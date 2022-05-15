@@ -12,13 +12,14 @@ class snes_cart {
 		reader.readAsDataURL(filename);*/
 		let dt = document.getElementById('displaytext');
 		console.log(dt);
-		const ROM = localStorage.getItem(filename)
+		const ROM = getFromDb('test');
 		console.log(ROM);
+		/*console.log(ROM);
 		if (ROM === null) {
 			dt.innerHTML = 'ROM not found!'
 		}
 		else {
 			dt.innerHTML = 'ROM found!'
-		}
+		}*/
 	}
 };

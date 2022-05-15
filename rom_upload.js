@@ -1,37 +1,103 @@
-var FILE_KEY = 'ROMFILE';
+let db;
+let dbVersion = 1;
+let dbReady = false;
 
+function initDb(func) {
+    let request = indexedDB.open('FileStorage', dbVersion);
 
-function setup_uploads() {
-// fire processUpload when the user uploads a file.
-document.querySelector('#fileUpload').addEventListener('change', handleFileUpload, false);
+    request.onerror = function(e) {
+        console.error('Unable to open database.');
+    }
 
-// Log any previously saved file.
-old_rom = retrieveRom();
-if (old_rom !== null) {
-	console.log('OLD ROM FOUND!', old_rom.byteLength)
-	const ui8 = new Uint8Array(old_rom);
-	console.log('UI8 len!', ui8.length)
+    request.onsuccess = function(e) {
+        db = e.target.result;
+        console.log('db opened');
+		func();
+    }
+
+    request.onupgradeneeded = function(e) {
+        let db = e.target.result;
+        db.createObjectStore('files', {keyPath:'id', autoIncrement: false});
+        dbReady = true;
+    }
+}
+
+function uploadFile(fileId) {
+    fileIn = document.getElementById('fileUpload');
+    if(fileIn.files && fileIn.files[0]) {
+        var reader = new FileReader();
+        reader.onload = function (e) {
+            console.log(e.target.result);
+
+            let bits = e.target.result;
+            let ob = {
+                id: fileId,
+                type: fileIn.files[0].type,
+                name: fileIn.files[0].name,
+                data: bits
+            };
+
+            let trans = db.transaction(['files'], 'readwrite');
+            let addReq = trans.objectStore('files').put(ob);
+
+            addReq.onerror = function(e) {
+                console.log('error storing data');
+                console.error(e);
+            }
+
+            trans.oncomplete = function(e) {
+                console.log('data stored');
+            }
+        };
+        reader.readAsBinaryString(fileIn.files[0])
+    }
 }
 
 
-// Setup file reading
-var reader = new FileReader();
-reader.onload = handleFileRead;
 
-function handleFileUpload(event) {
-    var file = event.target.files[0];
-    reader.readAsArrayBuffer(file); // fires onload when done.
+
+function getFromDb(fileId, func) {
+    var trans = db.transaction(['files'], 'readonly');
+    var dlReq = trans.objectStore('files').get(fileId);
+	let ready = false;
+	let errored = false;
+	
+    dlReq.onerror = function(e) {
+        console.log('error reading data');
+        console.error(e);
+    };
+    
+    dlReq.onsuccess = function(e) {
+        console.log('data read');
+        console.log(dlReq.result);
+		func(dlReq.result);
+    };
 }
 
-function handleFileRead(event) {
-    //var save = JSON.parse(event.target.result);
-	console.log(event);
-	console.log(event.target.result)
-    window.localStorage.setItem(FILE_KEY, btoa(event.target.result));
-}
 
-function retrieveRom() {
-    var se = localStorage.getItem(FILE_KEY);
-	return btoa(se);
-}
+function downloadFile(fileId) {
+    console.log('downloading');
+    var trans = db.transaction(['files'], 'readonly');
+    var dlReq = trans.objectStore('files').get(fileId);
+    
+    dlReq.onerror = function(e) {
+        console.log('error reading data');
+        console.error(e);
+    };
+    
+    dlReq.onsuccess = function(e) {
+        console.log('data read');
+        console.log(dlReq.result);
+        var element = document.createElement('a');
+        //element.setAttribute('href', 'data:' + dlReq.result.type + ';charset=utf-8,' + encodeURIComponent(dlReq.result.data));
+        element.setAttribute('href', 'data:' + dlReq.result.type + ';base64,' + dlReq.result.data);
+		element.setAttribute('download', dlReq.result.name);
+
+        element.style.display = 'none';
+        document.body.appendChild(element);
+
+        element.click();
+
+        document.body.removeChild(element);
+    };
 }
