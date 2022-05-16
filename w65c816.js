@@ -50,17 +50,21 @@ let NAT_BRK = 0xFFE6
 let BOOTUP = 256;
 class w65c816_registers {
 	constructor() {
-		this.IR = BOOTUP; // Instruction register
-		this.TCU = 0; // Timing Control Unit, counts up during execution
+		// Hidden registers used internally to track state
+		this.IR = 0; // Instruction register
+		this.TCU = 0; // Timing Control Unit, counts up during execution. Set to 0 at instruction fetch, incremented every cycle thereafter
+		this.MD = 0; // Memory Data Register, holds last known "good" RAM value from a read
+		
+		// Registers exposed to programs
 		this.C = 0; // B + A = C.
 		this.D = 0; // Direct
 		this.X = 0; // Y index
 		this.Y = 0; // X index
 		this.P = 0; // Processor Status
-		this.PBR = 0; // Program Bank Register
+		this.PB = 0; // Program Bank Register
 		this.PC = 0; // Program Counter
 		this.S = 0; // Stack pointer
-		this.DBR = 0; // Data Bank Register
+		this.DB = 0; // Data Bank Register
 		this.E = 0; // Hidden "Emulation" bit
 	}
 	
@@ -134,6 +138,173 @@ class w65c816_pins {
 	}
 };
 
+// Interrupt sequence
+// 2 cycles "internal", setting flags?
+// 1 cycle if native, write PB to stack
+// 1 cycle write PCH to stack
+// 1 cycle write PCL to stack
+// 1 cycle write P to stack
+// 1 cycle read vector low
+// 1 cycle read vector high
+
+class OPERAND_t {
+	constructor() {
+		this.NONE = 0;
+		this.CH = 1;
+		this.CL = 2;
+		this.C = 3;
+		this.X = 4;
+		this.XH = 5;
+		this.XL = 6;
+		this.Y = 7;
+		this.YH = 8;
+		this.YL = 9;
+		this.P = 10;
+		this.PB = 11;
+		this.DB = 12;
+		this.PC = 13;
+		this.PCH = 14;
+		this.PCL = 15;
+		this.S = 16;
+		this.SH = 17;
+		this.SL = 18;
+		this.D = 19;
+		this.DH = 20;
+		this.DL = 21;
+		this.MD = 22;
+	}
+}
+
+const OPERANDS = Object.freeze(new OPERAND_t());
+
+class micro_code {
+	constructor(name, action, internal, operand, addr) {
+		this.code_type = 0;
+		this.code_name = name;
+		this.internal = internal;
+		if (typeof(action) === 'undefined') {
+			this.action = function(cpu){};
+		}
+		else {
+			this.action = action;
+		}
+		if (typeof(operand) === 'undefined') {
+			this.operand = -1;
+		}
+		else {
+			this.operand = operand;
+		}
+		if (typeof(addr) === 'undefined') {
+			this.addr = 0;
+		}
+		else {
+			this.addr = addr;
+		}
+	}
+	
+	execute(cpu) {
+		return this.action(cpu, this.operand, this.addr);
+	}
+}
+
+function MKCODE(name, action, internal, operand, addr) {
+	let code = new micro_code(name, action, internal, operand, addr);
+	return code;
+}
+
+function NOP(cpu) {
+	cpu.pins.VPA = 0;
+	cpu.pins.VDA = 0;
+	cpu.pins.RW = 0;
+};
+
+// Set Address pins to Stack
+function M_SET_A_TO_S(cpu) {
+	cpu.pins.BA = 0;
+	if (cpu.reg.E) {
+		cpu.pins.A = (cpu.reg.S & 0xFF) | 0x100;
+	}
+	else {
+		cpu.pins.A = cpu.reg.S & 0xFFFF;
+	}	
+}
+
+function M_SET_A(cpu, addr) {
+	if (cpu.reg.E) {
+		cpu.pins.BA = 0;
+		cpu.pins.A = addr & 0xFFFF;
+	}
+	else {
+		cpu.pins.BA = (addr >> 16) && 0xFF;
+		cpu.pins.A = addr & 0xFFFF;
+	}
+}
+
+// Decreent Stack pointer
+function M_DEC_S(cpu) {
+	cpu.reg.S -= 1;
+	if (cpu.reg.S < 0) {
+		if (cpu.reg.E)
+			cpu.reg.S = 0xFF;
+		else
+			cpu.reg.S = 0xFFFF;
+	}
+}
+
+// C_ are microcode routines, like push a byte to stack
+function C_PUSH_PB(cpu) {
+	M_SET_A_TO_S(cpu);
+	cpu.pins.D = cpu.regs.PB;
+	cpu.pins.VPA = 0;
+	cpu.pins.VDA = 1;
+	cpu.pins.RW = 1;
+	cpu.pins.VPB = 0;
+	M_DEC_S(cpu);
+}
+
+function C_PUSH_PCH(cpu) {
+	M_SET_A_TO_S(cpu);
+	cpu.pins.BA = 0;
+	cpu.pins.D = (cpu.regs.PC >> 8) & 0xFF;
+	cpu.pins.VPA = 0;
+	cpu.pins.VDA = 1;
+	cpu.pins.RW = 1;
+	cpu.pins.VPB = 0;
+	M_DEC_S(cpu);
+}
+
+function C_PUSH_PCL(cpu) {
+	M_SET_A_TO_S(cpu);
+	cpu.pins.D = cpu.regs.PC & 0xFF;
+	cpu.pins.VPA = 0;
+	cpu.pins.VDA = 1;
+	cpu.pins.RW = 1;
+	M_DEC_S(cpu);
+	cpu.pins.VPB = 0;
+}
+
+function C_PUSH_P(cpu) {
+	M_SET_A_TO_S(cpu);
+	if (cpu.reg.E)
+		cpu.pins.D = cpu.regs.P & 0xF7; // Clear bit 4
+	else
+		cpu.pins.D = cpu.regs.P;
+	cpu.pins.VPA = 0;
+	cpu.pins.VDA = 1;
+	cpu.pins.RW = 1;
+	M_DEC_S(cpu);
+	cpu.pins.VPB = 0;
+}
+
+function C_RD_L(cpu, operand, addr) {
+	cpu.operand = operand;
+	M_SET_A(cpu, addr);
+	cpu.pins.VPA = 0;
+	cpu.pins.VDA = 1;
+	cpu.pins.RW = 0;
+	cpu.pins.VPB = 0;
+}
+
 class w65c816 {
 	#last_RES = 0;
 	#NMI_count = 0;
@@ -153,11 +324,32 @@ class w65c816 {
 		this.#ABORT_pending = false;
 		this.#IRQ_pending = false;
 		this.#RES_pending = true;
+		
+		this.microcode = []
 	}
 	
 	cycle() {
-		if (this.#RES_pending) {
-				
+		if (this.reg.TCU === 0) (this.#RES_pending) {
+			self.reset();
+			return;
 		}
+	}
+	
+	reset() {
+		let tri = 2;
+		var codelist = []
+		codelist.push(MKCODE('NOP', NOP, true));
+		codelist.push(MKCODE('RST_FLAGS', true, function(){
+			cpu.pins.E = 1;
+			console.log('Remember to finish flags set for reset here bro')
+		})
+		if (!self.reg.E) {
+			codelist.push(MKCODE('PUSH_PB', C_PUSH_PB, false));
+		}
+		codelist.push(MKCODE('PUSH_PCH', C_PUSH_PCH, false));
+		codelist.push(MKCODE('PUSH_PCL', C_PUSH_PCL, false));
+		codelist.push(MKCODE('PUSH_P', C_PUSH_P, false));
+		codelist.push(MKCODE('READ_LOW', function(cpu, operand, addr){C_RD_L(cpu, operand, addr); cpu.pins.VPB = 1;}, false, OPERAND.PC, 0x00FFFC))
+		codelist.push(MKCODE('READ_HIGH', function(cpu, operand, addr){C_RD_H(cpu, operand, addr); cpu.pins.VPB = 1;}, false, OPERAND.PC, 0x00FFFD))	
 	}
 };
