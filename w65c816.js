@@ -48,6 +48,29 @@ let NAT_COP = 0xFFE4
 let NAT_BRK = 0xFFE6
    
 let BOOTUP = 256;
+
+
+class w65c816_P {
+	constructor(pins) {
+		this.C = this.Z = this.I = this.D = this.X = this.M = this.V = this.N = 0;
+	}
+	
+	getbyte() {
+		return this.C + (this.Z << 1) + (this.I << 2) + (this.D << 3) + (this.X << 4) + (this.M << 5) + (this.V << 6) + (this.N << 7)
+	}
+	
+	setbyte(val) {
+		this.C = val & 0x01 ? 1 : 0;
+		this.Z = val & 0x02 ? 1 : 0;
+		this.I = val & 0x04 ? 1 : 0;
+		this.D = val & 0x08 ? 1 : 0;
+		this.X = val & 0x10 ? 1 : 0;
+		this.M = val & 0x20 ? 1 : 0;
+		this.V = val & 0x40 ? 1 : 0;
+		this.N = val & 0x80 ? 1 : 0;
+	}
+}
+
 class w65c816_registers {
 	constructor() {
 		// Hidden registers used internally to track state
@@ -60,62 +83,13 @@ class w65c816_registers {
 		this.D = 0; // Direct
 		this.X = 0; // Y index
 		this.Y = 0; // X index
-		this.P = 0; // Processor Status
-		this.PB = 0; // Program Bank Register
+		this.P = new w65c816_P(); // Processor Status
+		this.PBR = 0; // Program Bank Register
 		this.PC = 0; // Program Counter
 		this.S = 0; // Stack pointer
-		this.DB = 0; // Data Bank Register
+		this.DBR = 0; // Data Bank Register
 		this.E = 0; // Hidden "Emulation" bit
 	}
-	
-	reset() {
-		this.E = 1; // Set emulation mode
-		// Clear register to 0 that are cleared
-		this.D = 0;
-		this.DBR = 0;
-		this.PBR = 0;
-		this.S = 0x01FF;
-		this.set_index_8bit();
-	}
-	
-	// X=1, High byte forced low on changet o 8 bit
-	set_index_8bit() {
-		this.X &= 0xFF;
-		this.Y &= 0xFF;
-	}
-	
-	test_C() { // Test Carry
-		return this.P & 0x01;
-	}
-	
-	test_Z() { // Test zero
-		return this.P & 0x02;
-	}
-	
-	test_I() { // Test Interrupt Disable
-		return this.P & 0x04;
-	}
-	
-	test_D() { // Test Decimal Mode
-		return this.P & 0x08;
-	}
-	
-	test_X() { // IX select, 1=8bit, 0 = 16bit
-		return this.P & 0x10;
-	}
-	
-	test_M() { // Memory Select, accumulator mode, 1=8-bit, 0=16-bit
-		return this.P & 0x20;
-	}
-	
-	test_V() { // Overflow
-		return this.P & 0x40;
-	}
-	
-	test_N() { // Negative
-		return this.P & 0x80;
-	}
-
 };
 
 // We're going to use 1 as asserted just because
@@ -128,7 +102,7 @@ class w65c816_pins {
 		this.NMI = 0; // in
 		this.VPA = 0; // out. Valid Program Address
 		this.VDA = 0; // out. Valid Data Address
-		this.A = 0; // out. Address pins 0-15
+		this.Addr = 0; // out. Address pins 0-15
 		this.BA = 0; // out. Bank Address, upper 8 bits
 		this.D = 0; // in/out Data in/out
 		this.RW = 0; // 0 = reading, 1 = writing
@@ -160,8 +134,8 @@ class OPERAND_t {
 		this.YH = 8;
 		this.YL = 9;
 		this.P = 10;
-		this.PB = 11;
-		this.DB = 12;
+		this.PBR = 11;
+		this.DBR = 12;
 		this.PC = 13;
 		this.PCH = 14;
 		this.PCL = 15;
@@ -172,6 +146,9 @@ class OPERAND_t {
 		this.DH = 20;
 		this.DL = 21;
 		this.MD = 22;
+		this.MDH = 23;
+		this.MDL = 24;
+		this.IR = 25;
 	}
 }
 
@@ -215,28 +192,68 @@ function MKCODE(name, action, internal, operand, addr) {
 function NOP(cpu) {
 	cpu.pins.VPA = 0;
 	cpu.pins.VDA = 0;
+	cpu.pins.VPB = 0;
 	cpu.pins.RW = 0;
 };
 
 // Set Address pins to Stack
-function M_SET_A_TO_S(cpu) {
+function M_SET_Addr_TO_S(cpu) {
 	cpu.pins.BA = 0;
 	if (cpu.reg.E) {
-		cpu.pins.A = (cpu.reg.S & 0xFF) | 0x100;
+		cpu.pins.Addr = (cpu.reg.S & 0xFF) | 0x100;
 	}
 	else {
-		cpu.pins.A = cpu.reg.S & 0xFFFF;
+		cpu.pins.Addr = cpu.reg.S & 0xFFFF;
 	}	
 }
 
-function M_SET_A(cpu, addr) {
-	if (cpu.reg.E) {
+// Set CPU flags, pins during reset
+function M_RST_FLAGS(cpu) {
+	M_SET_E(cpu, 1);
+	cpu.pins.RW = 1;
+	cpu.pins.VDA = 0;
+	cpu.pins.VPA = 0;
+	console.log('Remember to finish flags set for reset here bro')
+	cpu.reg.D = 0;	
+	cpu.reg.DBR = 0;
+	cpu.reg.PBR = 0;
+	cpu.reg.S &= 0x1FF;
+	cpu.reg.X &= 0xFF;
+	cpu.reg.Y &= 0xFF;
+	cpu.reg.P.D = 0;
+	cpu.reg.P.C = 1;
+	cpu.reg.P.I = 1;
+	cpu.reg.P.M = 1;
+	cpu.reg.P.X = 1;
+}
+
+// Set address lines
+function M_SET_Addr(cpu, addr, ba) {
+	if (typeof(ba) === 'undefined') {
+		ba = 0;
+	}
+ 	if (cpu.reg.E) {
 		cpu.pins.BA = 0;
-		cpu.pins.A = addr & 0xFFFF;
+		cpu.pins.Addr = addr & 0xFFFF;
 	}
 	else {
-		cpu.pins.BA = (addr >> 16) && 0xFF;
-		cpu.pins.A = addr & 0xFFFF;
+		cpu.pins.BA = ba && 0xFF;
+		cpu.pins.Addr = addr & 0xFFFF;
+	}
+}
+
+// Change emulation mode
+function M_SET_E(cpu, val) {
+	let old_E = cpu.reg.E;
+	cpu.pins.E = val;
+	cpu.reg.E = val;
+	if (old_E !== cpu.reg.E) {
+		if (old_E == 1) {
+			// Disable Emulation mode
+		}
+		else {
+			// Enable Emulation mode
+		}
 	}
 }
 
@@ -251,9 +268,91 @@ function M_DEC_S(cpu) {
 	}
 }
 
+function M_SET_OPERAND(cpu, operand, value) {
+	switch(operand) {
+		case OPERANDS.NONE:
+			break;
+		case OPERANDS.CL:
+			cpu.reg.C = cpu.reg.C & 0xFF00 | (value & 0xFF);
+			break;
+		case OPERANDS.CH:
+			cpu.reg.C = cpu.reg.C & 0x00FF | ((value & 0xFF) << 8);
+			break;
+		case OPERANDS.C:
+			cpu.reg.C = value & 0xFFFF;
+			break;
+		case OPERANDS.X:
+			cpu.reg.X = value & 0xFFFF;
+			break;
+		case OPERANDS.XL:
+			cpu.reg.X = (cpu.reg.X & 0xFF00) | (value & 0xFF);
+			break;
+		case OPERANDS.XH:
+			cpu.reg.X = (cpu.reg.X & 0xFF) | ((value & 0xFF) << 8);
+			break;
+		case OPERANDS.Y:
+			cpu.reg.Y = value & 0xFFFF;
+			break;
+		case OPERANDS.YL:
+			cpu.reg.Y = (cpu.reg.Y & 0xFF00) | (value & 0xFF);
+			break;
+		case OPERANDS.YH:
+			cpu.reg.Y = (cpu.reg.Y & 0xFF) | ((value & 0xFF) << 8);
+			break;
+		case OPERANDS.P:
+			cpu.reg.P.setbyte(value);
+			break;
+		case OPERANDS.PBR:
+			cpu.reg.PBR = value & 0xFFFF;
+			break;
+		case OPERANDS.DBR:
+			cpu.reg.DBR = value & 0xFFFF;
+			break;
+		case OPERANDS.PC:
+			cpu.reg.PC = value & 0xFFFF;
+			break;
+		case OPERANDS.PCH:
+			cpu.reg.PC = (cpu.reg.PC & 0xFF) | ((value & 0xFF) << 8);
+			break;	
+		case OPERANDS.PCL:
+			cpu.reg.PC = (cpu.reg.PC & 0xFF00) | (value & 0xFF);
+			break;
+		case OPERANDS.S:
+			cpu.reg.S = value & 0xFFFF;
+			break;
+		case OPERANDS.SH:
+			cpu.reg.S = (cpu.reg.S & 0xFF) | ((value & 0xFF) << 8);
+			break;
+		case OPERANDS.SL:
+			cpu.reg.S = (cpu.reg.S & 0xFF00) | (value & 0xFF);
+			break;
+		case OPERANDS.D:
+			cpu.reg.D = value & 0xFFFF;
+			break;
+		case OPERANDS.DH:
+			cpu.reg.D = (cpu.reg.D & 0xFF) | ((value & 0xFF) << 8);
+			break;
+		case OPERANDS.DL:
+			cpu.reg.D = (cpu.reg.D & 0xFF00) | (value & 0xFF);
+			break;
+		case OPERANDS.MD:
+			cpu.reg.MD = value;
+			break;
+		case OPERANDS.MDL:
+			cpu.reg.MD = (cpu.reg.MD & 0xFF00) | (value & 0xFF);
+			break;
+		case OPERANDS.MDH:
+			cpu.reg.MD = (cpu.reg.MD & 0x00FF) | ((value & 0xFF) << 8);
+			break;
+		case OPERANDS.IR:
+			cpu.reg.IR = value;
+			break;
+		}
+}
+
 // C_ are microcode routines, like push a byte to stack
 function C_PUSH_PB(cpu) {
-	M_SET_A_TO_S(cpu);
+	M_SET_Addr_TO_S(cpu);
 	cpu.pins.D = cpu.regs.PB;
 	cpu.pins.VPA = 0;
 	cpu.pins.VDA = 1;
@@ -263,7 +362,7 @@ function C_PUSH_PB(cpu) {
 }
 
 function C_PUSH_PCH(cpu) {
-	M_SET_A_TO_S(cpu);
+	M_SET_Addr_TO_S(cpu);
 	cpu.pins.BA = 0;
 	cpu.pins.D = (cpu.regs.PC >> 8) & 0xFF;
 	cpu.pins.VPA = 0;
@@ -274,7 +373,7 @@ function C_PUSH_PCH(cpu) {
 }
 
 function C_PUSH_PCL(cpu) {
-	M_SET_A_TO_S(cpu);
+	M_SET_Addr_TO_S(cpu);
 	cpu.pins.D = cpu.regs.PC & 0xFF;
 	cpu.pins.VPA = 0;
 	cpu.pins.VDA = 1;
@@ -284,7 +383,7 @@ function C_PUSH_PCL(cpu) {
 }
 
 function C_PUSH_P(cpu) {
-	M_SET_A_TO_S(cpu);
+	M_SET_Addr_TO_S(cpu);
 	if (cpu.reg.E)
 		cpu.pins.D = cpu.regs.P & 0xF7; // Clear bit 4
 	else
@@ -296,13 +395,30 @@ function C_PUSH_P(cpu) {
 	cpu.pins.VPB = 0;
 }
 
-function C_RD_L(cpu, operand, addr) {
-	cpu.operand = operand;
-	M_SET_A(cpu, addr);
+function C_READ(cpu, addr) {
+	cpu.latched = operand;
+	M_SET_Addr(cpu, addr, ((addr >> 16) & 0xFF));
 	cpu.pins.VPA = 0;
 	cpu.pins.VDA = 1;
 	cpu.pins.RW = 0;
 	cpu.pins.VPB = 0;
+}
+
+class microcodelist {
+	constructor() {
+		this.actions = [];
+		this.cleanup = function() {}; // Cleanup after last instruction. Defaults to do nothing
+	}
+	
+	push(what) {
+		this.actions.push(what);
+	}
+	
+	clear() {
+		this.actions = [];
+		this.cleanup = function() {};
+	}
+	
 }
 
 class w65c816 {
@@ -320,36 +436,74 @@ class w65c816 {
 		this.#NMI_count = 0;
 		this.reg.IR = BOOTUP;
 		
+		this.STPWAI = false;
 		this.#NMI_pending = false;
 		this.#ABORT_pending = false;
 		this.#IRQ_pending = false;
 		this.#RES_pending = true;
 		
-		this.microcode = []
+		this.cached_microcodes = new Map();
+		this.microcode = microcodelist();
+		
+		this.latched = OPERANDS.NONE;
 	}
 	
 	cycle() {
-		if (this.reg.TCU === 0) (this.#RES_pending) {
+		if ((this.reg.TCU === 0) && (this.#RES_pending)) {
 			self.reset();
 			return;
 		}
+		
+		
+		// OK, check if we're STOP or WAIting
+		if (this.STPWAI) {
+			// Don't do anything
+			return;
+		}
+		
+		// Last cycle was a read, so we have to respect that
+		if (!this.pins.RW) {
+			M_SET_OPERAND(this, this.latched, this.pins.D);
+		}
+		this.latched = OPERANDS.NONE;
+		
+		// Check if we need to be fetching an opcode
+		if (this.reg.TCU >= this.microcode.actions.length) {
+			this.fetch_opcode();
+			return;
+		}
+		if (this.reg.TCU === 1) {
+			// Decode instruction
+		}
+		if (this.reg.TCU > 0) {
+			// Execute microcode
+		}
+		
+	}
+	
+	fetch_opcode() {
+		this.reg.TCU = 0;
+		this.latched = OPERANDS.IR;	
+		M_SET_Addr(this, this.reg.PB, this.reg.PBR);
+		this.pins.VDA = 1;
+		this.pins.VPA = 1;
+		this.pins.RW = 0;
+		this.pins.VPB = 0;		
 	}
 	
 	reset() {
-		let tri = 2;
-		var codelist = []
+		var codelist = this.microcode;
+		codelist.clear();
 		codelist.push(MKCODE('NOP', NOP, true));
-		codelist.push(MKCODE('RST_FLAGS', true, function(){
-			cpu.pins.E = 1;
-			console.log('Remember to finish flags set for reset here bro')
-		})
+		codelist.push(MKCODE('RST_FLAGS', true, M_RST_FLAGS)
 		if (!self.reg.E) {
 			codelist.push(MKCODE('PUSH_PB', C_PUSH_PB, false));
 		}
 		codelist.push(MKCODE('PUSH_PCH', C_PUSH_PCH, false));
 		codelist.push(MKCODE('PUSH_PCL', C_PUSH_PCL, false));
 		codelist.push(MKCODE('PUSH_P', C_PUSH_P, false));
-		codelist.push(MKCODE('READ_LOW', function(cpu, operand, addr){C_RD_L(cpu, operand, addr); cpu.pins.VPB = 1;}, false, OPERAND.PC, 0x00FFFC))
-		codelist.push(MKCODE('READ_HIGH', function(cpu, operand, addr){C_RD_H(cpu, operand, addr); cpu.pins.VPB = 1;}, false, OPERAND.PC, 0x00FFFD))	
+		codelist.push(MKCODE('READ_LOW', function(cpu, operand, addr){C_READ(cpu, operand, addr); cpu.pins.VPB = 1;}, false, OPERAND.PCL, 0x00FFFC));
+		codelist.push(MKCODE('READ_HIGH', function(cpu, operand, addr){C_READ(cpu, operand, addr); cpu.pins.VPB = 1;}, false, OPERAND.PCH, 0x00FFFD));
+		codelist.cleanup = function(cpu) {cpu.#RES_pending = false;}
 	}
 };
