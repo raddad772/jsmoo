@@ -152,49 +152,78 @@ class OPERAND_t {
 	}
 }
 
+class ADDRESS_MODES_t {
+	constructor() {
+		this.ABS_A = 1;   // 2 more bytes for low 16 bits, + DBR for high 8
+		this.ABS_INDEXED_IND_X = 2; // 2 bytes (LH) + X in Bank 0. For Jump, this value loaded to PC
+		this.ABS_INDEXED_X = 3; // 2 bytes + X, Bank DBR, 
+		this.ABS_INDEXED_Y = 4; // 2 bytes + y, Bank = DBR
+		this.ABS_IND = 5; // 2 bytes = addr in bank 0. PC = memory there.
+		this.ABS_IND_L = 6; // Same as ABS_IND, but a third byte for PBR
+		this.ABS_IND_L_X = 7; // addrl addh baddr. add X to this
+		this.ABS_L = 8; // 3 bytes (L, H, B) are used
+		this.A = 9; // A is the operand
+		this.BLOCK_MOVE = 10; //Opcode Dest_bank src_bank. X reg is low 16 source, Y is low 16 dest. C is 1 less than the number of bytes to move. Second byte is also loaded into DBR.
+		this.DIRECT_IND_IND = 11; // 1 extra. D + offset = direct address + X reg = bank 0 address. + DBR.
+		this.DIRECT_IND_X = 12; // 1 extra. offset + D + X = PBR 0
+		this.DIRECT_IND_Y = 13; // Same as DIRECT_IND_X but Y
+		
+		
+	}
+};
+
 const OPERANDS = Object.freeze(new OPERAND_t());
 
 class micro_code {
-	constructor(name, action, internal, operand, addr) {
+	constructor(name, action, internal, operand, addr, VPA, VDA, VPB, RW) {
 		this.code_type = 0;
 		this.code_name = name;
 		this.internal = internal;
-		if (typeof(action) === 'undefined') {
-			this.action = function(cpu){};
-		}
-		else {
-			this.action = action;
-		}
-		if (typeof(operand) === 'undefined') {
-			this.operand = -1;
-		}
-		else {
-			this.operand = operand;
-		}
-		if (typeof(addr) === 'undefined') {
-			this.addr = 0;
-		}
-		else {
-			this.addr = addr;
-		}
+		this.do_pins = false;
+		this.VPA = typeof(VPA) !== 'undefined' ? VPA : -1;
+		this.VDA = typeof(VDA) !== 'undefined' ? VDA : -1;
+		this.VPB = typeof(VPB) !== 'undefined' ? VPB : -1;
+		this.RW = typeof(RW) !== 'undefined' ? RW : -1;
+		
+		if (VPA > -1 || VDA > -1 || VPB > -1 || RW > -1) {this.do_pins = true; }
+		this.action = typeof(action) === 'undefined' ? function(){} : action;
+		this.operand = typeof(operand) === 'undefined' ? -1 : operand;
+		this.addr = typeof(addr) === 'undefined' ? 0 : addr;
 	}
 	
 	execute(cpu) {
+		if (this.do_pins) {
+			cpu.pins.VPA = this.VPA > -1 ? this.VPA : cpu.pins.VPA;
+			cpu.pins.VDA = this.VDA > -1 ? this.VDA : cpu.pins.VDA;
+			cpu.pins.VPB = this.VPB > -1 ? this.VPB : cpu.pins.VPB;
+			cpu.pins.RW = this.RW > -1 ? this.RW : cpu.pins.RW;
+		}
 		return this.action(cpu, this.operand, this.addr);
 	}
 }
 
-function MKCODE(name, action, internal, operand, addr) {
-	let code = new micro_code(name, action, internal, operand, addr);
+function MKCODE(name, action, internal, operand, addr, VPA, VDA, VPB, RW) {
+	//if ((typeof(action.has_pins) !== 'undefined') && action.has_pins) {
+	if (action.has_pins) {
+		VPA = action.VPA;
+		VDA = action.VDA;
+		VPB = action.VPB;
+		RW = action.RW;
+	}
+	let code = new micro_code(name, action, internal, operand, addr, VPA, VDA, VPB, RW);
 	return code;
 }
 
+function set_pins(func, VPA, VPD, VPB, RW) {
+	func.has_pins = true;
+	func.VPA = VPA;
+	func.VPD = VPD;
+	func.VPB = VPB;
+	func.RW = RW;
+}
 function NOP(cpu) {
-	cpu.pins.VPA = 0;
-	cpu.pins.VDA = 0;
-	cpu.pins.VPB = 0;
-	cpu.pins.RW = 0;
 };
+set_pins(NOP, 0, 0, 0, 0);
 
 // Set Address pins to Stack
 function M_SET_Addr_TO_S(cpu) {
@@ -213,6 +242,7 @@ function M_RST_FLAGS(cpu) {
 	cpu.pins.RW = 1;
 	cpu.pins.VDA = 0;
 	cpu.pins.VPA = 0;
+	cpu.pins.VPB = 0;
 	console.log('Remember to finish flags set for reset here bro')
 	cpu.reg.D = 0;	
 	cpu.reg.DBR = 0;
@@ -234,12 +264,11 @@ function M_SET_Addr(cpu, addr, ba) {
 	}
  	if (cpu.reg.E) {
 		cpu.pins.BA = 0;
-		cpu.pins.Addr = addr & 0xFFFF;
 	}
 	else {
 		cpu.pins.BA = ba && 0xFF;
-		cpu.pins.Addr = addr & 0xFFFF;
 	}
+	cpu.pins.Addr = addr & 0xFFFF;
 }
 
 // Change emulation mode
@@ -257,7 +286,7 @@ function M_SET_E(cpu, val) {
 	}
 }
 
-// Decreent Stack pointer
+// Decrement Stack pointer
 function M_DEC_S(cpu) {
 	cpu.reg.S -= 1;
 	if (cpu.reg.S < 0) {
@@ -266,6 +295,10 @@ function M_DEC_S(cpu) {
 		else
 			cpu.reg.S = 0xFFFF;
 	}
+}
+
+function M_INC_PC(cpu) {
+	cpu.reg.PC = (cpu.reg.PC + 1) & 0xFFFF;
 }
 
 function M_SET_OPERAND(cpu, operand, value) {
@@ -351,36 +384,26 @@ function M_SET_OPERAND(cpu, operand, value) {
 }
 
 // C_ are microcode routines, like push a byte to stack
-function C_PUSH_PB(cpu) {
+function C_PUSH_PBR(cpu) {
 	M_SET_Addr_TO_S(cpu);
-	cpu.pins.D = cpu.regs.PB;
-	cpu.pins.VPA = 0;
-	cpu.pins.VDA = 1;
-	cpu.pins.RW = 1;
-	cpu.pins.VPB = 0;
+	cpu.pins.D = cpu.regs.PBR;
 	M_DEC_S(cpu);
 }
+set_pins(C_PUSH_PBR, 0, 1, 0, 1);
 
 function C_PUSH_PCH(cpu) {
 	M_SET_Addr_TO_S(cpu);
-	cpu.pins.BA = 0;
 	cpu.pins.D = (cpu.regs.PC >> 8) & 0xFF;
-	cpu.pins.VPA = 0;
-	cpu.pins.VDA = 1;
-	cpu.pins.RW = 1;
-	cpu.pins.VPB = 0;
 	M_DEC_S(cpu);
 }
+set_pins(C_PUSH_PCH, 0, 1, 0, 1);
 
 function C_PUSH_PCL(cpu) {
 	M_SET_Addr_TO_S(cpu);
 	cpu.pins.D = cpu.regs.PC & 0xFF;
-	cpu.pins.VPA = 0;
-	cpu.pins.VDA = 1;
-	cpu.pins.RW = 1;
 	M_DEC_S(cpu);
-	cpu.pins.VPB = 0;
 }
+set_pins(C_PUSH_PCL, 0, 1, 0, 1);
 
 function C_PUSH_P(cpu) {
 	M_SET_Addr_TO_S(cpu);
@@ -388,21 +411,22 @@ function C_PUSH_P(cpu) {
 		cpu.pins.D = cpu.regs.P & 0xF7; // Clear bit 4
 	else
 		cpu.pins.D = cpu.regs.P;
-	cpu.pins.VPA = 0;
-	cpu.pins.VDA = 1;
-	cpu.pins.RW = 1;
 	M_DEC_S(cpu);
-	cpu.pins.VPB = 0;
 }
+set_pins(C_PUSH_P, 0, 1, 0, 1);
 
-function C_READ(cpu, addr) {
+function C_READ(cpu, operand, addr) {
 	cpu.latched = operand;
 	M_SET_Addr(cpu, addr, ((addr >> 16) & 0xFF));
-	cpu.pins.VPA = 0;
-	cpu.pins.VDA = 1;
-	cpu.pins.RW = 0;
-	cpu.pins.VPB = 0;
 }
+set_pins(C_READ, 0, 1, 0, 0);
+
+function C_READ_VPB(cpu, operand, addr) {
+	cpu.latched = operand;
+	M_SET_Addr(cpu, addr, ((addr >> 16) & 0xFF));
+}
+set_pins(C_READ_VPB, 0, 1, 1, 0);
+
 
 class microcodelist {
 	constructor() {
@@ -445,12 +469,14 @@ class w65c816 {
 		this.cached_microcodes = new Map();
 		this.microcode = microcodelist();
 		
+		this.decoded_opcodes = new Map();
+		
 		this.latched = OPERANDS.NONE;
 	}
 	
 	cycle() {
 		if ((this.reg.TCU === 0) && (this.#RES_pending)) {
-			self.reset();
+			this.reset();
 			return;
 		}
 		
@@ -474,21 +500,34 @@ class w65c816 {
 		}
 		if (this.reg.TCU === 1) {
 			// Decode instruction
+			this.decode_opcode(this.IR);
 		}
-		if (this.reg.TCU > 0) {
+		if (this.reg.TCU > 1) {
 			// Execute microcode
 		}
 		
 	}
 	
+	decode_opcode(IR) {
+		let microcode = this.decoded_opcodes[IR];
+		if (typeof(microcode) === 'undefined') {
+			// Actually decode
+			microcode = new microcode_list();
+			microcode.push(MKCOPDE('NOP', NOP, true));
+			switch(IR) {
+				
+			}
+		}
+	}
+	
 	fetch_opcode() {
 		this.reg.TCU = 0;
 		this.latched = OPERANDS.IR;	
-		M_SET_Addr(this, this.reg.PB, this.reg.PBR);
+		M_SET_Addr(this, this.reg.PC, this.reg.PBR);
 		this.pins.VDA = 1;
 		this.pins.VPA = 1;
 		this.pins.RW = 0;
-		this.pins.VPB = 0;		
+		this.pins.VPB = 0;
 	}
 	
 	reset() {
@@ -496,14 +535,15 @@ class w65c816 {
 		codelist.clear();
 		codelist.push(MKCODE('NOP', NOP, true));
 		codelist.push(MKCODE('RST_FLAGS', true, M_RST_FLAGS)
-		if (!self.reg.E) {
-			codelist.push(MKCODE('PUSH_PB', C_PUSH_PB, false));
+		if (!this.reg.E) {
+			codelist.push(MKCODE('PUSH_PBR', C_PUSH_PBR, false));
 		}
+		// VPA VDA VPB RW
 		codelist.push(MKCODE('PUSH_PCH', C_PUSH_PCH, false));
 		codelist.push(MKCODE('PUSH_PCL', C_PUSH_PCL, false));
 		codelist.push(MKCODE('PUSH_P', C_PUSH_P, false));
-		codelist.push(MKCODE('READ_LOW', function(cpu, operand, addr){C_READ(cpu, operand, addr); cpu.pins.VPB = 1;}, false, OPERAND.PCL, 0x00FFFC));
-		codelist.push(MKCODE('READ_HIGH', function(cpu, operand, addr){C_READ(cpu, operand, addr); cpu.pins.VPB = 1;}, false, OPERAND.PCH, 0x00FFFD));
+		codelist.push(MKCODE('READ_LOW', C_READ_VPB, false, OPERAND.PCL, 0x00FFFC));
+		codelist.push(MKCODE('READ_HIGH', C_READ_VPB, false, OPERAND.PCH, 0x00FFFD));
 		codelist.cleanup = function(cpu) {cpu.#RES_pending = false;}
 	}
 };
