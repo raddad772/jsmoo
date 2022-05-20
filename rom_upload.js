@@ -37,7 +37,8 @@ function uploadFile(fileId) {
                 data: bits
             };
 
-            let trans = db.transaction(['files'], 'readwrite');
+            main3(bits);
+			let trans = db.transaction(['files'], 'readwrite');
             let addReq = trans.objectStore('files').put(ob);
 
             addReq.onerror = function(e) {
@@ -46,6 +47,7 @@ function uploadFile(fileId) {
             }
 
             trans.oncomplete = function(e) {
+				//main3(e.result)
                 console.log('data stored');
             }
         };
@@ -69,7 +71,7 @@ function getFromDb(fileId, func) {
     
     dlReq.onsuccess = function(e) {
         console.log('data read');
-        console.log(dlReq.result);
+        //console.log(dlReq.result);
 		func(dlReq.result);
     };
 }
@@ -87,10 +89,9 @@ function downloadFile(fileId) {
     
     dlReq.onsuccess = function(e) {
         console.log('data read');
-        console.log(dlReq.result);
         var element = document.createElement('a');
         //element.setAttribute('href', 'data:' + dlReq.result.type + ';charset=utf-8,' + encodeURIComponent(dlReq.result.data));
-        element.setAttribute('href', 'data:' + dlReq.result.type + ';base64,' + dlReq.result.data);
+        /*element.setAttribute('href', 'data:' + dlReq.result.type + ';base64,' + dlReq.result.data);
 		element.setAttribute('download', dlReq.result.name);
 
         element.style.display = 'none';
@@ -98,6 +99,6 @@ function downloadFile(fileId) {
 
         element.click();
 
-        document.body.removeChild(element);
+        document.body.removeChild(element);*/
     };
 }

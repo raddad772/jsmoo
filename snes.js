@@ -1,4 +1,4 @@
-let NTSC_NASTER_CLOCK = 21477272 // 1.89e9 / 88
+let NTSC_MASTER_CLOCK = 21477272 // 1.89e9 / 88
 let PAL_MASTER_CLOCK =  21281370
 
 let MASTER_CLOCK = NTSC_MASTER_CLOCK;
@@ -18,11 +18,16 @@ class SNES {
 	constructor() {
 		this.cpu = new w65c816();
 		this.cart = new snes_cart();
-		this.mem = new snes_mem();
+		this.mem = null;//new snes_mem();
 	}
 	
 	load_ROM(file) {
 		this.cart.load_cart(file);
+	}
+	
+	load_ROM_from_RAM(ROM) {
+		this.cart.load_cart_from_RAM(new Uint8Array(ROM));
+		this.mem = new snes_mem(this.cart);
 	}
 }
 
@@ -32,9 +37,13 @@ function load_ROM(fileId, func) {
 
 function main3(ROM) {
 	snes = new SNES();
-	console.log('Got...', ROM);
-	//snes.load_ROM('smw.smc');
-
+	//console.log('Got...', ROM);
+	if (ROM === null || typeof(ROM) === 'undefined') {
+		alert('No ROM! Upload then refresh please');
+		return;
+	}
+	snes.load_ROM_from_RAM(ROM);
+	
 }
 
 function main2() {

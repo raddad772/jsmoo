@@ -49,6 +49,9 @@ let NAT_BRK = 0xFFE6
    
 let BOOTUP = 256;
 
+let VEC_RST_LO = 0x00FFFC;
+let VEC_RST_HI = 0x00FFFD;
+
 
 class w65c816_P {
 	constructor(pins) {
@@ -91,6 +94,18 @@ class w65c816_registers {
 		this.E = 0; // Hidden "Emulation" bit
 	}
 };
+
+class wc65816_cycletime {
+	constructor(def, E, M, X, MX, Branch, PB) {
+		this.def = def; // If no others apply 
+		this.E = E;   // E flag
+		this.M = M;   // M flag
+		this.X = X;   // X flag
+		this.MX = MX; // M & X flags
+		this.PB = PB; // Page Boundary +cycles
+		this.Branch = Branch; // If branch
+	}
+}
 
 // We're going to use 1 as asserted just because
 class w65c816_pins {
@@ -165,8 +180,20 @@ class ADDRESS_MODES_t {
 		this.A = 9; // A is the operand
 		this.BLOCK_MOVE = 10; //Opcode Dest_bank src_bank. X reg is low 16 source, Y is low 16 dest. C is 1 less than the number of bytes to move. Second byte is also loaded into DBR.
 		this.DIRECT_IND_IND = 11; // 1 extra. D + offset = direct address + X reg = bank 0 address. + DBR.
-		this.DIRECT_IND_X = 12; // 1 extra. offset + D + X = PBR 0
-		this.DIRECT_IND_Y = 13; // Same as DIRECT_IND_X but Y
+		this.DIRECT_INDEXED_X = 12; // 1 extra. offset + D + X = PBR 0
+		this.DIRECT_INDEXED_Y = 13; // Same as DIRECT_IND_X but Y
+		this.DIRECT_IND_INDEXED_Y = 14; // wow
+		this.DIRECT_IND_L_INDEXED_Y = 15;
+		this.DIRECT_IND_L = 16;
+		this.DIRECT_IND = 17;
+		this.DIRECT = 18;
+		this.IMMEDIATE = 19;
+		this.IMPLIED = 20;
+		this.PC_REL_L = 21;
+		this.PC_REL = 22;
+		this.STACK = 23;
+		this.STACK_REL = 24;
+		this.STACK_REL_IND_INDEXED_X = 25;
 		
 		
 	}
@@ -204,13 +231,25 @@ class micro_code {
 
 function MKCODE(name, action, internal, operand, addr, VPA, VDA, VPB, RW) {
 	//if ((typeof(action.has_pins) !== 'undefined') && action.has_pins) {
-	if (action.has_pins) {
-		VPA = action.VPA;
-		VDA = action.VDA;
-		VPB = action.VPB;
-		RW = action.RW;
+	let nVPA = -1;
+	let nVDA = -1;
+	let nVPB = -1;
+	let nRW = -1;
+	if (typeof(VPA) !== 'undefined') {
+		
 	}
-	let code = new micro_code(name, action, internal, operand, addr, VPA, VDA, VPB, RW);
+	if (action.has_pins) {
+		nVPA = action.VPA;
+		nVDA = action.VDA;
+		nVPB = action.VPB;
+		nRW = action.RW;
+	}
+	// If these are passed in, they override the action default
+	if (typeof(VPA) !== 'undefined') nVPA = VPA;
+	if (typeof(VDA) !== 'undefined') nVDA = VDA;
+	if (typeof(VPB) !== 'undefined') nVPB = VPB;
+	if (typeof(RW) !== 'undefined') nRW = RW;
+	let code = new micro_code(name, action, internal, operand, addr, nVPA, nVDA, nVPB, nRW);
 	return code;
 }
 
@@ -221,6 +260,7 @@ function set_pins(func, VPA, VPD, VPB, RW) {
 	func.VPB = VPB;
 	func.RW = RW;
 }
+
 function NOP(cpu) {
 };
 set_pins(NOP, 0, 0, 0, 0);
@@ -443,7 +483,7 @@ class microcodelist {
 		this.cleanup = function() {};
 	}
 	
-}
+};
 
 class w65c816 {
 	#last_RES = 0;
@@ -467,7 +507,7 @@ class w65c816 {
 		this.#RES_pending = true;
 		
 		this.cached_microcodes = new Map();
-		this.microcode = microcodelist();
+		this.microcode = new microcodelist();
 		
 		this.decoded_opcodes = new Map();
 		
@@ -515,8 +555,297 @@ class w65c816 {
 			microcode = new microcode_list();
 			microcode.push(MKCOPDE('NOP', NOP, true));
 			switch(IR) {
-				
-			}
+				case 0x00: // BRK s
+					break;	
+				case 0x01: // ORA (d,x)
+					break;	
+				case 0x02: // COP s
+					break;	
+				case 0x03: // ORA d,s
+					break;	
+				case 0x04: // TSB d
+					break;	
+				case 0x05: // ORA d
+					break;	
+				case 0x06: // ASL d
+					break;	
+				case 0x07: // ORA [d]
+					break;
+				case 0x08: // PHP s
+					break;	
+				case 0x09: // ORA #
+					break;	
+				case 0x0A: // ASL a
+					break;	
+				case 0x0B: // PHD s
+					break;	
+				case 0x0C: // TSB a
+					break;	
+				case 0x0D: // ORA a
+					break;	
+				case 0x0E: // ASL a
+					break;	
+				case 0x0F: // OR al
+					break;	
+				case 0x10: // BPL r
+					break;	
+				case 0x11: // ORA (d), y
+					break;	
+				case 0x12: // ORA (d)
+					break;	
+				case 0x13: // ORA(d,s),y
+					break;	
+				case 0x14: // TRB d
+					break;	
+				case 0x15: // ORA d,x
+					break;	
+				case 0x16: // ASL d,x
+					break;	
+				case 0x17: // ORA [d],y
+					break;	
+				case 0x18: // CLC i
+					break;	
+				case 0x19: // ORA a,y
+					break;	
+				case 0x1A: // INC A
+					break;	
+				case 0x1B: // TCS i
+					break;	
+				case 0x1C: // TRB a
+					break;	
+				case 0x1D: // ORA a,x
+					break;	
+				case 0x1E: // ASL a,x
+					break;	
+				case 0x1F: // ORA al, x
+					break;	
+				case 0x20: // JSR a
+					break;	
+				case 0x21: // AND (d,x)
+					break;	
+				case 0x22: // JSL al
+					break;	
+				case 0x23: // AND d,s
+					break;	
+				case 0x24: // BIT d
+					break;	
+				case 0x25: // AND d
+					break;	
+				case 0x26: // ROL d
+					break;	
+				case 0x27: // AND [d]
+					break;	
+				case 0x28: // PLP s
+					break;	
+				case 0x29: // AND #
+					break;	
+				case 0x2A: // ROL A
+					break;	
+				case 0x2B: // PLD s
+					break;	
+				case 0x2C: // BIT a
+					break;	
+				case 0x2D: // AND a
+					break;	
+				case 0x2E: // ROL a
+					break;	
+				case 0x2F: // AND al
+					break;	
+				case 0x30: // BMI R
+					break;	
+				case 0x31: // AND (d),y
+					break;	
+				case 0x32: //
+					break;	
+				case 0x33: //
+					break;	
+				case 0x34: //
+					break;	
+				case 0x35: //
+					break;	
+				case 0x36: //
+					break;	
+				case 0x37: //
+					break;	
+				case 0x38: //
+					break;	
+				case 0x39: //
+					break;	
+				case 0x3A: //
+					break;	
+				case 0x3B: //
+					break;	
+				case 0x3C: //
+					break;	
+				case 0x3D: //
+					break;	
+				case 0x3E: //
+					break;	
+				case 0x3F: //
+					break;	
+				case 0x40: //
+					break;	
+				case 0x41: //
+					break;	
+				case 0x42: //
+					break;	
+				case 0x43: //
+					break;	
+				case 0x44: //
+					break;	
+				case 0x45: //
+					break;	
+				case 0x46: //
+					break;	
+				case 0x47: //
+					break;	
+				case 0x48: //
+					break;	
+				case 0x49: //
+					break;	
+				case 0x4A: //
+					break;	
+				case 0x4B: //
+					break;	
+				case 0x4C: //
+					break;	
+				case 0x4D: //
+					break;	
+				case 0x4E: //
+					break;	
+				case 0x4F: //
+					break;	
+				case 0x50: //
+					break;	
+				case 0x51: //
+					break;	
+				case 0x52: //
+					break;	
+				case 0x53: //
+					break;	
+				case 0x54: //
+					break;	
+				case 0x55: //
+					break;	
+				case 0x56: //
+					break;	
+				case 0x57: //
+					break;	
+				case 0x58: //
+					break;	
+				case 0x59: //
+					break;	
+				case 0x5A: //
+					break;	
+				case 0x5B: //
+					break;	
+				case 0x5C: //
+					break;	
+				case 0x5D: //
+					break;	
+				case 0x5E: //
+					break;	
+				case 0x5F: //
+					break;	
+				case 0x60: //
+					break;	
+				case 0x61: //
+					break;	
+				case 0x62: //
+					break;	
+				case 0x63: //
+					break;	
+				case 0x64: //
+					break;	
+				case 0x65: //
+					break;	
+				case 0x66: //
+					break;	
+				case 0x67: //
+					break;	
+				case 0x68: //
+					break;	
+				case 0x69: //
+					break;	
+				case 0x6A: //
+					break;	
+				case 0x6B: //
+					break;	
+				case 0x6C: //
+					break;	
+				case 0x6D: //
+					break;	
+				case 0x6E: //
+					break;	
+				case 0x6F: //
+					break;	
+				case 0x70: //
+					break;	
+				case 0x71: //
+					break;	
+				case 0x72: //
+					break;	
+				case 0x73: //
+					break;	
+				case 0x74: //
+					break;	
+				case 0x75: //
+					break;	
+				case 0x76: //
+					break;	
+				case 0x77: //
+					break;	
+				case 0x78: //
+					break;	
+				case 0x79: //
+					break;	
+				case 0x7A: //
+					break;	
+				case 0x7B: //
+					break;	
+				case 0x7C: //
+					break;	
+				case 0x7D: //
+					break;	
+				case 0x7E: //
+					break;	
+				case 0x7F: //
+					break;
+				/*
+				case 0x0: //
+					break;	
+				case 0x1: //
+					break;	
+				case 0x2: //
+					break;	
+				case 0x3: //
+					break;	
+				case 0x4: //
+					break;	
+				case 0x5: //
+					break;	
+				case 0x6: //
+					break;	
+				case 0x7: //
+					break;	
+				case 0x8: //
+					break;	
+				case 0x9: //
+					break;	
+				case 0xA: //
+					break;	
+				case 0xB: //
+					break;	
+				case 0xC: //
+					break;	
+				case 0xD: //
+					break;	
+				case 0xE: //
+					break;	
+				case 0xF: //
+					break;	
+					*/	
+				}
 		}
 	}
 	
@@ -534,7 +863,7 @@ class w65c816 {
 		var codelist = this.microcode;
 		codelist.clear();
 		codelist.push(MKCODE('NOP', NOP, true));
-		codelist.push(MKCODE('RST_FLAGS', true, M_RST_FLAGS)
+		codelist.push(MKCODE('RST_FLAGS', true, M_RST_FLAGS));
 		if (!this.reg.E) {
 			codelist.push(MKCODE('PUSH_PBR', C_PUSH_PBR, false));
 		}
@@ -542,8 +871,8 @@ class w65c816 {
 		codelist.push(MKCODE('PUSH_PCH', C_PUSH_PCH, false));
 		codelist.push(MKCODE('PUSH_PCL', C_PUSH_PCL, false));
 		codelist.push(MKCODE('PUSH_P', C_PUSH_P, false));
-		codelist.push(MKCODE('READ_LOW', C_READ_VPB, false, OPERAND.PCL, 0x00FFFC));
-		codelist.push(MKCODE('READ_HIGH', C_READ_VPB, false, OPERAND.PCH, 0x00FFFD));
+		codelist.push(MKCODE('READ_LOW', C_READ_VPB, false, OPERAND.PCL, VEC_RST_LO));
+		codelist.push(MKCODE('READ_HIGH', C_READ_VPB, false, OPERAND.PCH, VEC_RST_HI));
 		codelist.cleanup = function(cpu) {cpu.#RES_pending = false;}
 	}
 };
