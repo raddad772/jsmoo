@@ -1,4 +1,5 @@
 class snes_mem {
-	constructor() {
+	constructor(snes_cart) {
+		this.cart = snes_cart;
 	}
 };
