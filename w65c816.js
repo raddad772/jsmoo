@@ -179,7 +179,7 @@ class ADDRESS_MODES_t {
 		this.ABS_L = 8; // 3 bytes (L, H, B) are used
 		this.A = 9; // A is the operand
 		this.BLOCK_MOVE = 10; //Opcode Dest_bank src_bank. X reg is low 16 source, Y is low 16 dest. C is 1 less than the number of bytes to move. Second byte is also loaded into DBR.
-		this.DIRECT_IND_IND = 11; // 1 extra. D + offset = direct address + X reg = bank 0 address. + DBR.
+		this.DIRECT_INDEXED_IND_X = 11; // 1 extra. D + offset = direct address + X reg = bank 0 address. + DBR.
 		this.DIRECT_INDEXED_X = 12; // 1 extra. offset + D + X = PBR 0
 		this.DIRECT_INDEXED_Y = 13; // Same as DIRECT_IND_X but Y
 		this.DIRECT_IND_INDEXED_Y = 14; // wow
@@ -199,23 +199,25 @@ class ADDRESS_MODES_t {
 	}
 };
 
+const ADDR_MODES = Object.freeze(new ADDRESS_MODES_t());
 const OPERANDS = Object.freeze(new OPERAND_t());
 
 class micro_code {
-	constructor(name, action, internal, operand, addr, VPA, VDA, VPB, RW) {
-		this.code_type = 0;
-		this.code_name = name;
-		this.internal = internal;
+	constructor({name, action=function(){}, operand=-1, addr=-1, VPA=-1, VDA=-1, VPB=-1, RW=-1}) {
+		this.name = name;
 		this.do_pins = false;
-		this.VPA = typeof(VPA) !== 'undefined' ? VPA : -1;
-		this.VDA = typeof(VDA) !== 'undefined' ? VDA : -1;
-		this.VPB = typeof(VPB) !== 'undefined' ? VPB : -1;
-		this.RW = typeof(RW) !== 'undefined' ? RW : -1;
+		this.VPA = VPA;
+		this.VDA = VDA;
+		this.VPB = VPB;
+		this.RW = RW;
 		
 		if (VPA > -1 || VDA > -1 || VPB > -1 || RW > -1) {this.do_pins = true; }
-		this.action = typeof(action) === 'undefined' ? function(){} : action;
-		this.operand = typeof(operand) === 'undefined' ? -1 : operand;
-		this.addr = typeof(addr) === 'undefined' ? 0 : addr;
+		this.action = action;
+		this.operand = operand;
+		this.addr = addr;
+		
+		this.num_cycles_to_execute = 1;
+		this.num_cycles_executed = 0;
 	}
 	
 	execute(cpu) {
@@ -225,19 +227,15 @@ class micro_code {
 			cpu.pins.VPB = this.VPB > -1 ? this.VPB : cpu.pins.VPB;
 			cpu.pins.RW = this.RW > -1 ? this.RW : cpu.pins.RW;
 		}
-		return this.action(cpu, this.operand, this.addr);
+		let r = this.action(cpu, this.operand, this.addr);
 	}
 }
 
-function MKCODE(name, action, internal, operand, addr, VPA, VDA, VPB, RW) {
-	//if ((typeof(action.has_pins) !== 'undefined') && action.has_pins) {
+function MKCODE({name='UNNAMED', action=function(cpu, operand, addr){}, internal=false, operand=OPERANDS.NONE, addr=0x0000, VPA=-1, VDA=-1, VPB=-1, RW=-1}) {
 	let nVPA = -1;
 	let nVDA = -1;
 	let nVPB = -1;
 	let nRW = -1;
-	if (typeof(VPA) !== 'undefined') {
-		
-	}
 	if (action.has_pins) {
 		nVPA = action.VPA;
 		nVDA = action.VDA;
@@ -245,11 +243,11 @@ function MKCODE(name, action, internal, operand, addr, VPA, VDA, VPB, RW) {
 		nRW = action.RW;
 	}
 	// If these are passed in, they override the action default
-	if (typeof(VPA) !== 'undefined') nVPA = VPA;
-	if (typeof(VDA) !== 'undefined') nVDA = VDA;
-	if (typeof(VPB) !== 'undefined') nVPB = VPB;
-	if (typeof(RW) !== 'undefined') nRW = RW;
-	let code = new micro_code(name, action, internal, operand, addr, nVPA, nVDA, nVPB, nRW);
+	if (VPA > -1) nVPA = VPA;
+	if (VDA > -1) nVDA = VDA;
+	if (VPB > -1) nVPB = VPB;
+	if (RW > -1) nRW = RW;
+	let code = new micro_code({name:name, action:action, internal:internal, operand:operand, addr:addr, VPA:nVPA, VDA:nVDA, VPB:nVPB, RW:nRW});
 	return code;
 }
 
@@ -499,6 +497,7 @@ class w65c816 {
 		this.#last_RES = 0;
 		this.#NMI_count = 0;
 		this.reg.IR = BOOTUP;
+		this.fetch_addr = 0;
 		
 		this.STPWAI = false;
 		this.#NMI_pending = false;
@@ -508,8 +507,11 @@ class w65c816 {
 		
 		this.cached_microcodes = new Map();
 		this.microcode = new microcodelist();
+		this.addr_mode = 
 		
 		this.decoded_opcodes = new Map();
+		this.decoded_opcodes[0] = new Map();
+		this.decoded_opcodes[1] = new Map();
 		
 		this.latched = OPERANDS.NONE;
 	}
@@ -540,7 +542,8 @@ class w65c816 {
 		}
 		if (this.reg.TCU === 1) {
 			// Decode instruction
-			this.decode_opcode(this.IR);
+			this.fetch_addr = 0;
+			this.decode_opcode(this.E, this.IR);
 		}
 		if (this.reg.TCU > 1) {
 			// Execute microcode
@@ -549,39 +552,41 @@ class w65c816 {
 	}
 	
 	decode_opcode(IR) {
-		let microcode = this.decoded_opcodes[IR];
+		let microcode = this.decoded_opcodes[this.reg.E][this.reg.M][this.reg.X][IR];
 		if (typeof(microcode) === 'undefined') {
 			// Actually decode
 			microcode = new microcode_list();
-			microcode.push(MKCOPDE('NOP', NOP, true));
+			microcode.push(MKCODE('NOP', NOP, true));
 			switch(IR) {
 				case 0x00: // BRK s
 					break;	
-				case 0x01: // ORA (d,x)
+				case 0x01: // ORA (d,x) Direc Ix Ind X
+					this.addr_mode = ADDR_MODES.DIRECT_INDEXED_IND_X;
+				microcode.push(MKCODE('AM', FETCH_AM_VAR_E, false));
+				break;	
+				case 0x02: // COP s. stack
 					break;	
-				case 0x02: // COP s
+				case 0x03: // ORA d,s stack relative
 					break;	
-				case 0x03: // ORA d,s
+				case 0x04: // TSB d direct
 					break;	
-				case 0x04: // TSB d
+				case 0x05: // ORA d direct
 					break;	
-				case 0x05: // ORA d
+				case 0x06: // ASL d direct
 					break;	
-				case 0x06: // ASL d
-					break;	
-				case 0x07: // ORA [d]
+				case 0x07: // ORA [d] direct ind long
 					break;
-				case 0x08: // PHP s
+				case 0x08: // PHP s stack
 					break;	
-				case 0x09: // ORA #
+				case 0x09: // ORA # immediate
 					break;	
-				case 0x0A: // ASL a
+				case 0x0A: // ASL a absolute
 					break;	
-				case 0x0B: // PHD s
+				case 0x0B: // PHD s stack
 					break;	
-				case 0x0C: // TSB a
+				case 0x0C: // TSB a absolute
 					break;	
-				case 0x0D: // ORA a
+				case 0x0D: // ORA a absolute
 					break;	
 				case 0x0E: // ASL a
 					break;	
