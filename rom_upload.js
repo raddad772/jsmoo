@@ -71,8 +71,8 @@ function getFromDb(fileId, func) {
     
     dlReq.onsuccess = function(e) {
         console.log('data read');
-        //console.log(dlReq.result);
-		func(dlReq.result);
+        console.log(dlReq.result.data.length);
+		func(dlReq.result.data);
     };
 }
 
