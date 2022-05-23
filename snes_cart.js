@@ -17,6 +17,7 @@ class snes_cart {
 		this.header.mapping_mode = -1;
 		this.header.version = -1;
 		this.header.hi_speed = false;
+		this.header.bank_mask = 0;
 		// ver.1:
 		//. 0xFFC0-D4. internal name
 		//. D5 map mode
@@ -67,6 +68,9 @@ class snes_cart {
 		this.header.hi_speed = this.ROM[0xFFD5] & 0x10 ? true : false;
 		this.header.mapping_mode = 0x2F & this.ROM[0xFFD5];
 		addtxt1('<br>Mapping mode 0x' + this.header.mapping_mode.toString(16) + '<br>HiSpeed? ' + this.header.hi_speed);
+		// Determine bank mask
+		let num_address_lines = Math.ceil(Math.log2(this.ROM.byteLength));
+		this.header.bank_mask = (((2 ** (num_address_lines - 16)) - 1) << 16) | 0xFFFF;
 		switch(ver) {
 			case 1:
 				this.read_ver1_header();
