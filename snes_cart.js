@@ -13,7 +13,7 @@ function addtxt1(txt) {
 class snes_cart {
 	constructor() {
 		this.ROM = new Uint8Array();
-		this.header = new Object();
+		this.header = {};
 		this.header.mapping_mode = -1;
 		this.header.version = -1;
 		this.header.hi_speed = false;
@@ -49,28 +49,45 @@ class snes_cart {
 		settxt1('Loading ROM of size ' + ROM.byteLength);
 		addtxt1('<br>Testing');
 		addtxt1('<br>' + typeof(ROM));
-		
+
 		// Determine if 512-byte copier header is present, and skip it
 		let SMCheader_size = ROM.byteLength % 1024;
 		if (SMCheader_size !== 0) {
 			addtxt1('<br>SMC header found! Removing ' + SMCheader_size + ' bytes!');
-			ROM = ROM.slice(SMCheader_size);
+			ROM = new Uint8Array(ROM.slice(SMCheader_size, ROM.byteLength));
 		}
 		this.ROM = ROM;
+		addtxt1('ROM size ' + this.ROM.byteLength.toString());
 		let ver = 1;
-		if (ROM[0xFFD4] === 0) {
+		this.header.header_offset = 0x7000;
+		if (ROM[this.header.header_offset + 0xFD4] === 0) {
 			ver = 2;
 		}
-		if (ROM[0xFFDA] === 0x33) {
+		if (ROM[this.header.header_offset + 0xFDA] === 0x33) {
 			ver = 3;
 		}
 		addtxt1('<br>Header version ' + ver + ' detected.')
-		this.header.hi_speed = this.ROM[0xFFD5] & 0x10 ? true : false;
-		this.header.mapping_mode = 0x2F & this.ROM[0xFFD5];
+		this.header.hi_speed = this.ROM[this.header.header_offset + 0xFD5] & 0x10 ? true : false;
+		this.header.mapping_mode = 0x2F & this.ROM[this.header.header_offset + 0xFD5];
 		addtxt1('<br>Mapping mode 0x' + this.header.mapping_mode.toString(16) + '<br>HiSpeed? ' + this.header.hi_speed);
 		// Determine bank mask
 		let num_address_lines = Math.ceil(Math.log2(this.ROM.byteLength));
 		this.header.bank_mask = (((2 ** (num_address_lines - 16)) - 1) << 16) | 0xFFFF;
+		/*var array_to_find = [0x53,0x55,0x50,0x45,0x52,0x20,0x4D,0x41,0x52];
+		var pos_in_array = 0;
+		var found_at = 0;
+		for (var i = 0; i < this.ROM.length; i++) {
+			if (pos_in_array >= array_to_find.length) {
+				console.log('FOUND AT ', i, ' 0x' + found_at.toString(16));
+				break;
+			}
+			if (this.ROM[i] == array_to_find[pos_in_array]) {
+				pos_in_array++;
+			}
+			else {
+				pos_in_array = 0;
+			}
+		}*/
 		switch(ver) {
 			case 1:
 				this.read_ver1_header();

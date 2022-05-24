@@ -27,7 +27,7 @@ function uploadFile(fileId) {
     if(fileIn.files && fileIn.files[0]) {
         var reader = new FileReader();
         reader.onload = function (e) {
-            console.log(e.target.result);
+            //console.log(e.target.result);
 
             let bits = e.target.result;
             let ob = {
@@ -56,7 +56,14 @@ function uploadFile(fileId) {
 }
 
 
-
+function dumb_convert(instr) {
+    var abuf = new ArrayBuffer(instr.length);
+    var buf = new Uint8Array(abuf);
+    for (var i = 0, strLen = instr.length; i < strLen; i++) {
+        buf[i] = instr.charCodeAt(i);
+    }
+    return buf;
+}
 
 function getFromDb(fileId, func) {
     var trans = db.transaction(['files'], 'readonly');
@@ -71,8 +78,17 @@ function getFromDb(fileId, func) {
     
     dlReq.onsuccess = function(e) {
         console.log('data read');
-        console.log(dlReq.result.data.length);
-		func(dlReq.result.data);
+        console.log("loaded bytes", dlReq.result.data.length);
+        //console.log('hi', dlReq.result.data)
+        /*var myvar = new TextEncoder("utf-8").encode(dlReq.result.data);
+        console.log(myvar.byteLength, typeof(myvar))
+        var yourvar = new Uint8Array(myvar);
+        console.log(typeof(yourvar), yourvar.byteLength, yourvar);
+        myvar = dumb_convert(dlReq.result.data);
+        console.log("done dumb:", myvar.byteLength);
+        var my = myvar[0xFFD5 + 512];*/
+        //console.log(my.toString(16));
+		func(dumb_convert(dlReq.result.data));
     };
 }
 
