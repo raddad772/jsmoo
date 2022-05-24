@@ -18,7 +18,7 @@ class SNES {
 	constructor() {
 		this.cpu = new w65c816();
 		this.cart = new snes_cart();
-		this.mem = null;//new snes_mem();
+		this.mem = null; //new snes_mem();
 	}
 	
 	load_ROM(file) {
@@ -28,6 +28,9 @@ class SNES {
 	load_ROM_from_RAM(ROM) {
 		this.cart.load_cart_from_RAM(new Uint8Array(ROM));
 		this.mem = new snes_mem(this.cart);
+		this.ROM = this.cart.ROM;
+		this.SRAM = this.cart.SRAM;
+		console.log('0xFFE0 mapped to cart is', this.mem.map_address(0xFFE0).toString(16));
 	}
 }
 
