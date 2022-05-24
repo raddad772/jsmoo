@@ -43,12 +43,15 @@ class snes_cart {
 	}
 	
 	read_ver1_header() {
+		this.header.flash_RAM_size = (2 ** this.ROM[this.header.header_offset + 0xD8]) * 1024;
+		addtxt1('<br>SRAM size ' + this.header.flash_RAM_size.toString());
+		this.header.internal_name = new TextDecoder().decode(this.ROM.slice(this.header.header_offset + 0xC0, this.header.header_offset + 0xD4));
+		addtxt1('<br>Internal name ' + this.header.internal_name);
+		this.SRAM = new Uint8Array(this.header.flash_RAM_size);
 	}
 	
 	load_cart_from_RAM(ROM) {
 		settxt1('Loading ROM of size ' + ROM.byteLength);
-		addtxt1('<br>Testing');
-		addtxt1('<br>' + typeof(ROM));
 
 		// Determine if 512-byte copier header is present, and skip it
 		let SMCheader_size = ROM.byteLength % 1024;
@@ -57,18 +60,18 @@ class snes_cart {
 			ROM = new Uint8Array(ROM.slice(SMCheader_size, ROM.byteLength));
 		}
 		this.ROM = ROM;
-		addtxt1('ROM size ' + this.ROM.byteLength.toString());
+		addtxt1('<br>ROM size ' + this.ROM.byteLength.toString());
 		let ver = 1;
-		this.header.header_offset = 0x7000;
-		if (ROM[this.header.header_offset + 0xFD4] === 0) {
+		this.header.header_offset = 0x7F00;
+		if (ROM[this.header.header_offset + 0xD4] === 0) {
 			ver = 2;
 		}
-		if (ROM[this.header.header_offset + 0xFDA] === 0x33) {
+		if (ROM[this.header.header_offset + 0xDA] === 0x33) {
 			ver = 3;
 		}
 		addtxt1('<br>Header version ' + ver + ' detected.')
-		this.header.hi_speed = this.ROM[this.header.header_offset + 0xFD5] & 0x10 ? true : false;
-		this.header.mapping_mode = 0x2F & this.ROM[this.header.header_offset + 0xFD5];
+		this.header.hi_speed = this.ROM[this.header.header_offset + 0xD5] & 0x10 ? true : false;
+		this.header.mapping_mode = 0x2F & this.ROM[this.header.header_offset + 0xD5];
 		addtxt1('<br>Mapping mode 0x' + this.header.mapping_mode.toString(16) + '<br>HiSpeed? ' + this.header.hi_speed);
 		// Determine bank mask
 		let num_address_lines = Math.ceil(Math.log2(this.ROM.byteLength));
@@ -112,7 +115,7 @@ class snes_cart {
 		reader.readAsDataURL(filename);*/
 		let dt = document.getElementById('displaytext');
 		const ROM = getFromDb('test');
-		console.log(ROM);
+		//console.log(ROM);
 		/*console.log(ROM);
 		if (ROM === null) {
 			dt.innerHTML = 'ROM not found!'

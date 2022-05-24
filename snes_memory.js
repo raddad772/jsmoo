@@ -19,22 +19,18 @@ class snes_mem {
 	
 	map_address(addr) {
 		let ROMaddr = 0;
+		let bank = (addr & 0xFF0000) >> 16;
+		let page = (addr & 0xFF00) >> 8;
+		let ROMsel = false;
+		let SRAMsel = false;
+		if ((bank === 0x7E) || (bank === 0x7F)) {
+			ROMsel = false;
+		}
+		else if ((bank < 0x40) || ((bank >= 0x80) && (bank < 0xC0))) {
+			ROMsel = addr >= 0x8000;
+		}
 		if (this.cart.header.mapping_mode === HIROM) {
-			let ROMsel = false;
-			let SRAMsel = false;
-			let bank = (addr & 0xFF0000) >> 16;
-			let page = (addr & 0xFF00) >> 8;
-			if ((bank === 0x7E) || (bank === 0x7F)) {
-				ROMsel = false;
-			}
-			else if ((bank < 0x40) || ((bank >= 0x80) && (bank < 0xC0))) {
-				if (addr >= 0x8000) {
-					ROMsel = true;
-				}
-				else {
-					ROMsel = false;
-				}
-			}
+			console.log('HIROM!')
 			if (ROMsel && (addr & 0x8000)) {
 				ROMsel = false;
 				SRAMsel = true;
@@ -43,7 +39,15 @@ class snes_mem {
 				ROMaddr = (addr & 0x7FFF) | ((addr & 0xFF0000) >> 1);
 				ROMaddr = ROMaddr & this.cart.header.bank_mask;
 			}
-			
+			return ROMaddr;
+		}
+		else {
+			console.log('LOROM!');
+			if (ROMsel) {
+				ROMaddr = (addr & 0x7FFF) | ((addr & 0xFF0000) >> 1);
+				ROMaddr = ROMaddr & this.cart.header.bank_mask;
+			}
+			return ROMaddr;
 		}
 	}
-};
+}
