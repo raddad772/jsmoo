@@ -1,0 +1,13 @@
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+}
+
+.disassembly {
+    border: 1px solid black;
+    border-radius: 5px;
+    background-color: #eee;
+    margin: 10px 0;
+    padding: 6px;
+}

@@ -167,39 +167,8 @@ class OPERAND_t {
 	}
 }
 
-class ADDRESS_MODES_t {
-	constructor() {
-		this.ABS_A = 1;   // 2 more bytes for low 16 bits, + DBR for high 8
-		this.ABS_INDEXED_IND_X = 2; // 2 bytes (LH) + X in Bank 0. For Jump, this value loaded to PC
-		this.ABS_INDEXED_X = 3; // 2 bytes + X, Bank DBR, 
-		this.ABS_INDEXED_Y = 4; // 2 bytes + y, Bank = DBR
-		this.ABS_IND = 5; // 2 bytes = addr in bank 0. PC = memory there.
-		this.ABS_IND_L = 6; // Same as ABS_IND, but a third byte for PBR
-		this.ABS_IND_L_X = 7; // addrl addh baddr. add X to this
-		this.ABS_L = 8; // 3 bytes (L, H, B) are used
-		this.A = 9; // A is the operand
-		this.BLOCK_MOVE = 10; //Opcode Dest_bank src_bank. X reg is low 16 source, Y is low 16 dest. C is 1 less than the number of bytes to move. Second byte is also loaded into DBR.
-		this.DIRECT_INDEXED_IND_X = 11; // 1 extra. D + offset = direct address + X reg = bank 0 address. + DBR.
-		this.DIRECT_INDEXED_X = 12; // 1 extra. offset + D + X = PBR 0
-		this.DIRECT_INDEXED_Y = 13; // Same as DIRECT_IND_X but Y
-		this.DIRECT_IND_INDEXED_Y = 14; // wow
-		this.DIRECT_IND_L_INDEXED_Y = 15;
-		this.DIRECT_IND_L = 16;
-		this.DIRECT_IND = 17;
-		this.DIRECT = 18;
-		this.IMMEDIATE = 19;
-		this.IMPLIED = 20;
-		this.PC_REL_L = 21;
-		this.PC_REL = 22;
-		this.STACK = 23;
-		this.STACK_REL = 24;
-		this.STACK_REL_IND_INDEXED_X = 25;
-		
-		
-	}
-};
 
-const ADDR_MODES = Object.freeze(new ADDRESS_MODES_t());
+
 const OPERANDS = Object.freeze(new OPERAND_t());
 
 class micro_code {

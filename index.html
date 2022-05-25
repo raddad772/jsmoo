@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+<script type="text/javascript" src="w65c816_disassemble.js"></script>
+<script type="text/javascript" src="w65c816.js"></script>
+<script type="text/javascript" src="snes_memory.js"></script>
+<script type="text/javascript" src="snes_cart.js"></script>
+<script type="text/javascript" src="snes.js"></script>
+<script type="text/javascript" src="rom_upload.js"></script>
+<meta charset="utf-8">
+<link rel="stylesheet" href="jsmoo.css">
+    <title>JSMoo</title>
+</head>
+
+<body>
+  <canvas id="glCanvas" width="1656" height="300"></canvas>
+
+
+<div class="grid-container">
+
+    <div class="grid-child">
+        <div class="disassembly">
+        <pre>
+            <code>
+000: test
+001: 000 000
+002: 000 000
+
+            </code>
+        </pre>
+        </div>
+    </div>
+
+    <div class="grid-child">
+        <section>
+            <button id="step" type="button" onclick="snes.step()">Step</button>
+        </section>
+    </div>
+    <div class="grid-child">
+       <div>
+  <section>
+            <input id="fileUpload" name="fileUpload" type="file"/>
+            <button id="upload" type="button" onclick="uploadFile('test');">Go</button>
+            <button id="download" type="button" onclick="downloadFile('test');">Download</button>
+        </section>
+</div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

@@ -32,10 +32,38 @@ class SNES {
 		this.SRAM = this.cart.SRAM;
 		console.log('0xFFE0 mapped to cart is', this.mem.map_address(0xFFE0).toString(16));
 	}
+
+	step() {
+		console.log('STEP...')
+	}
 }
 
 function load_ROM(fileId, func) {
 	getFromDb(fileId, func);
+}
+
+let gl;
+let canvas;
+let snes;
+
+function gl_cls() {
+	// Set clear color to black, fully opaque
+	gl.clearColor(0.0, 0.0, 0.0, 1.0);
+	// Clear the color buffer with specified clear color
+	gl.clear(gl.COLOR_BUFFER_BIT);
+}
+
+function init_gl() {
+	canvas = document.querySelector("#glCanvas");
+  	// Initialize the GL context
+  	gl = canvas.getContext("webgl");
+
+  	// Only continue if WebGL is available and working
+  	if (gl === null) {
+    	alert("Unable to initialize WebGL. Your browser or machine may not support it.");
+    	return false;
+  	}
+	gl_cls();
 }
 
 function main3(ROM) {
@@ -46,7 +74,9 @@ function main3(ROM) {
 		return;
 	}
 	snes.load_ROM_from_RAM(ROM);
-	
+	if (!init_gl()) {
+		return;
+	}
 }
 
 function main2() {
