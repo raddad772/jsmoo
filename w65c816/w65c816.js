@@ -1,4 +1,4 @@
-console.log('I AM ALIVE!')
+"use strict";
 
 /* We're not doing every pin individually. That's an unneccessary pain.
    We will group them where we can, and leave out ones like clock.
@@ -36,18 +36,18 @@ console.log('I AM ALIVE!')
    PBR, PCH, PCL, P
    */ 
 
-let EMU_IRQ = 0xFFFE
-let NAT_IRQ = 0xFFEE
-let EMU_NMI = 0xFFFA
-let NAT_NMI = 0xFFEA
-let EMUNAT_RES = 0xFFFC
-let EMU_ABORT = 0xFFF8
-let NAT_ABORT = 0xFFE8
-let EMU_COP = 0xFFF4
-let NAT_COP = 0xFFE4
-let NAT_BRK = 0xFFE6
+const EMU_IRQ = 0xFFFE
+const NAT_IRQ = 0xFFEE
+const EMU_NMI = 0xFFFA
+const NAT_NMI = 0xFFEA
+const EMUNAT_RES = 0xFFFC
+const EMU_ABORT = 0xFFF8
+const NAT_ABORT = 0xFFE8
+const EMU_COP = 0xFFF4
+const NAT_COP = 0xFFE4
+const NAT_BRK = 0xFFE6
    
-let BOOTUP = 256;
+const BOOTUP = 256;
 
 let VEC_RST_LO = 0x00FFFC;
 let VEC_RST_HI = 0x00FFFD;

@@ -1,5 +1,7 @@
-LOROM = 0x20
-HIROM = 0x21
+"use strict";
+
+const LOROM = 0x20
+const HIROM = 0x21
 class snes_mem {
 	constructor(snes_cart) {
 		this.cart = snes_cart;

@@ -1,3 +1,5 @@
+"use strict";
+
 class snes_cart {
 	constructor() {
 		this.ROM = new Uint8Array();

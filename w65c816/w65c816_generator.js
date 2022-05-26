@@ -1,3 +1,5 @@
+"use strict";
+
 // Function that checks opcode_AM_R, which is used to generate opcode_AM
 function check_addressing_matrix() {
     let testourset = function(i, ourset, ourthere, addrmode, pneumonic) {

@@ -1,3 +1,5 @@
+"use strict";
+
 class ADDRESS_MODES_t {
 	constructor() {
 		this.A = 0;                     // a        absolute
