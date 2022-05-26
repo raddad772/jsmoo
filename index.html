@@ -1,23 +1,28 @@
 <!DOCTYPE HTML>
 <html lang="en-US">
 <head>
-<script type="text/javascript" src="w65c816_disassemble.js"></script>
-<script type="text/javascript" src="w65c816.js"></script>
-<script type="text/javascript" src="snes_memory.js"></script>
-<script type="text/javascript" src="snes_cart.js"></script>
-<script type="text/javascript" src="snes.js"></script>
+<script type="text/javascript" src="helpers.js"></script>
+<script type="text/javascript" src="w65c816/w65c816_opcodes.js"></script>
+<script type="text/javascript" src="w65c816/w65c816_disassemble.js"></script>
+<script type="text/javascript" src="w65c816/w65c816.js"></script>
+<script type="text/javascript" src="w65c816/w65c816_generator.js"></script>
+<script type="text/javascript" src="snes/snes_memory.js"></script>
+<script type="text/javascript" src="snes/snes_clock.js"></script>
+<script type="text/javascript" src="snes/snes_clock_generator.js"></script>
+<script type="text/javascript" src="snes/snes_cart.js"></script>
+<script type="text/javascript" src="snes/snes.js"></script>
 <script type="text/javascript" src="rom_upload.js"></script>
 <meta charset="utf-8">
 <link rel="stylesheet" href="jsmoo.css">
-    <title>JSMoo</title>
+    <title>JSMoo SNES</title>
 </head>
 
 <body>
-  <canvas id="glCanvas" width="1656" height="300"></canvas>
+  <canvas id="glCanvas" width="1280" height="300"></canvas>
 
 
 <div class="grid-container">
-
+    <!-- memory listing/disassembly -->
     <div class="grid-child">
         <div class="disassembly">
         <pre>
@@ -31,20 +36,26 @@
         </div>
     </div>
 
+    <!-- a few controls -->
     <div class="grid-child">
         <section>
             <button id="step" type="button" onclick="snes.step()">Step</button>
         </section>
     </div>
+
+    <!-- message console -->
     <div class="grid-child">
-       <div>
-  <section>
+        <div id="textconsolecontainer" class="disassembly" style="height: 100px; overflow: auto;">
+            <pre><code id="textconsole"></code></pre>
+        </div>
+
+    </div>
+    <div class="grid-child">
+        <section>
             <input id="fileUpload" name="fileUpload" type="file"/>
             <button id="upload" type="button" onclick="uploadFile('test');">Go</button>
             <button id="download" type="button" onclick="downloadFile('test');">Download</button>
         </section>
-</div>
-
     </div>
 
 </div>
