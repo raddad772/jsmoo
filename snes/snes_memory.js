@@ -1,5 +1,15 @@
 "use strict";
 
+// Thanks to a forum member on forums.nesdev.org, the potentially-fastest possible way to get msater clock cycle timings on SNES
+// ROMspeed is 6 or 8 depending on $420d.d0=1
+function SNES_mem_timing(addr, ROMspeed) {
+	let rspeed = ROMspeed || 8;
+	if (addr & 0x408000) return addr & 0x800000 ? rspeed : 8;
+	if (addr + 0x6000 & 0x4000) return 8;
+	if (addr - 0x4000 & 0x7e00) return 6;
+	return 12;
+}
+
 const LOROM = 0x20
 const HIROM = 0x21
 class snes_mem {
