@@ -1,3 +1,5 @@
+"use strict";
+
 let db;
 let dbVersion = 1;
 let dbReady = false;
@@ -23,8 +25,8 @@ function initDb(func) {
 }
 
 function uploadFile(fileId) {
-    fileIn = document.getElementById('fileUpload');
-    if(fileIn.files && fileIn.files[0]) {
+    let fileIn = document.getElementById('fileUpload');
+    if (fileIn.files && fileIn.files[0]) {
         var reader = new FileReader();
         reader.onload = function (e) {
             //console.log(e.target.result);

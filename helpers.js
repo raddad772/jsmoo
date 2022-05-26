@@ -1,3 +1,5 @@
+"use strict";
+
 function hex2(val) {
     let outstr = val.toString(16);
     if (outstr.length === 1) outstr = '0' + outstr;

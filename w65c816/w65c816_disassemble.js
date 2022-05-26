@@ -1,3 +1,5 @@
+"use strict";
+
 class disassembly_output {
     constructor(addr, strout) {
         this.addr = addr;

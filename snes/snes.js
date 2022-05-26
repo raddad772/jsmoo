@@ -1,3 +1,5 @@
+"use strict";
+
 let NTSC_MASTER_CLOCK = 21477272 // 1.89e9 / 88
 let PAL_MASTER_CLOCK =  21281370
 
