@@ -1,11 +1,3 @@
-function settxt1(txt) {
-	tconsole.add_line(txt);
-}
-
-function addtxt1(txt) {
-	tconsole.add_line(txt);
-}
-
 class snes_cart {
 	constructor() {
 		this.ROM = new Uint8Array();
@@ -40,23 +32,23 @@ class snes_cart {
 	
 	read_ver1_header() {
 		this.header.flash_RAM_size = (2 ** this.ROM[this.header.header_offset + 0xD8]) * 1024;
-		addtxt1('SRAM size ' + this.header.flash_RAM_size.toString());
+		tconsole.addl('SRAM size ' + this.header.flash_RAM_size.toString());
 		this.header.internal_name = new TextDecoder().decode(this.ROM.slice(this.header.header_offset + 0xC0, this.header.header_offset + 0xD4));
-		addtxt1('Internal name "' + this.header.internal_name +'"');
+		tconsole.addl('Internal name "' + this.header.internal_name +'"');
 		this.SRAM = new Uint8Array(this.header.flash_RAM_size);
 	}
 	
 	load_cart_from_RAM(ROM) {
-		settxt1('Loading ROM of size ' + ROM.byteLength);
+		tconsole.addl('Loading ROM of size ' + ROM.byteLength);
 
 		// Determine if 512-byte copier header is present, and skip it
 		let SMCheader_size = ROM.byteLength % 1024;
 		if (SMCheader_size !== 0) {
-			addtxt1('SMC header found! Removing ' + SMCheader_size + ' bytes!');
+			tconsole.addl('SMC header found! Removing ' + SMCheader_size + ' bytes!');
 			ROM = new Uint8Array(ROM.slice(SMCheader_size, ROM.byteLength));
 		}
 		this.ROM = ROM;
-		addtxt1('ROM size ' + this.ROM.byteLength.toString());
+		tconsole.addl('ROM size ' + this.ROM.byteLength.toString());
 		let ver = 1;
 		this.header.header_offset = 0x7F00;
 		if (ROM[this.header.header_offset + 0xD4] === 0) {
@@ -65,10 +57,11 @@ class snes_cart {
 		if (ROM[this.header.header_offset + 0xDA] === 0x33) {
 			ver = 3;
 		}
-		addtxt1('Header version ' + ver + ' detected.')
-		this.header.hi_speed = this.ROM[this.header.header_offset + 0xD5] & 0x10 ? true : false;
+		tconsole.addl('Header version ' + ver + ' detected.')
+		this.header.hi_speed = !!(this.ROM[this.header.header_offset + 0xD5] & 0x10);
 		this.header.mapping_mode = 0x2F & this.ROM[this.header.header_offset + 0xD5];
-		addtxt1('Mapping mode 0x' + this.header.mapping_mode.toString(16) + '<br>HiSpeed? ' + this.header.hi_speed);
+		tconsole.addl('Mapping mode 0x' + this.header.mapping_mode.toString(16));
+		tconsole.addl('HiSpeed? ' + this.header.hi_speed);
 		// Determine bank mask
 		let num_address_lines = Math.ceil(Math.log2(this.ROM.byteLength));
 		this.header.bank_mask = (((2 ** (num_address_lines - 16)) - 1) << 16) | 0xFFFF;

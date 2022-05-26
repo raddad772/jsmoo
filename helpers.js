@@ -10,6 +10,62 @@ function buf_copy(src)  {
     return dst;
 }
 
+function txf(instr) {
+    let otag = '{';
+    let ctag = '}';
+    let in_tag = false;
+    let outstr = '';
+    let stack = [];
+    for (let i in instr) {
+        let ch = instr[i];
+        if (ch === otag) {
+            in_tag = true;
+            continue;
+        }
+        if (in_tag) {
+            switch(ch) {
+                case '/':
+                    while(stack.length !== 0) {
+                        let c = stack.pop();
+                        switch (c) {
+                            case 'R':
+                            case 'r':
+                            case 'B':
+                            case 'b':
+                                outstr += '</span>';
+                                break;
+                            case '*':
+                                outstr += '</b>';
+                                break;
+                        }
+                    }
+                    continue;
+                case 'R':
+                case 'r':
+                    console.log('ADDING RED', i, ch)
+                    outstr += '<span style="color: red;">';
+                    break;
+                case 'B':
+                case 'b':
+                    console.log('ADDING BLUE')
+                    outstr += '<span style="color: blue;">';
+                    break;
+                case '*':
+                    console.log('ADDING BOLD')
+                    outstr += '<b>';
+                    break;
+                case ctag:
+                    in_tag = false;
+                    continue;
+            }
+            stack.push(ch);
+            continue;
+        }
+        outstr += ch;
+    }
+    return outstr;
+}
+
 class console_t {
     constructor() {
         this.buffer = [];
@@ -42,11 +98,12 @@ class console_t {
         this.textconsole = document.getElementById("textconsole");
     }
 
-    add_line(line) {
+    addl(line) {
+        let ft = txf(line);
         if (this.textconsole === null) {
             this.init();
         }
-        this.buffer.push(line);
+        this.buffer.push(ft);
         if (this.buffer.length > this.max_lines) {
             this.buffer = this.buffer.slice(1);
         }
