@@ -59,30 +59,31 @@ class w65c816_P {
 	}
 	
 	getbyte() {
-		return this.C + (this.Z << 1) + (this.I << 2) + (this.D << 3) + (this.X << 4) + (this.M << 5) + (this.V << 6) + (this.N << 7)
+		return this.C | (this.Z << 1) | (this.I << 2) | (this.D << 3) | (this.X << 4) | (this.M << 5) | (this.V << 6) | (this.N << 7);
 	}
 	
 	setbyte(val) {
-		this.C = val & 0x01 ? 1 : 0;
-		this.Z = val & 0x02 ? 1 : 0;
-		this.I = val & 0x04 ? 1 : 0;
-		this.D = val & 0x08 ? 1 : 0;
-		this.X = val & 0x10 ? 1 : 0;
-		this.M = val & 0x20 ? 1 : 0;
-		this.V = val & 0x40 ? 1 : 0;
-		this.N = val & 0x80 ? 1 : 0;
+		this.C = val & 0x01;
+		this.Z = (val & 0x02) >> 1;
+		this.I = (val & 0x04) >> 2;
+		this.D = (val & 0x08) >> 3;
+		this.X = (val & 0x10) >> 4;
+		this.M = (val & 0x20) >> 5;
+		this.V = (val & 0x40) >> 6;
+		this.N = (val & 0x80) >> 7;
 	}
 }
 
 class w65c816_registers {
 	constructor() {
 		// Hidden registers used internally to track state
-		this.IR = 0; // Instruction register
+		this.IR = 0; // Instruction register. Holds opcode.
 		this.TCU = 0; // Timing Control Unit, counts up during execution. Set to 0 at instruction fetch, incremented every cycle thereafter
 		this.MD = 0; // Memory Data Register, holds last known "good" RAM value from a read
-		
+		this.TR = 0; // Temp Register, for operations
+
 		// Registers exposed to programs
-		this.C = 0; // B + A = C.
+		this.C = 0; // B...A = C.
 		this.D = 0; // Direct
 		this.X = 0; // Y index
 		this.Y = 0; // X index
@@ -92,18 +93,6 @@ class w65c816_registers {
 		this.S = 0; // Stack pointer
 		this.DBR = 0; // Data Bank Register
 		this.E = 0; // Hidden "Emulation" bit
-	}
-};
-
-class wc65816_cycletime {
-	constructor(def, E, M, X, MX, Branch, PB) {
-		this.def = def; // If no others apply 
-		this.E = E;   // E flag
-		this.M = M;   // M flag
-		this.X = X;   // X flag
-		this.MX = MX; // M & X flags
-		this.PB = PB; // Page Boundary +cycles
-		this.Branch = Branch; // If branch
 	}
 }
 
@@ -125,7 +114,7 @@ class w65c816_pins {
 		this.MX = 0; // M and X flags set
 		this.RES = 0; // RESET signal
 	}
-};
+}
 
 // Interrupt sequence
 // 2 cycles "internal", setting flags?
