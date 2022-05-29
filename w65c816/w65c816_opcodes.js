@@ -390,3 +390,11 @@ const opcode_AM_R = Object.freeze({
     [ADDR_MODES.IMM]: [0x09, 0x29, 0x49, 0x69, 0x89, 0xA0, 0xA2, 0xA9, 0xC0, 0xC2, 0xC9, 0xE0, 0xE2, 0xE9]
 });
 
+class opcode_step {
+	constructor() {
+		this.VDA = 0; // VDA pin
+		this.VPA = 0; // VPA pin
+		this.RW = 0;  // RW pin
+		this.action = function () {};
+	}
+}
