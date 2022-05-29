@@ -62,3 +62,14 @@ function check_mnemonic_matrix() {
 }
 check_addressing_matrix();
 check_mnemonic_matrix();
+
+/* We need to generate 256 opcodes, *2 for emulated versions, *4 for M/X. */
+// Each function will have ,N(ative M and X low), .M, .X, .MX, and .E modes.
+// D will come in later
+// .M, .X, and .MX can all be the same
+function generate_w65c816_opcode_table() {
+	let opcode_table = [];
+	for (var opcode = 0; opcode < 256; opcode++) {
+		
+	}
+}
