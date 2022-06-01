@@ -81,6 +81,7 @@ class w65c816_registers {
 		this.TCU = 0; // Timing Control Unit, counts up during execution. Set to 0 at instruction fetch, incremented every cycle thereafter
 		this.MD = 0; // Memory Data Register, holds last known "good" RAM value from a read
 		this.TR = 0; // Temp Register, for operations
+		this.TA = 0; // Temporary Address register
 
 		// Registers exposed to programs
 		this.C = 0; // B...A = C.
@@ -99,7 +100,7 @@ class w65c816_registers {
 // We're going to use 1 as asserted just because
 class w65c816_pins {
 	constructor() {
-		this.VPB = 0; // Output. Vector Pull 
+		this.VPB = 0; // Output. Vector Pull
 		this.ABORT = 0; // Input. Abort
 		this.IRQ = 0; // in. IRQ
 		this.ML = 0; // out
