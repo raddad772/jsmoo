@@ -400,12 +400,21 @@ class opcode_functions {
     }
 }
 
+function mksigned8(what) {
+    return -(0x100 - (what & 0xFF));
+}
+
+function mksigned16(what) {
+    return -(0x10000 - (what & 0xFFFF));
+}
+
 class switchgen {
     constructor(indent, what) {
         this.indent1 = indent;
         this.indent2 = '   ' + this.indent1;
         this.indent3 = '   ' + this.indent2;
         this.in_case = false;
+        this.last_case = 0;
         this.outstr = this.indent1 + 'switch(' + what + ') {\n';
     }
 
@@ -417,9 +426,14 @@ class switchgen {
         this.outstr = this.indent1 + 'switch(' + what + ') {\n';
     }
 
-    addcase(what) {
+    addcycle(what) {
         if (this.in_case)
             this.outstr += this.indent3 + 'break;\n';
+        if (typeof(what) === 'undefined') {
+            what = parseInt(this.last_case) + 1;
+        }
+        what = what.toString();
+        this.last_case = what;
         this.in_case = true;
         this.outstr += this.indent2 + 'case ' + what + ':\n';
     }
@@ -428,9 +442,27 @@ class switchgen {
         this.outstr += this.indent3 + 'pins.Addr = ' + who + '; pins.BA = regs.DBR;\n';
     }
 
+    load_TA_from_PC() {
+        this.addcycle('1');
+        this.RPDV(0, 1, 0, 0);
+        this.addr_to_pc_then_inc();
+        this.addcycle('2');
+        this.addl('regs.TA = pins.D & 0xFF;')
+        this.addr_to_pc_then_inc();
+        this.addcycle('3');
+        this.RPDV(0, 0, 0, 0);
+        this.addl('regs.TA += (pins.D & 0xFF) << 8;');
+    }
+
     addr_to_pc_then_inc() {
-        this.outstr += this.indent3 + 'pins.Addr = regs.PC; pins.BA = regs.PBR;\n'
-        this.outstr += this.indent3 + 'regs.PC = (regs.PC + 1) & 0xFFFF;\n'
+        this.outstr += this.indent3 + 'pins.Addr = regs.PC; pins.BA = regs.PBR;\n';
+        this.outstr += this.indent3 + 'regs.PC = (regs.PC + 1) & 0xFFFF;\n';
+    }
+
+    addr_to_s_then_dec() {
+        this.outstr += this.indent3 + 'pins.Addr = regs.S; pins.BA = 0;\n';
+        this.outstr += this.indent3 + 'regs.S = (regs.S - 1) & 0xFFFF;\n';
+        this.outstr += this.indent3 + 'if (regs.E) regs.S = (regs.S & 0xFF) | 0x0100;\n';
     }
 
     addr_to_pc() {
@@ -444,10 +476,29 @@ class switchgen {
         this.outstr += this.indent3 + what + '\n';
     }
 
+    addr_to_ta_pbr() {
+        this.addl('pins.Addr = regs.TA; pins.BA = regs.PBR;');
+    }
+
+    get_mem_from_TA16() {
+        this.addcycle();
+        this.RPDV(0, 1, 0, 0);
+        this.addr_to_ta_pbr();
+        this.addcycle();
+        this.addl('regs.TR = pins.D & 0xFF;')
+        this.addl('regs.TA = (regs.TA + 1) & 0xFFFF');
+        this.addr_to_ta_pbr();
+        this.addcycle();
+        this.addl('regs.TR += (pins.D & 0xFF) << 8;');
+    }
+
     finished() {
         if (!this.in_case) {
             return '';
         }
+        //this.addcycle((parseInt(this.last_case) + 1).toString());
+        this.addl('regs.TCU = -1;')
+        //this.addr_to_pc();
         this.outstr += this.indent3 + 'break;\n';
         this.outstr += this.indent1 + '}\n';
         return this.outstr;
@@ -552,43 +603,275 @@ class switchgen {
         this.addl('regs.P.N = (regs.TR & 0x8000) >> 8;');
     }
 
+    cmp8(who) {
+        this.addl('let result = mksigned8(' + who + ') - regs.TR;')
+        this.addl('regs.P.C = (result >= 0) ? 1 : 0;')
+        this.setz('(result & 0xFF)');
+        this.setn8('(result & 0xFF)');
+    }
+
+    cmp16(who) {
+        this.addl('let result = mksigned16(' + who + ') - regs.TR;')
+        this.addl('regs.P.C = (result >= 0) ? 1 : 0;')
+        this.setz('result');
+        this.setn16('result');
+    }
+
+    CMP8(){
+        this.cmp8('regs.C');
+    }
+
+
+    CMP16() {
+        this.cmp16('regs.C');
+    }
+
+    CPX8() {
+        this.cmp8('regs.X');
+    }
+
+    CPX16() {
+        this.cmp16('regs.X');
+    }
+
+    CPY8() {
+        this.cmp8('regs.Y');
+    }
+
+    CPY16() {
+        this.cmp16('regs.Y');
+    }
+
+    DEXY8(who) {
+        this.addl(who + ' = (' + who + ' - 1) & 0xFF;');
+        this.setz(who);
+        this.setn8(who);
+    }
+
+    DEXY16(who) {
+        this.addl(who + ' = (' + who + ' - 1) & 0xFFFF;');
+        this.setz(who);
+        this.setn16(who);
+    }
+
+    set_reg_low(who, to) {
+        this.addl(who + ' = (' + who + ' & 0xFF00) + ((' + to + ') & 0xFF);');
+    }
+
+    EOR8() {
+        this.addl('let A = (regs.C & 0xFF) ^ regs.TR;')
+        this.setz('A');
+        this.setn8('A');
+        this.set_reg_low('regs.C', 'A');
+    }
+
+    EOR16() {
+        this.addl('regs.C ^= regs.TR;')
+        this.setz('regs.C');
+        this.setn16('regs.C');
+    }
+
+    INXY8(who) {
+        this.addl(who + ' = (' + who + ' + 1) & 0xFF');
+        this.setz(who);
+        this.setn8(who);
+    }
+
+    INXY16(who) {
+        this.addl(who + ' = (' + who + ' + 1) & 0xFFFF');
+        this.setz(who);
+        this.setn16(who);
+    }
+
+    LDA8() {
+        this.set_reg_low('regs.C', 'regs.TR');
+        this.setz('regs.TR');
+        this.setn8('regs.TR');
+    }
+
+    LDA16() {
+        this.addl('regs.C = regs.TR & 0xFFFF;');
+        this.setz('regs.C');
+        this.setn16('regs.C');
+    }
+
+    LDXY8(who) {
+        this.set_reg_low(who, 'regs.TR');
+        this.setz('regs.TR');
+        this.setn8('regs.TR');
+    }
+
+    LDXY16(who) {
+        this.addl(who + ' = regs.TR;')
+        this.setz('regs.TR');
+        this.setn16('regs.TR');
+    }
+
+    push_L(what) {
+        this.addl('pins.D = ' + what + ' & 0xFF;');
+        this.addr_to_s_then_dec();
+    }
+
+    push_H(what) {
+        this.addl('pins.D = (' + what + '& 0xFF00) >> 8;');
+        this.addr_to_s_then_dec();
+    }
+
+    LSR8() {
+        this.addl('regs.P.C = regs.TR & 1;');
+        this.addl('regs.TR >>>= 1;');
+        this.setz('regs.TR');
+        this.setn8('regs.TR');
+    }
+
+    LSR16() {
+        this.addl('regs.P.C = regs.TR & 1;');
+        this.addl('regs.TR >>>= 1;');
+        this.setz('regs.TR');
+        this.setn16('regs.TR');
+    }
+
+    ORA8() {
+        this.addl('let A = (regs.TR | regs.C) & 0xFF;');
+        this.setz('A');
+        this.setn8('A');
+        this.set_reg_low('regs.C', 'A');
+    }
+
+    ORA16() {
+        this.addl('regs.C |= regs.TR;');
+        this.setz('regs.C');
+        this.setn16('regs.C');
+    }
+
     add_ins(ins, E, M, X, D) {
         switch(ins) {
             case OM.ADC:
-                if ((E === 1) || (M === 1))
+                if (E || M)
                     this.ADC8(D);
                 else
                     this.ADC16(D);
                 break;
             case OM.AND:
-                if ((E === 1) || (M === 1))
+                if (E || M)
                     this.AND8(D);
                 else
                     this.AND16(D);
                 break;
             case OM.ASL:
-                if ((E === 1) || (M === 1))
+                if (E || M)
                     this.ASL8();
                 else
                     this.ASL16();
                 break;
             case OM.BIT:
-                if ((E === 1) || (M === 1))
+                if (E || M)
                     this.BIT8();
                 else
                     this.BIT16();
+                break;
+            case OM.CMP:
+                if (E || M)
+                    this.CMP8();
+                else
+                    this.CMP16();
+                break;
+            case OM.CPX:
+                if (E || X)
+                    this.CPX8();
+                else
+                    this.CPX16();
+                break;
+            case OM.CPY:
+                if (E || X)
+                    this.CPY8();
+                else
+                    this.CPY16();
+                break;
+            case OM.DEC:
+                if (E || M)
+                    this.DEXY8('regs.TR');
+                else
+                    this.DEXY16('regs.TR');
+                break;
+            case OM.DEX:
+                if (E || X)
+                    this.DEXY8('regs.X');
+                else
+                    this.DEXY16('regs.X');
+                break;
+            case OM.DEY:
+                if (E || X)
+                    this.DEXY8('regs.Y');
+                else
+                    this.DEXY16('regs.Y');
+                break;
+            case OM.EOR:
+                if (E || M)
+                    this.EOR8();
+                else
+                    this.EOR16();
+                break;
+            case OM.INC:
+                if (E || M)
+                    this.INXY8('regs.TR');
+                else
+                    this.INXY16('regs.TR');
+                break;
+            case OM.INX:
+                if (E || X)
+                    this.INXY8('regs.X');
+                else
+                    this.INXY16('regs.X');
+                break;
+            case OM.INY:
+                if (E || X)
+                    this.INXY8('regs.Y');
+                else
+                    this.INXY16('regs.Y');
+                break;
+            case OM.LDA:
+                if (E || M)
+                    this.LDA8();
+                else
+                    this.LDA16();
+                break;
+            case OM.LDX:
+                if (E || X)
+                    this.LDXY8('regs.X');
+                else
+                    this.LDXY16('regs.X');
+                break;
+            case OM.LDY:
+                if (E || X)
+                    this.LDXY8('regs.Y');
+                else
+                    this.LDXY16('regs.Y');
+                break;
+            case OM.LSR:
+                if (E || M)
+                    this.LSR8();
+                else
+                    this.LSR16();
+                break;
+            case OM.ORA:
+                if (E || M)
+                    this.ORA8();
+                else
+                    this.ORA16();
+                break;
         }
     }
 
-    RPDV(R, P, D, V) {
-        this.outstr += this.indent3 + "pins.RW = " + R + "; pins.VPA = " + P + "; pins.VDA = " + D + "; pins.VPB = " + V + ";\n";
+    RPDV(W, P, D, V) {
+        this.outstr += this.indent3 + "pins.RW = " + W + "; pins.VPA = " + P + "; pins.VDA = " + D + "; pins.VPB = " + V + ";\n";
     }
 
 }
 
 
-const A_OR_M_X = Object.freeze(new Set([OM.STX, OM.STY, OM.LDX, OM.LDY]));
-const A_R_INS = Object.freeze(new Set([OM.ADC, OM.AND, OM.BIT, OM.CMP, OM.CPX, OM.CPY, OM.EOR, OM.LDA, OM.LDX, OM.LDY, OM.ORA, OM.SBC]));
+const A_OR_M_X = Object.freeze(new Set([OM.CPY, OM.CPY, OM.STX, OM.STY, OM.LDX, OM.LDY]));
+const A_R_INS = Object.freeze(new Set([OM.ADC, OM.AND, OM.BIT, OM.CMP, OM.EOR, OM.LDA, OM.LDX, OM.LDY, OM.ORA, OM.SBC]));
 function A_R_OR_W(ins) {
     return (A_R_INS.has(ins) ? 0 : 1);
 }
@@ -611,7 +894,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
     let opc2 = hex2(opcode_info.opcode);
     let opcode_infostr = 'opcode_matrix[' + opc2 + ']';
     let opcode = opcode_info.opcode;
-    let needs_pins = false;
+    let cycle = 0;
     let affected_by_E = false;
     let affected_by_M = false;
     let affected_by_X = false;
@@ -620,34 +903,31 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
     let indent3 = indent2 + '    ';
     let indent4 = indent3 + '    ';
     let ag = new switchgen(indent2,'regs.TCU')
+    let mem16 = false;
+    ag.addl('// ' + opcode_info.mnemonic + ' E=' + E + " M=" + M + " X=" + X);
     affected_by_D = ((opcode_info.ins === OM.ADC) || (opcode_info.ins === OM.SBC));
     switch(opcode_info.addr_mode) {
         case(AM.A):
             affected_by_E = true;
             affected_by_X = A_OR_M_X.has(opcode_info.ins);
             affected_by_M = !affected_by_X;
-            needs_pins = true;
+            if ((affected_by_X && X) || (affected_by_M && M))
+                mem16 = true;
+            if (E)
+                mem16 = false;
             let RW = A_R_OR_W(opcode_info.ins);
-            ag.addcase('1');
-            ag.addr_to_pc_then_inc();
-            ag.RPDV(0, 1, 0, 0);
-            ag.addcase('2');
-            ag.addl('regs.TA = pins.D & 0xFF;')
-            ag.addr_to_pc_then_inc();
-            ag.addcase('3');
-            ag.addl('regs.TA = (pins.D << 8) | regs.TA;')
+            ag.load_TA_from_PC();
             ag.addr_to_dbr('regs.TA');
             ag.RPDV(RW, 0, 1, 0);
             if (RW === 0) {
                 // Finish read, then do instruction
-                ag.addl('regs.TR = 0;')
-                ag.addcase('4');
+                ag.addcycle('4');
                 ag.addl('regs.TR = pins.D & 0xFF;');
-                if (!(E || M)) {
-                    ag.addcase('5');
+                if (mem16) {
                     ag.addl('regs.TA = (regs.TA + 1) & 0xFFFF;')
                     ag.addr_to_dbr('regs.TA');
-                    ag.addl('regs.TR = ((pins.D & 0xFF) << 8) | regs.TR;')
+                    ag.addcycle('5');
+                    ag.addl('regs.TR = ((pins.D & 0xFF) << 8) + regs.TR;')
                 }
                 ag.add_ins(opcode_info.ins, E, M, X, D);
             }
@@ -656,14 +936,108 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
                 ag.add_ins(opcode_info.ins, E, M, X, D);
                 ag.addr_to_dbr('regs.TA');
                 ag.addl('pins.D = regs.TR & 0xFF;')
-                if (!(E || M)) {
-                    ag.addcase('5')
+                if (mem16) {
+                    ag.addcycle('5')
                     ag.addl('regs.TA = (regs.TA + 1) & 0xFFFF;')
                     ag.addr_to_dbr('regs.TA');
                     ag.addl('pins.D = (regs.TR >> 8) & 0xFF;');
                 }
             }
-            break; // AM.A absolute A
+            break; // AM.A absolute Af
+        case AM.Ab: // JMP a
+            ag.load_TA_from_PC();
+            ag.addl('regs.PC = regs.TA;')
+            break;
+        case AM.Ac: // JSR a
+            affected_by_E = true;
+            ag.load_TA_from_PC();
+            ag.addcycle('4');
+            ag.RPDV(1, 0, 1, 0);
+            ag.push_H('regs.PC');
+            ag.addcycle('5');
+            ag.push_L('regs.PC');
+            ag.addl('regs.PC = regs.TA;');
+            break;
+        case AM.Ad: // Abslute a R-M-W
+            affected_by_E = true;
+            affected_by_M = true;
+            mem16 = !(E | M);
+
+            ag.load_TA_from_PC();
+            ag.addl('pins.Addr = regs.TA; pins.BA = regs.DBR;');
+            ag.addl('regs.TA = (regs.TA + 1) & 0xFFFF');
+            cycle = 4;
+            ag.addcycle(cycle); // 4
+            ag.addl('regs.TR = pins.D & 0xFF;');
+            if (mem16) {
+                ag.addl('pins.Addr = regs.TA');
+                cycle++;
+                ag.addcycle(cycle); // 4a
+                ag.addl('regs.TR += (pins.D & 0xFF) << 8;');
+            }
+            cycle++;
+            ag.addcycle(cycle); // 5
+            if (E)
+                ag.RPDV(1, 0, 1, 0);
+            ag.add_ins(opcode_info.ins, E, M, X, D);
+            if (mem16) {
+                cycle++;
+                ag.addcycle(cycle); // 6a
+                ag.RPDV(1, 0, 1, 0);
+                ag.addl('pins.D = (regs.TR & 0xFF00) >> 8;');
+                ag.addl('regs.TA = (regs.TA - 1) & 0xFFFF');
+                ag.addl('pins.Addr = regs.TA;')
+            }
+            cycle++;
+            ag.addcycle(cycle);
+            ag.RPDV(1, 0, 1, 0);
+            ag.addl('pins.D = (regs.TR & 0xFF);');
+            break;
+        case AM.A_INDEXED_IND:
+            // JMP (a,x)
+            ag.load_TA_from_PC(); // 1-3
+            ag.addl('regs.TA = (regs.X + regs.TA) & 0xFFFF');
+            ag.get_mem_from_TA16();
+            ag.addl('regs.PC = regs.TR');
+            break;
+        case AM.A_INDEXED_INDb:
+            // JSR (a,x)
+            // This one is REALLY FUNKY
+            // Can't really do a lot of automatic code here
+            ag.addcycle(1); // 2 PBR, PC+1 -> AAL
+            ag.RPDV(0, 1, 0, 0);
+            ag.addr_to_pc_then_inc();
+
+            ag.addcycle(2); // 3 0,S <- PCH
+            ag.RPDV(1, 0, 1, 0);
+            ag.addl('regs.TA = pins.D & 0xFF');
+            ag.push_H('regs.PC');
+
+            ag.addcycle(3); // 4 0,S-1 <- PCL
+            ag.push_L('regs.PC');
+
+            ag.addcycle(4); // 5 PBR, PC+2 -> AAH
+            ag.RPDV(0, 1, 0, 0);
+            ag.addr_to_pc_then_inc();
+
+            ag.addcycle(5); // 6 PBR, PC+2  IO (grab AAH)
+            ag.RPDV(0, 0, 0, 0);
+            ag.addl('regs.TA += (pins.D & 0xFF) << 8;');
+            ag.addl('regs.TA = (regs.TA + regs.X) & 0xFFFF;');
+            ag.addl('pins.Addr = regs.TA;');
+
+            ag.addcycle(6); // 7 PBR, AA+X   <- PCL
+            ag.addl('regs.TR = pins.D & 0xFF;');
+            ag.addl('regs.TA = (regs.TA + 1) & 0xFFFF;');
+            ag.addl('pins.Addr = regs.TA;');
+
+            ag.addcycle(7); // 8 PBR, AA+X+1 <- PCH (capture PCL)
+            ag.addl('regs.TR += (pins.D & 0xFF) << 8;');
+            ag.addl('regs.PC = regs.TR;');
+            break;
+        case AM.A_IND: // JML (a)
+            break;
+
     }
     let outstr = 'function(regs, pins) { // ' + opcode_info.mnemonic + '\n' + ag.finished() + indent + '}';
     return new generate_instruction_function_return(outstr, E, M, X, D, affected_by_E, affected_by_M, affected_by_X, affected_by_D);
