@@ -82,7 +82,7 @@ class w65c816_registers {
 		this.MD = 0; // Memory Data Register, holds last known "good" RAM value from a read
 		this.TR = 0; // Temp Register, for operations
 		this.TA = 0; // Temporary Address register
-		this.cancel_cycle = false;	// Cancelling out a cycle that doesn't belong
+		this.cancel_cycle = false;	// Cancelling out a cycle that doesn't belong. Mostly for JMPs
 
 		// Registers exposed to programs
 		this.C = 0; // B...A = C.
