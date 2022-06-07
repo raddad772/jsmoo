@@ -987,11 +987,6 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
     let mem16 = false;
     let RW = 0;
 
-    // Gets 2 bytes, skips a cycle depending on complicated semantics
-    this.get2_to_TA_d0 = function() {
-
-    }
-
     this.fetch_D0_and_skip_cycle = function() {
             ag.addcycle(2);
             ag.addr_to_PC_then_inc();
@@ -1566,8 +1561,37 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
         case AM.D_IND_INDEXED: // (d), y
             this.set_exm16rw();
             this.fetch_D0_and_skip_cycle();
+            // Check into RMW_indexed
+            // We're on cycle #3 now, DO is in regs.TA
+            ag.RPDV(0, 0, 1, 0);
+            ag.addr_to_ZB('(regs.D + regs.TA) & 0xFFFF');
 
-            this.get2_to_TA_d0();
+            ag.addcycle(4);
+            ag.addl('regs.TA = pins.D & 0xFF;')
+            ag.addr_inc();
+
+            // So, decide whether to skip cycle 3a
+            // We skip it if:
+            //  We're doing a read
+            //  X=1 or emulation mode
+            // But we DO NOT skip it if:
+            //  we index across a page boundary
+            ag.addl('regs.TR = regs.TA + (regs.Y & 0xFF);')
+            if ((RW === 0) || (X === 1) || (E === 1)) {
+                ag.addl('if (regs.TR < 0x100) { regs.skipped_cycle = true; regs.TCU++; }')
+            }
+
+            ag.addcycle('4a');
+            ag.addl('regs.TA += (pins.D & 0xFF) << 8;');
+            ag.RPDV(0, 0, 0, 0);
+
+            ag.addcycle(5);
+            ag.addl('if (regs.skipped_cycle) regs.TA += (pins.D & 0xFF) << 8;')
+            ag.addr_to_DBR('(regs.TA + regs.Y) & 0xFFFF');
+            this.finish_RW8or16p();
+            break;
+
+
     }
     let outstr = 'function(regs, pins) { // ' + opcode_info.mnemonic + '\n' + ag.finished() + indent + '}';
     return new generate_instruction_function_return(outstr, E, M, X, D, affected_by_E, affected_by_M, affected_by_X, affected_by_D);
