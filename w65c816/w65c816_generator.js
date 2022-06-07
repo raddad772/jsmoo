@@ -428,7 +428,7 @@ class switchgen {
         this.has_footer = false;
         this.has_custom_end = false;
         this.outstr = '';
-        this.clear();
+        this.clear(indent, what);
     }
 
     clear(indent, what) {
@@ -568,7 +568,7 @@ class switchgen {
         //this.addcycle((parseInt(this.last_case) + 1).toString());
         if (!this.has_custom_end) {
             this.regular_end();
-        };
+        }
 
         this.outstr += this.indent1 + '}\n';
         this.outstr += this.indent1 + 'return false;';
@@ -663,13 +663,13 @@ class switchgen {
     }
 
     BIT8() {
-        this.addl('regs.P.Z = (regs.C & regs.TR & 0xFF) == 0 ? 2 : 0;');
+        this.addl('regs.P.Z = (regs.C & regs.TR & 0xFF) === 0 ? 2 : 0;');
         this.addl('regs.P.V = regs.TR & 0x40;');
         this.addl('regs.P.N = regs.TR & 0x80;');
     }
 
     BIT16() {
-        this.addl('regs.P.Z = (regs.C & regs.TR & 0xFFFF) == 0 ? 2 : 0;');
+        this.addl('regs.P.Z = (regs.C & regs.TR & 0xFFFF) === 0 ? 2 : 0;');
         this.addl('regs.P.V = (regs.TR & 0x4000) >> 8;');
         this.addl('regs.P.N = (regs.TR & 0x8000) >> 8;');
     }
@@ -987,7 +987,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
     let mem16 = false;
     let RW = 0;
 
-    this.fetch_D0_and_skip_cycle = function() {
+    let fetch_D0_and_skip_cycle = function() {
             ag.addcycle(2);
             ag.addr_to_PC_then_inc();
             ag.RPDV(0, 1, 0, 0);
@@ -999,12 +999,12 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
             ag.RPDV(0, 0, 0, 0);
 
             ag.addcycle(3);
-            ag.addl('if (skipped_cycle) regs.TA = pins.D & 0xFF;')
+            ag.addl('if (regs.skipped_cycle) regs.TA = pins.D & 0xFF;')
 
     }
 
     // Function to do a variable-sized fetch in middle of RMW
-    this.fetch_rmw_8or16 = function() {
+    let fetch_rmw_8or16 = function() {
         if (mem16) {
             ag.addcycle('3a');
             ag.addl('regs.TR = pins.D & 0xFF');
@@ -1022,7 +1022,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
     };
 
     // Function to finish up Read-Modify-Write instructions
-    this.finish_rmw = function() {
+    let finish_rmw = function() {
         if (mem16) {
             ag.addcycle('7a');
             ag.RPDV(1, 0, 1, 0);
@@ -1038,7 +1038,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
         ag.D_to_TRL();
     }
 
-    this.finish_RW8or16p = function() {
+    let finish_RW8or16p = function() {
         // For many instructions that can read OR write either 8 or 16 bits of data,
         //  this is the last step to write them out.
         if (RW === 0) {
@@ -1068,7 +1068,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
     }
 
     // Set for many read-modify-write style instructions
-    this.set_em16rmw = function() {
+    let set_em16rmw = function() {
         affected_by_E = true;
         affected_by_M = true;
         mem16 = !(E | M);
@@ -1076,7 +1076,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
 
     // Set for many instructions that can read or write and change mem size based on different
     //  flags
-    this.set_exm16rw = function() {
+    let set_exm16rw = function() {
         affected_by_E = true;
         affected_by_X = A_OR_M_X.has(opcode_info.ins);
         affected_by_M = !affected_by_X;
@@ -1087,8 +1087,8 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
         RW = A_R_OR_W(opcode_info.ins);
     };
 
-    this.RMW_indexed = function(who) {
-        this.set_exm16rw();
+    let RMW_indexed = function(who) {
+        set_exm16rw();
 
         ag.addcycle(2);
         ag.RPDV(0, 1, 0, 0);
@@ -1124,14 +1124,14 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
         ag.addcycle(4);
         ag.addl('if (regs.skipped_cycle) regs.TA += ((pins.D) & 0xFF) << 8;');
         ag.addr_to_DBR('(' + who + ' + regs.TA) & 0xFFFF')
-        this.finish_RW8or16p();
+        finish_RW8or16p();
     };
 
     ag.addl('// ' + opcode_info.mnemonic + ' E=' + E + " M=" + M + " X=" + X);
     affected_by_D = ((opcode_info.ins === OM.ADC) || (opcode_info.ins === OM.SBC));
     switch(opcode_info.addr_mode) {
         case(AM.A):
-            this.set_exm16rw();
+            set_exm16rw();
             ag.addcycle(2);
             ag.RPDV(0, 1, 0, 0);
             ag.addr_to_PC_then_inc();
@@ -1143,11 +1143,11 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
             ag.addcycle(4);
             ag.addr_to_DBR('regs.TA + ((pins.D & 0xFF) << 8)');
             ag.RPDV(RW, 0, 1, 0);
-            this.finish_RW8or16p();
+            finish_RW8or16p();
             break; // AM.A absolute Af
         case AM.Ab: // JMP a
             ag.addcycle(2);
-            regs.RPDV(0, 1, 0, 0);
+            ag.RPDV(0, 1, 0, 0);
             ag.addr_to_PC_then_inc();
 
             ag.addcycle(3);
@@ -1169,14 +1169,14 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
             break;
         case AM.Ad: // Abslute a R-M-W
             ag.addl('//case AM.Ad')
-            this.set_em16rmw();
+            set_em16rmw();
 
             ag.get_TA_from_PC();
             ag.addr_to_DBR('regs.TA');
-            this.fetch_rmw_8or16();
+            fetch_rmw_8or16();
             ag.add_ins(opcode_info.ins, E, M, X, D);
 
-            this.finish_rmw();
+            finish_rmw();
             break;
         case AM.A_INDEXED_IND:
             // JMP (a,x)
@@ -1266,7 +1266,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
             ag.addl('regs.PC = regs.TR + ((pins.D & 0xFF) << 8);');
             break;
         case AM.AL:
-            this.set_exm16rw();
+            set_exm16rw();
             ag.addcycle(2);
             ag.RPDV(0, 1, 0, 0);
             ag.addr_to_PC_then_inc();
@@ -1356,7 +1356,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
             ag.addl('regs.PC = regs.TA;')
             break;
         case AM.AL_INDEXED_X:
-            this.set_exm16rw();
+            set_exm16rw();
             ag.addcycle(2); // LD AAL
             ag.RPDV(0, 1, 0, 0);
             ag.addr_to_PC_then_inc();
@@ -1372,13 +1372,13 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
             ag.addcycle(5); // capture AAB
             ag.addr_to('regs.TA', 'pins.D & 0xFF');
             ag.RPDV(RW, 0, 1, 0);
-            this.finish_RW8or16p();
+            finish_RW8or16p();
             break;
         case AM.A_INDEXED_X:
-            this.RMW_indexed('regs.X');
+            RMW_indexed('regs.X');
             break;
         case AM.A_INDEXED_Xb: // R-M-W a,x  6b
-            this.set_em16rmw();
+            set_em16rmw();
             ag.addcycle(2);
             ag.RPDV(0, 1, 0, 0);
             ag.addr_to_PC_then_inc();
@@ -1409,10 +1409,10 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
 
             ag.add_ins(opcode_info.ins, E, M, X, D);
 
-            this.finish_rmw();
+            finish_rmw();
             break;
         case AM.A_INDEXED_Y:
-            this.RMW_indexed('regs.Y');
+            RMW_indexed('regs.Y');
             break;
         case AM.ACCUM:
             affected_by_E = affected_by_M = true;
@@ -1501,31 +1501,31 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
             ag.addl('}');
             break;
         case AM.D:
-            this.set_exm16rw();
+            set_exm16rw();
 
-            this.fetch_D0_and_skip_cycle();
+            fetch_D0_and_skip_cycle();
             ag.RPDV(RW, 0, 1, 0);
             ag.addr_to_ZB('(regs.D + (pins.D & 0xFF)) & 0xFFFF');
 
-            this.finish_RW8or16p();
+            finish_RW8or16p();
             break;
         case AM.Db:
             // R-M-W direct
-            this.set_em16rmw();
+            set_em16rmw();
 
-            this.fetch_D0_and_skip_cycle();
+            fetch_D0_and_skip_cycle();
             ag.RPDV(0, 0, 1, 0);
-            ag.addr_to_ZB('(regs.TA + regs.D) & 0xFFFF;');
+            ag.addr_to_ZB('(regs.TA + regs.D) & 0xFFFF');
 
-            this.fetch_rmw_8or16();
+            fetch_rmw_8or16();
             ag.add_ins(opcode_info.ins, E, M, X, D);
 
-            this.finish_rmw();
+            finish_rmw();
             break;
         case AM.D_INDEXED_IND:
-            this.set_exm16rw();
+            set_exm16rw();
 
-            this.fetch_D0_and_skip_cycle();
+            fetch_D0_and_skip_cycle();
 
             ag.RPDV(0, 0, 0, 0);
             ag.addl('regs.TA = (regs.TA + regs.D + regs.X) & 0xFFFF');
@@ -1541,11 +1541,11 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
             ag.addcycle(6);
             ag.addr_to_DBR('(regs.TA + ((pins.D & 0xFF) << 8))');
             ag.RPDV(RW, 0, 1, 0);
-            this.finish_RW8or16p();
+            finish_RW8or16p();
             break;
         case AM.D_IND: // "Direct indirect"
-            this.set_exm16rw();
-            this.fetch_D0_and_skip_cycle();
+            set_exm16rw();
+            fetch_D0_and_skip_cycle();
             ag.RPDV(0, 0, 1, 0);
             ag.addr_to_ZB('(regs.D + regs.TA) & 0xFFFF');
 
@@ -1554,13 +1554,13 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
             ag.addr_inc();
 
             ag.addcycle(5);
-            this.addr_to_DBR('(regs.TA + ((pins.D & 0xFF) << 8))');
+            ag.addr_to_DBR('(regs.TA + ((pins.D & 0xFF) << 8))');
             ag.RPDV(RW, 0, 1, 0);
-            this.finish_RW8or16p();
+            finish_RW8or16p();
             break;
         case AM.D_IND_INDEXED: // (d), y
-            this.set_exm16rw();
-            this.fetch_D0_and_skip_cycle();
+            set_exm16rw();
+            fetch_D0_and_skip_cycle();
             // Check into RMW_indexed
             // We're on cycle #3 now, DO is in regs.TA
             ag.RPDV(0, 0, 1, 0);
@@ -1588,7 +1588,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
             ag.addcycle(5);
             ag.addl('if (regs.skipped_cycle) regs.TA += (pins.D & 0xFF) << 8;')
             ag.addr_to_DBR('(regs.TA + regs.Y) & 0xFFFF');
-            this.finish_RW8or16p();
+            finish_RW8or16p();
             break;
 
 
@@ -1620,4 +1620,5 @@ function generate_instruction_codes(indent) {
     }
     return('const yo = Object.freeze({\n' + outstr + '\n});');
 }
+
 console.log(generate_instruction_codes(''));
