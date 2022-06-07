@@ -411,35 +411,75 @@ function mksigned16(what) {
 class switchgen {
     constructor(indent, what) {
         this.indent1 = indent;
-        this.indent2 = '   ' + this.indent1;
-        this.indent3 = '   ' + this.indent2;
+        this.indent2 = '    ' + this.indent1;
+        this.indent3 = '    ' + this.indent2;
         this.in_case = false;
         this.last_case = 0;
-        this.outstr = this.indent1 + 'switch(' + what + ') {\n';
+        this.has_footer = false;
+        this.has_custom_end = false;
+        this.outstr = '';
+        this.clear();
     }
 
     clear(indent, what) {
         this.indent1 = indent;
-        this.indent2 = '   ' + this.indent1;
-        this.indent3 = '   ' + this.indent2;
+        this.indent2 = '    ' + this.indent1;
+        this.indent3 = '    ' + this.indent2;
         this.in_case = false;
+        this.last_case = 0;
+        this.has_footer = false;
+        this.has_custom_end = false;
         this.outstr = this.indent1 + 'switch(' + what + ') {\n';
     }
 
+    // We actually ignore the input cycle #
+    // This is determined automatically
+    // Passed in is reference cycle # from WDC doc, which is not 0-based
     addcycle(what) {
         if (this.in_case)
             this.outstr += this.indent3 + 'break;\n';
-        if (typeof(what) === 'undefined') {
-            what = parseInt(this.last_case) + 1;
-        }
-        what = what.toString();
+        what = (parseInt(this.last_case) + 1).toString();
         this.last_case = what;
         this.in_case = true;
         this.outstr += this.indent2 + 'case ' + what + ':\n';
     }
 
-    addr_to_dbr(who) {
-        this.outstr += this.indent3 + 'pins.Addr = ' + who + '; pins.BA = regs.DBR;\n';
+    // This is a final "cycle" only SOME functions use, mostly to get final data read or written
+    cleanup() {
+        this.has_footer = true;
+        this.addcycle();
+    }
+
+    addr_to(low, high) {
+        this.addl('pins.Addr = (' + low + '); pins.BA = (' + high + ');');
+    }
+
+    D_to_TRH() {
+        this.addl('pins.D = (regs.TR >>> 8) & 0xFF;');
+    }
+
+    D_to_TRL() {
+        this.addl('pins.D = regs.TR & 0xFF');
+    }
+
+    addr_inc() {
+        this.addl('pins.Addr = (pins.Addr + 1) & 0xFFFF;');
+    }
+
+    addr_dec() {
+        this.addl('pins.Addr = (pins.Addr - 1) & 0xFFFF;' );
+    }
+
+    addr_to_DBR(who) {
+        this.addr_to(who, 'regs.DBR');
+    }
+
+    addr_to_PBR(who) {
+        this.addr_to(who, 'regs.PBR');
+    }
+
+    addr_to_ZB(who) {
+        this.addr_to(who, '0');
     }
 
     get_TA_from_PC_noPRDV() {
@@ -448,34 +488,31 @@ class switchgen {
     }
 
     get_TA_from_PC() {
-        this.addcycle('1');
+        this.addcycle(); // usually #2
         this.RPDV(0, 1, 0, 0);
-        this.addr_to_pc_then_inc();
-        this.addcycle('2');
+        this.addr_to_PC_then_inc();
+        this.addcycle(); // 3
         this.addl('regs.TA = pins.D & 0xFF;')
-        this.addr_to_pc_then_inc();
-        this.addcycle('3');
+        this.addr_to_PC_then_inc();
+        this.addcycle(); // 4
         this.addl('regs.TA += (pins.D & 0xFF) << 8;');
     }
 
-    addr_to_pc_then_inc() {
+    addr_to_PC_then_inc() {
         this.outstr += this.indent3 + 'pins.Addr = regs.PC; pins.BA = regs.PBR;\n';
         this.outstr += this.indent3 + 'regs.PC = (regs.PC + 1) & 0xFFFF;\n';
     }
 
-    addr_to_s_then_dec() {
-        this.outstr += this.indent3 + 'pins.Addr = regs.S; pins.BA = 0;\n';
-        this.outstr += this.indent3 + 'regs.S = (regs.S - 1) & 0xFFFF;\n';
-        this.outstr += this.indent3 + 'if (regs.E) regs.S = (regs.S & 0xFF) | 0x0100;\n';
+    addr_to_S_then_dec() {
+        this.addl('pins.Addr = regs.S; pins.BA = 0;');
+        this.addl('regs.S = (regs.S - 1) & 0xFFFF;');
+        this.addl('if (regs.E) regs.S = (regs.S & 0xFF) | 0x0100;');
     }
 
-    addr_to_pc() {
-        this.outstr += this.indent3 + 'pins.Addr = regs.PC; pins.BA = regs.PBR;\n'
+    addr_to_PC() {
+        this.addl('pins.Addr = regs.PC; pins.BA = regs.PBR;');
     }
 
-    incpc() {
-        this.outstr += this.indent3 + 'regs.PC = (regs.PC + 1) & 0xFFFF;\n'
-    }
     addl(what) {
         this.outstr += this.indent3 + what + '\n';
     }
@@ -496,15 +533,35 @@ class switchgen {
         this.addl('regs.TR += (pins.D & 0xFF) << 8;');
     }
 
+    custom_end() {
+        this.has_custom_end = true;
+    }
+
+    regular_end() {
+        this.addl('// Following is auto-generated code for instruction finish')
+        if (!this.has_footer) {
+            this.addcycle();
+        }
+        this.addl('// Set up instruction fetch');
+        this.addr_to_PC();
+        this.RPDV(0, 1, 1, 0);
+        this.addl('// Signal new instruction is beginning');
+        this.addl('regs.TCU = -1;')
+        this.addl('// Signal the instruction is finished');
+        this.addl('return true;')
+    }
+
     finished() {
         if (!this.in_case) {
             return '';
         }
         //this.addcycle((parseInt(this.last_case) + 1).toString());
-        this.addl('regs.TCU = -1;')
-        //this.addr_to_pc();
-        this.outstr += this.indent3 + 'break;\n';
+        if (!this.has_custom_end) {
+            this.regular_end();
+        };
+
         this.outstr += this.indent1 + '}\n';
+        this.outstr += this.indent1 + 'return false;';
         return this.outstr;
     }
 
@@ -711,14 +768,24 @@ class switchgen {
         this.setn16('regs.TR');
     }
 
-    push_L(what) {
+    push_L(what, decrement) {
+        if (typeof(decrement) === 'undefined')
+            decrement = true;
         this.addl('pins.D = ' + what + ' & 0xFF;');
-        this.addr_to_s_then_dec();
+        if (decrement)
+            this.addr_to_S_then_dec();
+        else
+            this.addr_to('regs.S');
     }
 
-    push_H(what) {
+    push_H(what, decrement) {
+        if (typeof(decrement) === 'undefined')
+            decrement = true;
         this.addl('pins.D = (' + what + '& 0xFF00) >> 8;');
-        this.addr_to_s_then_dec();
+        if (decrement)
+            this.addr_to_S_then_dec();
+        else
+            this.addr_to('regs.S', '0');
     }
 
     LSR8() {
@@ -908,45 +975,103 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
     let indent4 = indent3 + '    ';
     let ag = new switchgen(indent2,'regs.TCU')
     let mem16 = false;
+    let RW = 0;
+
+    this.finish_RW8or16p = function() {
+        if (RW === 0) {
+            if (mem16) {
+                ag.addcycle('4a');
+                ag.addl('regs.TR = pins.D & 0xFF;');
+                ag.addr_inc();
+
+                ag.cleanup();
+                ag.addl('regs.TR += (pins.D & 0xFF) << 8;');
+            }
+            else {
+                ag.cleanup();
+                ag.addl('regs.TR = pins.D & 0xFF;')
+            }
+            ag.add_ins(opcode_info.ins, E, M, X, D);
+        }
+        else {
+            ag.add_ins(opcode_info.ins, E, M, X, D);
+            ag.D_to_TRL();
+            if (mem16) {
+                ag.addcycle('4a');
+                ag.addr_inc();
+                ag.D_to_TRH();
+            }
+        }
+    }
+
+    this.set_exm16rw = function() {
+        affected_by_E = true;
+        affected_by_X = A_OR_M_X.has(opcode_info.ins);
+        affected_by_M = !affected_by_X;
+        if ((affected_by_X && X) || (affected_by_M && M))
+            mem16 = true;
+        if (E)
+            mem16 = false;
+        RW = A_R_OR_W(opcode_info.ins);
+    };
+
+    this.RMW_indexed = function(who) {
+        this.set_exm16rw();
+
+        ag.addcycle(2);
+        ag.RPDV(0, 1, 0, 0);
+        ag.addr_to_PC_then_inc();
+
+        ag.addcycle(3);
+        ag.addl('regs.TA = pins.D & 0xFF');
+        ag.addr_to_PC_then_inc();
+
+        // Add 1 cycle for:
+        //  indexing across page boundaries
+        //  write
+        //  X=0
+        //  when X=1 or emulaion mode, addresses invalid
+
+        // So, decide whether to skip cycle 3a (4).
+        // We skip it if:
+        //  We're doing a read
+        //  X=1 or emulation mode
+        // But we DO NOT skip it if:
+        //  we index across a page boundary
+        ag.addl('regs.TR = regs.TA + (' + who + ' & 0xFF);');
+        ag.addl('regs.skipped_cycle = false;');
+        if  ((RW === 0) || (X === 1) || (E === 1))
+        {
+            ag.addl('if (regs.TR < 0x100) { regs.skipped_cycle = true; regs.TCU++; } ') // Skip cycle
+        }
+        ag.addcycle('3a');
+        ag.addl('regs.TA += ((pins.D) & 0xFF) << 8;');
+        ag.RPDV(0, 0, 0, 0);
+        ag.addr_to_DBR('((pins.D & 0xFF) << 8) + ((regs.TA + ' + who + ') & 0xFF)');
+
+        ag.addcycle(4);
+        ag.addl('if (regs.skipped_cycle) regs.TA += ((pins.D) & 0xFF) << 8;');
+        ag.addr_to_DBR('(' + who + ' + regs.TA) & 0xFFFF')
+        this.finish_RW8or16p();
+    };
+
     ag.addl('// ' + opcode_info.mnemonic + ' E=' + E + " M=" + M + " X=" + X);
     affected_by_D = ((opcode_info.ins === OM.ADC) || (opcode_info.ins === OM.SBC));
     switch(opcode_info.addr_mode) {
         case(AM.A):
-            affected_by_E = true;
-            affected_by_X = A_OR_M_X.has(opcode_info.ins);
-            affected_by_M = !affected_by_X;
-            if ((affected_by_X && X) || (affected_by_M && M))
-                mem16 = true;
-            if (E)
-                mem16 = false;
-            let RW = A_R_OR_W(opcode_info.ins);
-            ag.get_TA_from_PC();
-            ag.addr_to_dbr('regs.TA');
+            this.set_exm16rw();
+            ag.addcycle(2);
+            ag.RPDV(0, 1, 0, 0);
+            ag.addr_to_PC_then_inc();
+
+            ag.addcycle(3);
+            ag.addl('regs.TA = pins.D & 0xFF;');
+            ag.addr_to_PC_then_inc();
+
+            ag.addcycle(4);
+            ag.addr_to_DBR('regs.TA + ((pins.D & 0xFF) << 8)');
             ag.RPDV(RW, 0, 1, 0);
-            if (RW === 0) {
-                // Finish read, then do instruction
-                ag.addcycle('4');
-                ag.addl('regs.TR = pins.D & 0xFF;');
-                if (mem16) {
-                    ag.addl('regs.TA = (regs.TA + 1) & 0xFFFF;')
-                    ag.addr_to_dbr('regs.TA');
-                    ag.addcycle('5');
-                    ag.addl('regs.TR = ((pins.D & 0xFF) << 8) + regs.TR;')
-                }
-                ag.add_ins(opcode_info.ins, E, M, X, D);
-            }
-            else {
-                // Do instruction, then do write
-                ag.add_ins(opcode_info.ins, E, M, X, D);
-                ag.addr_to_dbr('regs.TA');
-                ag.addl('pins.D = regs.TR & 0xFF;')
-                if (mem16) {
-                    ag.addcycle('5')
-                    ag.addl('regs.TA = (regs.TA + 1) & 0xFFFF;')
-                    ag.addr_to_dbr('regs.TA');
-                    ag.addl('pins.D = (regs.TR >> 8) & 0xFF;');
-                }
-            }
+            this.finish_RW8or16p();
             break; // AM.A absolute Af
         case AM.Ab: // JMP a
             ag.get_TA_from_PC();
@@ -955,10 +1080,10 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
         case AM.Ac: // JSR a
             affected_by_E = true;
             ag.get_TA_from_PC();
-            ag.addcycle('4');
+            ag.addcycle(5);
             ag.RPDV(1, 0, 1, 0);
             ag.push_H('regs.PC');
-            ag.addcycle('5');
+            ag.addcycle(6);
             ag.push_L('regs.PC');
             ag.addl('regs.PC = regs.TA;');
             break;
@@ -971,30 +1096,29 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
             ag.get_TA_from_PC();
             ag.addl('pins.Addr = regs.TA; pins.BA = regs.DBR;');
             ag.addl('regs.TA = (regs.TA + 1) & 0xFFFF');
-            cycle = 4;
-            ag.addcycle(cycle); // 4
+            ag.addcycle(4);
             ag.addl('regs.TR = pins.D & 0xFF;');
             if (mem16) {
                 ag.addl('pins.Addr = regs.TA');
                 cycle++;
-                ag.addcycle(cycle); // 4a
+                ag.addcycle('4a'); // 4a
                 ag.addl('regs.TR += (pins.D & 0xFF) << 8;');
             }
             cycle++;
-            ag.addcycle(cycle); // 5
+            ag.addcycle(5); // 5
             if (E)
                 ag.RPDV(1, 0, 1, 0);
             ag.add_ins(opcode_info.ins, E, M, X, D);
             if (mem16) {
                 cycle++;
-                ag.addcycle(cycle); // 6a
+                ag.addcycle('5a'); // 6a
                 ag.RPDV(1, 0, 1, 0);
                 ag.addl('pins.D = (regs.TR & 0xFF00) >> 8;');
                 ag.addl('regs.TA = (regs.TA - 1) & 0xFFFF');
                 ag.addl('pins.Addr = regs.TA;')
             }
             cycle++;
-            ag.addcycle(cycle);
+            ag.addcycle(6);
             ag.RPDV(1, 0, 1, 0);
             ag.addl('pins.D = (regs.TR & 0xFF);');
             break;
@@ -1009,59 +1133,426 @@ function generate_instruction_function(indent, opcode_info, E, M, X, D) {
             // JSR (a,x)
             // This one is REALLY FUNKY
             // Can't really do a lot of automatic code here
-            ag.addcycle(1); // 2 PBR, PC+1 -> AAL
+            affected_by_E = true;
+            ag.addcycle(2); // 2 PBR, PC+1 -> AAL
             ag.RPDV(0, 1, 0, 0);
-            ag.addr_to_pc_then_inc();
+            ag.addr_to_PC_then_inc();
 
-            ag.addcycle(2); // 3 0,S <- PCH
+            ag.addcycle(3); // 3 0,S <- PCH
             ag.RPDV(1, 0, 1, 0);
             ag.addl('regs.TA = pins.D & 0xFF');
             ag.push_H('regs.PC');
 
-            ag.addcycle(3); // 4 0,S-1 <- PCL
+            ag.addcycle(4); // 4 0,S-1 <- PCL
             ag.push_L('regs.PC');
 
-            ag.addcycle(4); // 5 PBR, PC+2 -> AAH
+            ag.addcycle(5); // 5 PBR, PC+2 -> AAH
             ag.RPDV(0, 1, 0, 0);
-            ag.addr_to_pc_then_inc();
+            ag.addr_to_PC_then_inc();
 
-            ag.addcycle(5); // 6 PBR, PC+2  IO (grab AAH)
+            ag.addcycle(6); // 6 PBR, PC+2  IO (grab AAH)
             ag.RPDV(0, 0, 0, 0);
             ag.addl('regs.TA += (pins.D & 0xFF) << 8;');
             ag.addl('regs.TA = (regs.TA + regs.X) & 0xFFFF;');
+
+            ag.addcycle(7); // 7 PBR, AA+X
+            ag.RPDV(0, 1, 0, 0);
             ag.addl('pins.Addr = regs.TA;');
 
-            ag.addcycle(6); // 7 PBR, AA+X   <- PCL
-            ag.addl('regs.TR = pins.D & 0xFF;');
-            ag.addl('regs.TA = (regs.TA + 1) & 0xFFFF;');
-            ag.addl('pins.Addr = regs.TA;');
+            ag.addcycle(8); // 8 PBR, AA+X+1 <- PCL
+            ag.addl('pins.Addr = (pins.Addr + 1) & 0xFFFF;');
+            ag.addl('regs.PC = pins.D & 0xFF;');
 
-            ag.addcycle(7); // 8 PBR, AA+X+1 <- PCH (capture PCL)
-            ag.addl('regs.TR += (pins.D & 0xFF) << 8;');
-            ag.addl('regs.PC = regs.TR;');
+            ag.cleanup();
+            ag.addl('regs.PC += ((pins.D & 0xFF) << 8);')
             break;
         case AM.A_IND: // JML (a)
-            ag.addcycle(1);
-            ag.RPDV(0, 1, 0, 0);
-            ag.addr_to_pc_then_inc();
-            ag.addcycle(2);// capture AAL
+            ag.addcycle(2);
+            ag.addr_to_PC_then_inc();
+
+            ag.addcycle(3);// capture AAL
             ag.addl('regs.TA = pins.D & 0xFF;');
-            ag.addr_to_pc_then_inc();
-            ag.addcycle(3); // capture AAH, start PCL fetch
+            ag.addr_to_PC_then_inc();
+
+            ag.addcycle(4); // capture AAH, start PCL fetch
             ag.RPDV(0, 0, 1, 0);
             ag.addl('pins.Addr = regs.TA + ((pins.D & 0xFF) << 8); pins.BA = 0;');
-            ag.addcycle(4); // 4 capture PCL
+
+            ag.addcycle(5); // 4 capture PCL
             ag.addl('regs.TR = pins.D & 0xFF;');
             ag.addl('pins.Addr = (pins.Addr + 1) & 0xFFFF;');
-            ag.addcycle(5); // 5 capture PCH
-            ag.addl('regs.TR += (pins.D & 0xFF) << 8;');
+
+            ag.addcycle(6); // 5 capture PCH
+            ag.addl('regs.PC = regs.TR + ((pins.D & 0xFF) << 8);');
             ag.addl('pins.Addr = (pins.Addr + 1) & 0xFFFF;');
-            ag.addcycle(6); // 6 capture PBR & cancel
-            ag.addl('regs.PC = regs.TR;');
+
+            ag.cleanup();
             ag.addl('regs.PBR = pins.D & 0xFF;');
-            ag.addl('regs.cancel_cycle = true;');
             break;
-        case AM.A_INDb:
+        case AM.A_INDb: // JMP (a)
+            ag.addcycle(2);
+            ag.RPDV(0, 1, 0, 0);
+            ag.addr_to_PC_then_inc();
+
+            ag.addcycle(3);
+            ag.addl('regs.TA = pins.D & 0xFF;');
+            ag.addr_to_PC_then_inc();
+
+            ag.addcycle(4);
+            ag.RPDV(0, 0, 1, 0);
+            ag.addr_to_ZB('regs.TA + ((pins.D & 0xFF) << 8)');
+
+            ag.addcycle(5);
+            ag.addl('regs.TR = pins.D & 0xFF;');
+            ag.addr_inc();
+
+            ag.cleanup();
+            ag.addl('regs.PC = regs.TR + ((pins.D & 0xFF) << 8);');
+            break;
+        case AM.AL:
+            this.set_exm16rw();
+            ag.addcycle(2);
+            ag.RPDV(0, 1, 0, 0);
+            ag.addr_to_PC_then_inc();
+
+            ag.addcycle(3);
+            ag.addl('regs.TA = pins.D & 0xFF;');
+            ag.addr_to_PC_then_inc();
+
+            ag.addcycle(4);
+            ag.addl('regs.TA += (pins.D & 0xFF) << 8;');
+            ag.addr_to_PC_then_inc();
+
+            ag.addcycle(5);
+            ag.addr_to('regs.TA', 'pins.D & 0xFF');
+            ag.RPDV(RW, 0, 1, 0);
+            if (RW === 0) { // Doing a read
+                if (mem16) {
+                    ag.addcycle('5a');
+                    ag.addl('regs.TR = pins.D & 0xFF;');
+                    ag.addr_inc();
+
+                    ag.cleanup();
+                    ag.addl('regs.TR += (pins. D & 0xFF) << 8;');
+                    ag.add_ins(opcode_info.ins, E, M, X, D);
+                }
+                else {
+                    ag.cleanup();
+                    ag.addl('regs.TR = pins.D & 0xFF;')
+                    ag.add_ins(opcode_info.ins, E, M, X, D);
+                }
+            }
+            else { // Doing a write
+                ag.add_ins(opcode_info.ins, E, M, X, D);
+                ag.D_to_TRL();
+                if (mem16) {
+                    ag.addcycle('5a');
+                    ag.addr_inc();
+                    ag.D_to_TRH();
+                }
+            }
+            break;
+        case AM.ALb: // JMP
+            ag.addcycle(2);
+            ag.RPDV(0, 1, 0, 0);
+            ag.addr_to_PC_then_inc();
+
+            ag.addcycle(3);
+            ag.addl('regs.TA = pins.D & 0xFF;');
+            ag.addr_to_PC_then_inc();
+
+            ag.addcycle(4);
+            ag.addl('regs.TA += (pins.D & 0xFF) << 8;');
+            ag.addr_to_PC_then_inc();
+
+            ag.cleanup();
+            ag.addr_to('regs.TA', 'pins.D & 0xFF');
+            break;
+        case AM.ALc: // JSL long
+            affected_by_E = true;
+            ag.addcycle(2);
+            ag.RPDV(0, 1, 0, 0);
+            ag.addr_to_PC_then_inc();
+
+            ag.addcycle(3);
+            ag.addl('regs.TA = pins.D & 0xFF;');
+            ag.addr_to_PC_then_inc();
+
+            ag.addcycle(4);
+            ag.RPDV(1, 0, 1, 0);
+            ag.addl('regs.TA += (pins.D & 0xFF) << 8;');
+            ag.push_H('regs.PBR', false);
+
+            ag.addcycle(5);
+            ag.RPDV(0, 0, 0, 0);
+
+            ag.addcycle(6);
+            ag.RPDV(0, 1, 0, 0);
+            ag.addr_to_PC_then_inc();
+
+            ag.addcycle(7);
+            ag.addl('regs.PBR = pins.D & 0xFF');
+            ag.RPDV(1, 0, 1, 0);
+            ag.push_H('regs.PC');
+
+            ag.addcycle(8);
+            ag.push_L('regs.PC');
+            ag.addl('regs.PC = regs.TA;')
+            break;
+        case AM.AL_INDEXED_X:
+            this.set_exm16rw();
+            ag.addcycle(2); // LD AAL
+            ag.RPDV(0, 1, 0, 0);
+            ag.addr_to_PC_then_inc();
+
+            ag.addcycle(3); // LD AAH
+            ag.addl('regs.TA = pins.D & 0xFF');
+            ag.addr_to_PC_then_inc()
+
+            ag.addcycle(4); // LD AAB
+            ag.addl('regs.TA += (pins.D & 0xFF) << 8;')
+            ag.addr_to_PC_then_inc();
+
+            ag.addcycle(5); // capture AAB
+            ag.addr_to('regs.TA', 'pins.D & 0xFF');
+            ag.RPDV(RW, 0, 1, 0);
+            this.finish_RW8or16p();
+            break;
+        case AM.A_INDEXED_X:
+            this.RMW_indexed('regs.X');
+            break;
+        case AM.A_INDEXED_Xb: // R-M-W a,x  6b
+            affected_by_E = true;
+            affected_by_M = true;
+            mem16 = !(E | M);
+            ag.addcycle(2);
+            ag.RPDV(0, 1, 0, 0);
+            ag.addr_to_PC_then_inc();
+
+            ag.addcycle(3);
+            ag.addl('regs.TA = pins.D & 0xFF;')
+
+            ag.addcycle(4);
+            ag.RPDV(0, 0, 0, 0);
+            ag.addr_to_DBR('((pins.D & 0xFF) << 8) + ((regs.TA + regs.X) & 0xFF)');
+            ag.addl('regs.TA = (regs.TA + ((pins.D & 0xFF) << 8) + regs.X) & 0xFFFF');
+
+            ag.addcycle(5);
+            ag.RPDV(0, 0, 1, 0);
+            ag.addr_to_DBR('regs.TA');
+
+            if (mem16) {
+                ag.addcycle('5a');
+                ag.addl('regs.TR = pins.D & 0xFF;');
+                ag.addr_inc();
+            }
+
+            ag.addcycle(6);
+            if (M) ag.RPDV(1, 0, 0, 0);
+            else   ag.RPDV(0, 0, 0, 0);
+            if (mem16) ag.addl('regs.TR += (pins.D & 0xFF) << 8;');
+            else       ag.addl('regs.TR = (pins.D & 0xFF);')
+
+            ag.add_ins(opcode_info.ins, E, M, X, D);
+
+            if (mem16) {
+                ag.addcycle('7a');
+                ag.RPDV(1, 0, 1, 0);
+                ag.D_to_TRH();
+
+                ag.addcycle(7);
+                ag.addr_dec();
+            }
+            else {
+                ag.addcycle(7);
+                ag.RPDV(1, 0, 1, 0);
+            }
+            ag.D_to_TRL();
+            break;
+        case AM.A_INDEXED_Y:
+            this.RMW_indexed('regs.Y');
+            break;
+        case AM.ACCUM:
+            affected_by_E = affected_by_M = true;
+            ag.addcycle(2);
+            ag.RPDV(0, 0, 0, 0);
+            if (M|E) ag.addl('regs.TR = regs.C & 0xFF;');
+            else     ag.addl('regs.TR = regs.C;');
+            ag.add_ins(opcode_info.ins, E, M, X, D);
+            if (M|E) ag.addl('regs.C = (regs.C & 0xFF00) | (regs.TR & 0x00FF);');
+            else     ag.addl('regs.C = regs.TR & 0xFFFF;');
+            break;
+        case AM.XYC:
+            ag.addcycle(2);
+            ag.addl('if (regs.in_blockmove) {');
+            ag.addl('    regs.MD++;');
+            ag.addl('} else {');
+            ag.addl('    regs.MD = 0;');
+            ag.addl('    regs.in_blockmove = true;');
+            ag.addl('}')
+            ag.RPDV(0, 1, 0, 0);
+            ag.addr_to_PC_then_inc();
+
+            ag.addcycle(3);
+            ag.addl('regs.DBR = pins.D & 0xFF;');
+            ag.addr_to_PC_then_inc();
+
+            ag.addcycle(4);
+            ag.addl('regs.TA = pins.D & 0xFF');
+            ag.addr_to('(regs.X + regs.MD) & 0xFFFF', 'regs.TA');
+            ag.RPDV(0, 0, 1, 0);
+
+            ag.addcycle(5);
+            ag.RPDV(1, 0, 1, 0);
+            ag.addr_to('(regs.Y + regs.MD) & 0xFFFF', 'regs.DBR');
+
+            ag.addcycle(6);
+            ag.RPDV(0, 0, 0, 0);
+
+            ag.addcycle(7);
+
+            ag.cleanup();
+            ag.addl('regs.C = (regs.C - 1) & 0xFFFF;');
+            ag.addl('if (regs.C === 0xFFFF) { // Time to exit loop!');
+            ag.addl('    regs.in_blockmove = false;');
+            ag.addl("    // we'll just let PC go to the next instruction now");
+            ag.addl('} else { // Still in loop!');
+            ag.addl('    regs.PC = (regs.PC - 3) & 0xFFFF;');
+            ag.addl('}')
+            break;
+        case AM.XYCb:
+            ag.addcycle(2);
+            ag.addl('if (regs.in_blockmove) {');
+            ag.addl('    regs.MD++;');
+            ag.addl('} else {');
+            ag.addl('    regs.MD = 0;');
+            ag.addl('    regs.in_blockmove = true;');
+            ag.addl('}')
+            ag.RPDV(0, 1, 0, 0);
+            ag.addr_to_PC_then_inc();
+
+            ag.addcycle(3);
+            ag.addl('regs.DBR = pins.D & 0xFF;');
+            ag.addr_to_PC_then_inc();
+
+            ag.addcycle(4);
+            ag.addl('regs.TA = pins.D & 0xFF');
+            ag.addr_to('(regs.X - regs.MD) & 0xFFFF', 'regs.TA');
+            ag.RPDV(0, 0, 1, 0);
+
+            ag.addcycle(5);
+            ag.RPDV(1, 0, 1, 0);
+            ag.addr_to('(regs.Y - regs.MD) & 0xFFFF', 'regs.DBR');
+
+            ag.addcycle(6);
+            ag.RPDV(0, 0, 0, 0);
+
+            ag.addcycle(7);
+
+            ag.cleanup();
+            ag.addl('regs.C = (regs.C + 1) & 0xFFFF;');
+            ag.addl('if (regs.C === 0xFFFF) { // Time to exit loop!');
+            ag.addl('    regs.in_blockmove = false;');
+            ag.addl("    // we'll just let PC go to the next instruction now");
+            ag.addl('} else { // Still in loop!');
+            ag.addl('    regs.PC = (regs.PC - 3) & 0xFFFF;');
+            ag.addl('}');
+            break;
+        case AM.D:
+            this.set_exm16rw();
+            // 2a if DL not = 0
+            ag.addcycle(2);
+            ag.RPDV(0, 1, 0, 0);
+            ag.addr_to_PC_then_inc();
+            ag.addl('regs.skipped_cycle = false;')
+            ag.addl('if ((regs.D & 0xFF) === 0) { regs.skipped_cycle = true; regs.TCU++; }')
+
+            ag.addcycle('2a');
+            ag.RPDV(0, 0, 0, 0);
+            ag.addl('regs.TA = (regs.D + (pins.D & 0xFF)) & 0xFFFF;');
+
+            ag.addcycle(3);
+            ag.addl('if (regs.skipped_cycle) regs.TA = (regs.D + (pins.D & 0xFF)) & 0xFFFF;')
+            ag.addr_to_ZB('regs.TA');
+            ag.RPDV(RW, 0, 1, 0);
+            this.finish_RW8or16p();
+        case AM.Db:
+            // R-M-W direct
+            affected_by_E = true;
+            affected_by_M = true;
+            mem16 = !(E | M);
+
+            ag.addcycle(2);
+            ag.RPDV(0, 1, 0, 0);
+            ag.addr_to_PC_then_inc();
+            ag.addl('regs.skipped_cycle = false;');
+            ag.addl('if ((regs.D & 0xFF) === 0) { regs.skipped_cycle = true; regs.TCU++; }');
+
+            ag.addcycle('2a')
+            ag.RPDV(0, 0, 0, 0);
+            ag.addl('regs.TA = (regs.D + (pins.D & 0xFF)) & 0xFFFF;');
+
+            ag.addcycle(3);
+            ag.addl('if (regs.skipped_cycle) regs.TA = (regs.D + (pins.D & 0xFF)) & 0xFFFF;');
+            ag.RPDV(0, 0, 1, 0);
+            ag.addr_to_ZB('regs.TA');
+
+            if (mem16) {
+                ag.addcycle('3a');
+                ag.addl('regs.TR = pins.D & 0xFF');
+                ag.addr_inc();
+
+                ag.addcycle(4);
+                ag.addl('regs.TR += (pins.D & 0xFF) << 8;');
+            }
+            else {
+                ag.addcycle(4);
+                ag.addl('regs.TR = pins.D & 0xFF;');
+            }
+            if (E) ag.RPDV(1, 0, 0, 0);
+            else   ag.RPDV(0, 0, 0, 0);
+            ag.add_ins(opcode_info.ins, E, M, X, D);
+
+            if (mem16) {
+                ag.addcycle('5a');
+                ag.RPDV(1, 0, 1, 0);
+                ag.D_to_TRH();
+            }
+            ag.addcycle(5);
+            if ((!E) && (!mem16)) ag.RPDV(1, 0, 1, 0);
+            ag.addr_dec();
+            ag.D_to_TRL();
+            break;
+        case AM.D_INDEXED_IND:
+            this.set_exm16rw();
+
+            ag.addcycle(2);
+            ag.addr_to_PC_then_inc();
+            ag.RPDV(0, 1, 0, 0);
+            ag.addl('regs.skipped_cycle = false;')
+            ag.addl('if ((regs.D & 0xFF) === 0) { regs.skipped_cycle = true; regs.TCU++; }');
+
+            ag.addcycle('2a');
+            ag.addl('regs.TA = pins.D & 0xFF;');
+            ag.RPDV(0, 0, 0, 0);
+
+            ag.addcycle(3);
+            ag.RPDV(0, 0, 0, 0);
+            ag.addl('regs.TA = (regs.TA + regs.D + regs.X) & 0xFFFF');
+
+            ag.addcycle(4);
+            ag.addr_to_ZB('regs.TA');
+            ag.RPDV(0, 0, 1, 0);
+
+            ag.addcycle(5);
+            ag.addl('regs.TA = pins.D & 0xFF;');
+            ag.addr_inc();
+
+            ag.addcycle(6);
+            ag.addr_to_DBR('(regs.TA + ((pins.D & 0xFF) << 8))');
+            ag.RPDV(RW, 0, 1, 0);
+            this.finish_RW8or16p();
+            break;
 
     }
     let outstr = 'function(regs, pins) { // ' + opcode_info.mnemonic + '\n' + ag.finished() + indent + '}';
