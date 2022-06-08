@@ -127,6 +127,7 @@ class w65c816_pins {
 		this.RES = 0; // RESET signal
 
 		// For tracing processor...
+		this.trace_cycles = 0;
 		this.trace_on = false;
 		this.trace = [];
 	}
@@ -178,10 +179,11 @@ class w65c816 {
 		this.#IRQ_pending = false;
 		this.#RES_pending = true;
 
-		this.trace_peak = function(BA, Addr){return 0xC0C0);}
+		this.trace_peek = function(BA, Addr){return 0xC0;)}
 	}
 	
 	cycle() {
+		this.pins.trace_cycles++;
 		if (this.regs.STPWAI && this.regs.TCU === 0) {
 			// TODO: Check for things that get us out of STP or WAI state
 			return;
@@ -202,19 +204,19 @@ class w65c816 {
 	}
 
 	trace_peek8(bank, addr) {
-		return this.trace_peak(bank, addr & 0xFFFF);
+		return this.trace_peek(bank, addr & 0xFFFF);
 	}
 
 	trace_peek16(bank, addr) {
-		let ret = this.trace_peak(bank, addr & 0xFFFF) << 8;
-		ret |= this.trace_peak(bank, (addr+1) & 0xFFFF);
+		let ret = this.trace_peek(bank, addr & 0xFFFF) << 8;
+		ret |= this.trace_peek(bank, (addr+1) & 0xFFFF);
 		return ret;
 	}
 
 	trace_peek24(bank, addr) {
-		let ret = this.trace_peak(bank, addr & 0xFFFF) << 16;
-		ret |= this.trace_peak(bank, (addr+1) & 0xFFFF) << 8;
-		ret |= this.trace_peak(bank, (addr+2) & 0xFFFF);
+		let ret = this.trace_peek(bank, addr & 0xFFFF) << 16;
+		ret |= this.trace_peek(bank, (addr+1) & 0xFFFF) << 8;
+		ret |= this.trace_peek(bank, (addr+2) & 0xFFFF);
 		return ret;
 	}
 
@@ -381,11 +383,28 @@ class w65c816 {
 		return output;
 	}
 
+	enable_tracing(peek_func) {
+		this.trace_peek = peek_func;
+		this.pins.trace_cycles = 0;
+		this.pins.trace_on = true;
+	}
+
+	disable_tracing() {
+		this.trace_peek = function(BA, Addr){return 0xC0;}
+		this.pins.trace_on = false;
+	}
+
 	trace_format(da_out) {
+		let padl = function(what, howmuch) {
+			while(what.length < howmuch) {
+				what = ' ' + what;
+			}
+			return what;
+		}
 		let outstr = '';
 		// General trace format is...
-		// PBR: PC: LDA d,x   (any byte operands)   E: C: X: Y: S: P: D: DBR:
-		outstr += 'PBR: ' + hex0x2(this.regs.PBR) + ' PC: ' + hex0x4(this.regs.PC) + ' ';
+		// (cycles) PBR: PC: LDA d,x   (any byte operands)   E: C: X: Y: S: P: D: DBR:
+		outstr += '(' + padl(this.pins.trace_cycles.toString(), 6) + ') PBR: ' + hex0x2(this.regs.PBR) + ' PC: ' + hex0x4(this.regs.PC) + ' ';
 		outstr += ' ' + da_out.disassembled;
 		let sp = da_out.disassembled.length;
 		while(sp < 16) {
