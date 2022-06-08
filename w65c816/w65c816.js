@@ -144,6 +144,7 @@ class disassembly_output {
 		this.X = X;
 
 		this.mnemonic = 'UKN ###';
+		this.disassembled = 'ULN ###';
 	}
 }
 
@@ -200,17 +201,17 @@ class w65c816 {
 		this.current_instruction.exec_func(this.regs, this.pins);
 	}
 
-	peek8(bank, addr) {
+	trace_peek8(bank, addr) {
 		return this.trace_peak(bank, addr & 0xFFFF);
 	}
 
-	peek16(bank, addr) {
+	trace_peek16(bank, addr) {
 		let ret = this.trace_peak(bank, addr & 0xFFFF) << 8;
 		ret |= this.trace_peak(bank, (addr+1) & 0xFFFF);
 		return ret;
 	}
 
-	peek24(bank, addr) {
+	trace_peek24(bank, addr) {
 		let ret = this.trace_peak(bank, addr & 0xFFFF) << 16;
 		ret |= this.trace_peak(bank, (addr+1) & 0xFFFF) << 8;
 		ret |= this.trace_peak(bank, (addr+2) & 0xFFFF);
@@ -227,24 +228,24 @@ class w65c816 {
 		output.mnemonic = opcode_info.mnemonic;
 		let addr_mode = array_of_array_contains(opcode_AM_R, opcode);
 		PC += 1;
-		switch(addr_mode) {
+		switch (addr_mode) {
 			case AM.A:
 			case AM.A_INDEXED_IND:
 			case AM.A_IND:
-				output.data16 = this.peek16(PBR, PC);
+				output.data16 = this.trace_peek16(PBR, PC);
 				break;
 			case AM.AL:
 			case AM.AL_INDEXED_X:
-				output.data24 = this.peek24(PBR, PC);
+				output.data24 = this.trace_peek24(PBR, PC);
 				break;
 			case AM.A_INDEXED_X:
 			case AM.A_INDEXED_Y:
-				output.data16 = this.peek16(PBR, PC);
+				output.data16 = this.trace_peek16(PBR, PC);
 				break;
 			case AM.ACCUM:
 				break;
 			case AM.XYC:
-				output.data16 = this.peek16(PBR, PC);
+				output.data16 = this.trace_peek16(PBR, PC);
 				break;
 			case AM.D:
 			case AM.D_INDEXED_IND:
@@ -254,21 +255,140 @@ class w65c816 {
 			case AM.D_IND_L:
 			case AM.D_INDEXED_X:
 			case AM.D_INDEXED_Y:
-				output.data8 = this.peek8(PBR, PC);
+				output.data8 = this.trace_peek8(PBR, PC);
 				break;
 			case AM.IMM:
-				// argh
+				let affected_by_X = A_OR_M_X.has(opcode_info.ins);
+				let affected_by_M = !affected_by_X;
+				if ((affected_by_X && !this.regs.P.X) || (affected_by_M && !this.regs.P.M))
+					output.data16 = this.trace_peek16(PBR, PC);
+				else
+					output.data8 = this.trace_peek8(PBR, PC);
+				break;
+			// argh
+			case AM.I:
+				break;
+			case AM.PC_R:
+				output.data8 = this.trace_peek8(PBR, PC);
+				break;
+			case AM.PC_RL:
+				output.data16 = this.trace_peek16(PBR, PC);
+				break;
+			case AM.SPECIAL:
+				break;
+			case AM.STACK:
+				break;
+			case AM.STACKd:
+			case AM.STACKf:
+				output.data16 = this.trace_peek16(PBR, PC);
+				break;
+			case AM.STACKe:
+			case AM.STACKj:
+				output.data8 = this.trace_peek8(PBR, PC);
+				break;
+			case AM.STACK_R:
+			case AM.STACK_R_IND_INDEXED:
+				output.data8 = this.trace_peek8(PBR, PC);
+				break;
 		}
 		PC -= 1;
+		let dis_out = 'UKN ###';
+
+		// Now make actual disassembly output
+		dis_out = opcode_MN[opcode_info.ins];
+		switch(addr_mode) {
+			case AM.A:
+				dis_out += ' !$' + hex4(output.data16);
+				break;
+			case AM.A_INDEXED_IND:
+				dis_out += ' (!$' + hex4(output.data16) + ', x)';
+				break;
+			case AM.A_IND:
+				dis_out += ' (!$' + hex4(output.data16) + ')';
+				break;
+			case AM.AL:
+				dis_out += ' (>$' + hex6(output.data24) + ')';
+				break;
+			case AM.AL_INDEXED_X:
+				dis_out += ' >$' + hex6(output.data24) + ', x';
+				break;
+			case AM.A_INDEXED_X:
+				dis_out += ' !$' + hex4(output.data16) + ', x';
+				break;
+			case AM.A_INDEXED_Y:
+				dis_out += ' !$' + hex4(output.data16) + ', y';
+				break;
+			case AM.XYC:
+				dis_out += ' $' + hex2(output.data16 >> 8) + ', $' + hex2(output.data16 & 0xFF);
+				break;
+			case AM.ACCUM:
+				dis_out += ' A';
+				break;
+			case AM.D:
+				dis_out += ' <$' + hex2(output.data8);
+				break;
+			case AM.D_INDEXED_IND:
+				dis_out += ' (<$' + hex2(output.data8) + ', x)';
+				break;
+			case AM.D_IND:
+				dis_out += ' (<$' + hex2(output.data8) + ')';
+				break;
+			case AM.D_IND_INDEXED:
+				dis_out += ' (<$' + hex2(output.data8) + '), y';
+				break;
+			case AM.D_IND_L_INDEXED:
+				dis_out += ' [<$' + hex2(output.data8) + '], y';
+				break;
+			case AM.D_IND_L:
+				dis_out += ' [<$' + hex2(output.data8) + ']';
+				break;
+			case AM.D_INDEXED_X:
+				dis_out += ' <$' + hex2(output.data8) + ', x';
+				break;
+			case AM.D_INDEXED_Y:
+				dis_out += ' <$' + hex2(output.data8) + ', y';
+				break;
+			case AM.IMM:
+				if (output.data8 !== null) dis_out += ' #$' + hex2(output.data8);
+				if (output.data16 !== null) dis_out += ' #$' + hex4(output.data16);
+				break;
+			case AM.I:
+				break;
+			case AM.PC_R:
+				dis_out += ' r' + mksigned8(output.data8);
+				break;
+			case AM.PC_RL:
+				dis_out += ' r' + mksigned16(output.data16);
+				break;
+			case AM.SPECIAL:
+				break;
+			case AM.STACKd:
+			case AM.STACKf:
+				dis_out += ' $' + hex4(output.data16);
+				break;
+			case AM.STACKe:
+			case AM.STACKj:
+				dis_out += ' $' + hex2(output.data8);
+				break;
+			case AM.STACK_R:
+				dis_out += ' $' + hex2(output.data8) + ', s';
+				break;
+			case AM.STACK_R_IND_INDEXED:
+				dis_out += ' ($' + hex2(output.data8) + ',s),y';
+				break;
+		}
+		output.disassembled = dis_out;
+		return output;
+	}
 
 	trace_format(da_out) {
 		let outstr = '';
 		// General trace format is...
 		// PBR: PC: LDA d,x   (any byte operands)   E: C: X: Y: S: P: D: DBR:
 		outstr += 'PBR: ' + hex0x2(this.regs.PBR) + ' PC: ' + hex0x4(this.regs.PC) + ' ';
-		outstr += ' ' + da_out.mnemonic;
-		let sp = da_out.mnemonic.length;
-		while(sp < 10) {
+		outstr += ' ' + da_out.disassembled;
+		let sp = da_out.disassembled.length;
+		while(sp < 16) {
 			outstr += ' ';
 		}
 
