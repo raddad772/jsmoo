@@ -6,6 +6,22 @@ function hex2(val) {
     return outstr.toUpperCase();
 }
 
+function hex4(val) {
+    let outstr = val.toString(16);
+    if (outstr.length < 4) outstr = '0' + outstr;
+    if (outstr.length < 4) outstr = '0' + outstr;
+    if (outstr.length < 4) outstr = '0' + outstr;
+    return outstr.toUpperCase();
+}
+
+function hex0x2(val) {
+    return '0x' + hex2(val);
+}
+
+function hex0x4(val) {
+    return '0x' + hex4(val);
+}
+
 function buf_copy(src)  {
     var dst = new ArrayBuffer(src.byteLength);
     new Uint8Array(dst).set(new Uint8Array(src));

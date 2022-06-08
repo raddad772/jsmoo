@@ -254,6 +254,7 @@ class ADDRESS_MODES_t {
         this.XYC = 22;                  // xyc      block move negative
         this.XYCb = 2201;               // xyc      block move positive
         this.IMM = 23;                  // #        immediate
+        this.SPECIAL = 24;              // S        NMI, RESET, etc.
 	}
 }
 const AM = Object.freeze(new ADDRESS_MODES_t());
@@ -306,7 +307,8 @@ const opcode_AM_MN = {
      [AM.STACKj]: 's',
      [AM.XYC]: 'xyc',
      [AM.XYCb]: 'xyc',
-     [AM.IMM]: '#'
+     [AM.IMM]: '#',
+     [AM.SPECIAL]: 'S'
 };
 
 // Hand-made instruction matrix
@@ -403,10 +405,10 @@ const opcode_MN_R = Object.freeze({
    [OM.WDM]: [0x42],
    [OM.XBA]: [0xEB],
    [OM.XCE]: [0xFB],
-    [OM.S_RESET]: [0x100],
-    [OM.S_ABORT]: [0x101],
-    [OM.S_IRQ]: [0x102],
-    [OM.S_NMI]: [0x103]
+   [OM.S_RESET]: [0x100],
+   [OM.S_ABORT]: [0x101],
+   [OM.S_IRQ]: [0x102],
+   [OM.S_NMI]: [0x103]
 });
 
 // This addressing matrix is made by hand. The "non-reverse" one is generated with a function below
@@ -434,7 +436,8 @@ const opcode_AM_R = Object.freeze({
     [AM.PC_RL]: [0x82],
     [AM.STACK]: [0x00, 0x02, 0x08, 0x0B, 0x28, 0x2B, 0x40, 0x48, 0x4B, 0x5A, 0x60, 0x62, 0x68, 0x6B, 0x7A, 0x8B, 0xAB, 0xD4, 0xDA, 0xF4, 0xFA, 0x100, 0x101, 0x102, 0x103],
     [AM.XYC]: [0x44, 0x54],
-    [AM.IMM]: [0x09, 0x29, 0x49, 0x69, 0x89, 0xA0, 0xA2, 0xA9, 0xC0, 0xC2, 0xC9, 0xE0, 0xE2, 0xE9]
+    [AM.IMM]: [0x09, 0x29, 0x49, 0x69, 0x89, 0xA0, 0xA2, 0xA9, 0xC0, 0xC2, 0xC9, 0xE0, 0xE2, 0xE9],
+    [AM.SPECIAL]: [0x100, 0x101, 0x102, 0x103]
 });
 
 const opcode_AM_SPLIT_R = Object.freeze({
@@ -484,7 +487,8 @@ const opcode_AM_SPLIT_R = Object.freeze({
     [AM.STACKj]: [0x00, 0x02], // BRK, COP
     [AM.XYC]: [0x54], // MVN
     [AM.XYCb]: [0x44], // MVP
-    [AM.IMM]: [0x09, 0x29, 0x49, 0x69, 0x89, 0xA0, 0xA2, 0xA9, 0xC0, 0xC2, 0xC9, 0xE0, 0xE2, 0xE9]
+    [AM.IMM]: [0x09, 0x29, 0x49, 0x69, 0x89, 0xA0, 0xA2, 0xA9, 0xC0, 0xC2, 0xC9, 0xE0, 0xE2, 0xE9],
+    [AM.SPECIAL]: [0x100, 0x101, 0x102, 0x103]
 });
 
 function array_of_array_contains(array, el) {
@@ -501,7 +505,7 @@ function generate_opcode_R(indent) {
     let per_line = 4;
     let on_line = per_line;
     let first = true;
-    for (let i = 0; i < MAX_OPCODE; i++) {
+    for (let i = 0; i <= MAX_OPCODE; i++) {
         let j = array_of_array_contains(opcode_MN_R, i);
         if (on_line === per_line) {
             on_line = 0;
@@ -587,5 +591,6 @@ const opcode_R = Object.freeze({
     0xF4: OM.PEA, 0xF5: OM.SBC, 0xF6: OM.INC, 0xF7: OM.SBC,
     0xF8: OM.SED, 0xF9: OM.SBC, 0xFA: OM.PLX, 0xFB: OM.XCE,
     0xFC: OM.JSR, 0xFD: OM.SBC, 0xFE: OM.INC, 0xFF: OM.SBC,
-    0x100: OM.S_RESET, 0x101: OM.S_ABORT, 0x102: OM.S_IRQ
+    0x100: OM.S_RESET, 0x101: OM.S_ABORT, 0x102: OM.S_IRQ,
+    0x103: OM.S_NMI
 });
