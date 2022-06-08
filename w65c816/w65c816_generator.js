@@ -1901,7 +1901,7 @@ function generate_EMX_truth_table() {
 }
 
 //console.log(generate_EMX_truth_table());
-const EMX_truth_table = Object.freeze({
+const EMX_table = Object.freeze({
     0: 0, // E0 M0 X0
     1: 1, // E1 M0 X0
     2: 2, // E0 M1 X0
@@ -1920,7 +1920,7 @@ function decode_opcodes() {
     for (let E = 0; E < 2; E++) {
         for (let M = 0; M < 2; M++) {
             for (let X = 0; X < 2; X++) {
-                let flag = EMX_truth_table[E + M*2 + X*4];
+                let flag = EMX_table[E + M*2 + X*4];
                 if (already_done.indexOf(flag) !== -1) {
                     continue;
                 }
