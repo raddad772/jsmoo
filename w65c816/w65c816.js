@@ -92,6 +92,7 @@ class w65c816_registers {
 		this.TA = 0; // Temporary Address register
 		this.skipped_cycle = false; // For when we...skip a cycle! For certain ops
 		this.in_blockmove = false;  // For when we are in a blockmove
+		this.STPWAI = false; // Are we in STOP or WAIT?
 
 		// Registers exposed to programs
 		this.C = 0; // B...A = C.
@@ -124,6 +125,25 @@ class w65c816_pins {
 		this.E = 0; // state of Emulation bit
 		this.MX = 0; // M and X flags set
 		this.RES = 0; // RESET signal
+
+		// For tracing processor...
+		this.trace_on = false;
+		this.trace = [];
+	}
+}
+
+
+class disassembly_output {
+	constructor(E, M, X) {
+		this.data8 = null;
+		this.data16 = null;
+		this.data24 = null;
+
+		this.E = E;
+		this.M = M;
+		this.X = X;
+
+		this.mnemonic = 'UKN ###';
 	}
 }
 
@@ -150,36 +170,125 @@ class w65c816 {
 		this.#last_RES = 0;
 		this.#NMI_count = 0;
 		this.regs.IR = BOOTUP;
-		this.fetch_addr = 0;
-		
-		this.STPWAI = false;
+
+		this.regs.STPWAI = false;
 		this.#NMI_pending = false;
 		this.#ABORT_pending = false;
 		this.#IRQ_pending = false;
 		this.#RES_pending = true;
+
+		this.trace_peak = function(BA, Addr){return 0xC0C0);}
 	}
 	
 	cycle() {
+		if (this.regs.STPWAI && this.regs.TCU === 0) {
+			// TODO: Check for things that get us out of STP or WAI state
+			return;
+		}
 		if ((this.regs.TCU === 0) && (this.#RES_pending)) {
 			this.reset();
-			return;
 		}
 
 		this.regs.TCU++;
 		if (this.regs.TCU === 1) {
 			this.regs.IR = this.pins.D & 0xFF;
-			this.current_instruction = decode_opcode(this.regs);
+			this.current_instruction = get_decoded_opcode(this.regs);
+			if (this.pins.trace_on) {
+				this.pins.trace.push(this.trace_format(this.disassemble()));
+			}
 		}
 		this.current_instruction.exec_func(this.regs, this.pins);
 	}
-	
-	decode_opcode() {
-		this.current_instruction = null; // FILL THIS IN
+
+	peek8(bank, addr) {
+		return this.trace_peak(bank, addr & 0xFFFF);
 	}
-	
+
+	peek16(bank, addr) {
+		let ret = this.trace_peak(bank, addr & 0xFFFF) << 8;
+		ret |= this.trace_peak(bank, (addr+1) & 0xFFFF);
+		return ret;
+	}
+
+	peek24(bank, addr) {
+		let ret = this.trace_peak(bank, addr & 0xFFFF) << 16;
+		ret |= this.trace_peak(bank, (addr+1) & 0xFFFF) << 8;
+		ret |= this.trace_peak(bank, (addr+2) & 0xFFFF);
+		return ret;
+	}
+
+	// This must be called while regs.PBR and regs.PC are accurate for the instruction
+	disassemble() {
+		let PBR = this.pins.BA;
+		let PC = this.pins.Addr;
+		let opcode = this.regs.IR;
+		let opcode_info = opcode_matrix[opcode];
+		let output = new disassembly_output(this.regs.E, this.regs.P.M, this.regs.P.X);
+		output.mnemonic = opcode_info.mnemonic;
+		let addr_mode = array_of_array_contains(opcode_AM_R, opcode);
+		PC += 1;
+		switch(addr_mode) {
+			case AM.A:
+			case AM.A_INDEXED_IND:
+			case AM.A_IND:
+				output.data16 = this.peek16(PBR, PC);
+				break;
+			case AM.AL:
+			case AM.AL_INDEXED_X:
+				output.data24 = this.peek24(PBR, PC);
+				break;
+			case AM.A_INDEXED_X:
+			case AM.A_INDEXED_Y:
+				output.data16 = this.peek16(PBR, PC);
+				break;
+			case AM.ACCUM:
+				break;
+			case AM.XYC:
+				output.data16 = this.peek16(PBR, PC);
+				break;
+			case AM.D:
+			case AM.D_INDEXED_IND:
+			case AM.D_IND:
+			case AM.D_IND_INDEXED:
+			case AM.D_IND_L_INDEXED:
+			case AM.D_IND_L:
+			case AM.D_INDEXED_X:
+			case AM.D_INDEXED_Y:
+				output.data8 = this.peek8(PBR, PC);
+				break;
+			case AM.IMM:
+				// argh
+		}
+		PC -= 1;
+
+	trace_format(da_out) {
+		let outstr = '';
+		// General trace format is...
+		// PBR: PC: LDA d,x   (any byte operands)   E: C: X: Y: S: P: D: DBR:
+		outstr += 'PBR: ' + hex0x2(this.regs.PBR) + ' PC: ' + hex0x4(this.regs.PC) + ' ';
+		outstr += ' ' + da_out.mnemonic;
+		let sp = da_out.mnemonic.length;
+		while(sp < 10) {
+			outstr += ' ';
+		}
+
+		if (da_out.data8 !== null) outstr += hex0x2(da_out.data8) + '      ';
+		else if (da_out.data16 !== null) outstr += hex2((da_out.data16 & 0xFF00) >>> 8) + ' ' + hex2(da_out & 0xFF) + '   ';
+		else if (da_out.data24 !== null) outstr += hex2((da_out.data24 & 0xFF0000) >>> 16) + ' ' + hex2((da_out.data24 & 0xFF00) >>> 8) + ' ' + hex2((da_out.data24 & 0xFF) >>> 8);
+
+		outstr += 'E:' + this.regs.E + ' C:' + hex0x4(this.regs.C);
+		outstr += ' X:' + hex0x4(this.regs.X) + ' Y:' + hex0x4(this.regs.Y);
+		outstr += ' S:' + hex0x4(this.regs.S) + ' P:';
+		if (this.regs.E) outstr += hex0x2(this.regs.P.getbyte_emulated());
+		else             outstr += hex0x2(this.regs.P.getbyte_native());
+		outstr += ' D:' + hex0x4(this.regs.D) + ' DBR:' + hex0x2(this.regs.DBR);
+		return outstr;
+	}
+
 	reset() {
 		// Do more
 		this.regs.TCU = 0;
-		this.regs.IR = OM.S_RESET;
+		this.pins.D = OM.S_RESET;
+		this.#RES_pending = true;
 	}
 }
