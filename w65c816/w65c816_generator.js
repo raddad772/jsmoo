@@ -42,8 +42,8 @@
 
    ...
    So, IN BETWEEN CALLS TO cycle(), you should...
-     a) If pins are set to R and there is a valid address, set pins.D to that memory read
-     b) If pins are set to W and there is a valid address, pins.D is an outgoing write
+     a) If pins.RW is set to R and there is a valid address, processor requesting read to pins.D
+     b) If pins.RW is set to W and there is a valid address, pins.D is an outgoing write
      c) If there is no valid address, don't do anything.
   ...
  */
