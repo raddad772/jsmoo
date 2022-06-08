@@ -106,17 +106,6 @@ class OPCODE_MNEMONICS_t {
 
 const OM = Object.freeze(new OPCODE_MNEMONICS_t());
 
-function generate_opcode_MN(indent) {
-    let ostr = 'const opcode_MN = Object.freeze({\n';
-    for (let i in OM) {
-        if (i.length !== 3) continue;
-        ostr += indent + '[OM.' + i + "]: '" + i + "',\n";
-    }
-    ostr += '});';
-    return ostr;
-}
-// this isn't needed, it was used
-//console.log(generate_opcode_MN('    '));
 const opcode_MN = Object.freeze({
     [OM.ADC]: 'ADC',
     [OM.AND]: 'AND',
@@ -210,10 +199,10 @@ const opcode_MN = Object.freeze({
     [OM.WDM]: 'WDM',
     [OM.XBA]: 'XBA',
     [OM.XCE]: 'XCE',
-    [OM.S_RESET]: 'RESET',
-    [OM.S_NMI]: 'NMI',
-    [OM.S_IRQ]: 'IRQ',
-    [OM.S_ABORT]: 'ABORT'
+    [OM.S_RESET]: 'S_RESET',
+    [OM.S_NMI]: 'S_NMI',
+    [OM.S_IRQ]: 'S_IRQ',
+    [OM.S_ABORT]: 'S_ABORT'
 });
 
 class ADDRESS_MODES_t {
@@ -496,4 +485,107 @@ const opcode_AM_SPLIT_R = Object.freeze({
     [AM.XYC]: [0x54], // MVN
     [AM.XYCb]: [0x44], // MVP
     [AM.IMM]: [0x09, 0x29, 0x49, 0x69, 0x89, 0xA0, 0xA2, 0xA9, 0xC0, 0xC2, 0xC9, 0xE0, 0xE2, 0xE9]
+});
+
+function array_of_array_contains(array, el) {
+    for (let j in array) {
+        if (!(typeof(array[j].find(value => value === el)) === 'undefined')) {
+            return j;
+        }
+    }
+    return -1;
+}
+
+function generate_opcode_R(indent) {
+    let ostr = 'const opcode_R = Object.freeze({\n';
+    let per_line = 4;
+    let on_line = per_line;
+    let first = true;
+    for (let i = 0; i < MAX_OPCODE; i++) {
+        let j = array_of_array_contains(opcode_MN_R, i);
+        if (on_line === per_line) {
+            on_line = 0;
+            if (!first) ostr += ',\n' + indent;
+            else ostr += indent;
+            first = false;
+        }
+        else {
+            ostr += ', ';
+        }
+        ostr += '0x' + hex2(i) + ": OM." + opcode_MN[j];
+        on_line++;
+    }
+    ostr += '});';
+    return ostr;
+}
+
+
+// this isn't needed, it was used
+//console.log(generate_opcode_R('    '));
+const opcode_R = Object.freeze({
+    0x00: OM.BRK, 0x01: OM.ORA, 0x02: OM.COP, 0x03: OM.ORA,
+    0x04: OM.TSB, 0x05: OM.ORA, 0x06: OM.ASL, 0x07: OM.ORA,
+    0x08: OM.PHP, 0x09: OM.ORA, 0x0A: OM.ASL, 0x0B: OM.PHD,
+    0x0C: OM.TSB, 0x0D: OM.ORA, 0x0E: OM.ASL, 0x0F: OM.ORA,
+    0x10: OM.BPL, 0x11: OM.ORA, 0x12: OM.ORA, 0x13: OM.ORA,
+    0x14: OM.TRB, 0x15: OM.ORA, 0x16: OM.ASL, 0x17: OM.ORA,
+    0x18: OM.CLC, 0x19: OM.ORA, 0x1A: OM.INC, 0x1B: OM.TCS,
+    0x1C: OM.TRB, 0x1D: OM.ORA, 0x1E: OM.ASL, 0x1F: OM.ORA,
+    0x20: OM.JSR, 0x21: OM.AND, 0x22: OM.JSL, 0x23: OM.AND,
+    0x24: OM.BIT, 0x25: OM.AND, 0x26: OM.ROL, 0x27: OM.AND,
+    0x28: OM.PLP, 0x29: OM.AND, 0x2A: OM.ROL, 0x2B: OM.PLD,
+    0x2C: OM.BIT, 0x2D: OM.AND, 0x2E: OM.ROL, 0x2F: OM.AND,
+    0x30: OM.BMI, 0x31: OM.AND, 0x32: OM.AND, 0x33: OM.AND,
+    0x34: OM.BIT, 0x35: OM.AND, 0x36: OM.ROL, 0x37: OM.AND,
+    0x38: OM.SEC, 0x39: OM.AND, 0x3A: OM.DEC, 0x3B: OM.TSC,
+    0x3C: OM.BIT, 0x3D: OM.AND, 0x3E: OM.ROL, 0x3F: OM.AND,
+    0x40: OM.RTI, 0x41: OM.EOR, 0x42: OM.WDM, 0x43: OM.EOR,
+    0x44: OM.MVP, 0x45: OM.EOR, 0x46: OM.LSR, 0x47: OM.EOR,
+    0x48: OM.PHA, 0x49: OM.EOR, 0x4A: OM.LSR, 0x4B: OM.PHK,
+    0x4C: OM.JMP, 0x4D: OM.EOR, 0x4E: OM.LSR, 0x4F: OM.EOR,
+    0x50: OM.BVC, 0x51: OM.EOR, 0x52: OM.EOR, 0x53: OM.EOR,
+    0x54: OM.MVN, 0x55: OM.EOR, 0x56: OM.LSR, 0x57: OM.EOR,
+    0x58: OM.CLI, 0x59: OM.EOR, 0x5A: OM.PHY, 0x5B: OM.TCD,
+    0x5C: OM.JMP, 0x5D: OM.EOR, 0x5E: OM.LSR, 0x5F: OM.EOR,
+    0x60: OM.RTS, 0x61: OM.ADC, 0x62: OM.PER, 0x63: OM.ADC,
+    0x64: OM.STZ, 0x65: OM.ADC, 0x66: OM.ROR, 0x67: OM.ADC,
+    0x68: OM.PLA, 0x69: OM.ADC, 0x6A: OM.ROR, 0x6B: OM.RTL,
+    0x6C: OM.JMP, 0x6D: OM.ADC, 0x6E: OM.ROR, 0x6F: OM.ADC,
+    0x70: OM.BVS, 0x71: OM.ADC, 0x72: OM.ADC, 0x73: OM.ADC,
+    0x74: OM.STZ, 0x75: OM.ADC, 0x76: OM.ROR, 0x77: OM.ADC,
+    0x78: OM.SEI, 0x79: OM.ADC, 0x7A: OM.PLY, 0x7B: OM.TDC,
+    0x7C: OM.JMP, 0x7D: OM.ADC, 0x7E: OM.ROR, 0x7F: OM.ADC,
+    0x80: OM.BRA, 0x81: OM.STA, 0x82: OM.BRL, 0x83: OM.STA,
+    0x84: OM.STY, 0x85: OM.STA, 0x86: OM.STX, 0x87: OM.STA,
+    0x88: OM.DEY, 0x89: OM.BIT, 0x8A: OM.TXA, 0x8B: OM.PHB,
+    0x8C: OM.STY, 0x8D: OM.STA, 0x8E: OM.STX, 0x8F: OM.STA,
+    0x90: OM.BCC, 0x91: OM.STA, 0x92: OM.STA, 0x93: OM.STA,
+    0x94: OM.STY, 0x95: OM.STA, 0x96: OM.STX, 0x97: OM.STA,
+    0x98: OM.TYA, 0x99: OM.STA, 0x9A: OM.TXS, 0x9B: OM.TXY,
+    0x9C: OM.STZ, 0x9D: OM.STA, 0x9E: OM.STZ, 0x9F: OM.STA,
+    0xA0: OM.LDY, 0xA1: OM.LDA, 0xA2: OM.LDX, 0xA3: OM.LDA,
+    0xA4: OM.LDY, 0xA5: OM.LDA, 0xA6: OM.LDX, 0xA7: OM.LDA,
+    0xA8: OM.TAY, 0xA9: OM.LDA, 0xAA: OM.TAX, 0xAB: OM.PLB,
+    0xAC: OM.LDY, 0xAD: OM.LDA, 0xAE: OM.LDX, 0xAF: OM.LDA,
+    0xB0: OM.BCS, 0xB1: OM.LDA, 0xB2: OM.LDA, 0xB3: OM.LDA,
+    0xB4: OM.LDY, 0xB5: OM.LDA, 0xB6: OM.LDX, 0xB7: OM.LDA,
+    0xB8: OM.CLV, 0xB9: OM.LDA, 0xBA: OM.TSX, 0xBB: OM.TYX,
+    0xBC: OM.LDY, 0xBD: OM.LDA, 0xBE: OM.LDX, 0xBF: OM.LDA,
+    0xC0: OM.CPY, 0xC1: OM.CMP, 0xC2: OM.REP, 0xC3: OM.CMP,
+    0xC4: OM.CPY, 0xC5: OM.CMP, 0xC6: OM.DEC, 0xC7: OM.CMP,
+    0xC8: OM.INY, 0xC9: OM.CMP, 0xCA: OM.DEX, 0xCB: OM.WAI,
+    0xCC: OM.CPY, 0xCD: OM.CMP, 0xCE: OM.DEC, 0xCF: OM.CMP,
+    0xD0: OM.BNE, 0xD1: OM.CMP, 0xD2: OM.CMP, 0xD3: OM.CMP,
+    0xD4: OM.PEI, 0xD5: OM.CMP, 0xD6: OM.DEC, 0xD7: OM.CMP,
+    0xD8: OM.CLD, 0xD9: OM.CMP, 0xDA: OM.PHX, 0xDB: OM.STP,
+    0xDC: OM.JML, 0xDD: OM.CMP, 0xDE: OM.DEC, 0xDF: OM.CMP,
+    0xE0: OM.CPX, 0xE1: OM.SBC, 0xE2: OM.SEP, 0xE3: OM.SBC,
+    0xE4: OM.CPX, 0xE5: OM.SBC, 0xE6: OM.INC, 0xE7: OM.SBC,
+    0xE8: OM.INX, 0xE9: OM.SBC, 0xEA: OM.NOP, 0xEB: OM.XBA,
+    0xEC: OM.CPX, 0xED: OM.SBC, 0xEE: OM.INC, 0xEF: OM.SBC,
+    0xF0: OM.BEQ, 0xF1: OM.SBC, 0xF2: OM.SBC, 0xF3: OM.SBC,
+    0xF4: OM.PEA, 0xF5: OM.SBC, 0xF6: OM.INC, 0xF7: OM.SBC,
+    0xF8: OM.SED, 0xF9: OM.SBC, 0xFA: OM.PLX, 0xFB: OM.XCE,
+    0xFC: OM.JSR, 0xFD: OM.SBC, 0xFE: OM.INC, 0xFF: OM.SBC,
+    0x100: OM.S_RESET, 0x101: OM.S_ABORT, 0x102: OM.S_IRQ
 });
