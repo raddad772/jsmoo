@@ -1901,6 +1901,7 @@ function generate_EMX_truth_table() {
 }
 
 //console.log(generate_EMX_truth_table());
+// Lookup is E + M*2 + X*4
 const EMX_table = Object.freeze({
     0: 0, // E0 M0 X0
     1: 1, // E1 M0 X0
