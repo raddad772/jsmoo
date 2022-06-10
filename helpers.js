@@ -99,7 +99,8 @@ function txf(instr) {
 }
 
 class console_t {
-    constructor() {
+    constructor(elname) {
+        this.elname = elname;
         this.buffer = [];
         this.max_lines = 20;
         this.container = null;
@@ -126,8 +127,8 @@ class console_t {
 
     init() {
         if (this.textconsole !== null) return;
-        this.container = document.getElementById("textconsolecontainer");
-        this.textconsole = document.getElementById("textconsole");
+        this.container = document.getElementById(this.elname + "container");
+        this.textconsole = document.getElementById(this.elname);
     }
 
     addl(line) {
@@ -143,4 +144,21 @@ class console_t {
     }
 }
 
-var tconsole = new console_t();
+var tconsole = new console_t('textconsole');
+var dconsole = new console_t('disassembly');
+
+// https://stackoverflow.com/questions/3665115/how-to-create-a-file-in-memory-for-user-to-download-but-not-through-server
+function save_js(filename, data) {
+    const blob = new Blob([data], {type: 'text/javascript'});
+    if(window.navigator.msSaveOrOpenBlob) {
+        window.navigator.msSaveBlob(blob, filename);
+    }
+    else{
+        const elem = window.document.createElement('a');
+        elem.href = window.URL.createObjectURL(blob);
+        elem.download = filename;
+        document.body.appendChild(elem);
+        elem.click();
+        document.body.removeChild(elem);
+    }
+}

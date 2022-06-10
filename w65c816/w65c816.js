@@ -52,6 +52,8 @@ const BOOTUP = OM.S_RESET;
 let VEC_RST_LO = 0x00FFFC;
 let VEC_RST_HI = 0x00FFFD;
 
+const OP_RESET = 0x100;
+
 
 class w65c816_P {
 	constructor(pins) {
@@ -59,7 +61,7 @@ class w65c816_P {
 	}
 	
 	getbyte_emulated() {
-
+		return 0;
 	}
 
 	setbyte_emulate() {
@@ -129,7 +131,7 @@ class w65c816_pins {
 		// For tracing processor...
 		this.trace_cycles = 0;
 		this.trace_on = false;
-		this.trace = [];
+		this.traces = [];
 	}
 }
 
@@ -179,7 +181,7 @@ class w65c816 {
 		this.#IRQ_pending = false;
 		this.#RES_pending = true;
 
-		this.trace_peek = function(BA, Addr){return 0xC0;)}
+		this.trace_peek = function(BA, Addr){return 0xC0;};
 	}
 	
 	cycle() {
@@ -191,15 +193,16 @@ class w65c816 {
 		if ((this.regs.TCU === 0) && (this.#RES_pending)) {
 			this.reset();
 		}
-
 		this.regs.TCU++;
 		if (this.regs.TCU === 1) {
-			this.regs.IR = this.pins.D & 0xFF;
+			this.regs.IR = this.pins.D;
+			console.log('DECODING INSTRUCTION ' + hex0x2(this.regs.IR));
 			this.current_instruction = get_decoded_opcode(this.regs);
-			if (this.pins.trace_on) {
-				this.pins.trace.push(this.trace_format(this.disassemble()));
-			}
 		}
+		if (this.pins.trace_on) {
+			this.pins.traces.push(this.trace_format(this.disassemble()));
+		}
+		console.log('CI', this.current_instruction);
 		this.current_instruction.exec_func(this.regs, this.pins);
 	}
 
@@ -275,8 +278,6 @@ class w65c816 {
 				break;
 			case AM.PC_RL:
 				output.data16 = this.trace_peek16(PBR, PC);
-				break;
-			case AM.SPECIAL:
 				break;
 			case AM.STACK:
 				break;
@@ -362,8 +363,6 @@ class w65c816 {
 			case AM.PC_RL:
 				dis_out += ' r' + mksigned16(output.data16);
 				break;
-			case AM.SPECIAL:
-				break;
 			case AM.STACKd:
 			case AM.STACKf:
 				dis_out += ' $' + hex4(output.data16);
@@ -409,6 +408,7 @@ class w65c816 {
 		let sp = da_out.disassembled.length;
 		while(sp < 16) {
 			outstr += ' ';
+			sp++;
 		}
 
 		if (da_out.data8 !== null) outstr += hex0x2(da_out.data8) + '      ';
@@ -426,8 +426,10 @@ class w65c816 {
 
 	reset() {
 		// Do more
+		console.log('SETTING RESET')
 		this.regs.TCU = 0;
-		this.pins.D = OM.S_RESET;
-		this.#RES_pending = true;
+		this.pins.D = OP_RESET;
+		this.pins.RES = 0;
+		this.#RES_pending = false;
 	}
 }
