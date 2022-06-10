@@ -555,8 +555,8 @@ class switchgen {
     }
 
     addr_to_PC_then_inc() {
-        this.outstr += this.indent3 + 'pins.Addr = regs.PC; pins.BA = regs.PBR;\n';
-        this.outstr += this.indent3 + 'regs.PC = (regs.PC + 1) & 0xFFFF;\n';
+        this.addl('pins.Addr = regs.PC; pins.BA = regs.PBR;');
+        this.addl('regs.PC = (regs.PC + 1) & 0xFFFF;');
     }
 
     addr_to_S_then_dec() {
@@ -600,7 +600,7 @@ class switchgen {
         }
         //this.addl('// Set up instruction fetch');
         //this.addl('// Put PC on address lines')
-        this.addr_to_PC();
+        this.addr_to_PC_then_inc();
         //this.addl('// Set opcode fetch')
         this.RPDV(0, 1, 1, 0);
         //this.addl('// Signal new instruction is begun, as part of old instruction');
@@ -633,7 +633,7 @@ class switchgen {
         this.addl('regs.P.N = (' + who + ' & 0x8000) >> 8;');
     }
     setz(who) {
-        this.addl('regs.P.Z = (' + who + ' === 0) ? 2 : 0;');
+        this.addl('regs.P.Z = (' + who + ' === 0) ? 1 : 0;');
     }
 
     ADC8() {
@@ -708,13 +708,13 @@ class switchgen {
     }
 
     BIT8() {
-        this.addl('regs.P.Z = (regs.C & regs.TR & 0xFF) === 0 ? 2 : 0;');
+        this.addl('regs.P.Z = (regs.C & regs.TR & 0xFF) === 0 ? 1 : 0;');
         this.addl('regs.P.V = regs.TR & 0x40;');
         this.addl('regs.P.N = regs.TR & 0x80;');
     }
 
     BIT16() {
-        this.addl('regs.P.Z = (regs.C & regs.TR & 0xFFFF) === 0 ? 2 : 0;');
+        this.addl('regs.P.Z = (regs.C & regs.TR & 0xFFFF) === 0 ? 1 : 0;');
         this.addl('regs.P.V = (regs.TR & 0x4000) >> 8;');
         this.addl('regs.P.N = (regs.TR & 0x8000) >> 8;');
     }
@@ -951,12 +951,12 @@ class switchgen {
     }
 
     TRB8() {
-        this.addl('regs.P.Z = (regs.TR & regs.C & 0xFF) === 0 ? 2 : 0;');
+        this.addl('regs.P.Z = (regs.TR & regs.C & 0xFF) === 0 ? 1 : 0;');
         this.addl('regs.TR = (~regs.C) & regs.TR & 0xFF;');
     }
 
     TRB16() {
-        this.addl('regs.P.Z = (regs.TR & regs.C & 0xFFFF) === 0 ? 2 : 0;');
+        this.addl('regs.P.Z = (regs.TR & regs.C & 0xFFFF) === 0 ? 1 : 0;');
         this.addl('regs.TR = (~regs.C) & regs.TR & 0xFFFF;');
     }
 
@@ -978,7 +978,72 @@ class switchgen {
 
     // Upon enter emulation or setting M flag to 1
     SETM8() {
-        // Nothing to do here really, is handled elsewhere
+        // Nothing to do here really, top is not cleared
+    }
+
+    TT8(from, to) {
+        this.addl(to + ' = (' + to + ' & 0xFF00) + (' + from + ' & 0xFF);');
+        this.setz(to);
+        this.setn8(to);
+    }
+
+    TT16(from, to) {
+        this.addl(to + ' = ' + from + ';');
+        this.setz(to);
+        this.setn16(to);
+    }
+
+    TAXY8(who) {
+        this.TT8('regs.C', who);
+    }
+
+    TAXY16(who) {
+        this.TT16('regs.C', who);
+    }
+
+    TXYA8(who) {
+        this.TT8(who, 'regs.C');
+    }
+
+    TXYA16(who) {
+        this.TT16(who, 'regs.C');
+    }
+
+    TCS(E) {
+        this.addl('regs.S = regs.C;');
+        if (E) this.addl('regs.S = (regs.S & 0xFF) + 0x100;');
+    }
+
+    TSX8() {
+        this.TT8('regs.X', 'regs.S');
+    }
+
+    TSX16() {
+        this.TT16('regs.X', 'regs.S');
+    }
+
+    TXS8() {
+        this.addl('regs.S = (regs.S & 0xFF00) + (regs.X & 0xFF);');
+    }
+
+    TXS16() {
+        this.addl('regs.S = regs.X');
+    }
+
+    XCE() {
+        this.addl('let TMP = regs.P.C; regs.P.C = regs.E; regs.E = TMP;');
+        this.addl('if (regs.E) {');
+        this.addl('    regs.P.X = regs.P.M = 1;');
+        this.addl('    regs.X &= 0xFF;');
+        this.addl('    regs.Y &= 0xFF;');
+        this.addl('    regs.S = (regs.S & 0xFF) | 0x100;');
+        this.addl('}');
+    }
+
+    XBA() {
+        this.addl('regs.C = ((regs.C << 8) & 0xFF00) + ((regs.C >>> 8) & 0xFF);');
+        this.setz('regs.C & 0xFF');
+        this.setn8('regs.C & 0xFF');
     }
 
     // These S_ ones implement all of the instruction here, there's no table-based thing
@@ -1011,9 +1076,9 @@ class switchgen {
         this.SETM8();
         this.addl('regs.S = (regs.S & 0xFF) | 0x100;');
         this.addl('regs.E = 1;');
-        this.addl('regs.P.M = regs.P.X = regs.P.I = regs.P.C = 1;')
-        this.addl('regs.P.D = 0;')
-        this.addl('regs.STPWAI = false;')
+        this.addl('regs.P.M = regs.P.X = regs.P.I = regs.P.C = 1;');
+        this.addl('regs.P.D = 0;');
+        this.addl('regs.STP = regs.WAI = false;');
 
         this.addcycle(8);
         this.addl('regs.PC = pins.D;')
@@ -1207,6 +1272,98 @@ class switchgen {
             case OM.JSL:
                 console.log("Wait whats up with JSL?");
                 break;
+            case OM.CLC:
+                this.addl('regs.P.C = 0;');
+                break;
+            case OM.CLD:
+                this.addl('regs.P.D = 0;');
+                break;
+            case OM.CLI:
+                this.addl('regs.P.I = 0;');
+                break;
+            case OM.CLV:
+                this.addl('regs.P.V = 0;');
+                break;
+            case OM.NOP:
+                break;
+            case OM.SEC:
+                this.addl('regs.P.C = 1;');
+                break;
+            case OM.SED:
+                this.addl('regs.P.D = 1;');
+                break;
+            case OM.SEI:
+                this.addl('regs.P.I = 1;');
+                break;
+            case OM.TAX: // Transfer A->X
+                if (E || X)
+                    this.TAXY8('regs.X');
+                else
+                    this.TAXY16('regs.X')
+                break;
+            case OM.TAY:
+                if (E || X)
+                    this.TAXY8('regs.Y');
+                else
+                    this.TAXY16('regs.Y');
+                break;
+            case OM.TCD:
+                this.TAXY16('regs.D');
+                break;
+            case OM.TCS:
+                this.TCS(E);
+                break;
+            case OM.TDC:
+                this.TXYA16('regs.D');
+                break;
+            case OM.TSC:
+                this.TXYA16('regs.S');
+                break;
+            case OM.TSX:
+                if (E || X)
+                    this.TSX8()
+                else
+                    this.TSX16();
+                break;
+            case OM.TXA:
+                if (E || M)
+                    this.TXYA8('regs.X');
+                else
+                    this.TXYA16('regs.X');
+                break;
+            case OM.TXS:
+                if (E || X)
+                    this.TXS8();
+                else
+                    this.TXS16();
+                break;
+            case OM.TXY:
+                if (E || X)
+                    this.TT8('regs.X', 'regs.Y');
+                else
+                    this.TT16('regs.X', 'regs.Y');
+                break;
+            case OM.TYA:
+                if (E || M)
+                    this.TXYA8('regs.Y');
+                else
+                    this.TXYA16('regs.Y');
+                break;
+            case OM.TYX:
+                if (E || X)
+                    this.TT8('regs.Y', 'regs.X');
+                else
+                    this.TT16('regs.Y', 'regs.X');
+                break;
+            case OM.XCE:
+                this.XCE();
+                break;
+            case OM.XBA:
+                this.XBA();
+                break;
+            case OM.STP:
+            case OM.WAI:
+
             default:
                 console.log('UNKNOWN INSTRUCTION REQUESTED ' + ins);
                 break;
@@ -1925,10 +2082,36 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
 
             finish_R16p();
             break;
+        case AM.I:
+            ag.addcycle();
+            ag.RPDV(0, 0, 0, 0);
+            ag.cleanup();
+            ag.add_ins(opcode_info.ins, E, M, X);
+            break;
+        case AM.Ib:
+            ag.addcycle();
+            ag.RPDV(0, 0, 0, 0);
+            ag.addcycle();
+            ag.cleanup();
+            ag.add_ins(opcode_info.ins, E, M, X);
+            break;
+        case AM.Ic:
+            ag.addcycle();
+            ag.RPDV(0, 0, 0, 0);
+            ag.addcycle();
+            ag.cleanup();
+            ag.addl('regs.STP = true;');
+            break;
+        case AM.Id:
+            ag.addcycle();
+            ag.RPDV(0, 0, 0, 0);
+            ag.addcycle();
+            ag.cleanup();
+            ag.addl('regs.WAI = true;');
+            break;
         case AM.STACK:
             switch(opcode_info.ins) {
                 case OM.S_RESET:
-                    console.log('MAKING RESET');
                     ag.S_RESET();
                     break;
                 case OM.S_NMI:
@@ -2062,7 +2245,8 @@ function get_decoded_opcode(regs) {
         else
             ret = decoded_opcodes[EMX_table[0]][regs.IR];
     }
-    if (ret === null) {
+    if ((ret === null) || (typeof(ret) === 'undefined')) {
+        console.log('WHAT UNDEFINED');
         ret = decoded_opcodes[EMX_table[0]][regs.IR];
     }
     return ret;

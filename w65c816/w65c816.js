@@ -94,7 +94,8 @@ class w65c816_registers {
 		this.TA = 0; // Temporary Address register
 		this.skipped_cycle = false; // For when we...skip a cycle! For certain ops
 		this.in_blockmove = false;  // For when we are in a blockmove
-		this.STPWAI = false; // Are we in STOP or WAIT?
+		this.STP = false; // Are we in STOP?
+		this.WAI = false; // Are we in WAIT?
 
 		// Registers exposed to programs
 		this.C = 0; // B...A = C.
@@ -171,11 +172,13 @@ class w65c816 {
 	constructor() {
 		this.regs = new w65c816_registers();
 		this.pins = new w65c816_pins();
+		this.PCO = 0; // Old PC, for instruction fetch
 		this.#last_RES = 0;
 		this.#NMI_count = 0;
 		this.regs.IR = BOOTUP;
 
-		this.regs.STPWAI = false;
+		this.regs.STP = false;
+		this.regs.WAI = false;
 		this.#NMI_pending = false;
 		this.#ABORT_pending = false;
 		this.#IRQ_pending = false;
@@ -186,7 +189,8 @@ class w65c816 {
 	
 	cycle() {
 		this.pins.trace_cycles++;
-		if (this.regs.STPWAI && this.regs.TCU === 0) {
+		if ((this.regs.STP  || this.regs.WAI) && (this.regs.TCU === 0)) {
+			console.log(this.regs.STP, this.regs.WAI)
 			// TODO: Check for things that get us out of STP or WAI state
 			return;
 		}
@@ -196,11 +200,12 @@ class w65c816 {
 		this.regs.TCU++;
 		if (this.regs.TCU === 1) {
 			this.regs.IR = this.pins.D;
+			this.PCO = this.pins.Addr;
 			console.log('DECODING INSTRUCTION ' + hex0x2(this.regs.IR));
 			this.current_instruction = get_decoded_opcode(this.regs);
-		}
-		if (this.pins.trace_on) {
-			this.pins.traces.push(this.trace_format(this.disassemble()));
+			if (this.pins.trace_on) {
+				this.pins.traces.push(this.trace_format(this.disassemble(), this.PCO));
+			}
 		}
 		console.log('CI', this.current_instruction);
 		this.current_instruction.exec_func(this.regs, this.pins);
@@ -393,7 +398,7 @@ class w65c816 {
 		this.pins.trace_on = false;
 	}
 
-	trace_format(da_out) {
+	trace_format(da_out, PCO) {
 		let padl = function(what, howmuch) {
 			while(what.length < howmuch) {
 				what = ' ' + what;
@@ -403,7 +408,7 @@ class w65c816 {
 		let outstr = '';
 		// General trace format is...
 		// (cycles) PBR: PC: LDA d,x   (any byte operands)   E: C: X: Y: S: P: D: DBR:
-		outstr += '(' + padl(this.pins.trace_cycles.toString(), 6) + ') PBR: ' + hex0x2(this.regs.PBR) + ' PC: ' + hex0x4(this.regs.PC) + ' ';
+		outstr += '(' + padl(this.pins.trace_cycles.toString(), 6) + ') PBR: ' + hex0x2(this.regs.PBR) + ' PC: ' + hex0x4(PCO) + ' ';
 		outstr += ' ' + da_out.disassembled;
 		let sp = da_out.disassembled.length;
 		while(sp < 16) {
