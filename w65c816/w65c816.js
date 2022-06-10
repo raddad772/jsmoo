@@ -201,13 +201,13 @@ class w65c816 {
 		if (this.regs.TCU === 1) {
 			this.regs.IR = this.pins.D;
 			this.PCO = this.pins.Addr;
-			console.log('DECODING INSTRUCTION ' + hex0x2(this.regs.IR));
+			//console.log('DECODING INSTRUCTION ' + hex0x2(this.regs.IR));
 			this.current_instruction = get_decoded_opcode(this.regs);
 			if (this.pins.trace_on) {
 				this.pins.traces.push(this.trace_format(this.disassemble(), this.PCO));
 			}
 		}
-		console.log('CI', this.current_instruction);
+		//console.log('CI', this.current_instruction);
 		this.current_instruction.exec_func(this.regs, this.pins);
 	}
 
@@ -216,15 +216,15 @@ class w65c816 {
 	}
 
 	trace_peek16(bank, addr) {
-		let ret = this.trace_peek(bank, addr & 0xFFFF) << 8;
-		ret |= this.trace_peek(bank, (addr+1) & 0xFFFF);
+		let ret = this.trace_peek(bank, addr & 0xFFFF);
+		ret |= this.trace_peek(bank, (addr+1) & 0xFFFF) << 8;
 		return ret;
 	}
 
 	trace_peek24(bank, addr) {
-		let ret = this.trace_peek(bank, addr & 0xFFFF) << 16;
+		let ret = this.trace_peek(bank, addr & 0xFFFF);
 		ret |= this.trace_peek(bank, (addr+1) & 0xFFFF) << 8;
-		ret |= this.trace_peek(bank, (addr+2) & 0xFFFF);
+		ret |= this.trace_peek(bank, (addr+2) & 0xFFFF) << 16;
 		return ret;
 	}
 
@@ -238,7 +238,7 @@ class w65c816 {
 		output.mnemonic = opcode_info.mnemonic;
 		let addr_mode = array_of_array_contains(opcode_AM_R, opcode);
 		PC += 1;
-		switch (addr_mode) {
+		switch (parseInt(addr_mode)) {
 			case AM.A:
 			case AM.A_INDEXED_IND:
 			case AM.A_IND:
@@ -270,6 +270,7 @@ class w65c816 {
 			case AM.IMM:
 				let affected_by_X = A_OR_M_X.has(opcode_info.ins);
 				let affected_by_M = !affected_by_X;
+				console.log(this.regs.P);
 				if ((affected_by_X && !this.regs.P.X) || (affected_by_M && !this.regs.P.M))
 					output.data16 = this.trace_peek16(PBR, PC);
 				else
@@ -304,7 +305,8 @@ class w65c816 {
 
 		// Now make actual disassembly output
 		dis_out = opcode_MN[opcode_info.ins];
-		switch(addr_mode) {
+		console.log('ADDR MODE', addr_mode);
+		switch(parseInt(addr_mode)) {
 			case AM.A:
 				dis_out += ' !$' + hex4(output.data16);
 				break;
@@ -407,8 +409,8 @@ class w65c816 {
 		}
 		let outstr = '';
 		// General trace format is...
-		// (cycles) PBR: PC: LDA d,x   (any byte operands)   E: C: X: Y: S: P: D: DBR:
-		outstr += '(' + padl(this.pins.trace_cycles.toString(), 6) + ') PBR: ' + hex0x2(this.regs.PBR) + ' PC: ' + hex0x4(PCO) + ' ';
+		// (cycles) PC: LDA d,x   (any byte operands)   E: C: X: Y: S: MX: P: D: DBR:
+		outstr += '(' + padl(this.pins.trace_cycles.toString(), 6) + ') ' + hex0x2(this.regs.PBR) + ' PC: ' + hex0x4(PCO) + ' ';
 		outstr += ' ' + da_out.disassembled;
 		let sp = da_out.disassembled.length;
 		while(sp < 16) {
@@ -420,9 +422,17 @@ class w65c816 {
 		else if (da_out.data16 !== null) outstr += hex2((da_out.data16 & 0xFF00) >>> 8) + ' ' + hex2(da_out & 0xFF) + '   ';
 		else if (da_out.data24 !== null) outstr += hex2((da_out.data24 & 0xFF0000) >>> 16) + ' ' + hex2((da_out.data24 & 0xFF00) >>> 8) + ' ' + hex2((da_out.data24 & 0xFF) >>> 8);
 
+		let mx = 0;
+		if (this.regs.P.M) mx = 10;
+		if (this.regs.P.X) mx += 1;
+		mx = mx.toString();
+		if (mx.length < 2) mx = "0" + mx;
+
 		outstr += 'E:' + this.regs.E + ' C:' + hex0x4(this.regs.C);
 		outstr += ' X:' + hex0x4(this.regs.X) + ' Y:' + hex0x4(this.regs.Y);
-		outstr += ' S:' + hex0x4(this.regs.S) + ' P:';
+		outstr += ' S:' + hex0x4(this.regs.S);
+		outstr += ' MX:' + mx;
+		outstr += ' P:';
 		if (this.regs.E) outstr += hex0x2(this.regs.P.getbyte_emulated());
 		else             outstr += hex0x2(this.regs.P.getbyte_native());
 		outstr += ' D:' + hex0x4(this.regs.D) + ' DBR:' + hex0x2(this.regs.DBR);

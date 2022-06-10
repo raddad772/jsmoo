@@ -44,7 +44,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C |= regs.TR;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -52,8 +52,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -116,8 +114,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -148,7 +144,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C |= regs.TR;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -156,8 +152,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -194,7 +188,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = (regs. TR & 0x8000) >> 15;
                         regs.TR = (regs.TR & 0xFFFF) << 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem16 H
@@ -212,8 +206,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -256,7 +248,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C |= regs.TR;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -264,8 +256,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -282,26 +272,29 @@ const decoded_opcodes = Object.freeze(
                         // ORA # E=0 M=0 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // finish_R16p
                         regs.TR = pins.D;
-                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3:
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
+                        break;
+                    case 4:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -318,7 +311,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = (regs. TR & 0x8000) >> 15;
                         regs.TR = (regs.TR & 0xFFFF) << 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         regs.C = regs.TR & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -329,8 +322,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -387,8 +378,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -417,7 +406,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C |= regs.TR;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -425,8 +414,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -462,7 +449,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = (regs. TR & 0x8000) >> 15;
                         regs.TR = (regs.TR & 0xFFFF) << 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem16 H
@@ -480,8 +467,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -515,7 +500,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C |= regs.TR;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -523,8 +508,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -575,7 +558,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C |= regs.TR;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -583,8 +566,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -623,7 +604,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C |= regs.TR;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -631,8 +612,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -690,8 +669,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -725,7 +702,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C |= regs.TR;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -733,8 +710,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -768,8 +743,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -812,7 +785,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C |= regs.TR;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -820,8 +793,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -844,8 +815,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -883,7 +852,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C |= regs.TR;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -891,8 +860,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -908,7 +875,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR + 1) & 0xFFFF
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         regs.C = regs.TR & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -919,8 +886,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -943,8 +908,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -996,8 +959,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -1035,7 +996,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C |= regs.TR;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -1043,8 +1004,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -1082,7 +1041,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = (regs. TR & 0x8000) >> 15;
                         regs.TR = (regs.TR & 0xFFFF) << 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         break;
                     case 7: // finish_rmw mem16 H
@@ -1100,8 +1059,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -1135,7 +1092,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C |= regs.TR;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -1143,8 +1100,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -1188,8 +1143,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -1232,7 +1185,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C &= regs.TR
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -1240,8 +1193,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -1280,8 +1231,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -1325,8 +1274,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -1357,7 +1304,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C &= regs.TR
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -1365,8 +1312,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -1404,7 +1349,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x8000;
                         regs.TR = ((regs.TR & 0x7FFF) << 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem16 H
@@ -1422,8 +1367,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -1466,7 +1409,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C &= regs.TR
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -1474,8 +1417,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -1492,26 +1433,29 @@ const decoded_opcodes = Object.freeze(
                         // AND # E=0 M=0 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // finish_R16p
                         regs.TR = pins.D;
-                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3:
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
+                        break;
+                    case 4:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -1529,7 +1473,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x8000;
                         regs.TR = ((regs.TR & 0x7FFF) << 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         regs.C = regs.TR & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -1540,8 +1484,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -1583,8 +1525,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -1613,7 +1553,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C &= regs.TR
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -1621,8 +1561,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -1659,7 +1597,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x8000;
                         regs.TR = ((regs.TR & 0x7FFF) << 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem16 H
@@ -1677,8 +1615,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -1712,7 +1648,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C &= regs.TR
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -1720,8 +1656,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -1772,7 +1706,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C &= regs.TR
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -1780,8 +1714,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -1820,7 +1752,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C &= regs.TR
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -1828,8 +1760,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -1876,8 +1806,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -1911,7 +1839,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C &= regs.TR
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -1919,8 +1847,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -1954,8 +1880,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -1998,7 +1922,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C &= regs.TR
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -2006,8 +1930,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -2030,8 +1952,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -2069,7 +1989,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C &= regs.TR
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -2077,8 +1997,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -2094,7 +2012,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR - 1) & 0xFFFF;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         regs.C = regs.TR & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -2105,8 +2023,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -2123,7 +2039,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = regs.S;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -2131,8 +2047,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -2178,8 +2092,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -2217,7 +2129,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C &= regs.TR
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -2225,8 +2137,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -2265,7 +2175,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x8000;
                         regs.TR = ((regs.TR & 0x7FFF) << 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         break;
                     case 7: // finish_rmw mem16 H
@@ -2283,8 +2193,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -2318,7 +2226,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C &= regs.TR
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -2326,8 +2234,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -2375,7 +2281,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C ^= regs.TR;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -2383,8 +2289,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -2406,8 +2310,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -2466,8 +2368,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -2498,7 +2398,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C ^= regs.TR;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -2506,8 +2406,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -2544,7 +2442,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 1;
                         regs.TR >>>= 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem16 H
@@ -2562,8 +2460,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -2606,7 +2502,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C ^= regs.TR;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -2614,8 +2510,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -2632,26 +2526,29 @@ const decoded_opcodes = Object.freeze(
                         // EOR # E=0 M=0 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // finish_R16p
                         regs.TR = pins.D;
-                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3:
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
+                        break;
+                    case 4:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -2668,7 +2565,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 1;
                         regs.TR >>>= 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         regs.C = regs.TR & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -2679,8 +2576,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -2713,8 +2608,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -2743,7 +2636,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C ^= regs.TR;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -2751,8 +2644,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -2788,7 +2679,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 1;
                         regs.TR >>>= 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem16 H
@@ -2806,8 +2697,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -2841,7 +2730,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C ^= regs.TR;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -2849,8 +2738,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -2901,7 +2788,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C ^= regs.TR;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -2909,8 +2796,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -2949,7 +2834,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C ^= regs.TR;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -2957,8 +2842,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -3017,8 +2900,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -3052,7 +2933,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C ^= regs.TR;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -3060,8 +2941,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -3095,8 +2974,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -3139,7 +3016,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C ^= regs.TR;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -3147,8 +3024,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -3171,8 +3046,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -3210,7 +3083,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C ^= regs.TR;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -3218,8 +3091,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -3241,7 +3112,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.D = regs.C;
                         regs.P.Z = (regs.D === 0) ? 1 : 0;
-                        regs.P.N = (regs.D & 0x8000) >> 8;
+                        regs.P.N = (regs.D & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -3249,8 +3120,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -3271,20 +3140,18 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // 4
-                        regs.TA += pins.D << 8;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
+                        regs.PC = regs.TA + (pins.D << 8);
                         break;
                     case 4:
-                        pins.Addr = (regs.TA); pins.BA = (pins.D);
+                        regs.PBR = pins.D;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -3322,7 +3189,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C ^= regs.TR;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -3330,8 +3197,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -3369,7 +3234,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 1;
                         regs.TR >>>= 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         break;
                     case 7: // finish_rmw mem16 H
@@ -3387,8 +3252,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -3422,7 +3285,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C ^= regs.TR;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -3430,8 +3293,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -3495,7 +3356,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9FFF) result += 0x6000;
                         regs.P.C = (result > 0xFFFF) ? 1 : 0;
                         regs.P.Z = ((result & 0xFFFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = result;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -3504,8 +3365,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -3552,8 +3411,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -3600,7 +3457,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9FFF) result += 0x6000;
                         regs.P.C = (result > 0xFFFF) ? 1 : 0;
                         regs.P.Z = ((result & 0xFFFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = result;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -3609,8 +3466,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -3648,7 +3503,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x1;
                         regs.TR = ((regs.TR & 0xFFFF) >>> 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem16 H
@@ -3666,8 +3521,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -3726,7 +3579,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9FFF) result += 0x6000;
                         regs.P.C = (result > 0xFFFF) ? 1 : 0;
                         regs.P.Z = ((result & 0xFFFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = result;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -3735,8 +3588,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -3753,10 +3604,13 @@ const decoded_opcodes = Object.freeze(
                         // ADC # E=0 M=0 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // finish_R16p
                         regs.TR = pins.D;
-                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3:
                         regs.TR += pins.D << 8;
@@ -3779,17 +3633,17 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9FFF) result += 0x6000;
                         regs.P.C = (result > 0xFFFF) ? 1 : 0;
                         regs.P.Z = ((result & 0xFFFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = result;
                         // instruction code ends
+                        break;
+                    case 4:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -3807,7 +3661,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x1;
                         regs.TR = ((regs.TR & 0xFFFF) >>> 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         regs.C = regs.TR & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -3818,8 +3672,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -3860,8 +3712,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -3906,7 +3756,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9FFF) result += 0x6000;
                         regs.P.C = (result > 0xFFFF) ? 1 : 0;
                         regs.P.Z = ((result & 0xFFFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = result;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -3915,8 +3765,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -3953,7 +3801,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x1;
                         regs.TR = ((regs.TR & 0xFFFF) >>> 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem16 H
@@ -3971,8 +3819,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -4022,7 +3868,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9FFF) result += 0x6000;
                         regs.P.C = (result > 0xFFFF) ? 1 : 0;
                         regs.P.Z = ((result & 0xFFFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = result;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -4031,8 +3877,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -4099,7 +3943,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9FFF) result += 0x6000;
                         regs.P.C = (result > 0xFFFF) ? 1 : 0;
                         regs.P.Z = ((result & 0xFFFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = result;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -4108,8 +3952,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -4164,7 +4006,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9FFF) result += 0x6000;
                         regs.P.C = (result > 0xFFFF) ? 1 : 0;
                         regs.P.Z = ((result & 0xFFFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = result;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -4173,8 +4015,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -4219,8 +4059,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -4270,7 +4108,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9FFF) result += 0x6000;
                         regs.P.C = (result > 0xFFFF) ? 1 : 0;
                         regs.P.Z = ((result & 0xFFFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = result;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -4279,8 +4117,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -4314,8 +4150,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -4374,7 +4208,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9FFF) result += 0x6000;
                         regs.P.C = (result > 0xFFFF) ? 1 : 0;
                         regs.P.Z = ((result & 0xFFFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = result;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -4383,8 +4217,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -4407,8 +4239,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -4462,7 +4292,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9FFF) result += 0x6000;
                         regs.P.C = (result > 0xFFFF) ? 1 : 0;
                         regs.P.Z = ((result & 0xFFFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = result;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -4471,8 +4301,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -4494,7 +4322,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = regs.D;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -4502,8 +4330,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -4547,8 +4373,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -4602,7 +4426,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9FFF) result += 0x6000;
                         regs.P.C = (result > 0xFFFF) ? 1 : 0;
                         regs.P.Z = ((result & 0xFFFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = result;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -4611,8 +4435,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -4651,7 +4473,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x1;
                         regs.TR = ((regs.TR & 0xFFFF) >>> 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 7: // finish_rmw mem16 H
@@ -4669,8 +4491,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -4720,7 +4540,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9FFF) result += 0x6000;
                         regs.P.C = (result > 0xFFFF) ? 1 : 0;
                         regs.P.Z = ((result & 0xFFFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = result;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -4729,8 +4549,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -4785,8 +4603,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -4833,8 +4649,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -4872,8 +4686,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -4910,8 +4722,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -4961,8 +4771,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -4979,7 +4787,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.Y = (regs.Y - 1) & 0xFFFF;
                         regs.P.Z = (regs.Y === 0) ? 1 : 0;
-                        regs.P.N = (regs.Y & 0x8000) >> 8;
+                        regs.P.N = (regs.Y & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -4987,8 +4795,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -5000,10 +4806,13 @@ const decoded_opcodes = Object.freeze(
                         // BIT # E=0 M=0 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // finish_R16p
                         regs.TR = pins.D;
-                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3:
                         regs.TR += pins.D << 8;
@@ -5012,14 +4821,14 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (regs.TR & 0x4000) >> 8;
                         regs.P.N = (regs.TR & 0x8000) >> 8;
                         // instruction code ends
+                        break;
+                    case 4:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -5036,7 +4845,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = regs.X;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -5044,8 +4853,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -5085,8 +4892,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -5122,8 +4927,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -5158,8 +4961,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -5200,8 +5001,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -5258,8 +5057,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -5305,8 +5102,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -5351,8 +5146,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -5393,8 +5186,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -5449,8 +5240,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -5467,7 +5256,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = regs.Y;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -5475,8 +5264,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -5520,8 +5307,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -5544,8 +5329,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -5562,7 +5345,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.Y = regs.X;
                         regs.P.Z = (regs.Y === 0) ? 1 : 0;
-                        regs.P.N = (regs.Y & 0x8000) >> 8;
+                        regs.P.N = (regs.Y & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -5570,8 +5353,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -5606,8 +5387,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -5651,8 +5430,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -5695,8 +5472,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -5737,8 +5512,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -5750,26 +5523,29 @@ const decoded_opcodes = Object.freeze(
                         // LDY # E=0 M=0 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // finish_R16p
                         regs.TR = pins.D;
-                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3:
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.Y = regs.TR;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
+                        break;
+                    case 4:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -5812,7 +5588,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -5820,8 +5596,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -5833,26 +5607,29 @@ const decoded_opcodes = Object.freeze(
                         // LDX # E=0 M=0 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // finish_R16p
                         regs.TR = pins.D;
-                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3:
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.X = regs.TR;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
+                        break;
+                    case 4:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -5888,7 +5665,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.Y = regs.TR;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -5896,8 +5673,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -5928,7 +5703,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -5936,8 +5711,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -5968,7 +5741,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.X = regs.TR;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -5976,8 +5749,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -6020,7 +5791,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -6028,8 +5799,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -6046,7 +5815,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.Y = regs.C;
                         regs.P.Z = (regs.Y === 0) ? 1 : 0;
-                        regs.P.N = (regs.Y & 0x8000) >> 8;
+                        regs.P.N = (regs.Y & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -6054,8 +5823,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -6067,26 +5834,29 @@ const decoded_opcodes = Object.freeze(
                         // LDA # E=0 M=0 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // finish_R16p
                         regs.TR = pins.D;
-                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3:
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
+                        break;
+                    case 4:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -6103,7 +5873,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.X = regs.C;
                         regs.P.Z = (regs.X === 0) ? 1 : 0;
-                        regs.P.N = (regs.X & 0x8000) >> 8;
+                        regs.P.N = (regs.X & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -6111,8 +5881,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -6146,7 +5914,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.Y = regs.TR;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -6154,8 +5922,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -6184,7 +5950,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -6192,8 +5958,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -6222,7 +5986,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.X = regs.TR;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -6230,8 +5994,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -6265,7 +6027,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -6273,8 +6035,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -6325,7 +6085,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -6333,8 +6093,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -6373,7 +6131,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -6381,8 +6139,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -6421,7 +6177,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.Y = regs.TR;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -6429,8 +6185,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -6464,7 +6218,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -6472,8 +6226,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -6521,7 +6273,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -6529,8 +6281,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -6553,8 +6303,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -6592,7 +6340,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -6600,8 +6348,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -6618,7 +6364,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.S = regs.X;
                         regs.P.Z = (regs.S === 0) ? 1 : 0;
-                        regs.P.N = (regs.S & 0x8000) >> 8;
+                        regs.P.N = (regs.S & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -6626,8 +6372,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -6644,7 +6388,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.X = regs.Y;
                         regs.P.Z = (regs.X === 0) ? 1 : 0;
-                        regs.P.N = (regs.X & 0x8000) >> 8;
+                        regs.P.N = (regs.X & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -6652,8 +6396,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -6691,7 +6433,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.Y = regs.TR;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -6699,8 +6441,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -6738,7 +6478,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -6746,8 +6486,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -6785,7 +6523,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.X = regs.TR;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -6793,8 +6531,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -6828,7 +6564,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
                         regs.P.Z = (regs.C === 0) ? 1 : 0;
-                        regs.P.N = (regs.C & 0x8000) >> 8;
+                        regs.P.N = (regs.C & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -6836,8 +6572,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -6849,10 +6583,13 @@ const decoded_opcodes = Object.freeze(
                         // CPY # E=0 M=0 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // finish_R16p
                         regs.TR = pins.D;
-                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3:
                         regs.TR += pins.D << 8;
@@ -6860,16 +6597,16 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned16(regs.Y) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         // instruction code ends
+                        break;
+                    case 4:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -6913,7 +6650,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned16(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -6921,8 +6658,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -6934,23 +6669,26 @@ const decoded_opcodes = Object.freeze(
                         // REP # E=0 M=0 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // finish_R16p
                         regs.TR = pins.D;
-                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3:
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         // instruction code ends
+                        break;
+                    case 4:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -6984,7 +6722,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned16(regs.Y) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         // instruction code ends
                         pins.D = regs.TR & 0xFF;
                         // Following is auto-generated code for instruction finish
@@ -6995,8 +6733,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -7028,7 +6764,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned16(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -7036,8 +6772,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -7073,7 +6807,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR - 1) & 0xFFFF;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem16 H
@@ -7091,8 +6825,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -7136,7 +6868,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned16(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -7144,8 +6876,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -7162,7 +6892,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.Y = (regs.Y + 1) & 0xFFFF
                         regs.P.Z = (regs.Y === 0) ? 1 : 0;
-                        regs.P.N = (regs.Y & 0x8000) >> 8;
+                        regs.P.N = (regs.Y & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -7170,8 +6900,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -7183,10 +6911,13 @@ const decoded_opcodes = Object.freeze(
                         // CMP # E=0 M=0 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // finish_R16p
                         regs.TR = pins.D;
-                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3:
                         regs.TR += pins.D << 8;
@@ -7194,16 +6925,16 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned16(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         // instruction code ends
+                        break;
+                    case 4:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -7220,7 +6951,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.X = (regs.X - 1) & 0xFFFF;
                         regs.P.Z = (regs.X === 0) ? 1 : 0;
-                        regs.P.N = (regs.X & 0x8000) >> 8;
+                        regs.P.N = (regs.X & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -7228,8 +6959,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -7252,8 +6981,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -7280,7 +7007,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned16(regs.Y) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         // instruction code ends
                         pins.D = regs.TR & 0xFF;
                         // Following is auto-generated code for instruction finish
@@ -7291,8 +7018,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -7322,7 +7047,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned16(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -7330,8 +7055,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -7366,7 +7089,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR - 1) & 0xFFFF;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem16 H
@@ -7384,8 +7107,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -7420,7 +7141,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned16(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -7428,8 +7149,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -7481,7 +7200,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned16(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -7489,8 +7208,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -7530,7 +7247,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned16(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -7538,8 +7255,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -7584,7 +7299,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned16(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -7592,8 +7307,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -7627,8 +7340,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -7672,7 +7383,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned16(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -7680,8 +7391,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -7704,8 +7413,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -7744,7 +7451,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned16(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -7752,8 +7459,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -7781,8 +7486,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -7821,8 +7524,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -7861,7 +7562,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned16(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -7869,8 +7570,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -7907,7 +7606,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR - 1) & 0xFFFF;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         break;
                     case 7: // finish_rmw mem16 H
@@ -7925,8 +7624,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -7961,7 +7658,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned16(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -7969,8 +7666,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -7982,10 +7677,13 @@ const decoded_opcodes = Object.freeze(
                         // CPX # E=0 M=0 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // finish_R16p
                         regs.TR = pins.D;
-                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3:
                         regs.TR += pins.D << 8;
@@ -7993,16 +7691,16 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned16(regs.X) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         // instruction code ends
+                        break;
+                    case 4:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -8062,7 +7760,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = result > 0xFFFF ? 1 : 0
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = result
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -8071,8 +7769,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -8084,23 +7780,26 @@ const decoded_opcodes = Object.freeze(
                         // SEP # E=0 M=0 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // finish_R16p
                         regs.TR = pins.D;
-                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3:
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         // instruction code ends
+                        break;
+                    case 4:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -8134,7 +7833,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned16(regs.X) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         // instruction code ends
                         pins.D = regs.TR & 0xFF;
                         // Following is auto-generated code for instruction finish
@@ -8145,8 +7844,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -8194,7 +7891,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = result > 0xFFFF ? 1 : 0
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = result
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -8203,8 +7900,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -8240,7 +7935,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR + 1) & 0xFFFF
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem16 H
@@ -8258,8 +7953,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -8319,7 +8012,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = result > 0xFFFF ? 1 : 0
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = result
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -8328,8 +8021,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -8346,7 +8037,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.X = (regs.X + 1) & 0xFFFF
                         regs.P.Z = (regs.X === 0) ? 1 : 0;
-                        regs.P.N = (regs.X & 0x8000) >> 8;
+                        regs.P.N = (regs.X & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -8354,8 +8045,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -8367,10 +8056,13 @@ const decoded_opcodes = Object.freeze(
                         // SBC # E=0 M=0 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // finish_R16p
                         regs.TR = pins.D;
-                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3:
                         regs.TR += pins.D << 8;
@@ -8394,17 +8086,17 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = result > 0xFFFF ? 1 : 0
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = result
                         // instruction code ends
+                        break;
+                    case 4:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -8426,8 +8118,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -8446,7 +8136,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = ((regs.C << 8) & 0xFF00) + ((regs.C >>> 8) & 0xFF);
                         regs.P.Z = (regs.C & 0xFF === 0) ? 1 : 0;
-                        regs.P.N = regs.C & 0xFF & 0x80;
+                        regs.P.N = (regs.C & 0xFF & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -8454,8 +8144,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -8482,7 +8170,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned16(regs.X) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         // instruction code ends
                         pins.D = regs.TR & 0xFF;
                         // Following is auto-generated code for instruction finish
@@ -8493,8 +8181,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -8540,7 +8226,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = result > 0xFFFF ? 1 : 0
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = result
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -8549,8 +8235,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -8585,7 +8269,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR + 1) & 0xFFFF
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem16 H
@@ -8603,8 +8287,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -8655,7 +8337,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = result > 0xFFFF ? 1 : 0
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = result
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -8664,8 +8346,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -8733,7 +8413,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = result > 0xFFFF ? 1 : 0
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = result
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -8742,8 +8422,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -8799,7 +8477,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = result > 0xFFFF ? 1 : 0
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = result
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -8808,8 +8486,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -8870,7 +8546,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = result > 0xFFFF ? 1 : 0
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = result
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -8879,8 +8555,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -8914,8 +8588,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -8975,7 +8647,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = result > 0xFFFF ? 1 : 0
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = result
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -8984,8 +8656,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -9008,8 +8678,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -9064,7 +8732,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = result > 0xFFFF ? 1 : 0
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = result
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -9073,8 +8741,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -9108,8 +8774,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -9164,8 +8828,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -9220,7 +8882,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = result > 0xFFFF ? 1 : 0
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = result
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -9229,8 +8891,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -9267,7 +8927,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR + 1) & 0xFFFF
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         break;
                     case 7: // finish_rmw mem16 H
@@ -9285,8 +8945,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -9337,7 +8995,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = result > 0xFFFF ? 1 : 0
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = result
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -9346,8 +9004,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -9404,8 +9060,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -9464,8 +9118,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -9506,8 +9158,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -9546,8 +9196,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -9586,8 +9234,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -9631,8 +9277,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -9667,7 +9311,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.Y = (regs.Y & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -9675,8 +9319,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -9711,7 +9353,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.X = (regs.X & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -9719,8 +9361,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -9753,7 +9393,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.Y = (regs.Y & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -9761,8 +9401,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -9795,7 +9433,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.X = (regs.X & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -9803,8 +9441,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -9842,7 +9478,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.Y = (regs.Y & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -9850,8 +9486,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -9893,7 +9527,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.Y = (regs.Y & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -9901,8 +9535,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -9944,7 +9576,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.X = (regs.X & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -9952,8 +9584,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -9982,7 +9612,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.Y) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         pins.D = regs.TR & 0xFF;
                         break;
@@ -9997,8 +9627,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -10025,7 +9653,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.Y) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         pins.D = regs.TR & 0xFF;
                         break;
@@ -10040,8 +9668,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -10070,7 +9696,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.X) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         pins.D = regs.TR & 0xFF;
                         break;
@@ -10085,8 +9711,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -10113,7 +9737,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.X) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         pins.D = regs.TR & 0xFF;
                         break;
@@ -10128,8 +9752,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -10179,7 +9801,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -10188,8 +9810,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -10234,8 +9854,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -10270,7 +9888,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -10279,8 +9897,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -10313,7 +9929,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = (regs.TR & 0xFF) << 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -10327,8 +9943,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -10375,7 +9989,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -10384,8 +9998,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -10397,23 +10009,25 @@ const decoded_opcodes = Object.freeze(
                         // ORA # E=0 M=1 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -10430,7 +10044,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = (regs.TR & 0xFF) << 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         regs.C = (regs.C & 0xFF00) | (regs.TR & 0x00FF);
                         // Following is auto-generated code for instruction finish
@@ -10441,8 +10055,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -10486,8 +10098,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -10520,7 +10130,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -10529,8 +10139,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -10562,7 +10170,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = (regs.TR & 0xFF) << 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -10576,8 +10184,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -10615,7 +10221,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -10624,8 +10230,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -10675,7 +10279,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -10684,8 +10288,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -10728,7 +10330,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -10737,8 +10339,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -10783,8 +10383,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -10822,7 +10420,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -10831,8 +10429,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -10866,8 +10462,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -10914,7 +10508,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -10923,8 +10517,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -10966,7 +10558,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -10975,8 +10567,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -10992,7 +10582,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR + 1) & 0xFF
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         regs.C = (regs.C & 0xFF00) | (regs.TR & 0x00FF);
                         // Following is auto-generated code for instruction finish
@@ -11003,8 +10593,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -11048,8 +10636,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -11091,7 +10677,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -11100,8 +10686,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -11135,7 +10719,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = (regs.TR & 0xFF) << 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem8
@@ -11149,8 +10733,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -11188,7 +10770,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -11197,8 +10779,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -11246,7 +10826,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -11255,8 +10835,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -11299,8 +10877,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -11343,8 +10919,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -11380,7 +10954,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -11389,8 +10963,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -11424,7 +10996,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x80;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -11438,8 +11010,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -11487,7 +11057,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -11496,8 +11066,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -11509,6 +11077,8 @@ const decoded_opcodes = Object.freeze(
                         // AND # E=0 M=1 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
@@ -11516,17 +11086,17 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -11544,7 +11114,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x80;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         regs.C = (regs.C & 0xFF00) | (regs.TR & 0x00FF);
                         // Following is auto-generated code for instruction finish
@@ -11555,8 +11125,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -11597,8 +11165,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -11632,7 +11198,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -11641,8 +11207,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -11675,7 +11239,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x80;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -11689,8 +11253,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -11729,7 +11291,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -11738,8 +11300,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -11790,7 +11350,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -11799,8 +11359,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -11844,7 +11402,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -11853,8 +11411,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -11900,8 +11456,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -11940,7 +11494,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -11949,8 +11503,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -11984,8 +11536,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -12033,7 +11583,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -12042,8 +11592,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -12086,7 +11634,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -12095,8 +11643,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -12112,7 +11658,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR - 1) & 0xFF;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         regs.C = (regs.C & 0xFF00) | (regs.TR & 0x00FF);
                         // Following is auto-generated code for instruction finish
@@ -12123,8 +11669,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -12174,8 +11718,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -12218,7 +11760,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -12227,8 +11769,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -12263,7 +11803,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x80;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem8
@@ -12277,8 +11817,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -12317,7 +11855,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -12326,8 +11864,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -12374,7 +11910,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -12383,8 +11919,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -12419,7 +11953,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -12428,8 +11962,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -12462,7 +11994,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 1;
                         regs.TR >>>= 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -12476,8 +12008,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -12524,7 +12054,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -12533,8 +12063,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -12546,23 +12074,25 @@ const decoded_opcodes = Object.freeze(
                         // EOR # E=0 M=1 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -12579,7 +12109,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 1;
                         regs.TR >>>= 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         regs.C = (regs.C & 0xFF00) | (regs.TR & 0x00FF);
                         // Following is auto-generated code for instruction finish
@@ -12590,8 +12120,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -12624,7 +12152,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -12633,8 +12161,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -12666,7 +12192,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 1;
                         regs.TR >>>= 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -12680,8 +12206,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -12719,7 +12243,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -12728,8 +12252,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -12779,7 +12301,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -12788,8 +12310,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -12832,7 +12352,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -12841,8 +12361,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -12880,7 +12398,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -12889,8 +12407,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -12924,8 +12440,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -12972,7 +12486,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -12981,8 +12495,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -13024,7 +12536,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -13033,8 +12545,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -13076,7 +12586,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -13085,8 +12595,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -13120,7 +12628,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 1;
                         regs.TR >>>= 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem8
@@ -13134,8 +12642,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -13173,7 +12679,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -13182,8 +12688,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -13241,7 +12745,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -13250,8 +12754,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -13292,8 +12794,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -13339,7 +12839,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -13348,8 +12848,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -13383,7 +12881,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x1;
                         regs.TR = ((regs.TR & 0xFF) >>> 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -13397,8 +12895,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -13456,7 +12952,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -13465,8 +12961,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -13478,6 +12972,8 @@ const decoded_opcodes = Object.freeze(
                         // ADC # E=0 M=1 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
@@ -13495,17 +12991,17 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -13523,7 +13019,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x1;
                         regs.TR = ((regs.TR & 0xFF) >>> 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         regs.C = (regs.C & 0xFF00) | (regs.TR & 0x00FF);
                         // Following is auto-generated code for instruction finish
@@ -13534,8 +13030,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -13579,7 +13073,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -13588,8 +13082,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -13622,7 +13114,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x1;
                         regs.TR = ((regs.TR & 0xFF) >>> 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -13636,8 +13128,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -13686,7 +13176,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -13695,8 +13185,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -13757,7 +13245,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -13766,8 +13254,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -13821,7 +13307,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -13830,8 +13316,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -13875,8 +13359,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -13925,7 +13407,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -13934,8 +13416,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -13969,8 +13449,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -14028,7 +13506,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -14037,8 +13515,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -14091,7 +13567,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -14100,8 +13576,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -14154,7 +13628,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -14163,8 +13637,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -14199,7 +13671,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x1;
                         regs.TR = ((regs.TR & 0xFF) >>> 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem8
@@ -14213,8 +13685,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -14263,7 +13733,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -14272,8 +13742,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -14327,8 +13795,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -14370,8 +13836,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -14425,8 +13889,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -14438,6 +13900,8 @@ const decoded_opcodes = Object.freeze(
                         // BIT # E=0 M=1 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
@@ -14446,14 +13910,14 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = regs.TR & 0x40;
                         regs.P.N = regs.TR & 0x80;
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -14493,8 +13957,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -14539,8 +14001,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -14596,8 +14056,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -14647,8 +14105,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -14693,8 +14149,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -14748,8 +14202,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -14797,8 +14249,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -14837,8 +14287,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -14886,8 +14334,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -14934,8 +14380,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -14980,8 +14424,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -14993,22 +14435,24 @@ const decoded_opcodes = Object.freeze(
                         // LDY # E=0 M=1 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.Y = regs.TR;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -15055,7 +14499,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -15063,8 +14507,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -15076,22 +14518,24 @@ const decoded_opcodes = Object.freeze(
                         // LDX # E=0 M=1 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.X = regs.TR;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = (regs.TR & 0x8000) >> 8;
+                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -15126,7 +14570,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -15134,8 +14578,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -15182,7 +14624,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -15190,8 +14632,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -15203,22 +14643,24 @@ const decoded_opcodes = Object.freeze(
                         // LDA # E=0 M=1 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -15251,7 +14693,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -15259,8 +14701,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -15298,7 +14738,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -15306,8 +14746,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -15357,7 +14795,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -15365,8 +14803,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -15409,7 +14845,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -15417,8 +14853,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -15456,7 +14890,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -15464,8 +14898,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -15512,7 +14944,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -15520,8 +14952,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -15563,7 +14993,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -15571,8 +15001,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -15614,7 +15042,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -15622,8 +15050,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -15661,7 +15087,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -15669,8 +15095,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -15682,6 +15106,8 @@ const decoded_opcodes = Object.freeze(
                         // CPY # E=0 M=1 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
@@ -15689,16 +15115,16 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned16(regs.Y) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -15746,7 +15172,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -15754,8 +15180,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -15767,19 +15191,21 @@ const decoded_opcodes = Object.freeze(
                         // REP # E=0 M=1 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
                         // instruction code follows
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -15815,7 +15241,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -15823,8 +15249,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -15856,7 +15280,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR - 1) & 0xFF;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -15870,8 +15294,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -15919,7 +15341,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -15927,8 +15349,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -15940,6 +15360,8 @@ const decoded_opcodes = Object.freeze(
                         // CMP # E=0 M=1 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
@@ -15947,16 +15369,16 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -15990,7 +15412,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -15998,8 +15420,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -16030,7 +15450,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR - 1) & 0xFF;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -16044,8 +15464,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -16084,7 +15502,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -16092,8 +15510,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -16144,7 +15560,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -16152,8 +15568,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -16197,7 +15611,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -16205,8 +15619,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -16245,7 +15657,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -16253,8 +15665,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -16288,8 +15698,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -16337,7 +15745,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -16345,8 +15753,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -16389,7 +15795,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -16397,8 +15803,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -16441,7 +15845,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -16449,8 +15853,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -16483,7 +15885,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR - 1) & 0xFF;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem8
@@ -16497,8 +15899,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -16537,7 +15937,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -16545,8 +15945,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -16558,6 +15956,8 @@ const decoded_opcodes = Object.freeze(
                         // CPX # E=0 M=1 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
@@ -16565,16 +15965,16 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned16(regs.X) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -16632,7 +16032,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -16641,8 +16041,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -16654,19 +16052,21 @@ const decoded_opcodes = Object.freeze(
                         // SEP # E=0 M=1 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
                         // instruction code follows
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -16712,7 +16112,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -16721,8 +16121,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -16754,7 +16152,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR + 1) & 0xFF
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -16768,8 +16166,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -16827,7 +16223,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -16836,8 +16232,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -16849,6 +16243,8 @@ const decoded_opcodes = Object.freeze(
                         // SBC # E=0 M=1 X=0
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
@@ -16866,17 +16262,17 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -16920,7 +16316,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -16929,8 +16325,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -16961,7 +16355,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR + 1) & 0xFF
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -16975,8 +16369,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -17025,7 +16417,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -17034,8 +16426,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -17096,7 +16486,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -17105,8 +16495,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -17160,7 +16548,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -17169,8 +16557,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -17219,7 +16605,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -17228,8 +16614,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -17263,8 +16647,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -17322,7 +16704,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -17331,8 +16713,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -17385,7 +16765,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -17394,8 +16774,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -17448,7 +16826,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -17457,8 +16835,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -17491,7 +16867,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR + 1) & 0xFF
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem8
@@ -17505,8 +16881,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -17555,7 +16929,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -17564,8 +16938,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -17615,7 +16987,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -17624,8 +16996,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -17670,8 +17040,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -17706,7 +17074,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -17715,8 +17083,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -17749,7 +17115,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = (regs.TR & 0xFF) << 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -17763,8 +17129,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -17811,7 +17175,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -17820,8 +17184,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -17833,23 +17195,25 @@ const decoded_opcodes = Object.freeze(
                         // ORA # E=0 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -17866,7 +17230,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = (regs.TR & 0xFF) << 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         regs.C = (regs.C & 0xFF00) | (regs.TR & 0x00FF);
                         // Following is auto-generated code for instruction finish
@@ -17877,8 +17241,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -17922,8 +17284,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -17956,7 +17316,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -17965,8 +17325,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -17998,7 +17356,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = (regs.TR & 0xFF) << 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -18012,8 +17370,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -18051,7 +17407,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -18060,8 +17416,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -18111,7 +17465,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -18120,8 +17474,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -18164,7 +17516,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -18173,8 +17525,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -18219,8 +17569,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -18258,7 +17606,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -18267,8 +17615,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -18302,8 +17648,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -18350,7 +17694,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -18359,8 +17703,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -18402,7 +17744,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -18411,8 +17753,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -18428,7 +17768,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR + 1) & 0xFF
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         regs.C = (regs.C & 0xFF00) | (regs.TR & 0x00FF);
                         // Following is auto-generated code for instruction finish
@@ -18439,8 +17779,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -18484,8 +17822,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -18527,7 +17863,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -18536,8 +17872,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -18571,7 +17905,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = (regs.TR & 0xFF) << 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem8
@@ -18585,8 +17919,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -18624,7 +17956,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -18633,8 +17965,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -18682,7 +18012,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -18691,8 +18021,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -18735,8 +18063,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -18779,8 +18105,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -18816,7 +18140,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -18825,8 +18149,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -18860,7 +18182,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x80;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -18874,8 +18196,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -18923,7 +18243,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -18932,8 +18252,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -18945,6 +18263,8 @@ const decoded_opcodes = Object.freeze(
                         // AND # E=0 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
@@ -18952,17 +18272,17 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -18980,7 +18300,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x80;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         regs.C = (regs.C & 0xFF00) | (regs.TR & 0x00FF);
                         // Following is auto-generated code for instruction finish
@@ -18991,8 +18311,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -19033,8 +18351,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -19068,7 +18384,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -19077,8 +18393,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -19111,7 +18425,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x80;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -19125,8 +18439,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -19165,7 +18477,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -19174,8 +18486,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -19226,7 +18536,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -19235,8 +18545,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -19280,7 +18588,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -19289,8 +18597,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -19336,8 +18642,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -19376,7 +18680,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -19385,8 +18689,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -19420,8 +18722,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -19469,7 +18769,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -19478,8 +18778,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -19522,7 +18820,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -19531,8 +18829,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -19548,7 +18844,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR - 1) & 0xFF;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         regs.C = (regs.C & 0xFF00) | (regs.TR & 0x00FF);
                         // Following is auto-generated code for instruction finish
@@ -19559,8 +18855,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -19610,8 +18904,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -19654,7 +18946,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -19663,8 +18955,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -19699,7 +18989,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x80;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem8
@@ -19713,8 +19003,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -19753,7 +19041,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -19762,8 +19050,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -19810,7 +19096,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -19819,8 +19105,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -19855,7 +19139,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -19864,8 +19148,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -19898,7 +19180,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 1;
                         regs.TR >>>= 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -19912,8 +19194,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -19960,7 +19240,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -19969,8 +19249,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -19982,23 +19260,25 @@ const decoded_opcodes = Object.freeze(
                         // EOR # E=0 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -20015,7 +19295,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 1;
                         regs.TR >>>= 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         regs.C = (regs.C & 0xFF00) | (regs.TR & 0x00FF);
                         // Following is auto-generated code for instruction finish
@@ -20026,8 +19306,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -20060,7 +19338,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -20069,8 +19347,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -20102,7 +19378,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 1;
                         regs.TR >>>= 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -20116,8 +19392,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -20155,7 +19429,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -20164,8 +19438,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -20215,7 +19487,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -20224,8 +19496,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -20268,7 +19538,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -20277,8 +19547,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -20316,7 +19584,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -20325,8 +19593,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -20360,8 +19626,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -20408,7 +19672,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -20417,8 +19681,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -20460,7 +19722,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -20469,8 +19731,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -20512,7 +19772,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -20521,8 +19781,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -20556,7 +19814,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 1;
                         regs.TR >>>= 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem8
@@ -20570,8 +19828,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -20609,7 +19865,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -20618,8 +19874,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -20677,7 +19931,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -20686,8 +19940,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -20728,8 +19980,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -20775,7 +20025,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -20784,8 +20034,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -20819,7 +20067,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x1;
                         regs.TR = ((regs.TR & 0xFF) >>> 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -20833,8 +20081,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -20892,7 +20138,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -20901,8 +20147,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -20914,6 +20158,8 @@ const decoded_opcodes = Object.freeze(
                         // ADC # E=0 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
@@ -20931,17 +20177,17 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -20959,7 +20205,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x1;
                         regs.TR = ((regs.TR & 0xFF) >>> 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         regs.C = (regs.C & 0xFF00) | (regs.TR & 0x00FF);
                         // Following is auto-generated code for instruction finish
@@ -20970,8 +20216,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -21015,7 +20259,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -21024,8 +20268,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -21058,7 +20300,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x1;
                         regs.TR = ((regs.TR & 0xFF) >>> 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -21072,8 +20314,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -21122,7 +20362,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -21131,8 +20371,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -21193,7 +20431,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -21202,8 +20440,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -21257,7 +20493,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -21266,8 +20502,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -21311,8 +20545,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -21361,7 +20593,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -21370,8 +20602,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -21405,8 +20635,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -21464,7 +20692,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -21473,8 +20701,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -21527,7 +20753,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -21536,8 +20762,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -21590,7 +20814,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -21599,8 +20823,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -21635,7 +20857,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x1;
                         regs.TR = ((regs.TR & 0xFF) >>> 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem8
@@ -21649,8 +20871,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -21699,7 +20919,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -21708,8 +20928,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -21763,8 +20981,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -21805,8 +21021,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -21848,8 +21062,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -21890,8 +21102,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -21945,8 +21155,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -21958,6 +21166,8 @@ const decoded_opcodes = Object.freeze(
                         // BIT # E=0 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
@@ -21966,14 +21176,14 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = regs.TR & 0x40;
                         regs.P.N = regs.TR & 0x80;
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -22012,8 +21222,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -22053,8 +21261,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -22093,8 +21299,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -22139,8 +21343,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -22197,8 +21399,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -22248,8 +21448,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -22293,8 +21491,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -22339,8 +21535,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -22394,8 +21588,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -22444,8 +21636,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -22484,8 +21674,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -22534,8 +21722,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -22583,8 +21769,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -22629,8 +21813,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -22642,22 +21824,24 @@ const decoded_opcodes = Object.freeze(
                         // LDY # E=0 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.Y = (regs.Y & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -22704,7 +21888,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -22712,8 +21896,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -22725,22 +21907,24 @@ const decoded_opcodes = Object.freeze(
                         // LDX # E=0 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.X = (regs.X & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -22775,7 +21959,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.Y = (regs.Y & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -22783,8 +21967,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -22819,7 +22001,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -22827,8 +22009,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -22863,7 +22043,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.X = (regs.X & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -22871,8 +22051,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -22919,7 +22097,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -22927,8 +22105,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -22940,22 +22116,24 @@ const decoded_opcodes = Object.freeze(
                         // LDA # E=0 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -22988,7 +22166,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.Y = (regs.Y & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -22996,8 +22174,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -23030,7 +22206,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -23038,8 +22214,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -23072,7 +22246,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.X = (regs.X & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -23080,8 +22254,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -23119,7 +22291,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -23127,8 +22299,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -23178,7 +22348,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -23186,8 +22356,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -23230,7 +22398,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -23238,8 +22406,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -23277,7 +22443,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.Y = (regs.Y & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -23285,8 +22451,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -23324,7 +22488,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -23332,8 +22496,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -23380,7 +22542,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -23388,8 +22550,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -23431,7 +22591,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -23439,8 +22599,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -23482,7 +22640,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.Y = (regs.Y & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -23490,8 +22648,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -23533,7 +22689,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -23541,8 +22697,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -23584,7 +22738,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.X = (regs.X & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -23592,8 +22746,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -23631,7 +22783,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -23639,8 +22791,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -23652,6 +22802,8 @@ const decoded_opcodes = Object.freeze(
                         // CPY # E=0 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
@@ -23659,16 +22811,16 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.Y) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -23716,7 +22868,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -23724,8 +22876,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -23737,19 +22887,21 @@ const decoded_opcodes = Object.freeze(
                         // REP # E=0 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
                         // instruction code follows
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -23778,7 +22930,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.Y) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         pins.D = regs.TR & 0xFF;
                         break;
@@ -23793,8 +22945,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -23830,7 +22980,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -23838,8 +22988,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -23871,7 +23019,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR - 1) & 0xFF;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -23885,8 +23033,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -23934,7 +23080,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -23942,8 +23088,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -23955,6 +23099,8 @@ const decoded_opcodes = Object.freeze(
                         // CMP # E=0 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
@@ -23962,16 +23108,16 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -23998,7 +23144,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.Y) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         pins.D = regs.TR & 0xFF;
                         break;
@@ -24013,8 +23159,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -24048,7 +23192,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -24056,8 +23200,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -24088,7 +23230,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR - 1) & 0xFF;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -24102,8 +23244,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -24142,7 +23282,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -24150,8 +23290,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -24202,7 +23340,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -24210,8 +23348,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -24255,7 +23391,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -24263,8 +23399,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -24303,7 +23437,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -24311,8 +23445,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -24346,8 +23478,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -24395,7 +23525,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -24403,8 +23533,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -24447,7 +23575,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -24455,8 +23583,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -24499,7 +23625,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -24507,8 +23633,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -24541,7 +23665,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR - 1) & 0xFF;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem8
@@ -24555,8 +23679,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -24595,7 +23717,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -24603,8 +23725,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -24616,6 +23736,8 @@ const decoded_opcodes = Object.freeze(
                         // CPX # E=0 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
@@ -24623,16 +23745,16 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.X) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -24690,7 +23812,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -24699,8 +23821,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -24712,19 +23832,21 @@ const decoded_opcodes = Object.freeze(
                         // SEP # E=0 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
                         // instruction code follows
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -24753,7 +23875,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.X) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         pins.D = regs.TR & 0xFF;
                         break;
@@ -24768,8 +23890,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -24815,7 +23935,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -24824,8 +23944,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -24857,7 +23975,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR + 1) & 0xFF
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -24871,8 +23989,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -24930,7 +24046,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -24939,8 +24055,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -24952,6 +24066,8 @@ const decoded_opcodes = Object.freeze(
                         // SBC # E=0 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
@@ -24969,17 +24085,17 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -25006,7 +24122,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.X) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         pins.D = regs.TR & 0xFF;
                         break;
@@ -25021,8 +24137,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -25066,7 +24180,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -25075,8 +24189,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -25107,7 +24219,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR + 1) & 0xFF
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -25121,8 +24233,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -25171,7 +24281,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -25180,8 +24290,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -25242,7 +24350,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -25251,8 +24359,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -25306,7 +24412,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -25315,8 +24421,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -25365,7 +24469,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -25374,8 +24478,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -25409,8 +24511,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -25468,7 +24568,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -25477,8 +24577,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -25531,7 +24629,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -25540,8 +24638,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -25594,7 +24690,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -25603,8 +24699,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -25637,7 +24731,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR + 1) & 0xFF
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem8
@@ -25651,8 +24745,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -25701,7 +24793,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -25710,8 +24802,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -25757,7 +24847,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -25766,8 +24856,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -25812,8 +24900,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -25844,7 +24930,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -25853,8 +24939,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -25887,7 +24971,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = (regs.TR & 0xFF) << 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -25901,8 +24985,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -25945,7 +25027,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -25954,8 +25036,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -25967,23 +25047,25 @@ const decoded_opcodes = Object.freeze(
                         // ORA # E=1 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -26000,7 +25082,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = (regs.TR & 0xFF) << 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         regs.C = (regs.C & 0xFF00) | (regs.TR & 0x00FF);
                         // Following is auto-generated code for instruction finish
@@ -26011,8 +25093,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -26056,8 +25136,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -26086,7 +25164,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -26095,8 +25173,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -26128,7 +25204,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = (regs.TR & 0xFF) << 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -26142,8 +25218,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -26177,7 +25251,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -26186,8 +25260,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -26233,7 +25305,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -26242,8 +25314,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -26282,7 +25352,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -26291,8 +25361,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -26337,8 +25405,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -26372,7 +25438,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -26381,8 +25447,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -26416,8 +25480,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -26460,7 +25522,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -26469,8 +25531,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -26508,7 +25568,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -26517,8 +25577,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -26534,7 +25592,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR + 1) & 0xFF
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         regs.C = (regs.C & 0xFF00) | (regs.TR & 0x00FF);
                         // Following is auto-generated code for instruction finish
@@ -26545,8 +25603,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -26590,8 +25646,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -26629,7 +25683,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -26638,8 +25692,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -26673,7 +25725,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = (regs.TR & 0xFF) << 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem8
@@ -26687,8 +25739,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -26722,7 +25772,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.TR | regs.C) & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -26731,8 +25781,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -26776,8 +25824,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -26821,7 +25867,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -26830,8 +25876,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -26870,8 +25914,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -26910,8 +25952,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -26943,7 +25983,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -26952,8 +25992,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -26987,7 +26025,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x80;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -27001,8 +26039,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -27046,7 +26082,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -27055,8 +26091,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -27068,6 +26102,8 @@ const decoded_opcodes = Object.freeze(
                         // AND # E=1 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
@@ -27075,17 +26111,17 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -27103,7 +26139,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x80;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         regs.C = (regs.C & 0xFF00) | (regs.TR & 0x00FF);
                         // Following is auto-generated code for instruction finish
@@ -27114,8 +26150,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -27152,8 +26186,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -27183,7 +26215,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -27192,8 +26224,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -27226,7 +26256,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x80;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -27240,8 +26270,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -27276,7 +26304,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -27285,8 +26313,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -27333,7 +26359,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -27342,8 +26368,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -27383,7 +26407,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -27392,8 +26416,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -27435,8 +26457,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -27471,7 +26491,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -27480,8 +26500,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -27515,8 +26533,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -27560,7 +26576,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -27569,8 +26585,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -27609,7 +26623,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -27618,8 +26632,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -27635,7 +26647,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR - 1) & 0xFF;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         regs.C = (regs.C & 0xFF00) | (regs.TR & 0x00FF);
                         // Following is auto-generated code for instruction finish
@@ -27646,8 +26658,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -27693,8 +26703,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -27733,7 +26741,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -27742,8 +26750,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -27778,7 +26784,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x80;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem8
@@ -27792,8 +26798,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -27828,7 +26832,7 @@ const decoded_opcodes = Object.freeze(
                         let A = regs.C & 0xFF;
                         A &= regs.TR & 0xFF;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | A;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -27837,8 +26841,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -27881,7 +26883,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -27890,8 +26892,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -27922,7 +26922,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -27931,8 +26931,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -27965,7 +26963,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 1;
                         regs.TR >>>= 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -27979,8 +26977,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -28023,7 +27019,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -28032,8 +27028,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -28045,23 +27039,25 @@ const decoded_opcodes = Object.freeze(
                         // EOR # E=1 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -28078,7 +27074,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 1;
                         regs.TR >>>= 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         regs.C = (regs.C & 0xFF00) | (regs.TR & 0x00FF);
                         // Following is auto-generated code for instruction finish
@@ -28089,8 +27085,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -28119,7 +27113,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -28128,8 +27122,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -28161,7 +27153,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 1;
                         regs.TR >>>= 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -28175,8 +27167,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -28210,7 +27200,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -28219,8 +27209,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -28266,7 +27254,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -28275,8 +27263,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -28315,7 +27301,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -28324,8 +27310,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -28359,7 +27343,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -28368,8 +27352,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -28403,8 +27385,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -28447,7 +27427,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -28456,8 +27436,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -28495,7 +27473,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -28504,8 +27482,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -28543,7 +27519,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -28552,8 +27528,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -28587,7 +27561,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 1;
                         regs.TR >>>= 1;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem8
@@ -28601,8 +27575,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -28636,7 +27608,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         let A = (regs.C & 0xFF) ^ regs.TR;
                         regs.P.Z = (A === 0) ? 1 : 0;
-                        regs.P.N = A & 0x80;
+                        regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + ((A) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -28645,8 +27617,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -28700,7 +27670,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -28709,8 +27679,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -28747,8 +27715,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -28790,7 +27756,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -28799,8 +27765,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -28834,7 +27798,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x1;
                         regs.TR = ((regs.TR & 0xFF) >>> 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -28848,8 +27812,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -28903,7 +27865,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -28912,8 +27874,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -28925,6 +27885,8 @@ const decoded_opcodes = Object.freeze(
                         // ADC # E=1 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
@@ -28942,17 +27904,17 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -28970,7 +27932,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x1;
                         regs.TR = ((regs.TR & 0xFF) >>> 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         regs.C = (regs.C & 0xFF00) | (regs.TR & 0x00FF);
                         // Following is auto-generated code for instruction finish
@@ -28981,8 +27943,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -29022,7 +27982,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -29031,8 +27991,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -29065,7 +28023,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x1;
                         regs.TR = ((regs.TR & 0xFF) >>> 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -29079,8 +28037,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -29125,7 +28081,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -29134,8 +28090,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -29192,7 +28146,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -29201,8 +28155,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -29252,7 +28204,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -29261,8 +28213,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -29302,8 +28252,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -29348,7 +28296,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -29357,8 +28305,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -29392,8 +28338,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -29447,7 +28391,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -29456,8 +28400,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -29506,7 +28448,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -29515,8 +28457,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -29565,7 +28505,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -29574,8 +28514,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -29610,7 +28548,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.C = regs.TR & 0x1;
                         regs.TR = ((regs.TR & 0xFF) >>> 1) | carry;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem8
@@ -29624,8 +28562,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -29670,7 +28606,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result > 0x9F) result += 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0x8000) >> 8;
+                        regs.P.N = (result & 0x8000) >>> 15;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -29679,8 +28615,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -29730,8 +28664,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -29768,8 +28700,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -29807,8 +28737,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -29845,8 +28773,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -29896,8 +28822,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -29909,6 +28833,8 @@ const decoded_opcodes = Object.freeze(
                         // BIT # E=1 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
@@ -29917,14 +28843,14 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = regs.TR & 0x40;
                         regs.P.N = regs.TR & 0x80;
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -29959,8 +28885,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -29996,8 +28920,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -30032,8 +28954,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -30074,8 +28994,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -30128,8 +29046,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -30175,8 +29091,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -30216,8 +29130,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -30258,8 +29170,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -30309,8 +29219,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -30355,8 +29263,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -30391,8 +29297,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -30437,8 +29341,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -30482,8 +29384,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -30524,8 +29424,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -30537,22 +29435,24 @@ const decoded_opcodes = Object.freeze(
                         // LDY # E=1 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.Y = (regs.Y & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -30595,7 +29495,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -30603,8 +29503,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -30616,22 +29514,24 @@ const decoded_opcodes = Object.freeze(
                         // LDX # E=1 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.X = (regs.X & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -30662,7 +29562,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.Y = (regs.Y & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -30670,8 +29570,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -30702,7 +29600,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -30710,8 +29608,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -30742,7 +29638,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.X = (regs.X & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -30750,8 +29646,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -30794,7 +29688,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -30802,8 +29696,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -30815,22 +29707,24 @@ const decoded_opcodes = Object.freeze(
                         // LDA # E=1 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -30859,7 +29753,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.Y = (regs.Y & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -30867,8 +29761,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -30897,7 +29789,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -30905,8 +29797,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -30935,7 +29825,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.X = (regs.X & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -30943,8 +29833,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -30978,7 +29866,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -30986,8 +29874,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -31033,7 +29919,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -31041,8 +29927,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -31081,7 +29965,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -31089,8 +29973,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -31124,7 +30006,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.Y = (regs.Y & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -31132,8 +30014,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -31167,7 +30047,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -31175,8 +30055,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -31219,7 +30097,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -31227,8 +30105,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -31266,7 +30142,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -31274,8 +30150,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -31313,7 +30187,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.Y = (regs.Y & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -31321,8 +30195,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -31360,7 +30232,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -31368,8 +30240,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -31407,7 +30277,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.X = (regs.X & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -31415,8 +30285,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -31450,7 +30318,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.C = (regs.C & 0xFF00) + ((regs.TR) & 0xFF);
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -31458,8 +30326,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -31471,6 +30337,8 @@ const decoded_opcodes = Object.freeze(
                         // CPY # E=1 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
@@ -31478,16 +30346,16 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.Y) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -31531,7 +30399,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -31539,8 +30407,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -31552,19 +30418,21 @@ const decoded_opcodes = Object.freeze(
                         // REP # E=1 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
                         // instruction code follows
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -31593,7 +30461,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.Y) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         pins.D = regs.TR & 0xFF;
                         // Following is auto-generated code for instruction finish
@@ -31604,8 +30472,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -31637,7 +30503,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -31645,8 +30511,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -31678,7 +30542,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR - 1) & 0xFF;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -31692,8 +30556,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -31737,7 +30599,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -31745,8 +30607,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -31758,6 +30618,8 @@ const decoded_opcodes = Object.freeze(
                         // CMP # E=1 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
@@ -31765,16 +30627,16 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -31801,7 +30663,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.Y) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         pins.D = regs.TR & 0xFF;
                         // Following is auto-generated code for instruction finish
@@ -31812,8 +30674,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -31843,7 +30703,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -31851,8 +30711,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -31883,7 +30741,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR - 1) & 0xFF;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -31897,8 +30755,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -31933,7 +30789,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -31941,8 +30797,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -31989,7 +30843,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -31997,8 +30851,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -32038,7 +30890,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -32046,8 +30898,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -32082,7 +30932,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -32090,8 +30940,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -32125,8 +30973,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -32170,7 +31016,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -32178,8 +31024,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -32218,7 +31062,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -32226,8 +31070,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -32266,7 +31108,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -32274,8 +31116,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -32308,7 +31148,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR - 1) & 0xFF;
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem8
@@ -32322,8 +31162,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -32358,7 +31196,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.C) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -32366,8 +31204,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -32379,6 +31215,8 @@ const decoded_opcodes = Object.freeze(
                         // CPX # E=1 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
@@ -32386,16 +31224,16 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.X) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -32449,7 +31287,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -32458,8 +31296,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -32471,19 +31307,21 @@ const decoded_opcodes = Object.freeze(
                         // SEP # E=1 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
                         // instruction code follows
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -32512,7 +31350,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.X) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         pins.D = regs.TR & 0xFF;
                         // Following is auto-generated code for instruction finish
@@ -32523,8 +31361,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -32566,7 +31402,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -32575,8 +31411,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -32608,7 +31442,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR + 1) & 0xFF
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -32622,8 +31456,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -32677,7 +31509,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -32686,8 +31518,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -32699,6 +31529,8 @@ const decoded_opcodes = Object.freeze(
                         // SBC # E=1 M=1 X=1
                     case 1:
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 0; pins.VPB = 0;
+                        pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2:
                         regs.TR = pins.D;
@@ -32716,17 +31548,17 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
+                        break;
+                    case 3:
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -32753,7 +31585,7 @@ const decoded_opcodes = Object.freeze(
                         let result = mksigned8(regs.X) - regs.TR;
                         regs.P.C = (result >= 0) ? 1 : 0;
                         regs.P.Z = ((result & 0xFF) === 0) ? 1 : 0;
-                        regs.P.N = (result & 0xFF) & 0x80;
+                        regs.P.N = ((result & 0xFF) & 0x80) >>> 7;
                         // instruction code ends
                         pins.D = regs.TR & 0xFF;
                         // Following is auto-generated code for instruction finish
@@ -32764,8 +31596,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -32805,7 +31635,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -32814,8 +31644,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -32846,7 +31674,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR + 1) & 0xFF
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 5: // finish_rmw mem8
@@ -32860,8 +31688,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -32906,7 +31732,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -32915,8 +31741,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -32973,7 +31797,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -32982,8 +31806,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -33033,7 +31855,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -33042,8 +31864,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -33088,7 +31908,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -33097,8 +31917,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -33132,8 +31950,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -33187,7 +32003,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -33196,8 +32012,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -33246,7 +32060,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -33255,8 +32069,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -33311,8 +32123,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -33361,7 +32171,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -33370,8 +32180,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -33404,7 +32212,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code follows
                         regs.TR = (regs.TR + 1) & 0xFF
                         regs.P.Z = (regs.TR === 0) ? 1 : 0;
-                        regs.P.N = regs.TR & 0x80;
+                        regs.P.N = (regs.TR & 0x80) >>> 7;
                         // instruction code ends
                         break;
                     case 6: // finish_rmw mem8
@@ -33418,8 +32226,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },
@@ -33464,7 +32270,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = result > 0xFF ? 1 : 0;
                         regs.P.Z = (result === 0) ? 1 : 0;
-                        regs.P.N = result & 0x80;
+                        regs.P.N = (result & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
@@ -33473,8 +32279,6 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.VPA = 1; pins.VDA = 1; pins.VPB = 0;
                         regs.TCU = 0;
                         return true;
-                    default:                        console.log("TCU " + regs.TCU.toString() + " not valid for current op!");
-                        break;
                 }
                 return false;
             },

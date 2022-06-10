@@ -469,6 +469,7 @@ class switchgen {
         this.in_case = false;
         this.last_case = 0;
         this.has_footer = false;
+        this.no_addr_at_end = false;
         this.has_custom_end = false;
         this.outstr = '';
         this.clear(indent, what);
@@ -481,6 +482,7 @@ class switchgen {
         this.in_case = false;
         this.last_case = 0;
         this.has_footer = false;
+        this.no_addr_at_end = false;
         this.has_custom_end = false;
         this.outstr = this.indent1 + 'switch(' + what + ') {\n';
     }
@@ -504,6 +506,10 @@ class switchgen {
     cleanup() {
         this.has_footer = true;
         this.addcycle();
+    }
+
+    no_modify_addr() {
+        this.no_addr_at_end = true;
     }
 
     addr_to(low, high) {
@@ -600,7 +606,8 @@ class switchgen {
         }
         //this.addl('// Set up instruction fetch');
         //this.addl('// Put PC on address lines')
-        this.addr_to_PC_then_inc();
+        if (!this.no_addr_at_end)
+            this.addr_to_PC_then_inc();
         //this.addl('// Set opcode fetch')
         this.RPDV(0, 1, 1, 0);
         //this.addl('// Signal new instruction is begun, as part of old instruction');
@@ -616,9 +623,9 @@ class switchgen {
         //this.addcycle((parseInt(this.last_case) + 1).toString());
         if (!this.has_custom_end) {
             this.regular_end();
-            this.outstr += this.indent2 + 'default:';
+            /*this.outstr += this.indent2 + 'default:\n';
             this.addl('console.log("TCU " + regs.TCU.toString() + " not valid for current op!");');
-            this.addl('break;');
+            this.addl('break;');*/
         }
 
         this.outstr += this.indent1 + '}\n';
@@ -627,10 +634,10 @@ class switchgen {
     }
 
     setn8(who) {
-        this.addl('regs.P.N = ' + who + ' & 0x80;');
+        this.addl('regs.P.N = (' + who + ' & 0x80) >>> 7;');
     }
     setn16(who) {
-        this.addl('regs.P.N = (' + who + ' & 0x8000) >> 8;');
+        this.addl('regs.P.N = (' + who + ' & 0x8000) >>> 15;');
     }
     setz(who) {
         this.addl('regs.P.Z = (' + who + ' === 0) ? 1 : 0;');
@@ -1463,11 +1470,14 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
         ag.D_to_TRL();
     }
 
-    let finish_R16p = function() {
+    let finish_R16p = function(use_PC) {
         if (mem16) {
             ag.addcycle('finish_R16p');
             ag.addl('regs.TR = pins.D;');
-            ag.addr_inc();
+            if (use_PC)
+                ag.addr_to_PC_then_inc();
+            else
+                ag.addr_inc();
 
             ag.cleanup();
             ag.addl('regs.TR += pins.D << 8;');
@@ -1747,11 +1757,11 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addr_to_PC_then_inc();
 
             ag.addcycle(4);
-            ag.addl('regs.TA += pins.D << 8;');
             ag.addr_to_PC_then_inc();
+            ag.addl('regs.PC = regs.TA + (pins.D << 8);');
 
             ag.cleanup();
-            ag.addr_to('regs.TA', 'pins.D');
+            ag.addl('regs.PBR = pins.D;');
             break;
         case AM.ALc: // JSL long
             affected_by_E = true;
@@ -2079,8 +2089,10 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             set_em16rmw();
             ag.addcycle();
             ag.RPDV(0, 1, 0, 0);
+            ag.addr_to_PC_then_inc();
 
-            finish_R16p();
+            finish_R16p(true);
+            ag.cleanup();
             break;
         case AM.I:
             ag.addcycle();
@@ -2235,15 +2247,20 @@ const decoded_opcodes = Object.freeze(trattodo());*/
 function get_decoded_opcode(regs) {
     let flag = 0;
     let ret = null;
+    if (regs.IR === 0xA9) {
+        console.log('HERE for LDA');
+    }
     if (regs.E) {
         ret = decoded_opcodes[EMX_table[7]][regs.IR];
     }
     else {
         let flag = EMX_table[regs.P.M*2 + regs.P.X*4];
-        if (decoded_opcodes[EMX_table[flag]].hasOwnProperty(regs.IR.toString()))
-            ret = decoded_opcodes[EMX_table[flag]][regs.IR];
-        else
-            ret = decoded_opcodes[EMX_table[0]][regs.IR];
+        console.log("FLAG!", typeof(flag))
+        //if (decoded_opcodes[EMX_table[flag]].hasOwnProperty(regs.IR.toString()))
+        ret = decoded_opcodes[flag][regs.IR];
+        //else
+        //    ret = decoded_opcodes[EMX_table[0]][regs.IR];
+        console.log('GOT', ret);
     }
     if ((ret === null) || (typeof(ret) === 'undefined')) {
         console.log('WHAT UNDEFINED');
