@@ -256,7 +256,7 @@ class w65c816_assembler {
 
     writeinstruction(ins) {
         let addr = ins.addr;
-        console.log(hex0x6(addr) + ' ' + opcode_MN[ins.ins]);
+        console.log(hex0x6(addr) + ' ' + hex0x2(ins.bytecodes[0]) + ' ' + opcode_MN[ins.ins]);
         for (let i in ins.bytecodes) {
             this.write8(addr, ins.bytecodes[i]);
         }
@@ -267,6 +267,9 @@ class w65c816_assembler {
     }
 
     write16(addr, val) {
+        console.log('WRITE!', hex0x4(addr), hex0x4(addr+1), hex0x4(val))
+        console.log('PT1', val & 0xFF);
+        console.log('PT2', (val & 0xFF00) >>> 8)
         this.output[addr] = val & 0xFF;
         this.output[addr+1] = (val & 0xFF00) >>> 8;
     }
@@ -869,7 +872,8 @@ class w65c816_assembler {
         console.log('Writing vector table...');
         for (let addr in this.vectors) {
             let vec = this.vectors[addr];
-            this.write16(addr, vec.addr);
+            console.log(hex0x6(parseInt(addr)), hex0x4(vec.addr));
+            this.write16(parseInt(addr), vec.addr);
         }
 
         console.log('Writing instructions...');
@@ -877,7 +881,8 @@ class w65c816_assembler {
             this.writeinstruction(this.instructions[i]);
         }
 
-        // Write instructions
+        console.log('Done assembling!')
+
     }
 }
 

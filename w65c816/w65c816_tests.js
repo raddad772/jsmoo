@@ -45,7 +45,7 @@ ROM_SIZE $FFFFF
 .vectors
 RESET EMU_START
 
-.EMU_START:$2000
+.EMU_START:$2020
 ; Let the compiler know it's emulated mode here
 :E1
 CLC
@@ -62,6 +62,8 @@ STP
     `;
 
     a.assemble(TO_ASSEMBLE);
+    console.log('FFFC is', a.output[0xFFFC]);
+    console.log('FFFD is', a.output[0xFFFD]);
     return a.output;
 }
 
@@ -86,8 +88,10 @@ function test_65c816() {
     console.log('RUNNING CPU 10 CYCLES');
     for (let i = 0; i < 10; i++) {
         cpu.cycle();
-        dconsole.addl(cpu.pins.traces[0]);
-        cpu.pins.traces = [];
+        if (cpu.pins.traces.length > 0) {
+            dconsole.addl(cpu.pins.traces[0]);
+            cpu.pins.traces = [];
+        }
         if (cpu.pins.VDA || cpu.pins.VPA) {
             if (cpu.pins.RW) {
                 trace_write8(cpu.pins.BA, cpu.pins.Addr, cpu.pins.D);
