@@ -505,7 +505,7 @@ class switchgen {
     // This is a final "cycle" only SOME functions use, mostly to get final data read or written
     cleanup() {
         this.has_footer = true;
-        this.addcycle();
+        this.addcycle('cleanup_custom');
     }
 
     no_modify_addr() {
@@ -602,7 +602,7 @@ class switchgen {
     regular_end() {
         this.addl('// Following is auto-generated code for instruction finish')
         if (!this.has_footer) {
-            this.addcycle();
+            this.addcycle('cleanup');
         }
         //this.addl('// Set up instruction fetch');
         //this.addl('// Put PC on address lines')
@@ -1521,7 +1521,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
         affected_by_E = true;
         affected_by_X = A_OR_M_X.has(opcode_info.ins);
         affected_by_M = !affected_by_X;
-        if ((affected_by_X && X) || (affected_by_M && M))
+        if ((affected_by_X && !X) || (affected_by_M && !M))
             mem16 = true;
         if (E)
             mem16 = false;
@@ -2086,13 +2086,26 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             // NOT FINISHED YET
             break;
         case AM.IMM:
-            set_em16rmw();
-            ag.addcycle();
-            ag.RPDV(0, 1, 0, 0);
+            set_exm16rw();
+            console.log('// M=' + M + ' X=' + X + ' affected_by_X')
+            ag.addcycle('2');
+            ag.RPDV(0,1,0,0);
             ag.addr_to_PC_then_inc();
 
-            finish_R16p(true);
-            ag.cleanup();
+            if (mem16) {
+
+                ag.addcycle('2a');
+                ag.addl('regs.TR = pins.D;');
+                ag.addr_to_PC_then_inc();
+
+                ag.cleanup();
+                ag.addl('regs.TR += (pins.D << 8);');
+            }
+            else {
+                ag.cleanup();
+                ag.addl('regs.TR = pins.D;');
+            }
+            ag.add_ins(opcode_info.ins, E, M, X);
             break;
         case AM.I:
             ag.addcycle();
