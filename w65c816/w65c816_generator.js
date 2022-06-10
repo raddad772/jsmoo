@@ -60,6 +60,8 @@
 // However, it's an amazingly good resource, letting you know (for the most part) what the
 //  CPU is doing each cycle during an operation.
 
+let CONSOLE_TRACE = true;
+
 // Function that checks opcode_AM_R, which is used to generate opcode_AM
 function check_addressing_matrix() {
     console.log('Checking addressing matrix...')
@@ -596,14 +598,14 @@ class switchgen {
         if (!this.has_footer) {
             this.addcycle();
         }
-        this.addl('// Set up instruction fetch');
-        this.addl('// Put PC on address lines')
+        //this.addl('// Set up instruction fetch');
+        //this.addl('// Put PC on address lines')
         this.addr_to_PC();
-        this.addl('// Set opcode fetch')
+        //this.addl('// Set opcode fetch')
         this.RPDV(0, 1, 1, 0);
-        this.addl('// Signal new instruction is begun, as part of old instruction');
+        //this.addl('// Signal new instruction is begun, as part of old instruction');
         this.addl('regs.TCU = 0;')
-        this.addl('// Signal the instruction is finished');
+        //this.addl('// Signal the instruction is finished');
         this.addl('return true;')
     }
 
@@ -1219,8 +1221,6 @@ class switchgen {
 }
 
 
-const A_OR_M_X = Object.freeze(new Set([OM.CPY, OM.CPY, OM.STX, OM.STY, OM.LDX, OM.LDY]));
-const A_R_INS = Object.freeze(new Set([OM.ADC, OM.AND, OM.BIT, OM.CMP, OM.EOR, OM.LDA, OM.LDX, OM.LDY, OM.ORA, OM.SBC]));
 function A_R_OR_W(ins) {
     return (A_R_INS.has(ins) ? 0 : 1);
 }
@@ -1306,24 +1306,29 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
         ag.D_to_TRL();
     }
 
+    let finish_R16p = function() {
+        if (mem16) {
+            ag.addcycle('finish_R16p');
+            ag.addl('regs.TR = pins.D;');
+            ag.addr_inc();
+
+            ag.cleanup();
+            ag.addl('regs.TR += pins.D << 8;');
+        }
+        else {
+            ag.cleanup();
+            ag.addl('regs.TR = pins.D;')
+        }
+        ag.add_ins(opcode_info.ins, E, M, X);
+
+    }
+
     let finish_RW8or16p = function() {
         // For many instructions that can read OR write either 8 or 16 bits of data,
         //  this is the last step to write them out.
         ag.RPDV(RW, 0, 1, 0);
         if (RW === 0) {
-            if (mem16) {
-                ag.addcycle('finish_RW8or16p R16 L');
-                ag.addl('regs.TR = pins.D;');
-                ag.addr_inc();
-
-                ag.cleanup();
-                ag.addl('regs.TR += pins.D << 8;');
-            }
-            else {
-                ag.cleanup();
-                ag.addl('regs.TR = pins.D;')
-            }
-            ag.add_ins(opcode_info.ins, E, M, X);
+            finish_R16p();
         }
         else {
             ag.add_ins(opcode_info.ins, E, M, X);
@@ -1910,9 +1915,20 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addcycle(4);
             // NOT FINISHED HERE YET
             break;
-        case AM.SPECIAL: // special stuff like reset
+        case AM.D_INDEXED_Y:
+            // NOT FINISHED YET
+            break;
+        case AM.IMM:
+            set_em16rmw();
+            ag.addcycle();
+            ag.RPDV(0, 1, 0, 0);
+
+            finish_R16p();
+            break;
+        case AM.STACK:
             switch(opcode_info.ins) {
                 case OM.S_RESET:
+                    console.log('MAKING RESET');
                     ag.S_RESET();
                     break;
                 case OM.S_NMI:
@@ -2001,7 +2017,7 @@ const EMX_table = Object.freeze({
 function decode_opcodes() {
     // Intended data structure will be accessed like...yo[E + M*2 + X*4 + D*8][opcode]
     let IDT = '    ';
-    let outstr = 'const decoded_opcodes = Object.freeze({\n';
+    let outstr = '{\n';
     let already_done = [];
     for (let E = 0; E < 2; E++) {
         for (let M = 0; M < 2; M++) {
@@ -2019,20 +2035,23 @@ function decode_opcodes() {
             }
         }
     }
-    outstr += '\n});';
+    outstr += '\n}';
     return outstr;
 }
 
 //console.log(decode_opcodes());
-console.log('Starting opcode decode eval...');
+/*console.log('Starting opcode decode eval...');
 let tr = performance.now();
-eval(decode_opcodes());
+let trattodo = Function(decode_opcodes());
 let tr2 = performance.now() - tr;
 console.log('Took ' + tr2 + 'ms');
+const decoded_opcodes = Object.freeze(trattodo());*/
+
+//console.log('const decoded_opcodes = Object.freeze(\n' + decode_opcodes() + ');');
 
 function get_decoded_opcode(regs) {
     let flag = 0;
-    let ret;
+    let ret = null;
     if (regs.E) {
         ret = decoded_opcodes[EMX_table[7]][regs.IR];
     }
@@ -2043,6 +2062,143 @@ function get_decoded_opcode(regs) {
         else
             ret = decoded_opcodes[EMX_table[0]][regs.IR];
     }
+    if (ret === null) {
+        ret = decoded_opcodes[EMX_table[0]][regs.IR];
+    }
     return ret;
 }
 
+function generate_ins_AM(indent) {
+    let ostr = 'const ins_AM = Object.freeze({\n';
+    for (let ins = 0; ins <= MAX_INS; ins++) {
+        ostr += indent + '[OM.';
+        for (let j in OM) {
+            if (OM[j] === ins) {
+                ostr += j + ']: [ ';
+                break;
+            }
+        }
+        let first = true;
+        // Search through address modes
+        for (let opcoden = 0; opcoden <= MAX_OPCODE; opcoden++) {
+            let opcode = opcode_matrix[opcoden];
+            if (opcode.ins !== ins) continue;
+            let addr_mode = opcode.addr_mode;
+            if (!first) {
+                ostr += ', ';
+            }
+            first = false;
+            ostr += 'AM.';
+            for (let j in AM) {
+                if (AM[j] === addr_mode) {
+                    ostr += j;
+                    break;
+                }
+            }
+        }
+        ostr += ' ],\n'
+    }
+    ostr += '});'
+    return ostr;
+}
+
+//console.log(generate_ins_AM('    '));
+
+const ins_AM = Object.freeze({
+    [OM.ADC]: [ AM.D_INDEXED_IND, AM.STACK_R, AM.D, AM.D_IND_L, AM.IMM, AM.A, AM.AL, AM.D_IND_INDEXED, AM.D_IND, AM.STACK_R_IND_INDEXED, AM.D_INDEXED_X, AM.D_IND_L_INDEXED, AM.A_INDEXED_Y, AM.A_INDEXED_X, AM.AL_INDEXED_X ],
+    [OM.AND]: [ AM.D_INDEXED_IND, AM.STACK_R, AM.D, AM.D_IND_L, AM.IMM, AM.A, AM.AL, AM.D_IND_INDEXED, AM.D_IND, AM.STACK_R_IND_INDEXED, AM.D_INDEXED_X, AM.D_IND_L_INDEXED, AM.A_INDEXED_Y, AM.A_INDEXED_X, AM.AL_INDEXED_X ],
+    [OM.ASL]: [ AM.Db, AM.ACCUM, AM.Ad, AM.D_INDEXED_Xb, AM.A_INDEXED_Xb ],
+    [OM.BCC]: [ AM.PC_R ],
+    [OM.BCS]: [ AM.PC_R ],
+    [OM.BEQ]: [ AM.PC_R ],
+    [OM.BIT]: [ AM.D, AM.A, AM.D_INDEXED_X, AM.A_INDEXED_X, AM.IMM ],
+    [OM.BMI]: [ AM.PC_R ],
+    [OM.BNE]: [ AM.PC_R ],
+    [OM.BPL]: [ AM.PC_R ],
+    [OM.BRA]: [ AM.PC_R ],
+    [OM.BRK]: [ AM.STACKj ],
+    [OM.BRL]: [ AM.PC_RL ],
+    [OM.BVC]: [ AM.PC_R ],
+    [OM.BVS]: [ AM.PC_R ],
+    [OM.CLC]: [ AM.I ],
+    [OM.CLD]: [ AM.I ],
+    [OM.CLI]: [ AM.I ],
+    [OM.CLV]: [ AM.I ],
+    [OM.CMP]: [ AM.D_INDEXED_IND, AM.STACK_R, AM.D, AM.D_IND_L, AM.IMM, AM.A, AM.AL, AM.D_IND_INDEXED, AM.D_IND, AM.STACK_R_IND_INDEXED, AM.D_INDEXED_X, AM.D_IND_L_INDEXED, AM.A_INDEXED_Y, AM.A_INDEXED_X, AM.AL_INDEXED_X ],
+    [OM.COP]: [ AM.STACKj ],
+    [OM.CPX]: [ AM.IMM, AM.D, AM.A ],
+    [OM.CPY]: [ AM.IMM, AM.D, AM.A ],
+    [OM.DEC]: [ AM.ACCUM, AM.Db, AM.Ad, AM.D_INDEXED_Xb, AM.A_INDEXED_Xb ],
+    [OM.DEX]: [ AM.I ],
+    [OM.DEY]: [ AM.I ],
+    [OM.EOR]: [ AM.D_INDEXED_IND, AM.STACK_R, AM.D, AM.D_IND_L, AM.IMM, AM.A, AM.AL, AM.D_IND_INDEXED, AM.D_IND, AM.STACK_R_IND_INDEXED, AM.D_INDEXED_X, AM.D_IND_L_INDEXED, AM.A_INDEXED_Y, AM.A_INDEXED_X, AM.AL_INDEXED_X ],
+    [OM.INC]: [ AM.ACCUM, AM.Db, AM.Ad, AM.D_INDEXED_Xb, AM.A_INDEXED_Xb ],
+    [OM.INX]: [ AM.I ],
+    [OM.INY]: [ AM.I ],
+    [OM.JML]: [ AM.A_IND ],
+    [OM.JMP]: [ AM.Ab, AM.ALb, AM.A_INDb, AM.A_INDEXED_IND ],
+    [OM.JSL]: [ AM.AL ],
+    [OM.JSR]: [ AM.Ac, AM.A_INDEXED_INDb ],
+    [OM.LDA]: [ AM.D_INDEXED_IND, AM.STACK_R, AM.D, AM.D_IND_L, AM.IMM, AM.A, AM.AL, AM.D_IND_INDEXED, AM.D_IND, AM.STACK_R_IND_INDEXED, AM.D_INDEXED_X, AM.D_IND_L_INDEXED, AM.A_INDEXED_Y, AM.A_INDEXED_X, AM.AL_INDEXED_X ],
+    [OM.LDX]: [ AM.IMM, AM.D, AM.A, AM.D_INDEXED_Y, AM.A_INDEXED_Y ],
+    [OM.LDY]: [ AM.IMM, AM.D, AM.A, AM.D_INDEXED_X, AM.A_INDEXED_X ],
+    [OM.LSR]: [ AM.Db, AM.ACCUM, AM.Ad, AM.D_INDEXED_Xb, AM.A_INDEXED_Xb ],
+    [OM.MVN]: [ AM.XYC ],
+    [OM.MVP]: [ AM.XYCb ],
+    [OM.NOP]: [ AM.I ],
+    [OM.ORA]: [ AM.D_INDEXED_IND, AM.STACK_R, AM.D, AM.D_IND_L, AM.IMM, AM.A, AM.AL, AM.D_IND_INDEXED, AM.D_IND, AM.STACK_R_IND_INDEXED, AM.D_INDEXED_X, AM.D_IND_L_INDEXED, AM.A_INDEXED_Y, AM.A_INDEXED_X, AM.AL_INDEXED_X ],
+    [OM.PEA]: [ AM.STACKd ],
+    [OM.PEI]: [ AM.STACKe ],
+    [OM.PER]: [ AM.STACKf ],
+    [OM.PHA]: [ AM.STACKc ],
+    [OM.PHB]: [ AM.STACKc ],
+    [OM.PHD]: [ AM.STACKc ],
+    [OM.PHK]: [ AM.STACKc ],
+    [OM.PHP]: [ AM.STACKc ],
+    [OM.PHX]: [ AM.STACKc ],
+    [OM.PHY]: [ AM.STACKc ],
+    [OM.PLA]: [ AM.STACKb ],
+    [OM.PLB]: [ AM.STACKb ],
+    [OM.PLD]: [ AM.STACKb ],
+    [OM.PLP]: [ AM.STACKb ],
+    [OM.PLX]: [ AM.STACKb ],
+    [OM.PLY]: [ AM.STACKb ],
+    [OM.REP]: [ AM.IMM ],
+    [OM.ROL]: [ AM.Db, AM.ACCUM, AM.Ad, AM.D_INDEXED_Xb, AM.A_INDEXED_Xb ],
+    [OM.ROR]: [ AM.Db, AM.ACCUM, AM.Ad, AM.D_INDEXED_Xb, AM.A_INDEXED_Xb ],
+    [OM.RTI]: [ AM.STACKg ],
+    [OM.RTL]: [ AM.STACKi ],
+    [OM.RTS]: [ AM.STACKh ],
+    [OM.SBC]: [ AM.D_INDEXED_IND, AM.STACK_R, AM.D, AM.D_IND_L, AM.IMM, AM.A, AM.AL, AM.D_IND_INDEXED, AM.D_IND, AM.STACK_R_IND_INDEXED, AM.D_INDEXED_X, AM.D_IND_L_INDEXED, AM.A_INDEXED_Y, AM.A_INDEXED_X, AM.AL_INDEXED_X ],
+    [OM.SEP]: [ AM.IMM ],
+    [OM.SEC]: [ AM.I ],
+    [OM.SED]: [ AM.I ],
+    [OM.SEI]: [ AM.I ],
+    [OM.STA]: [ AM.D_INDEXED_IND, AM.STACK_R, AM.D, AM.D_IND_L, AM.A, AM.AL, AM.D_IND_INDEXED, AM.D_IND, AM.STACK_R_IND_INDEXED, AM.D_INDEXED_X, AM.D_IND_L_INDEXED, AM.A_INDEXED_Y, AM.A_INDEXED_X, AM.AL_INDEXED_X ],
+    [OM.STP]: [ AM.Ic ],
+    [OM.STX]: [ AM.D, AM.A, AM.D_INDEXED_Y ],
+    [OM.STY]: [ AM.D, AM.A, AM.D_INDEXED_X ],
+    [OM.STZ]: [ AM.D, AM.D_INDEXED_X, AM.A, AM.A_INDEXED_X ],
+    [OM.TAX]: [ AM.I ],
+    [OM.TAY]: [ AM.I ],
+    [OM.TCD]: [ AM.I ],
+    [OM.TCS]: [ AM.I ],
+    [OM.TDC]: [ AM.I ],
+    [OM.TRB]: [ AM.Db, AM.Ad ],
+    [OM.TSB]: [ AM.Db, AM.Ad ],
+    [OM.TSC]: [ AM.I ],
+    [OM.TSX]: [ AM.I ],
+    [OM.TXA]: [ AM.I ],
+    [OM.TXS]: [ AM.I ],
+    [OM.TXY]: [ AM.I ],
+    [OM.TYA]: [ AM.I ],
+    [OM.TYX]: [ AM.I ],
+    [OM.WAI]: [ AM.Id ],
+    [OM.WDM]: [ AM.I ],
+    [OM.XBA]: [ AM.Ib ],
+    [OM.XCE]: [ AM.I ],
+    [OM.S_RESET]: [ AM.STACK ],
+    [OM.S_NMI]: [ AM.STACK ],
+    [OM.S_IRQ]: [ AM.STACK ],
+    [OM.S_ABORT]: [ AM.STACK ],
+});

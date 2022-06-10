@@ -1,6 +1,6 @@
 "use strict";
 
-class disassembly_output {
+/*class disassembly_output {
     constructor(addr, strout) {
         this.addr = addr;
         this.strout = strout;
@@ -27,4 +27,4 @@ class w65c816_disassembler {
         let outstr = "";
 
     }
-}
+}*/

@@ -95,4 +95,10 @@ function main() {
 	initDb(main2);
 }
 
-window.onload = main;
+function generate_js() {
+	save_js('w65c816_generated_opcodes.js', 'const decoded_opcodes = Object.freeze(\n' + decode_opcodes() + ');');
+}
+
+//window.onload = main;
+window.onload = test_65c816;
+//window.onload = generate_js;

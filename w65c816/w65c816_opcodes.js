@@ -104,6 +104,8 @@ class OPCODE_MNEMONICS_t {
     }
 }
 
+const MAX_INS = 95;
+
 const OM = Object.freeze(new OPCODE_MNEMONICS_t());
 
 const opcode_MN = Object.freeze({
@@ -254,62 +256,113 @@ class ADDRESS_MODES_t {
         this.XYC = 22;                  // xyc      block move negative
         this.XYCb = 2201;               // xyc      block move positive
         this.IMM = 23;                  // #        immediate
-        this.SPECIAL = 24;              // S        NMI, RESET, etc.
 	}
 }
 const AM = Object.freeze(new ADDRESS_MODES_t());
 
 
-const opcode_AM_MN = {
-    [AM.A]: 'a',
-    [AM.Ab]: 'a',
-    [AM.Ac]: 'a',
-    [AM.Ad]: 'a',
-    [AM.ACCUM]: 'A',
-     [AM.A_INDEXED_X]: 'a,x',
-     [AM.A_INDEXED_Xb]: 'a,x',
-     [AM.A_INDEXED_Y]: 'a,y',
-     [AM.AL]: 'al',
-     [AM.ALb]: 'al',
-     [AM.ALc]: 'al',
-     [AM.AL_INDEXED_X]: 'al,x',
-     [AM.A_IND]: '(a)',
-     [AM.A_INDb]: '(a)',
-     [AM.A_INDEXED_IND]: '(a,x)',
-     [AM.A_INDEXED_INDb]: '(a,x)',
-     [AM.D]: 'd',
-     [AM.Db]: 'd',
-     [AM.STACK_R]: 'd,s',
-     [AM.D_INDEXED_X]: 'd,x',
-     [AM.D_INDEXED_Xb]: 'd,x',
-     [AM.D_INDEXED_Y]: 'd,y',
-     [AM.D_IND]: '(d)',
-     [AM.D_IND_L]: '[d]',
-     [AM.STACK_R_IND_INDEXED]: '(d,s),y',
-     [AM.D_INDEXED_IND]: '(d,x)',
-     [AM.D_IND_INDEXED]: '(d),y',
-     [AM.D_IND_L_INDEXED]: '[d],y',
-     [AM.I]: 'i',
-     [AM.Ib]: 'i',
-     [AM.Ic]: 'i',
-     [AM.Id]: 'i',
-     [AM.PC_R]: 'r',
-     [AM.PC_RL]: 'rl',
-     [AM.STACK]: 's',
-     [AM.STACKb]: 's',
-     [AM.STACKc]: 's',
-     [AM.STACKd]: 's',
-     [AM.STACKe]: 's',
-     [AM.STACKf]: 's',
-     [AM.STACKg]: 's',
-     [AM.STACKh]: 's',
-     [AM.STACKi]: 's',
-     [AM.STACKj]: 's',
-     [AM.XYC]: 'xyc',
-     [AM.XYCb]: 'xyc',
-     [AM.IMM]: '#',
-     [AM.SPECIAL]: 'S'
-};
+const AM_operand_regexes = Object.freeze({
+    [AM.A]: /^[!|]?\$?[0-9a-zA-Z_]+$/,
+    [AM.Ab]: /^[!|]?\$?[0-9a-zA-Z_]+$/,
+    [AM.Ac]: /^[!|]\$?[0-9a-zA-Z_]+$/,
+    [AM.Ad]: /^[!|]\$?[0-9a-zA-Z_]+$/,
+    [AM.ACCUM]: /^A$/,
+     [AM.A_INDEXED_X]:  /^[!|]\$?[0-9a-zA-Z_]+, ?x$/,
+     [AM.A_INDEXED_Xb]: /^[!|]\$?[0-9a-zA-Z_]+, ?x$/,
+     [AM.A_INDEXED_Y]:  /^[!|]\$?[0-9a-zA-Z_]+, ?y$/,
+     [AM.AL]:  /^>?\$?[0-9a-zA-Z_]+$/,
+     [AM.ALb]: /^>?\$?[0-9a-zA-Z_]+$/,
+     [AM.ALc]: /^>?\$?[0-9a-zA-Z_]+$/,
+     [AM.AL_INDEXED_X]: /^>?\$?[0-9a-zA-Z_]+, ?x$/,
+     [AM.A_IND]:  /^\([!|]?\$?[0-9a-zA-Z_]+\)$/,
+     [AM.A_INDb]: /^\([!|]?\$?[0-9a-zA-Z_]+\)$/,
+     [AM.A_INDEXED_IND]:  /^\([!|]?\$?[0-9a-zA-Z_]+, ?x\)$/,
+     [AM.A_INDEXED_INDb]: /^\([!|]?\$?[0-9a-zA-Z_]+, ?x\)$/,
+     [AM.D]:  /^<?\$?[0-9a-zA-Z_]$/,
+     [AM.Db]: /^<?\$?[0-9a-zA-Z_]$/,
+     [AM.STACK_R]: /^\$?[0-9a-zA-Z_]+, ?s$/,
+     [AM.D_INDEXED_X]:  /^<?\$?[a-zA-Z0-9_]+, ?x$/,
+     [AM.D_INDEXED_Xb]: /^<?\$?[a-zA-Z0-9_]+, ?x$/,
+     [AM.D_INDEXED_Y]:  /^<?\$?[a-zA-Z0-9_]+, ?y$/,
+     [AM.D_IND]:   /^\(<?\$?[a-zA-Z0-9_]+\)$/,
+     [AM.D_IND_L]: /^\[<?\$?[a-zA-Z0-9_]+]$/,
+     [AM.STACK_R_IND_INDEXED]: /^\(>?\$?[0-9a-zA-Z_]+, ?s\), ?y$/,
+     [AM.D_INDEXED_IND]: /^\(<?\$?[0-9a-zA-Z_]+, ?x\)$/,
+     [AM.D_IND_INDEXED]: /^\(<?\$?[0-9a-zA-Z_]+\), ?y$/,
+     [AM.D_IND_L_INDEXED]: /^\[<?\$?[0-9a-zA-Z_]+], ?y$/,
+     [AM.I]: /^$/,
+     [AM.Ib]: /^$/,
+     [AM.Ic]: /^$/,
+     [AM.Id]: /^$/,
+     [AM.IMM]: /^#[<>^]?\$?[0-9a-zA-Z_]+$/,
+     [AM.PC_R]:  /^-?\$?-?[0-9a-zA-Z_]+$/,
+     [AM.PC_RL]: /^-?\$?-?[0-9a-zA-Z_]+$/,
+     [AM.STACK]: /^$/,
+     [AM.STACKb]: /^$/,
+     [AM.STACKc]: /^$/,
+     [AM.STACKd]: /^#>?\$?[0-9a-zA-Z_]+$/, // basically immediate but only one size
+     [AM.STACKe]: /^<?\$?[0-9a-zA-Z_]$/, // basically d
+     [AM.STACKf]: /^-?\$?-?[0-9a-zA-Z_]+$/, // basically PC_R
+     [AM.STACKg]: /^$/,
+     [AM.STACKh]: /^$/,
+     [AM.STACKi]: /^$/,
+     [AM.STACKj]: /^\$?[0-9a-zA-Z_]+$/, // basically one hex number
+     [AM.XYC]: /^\$?[0-9a-zA-Z_]+, ?\$?[0-9a-zA-Z_]+$/,
+     [AM.XYCb]: /^\$?[0-9a-zA-Z_]+, ?\$?[0-9a-zA-Z_]+$/
+});
+// where d is 8 bits
+// a is 16
+// al is 24
+const AM_operand_allowed_types = Object.freeze({
+    [AM.A]: ['a'],
+    [AM.Ab]: ['a'],
+    [AM.Ac]: ['a'],
+    [AM.Ad]: ['a'],
+    [AM.ACCUM]: [],
+     [AM.A_INDEXED_X]:  ['d', 'a'],
+     [AM.A_INDEXED_Xb]: ['d', 'a'],
+     [AM.A_INDEXED_Y]:  ['d', 'a'],
+     [AM.AL]:  ['d', 'a', 'al'],
+     [AM.ALb]: ['d', 'a', 'al'],
+     [AM.ALc]: ['d', 'a', 'al'],
+     [AM.AL_INDEXED_X]: ['d', 'a', 'al'],
+     [AM.A_IND]:  ['d', 'a'],
+     [AM.A_INDb]: ['d', 'a'],
+     [AM.A_INDEXED_IND]:  ['d', 'a'],
+     [AM.A_INDEXED_INDb]: ['d', 'a'],
+     [AM.D]:  ['d'],
+     [AM.Db]: ['d'],
+     [AM.STACK_R]: ['d'],
+     [AM.D_INDEXED_X]:  ['d'],
+     [AM.D_INDEXED_Xb]: ['d'],
+     [AM.D_INDEXED_Y]:  ['d'],
+     [AM.D_IND]:   ['d'],
+     [AM.D_IND_L]: ['d'],
+     [AM.STACK_R_IND_INDEXED]: ['d'],
+     [AM.D_INDEXED_IND]: ['d'],
+     [AM.D_IND_INDEXED]: ['d'],
+     [AM.D_IND_L_INDEXED]: ['d'],
+     [AM.I]: [],
+     [AM.Ib]: [],
+     [AM.Ic]: [],
+     [AM.Id]: [],
+     [AM.PC_R]:  ['d'],
+     [AM.PC_RL]: ['d'],
+     [AM.STACK]: [],
+     [AM.STACKb]: [],
+     [AM.STACKc]: [],
+     [AM.STACKd]: ['d', 'a'],
+     [AM.STACKe]: ['d'],
+     [AM.STACKf]: ['d', 'a'],
+     [AM.STACKg]: [],
+     [AM.STACKh]: [],
+     [AM.STACKi]: [],
+     [AM.STACKj]: ['d'],
+     [AM.XYC]: ['d'],
+     [AM.XYCb]: ['d'],
+     [AM.IMM]: ['d', 'a']
+});
+
 
 // Hand-made instruction matrix
 const opcode_MN_R = Object.freeze({
@@ -437,7 +490,6 @@ const opcode_AM_R = Object.freeze({
     [AM.STACK]: [0x00, 0x02, 0x08, 0x0B, 0x28, 0x2B, 0x40, 0x48, 0x4B, 0x5A, 0x60, 0x62, 0x68, 0x6B, 0x7A, 0x8B, 0xAB, 0xD4, 0xDA, 0xF4, 0xFA, 0x100, 0x101, 0x102, 0x103],
     [AM.XYC]: [0x44, 0x54],
     [AM.IMM]: [0x09, 0x29, 0x49, 0x69, 0x89, 0xA0, 0xA2, 0xA9, 0xC0, 0xC2, 0xC9, 0xE0, 0xE2, 0xE9],
-    [AM.SPECIAL]: [0x100, 0x101, 0x102, 0x103]
 });
 
 const opcode_AM_SPLIT_R = Object.freeze({
@@ -487,8 +539,7 @@ const opcode_AM_SPLIT_R = Object.freeze({
     [AM.STACKj]: [0x00, 0x02], // BRK, COP
     [AM.XYC]: [0x54], // MVN
     [AM.XYCb]: [0x44], // MVP
-    [AM.IMM]: [0x09, 0x29, 0x49, 0x69, 0x89, 0xA0, 0xA2, 0xA9, 0xC0, 0xC2, 0xC9, 0xE0, 0xE2, 0xE9],
-    [AM.SPECIAL]: [0x100, 0x101, 0x102, 0x103]
+    [AM.IMM]: [0x09, 0x29, 0x49, 0x69, 0x89, 0xA0, 0xA2, 0xA9, 0xC0, 0xC2, 0xC9, 0xE0, 0xE2, 0xE9]
 });
 
 function array_of_array_contains(array, el) {
@@ -594,3 +645,6 @@ const opcode_R = Object.freeze({
     0x100: OM.S_RESET, 0x101: OM.S_ABORT, 0x102: OM.S_IRQ,
     0x103: OM.S_NMI
 });
+
+const A_OR_M_X = Object.freeze(new Set([OM.CPX, OM.CPY, OM.STX, OM.STY, OM.LDX, OM.LDY]));
+const A_R_INS = Object.freeze(new Set([OM.ADC, OM.AND, OM.BIT, OM.CMP, OM.EOR, OM.LDA, OM.LDX, OM.LDY, OM.ORA, OM.SBC]));
