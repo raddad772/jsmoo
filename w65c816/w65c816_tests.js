@@ -52,41 +52,50 @@ CLC
 .POOF
 XCE
 
-:NATIVE M0 X0
+:NATIVE M1 X1
 JMP NATIVE_START
 
-.NATIVE_START:$100200
-:E0 M0 X0
+.NATIVE_START:$040200
+:E0 M1 X1
 LDA #$ABCD
 STP
     `;
 
     a.assemble(TO_ASSEMBLE);
-    console.log('FFFC is', a.output[0xFFFC]);
-    console.log('FFFD is', a.output[0xFFFD]);
+    //console.log('2022 is', a.output[0x2022]);
+    //console.log('FFFD is', a.output[0xFFFD]);
     return a.output;
 }
 
 function test_65c816() {
     let RAM = write_test_to_RAM();
+    let read8 = function(bank, addr) {
+        bank = bank & 0x0F;
+        return RAM[(bank << 16) | addr];
+    }
     let trace_read8 = function(bank, addr) {
         bank = bank & 0x0F;
-        let ret = RAM[(bank << 16) | addr];
-        console.log('CPU read ' + hex0x6(addr) + ' value ' + hex0x2(ret));
+        addr = (bank << 16) | addr;
+        let ret = RAM[addr];
+
+        //console.log('read ' + hex0x6(addr) + ': ' + hex0x2(ret));
+        dconsole.addl('read ' + hex0x6(addr) + ': ' + hex0x2(ret));
         return ret;
     }
     let trace_write8 = function(bank, addr, val) {
         bank = bank & 0x0F;
         let ret = RAM[(bank << 16) | addr];
+        console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
         console.log('CPU write ' + hex0x2(val) + ' to ' + hex0x6(addr));
     }
 
     let cpu = new w65c816();
     console.log('RESETTING CPU');
     cpu.reset();
-    cpu.enable_tracing(trace_read8)
-    console.log('RUNNING CPU 10 CYCLES');
-    for (let i = 0; i < 10; i++) {
+    cpu.enable_tracing(read8)
+    let numcycles = 20;
+    console.log('RUNNING CPU ' + numcycles + ' CYCLES');
+    for (let i = 0; i < numcycles; i++) {
         cpu.cycle();
         if (cpu.pins.traces.length > 0) {
             dconsole.addl(cpu.pins.traces[0]);
@@ -98,9 +107,7 @@ function test_65c816() {
             }
             else {
                 let r = trace_read8(cpu.pins.BA, cpu.pins.Addr);
-                console.log('Setting pins to ', r);
                 cpu.pins.D = r;
-                console.log('PINS', cpu.pins.D);
             }
         }
     }

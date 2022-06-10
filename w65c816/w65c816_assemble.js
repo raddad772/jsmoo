@@ -258,7 +258,7 @@ class w65c816_assembler {
         let addr = ins.addr;
         console.log(hex0x6(addr) + ' ' + hex0x2(ins.bytecodes[0]) + ' ' + opcode_MN[ins.ins]);
         for (let i in ins.bytecodes) {
-            this.write8(addr, ins.bytecodes[i]);
+            this.write8(addr+parseInt(i), ins.bytecodes[i]);
         }
     }
 
@@ -267,9 +267,6 @@ class w65c816_assembler {
     }
 
     write16(addr, val) {
-        console.log('WRITE!', hex0x4(addr), hex0x4(addr+1), hex0x4(val))
-        console.log('PT1', val & 0xFF);
-        console.log('PT2', (val & 0xFF00) >>> 8)
         this.output[addr] = val & 0xFF;
         this.output[addr+1] = (val & 0xFF00) >>> 8;
     }
