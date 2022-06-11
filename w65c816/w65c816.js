@@ -61,11 +61,18 @@ class w65c816_P {
 	}
 	
 	getbyte_emulated() {
-		return 0;
+		return this.getbyte_native();
 	}
 
-	setbyte_emulate() {
-
+	setbyte_emulated(val) {
+		this.C = val & 0x01;
+		this.Z = (val & 0x02) >> 1;
+		this.I = (val & 0x04) >> 2;
+		this.D = (val & 0x08) >> 3;
+		this.X = 1;
+		this.M = 1;
+		this.V = (val & 0x40) >> 6;
+		this.N = (val & 0x80) >> 7;
 	}
 
 	getbyte_native() {
@@ -190,9 +197,11 @@ class w65c816 {
 	cycle() {
 		this.pins.trace_cycles++;
 		if ((this.regs.STP  || this.regs.WAI) && (this.regs.TCU === 0)) {
-			console.log(this.regs.STP, this.regs.WAI)
-			// TODO: Check for things that get us out of STP or WAI state
-			return;
+			if (this.regs.STP && this.pins.RES) {
+				this.regs.STP = false;
+			}
+			else
+				return;
 		}
 		if ((this.regs.TCU === 0) && (this.#RES_pending)) {
 			this.reset();

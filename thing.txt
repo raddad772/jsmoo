@@ -1,0 +1,52 @@
+                        // DEC a,x E=0 M=0 X=0
+
+
+Addressing modes to check out...
+
+A     with STA    all    LDA all
+Ab JMP            all
+Ac JSR            all
+Ad R-M-W      INC all
+ACCUM             all
+A_INDEXED_X       recheck, confused
+A_INDEXED_Xb      some
+A_INDEXED_Y       recheck, confused
+AL    with STA   all     LDA all
+ALb              all
+ALc              fixed for stack
+AL_INDEXED_X STA all     LDA all
+A_IND            all
+A_INDb           all
+A_INDEXED_IND    all
+A_INDEXED_INDb   all
+D                STA and LDA look good
+Db
+STACK_R
+D_INDEXED_X
+D_INDEXED_Xb
+D_INDEXED_Y
+D_IND
+D_IND_L
+STACK_R_IND_INDEXED
+D_INDEXED_IND
+D_IND_INDEXED
+D_IND_L_INDEXED
+I               all
+Ib              all
+Ic              all
+Id              all
+PC_R
+PC_RL
+STACK
+STACKb
+STACKc
+STACKd
+STACKe
+STACKf
+STACKg
+STACKh
+STACKi
+STACKj
+XYC             maybe
+XYCb            maybe
+IMM  all
