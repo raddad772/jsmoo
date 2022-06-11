@@ -57,7 +57,10 @@ JMP NATIVE_START
 
 .NATIVE_START:$040200
 :E0 M1 X1
+; Next line should do a 16-bit load
 LDA #$ABCD
+; Next line should store 8bits in 0x2010 
+STA $2010 
 STP
     `;
 

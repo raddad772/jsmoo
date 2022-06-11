@@ -501,7 +501,7 @@ const opcode_AM_SPLIT_R = Object.freeze({
     [AM.A_INDEXED_X]: [0x1D, 0x3C, 0x3D, 0x5D, 0x7D, 0x9D, 0x9E, 0xBC, 0xBD, 0xDD, 0xFD],
     [AM.A_INDEXED_Xb]: [0x1E, 0x3E, 0x5E, 0x7E, 0xDE, 0xFE], // rmw. ASL, DEC, INC, LSR, ROL, ROR
     [AM.A_INDEXED_Y]: [0x19, 0x39, 0x59, 0x79, 0x99, 0xB9, 0xBE, 0xD9, 0xF9],
-    [AM.AL]: [0x0F, 0x22, 0x2F, 0x4F, 0x6F, 0x8F, 0xAF, 0xCF, 0xEF],
+    [AM.AL]: [0x0F, 0x2F, 0x4F, 0x6F, 0x8F, 0xAF, 0xCF, 0xEF],
     [AM.ALb]: [0x5C], // JMP
     [AM.ALc]: [0x22], // JSL
     [AM.AL_INDEXED_X]: [0x1F, 0x3F, 0x5F, 0x7F, 0x9F, 0xBF, 0xDF, 0xFF],
@@ -647,4 +647,9 @@ const opcode_R = Object.freeze({
 });
 
 const A_OR_M_X = Object.freeze(new Set([OM.CPX, OM.CPY, OM.STX, OM.STY, OM.LDX, OM.LDY]));
+const STACK_X = Object.freeze(new Set([OM.PLX, OM.PLY, OM.PHX, OM.PHY]));
+const STACK_M = Object.freeze(new Set([OM.PHA, OM.PLA]));
+const STACK_8 = Object.freeze(new Set([OM.PHP, OM.PHB, OM.PHK, OM.PLP, OM.PLP]));
+const STACK_16 = Object.freeze(new Set([OM.PLD, OM.PHD]));
+
 const A_R_INS = Object.freeze(new Set([OM.ADC, OM.AND, OM.BIT, OM.CMP, OM.EOR, OM.LDA, OM.LDX, OM.LDY, OM.ORA, OM.SBC]));
