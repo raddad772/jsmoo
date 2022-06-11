@@ -2,6 +2,17 @@
 
 // BIG TODO: implement diff-based RPDV, so pins are not set and reset SO MUCH
 
+// PROBLEMS
+// Code generation is complete. BUT:
+// Large code generation
+// * Direct addressing not correct when DL != 0 in Emulation mode
+// * Absolute Indexed should be able to cross banks
+// * MVP, MVN assume 16-bit
+// * JMP (a) JML(a) use DBR? JMP (a,x) JSR(a)x) PBR?
+// * Relative (branch and other) addressing needs checking
+// * All branchy addressing actually like RTI
+// * NMI etc. need logic
+
 // So came into a bit of a problem. A naive encoding (with another doubling for D) ended
 //  up with 8MB of code.
 // Taking out D took us from 16 to 8 times, and got us down to 4.5MB.
@@ -475,6 +486,14 @@ class opcode_functions {
         this.affected_by_X = affected_by_X;
         this.affected_by_D = affected_by_D;
     }
+}
+
+function real_mksigned8(what) {
+     return what >= 0x80 ? -(0x100 - what) : what;
+}
+
+function real_mksigned16(what) {
+     return what >= 0x8000 ? -(0x10000 - what) : what;
 }
 
 function mksigned8(what) {
@@ -1205,16 +1224,67 @@ class switchgen {
         this.addl('regs.PC += (pins.D << 8);')
     }
 
-    S_NMI() {
+    INTERRUPT(ins, E) {
+        this.addcycle(2);
+        this.RPDV(0, 1, 0, 0);
+        this.addl('regs.TR = regs.PC;');
+        this.addr_to_PC_then_inc()
 
+        if (E) {
+            this.addcycle(3);
+            this.addr_to_S_then_dec();
+            this.RPDV(1, 0, 1, 0);
+            this.addl('pins.D = regs.PBR;');
+
+            this.addcycle(4);
+        }
+        else {
+            this.addcycle(4);
+            this.RPDV(1, 0, 1, 0);
+        }
+        this.addr_to_S_then_dec();
+        this.D_to_TRH();
+
+        this.addcycle(5);
+        this.addr_to_S_then_dec();
+        this.D_to_TRL();
+
+        this.addcycle(6);
+        this.addr_to_S_then_dec();
+        if (E && ins === OM.BRK)
+            this.addl('pins.D = regs.P.getbyte_emulated() | 8;'); // Set BRK bit
+        else if (E)
+            this.addl('pins.D = regs.P.getbyte_emulated() & 0xF7;'); // Clear BRK bit
+        else
+            this.addl('pins.D = regs.P.getbyte_native();');
+
+        this.addcycle(7);
+        let vector = get_vector(ins, E);
+        this.addr_to_ZB(hex0x4(vector));
+        this.RPDV(0, 0, 1, 1);
+
+        this.addcycle(8);
+        this.addr_to_ZB(hex0x4(vector+1));
+        this.addl('regs.TA = pins.D');
+
+        this.cleanup();
+        this.addl('regs.PC = (pins.D << 8) + regs.TA');
     }
 
-    S_ABORT() {
-
+    S_NMI(E) {
+        this.INTERRUPT(OM.S_NMI, E);
+        this.addl('regs.P.I = 1;');
+        this.addl('regs.P.D = 0;');
     }
 
-    S_IRQ() {
+    S_ABORT(E) {
+        this.INTERRUPT(OM.S_ABORT, E);
+    }
 
+    S_IRQ(E) {
+        this.INTERRUPT(OM.S_IRQ, E);
+        this.addl('regs.P.I = 1;');
+        this.addl('regs.P.D = 0;');
     }
 
     add_ins(ins, E, M, X) {
@@ -1243,6 +1313,10 @@ class switchgen {
                     this.BIT8();
                 else
                     this.BIT16();
+                break;
+            case OM.COP:
+            case OM.BRK:
+                this.INTERRUPT(ins, E);
                 break;
             case OM.CLC:
                 this.addl('regs.P.C = 0;');
@@ -2277,7 +2351,10 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.RPDV(0, 0, 0, 0);
 
             ag.addcycle(4);
-            ag.addr_to_ZB('(regs.TA + regs.X + regs.D) & 0xFFFF');
+            if (E)
+                ag.addr_to_ZB('(regs.TA + regs.X + regs.D) & 0xFF');
+            else
+                ag.addr_to_ZB('(regs.TA + regs.X + regs.D) & 0xFFFF');
             finish_RW8or16p();
             break;
         case AM.D_INDEXED_Xb: // d,x RMWs
@@ -2288,7 +2365,10 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
 
             ag.addcycle(4);
             ag.RPDV(0, 0, 1, 0);
-            ag.addr_to_ZB('(regs.X + regs.D + regs.TA) & 0xFFFF');
+            if (E)
+                ag.addr_to_ZB('(regs.TA + regs.X + regs.D) & 0xFF');
+            else
+                ag.addr_to_ZB('(regs.TA + regs.X + regs.D) & 0xFFFF');
             fetch_rmw_8or16();
             finish_rmw();
             break;
@@ -2297,7 +2377,10 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             fetch_D0_and_skip_cycle();
             ag.RPDV(0, 0, 0, 0);
             ag.addcycle(4);
-            ag.addr_to_ZB('(regs.TA + regs.Y + regs.D) & 0xFFFF');
+            if (E)
+                ag.addr_to_ZB('(regs.TA + regs.X + regs.D) & 0xFF');
+            else
+                ag.addr_to_ZB('(regs.TA + regs.X + regs.D) & 0xFFFF');
             finish_RW8or16p();
             break;
         case AM.IMM:
@@ -2350,19 +2433,89 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.cleanup();
             ag.addl('regs.WAI = true;');
             break;
+        case AM.PC_R:
+            // +1 if branch taken
+            // +1 if branch taken across page boundaries in emulation mode
+            ag.addcycle(2);
+            ag.RPDV(0, 1, 0, 0);
+            ag.addr_to_PC_then_inc();
+
+            switch(opcode_info.ins) {
+                case OM.BCC:
+                    ag.addl('regs.TR = regs.P.C === 0;');
+                    break;
+                case OM.BCS:
+                    ag.addl('regs.TR = regs.P.C === 1;');
+                    break;
+                case OM.BEQ:
+                    ag.addl('regs.TR = regs.P.Z === 0;');
+                    break;
+                case OM.BNE:
+                    ag.addl('regs.TR = regs.P.Z === 1;');
+                    break;
+                case OM.BPL:
+                    ag.addl('regs.TR = regs.P.N === 1;');
+                    break;
+                case OM.BRA:
+                    ag.addl('regs.TR = true;');
+                    break;
+                case OM.BMI:
+                    ag.addl('regs.TR = regs.P.N === 0;');
+                    break;
+                case OM.BVS:
+                    ag.addl('regs.TR = regs.P.V === 1;');
+                    break;
+                case OM.BVC:
+                    ag.addl('regs.TR = regs.P.V === 0;');
+                    break;
+            }
+
+            ag.addl('let skipped_cycle = 0;')
+            // Technically this is supposed to be skip if E and branch across page boundary
+            // BUT
+            // This is the one place it was too huge a pain to add perfect accuracy FOR RIGHT NOW
+            // It can certainly be added by making specialized versions of this function
+            if (!E) ag.addl('regs.TCU++; skipped_cycle++;           // skip cycle for no E')
+            ag.addl('if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken');
+
+            ag.addcycle('2a');
+            ag.addl('regs.TA = pins.D;');
+            ag.RPDV(0, 0, 0, 0);
+
+            ag.addcycle('2b');
+            ag.addl('if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.VPA = 0; pins.VDA = 0; }');
+
+            ag.cleanup();
+            ag.addl('if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.VPA = 0; pins.VDA = 0; }');
+            ag.addl('regs.PC = (regs.PC + -1 + real_mksigned8(regs.TA)) & 0xFFFF;');
+            break;
+        case AM.PC_RL:
+            ag.addcycle(2);
+            ag.RPDV(0, 1, 0, 0);
+            ag.addr_to_PC_then_inc();
+
+            ag.addcycle(3);
+            ag.addl('regs.TA = pins.D;');
+            ag.addr_to_PC_then_inc();
+
+            ag.addcycle(4);
+            ag.RPDV(0, 0, 0, 0);
+            ag.addl('regs.TA = real_mksigned16(regs.TA + (pins.D << 8));');
+            ag.addl('regs.PC = (regs.PC + regs.TA + -2) & 0xFFFF;');
+            break;
         case AM.STACK:
             switch(opcode_info.ins) {
                 case OM.S_RESET:
                     ag.S_RESET();
                     break;
                 case OM.S_NMI:
-                    ag.S_NMI();
+                    ag.S_NMI(E);
                     break;
                 case OM.S_IRQ:
-                    ag.S_IRQ();
+                    ag.S_IRQ(E);
                     break;
                 case OM.S_ABORT:
-                    ag.S_ABORT();
+                    ag.S_ABORT(E);
                     break;
             }
             break;
@@ -2596,49 +2749,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
         case AM.STACKj: // BRK, COP
             // dont push PBR if in emulation mode
             affected_by_E = true;
-            ag.addcycle(2);
-            ag.RPDV(0, 1, 0, 0);
-            ag.addl('regs.TR = regs.PC');
-            ag.addr_to_PC_then_inc()
-
-
-            if (E) {
-                ag.addcycle(3);
-                ag.addr_to_S_after_inc();
-                ag.RPDV(1, 0, 1, 0);
-                ag.addl('pins.D = regs.PBR');
-
-                ag.addcycle(4);
-            }
-            else {
-                ag.addcycle(4);
-                ag.RPDV(1, 0, 1, 0);
-            }
-            ag.addr_to_S_after_inc();
-            ag.D_to_TRH();
-
-            ag.addcycle(5);
-            ag.addr_to_S_after_inc();
-            ag.D_to_TRL();
-
-            ag.addcycle(6);
-            ag.addr_to_S_after_inc();
-            if (E)
-                ag.addl('pins.D = regs.P.getbyte_emulated() | 8;');
-            else
-                ag.addl('pins.D = regs.P.getbyte_native();');
-
-            ag.addcycle(7);
-            let vector = get_vector(opcode_info.ins, E);
-            ag.addr_to(hex0x4(vector), 0);
-            ag.RPDV(0, 0, 1, 1);
-
-            ag.addcycle(8);
-            ag.addr_to(hex0x4(vector+1), 0);
-            ag.addl('regs.TA = pins.D');
-
-            ag.cleanup();
-            ag.addl('regs.PC = (pins.D << 8) + regs.TA');
+            ag.add_ins(opcode_info.ins, E, M, X);
 
             ag.addl('regs.P.D = 0;');
             ag.addl('regs.P.I = 1;');
