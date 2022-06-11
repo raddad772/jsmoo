@@ -12,6 +12,18 @@
 // * Relative (branch and other) addressing needs checking
 // * All branchy addressing actually like RTI
 // * NMI etc. need logic
+// * Perhaps revise PRDV to just VD, RW, and make vector pull separate since it only happens in one place
+
+/*
+branch -3 (0xFD)
+
+INX   PC=0x100
+BVC   PC=0x101
+-3    PC=0x102
+INX   PC=0x103
+
+goes back to the start of INX. so PC is from the "next instruction" which is where it is after anyway
+*/
 
 // So came into a bit of a problem. A naive encoding (with another doubling for D) ended
 //  up with 8MB of code.
