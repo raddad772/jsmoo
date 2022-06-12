@@ -6,13 +6,15 @@
 // Code generation is complete. BUT:
 // Large code generation
 // * Direct addressing not correct when DL != 0 in Emulation mode
+//   * expected behavior: DL=0 means always zero page, DL!=0 means page boundaries can be crossed
 // * Absolute Indexed should be able to cross banks
-// * MVP, MVN assume 16-bit
+//   * yes not pages but BANKS
+// * MVP, MVN assume 16-bit. They are not tested, but if they did work, they will not in 8-bit.
 // * JMP (a) JML(a) use DBR? JMP (a,x) JSR(a)x) PBR?
-// * Relative (branch and other) addressing needs checking
-// * All branchy addressing actually like RTI
 // * NMI etc. need logic
 // * Perhaps revise PRDV to just VD, RW, and make vector pull separate since it only happens in one place
+//  * this is done, but still, TODO: check any skipped_cycles don't break RPDV now, since RPDV added
+//    "intelligence"
 
 /*
 branch -3 (0xFD)
@@ -527,6 +529,11 @@ class switchgen {
         this.no_addr_at_end = false;
         this.has_custom_end = false;
         this.outstr = '';
+
+        // We start any instruction on a read of a valid address
+        this.old_rw = 0;
+        this.old_pdv = 1;
+
         this.clear(indent, what);
     }
 
@@ -540,6 +547,9 @@ class switchgen {
         this.no_addr_at_end = false;
         this.has_custom_end = false;
         this.outstr = this.indent1 + 'switch(' + what + ') {\n';
+
+        this.old_rw = 0;
+        this.old_pdv = 1;
     }
 
     // We actually ignore the input cycle #
@@ -1202,7 +1212,12 @@ class switchgen {
         /*this.addcycle(2);
         this.RPDV(0, 0, 0, 0);*/
         this.addcycle(3);
-        this.RPDV(0, 0, 1, 0);
+        if (PINS_SEPERATE_PDV) {
+            this.RPDV(0, 0, 1, 0);
+        }
+        else {
+            this.addl('pins.RW = 0; pins.PDV = 1;');
+        }
         this.addr_to_S_then_dec();
 
         this.addcycle(4);
@@ -1215,7 +1230,9 @@ class switchgen {
         this.addr_to_S_then_dec();
 
         this.addcycle(7);
-        this.RPDV(0, 0, 1, 1);
+        if (PINS_SEPERATE_PDV) {
+            this.RPDV(0, 0, 1, 1);
+        }
         this.addr_to_ZB('0xFFFC');
         this.addl('regs.DBR = 0;');
         this.addl('regs.D = 0;');
@@ -1234,16 +1251,22 @@ class switchgen {
 
         this.cleanup();
         this.addl('regs.PC += (pins.D << 8);')
+        if (!PINS_SEPERATE_PDV) {
+            this.addl('pins.PDV = 1;');
+        }
     }
 
     INTERRUPT(ins, E) {
-        this.addcycle(2);
-        this.RPDV(0, 1, 0, 0);
-        this.addl('regs.TR = regs.PC;');
-        this.addr_to_PC_then_inc()
+        if (ins === OM.BRK || ins === OM.COP) {
+            // Get Signature Byte. Not a thing for NMI, IRQ
+            this.addcycle(2);
+            this.RPDV(0, 1, 0, 0);
+            this.addr_to_PC_then_inc();
+        }
 
-        if (E) {
+        if (!E) {
             this.addcycle(3);
+            this.addl('regs.TR = regs.PC;');
             this.addr_to_S_then_dec();
             this.RPDV(1, 0, 1, 0);
             this.addl('pins.D = regs.PBR;');
@@ -1252,6 +1275,7 @@ class switchgen {
         }
         else {
             this.addcycle(4);
+            this.addl('regs.TR = regs.PC;');
             this.RPDV(1, 0, 1, 0);
         }
         this.addr_to_S_then_dec();
@@ -1277,10 +1301,10 @@ class switchgen {
 
         this.addcycle(8);
         this.addr_to_ZB(hex0x4(vector+1));
-        this.addl('regs.TA = pins.D');
+        this.addl('regs.TA = pins.D;');
 
         this.cleanup();
-        this.addl('regs.PC = (pins.D << 8) + regs.TA');
+        this.addl('regs.PC = (pins.D << 8) + regs.TA;');
     }
 
     S_NMI(E) {
@@ -1652,7 +1676,24 @@ class switchgen {
     }
 
     RPDV(W, P, D, V) {
-        this.outstr += this.indent3 + "pins.RW = " + W + "; pins.VPA = " + P + "; pins.VDA = " + D + "; pins.VPB = " + V + ";\n";
+        if (PINS_SEPERATE_PDV) {
+            this.addl('pins.RW = ' + W + "; pins.VPA = " + P + "; pins.VDA = " + D + "; pins.VPB = " + V + ";");
+        } else {
+            let do_W = W !== this.old_rw;
+            let PDV = P || D ? 1 : 0;
+            let do_PDV = PDV !== this.old_pdv;
+            if (do_W && do_PDV) {
+                this.addl('pins.RW = ' + W + '; pins.PDV = ' + PDV + ';');
+            }
+            else if (do_W) {
+                this.addl('pins.RW = ' + W + ';');
+            }
+            else if (do_PDV) {
+                this.addl('pins.PDV = ' + PDV + ';');
+            }
+            this.old_rw = W;
+            this.old_pdv = PDV;
+        }
     }
 
 }
@@ -1704,7 +1745,6 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
 
             ag.addcycle('fetch_D0_and_skip_cycle 3');
             ag.addl('if (regs.skipped_cycle) regs.TA = pins.D;')
-
     }
 
     // Function to do a variable-sized fetch in middle of RMW
@@ -2495,11 +2535,21 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.RPDV(0, 0, 0, 0);
 
             ag.addcycle('2b');
-            ag.addl('if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.VPA = 0; pins.VDA = 0; }');
+            if (PINS_SEPERATE_PDV) {
+                ag.addl('if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.VPA = 0; pins.VDA = 0; }');
+            } else {
+                ag.addl('if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } ');
+                ag.old_rw = 0; ag.old_pdv = 0;
+            }
 
             ag.cleanup();
-            ag.addl('if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.VPA = 0; pins.VDA = 0; }');
-            ag.addl('regs.PC = (regs.PC + -1 + real_mksigned8(regs.TA)) & 0xFFFF;');
+            if (PINS_SEPERATE_PDV) {
+                ag.addl('if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.VPA = 0; pins.VDA = 0; }');
+            } else {
+                ag.addl('if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } ');
+                ag.old_rw = 0; ag.old_pdv = 0;
+            }
+            ag.addl('regs.PC = (regs.PC + 1 + real_mksigned8(regs.TA)) & 0xFFFF;');
             break;
         case AM.PC_RL:
             ag.addcycle(2);
@@ -2513,7 +2563,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addcycle(4);
             ag.RPDV(0, 0, 0, 0);
             ag.addl('regs.TA = real_mksigned16(regs.TA + (pins.D << 8));');
-            ag.addl('regs.PC = (regs.PC + regs.TA + -2) & 0xFFFF;');
+            ag.addl('regs.PC = (regs.PC + 1 + regs.TA) & 0xFFFF;'); // +1 because we didn't INC PC yet
             break;
         case AM.STACK:
             switch(opcode_info.ins) {
