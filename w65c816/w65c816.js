@@ -53,7 +53,7 @@ let VEC_RST_LO = 0x00FFFC;
 let VEC_RST_HI = 0x00FFFD;
 
 const OP_RESET = 0x100;
-
+const PINS_SEPERATE_PDV = false;
 
 class w65c816_P {
 	constructor(pins) {
@@ -135,6 +135,8 @@ class w65c816_pins {
 		this.E = 0; // state of Emulation bit
 		this.MX = 0; // M and X flags set
 		this.RES = 0; // RESET signal
+
+		this.PDV = 0; // combined program, data, vector pin, to simplify.
 
 		// For tracing processor...
 		this.trace_cycles = 0;
@@ -419,7 +421,7 @@ class w65c816 {
 		let outstr = '';
 		// General trace format is...
 		// (cycles) PC: LDA d,x   (any byte operands)   E: C: X: Y: S: MX: P: D: DBR:
-		outstr += '(' + padl(this.pins.trace_cycles.toString(), 6) + ') ' + hex0x2(this.regs.PBR) + ' PC: ' + hex0x4(PCO) + ' ';
+		outstr += '(' + padl((this.pins.trace_cycles - 1).toString(), 6) + ') ' + hex0x2(this.regs.PBR) + ' ' + hex0x4(PCO) + ' ';
 		outstr += ' ' + da_out.disassembled;
 		let sp = da_out.disassembled.length;
 		while(sp < 16) {
@@ -427,9 +429,9 @@ class w65c816 {
 			sp++;
 		}
 
-		if (da_out.data8 !== null) outstr += hex0x2(da_out.data8) + '      ';
+		/*if (da_out.data8 !== null) outstr += hex0x2(da_out.data8) + '      ';
 		else if (da_out.data16 !== null) outstr += hex2((da_out.data16 & 0xFF00) >>> 8) + ' ' + hex2(da_out & 0xFF) + '   ';
-		else if (da_out.data24 !== null) outstr += hex2((da_out.data24 & 0xFF0000) >>> 16) + ' ' + hex2((da_out.data24 & 0xFF00) >>> 8) + ' ' + hex2((da_out.data24 & 0xFF) >>> 8);
+		else if (da_out.data24 !== null) outstr += hex2((da_out.data24 & 0xFF0000) >>> 16) + ' ' + hex2((da_out.data24 & 0xFF00) >>> 8) + ' ' + hex2((da_out.data24 & 0xFF) >>> 8);*/
 
 		let mx = 0;
 		if (this.regs.P.M) mx = 10;

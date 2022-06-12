@@ -72,6 +72,12 @@ STP
 
 function test_65c816() {
     let RAM = write_test_to_RAM();
+    let padl = function(what, howmuch) {
+        while(what.length < howmuch) {
+            what = ' ' + what;
+        }
+        return what;
+    }
     let read8 = function(bank, addr) {
         bank = bank & 0x0F;
         return RAM[(bank << 16) | addr];
@@ -82,14 +88,12 @@ function test_65c816() {
         let ret = RAM[addr];
 
         //console.log('read ' + hex0x6(addr) + ': ' + hex0x2(ret));
-        dconsole.addl('read ' + hex0x6(addr) + ': ' + hex0x2(ret));
+        //dconsole.addl('read ' + hex0x6(addr) + ': ' + hex0x2(ret));
         return ret;
     }
     let trace_write8 = function(bank, addr, val) {
         bank = bank & 0x0F;
-        let ret = RAM[(bank << 16) | addr];
-        console.log('!!!!!!!!!!!!!!!!!!!!!!!!!!!!');
-        console.log('CPU write ' + hex0x2(val) + ' to ' + hex0x6(addr));
+        RAM[(bank << 16) | addr] = val;
     }
 
     let cpu = new w65c816();
@@ -104,13 +108,14 @@ function test_65c816() {
             dconsole.addl(cpu.pins.traces[0]);
             cpu.pins.traces = [];
         }
-        if (cpu.pins.VDA || cpu.pins.VPA) {
+        if (cpu.pins.VDA || cpu.pins.VPA || cpu.pins.PDV) {
             if (cpu.pins.RW) {
+                dconsole.addl('(' + padl(cpu.pins.trace_cycles.toString(), 6) + ') ' + hex0x2(cpu.pins.BA) + ' ' + hex0x4(cpu.pins.Addr) + ' WT   ' + hex0x2(cpu.pins.D));
                 trace_write8(cpu.pins.BA, cpu.pins.Addr, cpu.pins.D);
             }
             else {
-                let r = trace_read8(cpu.pins.BA, cpu.pins.Addr);
-                cpu.pins.D = r;
+                cpu.pins.D = trace_read8(cpu.pins.BA, cpu.pins.Addr);
+                dconsole.addl('(' + padl(cpu.pins.trace_cycles.toString(), 6) + ') ' + hex0x2(cpu.pins.BA) + ' ' + hex0x4(cpu.pins.Addr) + ' RD   ' + hex0x2(cpu.pins.D));
             }
         }
     }
