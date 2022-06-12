@@ -15,6 +15,7 @@
 // * Perhaps revise PRDV to just VD, RW, and make vector pull separate since it only happens in one place
 //  * this is done, but still, TODO: check any skipped_cycles don't break RPDV now, since RPDV added
 //    "intelligence"
+// * RESET does not restart a STP'd processor like it should
 
 /*
 branch -3 (0xFD)
@@ -502,20 +503,13 @@ class opcode_functions {
     }
 }
 
-function real_mksigned8(what) {
+// For relative addressing
+function mksigned8(what) {
      return what >= 0x80 ? -(0x100 - what) : what;
 }
 
-function real_mksigned16(what) {
-     return what >= 0x8000 ? -(0x10000 - what) : what;
-}
-
-function mksigned8(what) {
-    return -(0x100 - (what & 0xFF));
-}
-
 function mksigned16(what) {
-    return -(0x10000 - (what & 0xFFFF));
+     return what >= 0x8000 ? -(0x10000 - what) : what;
 }
 
 class switchgen {
@@ -809,17 +803,17 @@ class switchgen {
     }
 
     cmp8(who) {
-        this.addl('let result = mksigned8(' + who + ') - regs.TR;')
-        this.addl('regs.P.C = (result >= 0) ? 1 : 0;')
-        this.setz('(result & 0xFF)');
-        this.setn8('(result & 0xFF)');
+        this.addl('regs.TR = (' + who + ' & 0xFF) - regs.TR;');
+        this.addl('regs.P.C = (regs.TR >= 0) ? 1 : 0;');
+        this.setz('(regs.TR & 0xFF)');
+        this.setn8('(regs.TR & 0xFF)');
     }
 
     cmp16(who) {
-        this.addl('let result = mksigned16(' + who + ') - regs.TR;')
-        this.addl('regs.P.C = (result >= 0) ? 1 : 0;')
-        this.setz('result');
-        this.setn16('result');
+        this.addl('regs.TR = ' + who + ' - regs.TR;');
+        this.addl('regs.P.C = (regs.TR >= 0) ? 1 : 0;');
+        this.setz('regs.TR');
+        this.setn16('regs.TR');
     }
 
     CMP8(){
@@ -2549,7 +2543,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
                 ag.addl('if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } ');
                 ag.old_rw = 0; ag.old_pdv = 0;
             }
-            ag.addl('regs.PC = (regs.PC + 1 + real_mksigned8(regs.TA)) & 0xFFFF;');
+            ag.addl('regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;');
             break;
         case AM.PC_RL:
             ag.addcycle(2);
@@ -2562,7 +2556,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
 
             ag.addcycle(4);
             ag.RPDV(0, 0, 0, 0);
-            ag.addl('regs.TA = real_mksigned16(regs.TA + (pins.D << 8));');
+            ag.addl('regs.TA = mksigned16(regs.TA + (pins.D << 8));');
             ag.addl('regs.PC = (regs.PC + 1 + regs.TA) & 0xFFFF;'); // +1 because we didn't INC PC yet
             break;
         case AM.STACK:
@@ -2723,7 +2717,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.cleanup();
             if (E) ag.addl('regs.S = (regs.S & 0xFF) + 0x100;');
             break;
-        case AM.STACKg:
+        case AM.STACKg: // RTI
             affected_by_E = true;
 
             ag.addcycle(2);
@@ -2764,6 +2758,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
                 ag.cleanup();
                 ag.addl('regs.PC = regs.TA + (pins.D << 8);');
             }
+            ag.addl('if (regs.NMI_servicing) regs.NMI_servicing = false;');
             break;
         case AM.STACKh: // RTS
             ag.addcycle(2);
@@ -3001,10 +2996,8 @@ function get_decoded_opcode(regs) {
         ret = decoded_opcodes[flag][regs.IR];
         //else
         //    ret = decoded_opcodes[EMX_table[0]][regs.IR];
-        console.log('GOT', ret);
     }
     if ((ret === null) || (typeof(ret) === 'undefined')) {
-        console.log('WHAT UNDEFINED');
         ret = decoded_opcodes[EMX_table[0]][regs.IR];
     }
     return ret;

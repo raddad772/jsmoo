@@ -115,6 +115,8 @@ class w65c816_registers {
 		this.S = 0; // Stack pointer
 		this.DBR = 0; // Data Bank Register
 		this.E = 0; // Hidden "Emulation" bit
+
+		this.NMI_servicing = false;
 	}
 }
 
@@ -177,7 +179,8 @@ class w65c816 {
 	#ABORT_pending;
 	#RES_pending;
 	#IRQ_pending;
-	
+	#IRQ_servicing;
+
 	constructor() {
 		this.regs = new w65c816_registers();
 		this.pins = new w65c816_pins();
@@ -188,6 +191,7 @@ class w65c816 {
 
 		this.regs.STP = false;
 		this.regs.WAI = false;
+		this.#IRQ_servicing = false;
 		this.#NMI_pending = false;
 		this.#ABORT_pending = false;
 		this.#IRQ_pending = false;
@@ -198,21 +202,39 @@ class w65c816 {
 	
 	cycle() {
 		this.pins.trace_cycles++;
-		if ((this.regs.STP  || this.regs.WAI) && (this.regs.TCU === 0)) {
-			if (this.regs.STP && this.pins.RES) {
-				this.regs.STP = false;
-			}
-			else
-				return;
+		if (this.pins.NMI) {
+			this.pins.NMI = false;
+			this.#NMI_pending = true;
 		}
-		if ((this.regs.TCU === 0) && (this.#RES_pending)) {
-			this.reset();
+		if (this.pins.IRQ) {
+			this.pins.IRQ = false;
+			this.#IRQ_pending = true;
+		}
+		if (this.regs.TCU === 0) {
+			if ((this.regs.STP || this.regs.WAI)) {
+				if (this.regs.STP && (this.pins.RES || this.#RES_pending)) {
+					this.regs.STP = false;
+					this.pins.RES = 0;
+					this.#RES_pending = false;
+					return;
+				} else {
+					return;
+				}
+			}
+			if (this.#RES_pending) {
+				this.reset();
+			}
+			else if (this.#NMI_pending) {
+				this.nmi();
+			}
+			else if (this.#IRQ_pending) {
+				this.irq();
+			}
 		}
 		this.regs.TCU++;
 		if (this.regs.TCU === 1) {
 			this.regs.IR = this.pins.D;
-			this.PCO = this.pins.Addr;
-			//console.log('DECODING INSTRUCTION ' + hex0x2(this.regs.IR));
+			this.PCO = this.pins.Addr; // PCO is PC for tracing purposes
 			this.current_instruction = get_decoded_opcode(this.regs);
 			if (this.pins.trace_on) {
 				this.pins.traces.push(this.trace_format(this.disassemble(), this.PCO));
@@ -239,7 +261,8 @@ class w65c816 {
 		return ret;
 	}
 
-	// This must be called while regs.PBR and regs.PC are accurate for the instruction
+	// This must be called while regs.PBR and regs.PC are accurate for the instruction.
+	// Turns out disassembly was pretty easy per-opcode...
 	disassemble() {
 		let PBR = this.pins.BA;
 		let PC = this.pins.Addr;
@@ -281,7 +304,6 @@ class w65c816 {
 			case AM.IMM:
 				let affected_by_X = A_OR_M_X.has(opcode_info.ins);
 				let affected_by_M = !affected_by_X;
-				console.log(this.regs.P);
 				if ((affected_by_X && !this.regs.P.X) || (affected_by_M && !this.regs.P.M))
 					output.data16 = this.trace_peek16(PBR, PC);
 				else
@@ -316,7 +338,6 @@ class w65c816 {
 
 		// Now make actual disassembly output
 		dis_out = opcode_MN[opcode_info.ins];
-		console.log('ADDR MODE', addr_mode);
 		switch(parseInt(addr_mode)) {
 			case AM.A:
 				dis_out += ' !$' + hex4(output.data16);
@@ -450,12 +471,36 @@ class w65c816 {
 		return outstr;
 	}
 
+	nmi() {
+		console.log('NMI!');
+		this.regs.TCU = 0;
+		this.pins.D = OM.S_NMI;
+		this.pins.NMI = 0;
+		this.#NMI_pending = false;
+		this.regs.NMI_servicing = true;
+	}
+
+	irq() {
+		console.log('IRQ!');
+		if (this.regs.NMI_servicing)
+			return;
+		this.regs.TCU = 0;
+		this.pins.D = OM.S_IRQ;
+		this.#IRQ_pending = false;
+	}
+
 	reset() {
 		// Do more
-		console.log('SETTING RESET')
-		this.regs.TCU = 0;
-		this.pins.D = OP_RESET;
 		this.pins.RES = 0;
 		this.#RES_pending = false;
+		this.regs.TCU = 0;
+		if (this.regs.STP) {
+			console.log('RST clearing STP');
+			this.regs.STP = false;
+		}
+		else {
+			console.log('SETTING RESET');
+			this.pins.D = OM.S_RESET;
+		}
 	}
 }

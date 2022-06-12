@@ -866,7 +866,7 @@ class w65c816_assembler {
         this.output = new Uint8Array(this.ROM_SIZE);
 
         // Write vectors
-        console.log('Writing vector table...');
+        //console.log('Writing vector table...');
         for (let addr in this.vectors) {
             let vec = this.vectors[addr];
             console.log(hex0x6(parseInt(addr)), hex0x4(vec.addr));
@@ -878,8 +878,7 @@ class w65c816_assembler {
             this.writeinstruction(this.instructions[i]);
         }
 
-        console.log('Done assembling!')
-
+        console.log('Done assembling!');
     }
 }
 

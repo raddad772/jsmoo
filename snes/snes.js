@@ -80,11 +80,6 @@ function main3(ROM) {
 	if (!init_gl()) {
 		return;
 	}
-	console.log('GOT HERE!');
-	let tst = "{R}hello {/} {B}blue{/} {R*}hello bold red{/}";
-	console.log(tst);
-	tconsole.addl(tst);
-	console.log(txf(tst));
 }
 
 function main2() {
