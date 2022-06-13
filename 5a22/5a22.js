@@ -1,3 +1,4 @@
+"use scrict";
 /*
 Timing Notes
 The 42xxh Ports are clocked by the CPU Clock, meaning that one needs the same amount of "wait" opcodes no matter if the CPU Clock is 3.5MHz or 2.6MHz. When reading the result, the "MOV r,[421xh]" opcode does include 3 cycles (spent on reading the 3-byte opcode), meaning that one needs to insert only 5 cycles for MUL and only 13 for DIV.
@@ -8,3 +9,23 @@ The maths operations are started only on WRMPYB/WRDIVB writes (not on WRMPYA/WRD
 /*so mul and div happen 1 cycle of operation per 1 cycle of CPU which can take variable master cycles ok
 but unlike CPU core they are not interrupted by DRAM refresh
 */
+
+class ricoh5A22 {
+	constructor(busA, busB) {
+		this.cpu = new w65c816();
+		this.busA = busA;
+		this.busB = busB;
+
+        this.steps_for_CPU_cycle_left = 0;
+	}
+
+	reset() {
+		this.cpu.pins.RES = 1;
+	}
+
+	steps(scanline) {
+		// Dispatch IRQ, NMI, DMA, CPU cycles, etc.
+
+	}
+}
+

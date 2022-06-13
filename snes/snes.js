@@ -51,50 +51,13 @@ class SNESscanline {
     }
 }
 
-class SNESbus {
-    constructor(RAMsize, ROM) {
-		this.ROM = ROM;
-		this.RAM = new Uint8Array(RAMsize);
-    }
-	
-	read8(addr) {
-		return 0xC0;
-	}
-	
-	write8(addr, val) {
-	}
-}
-
-class ricoh5A22 {
-	constructor(busA, busB) {
-		this.CPU = new w65c816();
-		this.busA = busA;
-		this.busB = busB;
-	}
-	
-	step(step_info) {
-		// Dispatch IRQ, NMI, DMA, CPU cycles, etc.
-	}
-}
-
-class SNESPPU {
-	constructor(busB) {
-		this.busB = busB;
-	}
-	
-	steps(scanline) {
-		
-	}
-	
-}
-
 class SNESclock {
 	constructor(busA, busB) {
 		this.busA = busA;
 		this.busB = busB;
 		
 		this.cpu = new ricoh5A22(busA, busB);
-		this.ppu = new SNESPPU(busB);
+		this.ppu = new SNESPPU(null, busB);
 		
 		this.nstc_pal = 0;
 		this.interlaced_mode = 0;
@@ -106,8 +69,6 @@ class SNESclock {
 	}
 	
 	scanline() {
-		this.y++;
-		let scanline = new SNESscaline();
 		if (this.y == 0) {
 			
 		}
@@ -116,7 +77,7 @@ class SNESclock {
 		}
 		this.cpu.steps(scanline);
 		this.ppu.steps(scanline);
-		
+		this.scanline.y++;
 	}
 }
 
