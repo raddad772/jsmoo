@@ -32,19 +32,94 @@ cycles in scanline
 
 class SNESrom {
     constructor(ROM, size) {
-    
+    	this.ROM = ROM;
+		this.size = size;
+		this.mask = 0; //TODO fix this
     }
 }
 
-class scanline {
+class SNESscanline {
     constructor() {
+		this.y = 0;
+		this.vblank = false;
+		this.hb_stop = 0;
+		this.hb_start = 0;
+		this.dots = 0;
+		this.cycles = 0;
+		this.frame = 0;  // 0 or 1 even or odd, basically
+		this.cycles_since_reset = 0;
     }
 }
 
 class SNESbus {
     constructor(RAMsize, ROM) {
+		this.ROM = ROM;
+		this.RAM = new Uint8Array(RAMsize);
     }
+	
+	read8(addr) {
+		return 0xC0;
+	}
+	
+	write8(addr, val) {
+	}
 }
+
+class ricoh5A22 {
+	constructor(busA, busB) {
+		this.CPU = new w65c816();
+		this.busA = busA;
+		this.busB = busB;
+	}
+	
+	step(step_info) {
+		// Dispatch IRQ, NMI, DMA, CPU cycles, etc.
+	}
+}
+
+class SNESPPU {
+	constructor(busB) {
+		this.busB = busB;
+	}
+	
+	steps(scanline) {
+		
+	}
+	
+}
+
+class SNESclock {
+	constructor(busA, busB) {
+		this.busA = busA;
+		this.busB = busB;
+		
+		this.cpu = new ricoh5A22(busA, busB);
+		this.ppu = new SNESPPU(busB);
+		
+		this.nstc_pal = 0;
+		this.interlaced_mode = 0;
+		this.scanline = new SNESscanline();
+	}
+	
+	reset() {
+		// TODO: fix this
+	}
+	
+	scanline() {
+		this.y++;
+		let scanline = new SNESscaline();
+		if (this.y == 0) {
+			
+		}
+		else if ((this.y >= 1) && (this.y <= 0xE1)) {
+			
+		}
+		this.cpu.steps(scanline);
+		this.ppu.steps(scanline);
+		
+	}
+}
+
 
 // # Cycl  Op Type
 //      6  CPU internal operation (IO cycle)
@@ -141,9 +216,10 @@ scanline
 
 class SNES {
 	constructor() {
-		this.cpu = new w65c816();
 		this.cart = new snes_cart();
-		this.mem = null; //new snes_mem();
+		this.busA = new SNESbus(131072); // 128KB WRAM
+		this.busB = new SNESbus(65536);  // 64KB VRAM
+		this.clock = new SNESclock(this.busA, this.busB);
 	}
 	
 	load_ROM(file) {
