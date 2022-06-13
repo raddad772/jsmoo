@@ -53,6 +53,9 @@ let VEC_RST_LO = 0x00FFFC;
 let VEC_RST_HI = 0x00FFFD;
 
 const OP_RESET = 0x100;
+const OP_NMI = 0x103;
+const OP_IRQ = 0x102;
+const OP_ABORT = 0x101;
 const PINS_SEPERATE_PDV = false;
 
 class w65c816_P {
@@ -203,10 +206,12 @@ class w65c816 {
 	cycle() {
 		this.pins.trace_cycles++;
 		if (this.pins.NMI) {
+			console.log('NMI');
 			this.pins.NMI = false;
 			this.#NMI_pending = true;
 		}
 		if (this.pins.IRQ) {
+			console.log('IRQ');
 			this.pins.IRQ = false;
 			this.#IRQ_pending = true;
 		}
@@ -216,8 +221,6 @@ class w65c816 {
 					this.regs.STP = false;
 					this.pins.RES = 0;
 					this.#RES_pending = false;
-					return;
-				} else {
 					return;
 				}
 			}
@@ -233,6 +236,7 @@ class w65c816 {
 		}
 		this.regs.TCU++;
 		if (this.regs.TCU === 1) {
+			//console.log('GOT INS', hex0x4(this.regs.PC), hex0x2(this.pins.D));
 			this.regs.IR = this.pins.D;
 			this.PCO = this.pins.Addr; // PCO is PC for tracing purposes
 			this.current_instruction = get_decoded_opcode(this.regs);
@@ -240,7 +244,6 @@ class w65c816 {
 				this.pins.traces.push(this.trace_format(this.disassemble(), this.PCO));
 			}
 		}
-		//console.log('CI', this.current_instruction);
 		this.current_instruction.exec_func(this.regs, this.pins);
 	}
 
@@ -474,7 +477,7 @@ class w65c816 {
 	nmi() {
 		console.log('NMI!');
 		this.regs.TCU = 0;
-		this.pins.D = OM.S_NMI;
+		this.pins.D = OP_NMI;
 		this.pins.NMI = 0;
 		this.#NMI_pending = false;
 		this.regs.NMI_servicing = true;
@@ -485,12 +488,13 @@ class w65c816 {
 		if (this.regs.NMI_servicing)
 			return;
 		this.regs.TCU = 0;
-		this.pins.D = OM.S_IRQ;
+		this.pins.D = OP_IRQ;
 		this.#IRQ_pending = false;
 	}
 
 	reset() {
 		// Do more
+		console.log("RESET!");
 		this.pins.RES = 0;
 		this.#RES_pending = false;
 		this.regs.TCU = 0;
@@ -500,7 +504,7 @@ class w65c816 {
 		}
 		else {
 			console.log('SETTING RESET');
-			this.pins.D = OM.S_RESET;
+			this.pins.D = OP_RESET;
 		}
 	}
 }

@@ -2,7 +2,7 @@
 // This file generates test vectors for the 65c816 core.
 // This file depends on the pin-centric method of emulation
 
-class wd65c816_pins_expected {
+class w65c816_pins_expected {
     constructor(D, BA, Addr, RW, VDA, VPA, VPP, extra) {
         if (typeof(extra) === 'undefined') extra = function(regs, pins){return true;};
         this.D = D;
@@ -100,7 +100,7 @@ function test_65c816() {
     console.log('RESETTING CPU');
     cpu.reset();
     cpu.enable_tracing(read8)
-    let numcycles = 20;
+    let numcycles = 50;
     console.log('RUNNING CPU ' + numcycles + ' CYCLES');
     for (let i = 0; i < numcycles; i++) {
         cpu.cycle();
@@ -110,12 +110,12 @@ function test_65c816() {
         }
         if (cpu.pins.VDA || cpu.pins.VPA || cpu.pins.PDV) {
             if (cpu.pins.RW) {
-                dconsole.addl('(' + padl(cpu.pins.trace_cycles.toString(), 6) + ') ' + hex0x2(cpu.pins.BA) + ' ' + hex0x4(cpu.pins.Addr) + ' WT   ' + hex0x2(cpu.pins.D));
+                dconsole.addl('(' + padl(cpu.pins.trace_cycles.toString(), 6) + ')w' + hex0x2(cpu.pins.BA) + ' ' + hex0x4(cpu.pins.Addr) + ' WT   ' + hex0x2(cpu.pins.D));
                 trace_write8(cpu.pins.BA, cpu.pins.Addr, cpu.pins.D);
             }
             else {
                 cpu.pins.D = trace_read8(cpu.pins.BA, cpu.pins.Addr);
-                dconsole.addl('(' + padl(cpu.pins.trace_cycles.toString(), 6) + ') ' + hex0x2(cpu.pins.BA) + ' ' + hex0x4(cpu.pins.Addr) + ' RD   ' + hex0x2(cpu.pins.D));
+                dconsole.addl('(' + padl(cpu.pins.trace_cycles.toString(), 6) + ')r' + hex0x2(cpu.pins.BA) + ' ' + hex0x4(cpu.pins.Addr) + '  ' + hex0x2(cpu.pins.D));
             }
         }
     }

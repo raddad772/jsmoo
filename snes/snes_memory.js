@@ -12,6 +12,21 @@ function SNES_mem_timing(addr, ROMspeed) {
 
 const LOROM = 0x20
 const HIROM = 0x21
+class SNESbus {
+    constructor(RAMsize, ROM) {
+		this.ROM = ROM;
+		this.RAM = new Uint8Array(RAMsize);
+    }
+
+	read8(addr) {
+		return 0xC0;
+	}
+
+	write8(addr, val) {
+	}
+}
+
+
 class snes_mem {
 	constructor(snes_cart) {
 		this.cart = snes_cart;
