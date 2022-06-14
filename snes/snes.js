@@ -69,11 +69,28 @@ class SNESclock {
 	}
 	
 	scanline() {
+	// htime 0, 10 master clocks
+	// otherwise 14 + htime*dots master cycles
+	// no irq for dot 153 of last scanline or short scanline, which is interlaced thing
+	// 262 scanlines
+	// closest multiple of 8 cycle ssince reset, to scanline + 536, is 40 cycle CPU pause
+	// 340 dots per scanline, 323 and 327 are 6 instead of 4 cycles
+	// 22-277 are display time, hblank starts at 277 ends at 22
+	// ppu has 340 cycles in hblank to load sprite info for next line? read tilemaps?
+	// ppu and cpu keep their own track  this just needs to know how many to do
+	    let bottom_scanline = 
 		if (this.y == 0) {
-			
+			//vblank ends
+			// 1364 master cycles
+			// no output
 		}
-		else if ((this.y >= 1) && (this.y <= 0xE1)) {
-			
+		else if ((this.y >= 1) && (this.y < bottom_scanline)) {
+			// 1364 master cycles, 324 dots
+		}
+		else if (this.y === bottom_scanline) {
+		    // vblank begins
+		}
+		else {
 		}
 		this.cpu.steps(scanline);
 		this.ppu.steps(scanline);
