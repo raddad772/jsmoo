@@ -11,10 +11,11 @@ but unlike CPU core they are not interrupted by DRAM refresh
 */
 
 class ricoh5A22 {
-	constructor(busA, busB) {
+	constructor(busA, busB, clock) {
 		this.cpu = new w65c816();
 		this.busA = busA;
 		this.busB = busB;
+		this.clock = clock;
 
         this.steps_for_CPU_cycle_left = 0;
 	}
