@@ -244,6 +244,7 @@ class w65c816_assembler {
         this.lines_to_addr = {};
         this.addr = 0;
         this.instructions = [];
+        this.enable_console = true;
         this.vectors = { [VEC.RESET]: new vector_t(),
                          [VEC.IRQ_E]: new vector_t(),
                          [VEC.NMI_E]: new vector_t(),
@@ -259,7 +260,7 @@ class w65c816_assembler {
 
     writeinstruction(ins) {
         let addr = ins.addr;
-        console.log(hex0x6(addr) + ' ' + hex0x2(ins.bytecodes[0]) + ' ' + opcode_MN[ins.ins]);
+        if (this.enable_console) console.log(hex0x6(addr) + ' ' + hex0x2(ins.bytecodes[0]) + ' ' + opcode_MN[ins.ins]);
         for (let i in ins.bytecodes) {
             this.write8(addr+parseInt(i), ins.bytecodes[i]);
         }
@@ -358,7 +359,7 @@ class w65c816_assembler {
         for (let i in this.labels) {
             let label = this.labels[i];
             if ((label.addr === null) && (label.line === li)) {
-                console.log('Assigning address ' + hex0x6(addr) + ' to ' + i);
+                if (this.enable_console) console.log('Assigning address ' + hex0x6(addr) + ' to ' + i);
                 label.addr = addr;
                 break;
             }
@@ -510,7 +511,7 @@ class w65c816_assembler {
 
         // Attempt to find a mnemonic for the instruction
         if (line.length < 3) {
-            console.log('HEY! Whats up with this? ' + line);
+            if (this.enable_console) console.log('HEY! Whats up with this? ' + line);
             return;
         }
         let op = new a_ins_t();
@@ -612,8 +613,8 @@ class w65c816_assembler {
         }
         else if (nummerthing.kind === VT.label) {
             if (nummerthing.value.addr === null) {
-                console.log('Not sophisticated enough to resolve label "' + nummerthing.value.name + '" yet!');
-                console.log('Yes I know how to build it so it can always resolve these but I just want to get this assembler done.');
+                if (this.enable_console) console.log('Not sophisticated enough to resolve label "' + nummerthing.value.name + '" yet!');
+                if (this.enable_console) console.log('Yes I know how to build it so it can always resolve these but I just want to get this assembler done.');
                 return;
             }
             else {
@@ -657,7 +658,7 @@ class w65c816_assembler {
         let candidate_encodings = collapse_AMs_to_encodings(candidate_ams1);
         //console.log('CANDIDATES!', candidate_encodings);
         if (candidate_encodings.length < 1) {
-            console.log(candidate_ams1);
+            if (this.enable_console) console.log(candidate_ams1);
             this.errormsg('Error parsing operand ' + poperand + ': cannot determine type');
             return;
         }
@@ -820,9 +821,12 @@ class w65c816_assembler {
         this.instructions.push(op);
     }
 
-    assemble(instr) {
+    assemble(instr, disable_console) {
+        if (typeof(disable_console) === 'undefined')
+            disable_console = false;
+        this.enable_console = !disable_console;
         let lines = instr.split(/\r?\n/);
-        console.log('Pass 1: getting labels...');
+        if (this.enable_console) console.log('Pass 1: getting labels...');
 
         // Get vectors
         // Get labels
@@ -835,7 +839,7 @@ class w65c816_assembler {
             ctrl.get_labels(line)
         });
 
-        console.log('Pass 2: getting config information...')
+        if (this.enable_console) console.log('Pass 2: getting config information...')
         // Now get config information
         lines.forEach(function(line, li) {
             ctrl.lnum = li;
@@ -845,7 +849,7 @@ class w65c816_assembler {
             ctrl.get_config_lines(line);
         });
 
-        console.log('Pass 3: Interpreting instructions')
+        if (this.enable_console) console.log('Pass 3: Interpreting instructions')
         this.addr = 0;
 
         lines.forEach(function(line, li) {
@@ -856,7 +860,7 @@ class w65c816_assembler {
             ctrl.interpret_line(line);
         });
 
-        console.log('Pass 4: Resolving vectors from labels')
+        if (this.enable_console) console.log('Pass 4: Resolving vectors from labels')
         for (let addr in this.vectors) {
             let vec = this.vectors[addr];
             if (vec.addr === null && vec.label !== null && !vec.can_resolve()) {
@@ -870,25 +874,25 @@ class w65c816_assembler {
             if (vec.addr === null) vec.addr = 0;
         }
 
-        console.log('Pass 5: building ROM');
+        if (this.enable_console) console.log('Pass 5: building ROM');
         // Allocate ROM
-        console.log("Creating ROM size " + parseInt(this.ROM_SIZE / 1024) + 'k');
+        if (this.enable_console) console.log("Creating ROM size " + parseInt(this.ROM_SIZE / 1024) + 'k');
         this.output = new Uint8Array(this.ROM_SIZE);
 
         // Write vectors
         //console.log('Writing vector table...');
         for (let addr in this.vectors) {
             let vec = this.vectors[addr];
-            console.log(hex0x6(parseInt(addr)), hex0x4(vec.addr));
+            if (this.enable_console) console.log(hex0x6(parseInt(addr)), hex0x4(vec.addr));
             this.write16(parseInt(addr), vec.addr);
         }
 
-        console.log('Writing instructions...');
+        if (this.enable_console) console.log('Writing instructions...');
         for (let i in this.instructions) {
             this.writeinstruction(this.instructions[i]);
         }
 
-        console.log('Done assembling!');
+        if (this.enable_console) console.log('Done assembling!');
     }
 }
 
