@@ -41,27 +41,70 @@ class SNESrom {
 class SNESscanline {
     constructor() {
 		this.y = 0;
+		this.dots = new Uint8Array(340);
+		for (let i = 0; i < 340; i++) {
+			this.dots[i] = 4; // 4 master cycles per dot...mostly!
+		}
+		this.dots[323] = 6;
+		this.dots[327] = 6;
+
+		// Technically we start in vblank and hblank but...not gonna trigger CPU first frame. ARE WE?
 		this.vblank = false;
-		this.hb_stop = 0;
-		this.hb_start = 0;
-		this.dots = 0;
-		this.cycles = 0;
+		this.hblank = false;
+		this.hb_stop = 21;
+		this.hb_start = 277;
+		this.dots = 340;
+		this.frame_lines = 262;
+		this.interlaced = false;
+		this.cycles = 1364;
 		this.frame = 0;  // 0 or 1 even or odd, basically
-		this.cycles_since_reset = 0;
+		this.cycles_since_reset = 0; // Master cycles since reset. Yeah.
+
+		this.bottom_scanline = 0xE1; // by default
     }
+
+	set_interlaced(val) {
+		this.interlaced = val;
+		this.frame_lines = 262 + (1 * (this.interlaced && this.frame === 1));
+	}
+
+	new_frame() {
+		this.cycles_since_reset += this.cycles;
+		this.y = 0;
+		this.frame = (this.frame + 1) & 0x01;
+		this.frame_lines = 262 + (1 * (this.interlaced && this.frame === 1));
+	}
+
+	next_line() {
+		this.y += 1;
+		if (this.y > 261) this.new_frame();
+
+		if (this.y === 0) {
+			// vblank ends
+			// 1364 master cycles
+			// no output
+			this.vblank = false;
+			this.cycles = 1364;
+		}
+		else if ((this.y > 0) && (this.y < this.bottom_scanline)) {
+			// 1364 master cycles, 324 dots
+			this.cycles = 1364;
+		}
+		else if (this.y === this.bottom_scanline) {
+		    // vblank begins
+			this.vblank = true;
+			this.cycles = 1364;
+		}
+		else {
+			// during vblank
+			this.cycles = 1364;
+		}
+	}
 }
 
 class SNESclock {
 	constructor(busA, busB) {
-		this.busA = busA;
-		this.busB = busB;
-		
-		this.cpu = new ricoh5A22(busA, busB);
-		this.ppu = new SNESPPU(null, busB);
-		
-		this.nstc_pal = 0;
-		this.interlaced_mode = 0;
-		this.scanline = new SNESscanline();
+		this.scanline = SNESscanline();
 	}
 	
 	reset() {
@@ -78,20 +121,7 @@ class SNESclock {
 	// 22-277 are display time, hblank starts at 277 ends at 22
 	// ppu has 340 cycles in hblank to load sprite info for next line? read tilemaps?
 	// ppu and cpu keep their own track  this just needs to know how many to do
-	    let bottom_scanline = 
-		if (this.y == 0) {
-			//vblank ends
-			// 1364 master cycles
-			// no output
-		}
-		else if ((this.y >= 1) && (this.y < bottom_scanline)) {
-			// 1364 master cycles, 324 dots
-		}
-		else if (this.y === bottom_scanline) {
-		    // vblank begins
-		}
-		else {
-		}
+	    let bottom_scanline = ?;
 		this.cpu.steps(scanline);
 		this.ppu.steps(scanline);
 		this.scanline.y++;
@@ -197,7 +227,14 @@ class SNES {
 		this.cart = new snes_cart();
 		this.busA = new SNESbus(131072); // 128KB WRAM
 		this.busB = new SNESbus(65536);  // 64KB VRAM
-		this.clock = new SNESclock(this.busA, this.busB);
+		this.clock = new SNESclock();
+
+		this.cpu = new ricoh5A22(this.busA, this.busB, this.clock);
+		this.ppu = new SNESPPU(null, this.busB, this.clock);
+
+		this.nstc_pal = 0;
+		this.interlaced_mode = 0;
+		this.scanline = new SNESscanline();
 	}
 	
 	load_ROM(file) {
