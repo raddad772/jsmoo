@@ -2,34 +2,169 @@
 // This file generates test vectors for the 65c816 core.
 // This file depends on the pin-centric method of emulation
 
-class w65c816_pins_expected {
-    constructor(D, BA, Addr, RW, VDA, VPA, VPP, extra) {
-        if (typeof(extra) === 'undefined') extra = function(regs, pins){return true;};
-        this.D = D;
-        this.BA = BA;
-        this.Addr = Addr;
-        this.RW = RW;
-        this.VDA = VDA;
-        this.VPA = VPA;
-        this.VPP = VPP;
-        this.extra = extra;
+const TK = Object.freeze({
+    ASM: 0,
+    STP: 1
+});
+
+const CYCLEK = Object.freeze({
+    IO: 0,
+    R: 1,
+    W: 2
+});
+
+function if_defined(what, def) {
+    if (typeof(def) === 'undefined') def = null;
+    return typeof(what) !== 'undefined' ? what : null;
+}
+
+class w65c816_test_pins {
+    // Read/write,
+    constructor(cyclekind, RW, D_W, D, Addr, BA, cyclenum) {
+        this.cyclekind = cyclekind;
+        this.RW = RW;    // Cycle should be read/write cycle
+        this.D = D;  // Expected value at end of a cycle, or null for dont care
+        this.Addr = Addr; // Expected address at end of cycle
+        this.BA = BA;    // Expected bank at end of cycle
+        this.cyclenum = if_defined(cyclenum); // For a program to keep track of the cycle number if they want
+        this.errored = false;
+        this.error_reason = '';
     }
 
-    compare(pins) {
-        let failed = false;
-        failed |= pins.D !== this.D;
-        failed |= pins.BA !== this.BA;
-        failed |= pins.Addr !== this.Addr;
-        failed |= pins.RW !== this.RW;
-        failed |= pins.VDA !== this.VDA;
-        failed |= pins.VPA !== this.VPA;
-        failed |= pins.VPP !== this.VPP;
-        failed |= !this.extra();
-        if (failed) {
-            console.log('Failure!', pins, this);
-        }
-        return !failed;
+    get_error() {
+        if (!this.errored) return null;
+        return this.error_reason;
     }
+
+    set_error(reason) {
+        this.errored = true;
+        this.error_reason = reason;
+    }
+
+    check(cpu) {
+        let pins = cpu.pins;
+        let VAB = null; // valid address bus
+        if (PINS_SEPERATE_PDV)
+            VAB = pins.VDA || pins.VPA || pins.VPB;
+        else
+            VAB = pins.PDV;
+        switch (this.cyclekind) {
+            case CYCLEK.IO:
+                if (VAB) { this.set_error('RPDV values do not match expected cycle type IO'); return false; }
+                break;
+            case CYCLEK.R:
+                if (!VAB || pins.RW) { this.set_error('RPDV values do not match expected cycle type R'); return false; }
+                break;
+            case CYCLEK.W:
+                if (!VAB || !pins.RW) { this.set_error('RPDV values do not match expected cycle type W'); return false; }
+                break;
+        }
+        if (this.D !== null && this.D !== pins.D) { this.set_error('D (' + hex0x2(pins.D) + ') does not match expected value: ' + hex0x2(this.D)); return null; }
+        if (this.Addr !== null && this.Addr !== pins.Addr)  { this.set_error('Address (' + hex0x4(pins.Addr) + ') does not match expected value: ' + hex0x4(this.Addr)); return false; }
+        if (this.BA !== null && this.BA !== pins.BA) { this.set_error('Bank (' + hex0x2(pins.BA) + ') does not match expected bank: ' + hex0x4(this.BA)); return false; }
+        if (this.cyclenum !== null && this.cyclenum !== cpu.regs.trace_cycles) { this.set_error('Cycle #' + cpu.regs.trace_cycles + ' does not match expected value: ' + this.cyclenum); return false; }
+
+        return true;
+    }
+}
+
+function format_reg(regname, value, E) {
+    let padl0 = function(what, howmuch) {
+        while(what.length < howmuch) {
+            what = '0' + what;
+        }
+        return what;
+    }
+    switch(regname) {
+        case 'A8': // 8-bit registers
+        case 'C8':
+        case 'PBR':
+        case 'DBR':
+            return hex0x2(value & 0xFF);
+        case 'C': // 16-bit registers
+        case 'X':
+        case 'Y':
+        case 'D':
+        case 'PC':
+        case 'S':
+            return hex0x4(value & 0xFFFF);
+        case 'E':
+            return value ? '1' : '0';
+        case 'P':
+            return padl0(value.getbyte_native.toString(2), 8);
+    }
+    return '#?';
+}
+
+class w65c816_test_regs {
+    constructor(regs_dict) {
+        this.regsd = regs_dict;
+        this.errored = false;
+        this.error_reason = '';
+    }
+
+    get_error() {
+        if (!this.errored) return null;
+        return this.error_reason;
+    }
+
+    set_error(reason) {
+        this.errored = true;
+        this.error_reason = reason;
+    }
+
+    tst(cpu, regname) {
+        if (regname === 'A') regname = 'C';
+        if (this.regsd.hasOwnProperty(regname) && this.regsd[regname] !== null) {
+            if (regname === 'P') { // P has lots of flags to test depending on current mode
+                if (this.regsd.P !== cpu.regs.P.getbyte_native()) {
+                    this.set_error('CPU register ' + regname + ' (' + format_reg(regname, cpu.regs[regname], cpu.regs.E, cpu.regs.P.M, cpu.regs.P.X) + ') does not match expected value: ' + format_reg(regname, this.regsd[regname], cpu.regs.E, cpu.regs.P.M, cpu.regs.P.X));
+                    return false;
+                }
+            }
+            else {
+                if (this.regsd[regname] !== cpu.regs[regname]) {
+                    this.set_error('CPU register ' + regname + ' (' + format_reg(regname, cpu.regs[regname], cpu.regs.E, cpu.regs.P.M, cpu.regs.P.X) + ') does not match expected value: ' + format_reg(regname, this.regsd[regname], cpu.regs.E, cpu.regs.P.M, cpu.regs.P.X));
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    check(cpu) {
+        let regs = cpu.regs;
+        let tst_list = ['PC', 'PBR', 'DBR', 'C', 'D', 'X', 'Y', 'P', 'IR', 'S', 'E'];
+        for (let i in tst_list) {
+            if (!this.tst(cpu, tst_list[i])) return false;
+        }
+        return true;
+    }
+}
+
+class w65c816_test_case {
+    constructor(kind, RAM_ASMinit, testfuncs, cpu) {
+        this.kind = kind;
+        this.ASM = ASMinit;
+        this.testfuncs = (typeof(testfuncs) === 'undefined' || testfuncs === null) ? [function(cpu){return true}] : testfuncs;
+        if (typeof(cpu) === 'undefined') {
+            this.cpu = new w65c816();
+        }
+        else
+            this.cpu = cpu;
+
+        if (typeof(RAM_ASMinit) === 'string') {
+            let r = new w65c816_assembler();
+            r.assemble(RAM_ASMinit, true);
+            this.RAM = r.output;
+        }
+        else {
+            this.RAM = RAM_ASMinit;
+        }
+
+        this.asm_final_state = new w65c816_test_pins(CYCLEK.IO, 0, null, 0, 0x20, 0x4000);
+    }
+
 }
 
 
