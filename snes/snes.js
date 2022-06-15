@@ -39,7 +39,7 @@ class SNESrom {
 }
 
 class SNESscanline {
-    constructor() {
+    constructor(version) {
 		this.y = 0;
 		this.dots = new Uint8Array(340);
 		for (let i = 0; i < 340; i++) {
@@ -49,6 +49,7 @@ class SNESscanline {
 		this.dots[327] = 6;
 
 		// Technically we start in vblank and hblank but...not gonna trigger CPU first frame. ARE WE?
+		// Load up with first-frame data
 		this.vblank = false;
 		this.hblank = false;
 		this.hb_stop = 21;
@@ -59,13 +60,15 @@ class SNESscanline {
 		this.cycles = 1364;
 		this.frame = 0;  // 0 or 1 even or odd, basically
 		this.cycles_since_reset = 0; // Master cycles since reset. Yeah.
-
+		this.version = version;
 		this.bottom_scanline = 0xE1; // by default
+  		this.hdma_setup_position = (version.rev === 1 ? 12 + 8 - (this.cycles_since_reset & 7) : 12 + (this.cycles_since_reset & 7));
+		this.hdma_position = 1104; // HDMA triggers every VISIBLE scanline, here.
     }
 
 	set_interlaced(val) {
 		this.interlaced = val;
-		this.frame_lines = 262 + (1 * (this.interlaced && this.frame === 1));
+		this.frame_lines = 262 + (1 * (this.interlaced && this.frame === 0));
 	}
 
 	new_frame() {
@@ -75,9 +78,10 @@ class SNESscanline {
 		this.frame_lines = 262 + (1 * (this.interlaced && this.frame === 1));
 	}
 
-	next_line() {
+	next() {
 		this.y += 1;
 		if (this.y > 261) this.new_frame();
+		this.cycles = 1364;
 
 		if (this.y === 0) {
 			// vblank ends
@@ -97,14 +101,24 @@ class SNESscanline {
 		}
 		else {
 			// during vblank
-			this.cycles = 1364;
+		}
+		if (this.y === 0xF0 && !this.interlaced) {
+			this.cycles = 1360;
+		}
+		this.dram_refresh = this.version.rev === 1 ? 530 : 538;
+		if ((this.cycles_since_reset + this.dram_refresh) % 8) {
+			let w = ((this.cycles_since_reset + this.dram_refresh) % 8);
+			if (w < 4) this.dram_refresh += w;
+			else this.dram_refresh -= w;
 		}
 	}
 }
 
-class SNESclock {
+/*class SNESclock {
 	constructor(busA, busB) {
-		this.scanline = SNESscanline();
+		this.scanline = new SNESscanline();
+		this.y = 0;
+		this.x = 0;
 	}
 	
 	reset() {
@@ -121,12 +135,12 @@ class SNESclock {
 	// 22-277 are display time, hblank starts at 277 ends at 22
 	// ppu has 340 cycles in hblank to load sprite info for next line? read tilemaps?
 	// ppu and cpu keep their own track  this just needs to know how many to do
-	    let bottom_scanline = ?;
-		this.cpu.steps(scanline);
-		this.ppu.steps(scanline);
-		this.scanline.y++;
+		this.cpu.steps(this.scanline);
+		this.ppu.steps(this.scanline);
+		this.scanline.next();
+		this.dram_refresh = this.version.rev === 1 ? 530 : 538;
 	}
-}
+}*/
 
 
 // # Cycl  Op Type
@@ -221,18 +235,110 @@ so there are events
 scanline 
 */	
 
+class SNESbusMapper {
+	constructor(busA, busB) {
+		this.busA = busA;
+		this.busB = busB;
+	}
 
+	map_address() {
+		let ROMaddr = null;
+		let SRAMaddr = null;
+		let RAMaddr = null;
+		let bank = (addr & 0xFF0000) >> 16;
+		let page = (addr & 0xFF00) >> 8;
+		let addrlow = addr & 0xFFFF;
+		/*
+		let ROMsel = false;
+		let SRAMsel = false;
+		if ((bank === 0x7E) || (bank === 0x7F)) {
+			ROMsel = false;
+		}
+		else if ((bank < 0x40) || ((bank >= 0x80) && (bank < 0xC0))) {
+			ROMsel = addrlow >= 0x8000;
+		}
+		if (this.cart.header.mapping_mode === HIROM) {
+			if (ROMsel && (addr & 0x8000)) {
+				ROMsel = false;
+				SRAMsel = true;
+			}
+			if (ROMsel) {
+				ROMaddr = (addr & 0x7FFF) | ((addr & 0xFF0000) >> 1);
+				ROMaddr = ROMaddr & this.cart.header.bank_mask;
+			}
+			else if (SRAMsel) {
+
+			}
+			return new mapped_address(ROMaddr, null, null);
+		}
+		else {
+			if (ROMsel) {
+				ROMaddr = (addr & 0x7FFF) | ((addr & 0xFF0000) >> 1);
+				ROMaddr = ROMaddr & this.cart.header.bank_mask;
+				return new mapped_address(ROMaddr, null, null);
+			}
+			else {
+				if (bank >= 0x70 && bank <= 0x7D) {
+					return new mapped_address(null, null, ((bank - 0x70) * 32768) + (addr & 0x7FFF));
+				}
+				if ((bank <= 0x3F) && (addrlow < 0x2000)) {
+					return new mapped_address(null, addrlow, null);
+				}
+				if (bank >= 0x7E && bank <= 0x7F) {
+					return new mapped_address(null, ((bank - 0x7E) << 16) + addrlow, null);
+				}
+
+			}
+		}
+		return new mapped_address(null, null, null);
+		*/
+		if (this.cart.header.mapping_mode === LOROM) {
+			if (bank >= 0x80 && bank <= 0xFD) {
+				bank -= 0x80;
+			}
+			if (bank <= 0x3F) {
+				if (addrlow <= 0x2000)
+					return new mapped_address(null, addrlow, null);
+				if (addrlow & 0x8000) return new mapped_address((bank << 15) + (addrlow - 0x8000), null, null);
+			}
+			else if (bank <= 0x6F) {
+				if (addrlow & 0x8000) return new mapped_address((bank << 15) + (addrlow - 0x8000), null, null);
+			}
+			else if (bank <= 0x7D) {
+				if (addrlow & 0x8000) return new mapped_address((bank << 15) + (addrlow - 0x8000), null, null);
+				else return new mapped_address(null, null, ((bank - 0x70) << 15) + addrlow);
+			}
+			else if (bank >= 0x7E && bank <= 0x7F) {
+				return new mapped_address(null, ((bank - 0x7E) << 16) + addrlow, null);
+			}
+			else if (bank >= 0xFE) {
+				if (addrlow & 0x8000) return new mapped_address((bank - 0x80) << 16 + (addrlow - 0x8000), null, null);
+				else  return new mapped_address(null, null, ((bank - 0xF0) << 15) + addrlow);
+			}
+		}
+		else {
+			alert('HIROM!');
+		}
+		return new mapped_address(null, null, null);
+	}
+
+	}
+}
 class SNES {
 	constructor() {
 		this.cart = new snes_cart();
-		this.busA = new SNESbus(131072); // 128KB WRAM
-		this.busB = new SNESbus(65536);  // 64KB VRAM
-		this.clock = new SNESclock();
+		this.busA = new SNESbus(131072); // 128KB WRAM + ROM access
+		this.busB = new SNESbus(65536);  // 64KB VRAM accessed via ports, 256 possible ports
+		this.busMapper = new SNESbusMapper(this.busA, this.busB);
 
-		this.cpu = new ricoh5A22(this.busA, this.busB, this.clock);
-		this.ppu = new SNESPPU(null, this.busB, this.clock);
+		this.version = {rev: 0, nstc: true, pal: false}
 
-		this.nstc_pal = 0;
+		this.scanline = new SNESscanline(this.version);
+		this.mem_map = new snes_mem(null);
+		this.cpu = new ricoh5A22(this.busA, this.busB, this.version, this.mem_map.map_address);
+		this.ppu = new SNESPPU(null, this.busB);
+
+
 		this.interlaced_mode = 0;
 		this.scanline = new SNESscanline();
 	}
@@ -243,10 +349,14 @@ class SNES {
 	
 	load_ROM_from_RAM(ROM) {
 		this.cart.load_cart_from_RAM(new Uint8Array(ROM));
-		this.mem = new snes_mem(this.cart);
+		//this.mem = new snes_mem(this.cart);
 		this.ROM = this.cart.ROM;
 		this.SRAM = this.cart.SRAM;
 		console.log('0xFFE0 mapped to cart is', this.mem.map_address(0xFFE0).toString(16));
+	}
+
+	run_scanline() {
+		this.scanline.next();
 	}
 
 	step() {
