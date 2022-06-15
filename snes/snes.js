@@ -321,8 +321,6 @@ class SNESbusMapper {
 		}
 		return new mapped_address(null, null, null);
 	}
-
-	}
 }
 class SNES {
 	constructor() {
