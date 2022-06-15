@@ -716,7 +716,7 @@ class switchgen {
         this.addl('regs.P.N = (' + who + ' & 0x8000) >>> 15;');
     }
     setz(who) {
-        this.addl('regs.P.Z = (' + who + ' === 0) ? 1 : 0;');
+        this.addl('regs.P.Z = +(' + who + ' === 0);');
     }
 
     ADC8() {
@@ -726,13 +726,13 @@ class switchgen {
         this.addl('else {');
         this.addl('    result = (A & 0x0F) + (regs.TR & 0x0F) + (CF << 0);')
         this.addl('    if (result > 0x09) result += 0x06;')
-        this.addl('    regs.P.C = result > 0x0F ? 1 : 0;')
+        this.addl('    regs.P.C = +(result > 0x0F);')
         this.addl('    result = (A & 0xF0) + (regs.TR & 0xF0) + (regs.P.C << 4) + (result & 0x0F);')
         this.addl('}')
 
         this.addl('regs.P.V = ~(A ^ regs.TR) & (A ^ result) & 0x80;')
         this.addl('if (regs.P.D && result > 0x9F) result += 0x60;');
-        this.addl('regs.P.C = result > 0xFF ? 1 : 0;')
+        this.addl('regs.P.C = +(result > 0xFF);')
         this.setz('(result & 0xFF)');
         this.setn16('result');
         this.addl('regs.C = (regs.C & 0xFF00) | (result & 0xFF);')
@@ -744,74 +744,73 @@ class switchgen {
         this.addl('else {');
         this.addl('    let result = (regs.C & 0x000F) + (regs.TR & 0x000F) + (regs.P.C << 0);');
         this.addl('    if (result > 0x0009) result += 0x0006;');
-        this.addl('    regs.P.C = result > 0x000F ? 1 : 0;')
+        this.addl('    regs.P.C = +(result > 0x000F);')
         this.addl('    result = (regs.C & 0x00F0) + (regs.TR & 0x00F0) + (regs.P.C << 4) + (result & 0x000F);');
         this.addl('    if (result > 0x009F) result += 0x0060;');
-        this.addl('    regs.P.C = result > 0x00FF ? 1 : 0;')
+        this.addl('    regs.P.C = +(result > 0x00FF);')
         this.addl('    result = (regs.C & 0x0F00) + (regs.TR & 0x0F00) + (regs.P.C << 8) + (result & 0x00FF);');
         this.addl('    if (result > 0x09FF) result += 0x0600;');
-        this.addl('    regs.P.C = result > 0x0FFF ? 1 : 0;')
+        this.addl('    regs.P.C = +(result > 0x0FFF);')
         this.addl('    result = (regs.C & 0xF000) + (regs.TR & 0xF000) + (regs.P.C << 12) + (result & 0x0FFF);');
         this.addl('}');
 
         this.addl('regs.P.V = ~(regs.C ^ regs.TR) & (regs.C ^ result) & 0x8000;');
         this.addl('if (regs.P.D && result > 0x9FFF) result += 0x6000;');
-        this.addl('regs.P.C = (result > 0xFFFF) ? 1 : 0;')
+        this.addl('regs.P.C = +(result > 0xFFFF);')
         this.setz('(result & 0xFFFF)');
         this.setn16('result');
         this.addl('regs.C = result;')
     }
 
     AND8() {
-        this.addl('let A = regs.C & 0xFF;')
-        this.addl('A &= regs.TR & 0xFF;');
+        this.addl('let A = regs.C & regs.TR 0xFF;')
         this.setz('A');
         this.setn8('A');
-        this.addl('regs.C = (regs.C & 0xFF00) | A;');
+        this.addl('regs.C = (regs.C & 0xFF00) + A;');
     }
 
     AND16() {
-        this.addl('regs.C &= regs.TR');
+        this.addl('regs.C &= regs.TR;');
         this.setz('regs.C');
         this.setn16('regs.C');
     }
 
     ASL8() {
         this.addl('regs.P.C = (regs.TR & 0x80) >>> 7;')
-        this.addl('regs.TR = (regs.TR & 0xFF) << 1;');
+        this.addl('regs.TR = (regs.TR & 0x7F) << 1;');
         this.setz('regs.TR');
         this.setn8('regs.TR');
     }
 
     ASL16() {
         this.addl('regs.P.C = (regs.TR & 0x8000) >>> 15;');
-        this.addl('regs.TR = (regs.TR & 0xFFFF) << 1;');
+        this.addl('regs.TR = (regs.TR & 0x7FFF) << 1;');
         this.setz('regs.TR');
         this.setn16('regs.TR');
     }
 
     BIT8() {
-        this.addl('regs.P.Z = (regs.C & regs.TR & 0xFF) === 0 ? 1 : 0;');
-        this.addl('regs.P.V = regs.TR & 0x40;');
-        this.addl('regs.P.N = regs.TR & 0x80;');
+        this.addl('regs.P.Z = +((regs.C & regs.TR & 0xFF) === 0);');
+        this.addl('regs.P.V = (regs.TR & 0x40) >> 6;');
+        this.addl('regs.P.N = (regs.TR & 0x80) >> 7;');
     }
 
     BIT16() {
-        this.addl('regs.P.Z = (regs.C & regs.TR & 0xFFFF) === 0 ? 1 : 0;');
-        this.addl('regs.P.V = (regs.TR & 0x4000) >>> 8;');
-        this.addl('regs.P.N = (regs.TR & 0x8000) >>> 8;');
+        this.addl('regs.P.Z = +((regs.C & regs.TR & 0xFFFF) === 0);');
+        this.addl('regs.P.V = (regs.TR & 0x4000) >>> 14;');
+        this.addl('regs.P.N = (regs.TR & 0x8000) >>> 15;');
     }
 
     cmp8(who) {
         this.addl('regs.TR = (' + who + ' & 0xFF) - regs.TR;');
-        this.addl('regs.P.C = (regs.TR >= 0) ? 1 : 0;');
-        this.setz('(regs.TR & 0xFF)');
-        this.setn8('(regs.TR & 0xFF)');
+        this.addl('regs.P.C = +(regs.TR >= 0);');
+        this.setz('regs.TR & 0xFF');
+        this.setn8('regs.TR & 0xFF');
     }
 
     cmp16(who) {
         this.addl('regs.TR = ' + who + ' - regs.TR;');
-        this.addl('regs.P.C = (regs.TR >= 0) ? 1 : 0;');
+        this.addl('regs.P.C = +(regs.TR >= 0);');
         this.setz('regs.TR');
         this.setn16('regs.TR');
     }
@@ -993,13 +992,13 @@ class switchgen {
         this.addl('else {');
         this.addl('    result = (regs.C & 0x0F) + (data & 0x0F) + (regs.P.C);');
         this.addl('    if (result <= 0x0F) result -= 0x06;');
-        this.addl('    regs.P.C = (result > 0x0F) ? 1 : 0;');
+        this.addl('    regs.P.C = +(result > 0x0F);');
         this.addl('    result = (regs.C & 0xF0) + (data & 0xF0) + (regs.P.C << 4) + (result & 0x0F);');
         this.addl('}');
 
         this.addl('regs.P.V = ~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80;');
         this.addl('if (regs.P.D && result <= 0xFF) result -= 0x60;')
-        this.addl('regs.P.C = result > 0xFF ? 1 : 0;');
+        this.addl('regs.P.C = +(result > 0xFF);');
         this.setz('result');
         this.setn8('result');
         this.addl('regs.C = (regs.C & 0xFF00) | (result & 0xFF);');
@@ -1012,34 +1011,34 @@ class switchgen {
         this.addl('else {');
         this.addl('    result = (regs.C & 0x000F) + (data & 0x000F) + (regs.P.C);');
         this.addl('    if (result <= 0x000F) result -= 0x0006;');
-        this.addl('    regs.P.C = (result > 0x000F) ? 1 : 0;');
+        this.addl('    regs.P.C = +(result > 0x000F);');
 
         this.addl('    result = (regs.C & 0x00F0) + (data & 0x00F0) + (regs.P.C << 4) + (result & 0x000F);');
         this.addl('    if (result <= 0x00FF) result -= 0x0060;');
-        this.addl('    regs.P.C = (result > 0x00FF) ? 1 : 0;');
+        this.addl('    regs.P.C = +(result > 0x00FF);');
 
         this.addl('    result = (regs.C & 0x0F00) + (data & 0x0F00) + (regs.P.C << 8) + (result & 0x00FF);');
         this.addl('    if (result <= 0x0FFF) result -= 0x0600;');
-        this.addl('    regs.P.C = (result > 0x0FFF) ? 1 : 0;');
+        this.addl('    regs.P.C = +(result > 0x0FFF);');
 
         this.addl('    result = (regs.C & 0xF000) + (data & 0xF000) + (regs.P.C << 12) + (result & 0x0FFF);');
         this.addl('}');
 
         this.addl('regs.P.V = ~(regs.C ^ data) & (regs.C ^ result) & 0x8000;');
         this.addl('if (regs.P.D && result <= 0xFFFF) result -= 0x6000;');
-        this.addl('regs.P.C = result > 0xFFFF ? 1 : 0');
+        this.addl('regs.P.C = +(result > 0xFFFF);');
         this.setz('result');
         this.setn16('result');
         this.addl('regs.C = result');
     }
 
     TRB8() {
-        this.addl('regs.P.Z = (regs.TR & regs.C & 0xFF) === 0 ? 1 : 0;');
+        this.addl('regs.P.Z = +((regs.TR & regs.C & 0xFF) === 0);');
         this.addl('regs.TR = (~regs.C) & regs.TR & 0xFF;');
     }
 
     TRB16() {
-        this.addl('regs.P.Z = (regs.TR & regs.C & 0xFFFF) === 0 ? 1 : 0;');
+        this.addl('regs.P.Z = +((regs.TR & regs.C & 0xFFFF) === 0);');
         this.addl('regs.TR = (~regs.C) & regs.TR & 0xFFFF;');
     }
 
@@ -1674,7 +1673,7 @@ class switchgen {
             this.addl('pins.RW = ' + W + "; pins.VPA = " + P + "; pins.VDA = " + D + "; pins.VPB = " + V + ";");
         } else {
             let do_W = W !== this.old_rw;
-            let PDV = P || D ? 1 : 0;
+            let PDV = +(P || D);
             let do_PDV = PDV !== this.old_pdv;
             if (do_W && do_PDV) {
                 this.addl('pins.RW = ' + W + '; pins.PDV = ' + PDV + ';');
@@ -1694,7 +1693,7 @@ class switchgen {
 
 
 function A_R_OR_W(ins) {
-    return (A_R_INS.has(ins) ? 0 : 1);
+    return +(!A_R_INS.has(ins));
 }
 
 class generate_instruction_function_return {
