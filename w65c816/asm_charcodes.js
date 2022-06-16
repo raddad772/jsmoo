@@ -11,8 +11,8 @@ RESET EMU_START
 .FONTPTR:$23
 .SCRPTR:$26
 .INNERLOOP:$44
-.OUTERLOOP:$45
-.FONTTMP:$46
+.OUTERLOOP:$46
+.FONTTMP:$48
 
 .EMU_START:$2020
 ; Let the compiler know it's emulated mode here
@@ -24,8 +24,8 @@ XCE
 JMP >NATIVE_START
 
 .HELLOWORLD:$02F000
-DCB $48, $65, $6c, $6c, $6f, $2c, $20, $77, $6f, $72, $6c, $64, $21, $00
-;ASC "Hello, world! Goodbye!"
+;DCB $48, $65, $6c, $6c, $6f, $2c, $20, $77, $6f, $72, $6c, $64, $21, $00
+ASC "This is so exciting"
 
 .PRINT_HELLOWORLD:$040900
 SEP #$30
@@ -39,7 +39,7 @@ LDA #$02
 STA <$22
 REP #$30
 ; X and Y to have X and Y coords on screen
-LDX #5
+LDX #1
 LDY #5
 JSL >RENDERSTR
 LDA <$AB
@@ -76,24 +76,17 @@ REP #$30
 :M0 X0
 ; Multiply X by 8 and Y by 16! Bound them onto screen!
 TXA
-CLC
-ROL A
-CLC
-ROL A
-CLC
-ROL A
+ASL A
+ASL A
+ASL A
 AND #$FF
 TAX
 
 TYA
-CLC
-ROL A
-CLC
-ROL A
-CLC
-ROL A
-CLC
-ROL A
+ASL A
+ASL A
+ASL A
+ASL A
 AND #$FF
 TAY
 
@@ -101,11 +94,14 @@ TAY
 SEP #$20 ; 8-bit memory read & write, high pointer of 2 pointers
 
 ; 23-$25 is the font character address
+LDA #$01
+PHA
+PLB
+
 LDA #$02
 STA <$25
-; 26-$28 is the screen address for pixel drawing
-LDA #$01
-STA <$28
+;STA <$28
+;TCD
 STZ $26
 STZ $27
 STZ $23
@@ -124,18 +120,16 @@ JMP RENDERSTRLOOPDONE
 .RENDERSTRCONT
 SEC
 SBC #$20    ; First char is 32
-REP #$20
+REP #$20    ; 16-bit M/A
+; Add 1, multiply by 16, subtract 4
 :M0
 INC A
-CLC
-ROL A
-CLC
-ROL A
-CLC
-ROL A
-CLC
-ROL A
-DEC A
+ASL A
+ASL A
+ASL A
+ASL A
+SEC
+SBC #4
 STA <FONTPTR
 ; $23-$25 now holds address of first scanline of font
 ; Time to calcualte screen address. Y * 256 + X.
@@ -145,59 +139,44 @@ XBA     ; Y * 256
 STX <$30
 CLC
 ADC <$30 ; + X
-STA <SCRPTR ; $26-28 now holds the pixel address
+STA <SCRPTR
 
-
-; Now we must render 16 lines of 8 pixels! YAY!
-; Y will hold the line counter
-; X will hold the pixel counter
-SEP #$20
-LDA #16
+; Now we must render 13 lines of 8 pixels! YAY!
+LDA #13
 STA <OUTERLOOP
 .RS_OUTER_START
-SEP #$20
 LDA #8
 STA <INNERLOOP
-LDA [<FONTPTR]   ; Load font
-STA <FONTTMP
+LDA [<FONTPTR]   ; Load this row of pixels
+STA <FONTTMP     ; Store in our temporary variable
 .RS_INNER_START
-SEP #$20
-LDA <FONTTMP
-CLC
-ROL A       ; Rotate highest (leftmost) bit out to Carry
-STA <FONTTMP     ; Store font back
-LDA #0      ; Clear A
-ROL A       ; Put carry bit into A now
-STA [<SCRPTR]   ; Write to screen pixel
+SEP #$20         ; 8-bit A/M mode
+ASL <FONTTMP
+LDA #0           ; Clear A
+ROL A            ; Put carry bit into A now
+STA (<SCRPTR)    ; Write to screen pixel
 ; Now increase the 16-bit screen pixel address
-REP #$20
+REP #$20         ; 16-bit A/M mode
 INC <SCRPTR
 
 ; Now, decrement inner loop counter
-SEP #$20
 DEC <INNERLOOP
 BNE RS_INNER_START  
 
-; One last rotate
-REP #$20
 ; So now we're on the next row. 
-; Increase pixel address by 248 to get to n ext row
-CLC
+; Increase pixel address by 248 to get to next row
 LDA <SCRPTR
+CLC
 ADC #248
 STA <SCRPTR
 
 ; Decrease font address by 1, because remember it's stored in backwards order for some reason 
 DEC <FONTPTR
-SEP #$20
 DEC <OUTERLOOP
 BNE RS_OUTER_START
 
 REP #$20
 INC <STRPTR
-;LDA <SCRPTR
-;SBC #4096
-;STA <SCRPTR
 ; Increase screen X coord
 TXA
 ADC #10

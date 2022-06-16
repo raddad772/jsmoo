@@ -1165,7 +1165,7 @@ class switchgen {
     }
 
     PULL16(what) {
-        this.addl('regs.A = regs.TR;');
+        this.addl('regs.C = regs.TR;');
         this.setz(what);
         this.setn16(what);
     }
@@ -1457,9 +1457,9 @@ class switchgen {
                 break;
             case OM.PHA:
                 if (E || M)
-                    this.PUSH8('regs.A');
+                    this.PUSH8('regs.C');
                 else
-                    this.PUSH16('regs.A');
+                    this.PUSH16('regs.C');
                 break;
             case OM.PHB:
                 this.PUSH8('regs.DBR');
@@ -1487,9 +1487,9 @@ class switchgen {
                 break;
             case OM.PLA:
                 if (E || M)
-                    this.PULL8('regs.A');
+                    this.PULL8('regs.C');
                 else
-                    this.PULL16('regs.A');
+                    this.PULL16('regs.C');
                 break;
             case OM.PLB:
                 this.PULL8('regs.DBR');

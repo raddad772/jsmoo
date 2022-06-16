@@ -285,7 +285,8 @@ let testcpu;
 function test_65c816() {
     testcpu = new tester_65c816();
     // 1FC 1F9
-    let numcycles = 85040;
-    //numcycles = 50;
+    let numcycles = 65040;
+    numcycles = 200000;
+    //numcycles = 141;
     testcpu.do_cycles(numcycles);
 }
