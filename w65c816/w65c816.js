@@ -233,6 +233,9 @@ class w65c816 {
 			else if (this.#IRQ_pending) {
 				this.irq();
 			}
+			else if (this.regs.STP || this.regs.WAI) {
+				return;
+			}
 		}
 		this.regs.TCU++;
 		if (this.regs.TCU === 1) {

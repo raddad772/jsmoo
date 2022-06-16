@@ -171,33 +171,7 @@ class w65c816_test_case {
 function write_test_to_RAM()
 {
     let a = new w65c816_assembler();
-    let TO_ASSEMBLE = `
-; HI!
-.config
-# 16 * 65536
-ROM_SIZE $FFFFF
-
-.vectors
-RESET EMU_START
-
-.EMU_START:$2020
-; Let the compiler know it's emulated mode here
-:E1
-CLC
-.POOF
-XCE
-
-:NATIVE M1 X1
-JMP NATIVE_START
-
-.NATIVE_START:$040200
-:E0 M1 X1
-; Next line should do a 16-bit load
-LDA #$ABCD
-; Next line should store 8bits in 0x2010 
-STA $2010 
-STP
-    `;
+    let TO_ASSEMBLE = INIT_ASM;// + TEST_ABS_RW;
 
     a.assemble(TO_ASSEMBLE);
     //console.log('2022 is', a.output[0x2022]);
@@ -205,7 +179,34 @@ STP
     return a.output;
 }
 
+function clr_canvas() {
+    let imageData = pxctx.getImageData(0, 0, 256, 256);
+    let data = imageData.data;
+
+    for (let i = 0; i < data.length; i += 4) {
+      data[i]     = 0;
+      data[i + 1] = 0;
+      data[i + 2] = 0;
+      data[i + 3] = 255;
+    }
+    pxctx.putImageData(imageData, 0, 0);
+}
+
+function put_pixel(x, y, color) {
+    let imageData = pxctx.getImageData(0, 0, 1, 1);
+    imageData.data[0] = color ? 255 : 0;
+    imageData.data[1] = color ? 255 : 0;
+    imageData.data[2] = color ? 255 : 0;
+    pxctx.putImageData(imageData, x, y)
+}
+
+let canvasel;
+let pxctx;
+
 function test_65c816() {
+    canvasel = document.getElementById('glCanvas');
+    pxctx = canvasel.getContext('2d');
+    clr_canvas();
     let RAM = write_test_to_RAM();
     let padl = function(what, howmuch) {
         while(what.length < howmuch) {
@@ -229,6 +230,12 @@ function test_65c816() {
     let trace_write8 = function(bank, addr, val) {
         bank = bank & 0x0F;
         RAM[(bank << 16) | addr] = val;
+        // Display!
+        if (bank === 1) {
+            let x = (addr & 0xFF);
+            let y = (addr & 0xFF00) >> 8;
+            put_pixel(x, y, val);
+        }
     }
 
     let cpu = new w65c816();
