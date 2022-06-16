@@ -302,7 +302,7 @@ class w65c816_assembler {
     }
 
     interpret_number(instr) {
-        instr = instr.trim().replace(/[\^\[\],#<>!|]/g, '');
+        instr = instr.trim().replace(/[()^\[\],#<>!|]/g, '');
         let outval = new interpret_number_return();
         outval.value = instr;
         if (instr === 'A') {
