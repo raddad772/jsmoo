@@ -148,26 +148,25 @@ LDA [<FONTPTR]   ; Load this row of pixels
 BEQ CLRLINE      ; If this row of pixels is empty, go to a specialized part that will empty it for us
 STA <TMPVAR      ; Store in our temporary variable
 
-.RS_INNER_START
-REP #$20
-PHX
-LDX <SCRPTR
-LDA #0
-ROR <TMPVAR
-ROL A
-XBA
-ROR <TMPVAR
-ROL A
-;XBA
-STA !6,x
+; Render 8 pixels
+REP #$20      ; Set 16-bit memory mode
+PHX           ; Store X for later
+LDX <SCRPTR   ; Load screen pointer to X
+LDA #0        ; Clear A
+ROR <TMPVAR   ; Rotate out rightmost pixel
+ROL A         ; Rotate into A
+XBA           ; Swap A & B
+ROR <TMPVAR   ; Rorate out next rightmost pixel
+ROL A         ; Rotate into A
+STA !6,x      ; Store at positions 6&7 since we're going right to left now
 
+; Then repeat 3 more times for gorups of 2 pixels
 LDA #0
 ROR <TMPVAR
 ROL A
 XBA
 ROR <TMPVAR
 ROL A
-;XBA
 STA !4,x
 
 LDA #0
@@ -176,7 +175,6 @@ ROL A
 XBA
 ROR <TMPVAR
 ROL A
-;XBA
 STA !2,x
 
 LDA #0
@@ -185,18 +183,15 @@ ROL A
 XBA
 ROR <TMPVAR
 ROL A
-;XBA
 STA !0,x
 
-TXA
-ADC #8
-PLX
+TXA         ; Gotta do a little math on X
+ADC #256    ; Represent the 8 pixels we've drawn, plus the 248 from below
+PLX         ; Restore X from before
 
 .INNERLOOPSKIP
 ; So now we're on the next row. 
 ; Increase pixel address by 248 to get to next row
-CLC
-ADC #248
 STA <SCRPTR
 
 ; Decrease font address by 1, because remember it's stored in backwards order for some reason 
@@ -223,7 +218,7 @@ STA !4,x
 STA !2,x
 STA !0,x
 TXA
-ADC #8
+ADC #256
 PLX
 BRA INNERLOOPSKIP
 
