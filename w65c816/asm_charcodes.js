@@ -10,9 +10,9 @@ RESET EMU_START
 .STRPTR:$20
 .FONTPTR:$23
 .SCRPTR:$26
+.TMPVAR:$30
 .INNERLOOP:$44
 .OUTERLOOP:$46
-.FONTTMP:$48
 
 .EMU_START:$2020
 ; Let the compiler know it's emulated mode here
@@ -25,7 +25,8 @@ JMP >NATIVE_START
 
 .HELLOWORLD:$02F000
 ;DCB $48, $65, $6c, $6c, $6f, $2c, $20, $77, $6f, $72, $6c, $64, $21, $00
-ASC "This is so exciting"
+;ASC "This is so exciting!"
+ASC "Hello, world!"
 
 .PRINT_HELLOWORLD:$040900
 SEP #$30
@@ -95,8 +96,8 @@ SEP #$20 ; 8-bit memory read & write, high pointer of 2 pointers
 
 ; 23-$25 is the font character address
 LDA #$01
-PHA
-PLB
+PHA ; Push A to stack...
+PLB ; So that we can update DBR with it
 
 LDA #$02
 STA <$25
@@ -106,22 +107,19 @@ STZ $26
 STZ $27
 STZ $23
 STZ $24
-STZ $30
-STZ $31
-STZ $32
 
+; Our actual loop starts here
 .RENDERSTRLOOPSTART
 ; Now, fetch first character into A
 SEP #$20
-LDA [STRPTR] ; Read from string pointers
-; Next, calculate address of bytes holding the scanlines for the character A
-BNE RENDERSTRCONT
-JMP RENDERSTRLOOPDONE
+LDA [STRPTR] ; Read from string pointer
+BEQ RENDERSTRLOOPDONE
 .RENDERSTRCONT
 SEC
 SBC #$20    ; First char is 32
 REP #$20    ; 16-bit M/A
-; Add 1, multiply by 16, subtract 4
+; Add 1, multiply by 16, subtract 4. This is because they are stored in reversed order, and the top 3 rows are
+;  always blank.
 :M0
 INC A
 ASL A
@@ -131,27 +129,27 @@ ASL A
 SEC
 SBC #4
 STA <FONTPTR
-; $23-$25 now holds address of first scanline of font
-; Time to calcualte screen address. Y * 256 + X.
+; Time to calculate screen address. Y * 256 + X.
 ; X & Y hold current pixel address
-TYA
-XBA     ; Y * 256
-STX <$30
+TYA              ; Y->A
+XBA              ; * 256
 CLC
-ADC <$30 ; + X
-STA <SCRPTR
+STX <TMPVAR      ; X->TMPVAR
+ADC <TMPVAR      ; Y*256+X
+STA <SCRPTR      ; Set our screen pointer to that
 
 ; Now we must render 13 lines of 8 pixels! YAY!
 LDA #13
-STA <OUTERLOOP
-.RS_OUTER_START
+STA <OUTERLOOP   ; Outer loop will be 13 long
+.RS_OUTER_START  ; Outer loop starts here
 LDA #8
-STA <INNERLOOP
+STA <INNERLOOP   ; Inner loop will be 8 long
 LDA [<FONTPTR]   ; Load this row of pixels
-STA <FONTTMP     ; Store in our temporary variable
+BEQ CLRLINE 
+STA <TMPVAR      ; Store in our temporary variable
 .RS_INNER_START
 SEP #$20         ; 8-bit A/M mode
-ASL <FONTTMP
+ASL <TMPVAR
 LDA #0           ; Clear A
 ROL A            ; Put carry bit into A now
 STA (<SCRPTR)    ; Write to screen pixel
@@ -163,6 +161,7 @@ INC <SCRPTR
 DEC <INNERLOOP
 BNE RS_INNER_START  
 
+.INNERLOOPSKIP
 ; So now we're on the next row. 
 ; Increase pixel address by 248 to get to next row
 LDA <SCRPTR
@@ -183,6 +182,23 @@ ADC #10
 TAX
 SEP #$20
 JMP RENDERSTRLOOPSTART
+
+.CLRLINE
+REP #$20         ; 16-bit memory read/write
+LDA #0
+STA (<SCRPTR)    ; Write to screen pixel
+INC <SCRPTR
+INC <SCRPTR
+STA (<SCRPTR)    ; Write to screen pixel
+INC <SCRPTR
+INC <SCRPTR
+STA (<SCRPTR)    ; Write to screen pixel
+INC <SCRPTR
+INC <SCRPTR
+STA (<SCRPTR)    ; Write to screen pixel
+INC <SCRPTR
+INC <SCRPTR
+JMP INNERLOOPSKIP
 
 ; Loop done! Restore everything and return long
 .RENDERSTRLOOPDONE
