@@ -102,6 +102,7 @@ class OPCODE_MNEMONICS_t {
         this.S_IRQ = 94;
         this.S_ABORT = 95;
         this.DCB = 96; // Assembler mnemonic
+        this.ASC = 97;
     }
 }
 
@@ -206,7 +207,8 @@ const opcode_MN = Object.freeze({
     [OM.S_NMI]: 'S_NMI',
     [OM.S_IRQ]: 'S_IRQ',
     [OM.S_ABORT]: 'S_ABORT',
-    [OM.DCB]: 'DCB' // Assembler directive
+    [OM.DCB]: 'DCB', // Assembler directive
+    [OM.ASC]: 'ASC' // Assembler directive
 });
 
 class ADDRESS_MODES_t {
@@ -259,6 +261,7 @@ class ADDRESS_MODES_t {
         this.XYCb = 2201;               // xyc      block move positive
         this.IMM = 23;                  // #        immediate
         this.DCB = 24;                  // DCB      for assembly
+        this.ASC = 25;                  // ASC      for assembly
 	}
 }
 const AM = Object.freeze(new ADDRESS_MODES_t());

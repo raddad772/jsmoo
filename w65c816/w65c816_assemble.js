@@ -271,7 +271,7 @@ class w65c816_assembler {
 
     writeinstruction(ins) {
         let addr = ins.addr;
-        if (this.enable_console && opcode_MN[ins.ins] !== 'DCB') {
+        if (this.enable_console && opcode_MN[ins.ins] !== 'DCB' && opcode_MN[ins.ins] !== 'ASC') {
           let cstr = hex0x6(addr) + ' ' + hex0x2(ins.bytecodes[0]) + ' ' + opcode_MN[ins.ins];
           if (ins.bytecodes.length > 1) {
               for (let i in ins.bytecodes) {
@@ -497,12 +497,28 @@ class w65c816_assembler {
             }
             return;
         }
+        let mn = line.slice(0,3);
+        if (mn === 'REP') {
+            let operand = this.interpret_number(line.slice(4)).value;
+            if (operand & 0x10) this.X = 0;
+            if (operand & 0x20) this.M = 0;
+        }
+        else if (mn === 'SEP') {
+            let operand = this.interpret_number(line.slice(4)).value;
+            if (operand & 0x10) this.X = 1;
+            if (operand & 0x20) this.M = 1;
+        }
+
+        if (mn === 'REP' || mn === 'SEP') {
+
+        }
     }
 
     interpret_line(line) {
         this.E = this.EMX[this.lnum].E;
         this.M = this.EMX[this.lnum].M;
         this.X = this.EMX[this.lnum].X;
+        //console.log(this.lnum, this.E, this.M, this.X);
         if (line[0] === '.') {
             let section = line.slice(1);
             if (section === 'config' || section === 'vectors') {
@@ -582,6 +598,22 @@ class w65c816_assembler {
             }
             this.instructions.push(op);
             this.addr += to_parse.length;
+            return;
+        }
+        if (op.ins === OM.ASC) {
+            console.log('ASC!!!', line)
+            op.needs_resolve = false;
+            op.addr_mode = AM.DCB;
+            let to_parse = line.slice(5, line.length - 1);
+            let j;
+            for (let i = 0; i < to_parse.length; i++) {
+                let v =
+                op.bytecodes[i] = to_parse.charCodeAt(i);
+                j = i;
+            }
+            op.bytecodes[j+1] = 0;
+            this.instructions.push(op);
+            this.addr += to_parse.length + 1;
             return;
         }
 
@@ -688,7 +720,10 @@ class w65c816_assembler {
         }
 
         let valid_modes = [];
-        if (with_care) {
+        if (nummerthing.kind === VT.accumulator) {
+            valid_modes = [AM.ACCUM];
+        }
+        else if (with_care) {
             valid_modes = [AM.A, AM.Ab, AM.Ac, AM.Ad, AM.AL, AM.ALb, AM.ALc, AM.PC_R, AM.PC_RL]
         }
         else if (poperand.indexOf('#') !== -1) {
@@ -873,6 +908,7 @@ class w65c816_assembler {
         }
         if (foundcode === -1) {
             this.errormsg('Could not match opcode for ' + line);
+            alert('Could not match opcode for ' + line);
             return;
         }
 
@@ -880,12 +916,14 @@ class w65c816_assembler {
 
         switch(op.ins) {
             case OM.REP:
-                if (operand & 0x10) this.EMX[this.lnum+1].X = 0;
-                if (operand & 0x20) this.EMX[this.lnum+1].M = 0;
+                encoding = OPE.bytes1;
+                //if (operand & 0x10) this.EMX[this.lnum+1].X = 0;
+                //if (operand & 0x20) this.EMX[this.lnum+1].M = 0;
                 break;
             case OM.SEP:
-                if (operand & 0x10) this.EMX[this.lnum+1].X = 1;
-                if (operand & 0x20) this.EMX[this.lnum+1].M = 1;
+                encoding = OPE.bytes1;
+                //if (operand & 0x10) this.EMX[this.lnum+1].X = 1;
+                //if (operand & 0x20) this.EMX[this.lnum+1].M = 1;
                 break;
             case OM.BNE: // X
             case OM.BCC: // X
@@ -984,7 +1022,7 @@ class w65c816_assembler {
         switch(encoding) {
             case OPE.none:
                 this.addr += 1;
-                this.errormsg('NEVER SHOULDA GOT HERE!');
+                //this.errormsg('NEVER SHOULDA GOT HERE!');
                 break;
             case OPE.bytes1:
                 this.addr += 2;
@@ -1044,6 +1082,7 @@ class w65c816_assembler {
                 return;
             }
             ctrl.get_config_lines(line);
+            //console.log(ctrl.lnum, ctrl.E, ctrl.M, ctrl.X);
             ctrl.EMX[ctrl.lnum] = new EMX_t(ctrl.E, ctrl.M, ctrl.X);
             ctrl.EMX[ctrl.lnum+1] = new EMX_t(ctrl.E, ctrl.M, ctrl.X);
         });
@@ -1103,6 +1142,10 @@ class w65c816_assembler {
                         continue;
                 }
             }
+        }
+
+        for (let i in this.labels) {
+            console.log(this.labels[i].name, hex0x6(this.labels[i].addr));
         }
 
         if (this.enable_console) console.log('Pass 4: Resolving vectors from labels')

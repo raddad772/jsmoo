@@ -277,9 +277,6 @@ class w65c816 {
 		let output = new disassembly_output(this.regs.E, this.regs.P.M, this.regs.P.X);
 		output.mnemonic = opcode_info.mnemonic;
 		let addr_mode = array_of_array_contains(opcode_AM_R, opcode);
-		if (output.mnemonic === 'SEP #') {
-			console.log('HEY!', addr_mode);
-		}
 		PC += 1;
 		switch (parseInt(addr_mode)) {
 			case AM.A:
