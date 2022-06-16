@@ -1805,7 +1805,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR += (pins.D << 8);
                         // instruction code follows
-                        regs.C = regs.TR;
+                        regs.D = regs.TR;
                         regs.P.Z = +(regs.D === 0);
                         regs.P.N = (regs.D & 0x8000) >>> 15;
                         // instruction code ends
@@ -5193,7 +5193,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR += (pins.D << 8);
                         // instruction code follows
-                        regs.C = regs.TR;
+                        regs.Y = regs.TR;
                         regs.P.Z = +(regs.Y === 0);
                         regs.P.N = (regs.Y & 0x8000) >>> 15;
                         // instruction code ends
@@ -10287,7 +10287,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR += (pins.D << 8);
                         // instruction code follows
-                        regs.C = regs.TR;
+                        regs.X = regs.TR;
                         regs.P.Z = +(regs.X === 0);
                         regs.P.N = (regs.X & 0x8000) >>> 15;
                         // instruction code ends
@@ -12556,7 +12556,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR += (pins.D << 8);
                         // instruction code follows
-                        regs.C = regs.TR;
+                        regs.D = regs.TR;
                         regs.P.Z = +(regs.D === 0);
                         regs.P.N = (regs.D & 0x8000) >>> 15;
                         // instruction code ends
@@ -23060,7 +23060,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR += (pins.D << 8);
                         // instruction code follows
-                        regs.C = regs.TR;
+                        regs.D = regs.TR;
                         regs.P.Z = +(regs.D === 0);
                         regs.P.N = (regs.D & 0x8000) >>> 15;
                         // instruction code ends
@@ -26142,7 +26142,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR += (pins.D << 8);
                         // instruction code follows
-                        regs.C = regs.TR;
+                        regs.Y = regs.TR;
                         regs.P.Z = +(regs.Y === 0);
                         regs.P.N = (regs.Y & 0x8000) >>> 15;
                         // instruction code ends
@@ -30832,7 +30832,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR += (pins.D << 8);
                         // instruction code follows
-                        regs.C = regs.TR;
+                        regs.X = regs.TR;
                         regs.P.Z = +(regs.X === 0);
                         regs.P.N = (regs.X & 0x8000) >>> 15;
                         // instruction code ends
@@ -32935,7 +32935,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR += (pins.D << 8);
                         // instruction code follows
-                        regs.C = regs.TR;
+                        regs.D = regs.TR;
                         regs.P.Z = +(regs.D === 0);
                         regs.P.N = (regs.D & 0x8000) >>> 15;
                         // instruction code ends
@@ -42691,7 +42691,7 @@ const decoded_opcodes = Object.freeze(
                         regs.TR += (pins.D << 8);
                         regs.S = (regs.S & 0xFF) + 0x100;
                         // instruction code follows
-                        regs.C = regs.TR;
+                        regs.D = regs.TR;
                         regs.P.Z = +(regs.D === 0);
                         regs.P.N = (regs.D & 0x8000) >>> 15;
                         // instruction code ends
