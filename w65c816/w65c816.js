@@ -277,6 +277,9 @@ class w65c816 {
 		let output = new disassembly_output(this.regs.E, this.regs.P.M, this.regs.P.X);
 		output.mnemonic = opcode_info.mnemonic;
 		let addr_mode = array_of_array_contains(opcode_AM_R, opcode);
+		if (output.mnemonic === 'SEP #') {
+			console.log('HEY!', addr_mode);
+		}
 		PC += 1;
 		switch (parseInt(addr_mode)) {
 			case AM.A:
@@ -310,7 +313,10 @@ class w65c816 {
 			case AM.IMM:
 				let affected_by_X = A_OR_M_X.has(opcode_info.ins);
 				let affected_by_M = !affected_by_X;
-				if ((affected_by_X && !this.regs.P.X) || (affected_by_M && !this.regs.P.M))
+				if (opcode_info.ins === OM.SEP || opcode_info.ins === OM.REP) {
+					output.data8 = this.trace_peek8(PBR, PC);
+				}
+				else if ((affected_by_X && !this.regs.P.X) || (affected_by_M && !this.regs.P.M))
 					output.data16 = this.trace_peek16(PBR, PC);
 				else
 					output.data8 = this.trace_peek8(PBR, PC);
