@@ -680,19 +680,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.N === 1;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -1986,19 +1986,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.N === 0;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -3253,19 +3253,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.V === 0;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -4649,19 +4649,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.V === 1;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -5446,19 +5446,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = true;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -6002,19 +6002,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.C === 0;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -7172,19 +7172,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.C === 1;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -8384,19 +8384,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.Z === 1;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -9745,19 +9745,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.Z === 0;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -11431,19 +11431,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.N === 1;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -12737,19 +12737,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.N === 0;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -14004,19 +14004,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.V === 0;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -15394,19 +15394,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.V === 1;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -16185,19 +16185,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = true;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -16725,19 +16725,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.C === 0;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -17868,19 +17868,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.C === 1;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -19051,19 +19051,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.Z === 1;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -20393,19 +20393,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.Z === 0;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -22019,19 +22019,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.N === 1;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -22694,7 +22694,7 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -22782,7 +22782,7 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -22851,7 +22851,7 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -22941,7 +22941,7 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -22998,7 +22998,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -23122,7 +23122,7 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -23202,7 +23202,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -23223,19 +23223,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.N === 0;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -23283,7 +23283,7 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -23325,7 +23325,7 @@ const decoded_opcodes = Object.freeze(
                     case 6: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -23370,7 +23370,7 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -23443,7 +23443,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -23535,7 +23535,7 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -23598,7 +23598,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -23728,7 +23728,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -23812,7 +23812,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -24398,19 +24398,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.V === 0;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -25664,19 +25664,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.V === 1;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -26369,19 +26369,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = true;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -26896,19 +26896,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.C === 0;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -27997,19 +27997,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.C === 1;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -29132,19 +29132,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.Z === 1;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -30358,19 +30358,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.Z === 0;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -31894,19 +31894,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.N === 1;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -32569,7 +32569,7 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -32657,7 +32657,7 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -32726,7 +32726,7 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -32816,7 +32816,7 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -32873,7 +32873,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -32997,7 +32997,7 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -33077,7 +33077,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -33098,19 +33098,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.N === 0;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -33158,7 +33158,7 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -33200,7 +33200,7 @@ const decoded_opcodes = Object.freeze(
                     case 6: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -33245,7 +33245,7 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -33318,7 +33318,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -33410,7 +33410,7 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -33473,7 +33473,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -33603,7 +33603,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -33687,7 +33687,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -34273,19 +34273,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.V === 0;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -35533,19 +35533,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.V === 1;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -36232,19 +36232,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = true;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -36743,19 +36743,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.C === 0;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -37817,19 +37817,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.C === 1;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -38923,19 +38923,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.Z === 1;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -40130,19 +40130,19 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.Z === 0;
-                        let skipped_cycle = 0;
-                        regs.TCU++; skipped_cycle++;           // skip cycle for no E
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -41649,18 +41649,18 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.N === 1;
-                        let skipped_cycle = 0;
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -42324,7 +42324,7 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -42412,7 +42412,7 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -42481,7 +42481,7 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -42571,7 +42571,7 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -42628,7 +42628,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -42753,7 +42753,7 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -42833,7 +42833,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -42854,18 +42854,18 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.N === 0;
-                        let skipped_cycle = 0;
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -42913,7 +42913,7 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -42955,7 +42955,7 @@ const decoded_opcodes = Object.freeze(
                     case 6: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -43000,7 +43000,7 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -43073,7 +43073,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -43165,7 +43165,7 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -43228,7 +43228,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -43358,7 +43358,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -43442,7 +43442,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = regs.C & regs.TR 0xFF;
+                        let A = regs.C & regs.TR & 0xFF;
                         regs.P.Z = +(A === 0);
                         regs.P.N = (A & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) + A;
@@ -44021,18 +44021,18 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.V === 0;
-                        let skipped_cycle = 0;
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -45282,18 +45282,18 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.V === 1;
-                        let skipped_cycle = 0;
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -45980,18 +45980,18 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = true;
-                        let skipped_cycle = 0;
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -46490,18 +46490,18 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.C === 0;
-                        let skipped_cycle = 0;
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -47563,18 +47563,18 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.C === 1;
-                        let skipped_cycle = 0;
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -48668,18 +48668,18 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.Z === 1;
-                        let skipped_cycle = 0;
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -49875,18 +49875,18 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         regs.TR = regs.P.Z === 0;
-                        let skipped_cycle = 0;
-                        if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken
+                        regs.skipped_cycle = 0;
+                        if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken
                         break;
                     case 2: // 2a
                         regs.TA = pins.D;
                         pins.PDV = 0;
                         break;
                     case 3: // 2b
-                        if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
-                        if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
+                        if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;

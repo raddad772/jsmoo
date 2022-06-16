@@ -763,7 +763,7 @@ class switchgen {
     }
 
     AND8() {
-        this.addl('let A = regs.C & regs.TR 0xFF;')
+        this.addl('let A = regs.C & regs.TR & 0xFF;')
         this.setz('A');
         this.setn8('A');
         this.addl('regs.C = (regs.C & 0xFF00) + A;');
@@ -2515,13 +2515,13 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
                     break;
             }
 
-            ag.addl('let skipped_cycle = 0;')
+            ag.addl('regs.skipped_cycle = 0;')
             // Technically this is supposed to be skip if E and branch across page boundary
             // BUT
             // This is the one place it was too huge a pain to add perfect accuracy FOR RIGHT NOW
             // It can certainly be added by making specialized versions of this function
-            if (!E) ag.addl('regs.TCU++; skipped_cycle++;           // skip cycle for no E')
-            ag.addl('if (!regs.TR) { regs.TCU++; skipped_cycle++; } // skip cycle if NOT taken');
+            if (!E) ag.addl('regs.TCU++; regs.skipped_cycle++;           // skip cycle for no E')
+            ag.addl('if (!regs.TR) { regs.TCU++; regs.skipped_cycle++; } // skip cycle if NOT taken');
 
             ag.addcycle('2a');
             ag.addl('regs.TA = pins.D;');
@@ -2529,17 +2529,17 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
 
             ag.addcycle('2b');
             if (PINS_SEPERATE_PDV) {
-                ag.addl('if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.VPA = 0; pins.VDA = 0; }');
+                ag.addl('if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.VPA = 0; pins.VDA = 0; }');
             } else {
-                ag.addl('if (skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } ');
+                ag.addl('if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } ');
                 ag.old_rw = 0; ag.old_pdv = 0;
             }
 
             ag.cleanup();
             if (PINS_SEPERATE_PDV) {
-                ag.addl('if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.VPA = 0; pins.VDA = 0; }');
+                ag.addl('if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.VPA = 0; pins.VDA = 0; }');
             } else {
-                ag.addl('if (skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } ');
+                ag.addl('if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } ');
                 ag.old_rw = 0; ag.old_pdv = 0;
             }
             ag.addl('regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;');
@@ -3071,7 +3071,7 @@ const ins_AM = Object.freeze({
     [OM.INY]: [ AM.I ],
     [OM.JML]: [ AM.A_IND ],
     [OM.JMP]: [ AM.Ab, AM.ALb, AM.A_INDb, AM.A_INDEXED_IND ],
-    [OM.JSL]: [ AM.AL ],
+    [OM.JSL]: [ AM.ALc ],
     [OM.JSR]: [ AM.Ac, AM.A_INDEXED_INDb ],
     [OM.LDA]: [ AM.D_INDEXED_IND, AM.STACK_R, AM.D, AM.D_IND_L, AM.IMM, AM.A, AM.AL, AM.D_IND_INDEXED, AM.D_IND, AM.STACK_R_IND_INDEXED, AM.D_INDEXED_X, AM.D_IND_L_INDEXED, AM.A_INDEXED_Y, AM.A_INDEXED_X, AM.AL_INDEXED_X ],
     [OM.LDX]: [ AM.IMM, AM.D, AM.A, AM.D_INDEXED_Y, AM.A_INDEXED_Y ],
@@ -3135,4 +3135,5 @@ const ins_AM = Object.freeze({
     [OM.S_NMI]: [ AM.STACK ],
     [OM.S_IRQ]: [ AM.STACK ],
     [OM.S_ABORT]: [ AM.STACK ],
+    [OM.DCB]: [ AM.DCB ]
 });

@@ -10,10 +10,19 @@ function trim_comment(line) {
     return outstr;
 }
 
+class EMX_t {
+    constructor(E, M, X) {
+        this.E = E;
+        this.M = M;
+        this.X = X;
+    }
+}
+
 const VT = Object.freeze({
     invalid: 0,
     int: 1,
-    label: 2
+    label: 2,
+    accumulator: 3
 });
 
 const OPE = Object.freeze({
@@ -177,6 +186,7 @@ class label_t {
         this.name = name;
         this.addr = addr;
         this.line = line;
+        this.awaiting_resolution = [];
     }
 }
 
@@ -239,6 +249,7 @@ class w65c816_assembler {
         this.E = 1;
         this.M = 1;
         this.X = 1;
+        this.EMX = [];
 
         this.ROM_SIZE = 0;
         this.lines_to_addr = {};
@@ -260,7 +271,16 @@ class w65c816_assembler {
 
     writeinstruction(ins) {
         let addr = ins.addr;
-        if (this.enable_console) console.log(hex0x6(addr) + ' ' + hex0x2(ins.bytecodes[0]) + ' ' + opcode_MN[ins.ins]);
+        if (this.enable_console && opcode_MN[ins.ins] !== 'DCB') {
+          let cstr = hex0x6(addr) + ' ' + hex0x2(ins.bytecodes[0]) + ' ' + opcode_MN[ins.ins];
+          if (ins.bytecodes.length > 1) {
+              for (let i in ins.bytecodes) {
+                  if (i < 1) continue;
+                  cstr = cstr + ' ' + hex0x2(ins.bytecodes[i]);
+              }
+          }
+          console.log(cstr);
+        }
         for (let i in ins.bytecodes) {
             this.write8(addr+parseInt(i), ins.bytecodes[i]);
         }
@@ -282,16 +302,20 @@ class w65c816_assembler {
     }
 
     interpret_number(instr) {
-        instr = instr.trim().replace(/[\^#<>!|]/g, '');
+        instr = instr.trim().replace(/[\^\[\],#<>!|]/g, '');
         let outval = new interpret_number_return();
         outval.value = instr;
-        if (instr[0] === '$') {
+        if (instr === 'A') {
+            outval.value = null;
+            outval.kind = VT.accumulator;
+        }
+        else if (instr[0] === '$') {
             outval.value = parseInt(instr.slice(1), 16);
             outval.kind = VT.int;
         }
         else {
             // Check if number or not
-            if (/^-?\d+$/.test(instr)) {
+            if (/^\[?-?\d+]?$/.test(instr)) {
                 outval.value = parseInt(instr);
                 outval.kind = VT.int;
             }
@@ -351,8 +375,12 @@ class w65c816_assembler {
             return;
         if (vec.kind === VT.int)
             this.vectors[VW].set_to_addr(vec.value);
-        else
+        else if (vec.kind === VT.label)
             this.vectors[VW].set_to_label(vec.value);
+        else if (vec.kind === VT.accumulator) {
+            this.errormsg('Did not understand vector: ' + line);
+        }
+
     }
 
     determine_label_addr(li, addr) {
@@ -394,8 +422,11 @@ class w65c816_assembler {
                     let addr = this.interpret_number(parts[1]);
                     if (addr.kind === VT.int) {
                         this.labels[label] = new label_t(label, addr.value, this.lnum);
-                    } else {
+                    } else if (addr.kind === VT.label) {
                         this.errormsg('Error parsing line: ' + line);
+                        return;
+                    } else if (addr.kidn === VT.accumulator) {
+                        this.errormsg('Cannot have label named A')
                         return;
                     }
                 }
@@ -404,6 +435,7 @@ class w65c816_assembler {
     }
 
     get_config_lines(line) {
+        this.EMX[this.lnum] = new EMX_t(this.E, this.M, this.X);
         if (line[0] === '.') {
             let section = line.slice(1);
             // We have a section...
@@ -419,12 +451,12 @@ class w65c816_assembler {
             if (line.slice(0,8) === 'ROM_SIZE') {
                 let romsize = line.split(' ');
                 if (romsize.length !== 2) {
-                    this.errormsg('Error parsing line: ' + line);
+                    this.errormsg('Error 1 parsing line: ' + line);
                     return;
                 }
                 romsize = this.interpret_number(romsize[1]);
                 if (romsize.kind !== VT.int) {
-                    this.errormsg('Error parsing address: ' + romsize.value);
+                    this.errormsg('Error parsing ROM size: ' + romsize.value);
                     return;
                 }
                 this.ROM_SIZE = romsize.value;
@@ -433,49 +465,6 @@ class w65c816_assembler {
         else if (this.section === 'vectors') {
             this.set_vector(line);
         }
-    }
-
-    interpret_line(line) {
-        if (line[0] === '.') {
-            let section = line.slice(1);
-            if (section === 'config' || section === 'vectors') {
-                this.section = section;
-                //console.log('CONTINUE1');
-                return;
-            } else {
-                this.section = 'code';
-                // We have a code label
-                let parts = section.split(':');
-                if (parts.length > 2 || parts.length < 1) {
-                    this.errormsg('Error parsing line: ' + line);
-                    return;
-                }
-                let label = parts[0].trim();
-                if (!/^[a-zA-Z]+[a-zA-Z0-9_]*$/.test(label)) {
-                    this.errormsg('Invalid label1: ' + label);
-                    return;
-                }
-                if (parts.length === 2) {
-                    let addr = this.interpret_number(parts[1]);
-                    if (addr.kind === VT.int) {
-                        this.addr = addr.value;
-                        this.lines_to_addr[this.lnum] = this.addr;
-                    } else {
-                        this.errormsg('Error parsing line: ' + line);
-                        return;
-                    }
-                    return;
-                }
-                else {
-                    // Determine if we can now assign an address to a label that needs it
-                    this.determine_label_addr(this.lnum, this.addr);
-                }
-                return;
-            } // code label
-            return;
-        }
-        if (this.section === 'config' || this.section === 'vectors')
-            return;
         if (line[0] === ':') { // Assembling mode change
             // Set flags like E, M, X that are important for assembly
             let flags = line.slice(1);
@@ -508,8 +497,56 @@ class w65c816_assembler {
             }
             return;
         }
+    }
+
+    interpret_line(line) {
+        this.E = this.EMX[this.lnum].E;
+        this.M = this.EMX[this.lnum].M;
+        this.X = this.EMX[this.lnum].X;
+        if (line[0] === '.') {
+            let section = line.slice(1);
+            if (section === 'config' || section === 'vectors') {
+                this.section = section;
+                //console.log('CONTINUE1');
+                return;
+            } else {
+                this.section = 'code';
+                // We have a code label
+                let parts = section.split(':');
+                if (parts.length > 2 || parts.length < 1) {
+                    this.errormsg('Error 2 parsing line: ' + line);
+                    return;
+                }
+                let label = parts[0].trim();
+                if (!/^[a-zA-Z]+[a-zA-Z0-9_]*$/.test(label)) {
+                    this.errormsg('Invalid label1: ' + label);
+                    return;
+                }
+                if (parts.length === 2) {
+                    let addr = this.interpret_number(parts[1]);
+                    if (addr.kind === VT.int) {
+                        this.addr = addr.value;
+                        this.lines_to_addr[this.lnum] = this.addr;
+                    } else {
+                        this.errormsg('Error 3 parsing line: ' + line);
+                        return;
+                    }
+                    return;
+                }
+                else {
+                    // Determine if we can now assign an address to a label that needs it
+                    this.determine_label_addr(this.lnum, this.addr);
+                }
+                return;
+            } // code label
+            return;
+        }
+        if (this.section === 'config' || this.section === 'vectors')
+            return;
 
         // Attempt to find a mnemonic for the instruction
+        if (line[0] === ':')
+            return;
         if (line.length < 3) {
             if (this.enable_console) console.log('HEY! Whats up with this? ' + line);
             return;
@@ -526,11 +563,27 @@ class w65c816_assembler {
             }
         }
         if (ins === -1) {
-            this.errormsg('Error parsing line: ' + line);
+            this.errormsg('Error 4 parsing line: ' + line);
             return;
         }
-        op.ins = ins;
+        op.ins = parseInt(ins);
         // Now attempt to find an addressing mode
+        if (op.ins === OM.DCB) {
+            op.needs_resolve = false;
+            op.addr_mode = AM.DCB;
+            let to_parse = line.slice(4).split(',');
+            for (let i = 0; i < to_parse.length; i++) {
+                let v = this.interpret_number(to_parse[i]);
+                if (v.kind !== VT.int) {
+                    this.errormsg('DCB only takes integer operands');
+                    return;
+                }
+                op.bytecodes[i] = v.value;
+            }
+            this.instructions.push(op);
+            this.addr += to_parse.length;
+            return;
+        }
 
         // First knock out instructions with one-byte opcodes
         let ams = ins_AM[ins];
@@ -596,6 +649,8 @@ class w65c816_assembler {
         candidate_ams1 = candidate_ams2;
         candidate_ams2 = [];
 
+        //console.log('AFTER REGEXES', candidate_ams1);
+
         //console.log(operand, 'OK WE HAVE THIS LEFT:', candidate_ams1);
         let nummerthing = this.interpret_number(operand);
         // Now look if something is forced
@@ -607,17 +662,24 @@ class w65c816_assembler {
         // So first check for forced mode
         let poperand = operand;
 
+        let with_care = false;
         if (nummerthing.kind === VT.invalid) {
-            this.errormsg('Error 1 interpreting operand ' + operand);
+            this.errormsg('Error 1 interpreting operand ' + operand + ' ' + line);
             return;
         }
         else if (nummerthing.kind === VT.label) {
+            op.label = nummerthing.value;
             if (nummerthing.value.addr === null) {
-                if (this.enable_console) console.log('Not sophisticated enough to resolve label "' + nummerthing.value.name + '" yet!');
-                if (this.enable_console) console.log('Yes I know how to build it so it can always resolve these but I just want to get this assembler done.');
-                return;
+                // Assemble this op with care. Assume a 16-bit offset. Less code-dense but easier to make
+                with_care = true;
+                operand = 0;
+                console.log('THIS IS AWAITING RESOLUTION', line);
+                nummerthing.value.awaiting_resolution.push(op);
+                //if (this.enable_console) console.log('Not sophisticated enough to resolve label "' + nummerthing.value.name + '" yet!');
+                //if (this.enable_console) console.log('Yes I know how to build it so it can always resolve these but I just want to get this assembler done.');
             }
             else {
+                //console.log('GOT HERE', nummerthing.value.addr)
                 operand = nummerthing.value.addr;
             }
         }
@@ -626,7 +688,10 @@ class w65c816_assembler {
         }
 
         let valid_modes = [];
-        if (poperand.indexOf('#') !== -1) {
+        if (with_care) {
+            valid_modes = [AM.A, AM.Ab, AM.Ac, AM.Ad, AM.AL, AM.ALb, AM.ALc, AM.PC_R, AM.PC_RL]
+        }
+        else if (poperand.indexOf('#') !== -1) {
             // We are forced to immediate
             valid_modes = [AM.IMM];
         }
@@ -644,8 +709,20 @@ class w65c816_assembler {
             // We are forced to 24-bit absolute long
             valid_modes = [AM.AL, AM.ALb, AM.ALc, AM.AL_INDEXED_X];
         }
+        else {
+            valid_modes = [AM.ACCUM, AM.D, AM.Db, AM.D_INDEXED_X, AM.D_INDEXED_Xb,
+            AM.D_INDEXED_Y, AM.D_IND, AM.D_IND_L, AM.D_INDEXED_IND, AM.D_IND_INDEXED, AM.D_IND_L_INDEXED,
+            AM.A, AM.Ab, AM.Ac, AM.Ad, AM.A_INDEXED_X,
+            AM.A_INDEXED_Xb, AM.A_INDEXED_Y, AM.A_IND, AM.A_INDb, AM.A_INDEXED_IND, AM.A_INDEXED_INDb,
+                AM.AL, AM.ALb, AM.ALc, AM.AL_INDEXED_X,
+                AM.PC_R, AM.PC_RL
+            ]
+        }
 
+        //console.log('AMS1h', with_care, candidate_ams1, valid_modes, line);
+        //console.log('VALID MODES!', valid_modes, line);
         if (valid_modes.length !== 0) {
+            //console.log(candidate_ams1, line);
             for (let i in valid_modes) {
                 if (candidate_ams1.indexOf(valid_modes[i]) !== -1)
                     candidate_ams2.push(valid_modes[i]);
@@ -654,12 +731,13 @@ class w65c816_assembler {
             candidate_ams2 = [];
         }
 
+        //console.log(candidate_ams1)
         // OK we got here. Avengers, assemble!
         let candidate_encodings = collapse_AMs_to_encodings(candidate_ams1);
         //console.log('CANDIDATES!', candidate_encodings);
         if (candidate_encodings.length < 1) {
             if (this.enable_console) console.log(candidate_ams1);
-            this.errormsg('Error parsing operand ' + poperand + ': cannot determine type');
+            this.errormsg('Error parsing operand ' + poperand + ': cannot determine type ' + line);
             return;
         }
 
@@ -715,11 +793,24 @@ class w65c816_assembler {
             }
         }
         else {
+            // Deobfuscate between DirectPage and Absolute
+            if (candidate_ams1.length === 2) {
+                if ((candidate_ams1.indexOf(AM.D) !== -1) &&
+                    ((candidate_ams1.indexOf(AM.A) !== -1) || (candidate_ams1.indexOf(AM.Ad) !== -1))
+                ) {
+                    if (bytes_needed === 1) {
+                        candidate_ams1 = [AM.D];
+                        candidate_encodings = [OPE.bytes1];
+                    }
+                }
+            }
             // Now pick 2 bytes if encoding is still unclear
             if (candidate_encodings.length > 1) {
+                console.log('ENCODINGS:', candidate_encodings);
+                console.log('CANDIDATE AMS:', candidate_ams1);
                 if (candidate_encodings.indexOf(OPE.bytes2) !== -1) {
                     encoding = OPE.bytes2;
-                    this.warningmsg('Assuming 16-bit encoding for operand ' + poperand);
+                    this.warningmsg('Assuming 16-bit encoding for operand ' + poperand + ' on line ' + line);
                 }
                 else {
                     this.errormsg('Cannot decide on encoding method for operand ' + poperand);
@@ -770,6 +861,7 @@ class w65c816_assembler {
         }
         // Now we have addressing mode and encoding
         // Determine instruction opcode based on mnemonic and addressing mode using opcode_matrix
+        op.addr_mode = amode;
         let foundcode = -1;
         ins = parseInt(ins);
         for (let opcode = 0; opcode <= MAX_OPCODE; opcode++) {
@@ -785,6 +877,108 @@ class w65c816_assembler {
         }
 
         op.bytecodes[0] = foundcode;
+
+        switch(op.ins) {
+            case OM.REP:
+                if (operand & 0x10) this.EMX[this.lnum+1].X = 0;
+                if (operand & 0x20) this.EMX[this.lnum+1].M = 0;
+                break;
+            case OM.SEP:
+                if (operand & 0x10) this.EMX[this.lnum+1].X = 1;
+                if (operand & 0x20) this.EMX[this.lnum+1].M = 1;
+                break;
+            case OM.BNE: // X
+            case OM.BCC: // X
+            case OM.BCS: // X
+            case OM.BEQ: // X
+            case OM.BMI: // X
+            case OM.BRA: // X
+            case OM.BPL: // X
+            case OM.BVS: // X
+            case OM.BVC: // X
+                this.addr += 2;
+                if (operand === 0) {
+                    op.needs_resolve = true;
+                    op.addr_mode = AM.PC_R;
+                    this.instructions.push(op);
+                    return;
+                }
+                else {
+                    let op_dist = (operand - this.addr);
+                    if ((op_dist < -128) || (op_dist > 127)) {
+                        this.errormsg('Jump too long (' + op_dist + '): ' + line);
+                        return;
+                    }
+                    op.bytecodes[1] = op_dist & 0xFF;
+                    op.needs_resolve = false;
+                    this.instructions.push(op);
+                    return;
+                }
+            case OM.BRL:
+                this.addr += 3;
+                if (operand === 0) {
+                    console.log('BRL UNRESOLVED ' + line)
+                    op.needs_resolve = true;
+                    op.addr_mode = AM.PC_RL;
+                    this.instructions.push(op);
+                    return;
+                }
+                else {
+                    let op_dist = (operand - this.addr);
+                    if ((op_dist < -32768) || (op_dist > 32767)) {
+                        this.errormsg('Jump too long: ' + line);
+                        return;
+                    }
+                    op.bytecodes[1] = (op_dist & 0xFF);
+                    op.bytecodes[2] = (op_dist & 0xFF) >>> 8;
+                    op.needs_resolve = false;
+                    this.instructions.push(op);
+                    return;
+                }
+            case OM.JMP: // JMP a or al or (a) or (al)
+                console.log('JMP ADDRMODE', op.addr_mode);
+                switch(op.addr_mode) {
+                    case AM.ALb: // al
+                        this.addr += 4;
+                        break;
+                    case AM.Ab: // a
+                        this.addr += 3;
+                        break;
+                    case AM.A_INDb: // (a)
+                        this.addr += 3;
+                        break;
+                    case AM.A_INDEXED_IND: // (a, x)
+                        this.addr += 3;
+                        break;
+                }
+                op.needs_resolve = true;
+                this.instructions.push(op);
+                return;
+            case OM.JML: // JML (al)
+                console.log('JML addrmode', op.addr_mode)
+                this.addr += 3;
+                op.needs_resolve = true;
+                this.instructions.push(op);
+                return;
+            case OM.JSL: // JSL al
+                console.log('JSL addrmode', op.addr_mode)
+                this.addr += 4;
+                op.needs_resolve = true;
+                this.instructions.push(op);
+                return;
+            case OM.JSR: // JSR a, (a,x)
+                console.log('JSR addrmode', op.addr_mode)
+                this.addr += 3;
+                op.needs_resolve = true;
+                this.instructions.push(op);
+                return;
+
+                // JMP JML JSL JSR
+                // JMP a or al
+                // JML (al)
+                // JSL (al)
+                // JSR a or (a, x)
+        }
 
         // Now encode
         switch(encoding) {
@@ -817,7 +1011,7 @@ class w65c816_assembler {
                 this.errormsg('WHAT?' + encoding + ': ' + line);
                 break;
         }
-        op.needs_resolve = false;
+        if (!with_care) op.needs_resolve = false;
         this.instructions.push(op);
     }
 
@@ -844,9 +1038,14 @@ class w65c816_assembler {
         lines.forEach(function(line, li) {
             ctrl.lnum = li;
             line = trim_comment(lines[li]);
-            if (line.length === 0)
+            if (line.length === 0) {
+                ctrl.EMX[ctrl.lnum] = new EMX_t(ctrl.E, ctrl.M, ctrl.X);
+                ctrl.EMX[ctrl.lnum + 1] = new EMX_t(ctrl.E, ctrl.M, ctrl.X);
                 return;
+            }
             ctrl.get_config_lines(line);
+            ctrl.EMX[ctrl.lnum] = new EMX_t(ctrl.E, ctrl.M, ctrl.X);
+            ctrl.EMX[ctrl.lnum+1] = new EMX_t(ctrl.E, ctrl.M, ctrl.X);
         });
 
         if (this.enable_console) console.log('Pass 3: Interpreting instructions')
@@ -859,6 +1058,52 @@ class w65c816_assembler {
             if (line.length === 0) return;
             ctrl.interpret_line(line);
         });
+
+        if (this.enable_console) console.log('Pass 3.5: Resolving any jumps to unknown places')
+        for (let i in this.instructions) {
+            let op = this.instructions[i];
+            let dist;
+            if (op.needs_resolve) {
+                if (op.label.addr === null) {
+                    this.errormsg("Still can't resolve label " + op.label.name);
+                    continue;
+                }
+                switch(op.addr_mode) {
+                    case AM.PC_R:
+                        dist = op.label.addr - (op.addr + 2);
+                        if ((dist < -128) || (dist > 127)) {
+                            this.errormsg('Jump too long: ' + dist);
+                            continue;
+                        }
+                        op.bytecodes[1] = dist & 0xFF;
+                        op.needs_resolve = false;
+                        continue;
+                    case AM.PC_RL:
+                        dist = op.label.addr - (op.addr + 3);
+                        if ((dist < -32768) || (dist > 32767)) {
+                            this.errormsg('LJump too long: ' + dist);
+                            continue;
+                        }
+                        op.bytecodes[1] = dist & 0xFF;
+                        op.bytecodes[2] = (dist & 0xFF00) >>> 8;
+                        op.needs_resolve = false;
+                        continue;
+                    case AM.Ab: // JMP a
+                        op.bytecodes[1] = op.label.addr & 0xFF;
+                        op.bytecodes[2] = (op.label.addr & 0xFF00) >>> 8;
+                        continue;
+                    case AM.ALb: // JMP al
+                    case AM.ALc: // JSL al
+                        op.bytecodes[1] = op.label.addr & 0xFF;
+                        op.bytecodes[2] = (op.label.addr & 0xFF00) >>> 8;
+                        op.bytecodes[3] = (op.label.addr & 0xFF0000) >>> 16;
+                        continue;
+                    default:
+                        console.log('OOPS MESSED UP WHAT ' + op.addr_mode + ': ' + hex0x2(op.bytecodes[0]));
+                        continue;
+                }
+            }
+        }
 
         if (this.enable_console) console.log('Pass 4: Resolving vectors from labels')
         for (let addr in this.vectors) {

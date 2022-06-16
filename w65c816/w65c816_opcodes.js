@@ -101,6 +101,7 @@ class OPCODE_MNEMONICS_t {
         this.S_NMI = 93;
         this.S_IRQ = 94;
         this.S_ABORT = 95;
+        this.DCB = 96; // Assembler mnemonic
     }
 }
 
@@ -204,7 +205,8 @@ const opcode_MN = Object.freeze({
     [OM.S_RESET]: 'S_RESET',
     [OM.S_NMI]: 'S_NMI',
     [OM.S_IRQ]: 'S_IRQ',
-    [OM.S_ABORT]: 'S_ABORT'
+    [OM.S_ABORT]: 'S_ABORT',
+    [OM.DCB]: 'DCB' // Assembler directive
 });
 
 class ADDRESS_MODES_t {
@@ -256,6 +258,7 @@ class ADDRESS_MODES_t {
         this.XYC = 22;                  // xyc      block move negative
         this.XYCb = 2201;               // xyc      block move positive
         this.IMM = 23;                  // #        immediate
+        this.DCB = 24;                  // DCB      for assembly
 	}
 }
 const AM = Object.freeze(new ADDRESS_MODES_t());
@@ -278,8 +281,8 @@ const AM_operand_regexes = Object.freeze({
      [AM.A_INDb]: /^\([!|]?\$?[0-9a-zA-Z_]+\)$/,
      [AM.A_INDEXED_IND]:  /^\([!|]?\$?[0-9a-zA-Z_]+, ?x\)$/,
      [AM.A_INDEXED_INDb]: /^\([!|]?\$?[0-9a-zA-Z_]+, ?x\)$/,
-     [AM.D]:  /^<?\$?[0-9a-zA-Z_]$/,
-     [AM.Db]: /^<?\$?[0-9a-zA-Z_]$/,
+     [AM.D]:  /^<?\$?[0-9a-zA-Z_]+$/,
+     [AM.Db]: /^<?\$?[0-9a-zA-Z_]+$/,
      [AM.STACK_R]: /^\$?[0-9a-zA-Z_]+, ?s$/,
      [AM.D_INDEXED_X]:  /^<?\$?[a-zA-Z0-9_]+, ?x$/,
      [AM.D_INDEXED_Xb]: /^<?\$?[a-zA-Z0-9_]+, ?x$/,
@@ -301,7 +304,7 @@ const AM_operand_regexes = Object.freeze({
      [AM.STACKb]: /^$/,
      [AM.STACKc]: /^$/,
      [AM.STACKd]: /^#>?\$?[0-9a-zA-Z_]+$/, // basically immediate but only one size
-     [AM.STACKe]: /^<?\$?[0-9a-zA-Z_]$/, // basically d
+     [AM.STACKe]: /^<?\$?[0-9a-zA-Z_]+$/, // basically d
      [AM.STACKf]: /^-?\$?-?[0-9a-zA-Z_]+$/, // basically PC_R
      [AM.STACKg]: /^$/,
      [AM.STACKh]: /^$/,
@@ -502,13 +505,13 @@ const opcode_AM_SPLIT_R = Object.freeze({
     [AM.A_INDEXED_Xb]: [0x1E, 0x3E, 0x5E, 0x7E, 0xDE, 0xFE], // rmw. ASL, DEC, INC, LSR, ROL, ROR
     [AM.A_INDEXED_Y]: [0x19, 0x39, 0x59, 0x79, 0x99, 0xB9, 0xBE, 0xD9, 0xF9],
     [AM.AL]: [0x0F, 0x2F, 0x4F, 0x6F, 0x8F, 0xAF, 0xCF, 0xEF],
-    [AM.ALb]: [0x5C], // JMP
-    [AM.ALc]: [0x22], // JSL
+    [AM.ALb]: [0x5C], // JMP al
+    [AM.ALc]: [0x22], // JSL al
     [AM.AL_INDEXED_X]: [0x1F, 0x3F, 0x5F, 0x7F, 0x9F, 0xBF, 0xDF, 0xFF],
-    [AM.A_IND]: [0xDC],   // JML
-    [AM.A_INDb]: [0x6C],        // JMP
-    [AM.A_INDEXED_IND]: [0x7C], // JMP
-    [AM.A_INDEXED_INDb]: [0xFC], // JSR
+    [AM.A_IND]: [0xDC],   // JML (a)
+    [AM.A_INDb]: [0x6C],        // JMP (a)
+    [AM.A_INDEXED_IND]: [0x7C], // JMP (a,x)
+    [AM.A_INDEXED_INDb]: [0xFC], // JSR (a,x)
     [AM.D]: [0x05, 0x24, 0x25, 0x45, 0x64, 0x65, 0x84, 0x85, 0x86, 0xA4, 0xA5, 0xA6, 0xC4, 0xC5, 0xE4, 0xE5],
     [AM.Db]: [0x04, 0x06, 0x14, 0x26, 0x46, 0x66, 0xC6, 0xE6], // rmw ASL DEC INC LSR ROL ROR TRB TSB
     [AM.STACK_R]: [0x03, 0x23, 0x43, 0x63, 0x83, 0xA3, 0xC3, 0xE3],
