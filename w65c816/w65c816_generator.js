@@ -2486,31 +2486,31 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addr_to_PC_then_inc();
 
             switch(opcode_info.ins) {
-                case OM.BCC:
+                case OM.BCC: // Branch if carry clear
                     ag.addl('regs.TR = regs.P.C === 0;');
                     break;
-                case OM.BCS:
+                case OM.BCS: // Branch if carry set
                     ag.addl('regs.TR = regs.P.C === 1;');
                     break;
-                case OM.BEQ:
-                    ag.addl('regs.TR = regs.P.Z === 0;');
-                    break;
-                case OM.BNE:
+                case OM.BEQ: // Branch if zero flag set
                     ag.addl('regs.TR = regs.P.Z === 1;');
                     break;
-                case OM.BPL:
-                    ag.addl('regs.TR = regs.P.N === 1;');
+                case OM.BNE: // Branch if zero flag clear
+                    ag.addl('regs.TR = regs.P.Z === 0;');
+                    break;
+                case OM.BPL: // Branch if negative flag clear
+                    ag.addl('regs.TR = regs.P.N === 0;');
                     break;
                 case OM.BRA:
                     ag.addl('regs.TR = true;');
                     break;
-                case OM.BMI:
-                    ag.addl('regs.TR = regs.P.N === 0;');
+                case OM.BMI: // Branch if negative flag set
+                    ag.addl('regs.TR = regs.P.N === 1;');
                     break;
-                case OM.BVS:
+                case OM.BVS: // Branch if overflow set
                     ag.addl('regs.TR = regs.P.V === 1;');
                     break;
-                case OM.BVC:
+                case OM.BVC: // Branch if overflow clear
                     ag.addl('regs.TR = regs.P.V === 0;');
                     break;
             }
@@ -2542,7 +2542,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
                 ag.addl('if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } ');
                 ag.old_rw = 0; ag.old_pdv = 0;
             }
-            ag.addl('regs.PC = (regs.PC + 1 + mksigned8(regs.TA)) & 0xFFFF;');
+            ag.addl('if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;');
             break;
         case AM.PC_RL:
             ag.addcycle(2);
@@ -2556,7 +2556,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addcycle(4);
             ag.RPDV(0, 0, 0, 0);
             ag.addl('regs.TA = mksigned16(regs.TA + (pins.D << 8));');
-            ag.addl('regs.PC = (regs.PC + 1 + regs.TA) & 0xFFFF;'); // +1 because we didn't INC PC yet
+            ag.addl('regs.PC = (regs.PC + regs.TA) & 0xFFFF;'); // +1 because we didn't INC PC yet
             break;
         case AM.STACK:
             switch(opcode_info.ins) {
@@ -2776,7 +2776,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
 
             ag.addcycle(6)
             ag.RPDV(0, 0, 0, 0);
-            ag.addl('regs.PC = (regs.TA + (pins.D << 8) + 1) & 0xFFFF;');
+            ag.addl('regs.PC = (regs.TA + (pins.D << 8)) & 0xFFFF;');
             break;
         case AM.STACKi: // RTL
             affected_by_E = true;
@@ -2796,7 +2796,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
 
             ag.addcycle(6)
             ag.addr_to_S_after_inc();
-            ag.addl('regs.PC = (regs.TA + (pins.D << 8) + 1) & 0xFFFF;');
+            ag.addl('regs.PC = (regs.TA + (pins.D << 8)) & 0xFFFF;');
 
             ag.cleanup();
             ag.addl('regs.PBR = pins.D;')
@@ -3135,5 +3135,6 @@ const ins_AM = Object.freeze({
     [OM.S_NMI]: [ AM.STACK ],
     [OM.S_IRQ]: [ AM.STACK ],
     [OM.S_ABORT]: [ AM.STACK ],
-    [OM.DCB]: [ AM.DCB ]
+    [OM.DCB]: [ AM.DCB ],
+    [OM.ASC]: [ AM.ASC ]
 });

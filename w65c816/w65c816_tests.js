@@ -240,6 +240,9 @@ class tester_65c816 {
         }
     }
 
+    step() {
+        this.do_cycles(1);
+    }
     do_cycles(numcycles) {
         if (!this.init) {
             this.init = true;
@@ -253,22 +256,26 @@ class tester_65c816 {
         }
         for (let i = 0; i < numcycles; i++) {
             this.cpu.cycle();
-            if (this.cpu.pins.traces.length > 0) {
-                dconsole.addl(this.cpu.pins.traces[0]);
-                this.cpu.pins.traces = [];
-            }
+            //if (this.cpu.pins.traces.length > 0) {
+            //    this.cpu.pins.traces = [];
+            //}
             if (this.cpu.pins.VDA || this.cpu.pins.VPA || this.cpu.pins.PDV) {
                 if (this.cpu.pins.RW) {
-                    dconsole.addl('(' + padl(this.cpu.pins.trace_cycles.toString(), 6) + ')w' + hex0x2(this.cpu.pins.BA) + ' ' + hex0x4(this.cpu.pins.Addr) + ' WT   ' + hex0x2(this.cpu.pins.D));
+                    //dconsole.addl('(' + padl(this.cpu.pins.trace_cycles.toString(), 6) + ')w' + hex0x2(this.cpu.pins.BA) + ' ' + hex0x4(this.cpu.pins.Addr) + ' WT   ' + hex0x2(this.cpu.pins.D));
                     this.trace_write8(this.cpu.pins.BA, this.cpu.pins.Addr, this.cpu.pins.D);
                 }
                 else {
                     this.cpu.pins.D = this.trace_read8(this.cpu.pins.BA, this.cpu.pins.Addr);
-                    dconsole.addl('(' + padl(this.cpu.pins.trace_cycles.toString(), 6) + ')r' + hex0x2(this.cpu.pins.BA) + ' ' + hex0x4(this.cpu.pins.Addr) + '  ' + hex0x2(this.cpu.pins.D));
+                    //dconsole.addl('(' + padl(this.cpu.pins.trace_cycles.toString(), 6) + ')r' + hex0x2(this.cpu.pins.BA) + ' ' + hex0x4(this.cpu.pins.Addr) + '  ' + hex0x2(this.cpu.pins.D));
                 }
             }
         }
-
+        let strt_trace = (this.cpu.pins.traces.length - 100);
+        if (strt_trace < 0) strt_trace = 0;
+        for (let i=strt_trace; i<this.cpu.pins.traces.length; i++) {
+            dconsole.addl(this.cpu.pins.traces[i]);
+        }
+        this.cpu.pins.traces = [];
     }
 
 }
@@ -277,6 +284,8 @@ let testcpu;
 
 function test_65c816() {
     testcpu = new tester_65c816();
-    let numcycles = 60;
+    // 1FC 1F9
+    let numcycles = 85040;
+    //numcycles = 50;
     testcpu.do_cycles(numcycles);
 }
