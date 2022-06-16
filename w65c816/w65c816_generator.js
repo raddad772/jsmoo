@@ -1165,7 +1165,7 @@ class switchgen {
     }
 
     PULL16(what) {
-        this.addl('regs.C = regs.TR;');
+        this.addl(what + ' = regs.TR;');
         this.setz(what);
         this.setn16(what);
     }

@@ -184,21 +184,36 @@ SEP #$20
 JMP RENDERSTRLOOPSTART
 
 .CLRLINE
-REP #$20         ; 16-bit memory read/write
-LDA #0
-STA (<SCRPTR)    ; Write to screen pixel
-INC <SCRPTR
-INC <SCRPTR
-STA (<SCRPTR)    ; Write to screen pixel
-INC <SCRPTR
-INC <SCRPTR
-STA (<SCRPTR)    ; Write to screen pixel
-INC <SCRPTR
-INC <SCRPTR
-STA (<SCRPTR)    ; Write to screen pixel
-INC <SCRPTR
-INC <SCRPTR
-JMP INNERLOOPSKIP
+REP #$20
+PHX
+LDX <SCRPTR
+STA !0,x
+STA !2,x
+STA !4,x
+STA !6,x
+TXA
+ADC #8
+STA <SCRPTR
+PLX
+BRA INNERLOOPSKIP
+
+;.CLRLINE
+;REP #$20         ; 16-bit memory read/write
+;LDA #0
+;STA (<SCRPTR)    ; Write to screen pixel
+;INC <SCRPTR
+;INC <SCRPTR
+;STA (<SCRPTR)    ; Write to screen pixel
+;INC <SCRPTR
+;INC <SCRPTR
+;STA (<SCRPTR)    ; Write to screen pixel
+;INC <SCRPTR
+;INC <SCRPTR
+;STA (<SCRPTR)    ; Write to screen pixel
+;INC <SCRPTR
+;INC <SCRPTR
+;BRA INNERLOOPSKIP
+
 
 ; Loop done! Restore everything and return long
 .RENDERSTRLOOPDONE

@@ -302,7 +302,15 @@ class w65c816_assembler {
     }
 
     interpret_number(instr) {
-        instr = instr.trim().replace(/[()^\[\],#<>!|]/g, '');
+        instr = instr.trim().replace(/[()^\[\]#<>!|]/g, '');
+        if (instr.indexOf(',') !== -1) {
+            instr = instr.trim().replace(/(,x)/g, '');
+            instr = instr.trim().replace(/(,y)/g, '');
+            instr = instr.trim().replace(/(, x)/g, '');
+            instr = instr.trim().replace(/( ,y)/g, '');
+        }
+        //instr = instr.trim().replace(/(,x)/g, '');
+        //instr = instr.trim().replace(/(,y)/g, '');
         let outval = new interpret_number_return();
         outval.value = instr;
         if (instr === 'A') {
@@ -387,7 +395,7 @@ class w65c816_assembler {
         for (let i in this.labels) {
             let label = this.labels[i];
             if ((label.addr === null) && (label.line === li)) {
-                if (this.enable_console) console.log('Assigning address ' + hex0x6(addr) + ' to ' + i);
+                //if (this.enable_console) console.log('Assigning address ' + hex0x6(addr) + ' to ' + i);
                 label.addr = addr;
                 break;
             }
@@ -515,6 +523,7 @@ class w65c816_assembler {
     }
 
     interpret_line(line) {
+        let oline = line;
         this.E = this.EMX[this.lnum].E;
         this.M = this.EMX[this.lnum].M;
         this.X = this.EMX[this.lnum].X;
@@ -1111,7 +1120,7 @@ class w65c816_assembler {
                     case AM.PC_R:
                         dist = op.label.addr - (op.addr + 2);
                         if ((dist < -128) || (dist > 127)) {
-                            this.errormsg('Jump too long: ' + dist);
+                            this.errormsg('Jump too long: ' + dist + ' ' + op.label.name);
                             continue;
                         }
                         op.bytecodes[1] = dist & 0xFF;
@@ -1120,7 +1129,7 @@ class w65c816_assembler {
                     case AM.PC_RL:
                         dist = op.label.addr - (op.addr + 3);
                         if ((dist < -32768) || (dist > 32767)) {
-                            this.errormsg('LJump too long: ' + dist);
+                            this.errormsg('LJump too long: ' + dist + ' ' + op.label.name);
                             continue;
                         }
                         op.bytecodes[1] = dist & 0xFF;
