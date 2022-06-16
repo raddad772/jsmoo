@@ -113,7 +113,8 @@ STZ $24
 ; Now, fetch first character into A
 SEP #$20
 LDA [STRPTR] ; Read from string pointer
-BEQ RENDERSTRLOOPDONE
+BNE RENDERSTRCONT
+JMP RENDERSTRLOOPDONE
 .RENDERSTRCONT
 SEC
 SBC #$20    ; First char is 32
@@ -142,29 +143,58 @@ STA <SCRPTR      ; Set our screen pointer to that
 LDA #13
 STA <OUTERLOOP   ; Outer loop will be 13 long
 .RS_OUTER_START  ; Outer loop starts here
-LDA #8
-STA <INNERLOOP   ; Inner loop will be 8 long
+SEP #$20
 LDA [<FONTPTR]   ; Load this row of pixels
-BEQ CLRLINE 
+BEQ CLRLINE      ; If this row of pixels is empty, go to a specialized part that will empty it for us
 STA <TMPVAR      ; Store in our temporary variable
-.RS_INNER_START
-SEP #$20         ; 8-bit A/M mode
-ASL <TMPVAR
-LDA #0           ; Clear A
-ROL A            ; Put carry bit into A now
-STA (<SCRPTR)    ; Write to screen pixel
-; Now increase the 16-bit screen pixel address
-REP #$20         ; 16-bit A/M mode
-INC <SCRPTR
 
-; Now, decrement inner loop counter
-DEC <INNERLOOP
-BNE RS_INNER_START  
+.RS_INNER_START
+REP #$20
+PHX
+LDX <SCRPTR
+LDA #0
+ROR <TMPVAR
+ROL A
+XBA
+ROR <TMPVAR
+ROL A
+;XBA
+STA !6,x
+
+LDA #0
+ROR <TMPVAR
+ROL A
+XBA
+ROR <TMPVAR
+ROL A
+;XBA
+STA !4,x
+
+LDA #0
+ROR <TMPVAR
+ROL A
+XBA
+ROR <TMPVAR
+ROL A
+;XBA
+STA !2,x
+
+LDA #0
+ROR <TMPVAR
+ROL A
+XBA
+ROR <TMPVAR
+ROL A
+;XBA
+STA !0,x
+
+TXA
+ADC #8
+PLX
 
 .INNERLOOPSKIP
 ; So now we're on the next row. 
 ; Increase pixel address by 248 to get to next row
-LDA <SCRPTR
 CLC
 ADC #248
 STA <SCRPTR
@@ -185,35 +215,17 @@ JMP RENDERSTRLOOPSTART
 
 .CLRLINE
 REP #$20
+LDA #0
 PHX
 LDX <SCRPTR
-STA !0,x
-STA !2,x
-STA !4,x
 STA !6,x
+STA !4,x
+STA !2,x
+STA !0,x
 TXA
 ADC #8
-STA <SCRPTR
 PLX
 BRA INNERLOOPSKIP
-
-;.CLRLINE
-;REP #$20         ; 16-bit memory read/write
-;LDA #0
-;STA (<SCRPTR)    ; Write to screen pixel
-;INC <SCRPTR
-;INC <SCRPTR
-;STA (<SCRPTR)    ; Write to screen pixel
-;INC <SCRPTR
-;INC <SCRPTR
-;STA (<SCRPTR)    ; Write to screen pixel
-;INC <SCRPTR
-;INC <SCRPTR
-;STA (<SCRPTR)    ; Write to screen pixel
-;INC <SCRPTR
-;INC <SCRPTR
-;BRA INNERLOOPSKIP
-
 
 ; Loop done! Restore everything and return long
 .RENDERSTRLOOPDONE
