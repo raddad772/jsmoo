@@ -102,7 +102,7 @@ class console_t {
     constructor(elname) {
         this.elname = elname;
         this.buffer = [];
-        this.max_lines = 70;
+        this.max_lines = 30;
         this.container = null;
         this.textconsole = null;
     }

@@ -20,19 +20,19 @@ XCE
 :NATIVE M1 X1
 JMP >NATIVE_START
 
-.HELLOWORLD:$02F000
+.HELLOWORLD:$02F005
 DCB $48, $65, $6c, $6c, $6f, $2c, $20, $77, $6f, $72, $6c, $64, $21, $00
 
 .PRINT_HELLOWORLD:$040900
 SEP #$30
 :E0 M1 X1
 ; $0020, $0021, $0022 to have a long-pointer to a null-terminated string.
-LDA #$00
+LDA #$05
 STA <$20
 LDA #$F0
-STA <$20
-LDA #$20
-STA <$20
+STA <$21
+LDA #$02
+STA <$22
 JSL >RENDERSTR
 LDA $AB
 STP

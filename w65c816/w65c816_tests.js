@@ -203,33 +203,35 @@ function put_pixel(x, y, color) {
 let canvasel;
 let pxctx;
 
-function test_65c816() {
-    canvasel = document.getElementById('glCanvas');
-    pxctx = canvasel.getContext('2d');
-    clr_canvas();
-    let RAM = write_test_to_RAM();
-    let padl = function(what, howmuch) {
-        while(what.length < howmuch) {
-            what = ' ' + what;
+// A test "machine" with basic graphics output
+class tester_65c816 {
+    constructor() {
+        canvasel = document.getElementById('glCanvas');
+        pxctx = canvasel.getContext('2d');
+        clr_canvas();
+        this.RAM = write_test_to_RAM();
+        this.cpu = new w65c816();
+        this.cpu.reset();
+        this.init = false;
+        let ctrl = this;
+        this.read8 = function(bank, addr) {
+            bank = bank & 0x0F;
+            return ctrl.RAM[(bank << 16) | addr];
         }
-        return what;
-    }
-    let read8 = function(bank, addr) {
-        bank = bank & 0x0F;
-        return RAM[(bank << 16) | addr];
-    }
-    let trace_read8 = function(bank, addr) {
-        bank = bank & 0x0F;
-        addr = (bank << 16) | addr;
-        let ret = RAM[addr];
+        this.trace_read8 = function(bank, addr) {
+            bank = bank & 0x0F;
+            addr = (bank << 16) | addr;
+            let ret = ctrl.RAM[addr];
 
-        //console.log('read ' + hex0x6(addr) + ': ' + hex0x2(ret));
-        //dconsole.addl('read ' + hex0x6(addr) + ': ' + hex0x2(ret));
-        return ret;
+            return ret;
+        }
     }
-    let trace_write8 = function(bank, addr, val) {
+
+
+
+    trace_write8(bank, addr, val) {
         bank = bank & 0x0F;
-        RAM[(bank << 16) | addr] = val;
+        this.RAM[(bank << 16) | addr] = val;
         // Display!
         if (bank === 1) {
             let x = (addr & 0xFF);
@@ -238,28 +240,43 @@ function test_65c816() {
         }
     }
 
-    let cpu = new w65c816();
-    console.log('RESETTING CPU');
-    cpu.reset();
-    cpu.enable_tracing(read8)
-    let numcycles = 50;
-    console.log('RUNNING CPU ' + numcycles + ' CYCLES');
-    for (let i = 0; i < numcycles; i++) {
-        cpu.cycle();
-        if (cpu.pins.traces.length > 0) {
-            dconsole.addl(cpu.pins.traces[0]);
-            cpu.pins.traces = [];
+    do_cycles(numcycles) {
+        if (!this.init) {
+            this.init = true;
+            this.cpu.enable_tracing(this.read8);
         }
-        if (cpu.pins.VDA || cpu.pins.VPA || cpu.pins.PDV) {
-            if (cpu.pins.RW) {
-                dconsole.addl('(' + padl(cpu.pins.trace_cycles.toString(), 6) + ')w' + hex0x2(cpu.pins.BA) + ' ' + hex0x4(cpu.pins.Addr) + ' WT   ' + hex0x2(cpu.pins.D));
-                trace_write8(cpu.pins.BA, cpu.pins.Addr, cpu.pins.D);
+        let padl = function(what, howmuch) {
+            while(what.length < howmuch) {
+                what = ' ' + what;
             }
-            else {
-                cpu.pins.D = trace_read8(cpu.pins.BA, cpu.pins.Addr);
-                dconsole.addl('(' + padl(cpu.pins.trace_cycles.toString(), 6) + ')r' + hex0x2(cpu.pins.BA) + ' ' + hex0x4(cpu.pins.Addr) + '  ' + hex0x2(cpu.pins.D));
+            return what;
+        }
+        for (let i = 0; i < numcycles; i++) {
+            this.cpu.cycle();
+            if (this.cpu.pins.traces.length > 0) {
+                dconsole.addl(this.cpu.pins.traces[0]);
+                this.cpu.pins.traces = [];
+            }
+            if (this.cpu.pins.VDA || this.cpu.pins.VPA || this.cpu.pins.PDV) {
+                if (this.cpu.pins.RW) {
+                    dconsole.addl('(' + padl(this.cpu.pins.trace_cycles.toString(), 6) + ')w' + hex0x2(this.cpu.pins.BA) + ' ' + hex0x4(this.cpu.pins.Addr) + ' WT   ' + hex0x2(this.cpu.pins.D));
+                    this.trace_write8(this.cpu.pins.BA, this.cpu.pins.Addr, this.cpu.pins.D);
+                }
+                else {
+                    this.cpu.pins.D = this.trace_read8(this.cpu.pins.BA, this.cpu.pins.Addr);
+                    dconsole.addl('(' + padl(this.cpu.pins.trace_cycles.toString(), 6) + ')r' + hex0x2(this.cpu.pins.BA) + ' ' + hex0x4(this.cpu.pins.Addr) + '  ' + hex0x2(this.cpu.pins.D));
+                }
             }
         }
+
     }
-    console.log('DONE!');
+
+}
+
+let testcpu;
+
+function test_65c816() {
+    testcpu = new tester_65c816();
+    let numcycles = 60;
+    testcpu.do_cycles(numcycles);
 }
