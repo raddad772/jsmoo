@@ -203,6 +203,10 @@ class w65c816 {
 		this.trace_peek = function(BA, Addr){return 0xC0;};
 	}
 	
+	clear_RES() {
+		this.#RES_pending = false;
+	}
+
 	cycle() {
 		this.pins.trace_cycles++;
 		if (this.pins.NMI) {

@@ -17,6 +17,9 @@ RESET EMU_START
 .INNERLOOP:$44
 .OUTERLOOP:$46
 
+.BTPTRL:$50
+.BTVAR:$53
+
 ; Here's where we jump on reset, in emulation mode
 .EMU_START:$2020
 ; Let the compiler know it's emulated mode here.
@@ -27,7 +30,23 @@ CLC   ; Clear C
 XCE   ; eXchange C and E, which will put us in native mode
 
 :NATIVE M1 X1     ; let assembler know we're now in native mode with M=1 X=1. It doesn't follow XCE correctly yet
+JMP >BASIC_TEST   ;
+
+.BASIC_TEST       ; *BASIC* test of LDA, STA, LDX, STX, LDY, STX, CMP, CPX, CPY, ADC, SBC, in a few addressing
+                  ;   modes.
+                  
+.BASIC_TEST
+:E0 M1 X1
+REP #$30
+LDA #$0053
+STA !BTPRL
+
+
+
+
 JMP >NATIVE_START ; This will be a long-jump with 24-bit destination in high bank, to test instructions
+
+
 
 ; Here is where we store our string
 .HELLOWORLD:$02F000
