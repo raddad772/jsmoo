@@ -417,5 +417,6 @@ function generate_js() {
 }
 
 //window.onload = main;
-window.onload = test_65c816;
+//window.onload = test_65c816;
 //window.onload = generate_js;
+window.onload = test_pt_65c816;
