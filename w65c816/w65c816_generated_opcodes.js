@@ -226,7 +226,7 @@ const decoded_opcodes = Object.freeze(
                         regs.TR += pins.D << 8;
                         pins.PDV = 0;
                         // instruction code follows
-                        regs.P.Z = (regs.TR & regs.C & 0xFFFF) === 0
+                        regs.P.Z = +((regs.TR & regs.C & 0xFFFF) === 0);
                         regs.TR = (regs.C | regs.TR) & 0xFFFF;
                         // instruction code ends
                         break;
@@ -478,7 +478,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.D
+                        regs.TR = (regs.D);
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -525,7 +525,7 @@ const decoded_opcodes = Object.freeze(
                         regs.TR += pins.D << 8;
                         pins.PDV = 0;
                         // instruction code follows
-                        regs.P.Z = (regs.TR & regs.C & 0xFFFF) === 0
+                        regs.P.Z = +((regs.TR & regs.C & 0xFFFF) === 0);
                         regs.TR = (regs.C | regs.TR) & 0xFFFF;
                         // instruction code ends
                         break;
@@ -1630,7 +1630,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 0;
                         // instruction code follows
                         let carry = regs.P.C;
-                        regs.P.C = regs.TR & 0x8000;
+                        regs.P.C = (regs.TR & 0x8000) >> 15;
                         regs.TR = ((regs.TR & 0x7FFF) << 1) | carry;
                         regs.P.Z = +((regs.TR) === 0);
                         regs.P.N = ((regs.TR) & 0x8000) >>> 15;
@@ -1773,7 +1773,7 @@ const decoded_opcodes = Object.freeze(
                         regs.TR = regs.C;
                         // instruction code follows
                         let carry = regs.P.C;
-                        regs.P.C = regs.TR & 0x8000;
+                        regs.P.C = (regs.TR & 0x8000) >> 15;
                         regs.TR = ((regs.TR & 0x7FFF) << 1) | carry;
                         regs.P.Z = +((regs.TR) === 0);
                         regs.P.N = ((regs.TR) & 0x8000) >>> 15;
@@ -1922,7 +1922,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 0;
                         // instruction code follows
                         let carry = regs.P.C;
-                        regs.P.C = regs.TR & 0x8000;
+                        regs.P.C = (regs.TR & 0x8000) >> 15;
                         regs.TR = ((regs.TR & 0x7FFF) << 1) | carry;
                         regs.P.Z = +((regs.TR) === 0);
                         regs.P.N = ((regs.TR) & 0x8000) >>> 15;
@@ -2273,7 +2273,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 0;
                         // instruction code follows
                         let carry = regs.P.C;
-                        regs.P.C = regs.TR & 0x8000;
+                        regs.P.C = (regs.TR & 0x8000) >> 15;
                         regs.TR = ((regs.TR & 0x7FFF) << 1) | carry;
                         regs.P.Z = +((regs.TR) === 0);
                         regs.P.N = ((regs.TR) & 0x8000) >>> 15;
@@ -2452,7 +2452,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.C = regs.S;
+                        regs.C = (regs.S);
                         regs.P.Z = +((regs.C) === 0);
                         regs.P.N = ((regs.C) & 0x8000) >>> 15;
                         // instruction code ends
@@ -2588,7 +2588,7 @@ const decoded_opcodes = Object.freeze(
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let carry = regs.P.C;
-                        regs.P.C = regs.TR & 0x8000;
+                        regs.P.C = (regs.TR & 0x8000) >> 15;
                         regs.TR = ((regs.TR & 0x7FFF) << 1) | carry;
                         regs.P.Z = +((regs.TR) === 0);
                         regs.P.N = ((regs.TR) & 0x8000) >>> 15;
@@ -3013,7 +3013,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.C
+                        regs.TR = (regs.C);
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -3100,7 +3100,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.PBR & 0xFF;
+                        regs.TR = (regs.PBR) & 0xFF;
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -3714,7 +3714,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.Y
+                        regs.TR = (regs.Y);
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -3749,7 +3749,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.D = regs.C;
+                        regs.D = (regs.C);
                         regs.P.Z = +((regs.D) === 0);
                         regs.P.N = ((regs.D) & 0x8000) >>> 15;
                         // instruction code ends
@@ -5249,7 +5249,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.C = regs.D;
+                        regs.C = (regs.D);
                         regs.P.Z = +((regs.C) === 0);
                         regs.P.N = ((regs.C) & 0x8000) >>> 15;
                         // instruction code ends
@@ -5848,7 +5848,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.C = regs.X;
+                        regs.C = (regs.X);
                         regs.P.Z = +((regs.C) === 0);
                         regs.P.N = ((regs.C) & 0x8000) >>> 15;
                         // instruction code ends
@@ -5874,7 +5874,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.DBR & 0xFF;
+                        regs.TR = (regs.DBR) & 0xFF;
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -6395,7 +6395,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.C = regs.Y;
+                        regs.C = (regs.Y);
                         regs.P.Z = +((regs.C) === 0);
                         regs.P.N = ((regs.C) & 0x8000) >>> 15;
                         // instruction code ends
@@ -6490,7 +6490,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.Y = regs.X;
+                        regs.Y = (regs.X);
                         regs.P.Z = +((regs.Y) === 0);
                         regs.P.N = ((regs.Y) & 0x8000) >>> 15;
                         // instruction code ends
@@ -6982,7 +6982,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.Y = regs.C;
+                        regs.Y = (regs.C);
                         regs.P.Z = +((regs.Y) === 0);
                         regs.P.N = ((regs.Y) & 0x8000) >>> 15;
                         // instruction code ends
@@ -7037,7 +7037,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.X = regs.C;
+                        regs.X = (regs.C);
                         regs.P.Z = +((regs.X) === 0);
                         regs.P.N = ((regs.X) & 0x8000) >>> 15;
                         // instruction code ends
@@ -7071,7 +7071,7 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        regs.DBR = (regs.DBR & 0xFF00) + (regs.TR & 0xFF);
+                        regs.DBR = ((regs.DBR) & 0xFF00) + (regs.TR & 0xFF);
                         regs.P.Z = +((regs.DBR) === 0);
                         regs.P.N = ((regs.DBR) & 0x80) >>> 7;
                         // instruction code ends
@@ -7656,7 +7656,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.S = regs.X;
+                        regs.S = (regs.X);
                         regs.P.Z = +((regs.S) === 0);
                         regs.P.N = ((regs.S) & 0x8000) >>> 15;
                         // instruction code ends
@@ -7683,7 +7683,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.X = regs.Y;
+                        regs.X = (regs.Y);
                         regs.P.Z = +((regs.X) === 0);
                         regs.P.N = ((regs.X) & 0x8000) >>> 15;
                         // instruction code ends
@@ -8908,7 +8908,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.X
+                        regs.TR = (regs.X);
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -9190,7 +9190,7 @@ const decoded_opcodes = Object.freeze(
                     case 8: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -9208,7 +9208,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -9270,7 +9270,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -9288,7 +9288,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -9366,7 +9366,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -9384,7 +9384,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -9483,7 +9483,7 @@ const decoded_opcodes = Object.freeze(
                     case 8: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -9501,7 +9501,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -9556,7 +9556,7 @@ const decoded_opcodes = Object.freeze(
                     case 3: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -9574,7 +9574,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -9696,7 +9696,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -9714,7 +9714,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -9803,7 +9803,7 @@ const decoded_opcodes = Object.freeze(
                     case 6: // cleanup_custom
                         regs.TR += (pins. D & 0xFF) << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -9821,7 +9821,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -9905,7 +9905,7 @@ const decoded_opcodes = Object.freeze(
                     case 8: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -9923,7 +9923,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -9968,7 +9968,7 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -9986,7 +9986,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -10034,7 +10034,7 @@ const decoded_opcodes = Object.freeze(
                     case 8: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -10052,7 +10052,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -10125,7 +10125,7 @@ const decoded_opcodes = Object.freeze(
                     case 6: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -10143,7 +10143,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -10244,7 +10244,7 @@ const decoded_opcodes = Object.freeze(
                     case 8: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -10262,7 +10262,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -10332,7 +10332,7 @@ const decoded_opcodes = Object.freeze(
                     case 6: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -10350,7 +10350,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -10512,7 +10512,7 @@ const decoded_opcodes = Object.freeze(
                     case 6: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -10530,7 +10530,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -10623,7 +10623,7 @@ const decoded_opcodes = Object.freeze(
                     case 6: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -10641,7 +10641,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -11081,7 +11081,7 @@ const decoded_opcodes = Object.freeze(
                         regs.TR += pins.D << 8;
                         pins.PDV = 0;
                         // instruction code follows
-                        regs.P.Z = (regs.TR & regs.C & 0xFFFF) === 0
+                        regs.P.Z = +((regs.TR & regs.C & 0xFFFF) === 0);
                         regs.TR = (regs.C | regs.TR) & 0xFFFF;
                         // instruction code ends
                         break;
@@ -11333,7 +11333,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.D
+                        regs.TR = (regs.D);
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -11380,7 +11380,7 @@ const decoded_opcodes = Object.freeze(
                         regs.TR += pins.D << 8;
                         pins.PDV = 0;
                         // instruction code follows
-                        regs.P.Z = (regs.TR & regs.C & 0xFFFF) === 0
+                        regs.P.Z = +((regs.TR & regs.C & 0xFFFF) === 0);
                         regs.TR = (regs.C | regs.TR) & 0xFFFF;
                         // instruction code ends
                         break;
@@ -12485,7 +12485,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 0;
                         // instruction code follows
                         let carry = regs.P.C;
-                        regs.P.C = regs.TR & 0x8000;
+                        regs.P.C = (regs.TR & 0x8000) >> 15;
                         regs.TR = ((regs.TR & 0x7FFF) << 1) | carry;
                         regs.P.Z = +((regs.TR) === 0);
                         regs.P.N = ((regs.TR) & 0x8000) >>> 15;
@@ -12628,7 +12628,7 @@ const decoded_opcodes = Object.freeze(
                         regs.TR = regs.C;
                         // instruction code follows
                         let carry = regs.P.C;
-                        regs.P.C = regs.TR & 0x8000;
+                        regs.P.C = (regs.TR & 0x8000) >> 15;
                         regs.TR = ((regs.TR & 0x7FFF) << 1) | carry;
                         regs.P.Z = +((regs.TR) === 0);
                         regs.P.N = ((regs.TR) & 0x8000) >>> 15;
@@ -12777,7 +12777,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 0;
                         // instruction code follows
                         let carry = regs.P.C;
-                        regs.P.C = regs.TR & 0x8000;
+                        regs.P.C = (regs.TR & 0x8000) >> 15;
                         regs.TR = ((regs.TR & 0x7FFF) << 1) | carry;
                         regs.P.Z = +((regs.TR) === 0);
                         regs.P.N = ((regs.TR) & 0x8000) >>> 15;
@@ -13128,7 +13128,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 0;
                         // instruction code follows
                         let carry = regs.P.C;
-                        regs.P.C = regs.TR & 0x8000;
+                        regs.P.C = (regs.TR & 0x8000) >> 15;
                         regs.TR = ((regs.TR & 0x7FFF) << 1) | carry;
                         regs.P.Z = +((regs.TR) === 0);
                         regs.P.N = ((regs.TR) & 0x8000) >>> 15;
@@ -13307,7 +13307,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.C = regs.S;
+                        regs.C = (regs.S);
                         regs.P.Z = +((regs.C) === 0);
                         regs.P.N = ((regs.C) & 0x8000) >>> 15;
                         // instruction code ends
@@ -13443,7 +13443,7 @@ const decoded_opcodes = Object.freeze(
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let carry = regs.P.C;
-                        regs.P.C = regs.TR & 0x8000;
+                        regs.P.C = (regs.TR & 0x8000) >> 15;
                         regs.TR = ((regs.TR & 0x7FFF) << 1) | carry;
                         regs.P.Z = +((regs.TR) === 0);
                         regs.P.N = ((regs.TR) & 0x8000) >>> 15;
@@ -13868,7 +13868,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.C
+                        regs.TR = (regs.C);
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -13955,7 +13955,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.PBR & 0xFF;
+                        regs.TR = (regs.PBR) & 0xFF;
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -14569,7 +14569,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.Y & 0xFF;
+                        regs.TR = (regs.Y) & 0xFF;
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -14598,7 +14598,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.D = regs.C;
+                        regs.D = (regs.C);
                         regs.P.Z = +((regs.D) === 0);
                         regs.P.N = ((regs.D) & 0x8000) >>> 15;
                         // instruction code ends
@@ -16068,7 +16068,7 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        regs.Y = (regs.Y & 0xFF00) + (regs.TR & 0xFF);
+                        regs.Y = ((regs.Y) & 0xFF00) + (regs.TR & 0xFF);
                         regs.P.Z = +((regs.Y) === 0);
                         regs.P.N = ((regs.Y) & 0x80) >>> 7;
                         // instruction code ends
@@ -16092,7 +16092,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.C = regs.D;
+                        regs.C = (regs.D);
                         regs.P.Z = +((regs.C) === 0);
                         regs.P.N = ((regs.C) & 0x8000) >>> 15;
                         // instruction code ends
@@ -16683,7 +16683,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.C = regs.X;
+                        regs.C = (regs.X);
                         regs.P.Z = +((regs.C) === 0);
                         regs.P.N = ((regs.C) & 0x8000) >>> 15;
                         // instruction code ends
@@ -16709,7 +16709,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.DBR & 0xFF;
+                        regs.TR = (regs.DBR) & 0xFF;
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -17215,7 +17215,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.C = regs.Y;
+                        regs.C = (regs.Y);
                         regs.P.Z = +((regs.C) === 0);
                         regs.P.N = ((regs.C) & 0x8000) >>> 15;
                         // instruction code ends
@@ -17312,7 +17312,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.Y = (regs.Y & 0xFF00) + (regs.X & 0xFF);
+                        regs.Y = ((regs.Y) & 0xFF00) + ((regs.X) & 0xFF);
                         regs.P.Z = +((regs.Y) === 0);
                         regs.P.N = ((regs.Y) & 0x80) >>> 7;
                         // instruction code ends
@@ -17790,7 +17790,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.Y = (regs.Y & 0xFF00) + (regs.C & 0xFF);
+                        regs.Y = ((regs.Y) & 0xFF00) + ((regs.C) & 0xFF);
                         regs.P.Z = +((regs.Y) === 0);
                         regs.P.N = ((regs.Y) & 0x80) >>> 7;
                         // instruction code ends
@@ -17845,7 +17845,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.X = (regs.X & 0xFF00) + (regs.C & 0xFF);
+                        regs.X = ((regs.X) & 0xFF00) + ((regs.C) & 0xFF);
                         regs.P.Z = +((regs.X) === 0);
                         regs.P.N = ((regs.X) & 0x80) >>> 7;
                         // instruction code ends
@@ -17879,7 +17879,7 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        regs.DBR = (regs.DBR & 0xFF00) + (regs.TR & 0xFF);
+                        regs.DBR = ((regs.DBR) & 0xFF00) + (regs.TR & 0xFF);
                         regs.P.Z = +((regs.DBR) === 0);
                         regs.P.N = ((regs.DBR) & 0x80) >>> 7;
                         // instruction code ends
@@ -18448,7 +18448,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.S = (regs.S & 0xFF00) + (regs.X & 0xFF);
+                        regs.S = ((regs.S) & 0xFF00) + ((regs.X) & 0xFF);
                         regs.P.Z = +((regs.S) === 0);
                         regs.P.N = ((regs.S) & 0x80) >>> 7;
                         // instruction code ends
@@ -18475,7 +18475,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.X = (regs.X & 0xFF00) + (regs.Y & 0xFF);
+                        regs.X = ((regs.X) & 0xFF00) + ((regs.Y) & 0xFF);
                         regs.P.Z = +((regs.X) === 0);
                         regs.P.N = ((regs.X) & 0x80) >>> 7;
                         // instruction code ends
@@ -19679,7 +19679,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.X & 0xFF;
+                        regs.TR = (regs.X) & 0xFF;
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -19950,7 +19950,7 @@ const decoded_opcodes = Object.freeze(
                     case 8: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -19968,7 +19968,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -20030,7 +20030,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -20048,7 +20048,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -20122,7 +20122,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -20140,7 +20140,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -20239,7 +20239,7 @@ const decoded_opcodes = Object.freeze(
                     case 8: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -20257,7 +20257,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -20312,7 +20312,7 @@ const decoded_opcodes = Object.freeze(
                     case 3: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -20330,7 +20330,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -20448,7 +20448,7 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -20466,7 +20466,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -20555,7 +20555,7 @@ const decoded_opcodes = Object.freeze(
                     case 6: // cleanup_custom
                         regs.TR += (pins. D & 0xFF) << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -20573,7 +20573,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -20657,7 +20657,7 @@ const decoded_opcodes = Object.freeze(
                     case 8: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -20675,7 +20675,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -20720,7 +20720,7 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -20738,7 +20738,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -20786,7 +20786,7 @@ const decoded_opcodes = Object.freeze(
                     case 8: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -20804,7 +20804,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -20877,7 +20877,7 @@ const decoded_opcodes = Object.freeze(
                     case 6: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -20895,7 +20895,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -20996,7 +20996,7 @@ const decoded_opcodes = Object.freeze(
                     case 8: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -21014,7 +21014,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -21084,7 +21084,7 @@ const decoded_opcodes = Object.freeze(
                     case 6: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -21102,7 +21102,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -21133,7 +21133,7 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        regs.X = (regs.X & 0xFF00) + (regs.TR & 0xFF);
+                        regs.X = ((regs.X) & 0xFF00) + (regs.TR & 0xFF);
                         regs.P.Z = +((regs.X) === 0);
                         regs.P.N = ((regs.X) & 0x80) >>> 7;
                         // instruction code ends
@@ -21258,7 +21258,7 @@ const decoded_opcodes = Object.freeze(
                     case 6: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -21276,7 +21276,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -21369,7 +21369,7 @@ const decoded_opcodes = Object.freeze(
                     case 6: // cleanup_custom
                         regs.TR += pins.D << 8;
                         // instruction code follows
-                        let data = ~regs.TR;
+                        let data = (~regs.TR) & 0xFFFF;
                         let result;
                         if (!regs.P.D) result = regs.C + data + regs.P.C;
                         else {
@@ -21387,7 +21387,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;
                         if (regs.P.D && result <= 0xFFFF) result -= 0x6000;
                         regs.P.C = +(result > 0xFFFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFFFF) === 0);
                         regs.P.N = ((result) & 0x8000) >>> 15;
                         regs.C = (result & 0xFFFF);
                         // instruction code ends
@@ -21691,10 +21691,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -21781,10 +21781,10 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -21817,7 +21817,7 @@ const decoded_opcodes = Object.freeze(
                         regs.TR = pins.D;
                         pins.PDV = 0;
                         // instruction code follows
-                        regs.P.Z = (regs.TR & regs.C & 0xFF) === 0
+                        regs.P.Z = +((regs.TR & regs.C & 0xFF) === 0);
                         regs.TR = (regs.C | regs.TR) & 0xFF;
                         // instruction code ends
                         break;
@@ -21857,10 +21857,10 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -21946,10 +21946,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -21998,10 +21998,10 @@ const decoded_opcodes = Object.freeze(
                     case 2: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -22047,7 +22047,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.D
+                        regs.TR = (regs.D);
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -22090,7 +22090,7 @@ const decoded_opcodes = Object.freeze(
                         regs.TR = pins.D;
                         pins.PDV = 0;
                         // instruction code follows
-                        regs.P.Z = (regs.TR & regs.C & 0xFF) === 0
+                        regs.P.Z = +((regs.TR & regs.C & 0xFF) === 0);
                         regs.TR = (regs.C | regs.TR) & 0xFF;
                         // instruction code ends
                         break;
@@ -22127,10 +22127,10 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -22206,10 +22206,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -22287,10 +22287,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -22329,10 +22329,10 @@ const decoded_opcodes = Object.freeze(
                     case 6: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -22374,10 +22374,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -22452,10 +22452,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -22543,10 +22543,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -22610,10 +22610,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -22741,10 +22741,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -22824,10 +22824,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -23104,7 +23104,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 0;
                         // instruction code follows
                         let carry = regs.P.C;
-                        regs.P.C = regs.TR & 0x80;
+                        regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = +((regs.TR) === 0);
                         regs.P.N = ((regs.TR) & 0x80) >>> 7;
@@ -23236,7 +23236,7 @@ const decoded_opcodes = Object.freeze(
                         regs.TR = regs.C & 0xFF;
                         // instruction code follows
                         let carry = regs.P.C;
-                        regs.P.C = regs.TR & 0x80;
+                        regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = +((regs.TR) === 0);
                         regs.P.N = ((regs.TR) & 0x80) >>> 7;
@@ -23374,7 +23374,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 0;
                         // instruction code follows
                         let carry = regs.P.C;
-                        regs.P.C = regs.TR & 0x80;
+                        regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = +((regs.TR) === 0);
                         regs.P.N = ((regs.TR) & 0x80) >>> 7;
@@ -23698,7 +23698,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 0;
                         // instruction code follows
                         let carry = regs.P.C;
-                        regs.P.C = regs.TR & 0x80;
+                        regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = +((regs.TR) === 0);
                         regs.P.N = ((regs.TR) & 0x80) >>> 7;
@@ -23867,7 +23867,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.C = regs.S;
+                        regs.C = (regs.S);
                         regs.P.Z = +((regs.C) === 0);
                         regs.P.N = ((regs.C) & 0x8000) >>> 15;
                         // instruction code ends
@@ -23992,7 +23992,7 @@ const decoded_opcodes = Object.freeze(
                         regs.TR = pins.D;
                         // instruction code follows
                         let carry = regs.P.C;
-                        regs.P.C = regs.TR & 0x80;
+                        regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = +((regs.TR) === 0);
                         regs.P.N = ((regs.TR) & 0x80) >>> 7;
@@ -24131,10 +24131,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -24193,10 +24193,10 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -24277,10 +24277,10 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -24366,10 +24366,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -24390,7 +24390,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.C & 0xFF;
+                        regs.TR = (regs.C) & 0xFF;
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -24418,10 +24418,10 @@ const decoded_opcodes = Object.freeze(
                     case 2: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -24467,7 +24467,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.PBR & 0xFF;
+                        regs.TR = (regs.PBR) & 0xFF;
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -24526,10 +24526,10 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -24605,10 +24605,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -24686,10 +24686,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -24728,10 +24728,10 @@ const decoded_opcodes = Object.freeze(
                     case 6: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -24773,10 +24773,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -24859,10 +24859,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -24950,10 +24950,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -25017,10 +25017,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -25041,7 +25041,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.Y
+                        regs.TR = (regs.Y);
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -25076,7 +25076,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.D = regs.C;
+                        regs.D = (regs.C);
                         regs.P.Z = +((regs.D) === 0);
                         regs.P.N = ((regs.D) & 0x8000) >>> 15;
                         // instruction code ends
@@ -25147,10 +25147,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -25230,10 +25230,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -25617,7 +25617,7 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        regs.C = (regs.C & 0xFF00) + (regs.TR & 0xFF);
+                        regs.C = ((regs.C) & 0xFF00) + (regs.TR & 0xFF);
                         regs.P.Z = +((regs.C) === 0);
                         regs.P.N = ((regs.C) & 0x80) >>> 7;
                         // instruction code ends
@@ -26406,7 +26406,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.C = regs.D;
+                        regs.C = (regs.D);
                         regs.P.Z = +((regs.C) === 0);
                         regs.P.N = ((regs.C) & 0x8000) >>> 15;
                         // instruction code ends
@@ -26958,7 +26958,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.C = (regs.C & 0xFF00) + (regs.X & 0xFF);
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.X) & 0xFF);
                         regs.P.Z = +((regs.C) === 0);
                         regs.P.N = ((regs.C) & 0x80) >>> 7;
                         // instruction code ends
@@ -26984,7 +26984,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.DBR & 0xFF;
+                        regs.TR = (regs.DBR) & 0xFF;
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -27477,7 +27477,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.C = (regs.C & 0xFF00) + (regs.Y & 0xFF);
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.Y) & 0xFF);
                         regs.P.Z = +((regs.C) === 0);
                         regs.P.N = ((regs.C) & 0x80) >>> 7;
                         // instruction code ends
@@ -27568,7 +27568,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.Y = regs.X;
+                        regs.Y = (regs.X);
                         regs.P.Z = +((regs.Y) === 0);
                         regs.P.N = ((regs.Y) & 0x8000) >>> 15;
                         // instruction code ends
@@ -28028,7 +28028,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.Y = regs.C;
+                        regs.Y = (regs.C);
                         regs.P.Z = +((regs.Y) === 0);
                         regs.P.N = ((regs.Y) & 0x8000) >>> 15;
                         // instruction code ends
@@ -28078,7 +28078,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.X = regs.C;
+                        regs.X = (regs.C);
                         regs.P.Z = +((regs.X) === 0);
                         regs.P.N = ((regs.X) & 0x8000) >>> 15;
                         // instruction code ends
@@ -28112,7 +28112,7 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        regs.DBR = (regs.DBR & 0xFF00) + (regs.TR & 0xFF);
+                        regs.DBR = ((regs.DBR) & 0xFF00) + (regs.TR & 0xFF);
                         regs.P.Z = +((regs.DBR) === 0);
                         regs.P.N = ((regs.DBR) & 0x80) >>> 7;
                         // instruction code ends
@@ -28665,7 +28665,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.S = regs.X;
+                        regs.S = (regs.X);
                         regs.P.Z = +((regs.S) === 0);
                         regs.P.N = ((regs.S) & 0x8000) >>> 15;
                         // instruction code ends
@@ -28692,7 +28692,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.X = regs.Y;
+                        regs.X = (regs.Y);
                         regs.P.Z = +((regs.X) === 0);
                         regs.P.N = ((regs.X) & 0x8000) >>> 15;
                         // instruction code ends
@@ -29832,7 +29832,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.X
+                        regs.TR = (regs.X);
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -30106,7 +30106,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -30176,7 +30176,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -30262,7 +30262,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -30361,7 +30361,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -30423,7 +30423,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -30553,7 +30553,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -30642,7 +30642,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -30734,7 +30734,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -30787,7 +30787,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -30843,7 +30843,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -30924,7 +30924,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -31025,7 +31025,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -31103,7 +31103,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -31273,7 +31273,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -31366,7 +31366,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -31670,10 +31670,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -31760,10 +31760,10 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -31796,7 +31796,7 @@ const decoded_opcodes = Object.freeze(
                         regs.TR = pins.D;
                         pins.PDV = 0;
                         // instruction code follows
-                        regs.P.Z = (regs.TR & regs.C & 0xFF) === 0
+                        regs.P.Z = +((regs.TR & regs.C & 0xFF) === 0);
                         regs.TR = (regs.C | regs.TR) & 0xFF;
                         // instruction code ends
                         break;
@@ -31836,10 +31836,10 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -31925,10 +31925,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -31977,10 +31977,10 @@ const decoded_opcodes = Object.freeze(
                     case 2: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -32026,7 +32026,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.D
+                        regs.TR = (regs.D);
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -32069,7 +32069,7 @@ const decoded_opcodes = Object.freeze(
                         regs.TR = pins.D;
                         pins.PDV = 0;
                         // instruction code follows
-                        regs.P.Z = (regs.TR & regs.C & 0xFF) === 0
+                        regs.P.Z = +((regs.TR & regs.C & 0xFF) === 0);
                         regs.TR = (regs.C | regs.TR) & 0xFF;
                         // instruction code ends
                         break;
@@ -32106,10 +32106,10 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -32185,10 +32185,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -32266,10 +32266,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -32308,10 +32308,10 @@ const decoded_opcodes = Object.freeze(
                     case 6: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -32353,10 +32353,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -32431,10 +32431,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -32522,10 +32522,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -32589,10 +32589,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -32720,10 +32720,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -32803,10 +32803,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -33083,7 +33083,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 0;
                         // instruction code follows
                         let carry = regs.P.C;
-                        regs.P.C = regs.TR & 0x80;
+                        regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = +((regs.TR) === 0);
                         regs.P.N = ((regs.TR) & 0x80) >>> 7;
@@ -33215,7 +33215,7 @@ const decoded_opcodes = Object.freeze(
                         regs.TR = regs.C & 0xFF;
                         // instruction code follows
                         let carry = regs.P.C;
-                        regs.P.C = regs.TR & 0x80;
+                        regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = +((regs.TR) === 0);
                         regs.P.N = ((regs.TR) & 0x80) >>> 7;
@@ -33353,7 +33353,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 0;
                         // instruction code follows
                         let carry = regs.P.C;
-                        regs.P.C = regs.TR & 0x80;
+                        regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = +((regs.TR) === 0);
                         regs.P.N = ((regs.TR) & 0x80) >>> 7;
@@ -33677,7 +33677,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 0;
                         // instruction code follows
                         let carry = regs.P.C;
-                        regs.P.C = regs.TR & 0x80;
+                        regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = +((regs.TR) === 0);
                         regs.P.N = ((regs.TR) & 0x80) >>> 7;
@@ -33846,7 +33846,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.C = regs.S;
+                        regs.C = (regs.S);
                         regs.P.Z = +((regs.C) === 0);
                         regs.P.N = ((regs.C) & 0x8000) >>> 15;
                         // instruction code ends
@@ -33971,7 +33971,7 @@ const decoded_opcodes = Object.freeze(
                         regs.TR = pins.D;
                         // instruction code follows
                         let carry = regs.P.C;
-                        regs.P.C = regs.TR & 0x80;
+                        regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = +((regs.TR) === 0);
                         regs.P.N = ((regs.TR) & 0x80) >>> 7;
@@ -34110,10 +34110,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -34172,10 +34172,10 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -34256,10 +34256,10 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -34345,10 +34345,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -34369,7 +34369,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.C & 0xFF;
+                        regs.TR = (regs.C) & 0xFF;
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -34397,10 +34397,10 @@ const decoded_opcodes = Object.freeze(
                     case 2: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -34446,7 +34446,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.PBR & 0xFF;
+                        regs.TR = (regs.PBR) & 0xFF;
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -34505,10 +34505,10 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -34584,10 +34584,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -34665,10 +34665,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -34707,10 +34707,10 @@ const decoded_opcodes = Object.freeze(
                     case 6: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -34752,10 +34752,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -34838,10 +34838,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -34929,10 +34929,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -34996,10 +34996,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -35020,7 +35020,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.Y & 0xFF;
+                        regs.TR = (regs.Y) & 0xFF;
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -35049,7 +35049,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.D = regs.C;
+                        regs.D = (regs.C);
                         regs.P.Z = +((regs.D) === 0);
                         regs.P.N = ((regs.D) & 0x8000) >>> 15;
                         // instruction code ends
@@ -35120,10 +35120,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -35203,10 +35203,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -35590,7 +35590,7 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        regs.C = (regs.C & 0xFF00) + (regs.TR & 0xFF);
+                        regs.C = ((regs.C) & 0xFF00) + (regs.TR & 0xFF);
                         regs.P.Z = +((regs.C) === 0);
                         regs.P.N = ((regs.C) & 0x80) >>> 7;
                         // instruction code ends
@@ -36349,7 +36349,7 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        regs.Y = (regs.Y & 0xFF00) + (regs.TR & 0xFF);
+                        regs.Y = ((regs.Y) & 0xFF00) + (regs.TR & 0xFF);
                         regs.P.Z = +((regs.Y) === 0);
                         regs.P.N = ((regs.Y) & 0x80) >>> 7;
                         // instruction code ends
@@ -36373,7 +36373,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.C = regs.D;
+                        regs.C = (regs.D);
                         regs.P.Z = +((regs.C) === 0);
                         regs.P.N = ((regs.C) & 0x8000) >>> 15;
                         // instruction code ends
@@ -36917,7 +36917,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.C = (regs.C & 0xFF00) + (regs.X & 0xFF);
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.X) & 0xFF);
                         regs.P.Z = +((regs.C) === 0);
                         regs.P.N = ((regs.C) & 0x80) >>> 7;
                         // instruction code ends
@@ -36943,7 +36943,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.DBR & 0xFF;
+                        regs.TR = (regs.DBR) & 0xFF;
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -37421,7 +37421,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.C = (regs.C & 0xFF00) + (regs.Y & 0xFF);
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.Y) & 0xFF);
                         regs.P.Z = +((regs.C) === 0);
                         regs.P.N = ((regs.C) & 0x80) >>> 7;
                         // instruction code ends
@@ -37514,7 +37514,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.Y = (regs.Y & 0xFF00) + (regs.X & 0xFF);
+                        regs.Y = ((regs.Y) & 0xFF00) + ((regs.X) & 0xFF);
                         regs.P.Z = +((regs.Y) === 0);
                         regs.P.N = ((regs.Y) & 0x80) >>> 7;
                         // instruction code ends
@@ -37960,7 +37960,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.Y = (regs.Y & 0xFF00) + (regs.C & 0xFF);
+                        regs.Y = ((regs.Y) & 0xFF00) + ((regs.C) & 0xFF);
                         regs.P.Z = +((regs.Y) === 0);
                         regs.P.N = ((regs.Y) & 0x80) >>> 7;
                         // instruction code ends
@@ -38010,7 +38010,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.X = (regs.X & 0xFF00) + (regs.C & 0xFF);
+                        regs.X = ((regs.X) & 0xFF00) + ((regs.C) & 0xFF);
                         regs.P.Z = +((regs.X) === 0);
                         regs.P.N = ((regs.X) & 0x80) >>> 7;
                         // instruction code ends
@@ -38044,7 +38044,7 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        regs.DBR = (regs.DBR & 0xFF00) + (regs.TR & 0xFF);
+                        regs.DBR = ((regs.DBR) & 0xFF00) + (regs.TR & 0xFF);
                         regs.P.Z = +((regs.DBR) === 0);
                         regs.P.N = ((regs.DBR) & 0x80) >>> 7;
                         // instruction code ends
@@ -38581,7 +38581,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.S = (regs.S & 0xFF00) + (regs.X & 0xFF);
+                        regs.S = ((regs.S) & 0xFF00) + ((regs.X) & 0xFF);
                         regs.P.Z = +((regs.S) === 0);
                         regs.P.N = ((regs.S) & 0x80) >>> 7;
                         // instruction code ends
@@ -38608,7 +38608,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.X = (regs.X & 0xFF00) + (regs.Y & 0xFF);
+                        regs.X = ((regs.X) & 0xFF00) + ((regs.Y) & 0xFF);
                         regs.P.Z = +((regs.X) === 0);
                         regs.P.N = ((regs.X) & 0x80) >>> 7;
                         // instruction code ends
@@ -39727,7 +39727,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.X & 0xFF;
+                        regs.TR = (regs.X) & 0xFF;
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -39990,7 +39990,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -40060,7 +40060,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -40142,7 +40142,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -40241,7 +40241,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -40303,7 +40303,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -40429,7 +40429,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -40518,7 +40518,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -40610,7 +40610,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -40663,7 +40663,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -40719,7 +40719,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -40800,7 +40800,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -40901,7 +40901,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -40979,7 +40979,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -41010,7 +41010,7 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        regs.X = (regs.X & 0xFF00) + (regs.TR & 0xFF);
+                        regs.X = ((regs.X) & 0xFF00) + (regs.TR & 0xFF);
                         regs.P.Z = +((regs.X) === 0);
                         regs.P.N = ((regs.X) & 0x80) >>> 7;
                         // instruction code ends
@@ -41143,7 +41143,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -41236,7 +41236,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -41534,10 +41534,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -41618,10 +41618,10 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -41654,7 +41654,7 @@ const decoded_opcodes = Object.freeze(
                         regs.TR = pins.D;
                         pins.RW = 1; pins.PDV = 0;
                         // instruction code follows
-                        regs.P.Z = (regs.TR & regs.C & 0xFF) === 0
+                        regs.P.Z = +((regs.TR & regs.C & 0xFF) === 0);
                         regs.TR = (regs.C | regs.TR) & 0xFF;
                         // instruction code ends
                         break;
@@ -41694,10 +41694,10 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -41783,10 +41783,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -41835,10 +41835,10 @@ const decoded_opcodes = Object.freeze(
                     case 2: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -41884,7 +41884,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.D
+                        regs.TR = (regs.D);
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -41928,7 +41928,7 @@ const decoded_opcodes = Object.freeze(
                         regs.TR = pins.D;
                         pins.RW = 1; pins.PDV = 0;
                         // instruction code follows
-                        regs.P.Z = (regs.TR & regs.C & 0xFF) === 0
+                        regs.P.Z = +((regs.TR & regs.C & 0xFF) === 0);
                         regs.TR = (regs.C | regs.TR) & 0xFF;
                         // instruction code ends
                         break;
@@ -41965,10 +41965,10 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -42044,10 +42044,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -42124,10 +42124,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -42166,10 +42166,10 @@ const decoded_opcodes = Object.freeze(
                     case 6: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -42211,10 +42211,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -42289,10 +42289,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -42380,10 +42380,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -42447,10 +42447,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -42579,10 +42579,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -42662,10 +42662,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.TR | regs.C) & 0xFF;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.TR | regs.C) & 0xFF;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -42942,7 +42942,7 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 1; pins.PDV = 0;
                         // instruction code follows
                         let carry = regs.P.C;
-                        regs.P.C = regs.TR & 0x80;
+                        regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = +((regs.TR) === 0);
                         regs.P.N = ((regs.TR) & 0x80) >>> 7;
@@ -43074,7 +43074,7 @@ const decoded_opcodes = Object.freeze(
                         regs.TR = regs.C & 0xFF;
                         // instruction code follows
                         let carry = regs.P.C;
-                        regs.P.C = regs.TR & 0x80;
+                        regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = +((regs.TR) === 0);
                         regs.P.N = ((regs.TR) & 0x80) >>> 7;
@@ -43213,7 +43213,7 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 1; pins.PDV = 0;
                         // instruction code follows
                         let carry = regs.P.C;
-                        regs.P.C = regs.TR & 0x80;
+                        regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = +((regs.TR) === 0);
                         regs.P.N = ((regs.TR) & 0x80) >>> 7;
@@ -43536,7 +43536,7 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 1; pins.PDV = 0;
                         // instruction code follows
                         let carry = regs.P.C;
-                        regs.P.C = regs.TR & 0x80;
+                        regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = +((regs.TR) === 0);
                         regs.P.N = ((regs.TR) & 0x80) >>> 7;
@@ -43705,7 +43705,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.C = regs.S;
+                        regs.C = (regs.S);
                         regs.P.Z = +((regs.C) === 0);
                         regs.P.N = ((regs.C) & 0x8000) >>> 15;
                         // instruction code ends
@@ -43830,7 +43830,7 @@ const decoded_opcodes = Object.freeze(
                         regs.TR = pins.D;
                         // instruction code follows
                         let carry = regs.P.C;
-                        regs.P.C = regs.TR & 0x80;
+                        regs.P.C = (regs.TR & 0x80) >> 7;
                         regs.TR = ((regs.TR & 0x7F) << 1) | carry;
                         regs.P.Z = +((regs.TR) === 0);
                         regs.P.N = ((regs.TR) & 0x80) >>> 7;
@@ -43962,10 +43962,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -44024,10 +44024,10 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -44108,10 +44108,10 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -44197,10 +44197,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -44221,7 +44221,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.C & 0xFF;
+                        regs.TR = (regs.C) & 0xFF;
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -44249,10 +44249,10 @@ const decoded_opcodes = Object.freeze(
                     case 2: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -44298,7 +44298,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.PBR & 0xFF;
+                        regs.TR = (regs.PBR) & 0xFF;
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -44357,10 +44357,10 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -44436,10 +44436,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -44516,10 +44516,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -44558,10 +44558,10 @@ const decoded_opcodes = Object.freeze(
                     case 6: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -44603,10 +44603,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -44689,10 +44689,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -44780,10 +44780,10 @@ const decoded_opcodes = Object.freeze(
                     case 7: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -44847,10 +44847,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -44871,7 +44871,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.Y & 0xFF;
+                        regs.TR = (regs.Y) & 0xFF;
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -44900,7 +44900,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.D = regs.C;
+                        regs.D = (regs.C);
                         regs.P.Z = +((regs.D) === 0);
                         regs.P.N = ((regs.D) & 0x8000) >>> 15;
                         // instruction code ends
@@ -44971,10 +44971,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -45054,10 +45054,10 @@ const decoded_opcodes = Object.freeze(
                     case 5: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        let A = (regs.C & 0xFF) ^ regs.TR;
-                        regs.P.Z = +((A) === 0);
-                        regs.P.N = ((A) & 0x80) >>> 7;
-                        regs.C = ((regs.C) & 0xFF00) + ((A) & 0xFF);
+                        regs.TR = (regs.C & 0xFF) ^ regs.TR;
+                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.N = ((retgs.TR) & 0x80) >>> 7;
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -45442,7 +45442,7 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        regs.C = (regs.C & 0xFF00) + (regs.TR & 0xFF);
+                        regs.C = ((regs.C) & 0xFF00) + (regs.TR & 0xFF);
                         regs.P.Z = +((regs.C) === 0);
                         regs.P.N = ((regs.C) & 0x80) >>> 7;
                         // instruction code ends
@@ -46201,7 +46201,7 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        regs.Y = (regs.Y & 0xFF00) + (regs.TR & 0xFF);
+                        regs.Y = ((regs.Y) & 0xFF00) + (regs.TR & 0xFF);
                         regs.P.Z = +((regs.Y) === 0);
                         regs.P.N = ((regs.Y) & 0x80) >>> 7;
                         // instruction code ends
@@ -46225,7 +46225,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.C = regs.D;
+                        regs.C = (regs.D);
                         regs.P.Z = +((regs.C) === 0);
                         regs.P.N = ((regs.C) & 0x8000) >>> 15;
                         // instruction code ends
@@ -46768,7 +46768,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.C = (regs.C & 0xFF00) + (regs.X & 0xFF);
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.X) & 0xFF);
                         regs.P.Z = +((regs.C) === 0);
                         regs.P.N = ((regs.C) & 0x80) >>> 7;
                         // instruction code ends
@@ -46794,7 +46794,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.DBR & 0xFF;
+                        regs.TR = (regs.DBR) & 0xFF;
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -47271,7 +47271,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.C = (regs.C & 0xFF00) + (regs.Y & 0xFF);
+                        regs.C = ((regs.C) & 0xFF00) + ((regs.Y) & 0xFF);
                         regs.P.Z = +((regs.C) === 0);
                         regs.P.N = ((regs.C) & 0x80) >>> 7;
                         // instruction code ends
@@ -47364,7 +47364,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.Y = (regs.Y & 0xFF00) + (regs.X & 0xFF);
+                        regs.Y = ((regs.Y) & 0xFF00) + ((regs.X) & 0xFF);
                         regs.P.Z = +((regs.Y) === 0);
                         regs.P.N = ((regs.Y) & 0x80) >>> 7;
                         // instruction code ends
@@ -47810,7 +47810,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.Y = (regs.Y & 0xFF00) + (regs.C & 0xFF);
+                        regs.Y = ((regs.Y) & 0xFF00) + ((regs.C) & 0xFF);
                         regs.P.Z = +((regs.Y) === 0);
                         regs.P.N = ((regs.Y) & 0x80) >>> 7;
                         // instruction code ends
@@ -47860,7 +47860,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.X = (regs.X & 0xFF00) + (regs.C & 0xFF);
+                        regs.X = ((regs.X) & 0xFF00) + ((regs.C) & 0xFF);
                         regs.P.Z = +((regs.X) === 0);
                         regs.P.N = ((regs.X) & 0x80) >>> 7;
                         // instruction code ends
@@ -47894,7 +47894,7 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        regs.DBR = (regs.DBR & 0xFF00) + (regs.TR & 0xFF);
+                        regs.DBR = ((regs.DBR) & 0xFF00) + (regs.TR & 0xFF);
                         regs.P.Z = +((regs.DBR) === 0);
                         regs.P.N = ((regs.DBR) & 0x80) >>> 7;
                         // instruction code ends
@@ -48430,7 +48430,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.S = (regs.S & 0xFF00) + (regs.X & 0xFF);
+                        regs.S = ((regs.S) & 0xFF00) + ((regs.X) & 0xFF);
                         regs.P.Z = +((regs.S) === 0);
                         regs.P.N = ((regs.S) & 0x80) >>> 7;
                         // instruction code ends
@@ -48457,7 +48457,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
-                        regs.X = (regs.X & 0xFF00) + (regs.Y & 0xFF);
+                        regs.X = ((regs.X) & 0xFF00) + ((regs.Y) & 0xFF);
                         regs.P.Z = +((regs.X) === 0);
                         regs.P.N = ((regs.X) & 0x80) >>> 7;
                         // instruction code ends
@@ -49576,7 +49576,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         pins.RW = 1; pins.PDV = 1;
                         // instruction code follows
-                        regs.TR = regs.X & 0xFF;
+                        regs.TR = (regs.X) & 0xFF;
                         // instruction code ends
                         pins.Addr = regs.S; pins.BA = 0;
                         regs.S = (regs.S - 1) & 0xFFFF;
@@ -49839,7 +49839,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -49909,7 +49909,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -49991,7 +49991,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -50090,7 +50090,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -50152,7 +50152,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -50278,7 +50278,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -50367,7 +50367,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -50458,7 +50458,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -50511,7 +50511,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -50567,7 +50567,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -50649,7 +50649,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -50750,7 +50750,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -50828,7 +50828,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -50859,7 +50859,7 @@ const decoded_opcodes = Object.freeze(
                     case 4: // cleanup_custom
                         regs.TR = pins.D;
                         // instruction code follows
-                        regs.X = (regs.X & 0xFF00) + (regs.TR & 0xFF);
+                        regs.X = ((regs.X) & 0xFF00) + (regs.TR & 0xFF);
                         regs.P.Z = +((regs.X) === 0);
                         regs.P.N = ((regs.X) & 0x80) >>> 7;
                         // instruction code ends
@@ -50992,7 +50992,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends
@@ -51085,7 +51085,7 @@ const decoded_opcodes = Object.freeze(
                         regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;
                         if (regs.P.D && result <= 0xFF) result -= 0x60;
                         regs.P.C = +(result > 0xFF);
-                        regs.P.Z = +((result) === 0);
+                        regs.P.Z = +((result & 0xFF) === 0);
                         regs.P.N = ((result) & 0x80) >>> 7;
                         regs.C = (regs.C & 0xFF00) | (result & 0xFF);
                         // instruction code ends

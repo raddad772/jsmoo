@@ -819,7 +819,6 @@ class switchgen {
         this.cmp8('regs.C');
     }
 
-
     CMP16() {
         this.cmp16('regs.C');
     }
@@ -857,10 +856,10 @@ class switchgen {
     }
 
     EOR8() {
-        this.addl('let A = (regs.C & 0xFF) ^ regs.TR;')
-        this.setz('A');
-        this.setn8('A');
-        this.set_reg_low('regs.C', 'A');
+        this.addl('regs.TR = (regs.C & 0xFF) ^ regs.TR;')
+        this.setz('regs.TR');
+        this.setn8('retgs.TR');
+        this.set_reg_low('regs.C', 'regs.TR');
     }
 
     EOR16() {
@@ -940,10 +939,10 @@ class switchgen {
     }
 
     ORA8() {
-        this.addl('let A = (regs.TR | regs.C) & 0xFF;');
-        this.setz('A');
-        this.setn8('A');
-        this.set_reg_low('regs.C', 'A');
+        this.addl('regs.TR = (regs.TR | regs.C) & 0xFF;');
+        this.setz('regs.TR');
+        this.setn8('regs.TR');
+        this.set_reg_low('regs.C', 'regs.TR');
     }
 
     ORA16() {
@@ -954,7 +953,7 @@ class switchgen {
 
     ROL8() {
         this.addl('let carry = regs.P.C;');
-        this.addl('regs.P.C = regs.TR & 0x80;');
+        this.addl('regs.P.C = (regs.TR & 0x80) >> 7;');
         this.addl('regs.TR = ((regs.TR & 0x7F) << 1) | carry;');
         this.setz('regs.TR');
         this.setn8('regs.TR');
@@ -962,7 +961,7 @@ class switchgen {
 
     ROL16() {
         this.addl('let carry = regs.P.C;');
-        this.addl('regs.P.C = regs.TR & 0x8000;');
+        this.addl('regs.P.C = (regs.TR & 0x8000) >> 15;');
         this.addl('regs.TR = ((regs.TR & 0x7FFF) << 1) | carry;');
         this.setz('regs.TR');
         this.setn16('regs.TR');
@@ -999,13 +998,13 @@ class switchgen {
         this.addl('regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;');
         this.addl('if (regs.P.D && result <= 0xFF) result -= 0x60;')
         this.addl('regs.P.C = +(result > 0xFF);');
-        this.setz('result');
+        this.setz('result & 0xFF');
         this.setn8('result');
         this.addl('regs.C = (regs.C & 0xFF00) | (result & 0xFF);');
     }
 
     SBC16() {
-        this.addl('let data = ~regs.TR;');
+        this.addl('let data = (~regs.TR) & 0xFFFF;');
         this.addl('let result;')
         this.addl('if (!regs.P.D) result = regs.C + data + regs.P.C;');
         this.addl('else {');
@@ -1027,7 +1026,7 @@ class switchgen {
         this.addl('regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;');
         this.addl('if (regs.P.D && result <= 0xFFFF) result -= 0x6000;');
         this.addl('regs.P.C = +(result > 0xFFFF);');
-        this.setz('result');
+        this.setz('result & 0xFFFF');
         this.setn16('result');
         this.addl('regs.C = (result & 0xFFFF);');
     }
@@ -1043,12 +1042,12 @@ class switchgen {
     }
 
     TSB8() {
-        this.addl('regs.P.Z = (regs.TR & regs.C & 0xFF) === 0');
+        this.addl('regs.P.Z = +((regs.TR & regs.C & 0xFF) === 0);');
         this.addl('regs.TR = (regs.C | regs.TR) & 0xFF;');
     }
 
     TSB16() {
-        this.addl('regs.P.Z = (regs.TR & regs.C & 0xFFFF) === 0');
+        this.addl('regs.P.Z = +((regs.TR & regs.C & 0xFFFF) === 0);');
         this.addl('regs.TR = (regs.C | regs.TR) & 0xFFFF;');
     }
 
@@ -1060,17 +1059,17 @@ class switchgen {
 
     // Upon enter emulation or setting M flag to 1
     SETM8() {
-        // Nothing to do here really, top is not cleared
+        // Nothing to do here really, top of A is not cleared
     }
 
     TT8(from, to) {
-        this.addl(to + ' = (' + to + ' & 0xFF00) + (' + from + ' & 0xFF);');
+        this.addl(to + ' = ((' + to + ') & 0xFF00) + ((' + from + ') & 0xFF);');
         this.setz(to);
         this.setn8(to);
     }
 
     TT16(from, to) {
-        this.addl(to + ' = ' + from + ';');
+        this.addl(to + ' = (' + from + ');');
         this.setz(to);
         this.setn16(to);
     }
@@ -1159,7 +1158,7 @@ class switchgen {
     }
 
     PULL8(what) {
-        this.addl(what + ' = (' + what + ' & 0xFF00) + (regs.TR & 0xFF);');
+        this.addl(what + ' = ((' + what + ') & 0xFF00) + (regs.TR & 0xFF);');
         this.setz(what);
         this.setn8(what);
     }
@@ -1172,11 +1171,11 @@ class switchgen {
 
 
     PUSH8(what) {
-        this.addl('regs.TR = ' + what + ' & 0xFF;');
+        this.addl('regs.TR = (' + what + ') & 0xFF;');
     }
 
     PUSH16(what) {
-        this.addl('regs.TR = ' + what);
+        this.addl('regs.TR = (' + what + ');');
     }
 
     PULLP(E) {
