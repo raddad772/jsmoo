@@ -250,11 +250,11 @@ function test_it(tests) {
 // 4F.N +
 // C9.N +
 // 6D.N +
-
+// e8 needs fixes
 // ed needs fixes
 function test_pt_65c816() {
     console.log('TRYIN TO GET ME SOME JSON')
-    let opc = 'e8.n'
+    let opc = 'ed.n'
     getJSON(tt + opc + '.json').then(data => {
         test_it(data);
     });
