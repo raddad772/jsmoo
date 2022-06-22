@@ -74,16 +74,17 @@ function txf(instr) {
                     continue;
                 case 'R':
                 case 'r':
-                    console.log('ADDING RED', i, ch)
                     outstr += '<span style="color: red;">';
                     break;
                 case 'B':
                 case 'b':
-                    console.log('ADDING BLUE')
                     outstr += '<span style="color: blue;">';
                     break;
+                case 'G':
+                case 'g':
+                    outstr += '<span style="color: green;">';
+                    break;
                 case '*':
-                    console.log('ADDING BOLD')
                     outstr += '<b>';
                     break;
                 case ctag:
