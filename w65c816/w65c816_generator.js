@@ -730,7 +730,7 @@ class switchgen {
         this.addl('    result = (A & 0xF0) + (regs.TR & 0xF0) + (regs.P.C << 4) + (result & 0x0F);')
         this.addl('}')
 
-        this.addl('regs.P.V = (~(A ^ regs.TR) & (A ^ result) & 0x80) >> 7;')
+        this.addl('regs.P.V = ((~(A ^ regs.TR)) & (A ^ result) & 0x80) >> 7;')
         this.addl('if (regs.P.D && result > 0x9F) result += 0x60;');
         this.addl('regs.P.C = +(result > 0xFF);')
         this.setz('(result & 0xFF)');
@@ -754,7 +754,7 @@ class switchgen {
         this.addl('    result = (regs.C & 0xF000) + (regs.TR & 0xF000) + (regs.P.C << 12) + (result & 0x0FFF);');
         this.addl('}');
 
-        this.addl('regs.P.V = (~(regs.C ^ regs.TR) & (regs.C ^ result) & 0x8000) >> 15;');
+        this.addl('regs.P.V = ((~(regs.C ^ regs.TR)) & (regs.C ^ result) & 0x8000) >> 15;');
         this.addl('if (regs.P.D && result > 0x9FFF) result += 0x6000;');
         this.addl('regs.P.C = +(result > 0xFFFF);')
         this.setz('(result & 0xFFFF)');
@@ -858,7 +858,7 @@ class switchgen {
     EOR8() {
         this.addl('regs.TR = (regs.C & 0xFF) ^ regs.TR;')
         this.setz('regs.TR');
-        this.setn8('retgs.TR');
+        this.setn8('regs.TR');
         this.set_reg_low('regs.C', 'regs.TR');
     }
 
@@ -980,22 +980,22 @@ class switchgen {
         this.addl('regs.P.C = regs.TR & 0x1;');
         this.addl('regs.TR = ((regs.TR & 0xFFFF) >>> 1) | carry;');
         this.setz('regs.TR');
-        this.setn8('regs.TR');
+        this.setn16('regs.TR');
     }
 
     SBC8() {
         // Thank you Higan source
-        this.addl('let data = (~regs.TR) & 0xFF;');
+        this.addl('let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;');
         this.addl('let result;')
-        this.addl('if (!regs.P.D) result = data + (regs.C & 0xFF) + regs.P.C;');
+        this.addl('if (!regs.P.D) result = data + A + regs.P.C;');
         this.addl('else {');
-        this.addl('    result = (regs.C & 0x0F) + (data & 0x0F) + (regs.P.C);');
+        this.addl('    result = (A & 0x0F) + (data & 0x0F) + (regs.P.C);');
         this.addl('    if (result <= 0x0F) result -= 0x06;');
         this.addl('    regs.P.C = +(result > 0x0F);');
-        this.addl('    result = (regs.C & 0xF0) + (data & 0xF0) + (regs.P.C << 4) + (result & 0x0F);');
+        this.addl('    result = (A & 0xF0) + (data & 0xF0) + (regs.P.C << 4) + (result & 0x0F);');
         this.addl('}');
 
-        this.addl('regs.P.V = (~((regs.C & 0xFF) ^ data) & ((regs.C & 0xFF) ^ result) & 0x80) >> 7;');
+        this.addl('regs.P.V = ((~(A ^ data)) & (A ^ result) & 0x80) >> 7;');
         this.addl('if (regs.P.D && result <= 0xFF) result -= 0x60;')
         this.addl('regs.P.C = +(result > 0xFF);');
         this.setz('result & 0xFF');
@@ -1023,7 +1023,7 @@ class switchgen {
         this.addl('    result = (regs.C & 0xF000) + (data & 0xF000) + (regs.P.C << 12) + (result & 0x0FFF);');
         this.addl('}');
 
-        this.addl('regs.P.V = (~(regs.C ^ data) & (regs.C ^ result) & 0x8000) >> 15;');
+        this.addl('regs.P.V = ((~(regs.C ^ data)) & (regs.C ^ result) & 0x8000) >> 15;');
         this.addl('if (regs.P.D && result <= 0xFFFF) result -= 0x6000;');
         this.addl('regs.P.C = +(result > 0xFFFF);');
         this.setz('result & 0xFFFF');
@@ -1736,7 +1736,13 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.RPDV(0, 0, 0, 0);
 
             ag.addcycle('fetch_D0_and_skip_cycle 3');
-            ag.addl('if (regs.skipped_cycle) regs.TA = pins.D;')
+            ag.addl('if (regs.skipped_cycle) {');
+            ag.addl('    regs.TA = pins.D;');
+            if (PINS_SEPERATE_PDV)
+                ag.addl('    pins.VDA = 0; pins.VPA = 0; pins.VPB = 0; pins.RW = 0;');
+            else
+                ag.addl('    pins.PDV = 0;');
+            ag.addl('}');
     }
 
     // Function to do a variable-sized fetch in middle of RMW
@@ -1866,8 +1872,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
         // But we DO NOT skip it if:
         //  we index across a page boundary
         ag.addl('regs.skipped_cycle = false;');
-        if  ((RW === 0) || (X === 1) || (E === 1))
-        {
+        if ((RW === 0) && ((X === 1) || (E === 1))) {
             ag.addl('regs.TR = regs.TA + ((' + who + ') & 0xFF);');
             ag.addl('if (regs.TR < 0x100) { regs.skipped_cycle = true; regs.TCU++; } ') // Skip cycle
         }
@@ -2133,7 +2138,8 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addr_to_PC_then_inc();
 
             ag.addcycle(5); // capture AAB
-            ag.addr_to('regs.TA', 'pins.D');
+            ag.addl('regs.TA += (pins.D << 16) + regs.X;');
+            ag.addr_to('regs.TA & 0xFFFF', '(regs.TA >>> 16) & 0xFF');
             finish_RW8or16p();
             break;
         case AM.A_INDEXED_X:
@@ -2301,7 +2307,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addr_to_DBR('(regs.TA + (pins.D << 8))');
             finish_RW8or16p();
             break;
-        case AM.D_IND: // "Direct indirect"
+        case AM.D_IND: // "Direct indirect" (d, x)
             set_exm16rw();
             fetch_D0_and_skip_cycle();
             ag.RPDV(0, 0, 1, 0);
@@ -2312,6 +2318,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addr_inc();
 
             ag.addcycle(5);
+
             ag.addr_to_DBR('(regs.TA + (pins.D << 8))');
             finish_RW8or16p();
             break;
@@ -2327,14 +2334,20 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addl('regs.TA = pins.D;')
             ag.addr_inc();
 
-            // So, decide whether to skip cycle 3a
+            // So, decide whether to skip cycle 4a
+            // We add cycle if
+            //  write
+            //  X=0
+            //  index across page boundaries
+
             // We skip it if:
             //  We're doing a read
             //  X=1 or emulation mode
             // But we DO NOT skip it if:
             //  we index across a page boundary
             ag.addl('regs.TR = regs.TA + (regs.Y & 0xFF);')
-            if ((RW === 0) || (X === 1) || (E === 1)) {
+            ag.addl('regs.skipped_cycle = false;');
+            if ((RW === 0) && ((X === 1) || (E === 1))) {
                 ag.addl('if (regs.TR < 0x100) { regs.skipped_cycle = true; regs.TCU++; }')
             }
 
@@ -2344,7 +2357,10 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
 
             ag.addcycle(5);
             ag.addl('if (regs.skipped_cycle) regs.TA += pins.D << 8;')
-            ag.addr_to_DBR('(regs.TA + regs.Y) & 0xFFFF');
+            ag.addl('regs.TR = regs.DBR;')
+            ag.addl('regs.TA += regs.Y;')
+            ag.addl('if (regs.TA > 0xFFFF) { regs.TA -= 0x10000; regs.TR = (regs.TR + 1) & 0xFF; }')
+            ag.addr_to('regs.TA', 'regs.TR');
             finish_RW8or16p();
             break;
         case AM.D_IND_L_INDEXED: // [d], y
@@ -2360,11 +2376,13 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addr_inc();
 
             ag.addcycle(5);
-            ag.addl('regs.TA = (regs.TA + (pins.D << 8) + regs.Y) & 0xFFFF;');
+            ag.addl('regs.TA = (regs.TA + (pins.D << 8) + regs.Y);');
             ag.addr_inc();
 
             ag.addcycle(6);
-            ag.addr_to('regs.TA', 'pins.D');
+            ag.addl('regs.TR = pins.D;');
+            ag.addl('if (regs.TA >= 0x10000) { regs.TA -= 0x10000; regs.TR = (regs.TR + 1) & 0xFF; }');
+            ag.addr_to('regs.TA', 'regs.TR');
             finish_RW8or16p();
             break;
         case AM.D_IND_L: // [d]
@@ -2384,7 +2402,9 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addr_inc();
 
             ag.addcycle(6);
-            ag.addr_to('regs.TA', 'pins.D');
+            ag.addl('regs.TR = pins.D;');
+            ag.addl('if (regs.TA > 0x10000) { regs.TA -= 0x10000; regs.TR = (regs.TR + 1) & 0xFF; }')
+            ag.addr_to('regs.TA', 'pins.TR');
             finish_RW8or16p();
             break;
         case AM.D_INDEXED_X: // d,x
@@ -2450,10 +2470,10 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             break;
         case AM.I:
             ag.addcycle();
-            ag.addr_to_PC_then_inc();
+            //ag.addr_to_PC_then_inc();
             ag.RPDV(0, 0, 0, 0);
-            ag.addcycle();
             ag.addr_to_PC();
+            //ag.addcycle();
             ag.add_ins(opcode_info.ins, E, M, X);
             ag.cleanup();
             break;
@@ -2658,10 +2678,10 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addr_to_PC_then_inc();
 
             ag.addcycle(4);
+            ag.RPDV(1, 0, 1, 0);
             ag.addr_to_S_then_dec_N();
 
             ag.addcycle(5);
-            ag.RPDV(1, 0, 1, 0);
             ag.addr_to_S_then_dec_N();
             ag.addl('pins.D = regs.TR;');
 
@@ -2849,11 +2869,13 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addr_inc();
 
             ag.addcycle(6);
-            ag.addl('regs.TR = (regs.TR + (pins.D << 8) + regs.Y) & 0xFFFF;')
+            ag.addl('regs.TA = (regs.TR + (pins.D << 8) + regs.Y);')
+            ag.addl('regs.TR = regs.DBR;');
+            ag.addl('if (regs.TA >= 0x10000) { regs.TA -= 0x10000; regs.TR = (regs.TR + 1) & 0xFF; }')
             ag.RPDV(0, 0, 0, 0);
 
             ag.addcycle(7);
-            ag.addr_to_DBR('regs.TR');
+            ag.addr_to('regs.TA', 'regs.TR');
             finish_RW8or16p();
             break;
     }

@@ -3,11 +3,16 @@
 class snes_cart {
 	constructor() {
 		this.ROM = new Uint8Array();
-		this.header = {};
-		this.header.mapping_mode = -1;
-		this.header.version = -1;
-		this.header.hi_speed = false;
-		this.header.bank_mask = 0;
+		this.header = { mapping_mode: -1,
+						version: -1,
+						hi_speed: false,
+						rom_size: 0,
+						sram_size: 0,
+			            rom_sizebit: 0,
+						sram_sizebit: 0,
+						lorom: false,
+						hirom: false
+		};
 		// ver.1:
 		//. 0xFFC0-D4. internal name
 		//. D5 map mode
@@ -34,9 +39,11 @@ class snes_cart {
 	
 	read_ver1_header() {
 		this.header.flash_RAM_size = (2 ** this.ROM[this.header.header_offset + 0xD8]) * 1024;
-		tconsole.addl('SRAM size ' + this.header.flash_RAM_size.toString());
+		this.header.sram_sizebit = this.ROM[this.header.header_offset + 0xD8];
+		this.header.rom_sizebit = this.ROM[this.header.header_offset + 0xD7]
+		//tconsole.addl('SRAM size ' + this.header.flash_RAM_size.toString());
 		this.header.internal_name = new TextDecoder().decode(this.ROM.slice(this.header.header_offset + 0xC0, this.header.header_offset + 0xD4));
-		tconsole.addl('Internal name "' + this.header.internal_name +'"');
+		//tconsole.addl('Internal name "' + this.header.internal_name +'"');
 		this.SRAM = new Uint8Array(this.header.flash_RAM_size);
 	}
 	
@@ -63,6 +70,7 @@ class snes_cart {
 		this.header.hi_speed = !!(this.ROM[this.header.header_offset + 0xD5] & 0x10);
 		this.header.mapping_mode = 0x2F & this.ROM[this.header.header_offset + 0xD5];
 		tconsole.addl('Mapping mode 0x' + this.header.mapping_mode.toString(16));
+		if (this.header.mapping_mode === 0x20) this.header.lorom = true;
 		tconsole.addl('HiSpeed? ' + this.header.hi_speed);
 		// Determine bank mask
 		let num_address_lines = Math.ceil(Math.log2(this.ROM.byteLength));

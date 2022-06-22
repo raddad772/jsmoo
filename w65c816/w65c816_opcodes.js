@@ -658,4 +658,4 @@ const STACK_M = Object.freeze(new Set([OM.PHA, OM.PLA]));
 const STACK_8 = Object.freeze(new Set([OM.PHP, OM.PHB, OM.PHK, OM.PLP, OM.PLP]));
 const STACK_16 = Object.freeze(new Set([OM.PLD, OM.PHD]));
 
-const A_R_INS = Object.freeze(new Set([OM.ADC, OM.AND, OM.BIT, OM.CMP, OM.EOR, OM.LDA, OM.LDX, OM.LDY, OM.ORA, OM.SBC]));
+const A_R_INS = Object.freeze(new Set([OM.ADC, OM.AND, OM.BIT, OM.CMP, OM.CPX, OM.CPY, OM.EOR, OM.LDA, OM.LDX, OM.LDY, OM.ORA, OM.SBC]));

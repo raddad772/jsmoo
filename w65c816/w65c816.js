@@ -78,6 +78,23 @@ class w65c816_P {
 		this.N = (val & 0x80) >> 7;
 	}
 
+	formatbyte_emulated() {
+		return this.formatbyte_native();
+	}
+
+	formatbyte_native() {
+		let outstr = '';
+		outstr += this.N ? 'N' : 'n';
+		outstr += this.V ? 'V' : 'v';
+		outstr += this.M ? 'M' : 'm';
+		outstr += this.X ? 'X' : 'x';
+		outstr += this.D ? 'D' : 'd';
+		outstr += this.I ? 'I' : 'i';
+		outstr += this.Z ? 'Z' : 'z';
+		outstr += this.C ? 'C' : 'c';
+		return outstr;
+	}
+
 	getbyte_native() {
 		return this.C | (this.Z << 1) | (this.I << 2) | (this.D << 3) | (this.X << 4) | (this.M << 5) | (this.V << 6) | (this.N << 7);
 	}
@@ -478,8 +495,8 @@ class w65c816 {
 		outstr += ' S:' + hex0x4(this.regs.S);
 		outstr += ' MX:' + mx;
 		outstr += ' P:';
-		if (this.regs.E) outstr += hex0x2(this.regs.P.getbyte_emulated());
-		else             outstr += hex0x2(this.regs.P.getbyte_native());
+		if (this.regs.E) outstr += this.regs.P.formatbyte_emulated();
+		else             outstr += this.regs.P.formatbyte_native();
 		outstr += ' D:' + hex0x4(this.regs.D) + ' DBR:' + hex0x2(this.regs.DBR);
 		return outstr;
 	}
