@@ -254,7 +254,7 @@ function test_it_automated(cpu, tests) {
             }
             return true;
         }
-        let JMP_INS = [0x10, 0x30, 0x40, 0x4C, 0x50, 0x6C, 0x70, 0x7C, 0x80, 0x90, 0xB0, 0xD0, 0xF0, 0xFC];
+        let JMP_INS = [0x10, 0x30, 0x40, 0x4C, 0x50, 0x6C, 0x70, 0x7C, 0x80, 0x90, 0xB0, 0xD0, 0xF0, 0xFC, 0x54, 0x44];
         if (JMP_INS.indexOf(ins) !== -1) {
             passed &= testregs('PC', (cpu.regs.PC - 1) & 0xFFFF, final.pc)
         } else passed &= testregs('PC', last_pc, final.pc);
@@ -343,12 +343,12 @@ async function test_pt_65c816() {
         return testRAM[(bank << 16) | addr];
     }
     let cpu = new w65c816();
-    let start_test = 0x00;
+    let start_test = 0x44;
     let skip_tests = [  0x00, // BRK, don't feel like it
                         0x02, // COP again don't feel like it
-                        0x44, // MVN - not sure on my implementation
-                        0x54, // MVP - not sure on my implementation
-                        0x89, // BIT again
+                        //0x44, // MVN - not sure on my implementation
+                        //0x54, // MVP - not sure on my implementation
+                        //0x89, // BIT again
                         0x91, // STA (d), y missing IO cycle
                         0xCB, // WAI
                         0xDB, // STP

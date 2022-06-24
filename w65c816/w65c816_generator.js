@@ -2241,14 +2241,9 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             if (M|E) ag.addl('regs.C = (regs.C & 0xFF00) | (regs.TR & 0x00FF);');
             else     ag.addl('regs.C = regs.TR & 0xFFFF;');
             break;
-        case AM.XYC:
+        case AM.XYC: // MVN
+            affected_by_X = affected_by_E = true;
             ag.addcycle(2);
-            ag.addl('if (regs.in_blockmove) {');
-            ag.addl('    regs.MD++;');
-            ag.addl('} else {');
-            ag.addl('    regs.MD = 0;');
-            ag.addl('    regs.in_blockmove = true;');
-            ag.addl('}')
             ag.RPDV(0, 1, 0, 0);
             ag.addr_to_PC_then_inc();
 
@@ -2270,23 +2265,20 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
 
             ag.addcycle(7);
 
-            ag.cleanup();
             ag.addl('regs.C = (regs.C - 1) & 0xFFFF;');
-            ag.addl('if (regs.C === 0xFFFF) { // Time to exit loop!');
-            ag.addl('    regs.in_blockmove = false;');
-            ag.addl("    // we'll just let PC go to the next instruction now");
-            ag.addl('} else { // Still in loop!');
-            ag.addl('    regs.PC = (regs.PC - 3) & 0xFFFF;');
-            ag.addl('}')
+            if (X) {
+                ag.addl('regs.X = (regs.X + 1) & 0xFF;');
+                ag.addl('regs.Y = (regs.Y + 1) & 0xFF;');
+            }
+            else {
+                ag.addl('regs.X = (regs.X + 1) & 0xFFFF;');
+                ag.addl('regs.Y = (regs.Y + 1) & 0xFFFF;');
+            }
+            ag.addl('if (regs.C !== 0xFFFF) regs.PC = (regs.PC - 3) & 0xFFFF;');
             break;
-        case AM.XYCb:
+        case AM.XYCb: // MVP
+            affected_by_X = affected_by_E = true;
             ag.addcycle(2);
-            ag.addl('if (regs.in_blockmove) {');
-            ag.addl('    regs.MD++;');
-            ag.addl('} else {');
-            ag.addl('    regs.MD = 0;');
-            ag.addl('    regs.in_blockmove = true;');
-            ag.addl('}')
             ag.RPDV(0, 1, 0, 0);
             ag.addr_to_PC_then_inc();
 
@@ -2296,12 +2288,12 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
 
             ag.addcycle(4);
             ag.addl('regs.TA = pins.D');
-            ag.addr_to('(regs.X - regs.MD) & 0xFFFF', 'regs.TA');
+            ag.addr_to('regs.X', 'regs.TA');
             ag.RPDV(0, 0, 1, 0);
 
             ag.addcycle(5);
             ag.RPDV(1, 0, 1, 0);
-            ag.addr_to('(regs.Y - regs.MD) & 0xFFFF', 'regs.DBR');
+            ag.addr_to('regs.Y', 'regs.DBR');
 
             ag.addcycle(6);
             ag.RPDV(0, 0, 0, 0);
@@ -2309,13 +2301,16 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addcycle(7);
 
             ag.cleanup();
-            ag.addl('regs.C = (regs.C + 1) & 0xFFFF;');
-            ag.addl('if (regs.C === 0xFFFF) { // Time to exit loop!');
-            ag.addl('    regs.in_blockmove = false;');
-            ag.addl("    // we'll just let PC go to the next instruction now");
-            ag.addl('} else { // Still in loop!');
-            ag.addl('    regs.PC = (regs.PC - 3) & 0xFFFF;');
-            ag.addl('}');
+            ag.addl('regs.C = (regs.C - 1) & 0xFFFF;');
+            if (X) {
+                ag.addl('regs.X = (regs.X - 1) & 0xFF;');
+                ag.addl('regs.Y = (regs.Y - 1) & 0xFF;');
+            }
+            else {
+                ag.addl('regs.X = (regs.X - 1) & 0xFFFF;');
+                ag.addl('regs.Y = (regs.Y - 1) & 0xFFFF;');
+            }
+            ag.addl('if (regs.C !== 0xFFFF) regs.PC = (regs.PC - 3) & 0xFFFF;');
             break;
         case AM.D:
             set_exm16rw();
