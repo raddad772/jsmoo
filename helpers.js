@@ -100,10 +100,10 @@ function txf(instr) {
 }
 
 class console_t {
-    constructor(elname) {
+    constructor(elname, maxlines=30) {
         this.elname = elname;
         this.buffer = [];
-        this.max_lines = 30;
+        this.max_lines = maxlines;
         this.container = null;
         this.textconsole = null;
     }
@@ -145,7 +145,7 @@ class console_t {
     }
 }
 
-var tconsole = new console_t('textconsole');
+var tconsole = new console_t('textconsole', 80);
 var dconsole = new console_t('disassembly');
 
 // https://stackoverflow.com/questions/3665115/how-to-create-a-file-in-memory-for-user-to-download-but-not-through-server

@@ -8506,9 +8506,6 @@ const decoded_opcodes = Object.freeze(
                     case 3: // cleanup_custom
                         regs.WAI = true;
                         // Following is auto-generated code for instruction finish
-                        pins.Addr = regs.PC; pins.BA = regs.PBR;
-                        regs.PC = (regs.PC + 1) & 0xFFFF;
-                        pins.PDV = 1;
                         regs.TCU = 0;
                         break;
                 }
@@ -9182,9 +9179,6 @@ const decoded_opcodes = Object.freeze(
                     case 3: // cleanup_custom
                         regs.STP = true;
                         // Following is auto-generated code for instruction finish
-                        pins.Addr = regs.PC; pins.BA = regs.PBR;
-                        regs.PC = (regs.PC + 1) & 0xFFFF;
-                        pins.PDV = 1;
                         regs.TCU = 0;
                         break;
                 }
@@ -19578,9 +19572,6 @@ const decoded_opcodes = Object.freeze(
                     case 3: // cleanup_custom
                         regs.WAI = true;
                         // Following is auto-generated code for instruction finish
-                        pins.Addr = regs.PC; pins.BA = regs.PBR;
-                        regs.PC = (regs.PC + 1) & 0xFFFF;
-                        pins.PDV = 1;
                         regs.TCU = 0;
                         break;
                 }
@@ -20247,9 +20238,6 @@ const decoded_opcodes = Object.freeze(
                     case 3: // cleanup_custom
                         regs.STP = true;
                         // Following is auto-generated code for instruction finish
-                        pins.Addr = regs.PC; pins.BA = regs.PBR;
-                        regs.PC = (regs.PC + 1) & 0xFFFF;
-                        pins.PDV = 1;
                         regs.TCU = 0;
                         break;
                 }
@@ -30058,9 +30046,6 @@ const decoded_opcodes = Object.freeze(
                     case 3: // cleanup_custom
                         regs.WAI = true;
                         // Following is auto-generated code for instruction finish
-                        pins.Addr = regs.PC; pins.BA = regs.PBR;
-                        regs.PC = (regs.PC + 1) & 0xFFFF;
-                        pins.PDV = 1;
                         regs.TCU = 0;
                         break;
                 }
@@ -30686,9 +30671,6 @@ const decoded_opcodes = Object.freeze(
                     case 3: // cleanup_custom
                         regs.STP = true;
                         // Following is auto-generated code for instruction finish
-                        pins.Addr = regs.PC; pins.BA = regs.PBR;
-                        regs.PC = (regs.PC + 1) & 0xFFFF;
-                        pins.PDV = 1;
                         regs.TCU = 0;
                         break;
                 }
@@ -40254,9 +40236,6 @@ const decoded_opcodes = Object.freeze(
                     case 3: // cleanup_custom
                         regs.WAI = true;
                         // Following is auto-generated code for instruction finish
-                        pins.Addr = regs.PC; pins.BA = regs.PBR;
-                        regs.PC = (regs.PC + 1) & 0xFFFF;
-                        pins.PDV = 1;
                         regs.TCU = 0;
                         break;
                 }
@@ -40875,9 +40854,6 @@ const decoded_opcodes = Object.freeze(
                     case 3: // cleanup_custom
                         regs.STP = true;
                         // Following is auto-generated code for instruction finish
-                        pins.Addr = regs.PC; pins.BA = regs.PBR;
-                        regs.PC = (regs.PC + 1) & 0xFFFF;
-                        pins.PDV = 1;
                         regs.TCU = 0;
                         break;
                 }
@@ -50410,9 +50386,6 @@ const decoded_opcodes = Object.freeze(
                     case 3: // cleanup_custom
                         regs.WAI = true;
                         // Following is auto-generated code for instruction finish
-                        pins.Addr = regs.PC; pins.BA = regs.PBR;
-                        regs.PC = (regs.PC + 1) & 0xFFFF;
-                        pins.PDV = 1;
                         regs.TCU = 0;
                         break;
                 }
@@ -51031,9 +51004,6 @@ const decoded_opcodes = Object.freeze(
                     case 3: // cleanup_custom
                         regs.STP = true;
                         // Following is auto-generated code for instruction finish
-                        pins.Addr = regs.PC; pins.BA = regs.PBR;
-                        regs.PC = (regs.PC + 1) & 0xFFFF;
-                        pins.PDV = 1;
                         regs.TCU = 0;
                         break;
                 }

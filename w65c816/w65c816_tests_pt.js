@@ -98,7 +98,7 @@ class test_return {
     }
 }
 
-let DO_TRACING = true;
+let DO_TRACING = false;
 
 function faddr(addr) {
     return (addr & 0xFFFFFF);
@@ -343,16 +343,14 @@ async function test_pt_65c816() {
         return testRAM[(bank << 16) | addr];
     }
     let cpu = new w65c816();
-    let start_test = 0x44;
-    let skip_tests = [  0x00, // BRK, don't feel like it
-                        0x02, // COP again don't feel like it
-                        //0x44, // MVN - not sure on my implementation
-                        //0x54, // MVP - not sure on my implementation
-                        //0x89, // BIT again
+    let start_test = 0x00;
+    let skip_tests = [  0x00, // BRK, test doesn't assert VDA on vector pull
+                        0x02, // COP, test doesn't assert VDA on vector pull
+                        0x89, // BIT again
                         0x91, // STA (d), y missing IO cycle
-                        0xCB, // WAI
-                        0xDB, // STP
-                        /*0xE1, // SBC (d,x) decimal Carry mismatch
+                        0xCB, // WAI, test doesn't increment PC, which it should
+                        0xDB, // STP, test doesn't increment PC, which it should
+                        0xE1, // SBC (d,x) decimal Carry mismatch
                         0xE3, // SBC d, s  decimal result mismatch
                         0xE5, // SBC d    Decimal result mismatch
                         0xE7, // SBC [d]  Decimal result mismatch
@@ -366,13 +364,12 @@ async function test_pt_65c816() {
                         0xF7, // SBC [d],y Dec...
                         0xF9, // SBC a,y Dec...
                         0xFD, // SBC a,x Dec...
-                        0xFF, // SBC al,x Dec...*/
+                        0xFF, // SBC al,x Dec...
     ]
-    //let skip_tests = [0x00, 0x02]
     if (DO_TRACING) cpu.enable_tracing(read8);
     for (let i = start_test; i < 256; i++) {
         if (skip_tests.indexOf(i) !== -1) {
-            console.log('Skipping test', hex0x2(i));
+            tconsole.addl(txf('Test for ' + hex0x2(i) + ' {b}skipped{/}!'));
             continue;
         }
         let result = await test_pt_65c816_ins(cpu,i);

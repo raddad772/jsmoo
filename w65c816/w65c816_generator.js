@@ -539,6 +539,7 @@ class switchgen {
         this.last_case = 0;
         this.has_footer = false;
         this.no_addr_at_end = false;
+        this.no_RPDV_at_end = false;
         this.has_custom_end = false;
         this.outstr = '';
 
@@ -557,6 +558,7 @@ class switchgen {
         this.last_case = 0;
         this.has_footer = false;
         this.no_addr_at_end = false;
+        this.no_RPDV_at_end = false;
         this.has_custom_end = false;
         this.outstr = this.indent1 + 'switch(' + what + ') {\n';
 
@@ -587,6 +589,10 @@ class switchgen {
 
     no_modify_addr() {
         this.no_addr_at_end = true;
+    }
+
+    no_modify_RPDV() {
+        this.no_RPDV_at_end = true;
     }
 
     addr_to(low, high) {
@@ -707,13 +713,10 @@ class switchgen {
         if (!this.has_footer) {
             this.addcycle('cleanup');
         }
-        //this.addl('// Set up instruction fetch');
-        //this.addl('// Put PC on address lines')
         if (!this.no_addr_at_end)
             this.addr_to_PC_then_inc();
-        //this.addl('// Set opcode fetch')
-        this.RPDV(0, 1, 1, 0);
-        //this.addl('// Signal new instruction is begun, as part of old instruction');
+        if (!this.no_RPDV_at_end)
+            this.RPDV(0, 1, 1, 0);
         this.addl('regs.TCU = 0;')
         this.addl('break;')
     }
@@ -2539,6 +2542,8 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addcycle(2);
             ag.RPDV(0, 0, 0, 0);
             ag.addcycle(3);
+            ag.no_modify_RPDV();
+            ag.no_modify_addr();
             ag.cleanup();
             ag.addl('regs.STP = true;');
             break;
@@ -2546,6 +2551,8 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addcycle(2);
             ag.RPDV(0, 0, 0, 0);
             ag.addcycle(3);
+            ag.no_modify_RPDV();
+            ag.no_modify_addr();
             ag.cleanup();
             ag.addl('regs.WAI = true;');
             break;
