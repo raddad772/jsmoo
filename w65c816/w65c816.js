@@ -58,6 +58,13 @@ const OP_IRQ = 0x102;
 const OP_ABORT = 0x101;
 const PINS_SEPERATE_PDV = false;
 
+function padl(what, howmuch) {
+	while(what.length < howmuch) {
+		what = ' ' + what;
+	}
+	return what;
+}
+
 class w65c816_P {
 	constructor(pins) {
 		this.C = this.Z = this.I = this.D = this.X = this.M = this.V = this.N = 0;
@@ -462,17 +469,23 @@ class w65c816 {
 		this.pins.trace_on = false;
 	}
 
+	trace_format_read(addr, val) {
+		return '(' + padl(this.pins.trace_cycles.toString(), 6) + ')r' + hex2((addr >> 16) & 0xFF) + ' ' + hex4(addr & 0xFFFF) + '  ' + hex0x2(val);
+	}
+
+	trace_format_write(addr, val) {
+		return '(' + padl(this.pins.trace_cycles.toString(), 6) + ')w' + hex2((addr >> 16) & 0xFF) + ' ' + hex4(addr & 0xFFFF) + '  WT  ' + hex0x2(val);
+	}
+
+	trace_format_IO(addr, val) {
+		return '(' + padl(this.pins.trace_cycles.toString(), 6) + ')   IO'
+	}
+
 	trace_format(da_out, PCO) {
-		let padl = function(what, howmuch) {
-			while(what.length < howmuch) {
-				what = ' ' + what;
-			}
-			return what;
-		}
 		let outstr = '';
 		// General trace format is...
 		// (cycles) PC: LDA d,x   (any byte operands)   E: C: X: Y: S: MX: P: D: DBR:
-		outstr += '(' + padl((this.pins.trace_cycles - 1).toString(), 6) + ') ' + hex0x2(this.regs.PBR) + ' ' + hex0x4(PCO) + ' ';
+		outstr += '(' + padl((this.pins.trace_cycles - 1).toString(), 6) + ') ' + hex2(this.regs.PBR) + ' ' + hex4(PCO) + ' ';
 		outstr += ' ' + da_out.disassembled;
 		let sp = da_out.disassembled.length;
 		while(sp < 16) {
