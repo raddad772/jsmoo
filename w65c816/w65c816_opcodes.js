@@ -652,10 +652,14 @@ const opcode_R = Object.freeze({
     0x103: OM.S_NMI
 });
 
+// List of instructions that use access size depends on X instead of M. If not in here they depend on M.
 const A_OR_M_X = Object.freeze(new Set([OM.CPX, OM.CPY, OM.STX, OM.STY, OM.LDX, OM.LDY]));
+
+// used to figure out if stack will be 8- or 16-bit push for some instructions
 const STACK_X = Object.freeze(new Set([OM.PLX, OM.PLY, OM.PHX, OM.PHY]));
 const STACK_M = Object.freeze(new Set([OM.PHA, OM.PLA]));
 const STACK_8 = Object.freeze(new Set([OM.PHP, OM.PHB, OM.PHK, OM.PLP, OM.PLP]));
 const STACK_16 = Object.freeze(new Set([OM.PLD, OM.PHD]));
 
+// List of instructions that are Read for R/W types. If not in here, they are Write.
 const A_R_INS = Object.freeze(new Set([OM.ADC, OM.AND, OM.BIT, OM.CMP, OM.CPX, OM.CPY, OM.EOR, OM.LDA, OM.LDX, OM.LDY, OM.ORA, OM.SBC]));

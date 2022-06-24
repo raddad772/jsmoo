@@ -1,24 +1,4 @@
-
 const INIT_ASM = `
-.config
-# 16 * 65536
-ROM_SIZE $100000
-
-; This section holds vectors for NMI, RESET, etc. if they are set
-.vectors
-RESET EMU_START
-
-.EMU_START
-CLC
-XCE
-:E0 M1 X1
-REP #$FF
-SEP #$9E
-LDA #$E2FE
-SBC #$A005
-
-`
-const INIT_ASM2 = `
 ; This section holds configuration data for the assembler
 .config
 # 16 * 65536
@@ -464,5 +444,25 @@ DCB $00, $00, $00, $00, $00, $00, $06, $8f, $f1, $60, $00, $00, $00, $00, $00, $
 
 
 
+
+`
+
+const INIT_ASM2 = `
+.config
+# 16 * 65536
+ROM_SIZE $100000
+
+; This section holds vectors for NMI, RESET, etc. if they are set
+.vectors
+RESET EMU_START
+
+.EMU_START
+CLC
+XCE
+:E0 M1 X1
+REP #$FF
+SEP #$9E
+LDA #$E2FE
+SBC #$A005
 
 `
