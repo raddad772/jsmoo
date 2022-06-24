@@ -127,7 +127,6 @@ class w65c816_registers {
 		this.TR = 0; // Temp Register, for operations
 		this.TA = 0; // Temporary Address register
 		this.skipped_cycle = false; // For when we...skip a cycle! For certain ops
-		this.in_blockmove = false;  // For when we are in a blockmove
 		this.STP = false; // Are we in STOP?
 		this.WAI = false; // Are we in WAIT?
 

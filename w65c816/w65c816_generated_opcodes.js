@@ -2903,12 +2903,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // MVP xyc E=0 M=0 X=0
                     case 1: // 2
-                        if (regs.in_blockmove) {
-                            regs.MD++;
-                        } else {
-                            regs.MD = 0;
-                            regs.in_blockmove = true;
-                        }
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
@@ -2919,11 +2913,11 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 3: // 4
                         regs.TA = pins.D
-                        pins.Addr = ((regs.X - regs.MD) & 0xFFFF); pins.BA = (regs.TA);
+                        pins.Addr = (regs.X); pins.BA = (regs.TA);
                         break;
                     case 4: // 5
                         pins.RW = 1;
-                        pins.Addr = ((regs.Y - regs.MD) & 0xFFFF); pins.BA = (regs.DBR);
+                        pins.Addr = (regs.Y); pins.BA = (regs.DBR);
                         break;
                     case 5: // 6
                         pins.RW = 0; pins.PDV = 0;
@@ -2931,13 +2925,10 @@ const decoded_opcodes = Object.freeze(
                     case 6: // 7
                         break;
                     case 7: // cleanup_custom
-                        regs.C = (regs.C + 1) & 0xFFFF;
-                        if (regs.C === 0xFFFF) { // Time to exit loop!
-                            regs.in_blockmove = false;
-                            // we'll just let PC go to the next instruction now
-                        } else { // Still in loop!
-                            regs.PC = (regs.PC - 3) & 0xFFFF;
-                        }
+                        regs.C = (regs.C - 1) & 0xFFFF;
+                        regs.X = (regs.X - 1) & 0xFFFF;
+                        regs.Y = (regs.Y - 1) & 0xFFFF;
+                        if (regs.C !== 0xFFFF) regs.PC = (regs.PC - 3) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2946,7 +2937,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                 }
             },
-            false, false, false),
+            true, false, true),
         0x45: new opcode_functions(opcode_matrix[0x45],
             function(regs, pins) { // EOR d
                 switch(regs.TCU) {
@@ -3552,12 +3543,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // MVN xyc E=0 M=0 X=0
                     case 1: // 2
-                        if (regs.in_blockmove) {
-                            regs.MD++;
-                        } else {
-                            regs.MD = 0;
-                            regs.in_blockmove = true;
-                        }
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
@@ -3578,16 +3563,13 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.PDV = 0;
                         break;
                     case 6: // 7
-                        break;
-                    case 7: // cleanup_custom
                         regs.C = (regs.C - 1) & 0xFFFF;
-                        if (regs.C === 0xFFFF) { // Time to exit loop!
-                            regs.in_blockmove = false;
-                            // we'll just let PC go to the next instruction now
-                        } else { // Still in loop!
-                            regs.PC = (regs.PC - 3) & 0xFFFF;
-                        }
+                        regs.X = (regs.X + 1) & 0xFFFF;
+                        regs.Y = (regs.Y + 1) & 0xFFFF;
+                        if (regs.C !== 0xFFFF) regs.PC = (regs.PC - 3) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
+                        break;
+                    case 7: // cleanup
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -3595,7 +3577,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                 }
             },
-            false, false, false),
+            true, false, true),
         0x55: new opcode_functions(opcode_matrix[0x55],
             function(regs, pins) { // EOR d,x
                 switch(regs.TCU) {
@@ -14061,12 +14043,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // MVP xyc E=0 M=0 X=1
                     case 1: // 2
-                        if (regs.in_blockmove) {
-                            regs.MD++;
-                        } else {
-                            regs.MD = 0;
-                            regs.in_blockmove = true;
-                        }
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
@@ -14077,11 +14053,11 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 3: // 4
                         regs.TA = pins.D
-                        pins.Addr = ((regs.X - regs.MD) & 0xFFFF); pins.BA = (regs.TA);
+                        pins.Addr = (regs.X); pins.BA = (regs.TA);
                         break;
                     case 4: // 5
                         pins.RW = 1;
-                        pins.Addr = ((regs.Y - regs.MD) & 0xFFFF); pins.BA = (regs.DBR);
+                        pins.Addr = (regs.Y); pins.BA = (regs.DBR);
                         break;
                     case 5: // 6
                         pins.RW = 0; pins.PDV = 0;
@@ -14089,13 +14065,10 @@ const decoded_opcodes = Object.freeze(
                     case 6: // 7
                         break;
                     case 7: // cleanup_custom
-                        regs.C = (regs.C + 1) & 0xFFFF;
-                        if (regs.C === 0xFFFF) { // Time to exit loop!
-                            regs.in_blockmove = false;
-                            // we'll just let PC go to the next instruction now
-                        } else { // Still in loop!
-                            regs.PC = (regs.PC - 3) & 0xFFFF;
-                        }
+                        regs.C = (regs.C - 1) & 0xFFFF;
+                        regs.X = (regs.X - 1) & 0xFF;
+                        regs.Y = (regs.Y - 1) & 0xFF;
+                        if (regs.C !== 0xFFFF) regs.PC = (regs.PC - 3) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -14104,7 +14077,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                 }
             },
-            false, false, false),
+            true, false, true),
         0x45: new opcode_functions(opcode_matrix[0x45],
             function(regs, pins) { // EOR d
                 switch(regs.TCU) {
@@ -14711,12 +14684,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // MVN xyc E=0 M=0 X=1
                     case 1: // 2
-                        if (regs.in_blockmove) {
-                            regs.MD++;
-                        } else {
-                            regs.MD = 0;
-                            regs.in_blockmove = true;
-                        }
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
@@ -14737,16 +14704,13 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.PDV = 0;
                         break;
                     case 6: // 7
-                        break;
-                    case 7: // cleanup_custom
                         regs.C = (regs.C - 1) & 0xFFFF;
-                        if (regs.C === 0xFFFF) { // Time to exit loop!
-                            regs.in_blockmove = false;
-                            // we'll just let PC go to the next instruction now
-                        } else { // Still in loop!
-                            regs.PC = (regs.PC - 3) & 0xFFFF;
-                        }
+                        regs.X = (regs.X + 1) & 0xFF;
+                        regs.Y = (regs.Y + 1) & 0xFF;
+                        if (regs.C !== 0xFFFF) regs.PC = (regs.PC - 3) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
+                        break;
+                    case 7: // cleanup
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -14754,7 +14718,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                 }
             },
-            false, false, false),
+            true, false, true),
         0x55: new opcode_functions(opcode_matrix[0x55],
             function(regs, pins) { // EOR d,x
                 switch(regs.TCU) {
@@ -24910,12 +24874,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // MVP xyc E=0 M=1 X=0
                     case 1: // 2
-                        if (regs.in_blockmove) {
-                            regs.MD++;
-                        } else {
-                            regs.MD = 0;
-                            regs.in_blockmove = true;
-                        }
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
@@ -24926,11 +24884,11 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 3: // 4
                         regs.TA = pins.D
-                        pins.Addr = ((regs.X - regs.MD) & 0xFFFF); pins.BA = (regs.TA);
+                        pins.Addr = (regs.X); pins.BA = (regs.TA);
                         break;
                     case 4: // 5
                         pins.RW = 1;
-                        pins.Addr = ((regs.Y - regs.MD) & 0xFFFF); pins.BA = (regs.DBR);
+                        pins.Addr = (regs.Y); pins.BA = (regs.DBR);
                         break;
                     case 5: // 6
                         pins.RW = 0; pins.PDV = 0;
@@ -24938,13 +24896,10 @@ const decoded_opcodes = Object.freeze(
                     case 6: // 7
                         break;
                     case 7: // cleanup_custom
-                        regs.C = (regs.C + 1) & 0xFFFF;
-                        if (regs.C === 0xFFFF) { // Time to exit loop!
-                            regs.in_blockmove = false;
-                            // we'll just let PC go to the next instruction now
-                        } else { // Still in loop!
-                            regs.PC = (regs.PC - 3) & 0xFFFF;
-                        }
+                        regs.C = (regs.C - 1) & 0xFFFF;
+                        regs.X = (regs.X - 1) & 0xFFFF;
+                        regs.Y = (regs.Y - 1) & 0xFFFF;
+                        if (regs.C !== 0xFFFF) regs.PC = (regs.PC - 3) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -24953,7 +24908,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                 }
             },
-            false, false, false),
+            true, false, true),
         0x45: new opcode_functions(opcode_matrix[0x45],
             function(regs, pins) { // EOR d
                 switch(regs.TCU) {
@@ -25512,12 +25467,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // MVN xyc E=0 M=1 X=0
                     case 1: // 2
-                        if (regs.in_blockmove) {
-                            regs.MD++;
-                        } else {
-                            regs.MD = 0;
-                            regs.in_blockmove = true;
-                        }
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
@@ -25538,16 +25487,13 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.PDV = 0;
                         break;
                     case 6: // 7
-                        break;
-                    case 7: // cleanup_custom
                         regs.C = (regs.C - 1) & 0xFFFF;
-                        if (regs.C === 0xFFFF) { // Time to exit loop!
-                            regs.in_blockmove = false;
-                            // we'll just let PC go to the next instruction now
-                        } else { // Still in loop!
-                            regs.PC = (regs.PC - 3) & 0xFFFF;
-                        }
+                        regs.X = (regs.X + 1) & 0xFFFF;
+                        regs.Y = (regs.Y + 1) & 0xFFFF;
+                        if (regs.C !== 0xFFFF) regs.PC = (regs.PC - 3) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
+                        break;
+                    case 7: // cleanup
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -25555,7 +25501,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                 }
             },
-            false, false, false),
+            true, false, true),
         0x55: new opcode_functions(opcode_matrix[0x55],
             function(regs, pins) { // EOR d,x
                 switch(regs.TCU) {
@@ -35192,12 +35138,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // MVP xyc E=0 M=1 X=1
                     case 1: // 2
-                        if (regs.in_blockmove) {
-                            regs.MD++;
-                        } else {
-                            regs.MD = 0;
-                            regs.in_blockmove = true;
-                        }
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
@@ -35208,11 +35148,11 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 3: // 4
                         regs.TA = pins.D
-                        pins.Addr = ((regs.X - regs.MD) & 0xFFFF); pins.BA = (regs.TA);
+                        pins.Addr = (regs.X); pins.BA = (regs.TA);
                         break;
                     case 4: // 5
                         pins.RW = 1;
-                        pins.Addr = ((regs.Y - regs.MD) & 0xFFFF); pins.BA = (regs.DBR);
+                        pins.Addr = (regs.Y); pins.BA = (regs.DBR);
                         break;
                     case 5: // 6
                         pins.RW = 0; pins.PDV = 0;
@@ -35220,13 +35160,10 @@ const decoded_opcodes = Object.freeze(
                     case 6: // 7
                         break;
                     case 7: // cleanup_custom
-                        regs.C = (regs.C + 1) & 0xFFFF;
-                        if (regs.C === 0xFFFF) { // Time to exit loop!
-                            regs.in_blockmove = false;
-                            // we'll just let PC go to the next instruction now
-                        } else { // Still in loop!
-                            regs.PC = (regs.PC - 3) & 0xFFFF;
-                        }
+                        regs.C = (regs.C - 1) & 0xFFFF;
+                        regs.X = (regs.X - 1) & 0xFF;
+                        regs.Y = (regs.Y - 1) & 0xFF;
+                        if (regs.C !== 0xFFFF) regs.PC = (regs.PC - 3) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -35235,7 +35172,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                 }
             },
-            false, false, false),
+            true, false, true),
         0x45: new opcode_functions(opcode_matrix[0x45],
             function(regs, pins) { // EOR d
                 switch(regs.TCU) {
@@ -35795,12 +35732,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // MVN xyc E=0 M=1 X=1
                     case 1: // 2
-                        if (regs.in_blockmove) {
-                            regs.MD++;
-                        } else {
-                            regs.MD = 0;
-                            regs.in_blockmove = true;
-                        }
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
@@ -35821,16 +35752,13 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.PDV = 0;
                         break;
                     case 6: // 7
-                        break;
-                    case 7: // cleanup_custom
                         regs.C = (regs.C - 1) & 0xFFFF;
-                        if (regs.C === 0xFFFF) { // Time to exit loop!
-                            regs.in_blockmove = false;
-                            // we'll just let PC go to the next instruction now
-                        } else { // Still in loop!
-                            regs.PC = (regs.PC - 3) & 0xFFFF;
-                        }
+                        regs.X = (regs.X + 1) & 0xFF;
+                        regs.Y = (regs.Y + 1) & 0xFF;
+                        if (regs.C !== 0xFFFF) regs.PC = (regs.PC - 3) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
+                        break;
+                    case 7: // cleanup
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -35838,7 +35766,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                 }
             },
-            false, false, false),
+            true, false, true),
         0x55: new opcode_functions(opcode_matrix[0x55],
             function(regs, pins) { // EOR d,x
                 switch(regs.TCU) {
@@ -45369,12 +45297,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // MVP xyc E=1 M=1 X=1
                     case 1: // 2
-                        if (regs.in_blockmove) {
-                            regs.MD++;
-                        } else {
-                            regs.MD = 0;
-                            regs.in_blockmove = true;
-                        }
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
@@ -45385,11 +45307,11 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 3: // 4
                         regs.TA = pins.D
-                        pins.Addr = ((regs.X - regs.MD) & 0xFFFF); pins.BA = (regs.TA);
+                        pins.Addr = (regs.X); pins.BA = (regs.TA);
                         break;
                     case 4: // 5
                         pins.RW = 1;
-                        pins.Addr = ((regs.Y - regs.MD) & 0xFFFF); pins.BA = (regs.DBR);
+                        pins.Addr = (regs.Y); pins.BA = (regs.DBR);
                         break;
                     case 5: // 6
                         pins.RW = 0; pins.PDV = 0;
@@ -45397,13 +45319,10 @@ const decoded_opcodes = Object.freeze(
                     case 6: // 7
                         break;
                     case 7: // cleanup_custom
-                        regs.C = (regs.C + 1) & 0xFFFF;
-                        if (regs.C === 0xFFFF) { // Time to exit loop!
-                            regs.in_blockmove = false;
-                            // we'll just let PC go to the next instruction now
-                        } else { // Still in loop!
-                            regs.PC = (regs.PC - 3) & 0xFFFF;
-                        }
+                        regs.C = (regs.C - 1) & 0xFFFF;
+                        regs.X = (regs.X - 1) & 0xFF;
+                        regs.Y = (regs.Y - 1) & 0xFF;
+                        if (regs.C !== 0xFFFF) regs.PC = (regs.PC - 3) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -45412,7 +45331,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                 }
             },
-            false, false, false),
+            true, false, true),
         0x45: new opcode_functions(opcode_matrix[0x45],
             function(regs, pins) { // EOR d
                 switch(regs.TCU) {
@@ -45971,12 +45890,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // MVN xyc E=1 M=1 X=1
                     case 1: // 2
-                        if (regs.in_blockmove) {
-                            regs.MD++;
-                        } else {
-                            regs.MD = 0;
-                            regs.in_blockmove = true;
-                        }
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
@@ -45997,16 +45910,13 @@ const decoded_opcodes = Object.freeze(
                         pins.RW = 0; pins.PDV = 0;
                         break;
                     case 6: // 7
-                        break;
-                    case 7: // cleanup_custom
                         regs.C = (regs.C - 1) & 0xFFFF;
-                        if (regs.C === 0xFFFF) { // Time to exit loop!
-                            regs.in_blockmove = false;
-                            // we'll just let PC go to the next instruction now
-                        } else { // Still in loop!
-                            regs.PC = (regs.PC - 3) & 0xFFFF;
-                        }
+                        regs.X = (regs.X + 1) & 0xFF;
+                        regs.Y = (regs.Y + 1) & 0xFF;
+                        if (regs.C !== 0xFFFF) regs.PC = (regs.PC - 3) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
+                        break;
+                    case 7: // cleanup
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -46014,7 +45924,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                 }
             },
-            false, false, false),
+            true, false, true),
         0x55: new opcode_functions(opcode_matrix[0x55],
             function(regs, pins) { // EOR d,x
                 switch(regs.TCU) {
