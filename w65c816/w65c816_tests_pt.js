@@ -2,7 +2,6 @@
 
 // https://stackoverflow.com/questions/2499567/how-to-make-a-json-call-to-an-url/2499647#2499647
 function getJSONP(url, success) {
-    console.log('HEY!');
     var ud = '_' + +new Date,
         script = document.createElement('script'),
         head = document.getElementsByTagName('head')[0]
@@ -98,7 +97,7 @@ class test_return {
     }
 }
 
-let DO_TRACING = false;
+let DO_TRACING = true;
 
 function faddr(addr) {
     return (addr & 0xFFFFFF);
@@ -152,6 +151,9 @@ function test_it_automated(cpu, tests) {
         ins = cpu.regs.IR;
         cpu.pins.Addr = (cpu.regs.PC-1) & 0xFFFF;
         cpu.pins.BA = cpu.regs.PBR;
+        cpu.regs.TCU = 0;
+        cpu.regs.WAI = false;
+        cpu.regs.STP = false;
         cpu.clear_RES();
         let addr;
         let passed = true;
@@ -173,7 +175,7 @@ function test_it_automated(cpu, tests) {
                 }
             }
             if (cycle[1] !== null && (cycle[1] !== cpu.pins.D) && !iocycle) {
-                messages.push(cyclei.toString() + ' MISMATCH IN RAM THEIRS: ' + hex0x2(cycle[1]) + ' OURS: ' + hex0x2(cpu.pins.D));
+                messages.push(cyclei.toString() + ' MISMATCH IN RAM AT' + hex0x2(cycle[0]) + ' THEIRS: ' + hex0x2(cycle[1]) + ' OURS: ' + hex0x2(cpu.pins.D));
                 passed = false;
             }
             // Check pins
@@ -254,7 +256,8 @@ function test_it_automated(cpu, tests) {
             }
             return true;
         }
-        let JMP_INS = [0x10, 0x30, 0x40, 0x4C, 0x50, 0x6C, 0x70, 0x7C, 0x80, 0x90, 0xB0, 0xD0, 0xF0, 0xFC, 0x54, 0x44];
+        //let JMP_INS = [];
+        let JMP_INS = [0x10, 0x20, 0x30, 0x40, 0x4C, 0x50, 0x6C, 0x70, 0x7C, 0x80, 0x90, 0xB0, 0xD0, 0xF0, 0xFC, 0x54, 0x44];
         if (JMP_INS.indexOf(ins) !== -1) {
             passed &= testregs('PC', (cpu.regs.PC - 1) & 0xFFFF, final.pc)
         } else passed &= testregs('PC', last_pc, final.pc);
@@ -308,10 +311,13 @@ async function test_pt_65c816_ins(cpu, ins) {
     }
     if (!result.passed) {
         let strt = cpu.pins.traces.length - 25;
+        //let strt = 0;
         strt = strt > 0 ? strt : 0;
         for (let i = strt; i < cpu.pins.traces.length; i++) {
             dconsole.addl(cpu.pins.traces[i]);
         }
+        console.log(cpu.pins.trace_cycles);
+        //console.log(cpu.pins.traces);
     }
     cpu.pins.traces = [];
     /*
@@ -346,27 +352,10 @@ async function test_pt_65c816() {
     let start_test = 0x00;
     let skip_tests = [  0x00, // BRK, test doesn't assert VDA on vector pull
                         0x02, // COP, test doesn't assert VDA on vector pull
-                        0x89, // BIT again
-                        0x91, // STA (d), y missing IO cycle
-                        0xCB, // WAI, test doesn't increment PC, which it should
-                        0xDB, // STP, test doesn't increment PC, which it should
-                        0xE1, // SBC (d,x) decimal Carry mismatch
-                        0xE3, // SBC d, s  decimal result mismatch
-                        0xE5, // SBC d    Decimal result mismatch
-                        0xE7, // SBC [d]  Decimal result mismatch
-                        0xE9, // SBC a    Dec...
-                        0xED, // SBC a    Dec...
-                        0xEF, // SBC (al) Dec...
-                        0xF1, // SBC (d),y Dec...
-                        0xF2, // SBC (d)   Dec..
-                        0xF3, // SBC (d,s),y Dec...
-                        0xF5, // SBC (d),x Dec...
-                        0xF7, // SBC [d],y Dec...
-                        0xF9, // SBC a,y Dec...
-                        0xFD, // SBC a,x Dec...
-                        0xFF, // SBC al,x Dec...
+                        0x20, // JSR infinite loop currently
     ]
     if (DO_TRACING) cpu.enable_tracing(read8);
+    //console.log('DO TRACING?', DO_TRACING);
     for (let i = start_test; i < 256; i++) {
         if (skip_tests.indexOf(i) !== -1) {
             tconsole.addl(txf('Test for ' + hex0x2(i) + ' {b}skipped{/}!'));
