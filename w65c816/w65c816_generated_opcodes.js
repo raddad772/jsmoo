@@ -846,7 +846,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -2203,7 +2203,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -3507,7 +3507,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -4974,7 +4974,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -5977,8 +5977,6 @@ const decoded_opcodes = Object.freeze(
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFFFF) === 0);
-                        regs.P.V = (regs.TR & 0x4000) >>> 14;
-                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -6345,7 +6343,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -7572,7 +7570,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -8832,7 +8830,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -10272,7 +10270,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -11969,7 +11967,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -13331,7 +13329,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -14642,7 +14640,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -16108,7 +16106,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -17101,8 +17099,6 @@ const decoded_opcodes = Object.freeze(
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFFFF) === 0);
-                        regs.P.V = (regs.TR & 0x4000) >>> 14;
-                        regs.P.N = (regs.TR & 0x8000) >>> 15;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -17461,7 +17457,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -18655,7 +18651,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -19895,7 +19891,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -21321,7 +21317,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -22955,7 +22951,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -24210,7 +24206,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -25422,7 +25418,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -26747,7 +26743,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -27655,8 +27651,6 @@ const decoded_opcodes = Object.freeze(
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFF) === 0);
-                        regs.P.V = (regs.TR & 0x40) >> 6;
-                        regs.P.N = (regs.TR & 0x80) >> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -28007,7 +28001,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -29165,7 +29159,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -30348,7 +30342,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -31641,7 +31635,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -33202,7 +33196,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -34462,7 +34456,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -35681,7 +35675,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -37005,7 +36999,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -37903,8 +37897,6 @@ const decoded_opcodes = Object.freeze(
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFF) === 0);
-                        regs.P.V = (regs.TR & 0x40) >> 6;
-                        regs.P.N = (regs.TR & 0x80) >> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -38247,7 +38239,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -39372,7 +39364,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -40535,7 +40527,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -41814,7 +41806,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -43361,7 +43353,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -44622,7 +44614,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -45833,7 +45825,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -47158,7 +47150,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -48055,8 +48047,6 @@ const decoded_opcodes = Object.freeze(
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFF) === 0);
-                        regs.P.V = (regs.TR & 0x40) >> 6;
-                        regs.P.N = (regs.TR & 0x80) >> 7;
                         // instruction code ends
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -48398,7 +48388,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -49522,7 +49512,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -50684,7 +50674,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);
@@ -51962,7 +51952,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                     case 4: // 5
                         regs.TR = pins.D;
-                        pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
+                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // 6
                         regs.TA = (regs.TR + (pins.D << 8) + regs.Y);

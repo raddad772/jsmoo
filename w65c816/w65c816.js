@@ -250,6 +250,9 @@ class w65c816 {
 					this.#RES_pending = false;
 					return;
 				}
+				else if (this.regs.WAI) {
+					return;
+				}
 			}
 			if (this.#RES_pending) {
 				this.reset();

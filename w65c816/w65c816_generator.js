@@ -830,6 +830,14 @@ class switchgen {
         this.addl('regs.P.N = (regs.TR & 0x8000) >>> 15;');
     }
 
+    BIT8IMM() {
+        this.addl('regs.P.Z = +((regs.C & regs.TR & 0xFF) === 0);');
+    }
+
+    BIT16IMM() {
+        this.addl('regs.P.Z = +((regs.C & regs.TR & 0xFFFF) === 0);');
+    }
+
     cmp8(who) {
         this.addl('regs.TR = (' + who + ' & 0xFF) - regs.TR;');
         this.addl('regs.P.C = +(regs.TR >= 0);');
@@ -1347,7 +1355,7 @@ class switchgen {
         this.addl('regs.P.D = 0;');
     }
 
-    add_ins(ins, E, M, X) {
+    add_ins(ins, E, M, X, addrmode=null) {
         this.addl('// instruction code follows')
         switch(ins) {
             case OM.ADC:
@@ -1369,10 +1377,17 @@ class switchgen {
                     this.ASL16();
                 break;
             case OM.BIT:
-                if (E || M)
-                    this.BIT8();
-                else
-                    this.BIT16();
+                if (addrmode === AM.IMM) {
+                    if (E || M)
+                        this.BIT8IMM();
+                    else
+                        this.BIT16IMM();
+                } else {
+                    if (E || M)
+                        this.BIT8();
+                    else
+                        this.BIT16();
+                }
                 break;
             case OM.COP:
             case OM.BRK:
@@ -1819,7 +1834,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
         ag.D_to_TRL();
     }
 
-    let finish_R16p = function(use_PC, ZB=false) {
+    let finish_R16p = function(use_PC, ZB=false, addrmode=null) {
         if (mem16) {
             ag.addcycle('finish_R16p');
             ag.addl('regs.TR = pins.D;');
@@ -1839,7 +1854,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.cleanup();
             ag.addl('regs.TR = pins.D;')
         }
-        ag.add_ins(opcode_info.ins, E, M, X);
+        ag.add_ins(opcode_info.ins, E, M, X, addrmode);
     }
 
     let finish_RW8or16p = function(ZB= false) {
@@ -2514,7 +2529,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.RPDV(0,1,0,0);
             ag.addr_to_PC_then_inc();
 
-            finish_R16p(true);
+            finish_R16p(true, false, AM.IMM);
             break;
         case AM.I:
             ag.addcycle(2);
@@ -2924,7 +2939,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
 
             ag.addcycle(5);
             ag.addl('regs.TR = pins.D;');
-            ag.addr_inc_unbound();
+            ag.addr_inc();
 
             ag.addcycle(6);
             ag.addl('regs.TA = (regs.TR + (pins.D << 8) + regs.Y);')
