@@ -33,15 +33,11 @@ function SNES_mem_timing(addr, ROMspeed) {
 
 class ricoh5A22 {
 	/**
-	 * @param {SNESbus} busA
-	 * @param {SNESbus} busB
-	 * @param version
-	 * @param {CallableFunction} mem_map
+	 * @param {*} version
+	 * @param {snes_memmap} mem_map
 	 */
-	constructor(busA, busB, version, mem_map) {
+	constructor(version, mem_map) {
 		this.cpu = new w65c816();
-		this.busA = busA;
-		this.busB = busB;
 		this.CPUregs = new Uint8Array(0x100);
 		this.version = version;
 
@@ -53,8 +49,6 @@ class ricoh5A22 {
 		this.cpu_addr = 0;
 		this.cpu_addrlow = 0;
 		this.cpu_bank = 0;
-
-		this.SRAM = new Uint8Array(512 * 1024);
 
 		this.mem_map = mem_map;
 		this.auto_joypad_counter = 33; // disabled
@@ -85,34 +79,16 @@ class ricoh5A22 {
 
 	service_CPU_cycle() {
 		// Determine bus
-		if(this.steps_for_CPU_cycle_left === 12) {
-			this.readwriteCPUreg();
-		}
-		if ((this.cpu_bank <= 0x3F) && ((this.cpu_addrlow >= 0x2100 && this.cpu_addrlow <= 0x21FF) || (this.cpu_addrlow >= 0x4200 && this.cpu_addrlow <= 0x44FF))) {
-			// BusB
-			console.log('WRITE TO', hex0x4(this.cpu_addrlow));
-		}
-		else {
-			// BusA
-			// Map to WRAM or cartridge
-			let ma = this.mem_map(this.cpu_addr);
-			if (ma.RAMaddr) {
-				// R/W RAM
-				if (this.cpu.pins.RW)
-					this.busA.write8(ma.RAMaddr, this.cpu.pins.D);
-				else
-					this.cpu.pins.D = this.busA.read8(ma.RAMaddr);
-			}
-			else if (ma.ROMaddr) {
 
-				// R/W ROM
+		this.steps_for_CPU_cycle_left = this.cpu.pins.PDV ? SNES_mem_timing(this.cpu_addr, this.ROMspeed) : 6;
+		if (this.cpu.pins.PDV) { // Read/write
+			this.steps_for_CPU_cycle_left = SNES_mem_timing(addr, this.ROMspeed);
+			if (this.cpu.pins.RW) { // Write
+				this.mem_map.dispatch_write(this.cpu_addr, this.cpu.pins.D);
 			}
-			else if (ma.SRAMaddr) {
-				if (this.cpu.pins.RW)
-					this.SRAM[ma.SRAMaddr] = this.cpu.pins.D;
-				else
-					this.cpu.pins.D = this.SRAM[ma.SRAMaddr];
-				// R/W SRAM
+			else { // Read
+				let r = this.mem_map.dispatch_read(this.cpu_addr);
+				if (r !== null) this.cpu.pins.D = r;
 			}
 		}
 
@@ -153,15 +129,11 @@ class ricoh5A22 {
 			this.cpu.cycle();
 
 			this.cpu_addr = (this.cpu.pins.BA << 16) + this.cpu.pins.Addr;
-			this.cpu_bank = this.cpu.pins.BA;
-			this.cpu_addrlow = this.cpu.pins.Addr;
 			this.steps_for_CPU_cycle_left = this.cpu.pins.PDV ? SNES_mem_timing(this.cpu_addr, this.ROMspeed) : 6;
 			// Do timing info...
-			if (this.steps_for_CPU_cycle_left > this.steps_left) {
+			if (this.steps_for_CPU_cycle_left > this.steps_left)
 				return;
-			}
 			this.service_CPU_cycle();
-
 		}
 	}
 }

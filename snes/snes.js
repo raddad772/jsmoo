@@ -343,16 +343,12 @@ function fmt_smap(smap) {
 class SNES {
 	constructor() {
 		this.cart = new snes_cart();
-		this.busA = new SNESbus(131072); // 128KB WRAM + ROM access
-		this.busB = new SNESbus(65536);  // 64KB VRAM accessed via ports, 256 possible ports
-		this.busMapper = new SNESbusMapper(this.busA, this.busB);
-
 		this.version = {rev: 0, nstc: true, pal: false}
 
 		this.scanline = new SNESscanline(this.version);
 		this.mem_map = new snes_memmap();
-		this.cpu = new ricoh5A22(this.busA, this.busB, this.version, this.mem_map.map_address);
-		this.ppu = new SNESPPU(null, this.busB);
+		this.cpu = new ricoh5A22(this.version, this.mem_map);
+		this.ppu = new SNESPPU(null, this.version, this.mem_map);
 
 		this.mem_map.read_cpu = this.cpu.reg_read;
 		this.mem_map.write_cpu = this.cpu.reg_write;
