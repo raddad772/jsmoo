@@ -182,6 +182,7 @@ class snes_memmap {
 		}
 	};
 
+	// Map RAM into low pages
 	map_loram(bank_start, bank_end, addr_start, addr_end, offset) {
 		for (let c = bank_start; c <= bank_end; c++) {
 			for (let i = addr_start; i <= addr_end; i += 0x1000) {
@@ -194,6 +195,7 @@ class snes_memmap {
 		}
 	}
 
+	// Map CPU, PPU, etc. regions
 	map_kind(bank_start, bank_end, addr_start, addr_end, offset, kind) {
 		for (let c = bank_start; c <= bank_end; c++) {
 			for (let i = addr_start; i <= addr_end; i += 0x1000) {
@@ -205,6 +207,7 @@ class snes_memmap {
 		}
 	}
 
+	// Map ROM into address space using LoROM method
 	map_lorom(bank_start, bank_end, addr_start, addr_end) {
 		let offset = 0;
 		for (let c = bank_start; c <= bank_end; c++) {
@@ -223,6 +226,7 @@ class snes_memmap {
 		}
 	}
 
+	// M ap SRAM into address space
 	map_sram(bank_start, bank_end, addr_start, addr_end) {
 		let offset = 0;
 		for (let c = bank_start; c <= bank_end; c++) {
@@ -239,6 +243,7 @@ class snes_memmap {
 		}
 	}
 
+	// Map WRAM into address space
 	map_wram(bank_start, bank_end, addr_start, addr_end) {
 		let offset = 0;
 		for (let c = bank_start; c <= bank_end; c++) {
@@ -253,6 +258,7 @@ class snes_memmap {
 		}
 	}
 
+	// Map system registers and loRAM
 	map_system() {
 		// First 8K of RAM
 		this.map_loram(0x00, 0x3F, 0x0000, 0x1FFF, 0);
@@ -266,7 +272,7 @@ class snes_memmap {
 		this.map_kind(0x80, 0xBF, 0x4000, 0x5FFF, 0x4000, MAP_TI.CPU);
 	}
 
-
+	// Map SRAM into memory using LoROM scheme
 	map_lorom_sram() {
 		let hi;
 		if (this.ROMSizebit > 11 || this.SRAMSizebit > 5)
@@ -278,6 +284,7 @@ class snes_memmap {
 		this.map_sram(0xF0, 0xFF, 0x0000, hi);
 	}
 
+	// Set the memory map up for LoROM
 	setup_mem_map_lorom() {
 		this.clear_map();
 		this.map_system();
@@ -291,6 +298,7 @@ class snes_memmap {
 		this.map_wram(0x7E, 0x7F, 0x0000, 0xFFFF);
 	}
 
+	// Set the memory map up for HiROM
 	setup_mem_map_hirom() {
 		alert('No HIROM!');
 	}
