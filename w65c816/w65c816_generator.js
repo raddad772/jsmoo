@@ -191,8 +191,9 @@ function check_mnemonic_matrix() {
         }
     }
 }
-check_addressing_matrix();
-check_mnemonic_matrix();
+// These check integrity of some stuff, not needed each times
+//check_addressing_matrix();
+//check_mnemonic_matrix();
 
 class opcode_info {
     constructor(opcode, ins, addr_mode_split, mnemonic) {
@@ -759,7 +760,7 @@ class switchgen {
         this.addl('    result = (A & 0xF0) + (regs.TR & 0xF0) + (regs.P.C << 4) + (result & 0x0F);')
         this.addl('}')
 
-        this.addl('regs.P.V = ((~(A ^ regs.TR)) & (A ^ result) & 0x80) >> 7;')
+        this.addl('regs.P.V = ((~(A ^ regs.TR)) & (A ^ result) & 0x80) >>> 7;')
         this.addl('if (regs.P.D && result > 0x9F) result += 0x60;');
         this.addl('regs.P.C = +(result > 0xFF);')
         this.setz('(result & 0xFF)');
@@ -783,7 +784,7 @@ class switchgen {
         this.addl('    result = (regs.C & 0xF000) + (regs.TR & 0xF000) + (regs.P.C << 12) + (result & 0x0FFF);');
         this.addl('}');
 
-        this.addl('regs.P.V = ((~(regs.C ^ regs.TR)) & (regs.C ^ result) & 0x8000) >> 15;');
+        this.addl('regs.P.V = ((~(regs.C ^ regs.TR)) & (regs.C ^ result) & 0x8000) >>> 15;');
         this.addl('if (regs.P.D && result > 0x9FFF) result += 0x6000;');
         this.addl('regs.P.C = +(result > 0xFFFF);')
         this.setz('(result & 0xFFFF)');
@@ -820,8 +821,8 @@ class switchgen {
 
     BIT8() {
         this.addl('regs.P.Z = +((regs.C & regs.TR & 0xFF) === 0);');
-        this.addl('regs.P.V = (regs.TR & 0x40) >> 6;');
-        this.addl('regs.P.N = (regs.TR & 0x80) >> 7;');
+        this.addl('regs.P.V = (regs.TR & 0x40) >>> 6;');
+        this.addl('regs.P.N = (regs.TR & 0x80) >>> 7;');
     }
 
     BIT16() {
@@ -990,7 +991,7 @@ class switchgen {
 
     ROL8() {
         this.addl('let carry = regs.P.C;');
-        this.addl('regs.P.C = (regs.TR & 0x80) >> 7;');
+        this.addl('regs.P.C = (regs.TR & 0x80) >>> 7;');
         this.addl('regs.TR = ((regs.TR & 0x7F) << 1) | carry;');
         this.setz('regs.TR');
         this.setn8('regs.TR');
@@ -998,7 +999,7 @@ class switchgen {
 
     ROL16() {
         this.addl('let carry = regs.P.C;');
-        this.addl('regs.P.C = (regs.TR & 0x8000) >> 15;');
+        this.addl('regs.P.C = (regs.TR & 0x8000) >>> 15;');
         this.addl('regs.TR = ((regs.TR & 0x7FFF) << 1) | carry;');
         this.setz('regs.TR');
         this.setn16('regs.TR');
@@ -1032,7 +1033,7 @@ class switchgen {
         this.addl('    result = (A & 0xF0) + (data & 0xF0) + (regs.P.C << 4) + (result & 0x0F);');
         this.addl('}');
 
-        this.addl('regs.P.V = ((~(A ^ data)) & (A ^ result) & 0x80) >> 7;');
+        this.addl('regs.P.V = ((~(A ^ data)) & (A ^ result) & 0x80) >>> 7;');
         this.addl('if (regs.P.D && result <= 0xFF) result -= 0x60;')
         this.addl('regs.P.C = +(result > 0xFF);');
         this.setz('result & 0xFF');
@@ -1060,7 +1061,7 @@ class switchgen {
         this.addl('    result = (regs.C & 0xF000) + (data & 0xF000) + (regs.P.C << 12) + (result & 0x0FFF);');
         this.addl('}');
 
-        this.addl('regs.P.V = ((~(regs.C ^ data)) & (regs.C ^ result) & 0x8000) >> 15;');
+        this.addl('regs.P.V = ((~(regs.C ^ data)) & (regs.C ^ result) & 0x8000) >>> 15;');
         this.addl('if (regs.P.D && result <= 0xFFFF) result -= 0x6000;');
         this.addl('regs.P.C = +(result > 0xFFFF);');
         this.setz('result & 0xFFFF');
@@ -1334,6 +1335,7 @@ class switchgen {
         this.addcycle(8);
         this.addr_to_ZB(hex0x4(vector+1));
         this.addl('regs.TA = pins.D;');
+        this.addl('regs.PBR = 0;');
 
         this.cleanup();
         this.addl('regs.PC = (pins.D << 8) + regs.TA;');
@@ -1942,7 +1944,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
         ag.addl('regs.TR = regs.DBR;')
         ag.addl('regs.TA += pins.D << 8');
         //
-        //ag.addr_to_DBR('((pins.D << 8) + regs.TA + (' + who + ')) & 0xFFFF');
+        ag.addr_to_DBR('(pins.D << 8) + (regs.TA + (' + who + ' ) & 0xFF)');
 
         ag.addcycle(4);
         ag.addl('if (regs.skipped_cycle) regs.TA += pins.D << 8;');
@@ -2252,6 +2254,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
         case AM.ACCUM:
             affected_by_E = affected_by_M = true;
             ag.addcycle(2);
+            ag.addr_to_PC();
             ag.RPDV(0, 0, 0, 0);
             if (M|E) ag.addl('regs.TR = regs.C & 0xFF;');
             else     ag.addl('regs.TR = regs.C;');
@@ -2416,6 +2419,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
 
             ag.addcycle('4a');
             ag.addl('regs.TA += pins.D << 8;');
+            ag.addl('pins.Addr = (pins.D << 8) + (regs.TR & 0xFF); pins.BA = regs.DBR;');
             ag.RPDV(0, 0, 0, 0);
 
             ag.addcycle(5);
@@ -2555,6 +2559,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             break;
         case AM.Ic: // STP
             ag.addcycle(2);
+            ag.addr_to_PC();
             ag.RPDV(0, 0, 0, 0);
             ag.addcycle(3);
             ag.no_modify_RPDV();
@@ -2564,6 +2569,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             break;
         case AM.Id: // WAI
             ag.addcycle(2);
+            ag.addr_to_PC();
             ag.RPDV(0, 0, 0, 0);
             ag.addcycle(3);
             ag.no_modify_RPDV();
@@ -2913,13 +2919,12 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
 
             ag.addcycle(3);
             ag.RPDV(0, 0, 0, 0);
-            ag.addr_to_PC();
+            //ag.addr_to_PC();
             ag.addl('regs.TA = (pins.D + regs.S) & 0xFFFF;');
 
             // TODO: check this!!!!
             ag.addcycle(4);
             ag.addr_to_ZB('regs.TA');
-            ag.addl('// DOUBLE CHEK THIS DAWG');
             finish_RW8or16p();
             break;
         case AM.STACK_R_IND_INDEXED:
@@ -2930,7 +2935,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
 
             ag.addcycle(3);
             ag.RPDV(0, 0, 0, 0);
-            ag.addr_to_PC();
+            //ag.addr_to_PC();
             ag.addl('regs.TA = (pins.D + regs.S) & 0xFFFF;');
 
             ag.addcycle(4);

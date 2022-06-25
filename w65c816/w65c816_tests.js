@@ -235,7 +235,7 @@ class tester_65c816 {
         // Display!
         if (bank === 1) {
             let x = (addr & 0xFF);
-            let y = (addr & 0xFF00) >> 8;
+            let y = (addr & 0xFF00) >>> 8;
             put_pixel(x, y, val);
         }
     }

@@ -28,13 +28,13 @@ function PARSEP(w, E) {
     let outstr;
     //if (E === 0) {
         outstr = 'C' + +(w & 0x01);
-        outstr += ' Z' + ((w & 0x02) >> 1);
-        outstr += ' I' + ((w & 0x04) >> 2);
-        outstr += ' D' + ((w & 0x08) >> 3);
-        outstr += ' X' + ((w & 0x10) >> 4);
-        outstr += ' M' + ((w & 0x20) >> 5);
-        outstr += ' V' + ((w & 0x40) >> 6);
-        outstr += ' N' + ((w & 0x80) >> 7);
+        outstr += ' Z' + ((w & 0x02) >>> 1);
+        outstr += ' I' + ((w & 0x04) >>> 2);
+        outstr += ' D' + ((w & 0x08) >>> 3);
+        outstr += ' X' + ((w & 0x10) >>> 4);
+        outstr += ' M' + ((w & 0x20) >>> 5);
+        outstr += ' V' + ((w & 0x40) >>> 6);
+        outstr += ' N' + ((w & 0x80) >>> 7);
     //}
     return outstr;
 }
@@ -98,6 +98,7 @@ class test_return {
 }
 
 let DO_TRACING = true;
+let BRK_ON_IO = false;
 
 function faddr(addr) {
     return (addr & 0xFFFFFF);
@@ -171,6 +172,10 @@ function test_it_automated(cpu, tests) {
                 }
                 else {
                     addr_io_mismatched += 1;
+                    if (BRK_ON_IO){
+                        messages.push(cyclei.toString() + ' MISMATCH IN IO, THEIRS: ' + hex0x6(cycle[0]) + ' OURS: ' + hex0x6(addr));
+                        passed = false;
+                    }
                     //console.log(cyclei, 'MISMATCH IN ADDRESSES, THEIRS', hex0x6(cycle[0]), hex0x6(addr));
                 }
             }
@@ -257,7 +262,7 @@ function test_it_automated(cpu, tests) {
             return true;
         }
         //let JMP_INS = [];
-        let JMP_INS = [0x10, 0x20, 0x30, 0x40, 0x4C, 0x50, 0x6C, 0x70, 0x7C, 0x80, 0x90, 0xB0, 0xD0, 0xF0, 0xFC, 0x54, 0x44];
+        let JMP_INS = [0x00, 0x02, 0x10, 0x20, 0x30, 0x40, 0x4C, 0x50, 0x6C, 0x70, 0x7C, 0x80, 0x90, 0xB0, 0xD0, 0xF0, 0xFC, 0x54, 0x44];
         if (JMP_INS.indexOf(ins) !== -1) {
             passed &= testregs('PC', (cpu.regs.PC - 1) & 0xFFFF, final.pc)
         } else passed &= testregs('PC', last_pc, final.pc);
@@ -289,6 +294,8 @@ function test_it_automated(cpu, tests) {
     return new test_return(true, ins, messages, addr_io_mismatched, length_mismatch, null);
 }
 
+let io_mismatches = [];
+
 async function test_pt_65c816_ins(cpu, ins) {
     let opc = hex2(ins).toLowerCase() + '.n';
     let data = await getJSON(tt + opc + '.json');
@@ -305,6 +312,7 @@ async function test_pt_65c816_ins(cpu, ins) {
     }
     if (result.addr_io_mismatches !== 0) {
         tconsole.addl(txf('{r}ADDR MISMATCHES ON IO: {/}' + result.addr_io_mismatches))
+        io_mismatches.push(hex0x2(ins));
     }
     if (result.length_mismatches !== 0) {
         tconsole.addl(txf('{r}POTENTIAL CYCLE LENGTH MISMATCHES: {/}' + result.length_mismatches))
@@ -350,10 +358,14 @@ async function test_pt_65c816() {
     }
     let cpu = new w65c816();
     let start_test = 0x00;
-    let skip_tests = [  0x00, // BRK, test doesn't assert VDA on vector pull
-                        0x02, // COP, test doesn't assert VDA on vector pull
-                        0x20, // JSR infinite loop currently
+    let skip_tests = [0x22, // cycel4 addr is S-1 instead of S
+        0xCB, // Last cycle wrong 0xFFFF addr
+        0xDB,
     ]
+
+    // 6502 emulation mode
+    //skip_tests = [ 0x00, 0x01, 0x02 ];
+    skip_tests = [];
     if (DO_TRACING) cpu.enable_tracing(read8);
     //console.log('DO TRACING?', DO_TRACING);
     for (let i = start_test; i < 256; i++) {
@@ -365,4 +377,5 @@ async function test_pt_65c816() {
         if (!result) break;
         tconsole.addl('Test for ' + hex0x2(i) + ' passed!');
     }
+    if (io_mismatches.length > 0) console.log('IO mismatches occured for', io_mismatches);
 }
