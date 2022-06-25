@@ -236,17 +236,18 @@ scanline
 */	
 
 class SNESbusMapper {
-	constructor(busA, busB) {
-		this.busA = busA;
-		this.busB = busB;
+	constructor(cart) {
+		/*this.busA = busA;
+		this.busB = busB;*/
+		this.cart = cart;
 	}
 
-	map_address() {
+	map_address(addr) {
 		let ROMaddr = null;
 		let SRAMaddr = null;
 		let RAMaddr = null;
-		let bank = (addr & 0xFF0000) >> 16;
-		let page = (addr & 0xFF00) >> 8;
+		let bank = (addr & 0xFF0000) >>> 16;
+		let page = (addr & 0xFF00) >>> 8;
 		let addrlow = addr & 0xFFFF;
 		/*
 		let ROMsel = false;
@@ -263,7 +264,7 @@ class SNESbusMapper {
 				SRAMsel = true;
 			}
 			if (ROMsel) {
-				ROMaddr = (addr & 0x7FFF) | ((addr & 0xFF0000) >> 1);
+				ROMaddr = (addr & 0x7FFF) | ((addr & 0xFF0000) >>> 1);
 				ROMaddr = ROMaddr & this.cart.header.bank_mask;
 			}
 			else if (SRAMsel) {
@@ -273,7 +274,7 @@ class SNESbusMapper {
 		}
 		else {
 			if (ROMsel) {
-				ROMaddr = (addr & 0x7FFF) | ((addr & 0xFF0000) >> 1);
+				ROMaddr = (addr & 0x7FFF) | ((addr & 0xFF0000) >>> 1);
 				ROMaddr = ROMaddr & this.cart.header.bank_mask;
 				return new mapped_address(ROMaddr, null, null);
 			}
@@ -292,6 +293,15 @@ class SNESbusMapper {
 		}
 		return new mapped_address(null, null, null);
 		*/
+		let kind = -1;
+		let outaddr = -1;
+		let isRAM = false;
+		let isROM = false;
+		let writeable = false;
+		let ROMoffset = 0;
+		let RAMoffset = 0;
+
+		//let outp = new supermapped_address(addr, kind, outaddr, isRAM, isROM, writeable, ROMoffset, RAMoffset);
 		if (this.cart.header.mapping_mode === LOROM) {
 			if (bank >= 0x80 && bank <= 0xFD) {
 				bank -= 0x80;
@@ -322,6 +332,14 @@ class SNESbusMapper {
 		return new mapped_address(null, null, null);
 	}
 }
+
+function fmt_smap(smap) {
+	if (smap.RAMoffset !== -1) smap.RAMoffset = hex0x6(smap.RAMoffset);
+	if (smap.ROMoffset !== -1) smap.ROMoffset = hex0x6(smap.ROMoffset);
+	smap.addr = hex0x6(smap.addr);
+	return smap;
+}
+
 class SNES {
 	constructor() {
 		this.cart = new snes_cart();
@@ -332,13 +350,16 @@ class SNES {
 		this.version = {rev: 0, nstc: true, pal: false}
 
 		this.scanline = new SNESscanline(this.version);
-		this.mem_map = new snes_mem(null);
+		this.mem_map = new snes_memmap();
 		this.cpu = new ricoh5A22(this.busA, this.busB, this.version, this.mem_map.map_address);
 		this.ppu = new SNESPPU(null, this.busB);
 
+		this.mem_map.read_cpu = this.cpu.reg_read;
+		this.mem_map.write_cpu = this.cpu.reg_write;
+		this.mem_map.read_ppu = this.ppu.reg_read;
+		this.mem_map.write_ppu = this.ppu.reg_write;
 
 		this.interlaced_mode = 0;
-		this.scanline = new SNESscanline();
 	}
 	
 	load_ROM(file) {
@@ -348,9 +369,21 @@ class SNES {
 	load_ROM_from_RAM(ROM) {
 		this.cart.load_cart_from_RAM(new Uint8Array(ROM));
 		//this.mem = new snes_mem(this.cart);
-		this.ROM = this.cart.ROM;
-		this.SRAM = this.cart.SRAM;
-		console.log('0xFFE0 mapped to cart is', this.mem.map_address(0xFFE0).toString(16));
+		this.mem_map.cart_inserted(this.cart);
+		console.log('Should calc RAM 0x000004');
+		this.mem_map.dispatch_read(0x000004);
+		console.log('Should calc ROM 0x000004');
+		this.mem_map.dispatch_read(0x008004);
+		console.log('Should calc ROM 0x001004');
+		this.mem_map.dispatch_read(0x009004);
+		console.log('Should calc ROM 0x008003');
+		this.mem_map.dispatch_read(0x018003);
+		console.log('Should calc RAM 0x001002');
+		this.mem_map.dispatch_read(0x041002);
+		console.log('Should CPU reg read 0x4200');
+		this.mem_map.dispatch_read(0x124200);
+		console.log('Should PPU reg read 0x2200');
+		this.mem_map.dispatch_read(0x182200);
 	}
 
 	run_scanline() {
@@ -416,7 +449,7 @@ function generate_js() {
 	save_js('w65c816_generated_opcodes.js', 'const decoded_opcodes = Object.freeze(\n' + decode_opcodes() + ');');
 }
 
-//window.onload = main;
-window.onload = test_65c816;
+window.onload = main;
+//window.onload = test_65c816;
 //window.onload = generate_js;
 //window.onload = test_pt_65c816;

@@ -76,13 +76,13 @@ class w65c816_P {
 
 	setbyte_emulated(val) {
 		this.C = val & 0x01;
-		this.Z = (val & 0x02) >> 1;
-		this.I = (val & 0x04) >> 2;
-		this.D = (val & 0x08) >> 3;
+		this.Z = (val & 0x02) >>> 1;
+		this.I = (val & 0x04) >>> 2;
+		this.D = (val & 0x08) >>> 3;
 		this.X = 1;
 		this.M = 1;
-		this.V = (val & 0x40) >> 6;
-		this.N = (val & 0x80) >> 7;
+		this.V = (val & 0x40) >>> 6;
+		this.N = (val & 0x80) >>> 7;
 	}
 
 	formatbyte_emulated() {
@@ -108,13 +108,13 @@ class w65c816_P {
 	
 	setbyte_native(val) {
 		this.C = val & 0x01;
-		this.Z = (val & 0x02) >> 1;
-		this.I = (val & 0x04) >> 2;
-		this.D = (val & 0x08) >> 3;
-		this.X = (val & 0x10) >> 4;
-		this.M = (val & 0x20) >> 5;
-		this.V = (val & 0x40) >> 6;
-		this.N = (val & 0x80) >> 7;
+		this.Z = (val & 0x02) >>> 1;
+		this.I = (val & 0x04) >>> 2;
+		this.D = (val & 0x08) >>> 3;
+		this.X = (val & 0x10) >>> 4;
+		this.M = (val & 0x20) >>> 5;
+		this.V = (val & 0x40) >>> 6;
+		this.N = (val & 0x80) >>> 7;
 	}
 }
 
@@ -250,7 +250,7 @@ class w65c816 {
 					this.#RES_pending = false;
 					return;
 				}
-				else if (this.regs.WAI) {
+				if (this.regs.STP || this.regs.WAI) {
 					return;
 				}
 			}
@@ -388,7 +388,12 @@ class w65c816 {
 				dis_out += ' (!$' + hex4(output.data16) + ')';
 				break;
 			case AM.AL:
-				dis_out += ' (>$' + hex6(output.data24) + ')';
+				if (opcode_info.ins === OM.JSL) {
+					dis_out += ' >$' + hex6(output.data24);
+				}
+				else {
+					dis_out += ' (>$' + hex6(output.data24) + ')';
+				}
 				break;
 			case AM.AL_INDEXED_X:
 				dis_out += ' >$' + hex6(output.data24) + ', x';
@@ -480,7 +485,7 @@ class w65c816 {
 	}
 
 	trace_format_IO(addr, val) {
-		return '(' + padl(this.pins.trace_cycles.toString(), 6) + ')   IO'
+		return '(' + padl(this.pins.trace_cycles.toString(), 6) + ')   IO ' + hex2((addr >> 16) & 0xFF) + ' ' + hex4(addr & 0xFFFF);
 	}
 
 	trace_format(da_out, PCO) {

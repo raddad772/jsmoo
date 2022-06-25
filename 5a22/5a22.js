@@ -60,6 +60,15 @@ class ricoh5A22 {
 		this.auto_joypad_counter = 33; // disabled
 	}
 
+	reg_read(addr) {
+		console.log('5A22 read', hex0x4(addr));
+		return 0x00;
+	}
+
+	reg_write(addr, val) {
+		console.log('5A22 write', hex0x4(addr), hex0x2(val));
+	}
+
 	reset() {
 		this.cpu.pins.RES = 1;
 	}
