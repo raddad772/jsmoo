@@ -51,38 +51,116 @@ class ricoh5A22 {
 		this.cpu_bank = 0;
 
 		this.mem_map = mem_map;
+		this.mem_map.read_cpu = this.reg_read;
+		this.mem_map.write_cpu = this.reg_write;
+
+		this.dma = new r5a22DMA(mem_map);
+
+		this.io = {
+			hirqEnable: 0,
+			virqEnable: 0,
+			irqEnable: 0,
+			nmiEnable: 0,
+			autoJoypadPoll: 0,
+
+			wrmpya: 0xFF,   // $4202
+			wrmpyb: 0xFF,   // $4203
+			wrdiva: 0xFFFF, // $4204-4205
+			wrdivb: 0xFF,   // $4026
+
+			rddiv: 0, // $4214-4215
+			rdmpy: 0 // $4216-4217
+		};
+
+		this.alu = {
+			mpyctr: 0,
+			divctr: 0,
+			shift: 0
+		};
+
+
 		this.auto_joypad_counter = 33; // disabled
 	}
 
 	reg_read(addr) {
 		console.log('5A22 read', hex0x4(addr));
-		return 0x00;
+		switch(addr) {
+			case 0x4214: // Hardware multiplier stuff
+				return this.io.rddiv & 0xFF;
+			case 0x4215:
+				return (this.io.rddiv >>> 8) & 0xFF;
+			case 0x4216:
+				return this.io.rdmpy & 0xFF;
+			case 0x4217:
+				return (this.io.rdmpy >>> 8) & 0xFF;
+		}
+		return null;
 	}
 
 	reg_write(addr, val) {
 		console.log('5A22 write', hex0x4(addr), hex0x2(val));
+		switch(addr) {
+			case 0x4202: // Multiplicand A
+				this.io.wrmpya = val;
+				return;
+			case 0x4203: // Multiplier B & start
+				this.io.rdmpy = 0;
+				if (this.alu.mpyctr || this.alu.divctr) return;
+				this.io.wrmpyb = val;
+				this.io.rddiv = (this.io.wrmpyb << 8) | this.io.wrmpya;
+				this.alu.mpyctr = 8;
+				this.alu.shift = this.io.wrmpyb;
+				return;
+			case 0x4204: // Dividend lo
+				this.io.wrdiva = (this.io.wrdiva & 0xFF00) + val;
+				return;
+			case 0x4205:
+				this.io.wrdiva = (this.io.wrdiva & 0xFF) + (val << 8);
+				return;
+			case 0x4206:
+				this.io.rdmpy = this.io.wrdiva;
+				if(this.alu.mpyctr || this.alu.divctr) return;
+
+				this.io.wrdivb = val;
+
+				this.alu.divctr = 16;
+				this.alu.shift = this.io.wrdivb << 16;
+				return;
+		}
+	}
+
+	alu_cycle(num=1) {
+		while (num > 0) {
+			if (this.alu.mpyctr) {
+				this.alu.mpyctr--;
+				if (this.io.rddiv & 1) this.io.rdmpy += this.alu.shift;
+				this.io.rddiv >>>= 1;
+				this.alu.shift <<= 1;
+			}
+
+			if (this.alu.divctr) {
+				this.alu.divctr--;
+				this.io.rddiv <<= 1;
+				this.alu.shift >>>= 1;
+				if (this.io.rdmpy >= this.alu.shift) {
+					this.io.rdmpy -= this.alu.shift;
+					this.io.rddiv |= 1;
+				}
+			}
+			num--;
+		}
 	}
 
 	reset() {
 		this.cpu.pins.RES = 1;
-	}
-
-	readwriteCPUreg() {
-		let addr = this.cpu.pins.Addr;
-		if (this.cpu.pins.RW) { // Write
-			this.CPUregs[addr & 0xFF] = this.cpu.pins.D;
-		}
-		else { // Read
-			this.cpu.pins.D = this.CPUregs[addr & 0xFF];
-		}
+		this.dma.reset();
+		this.multiplier.reset();
 	}
 
 	service_CPU_cycle() {
 		// Determine bus
 
-		this.steps_for_CPU_cycle_left = this.cpu.pins.PDV ? SNES_mem_timing(this.cpu_addr, this.ROMspeed) : 6;
 		if (this.cpu.pins.PDV) { // Read/write
-			this.steps_for_CPU_cycle_left = SNES_mem_timing(addr, this.ROMspeed);
 			if (this.cpu.pins.RW) { // Write
 				this.mem_map.dispatch_write(this.cpu_addr, this.cpu.pins.D);
 			}
@@ -97,33 +175,46 @@ class ricoh5A22 {
 	}
 
 	/**
-	 * @param {SNESscanline} scanline
+	 * @param {SNEStiming} timing
 	 */
-	steps(scanline) {
+	steps(timing) {
 		// Dispatch IRQ, NMI, DMA, CPU cycles, etc.
 
-		if (scanline.y === 0) {
+		if (timing.ppu_y === 0) {
 			// HDMA setup
 			this.auto_joypad_counter = 33;
 		}
 
+		this.steps_left = timing.cycles;
 		if (this.scanline_start !== 0) {
-			// We left partway through a CPU cycle? Or DMA TRANSFER!?
-			this.service_CPU_cycle();
+			this.steps_left -= this.scanline_start;
 		}
 
-		this.scaline_start = this.steps_left;
-		this.steps_left += scanline.cycles;
 		while(this.steps_left > 0) {
-			let place_in_scanline = scanline.cycles - (this.steps_left - this.scanline_start);
+			let place_in_scanline = (timing.cycles - this.steps_left);
 
-			if ((place_in_scanline >= scanline.dram_refresh) && (place_in_scanline < (scanline.dram_refresh + 40))) {
-				// Simulate DRAM refresh time
+			// Shall we refresh DRAM?
+			if ((place_in_scanline >= timing.dram_refresh) && (place_in_scanline < (timing.dram_refresh + 40))) {
 				this.steps_left -= 40;
+				place_in_scanline += 40;
+				this.alu_cycle(5); // mul/div goes on during DRAM refresh
 			}
 
-			// if DmA
-			// etc.
+			// Shall we setup HDMA?
+			if (!timing.hdma_setup_triggered && (place_in_scanline >= timing.hdma_setup_position)) {
+				timing.hdma_setup_triggered = true;
+				this.hdma_setup();
+				// if hdmaEnable, hdmaPending = true, hdmaMode = 0
+			}
+
+			// Shall we execute HDMA?
+			if (!timing.hdma_triggered && (place_in_scanline >= timing.hdma_position)) {
+				timing.hdma_triggered = true;
+				// if hdmaActive()    dhma_pending = true. hdma_mode = 1;
+			}
+
+
+
 
 			// now do 65816 stuff
 			this.cpu.cycle();
