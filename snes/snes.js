@@ -38,9 +38,9 @@ class SNESrom {
     }
 }
 
-class SNESscanline {
+class SNEStiming {
     constructor(version) {
-		this.y = 0;
+		this.ppu_y = 0;
 		this.dots = new Uint8Array(340);
 		for (let i = 0; i < 340; i++) {
 			this.dots[i] = 4; // 4 master cycles per dot...mostly!
@@ -51,19 +51,26 @@ class SNESscanline {
 		// Technically we start in vblank and hblank but...not gonna trigger CPU first frame. ARE WE?
 		// Load up with first-frame data
 		this.vblank = false;
-		this.hblank = false;
-		this.hb_stop = 21;
-		this.hb_start = 277;
+		this.vblank_start = false;
+		this.hblank_stop = 21;
+		this.hblank_start = 277;
 		this.dots = 340;
+		this.hdma_setup_triggered = false;
 		this.frame_lines = 262;
-		this.interlaced = false;
+		this.dram_refresh = this.version.rev === 1 ? 530 : 538
 		this.cycles = 1364;
+		this.interlaced = false;
 		this.frame = 0;  // 0 or 1 even or odd, basically
 		this.cycles_since_reset = 0; // Master cycles since reset. Yeah.
 		this.version = version;
 		this.bottom_scanline = 0xE1; // by default
-  		this.hdma_setup_position = (version.rev === 1 ? 12 + 8 - (this.cycles_since_reset & 7) : 12 + (this.cycles_since_reset & 7));
-		this.hdma_position = 1104; // HDMA triggers every VISIBLE scanline, here.
+		this.hdma_setup_position = (version.rev === 1 ? 12 + 8 - (this.cycles_since_reset & 7) : 12 + (this.cycles_since_reset & 7));
+		this.hdma_setup_triggered = false;
+
+		this.hdma_position = 1104;
+		this.hdma_triggered = false;
+
+		this.fblank = false;
     }
 
 	set_interlaced(val) {
@@ -72,45 +79,52 @@ class SNESscanline {
 	}
 
 	new_frame() {
-		this.cycles_since_reset += this.cycles;
-		this.y = 0;
+		this.ppu_y = 0;
 		this.frame = (this.frame + 1) & 0x01;
 		this.frame_lines = 262 + (1 * (this.interlaced && this.frame === 1));
 	}
 
 	next() {
-		this.y += 1;
-		if (this.y > 261) this.new_frame();
+		this.ppu_y += 1;
+		if (this.ppu_y > 261) this.new_frame();
+
+		this.cycles_since_reset += this.cycles;
 		this.cycles = 1364;
 
-		if (this.y === 0) {
+		this.vblank_start = false;
+		if (this.ppu_y === 0) {
 			// vblank ends
 			// 1364 master cycles
 			// no output
+			this.hdma_setup_position = (this.version.rev === 1 ? 12 + 8 - (this.cycles_since_reset & 7) : 12 + (this.cycles_since_reset & 7));
+			this.hdma_setup_triggered = false;
 			this.vblank = false;
 			this.cycles = 1364;
 		}
-		else if ((this.y > 0) && (this.y < this.bottom_scanline)) {
+		else if ((this.ppu_y > 0) && (this.ppu_y < this.bottom_scanline)) {
 			// 1364 master cycles, 324 dots
 			this.cycles = 1364;
 		}
-		else if (this.y === this.bottom_scanline) {
+		else if (this.ppu_y === this.bottom_scanline) {
 		    // vblank begins
 			this.vblank = true;
+			this.vblank_start = true;
 			this.cycles = 1364;
 		}
 		else {
 			// during vblank
+			this.cycles = 1364;
 		}
-		if (this.y === 0xF0 && !this.interlaced) {
+		if (this.ppu_y === 0xF0 && !this.interlaced) {
 			this.cycles = 1360;
 		}
-		this.dram_refresh = this.version.rev === 1 ? 530 : 538;
-		if ((this.cycles_since_reset + this.dram_refresh) % 8) {
-			let w = ((this.cycles_since_reset + this.dram_refresh) % 8);
-			if (w < 4) this.dram_refresh += w;
-			else this.dram_refresh -= w;
+
+		if (!this.vblank) { // Every visible scanline, hdma
+			this.hdma_position = 1104;
+			this.hdma_triggered = false;
 		}
+
+		this.dram_refresh = 538 - (this.cycles_since_reset & 7);
 	}
 }
 
@@ -235,125 +249,15 @@ so there are events
 scanline 
 */	
 
-class SNESbusMapper {
-	constructor(cart) {
-		/*this.busA = busA;
-		this.busB = busB;*/
-		this.cart = cart;
-	}
-
-	map_address(addr) {
-		let ROMaddr = null;
-		let SRAMaddr = null;
-		let RAMaddr = null;
-		let bank = (addr & 0xFF0000) >>> 16;
-		let page = (addr & 0xFF00) >>> 8;
-		let addrlow = addr & 0xFFFF;
-		/*
-		let ROMsel = false;
-		let SRAMsel = false;
-		if ((bank === 0x7E) || (bank === 0x7F)) {
-			ROMsel = false;
-		}
-		else if ((bank < 0x40) || ((bank >= 0x80) && (bank < 0xC0))) {
-			ROMsel = addrlow >= 0x8000;
-		}
-		if (this.cart.header.mapping_mode === HIROM) {
-			if (ROMsel && (addr & 0x8000)) {
-				ROMsel = false;
-				SRAMsel = true;
-			}
-			if (ROMsel) {
-				ROMaddr = (addr & 0x7FFF) | ((addr & 0xFF0000) >>> 1);
-				ROMaddr = ROMaddr & this.cart.header.bank_mask;
-			}
-			else if (SRAMsel) {
-
-			}
-			return new mapped_address(ROMaddr, null, null);
-		}
-		else {
-			if (ROMsel) {
-				ROMaddr = (addr & 0x7FFF) | ((addr & 0xFF0000) >>> 1);
-				ROMaddr = ROMaddr & this.cart.header.bank_mask;
-				return new mapped_address(ROMaddr, null, null);
-			}
-			else {
-				if (bank >= 0x70 && bank <= 0x7D) {
-					return new mapped_address(null, null, ((bank - 0x70) * 32768) + (addr & 0x7FFF));
-				}
-				if ((bank <= 0x3F) && (addrlow < 0x2000)) {
-					return new mapped_address(null, addrlow, null);
-				}
-				if (bank >= 0x7E && bank <= 0x7F) {
-					return new mapped_address(null, ((bank - 0x7E) << 16) + addrlow, null);
-				}
-
-			}
-		}
-		return new mapped_address(null, null, null);
-		*/
-		let kind = -1;
-		let outaddr = -1;
-		let isRAM = false;
-		let isROM = false;
-		let writeable = false;
-		let ROMoffset = 0;
-		let RAMoffset = 0;
-
-		//let outp = new supermapped_address(addr, kind, outaddr, isRAM, isROM, writeable, ROMoffset, RAMoffset);
-		if (this.cart.header.mapping_mode === LOROM) {
-			if (bank >= 0x80 && bank <= 0xFD) {
-				bank -= 0x80;
-			}
-			if (bank <= 0x3F) {
-				if (addrlow <= 0x2000)
-					return new mapped_address(null, addrlow, null);
-				if (addrlow & 0x8000) return new mapped_address((bank << 15) + (addrlow - 0x8000), null, null);
-			}
-			else if (bank <= 0x6F) {
-				if (addrlow & 0x8000) return new mapped_address((bank << 15) + (addrlow - 0x8000), null, null);
-			}
-			else if (bank <= 0x7D) {
-				if (addrlow & 0x8000) return new mapped_address((bank << 15) + (addrlow - 0x8000), null, null);
-				else return new mapped_address(null, null, ((bank - 0x70) << 15) + addrlow);
-			}
-			else if (bank >= 0x7E && bank <= 0x7F) {
-				return new mapped_address(null, ((bank - 0x7E) << 16) + addrlow, null);
-			}
-			else if (bank >= 0xFE) {
-				if (addrlow & 0x8000) return new mapped_address((bank - 0x80) << 16 + (addrlow - 0x8000), null, null);
-				else  return new mapped_address(null, null, ((bank - 0xF0) << 15) + addrlow);
-			}
-		}
-		else {
-			alert('HIROM!');
-		}
-		return new mapped_address(null, null, null);
-	}
-}
-
-function fmt_smap(smap) {
-	if (smap.RAMoffset !== -1) smap.RAMoffset = hex0x6(smap.RAMoffset);
-	if (smap.ROMoffset !== -1) smap.ROMoffset = hex0x6(smap.ROMoffset);
-	smap.addr = hex0x6(smap.addr);
-	return smap;
-}
-
 class SNES {
 	constructor() {
 		this.cart = new snes_cart();
 		this.version = {rev: 0, nstc: true, pal: false}
 
-		this.scanline = new SNESscanline(this.version);
+		this.scanline = new SNEStiming(this.version);
 		this.mem_map = new snes_memmap();
 		this.cpu = new ricoh5A22(this.version, this.mem_map);
 		this.ppu = new SNESPPU(null, this.version, this.mem_map);
-
-		this.mem_map.read_cpu = this.cpu.reg_read;
-		this.mem_map.write_cpu = this.cpu.reg_write;
-		this.mem_map.read_ppu = this.ppu.reg_read;
-		this.mem_map.write_ppu = this.ppu.reg_write;
 
 		this.interlaced_mode = 0;
 	}
@@ -384,6 +288,8 @@ class SNES {
 
 	run_scanline() {
 		this.scanline.next();
+		this.cpu.steps(this.scanline);
+		this.ppu.steps(this.scanline);
 	}
 
 	step() {
