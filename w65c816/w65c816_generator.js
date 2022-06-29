@@ -699,7 +699,7 @@ class switchgen {
         this.addr_to_ta_pbr();
         this.addcycle();
         this.addl('regs.TR = pins.D;')
-        this.addl('regs.TA = (regs.TA + 1) & 0xFFFF');
+        this.addl('regs.TA = (regs.TA + 1) & 0xFFFF;');
         this.addr_to_ta_pbr();
         this.addcycle();
         this.addl('regs.TR += pins.D << 8;');
@@ -1758,17 +1758,11 @@ class generate_instruction_function_return {
 }
 
 function generate_instruction_function(indent, opcode_info, E, M, X) {
-    let opc2 = hex2(opcode_info.opcode);
-    let opcode_infostr = 'opcode_matrix[' + opc2 + ']';
-    let opcode = opcode_info.opcode;
-    let cycle = 0;
     let affected_by_E = false;
     let affected_by_M = false;
     let affected_by_X = false;
     let affected_by_D = false;
     let indent2 = indent + '    ';
-    let indent3 = indent2 + '    ';
-    let indent4 = indent3 + '    ';
     let ag = new switchgen(indent2,'regs.TCU')
     let mem16 = false;
     let RW = 0;

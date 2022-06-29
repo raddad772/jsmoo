@@ -11,8 +11,13 @@
 <script type="text/javascript" src="w65c816/w65c816_tests.js"></script>
 <script type="text/javascript" src="w65c816/w65c816_tests_pt.js"></script>
 <script type="text/javascript" src="5a22/dma.js"></script>
-<script type="text/javascript" src="5a22/multiplier.js"></script>
 <script type="text/javascript" src="5a22/5a22.js"></script>
+<script type="text/javascript" src="apu/spc700_boot_rom.js"></script>
+<script type="text/javascript" src="apu/spc700_assembler.js"></script>
+<script type="text/javascript" src="apu/spc700_disassembler.js"></script>
+<script type="text/javascript" src="apu/spc700.js"></script>
+<script type="text/javascript" src="apu/spc700_generated_opcodes.js"></script>
+<script type="text/javascript" src="apu/spc700_generator.js"></script>
 <script type="text/javascript" src="snes/snes_memory.js"></script>
 <script type="text/javascript" src="snes/snes_clock.js"></script>
 <script type="text/javascript" src="snes/snes_clock_generator.js"></script>
@@ -44,7 +49,8 @@
     <div class="grid-child">
         <section>
             <button id="step" type="button" onclick="testcpu.step()">Step</button>
-            <button id="downloadjs" type="button" onclick="generate_js()">Generate JS</button>
+            <button id="downloadjs" type="button" onclick="generate_js()">Generate 65816</button>
+            <button id="downloadjsSPC" type="button" onclick="generate_js_SPC()">Generate SPC</button>
         </section>
     </div>
 

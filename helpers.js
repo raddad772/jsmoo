@@ -146,7 +146,7 @@ class console_t {
 }
 
 var tconsole = new console_t('textconsole', 80);
-var dconsole = new console_t('disassembly');
+var dconsole = new console_t('disassembly', 200);
 
 // https://stackoverflow.com/questions/3665115/how-to-create-a-file-in-memory-for-user-to-download-but-not-through-server
 function save_js(filename, data) {

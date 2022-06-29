@@ -57,12 +57,12 @@ class SNEStiming {
 		this.dots = 340;
 		this.hdma_setup_triggered = false;
 		this.frame_lines = 262;
+		this.version = version;
 		this.dram_refresh = this.version.rev === 1 ? 530 : 538
 		this.cycles = 1364;
 		this.interlaced = false;
 		this.frame = 0;  // 0 or 1 even or odd, basically
 		this.cycles_since_reset = 0; // Master cycles since reset. Yeah.
-		this.version = version;
 		this.bottom_scanline = 0xE1; // by default
 		this.hdma_setup_position = (version.rev === 1 ? 12 + 8 - (this.cycles_since_reset & 7) : 12 + (this.cycles_since_reset & 7));
 		this.hdma_setup_triggered = false;
@@ -254,10 +254,12 @@ class SNES {
 		this.cart = new snes_cart();
 		this.version = {rev: 0, nstc: true, pal: false}
 
-		this.scanline = new SNEStiming(this.version);
+		this.clock = new SNES_clock();
+		this.timing = new SNEStiming(this.version);
 		this.mem_map = new snes_memmap();
-		this.cpu = new ricoh5A22(this.version, this.mem_map);
-		this.ppu = new SNESPPU(null, this.version, this.mem_map);
+		this.cpu = new ricoh5A22(this.version, this.mem_map, this.clock);
+		this.ppu = new SNESPPU(null, this.version, this.mem_map, this.clock);
+		this.apu = new spc700(this.mem_map, this.clock);
 
 		this.interlaced_mode = 0;
 	}
@@ -270,26 +272,12 @@ class SNES {
 		this.cart.load_cart_from_RAM(new Uint8Array(ROM));
 		//this.mem = new snes_mem(this.cart);
 		this.mem_map.cart_inserted(this.cart);
-		console.log('Should calc RAM 0x000004');
-		this.mem_map.dispatch_read(0x000004);
-		console.log('Should calc ROM 0x000004');
-		this.mem_map.dispatch_read(0x008004);
-		console.log('Should calc ROM 0x001004');
-		this.mem_map.dispatch_read(0x009004);
-		console.log('Should calc ROM 0x008003');
-		this.mem_map.dispatch_read(0x018003);
-		console.log('Should calc RAM 0x001002');
-		this.mem_map.dispatch_read(0x041002);
-		console.log('Should CPU reg read 0x4200');
-		this.mem_map.dispatch_read(0x124200);
-		console.log('Should PPU reg read 0x2200');
-		this.mem_map.dispatch_read(0x182200);
 	}
 
 	run_scanline() {
-		this.scanline.next();
-		this.cpu.steps(this.scanline);
-		this.ppu.steps(this.scanline);
+		this.cpu.steps(this.timing);
+		this.ppu.steps(this.timing);
+		this.timing.next();
 	}
 
 	step() {
@@ -337,6 +325,20 @@ function main3(ROM) {
 	if (!init_gl()) {
 		return;
 	}
+
+	//let torun = 10000;
+	//this.console('Running ' + torun + ' cycles')
+	let scanlines = 26;
+	scanlines = 262 * 60;
+	console.log('EMULATING', scanlines)
+	let start = performance.now()
+	for (let i = 0; i < scanlines; i++) {
+		//console.log(i);
+		snes.run_scanline();
+	}
+	let duration = performance.now() - start;
+	console.log('EXECUTION TOOK', duration);
+	console.log(snes.clock);
 }
 
 function main2() {
@@ -348,10 +350,15 @@ function main() {
 }
 
 function generate_js() {
-	save_js('w65c816_generated_opcodes.js', 'const decoded_opcodes = Object.freeze(\n' + decode_opcodes() + ');');
+	save_js('w65c816_generated_opcodes.js', '"use strict";\n\nconst decoded_opcodes = Object.freeze(\n' + decode_opcodes() + ');');
+}
+
+function generate_js_SPC() {
+    save_js('spc700_generated_opcodes.js', '"use strict";\n\nconst SPC_decoded_opcodes = Object.freeze(\n' + SPC_decode_opcodes() + ');');
 }
 
 window.onload = main;
 //window.onload = test_65c816;
 //window.onload = generate_js;
 //window.onload = test_pt_65c816;
+//window.onload = generate_js_SPC;
