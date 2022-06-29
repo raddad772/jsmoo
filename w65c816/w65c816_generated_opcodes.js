@@ -1,3 +1,5 @@
+"use strict";
+
 const decoded_opcodes = Object.freeze(
 {
     // E0 M0 X0

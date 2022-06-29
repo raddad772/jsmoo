@@ -1,351 +1,30 @@
-"use strict";
 
-function trim_comment(line) {
-    let outstr = line.trim();
-    if (outstr[0] === ';' || outstr[0] === '*')
-        return '';
-    // Trim any comment off this thing yo
-    if (outstr.indexOf(';') !== -1)
-        outstr = outstr.split(';')[0].trim();
-    return outstr;
-}
-
-class EMX_t {
-    constructor(E, M, X) {
-        this.E = E;
-        this.M = M;
-        this.X = X;
-    }
-}
-
-const VT = Object.freeze({
-    invalid: 0,
-    int: 1,
-    label: 2,
-    accumulator: 3
-});
-
-const OPE = Object.freeze({
-    none: 0,
-    bytes1: 1,
-    bytes2: 2,
-    bytes3: 3,
-    operands2: 4, // 2 1-byte operands
-    bymode: 5     // 1 or 2 bytes, by processor mode
-});
-
-const AM_simplifier_by_encoding = Object.freeze({
-    [AM.A]: OPE.bytes2,
-    [AM.Ab]: OPE.bytes2,
-    [AM.Ac]: OPE.bytes2,
-    [AM.Ad]: OPE.bytes2,
-    [AM.ACCUM]: OPE.none,
-    [AM.A_INDEXED_X]: OPE.bytes2,
-    [AM.A_INDEXED_Xb]: OPE.bytes2,
-    [AM.A_INDEXED_Y]: OPE.bytes2,
-    [AM.AL]: OPE.bytes3,
-    [AM.ALb]: OPE.bytes3,
-    [AM.ALc]: OPE.bytes3,
-    [AM.AL_INDEXED_X]: OPE.bytes3,
-    [AM.A_IND]: OPE.bytes2,
-    [AM.A_INDb]: OPE.bytes2,
-    [AM.A_INDEXED_IND]: OPE.bytes2,
-    [AM.A_INDEXED_INDb]: OPE.bytes2,
-    [AM.D]: OPE.bytes1,
-    [AM.Db]: OPE.bytes1,
-    [AM.STACK_R]: OPE.bytes1,
-    [AM.D_INDEXED_X]: OPE.bytes1,
-    [AM.D_INDEXED_Xb]: OPE.bytes1,
-    [AM.D_INDEXED_Y]: OPE.bytes1,
-    [AM.D_IND]: OPE.bytes1,
-    [AM.D_IND_L]: OPE.bytes1,
-    [AM.STACK_R_IND_INDEXED]: OPE.bytes1,
-    [AM.D_INDEXED_IND]: OPE.bytes1,
-    [AM.D_IND_INDEXED]: OPE.bytes1,
-    [AM.D_IND_L_INDEXED]: OPE.bytes1,
-    [AM.I]: OPE.none,
-    [AM.Ib]: OPE.none,
-    [AM.Ic]: OPE.none,
-    [AM.Id]: OPE.none,
-    [AM.PC_R]: OPE.bytes1,
-    [AM.PC_RL]: OPE.bytes2,
-    [AM.STACK]: OPE.none,
-    [AM.STACKb]: OPE.none,
-    [AM.STACKc]: OPE.none,
-    [AM.STACKd]: OPE.bytes2,
-    [AM.STACKe]: OPE.bytes1,
-    [AM.STACKf]: OPE.bytes2,
-    [AM.STACKg]: OPE.none,
-    [AM.STACKh]: OPE.none,
-    [AM.STACKi]: OPE.none,
-    [AM.STACKj]: OPE.bytes1,
-    [AM.XYC]: OPE.operands2,
-    [AM.XYCb]: OPE.operands2,
-    [AM.IMM]: OPE.bymode
-});
-
-const AM_simplifier_by_encoding_R = Object.freeze({
-    [OPE.none]: [AM.ACCUM, AM.I, AM.Ib, AM.Ic, AM.Id, AM.STACK, AM.STACKb, AM.STACKc, AM.STACKg, AM.STACKh, AM.STACKi],
-    [OPE.bytes1]: [AM.STACK_R, AM.D_INDEXED_X, AM.D_INDEXED_Xb, AM.D_INDEXED_Y, AM.D_IND, AM.D_IND_L, AM.STACK_R_IND_INDEXED, AM.D_INDEXED_IND, AM.D_IND_INDEXED, AM.D_IND_L_INDEXED, AM.PC_R, AM.STACKe, AM.STACKj],
-    [OPE.bytes2]: [AM.A, AM.Ab, AM.Ac, AM.Ad, AM.A_INDEXED_X, AM.A_INDEXED_Xb, AM.A_INDEXED_Y, AM.A_IND, AM.A_INDb, AM.A_INDEXED_IND, AM.A_INDEXED_INDb, AM.PC_RL, AM.STACKd, AM.STACKf],
-    [OPE.bytes3]: [AM.AL, AM.ALb, AM.ALc, AM.AL_INDEXED_X],
-    [OPE.bymode]: [AM.IMM],
-    [OPE.operands2]: [AM.XYC, AM.XYCb]
-});
-
-
-const opcode_AM_MN = Object.freeze({
-    [AM.A]: 'a',
-    [AM.Ab]: 'a',
-    [AM.Ac]: 'a',
-    [AM.Ad]: 'a',
-    [AM.ACCUM]: 'A',
-    [AM.A_INDEXED_X]: 'a,x',
-    [AM.A_INDEXED_Xb]: 'a,x',
-    [AM.A_INDEXED_Y]: 'a,y',
-    [AM.AL]: 'al',
-    [AM.ALb]: 'al',
-    [AM.ALc]: 'al',
-    [AM.AL_INDEXED_X]: 'al,x',
-    [AM.A_IND]: '(a)',
-    [AM.A_INDb]: '(a)',
-    [AM.A_INDEXED_IND]: '(a,x)',
-    [AM.A_INDEXED_INDb]: '(a,x)',
-    [AM.D]: 'd',
-    [AM.Db]: 'd',
-    [AM.STACK_R]: 'd,s',
-    [AM.D_INDEXED_X]: 'd,x',
-    [AM.D_INDEXED_Xb]: 'd,x',
-    [AM.D_INDEXED_Y]: 'd,y',
-    [AM.D_IND]: '(d)',
-    [AM.D_IND_L]: '[d]',
-    [AM.STACK_R_IND_INDEXED]: '(d,s),y',
-    [AM.D_INDEXED_IND]: '(d,x)',
-    [AM.D_IND_INDEXED]: '(d),y',
-    [AM.D_IND_L_INDEXED]: '[d],y',
-    [AM.I]: 'i',
-    [AM.Ib]: 'i',
-    [AM.Ic]: 'i',
-    [AM.Id]: 'i',
-    [AM.PC_R]: 'r',
-    [AM.PC_RL]: 'rl',
-    [AM.STACK]: 's',
-    [AM.STACKb]: 's',
-    [AM.STACKc]: 's',
-    [AM.STACKd]: 's',
-    [AM.STACKe]: 's',
-    [AM.STACKf]: 's',
-    [AM.STACKg]: 's',
-    [AM.STACKh]: 's',
-    [AM.STACKi]: 's',
-    [AM.STACKj]: 's',
-    [AM.XYC]: 'xyc',
-    [AM.XYCb]: 'xyc',
-    [AM.IMM]: '#'
-});
-
-function collapse_AMs_to_encodings(alist) {
-    var outlist = [];
-    for (let i in alist) {
-        let r = AM_simplifier_by_encoding[alist[i]];
-        if (outlist.indexOf(r) === -1) {
-            outlist.push(r);
-        }
-    }
-    return outlist;
-}
-
-const VEC_list = [0xFFFC, 0xFFFE, 0xFFFA,
-    0xFFF8, 0xFFF4, 0xFFEE, 0xFFEA,
-    0xFFE8, 0xFFE6, 0xFFE4];
-
-const VEC = Object.freeze({
-    RESET: 0xFFFC,
-    IRQ_E: 0xFFFE,
-    BRK_E: 0xFFFE,
-    NMI_E: 0xFFFA,
-    ABORT_E: 0xFFF8,
-    COP_E: 0xFFF4,
-    IRQ_N: 0xFFEE,
-    NMI_N: 0xFFEA,
-    ABORT_N: 0xFFE8,
-    BRK_N: 0xFFE6,
-    COP_N: 0xFFE4
-});
-const VEC_CONVERT = 0xFFE0;
-
-class interpret_number_return {
-    constructor(value, kind, suffix) {
-        this.value = value;
-        this.kind = kind;
-    }
-}
-
-class label_t {
-    constructor(name, addr, line) {
-        this.name = name;
-        this.addr = addr;
-        this.line = line;
-        this.awaiting_resolution = [];
-    }
-}
-
-class vector_t {
-    constructor() {
-        this.addr = null;
-        this.label = null;
-    }
-
-    set_to_label(label) {
-        this.label = label;
-        this.addr = label.addr;
-    }
-
-    set_to_addr(addr) {
-        this.label = null;
-        this.addr = addr;
-    }
-
-    can_resolve() {
-        if (this.addr !== null)
-            return true;
-        if (this.label !== null && this.label.addr !== null)
-            return true;
-        return false;
-    }
-
-    resolve() {
-        if (this.addr !== null)
-            return this.addr;
-        if (this.label !== null && this.label.addr !== null)
-            return this.label.addr;
-        return null;
-    }
-}
-
-function assembly_interpret_number(instr) {
-    instr = instr.trim().replace(/[()^\[\]#<>!|]/g, '');
-    if (instr.indexOf(',') !== -1) {
-        instr = instr.trim().replace(/(,x)/g, '');
-        instr = instr.trim().replace(/(,y)/g, '');
-        instr = instr.trim().replace(/(, x)/g, '');
-        instr = instr.trim().replace(/( ,y)/g, '');
-    }
-    //instr = instr.trim().replace(/(,x)/g, '');
-    //instr = instr.trim().replace(/(,y)/g, '');
-    let outval = new interpret_number_return();
-    outval.value = instr;
-    if (instr === 'A') {
-        outval.value = null;
-        outval.kind = VT.accumulator;
-    }
-    else if (instr[0] === '$') {
-        outval.value = parseInt(instr.slice(1), 16);
-        outval.kind = VT.int;
-    }
-    else {
-        // Check if number or not
-        if (/^\[?-?\d+]?$/.test(instr)) {
-            outval.value = parseInt(instr);
-            outval.kind = VT.int;
-        }
-        else {
-            // Check if first character is alphanumeric
-            if (/^[a-zA-Z_0-9]+.*/.test(instr)) {
-                if (this.labels.hasOwnProperty(instr)) {
-                    outval.value = this.labels[instr];
-                    outval.kind = VT.label;
-                }
-                else {
-                    outval.value = instr;
-                    outval.kind = VT.invalid;
-                }
-            }
-            else {
-                outval.value = instr;
-                outval.kind = VT.invalid;
-            }
-        }
-    }
-    return outval;
-}
-
-class a_ins_t {
-    constructor() {
-        this.addr = -1;
-        this.line = -1;
-        this.addr_mode = 0;
-        this.ins = 0;
-        this.bytecodes = [];
-        this.needs_resolve = false;
-        this.label = null;
-    }
-}
-
-
-const ONE_BYTE_ADDRESS_MODES = Object.freeze([
-    AM.ACCUM, AM.I, AM.Ib, AM.Ic, AM.Id, AM.STACK, AM.STACKb, AM.STACKc,
-    AM.STACKg, AM.STACKh, AM.STACKi]);
-
-class w65c816_assembler {
+class spc700_assembler {
     constructor() {
         this.output = '';
         this.lnum = 0;
         this.labels = {};
         this.section = '';
-        this.E = 1;
-        this.M = 1;
-        this.X = 1;
-        this.EMX = [];
-
         this.ROM_SIZE = 0;
         this.lines_to_addr = {};
         this.addr = 0;
         this.instructions = [];
         this.enable_console = true;
-        this.vectors = { [VEC.RESET]: new vector_t(),
-                         [VEC.IRQ_E]: new vector_t(),
-                         [VEC.NMI_E]: new vector_t(),
-                         [VEC.ABORT_E]: new vector_t(),
-                         [VEC.COP_E]: new vector_t(),
-                         [VEC.IRQ_N]: new vector_t(),
-                         [VEC.NMI_N]: new vector_t(),
-                         [VEC.ABORT_N]: new vector_t(),
-                         [VEC.BRK_N]: new vector_t(),
-                         [VEC.COP_N]: new vector_t()
-                       };
+        this.rom_start = 0;
+        this.vectors = { [VEC.RESET]: 0xFFEF }
     }
 
     writeinstruction(ins) {
-        let addr = ins.addr;
-        if (this.enable_console && opcode_MN[ins.ins] !== 'DCB' && opcode_MN[ins.ins] !== 'ASC') {
-          let cstr = hex0x6(addr) + ' ' + hex0x2(ins.bytecodes[0]) + ' ' + opcode_MN[ins.ins];
-          if (ins.bytecodes.length > 1) {
-              for (let i in ins.bytecodes) {
-                  if (i < 1) continue;
-                  cstr = cstr + ' ' + hex0x2(ins.bytecodes[i]);
-              }
-          }
-          console.log(cstr);
-        }
-        for (let i in ins.bytecodes) {
-            this.write8(addr+parseInt(i), ins.bytecodes[i]);
-        }
+
     }
 
     write8(addr, val) {
-        this.output[addr] = val & 0xFF;
+        this.output[addr & 0xFFFF] = val & 0xFF;
     }
 
     write16(addr, val) {
         this.output[addr] = val & 0xFF;
-        this.output[addr+1] = (val & 0xFF00) >>> 8;
-    }
-
-    write24(addr, val) {
-        this.output[addr] = val & 0xFF;
-        this.output[addr+1] = (val & 0xFF00) >>> 8;
-        this.output[addr+2] = (val & 0xFF0000) >>> 16;
+        this.output[(addr + 1) & 0xFFFF] = (val >>> 8) & 0xFF;
     }
 
     interpret_number(instr) {
@@ -447,7 +126,6 @@ class w65c816_assembler {
     }
 
     get_config_lines(line) {
-        this.EMX[this.lnum] = new EMX_t(this.E, this.M, this.X);
         if (line[0] === '.') {
             let section = line.slice(1);
             // We have a section...
@@ -477,53 +155,7 @@ class w65c816_assembler {
         else if (this.section === 'vectors') {
             this.set_vector(line);
         }
-        if (line[0] === ':') { // Assembling mode change
-            // Set flags like E, M, X that are important for assembly
-            let flags = line.slice(1);
-            if (flags.indexOf('E1') !== -1) {  // Enabling emulation
-                this.E = 1;
-                this.M = 1;
-                this.X = 1;
-                return;
-            }
-            if (flags.indexOf('E0') !== -1 || flags.indexOf('NATIVE') !== -1) { // Disabling emulation
-                this.E = 0;
-            }
-            if (flags.indexOf('M0') !== -1) { // Setting 16-bit M/A
-                if (this.E)
-                    this.errormsg('Error parsing inline flags: M0 not allowed in emulation mode');
-                else
-                    this.M = 0;
-            }
-            if (flags.indexOf('X0') !== -1) { // Setting 16-bit X/Y
-                if (this.E)
-                    this.errormsg('Error parsing inline flags: X0 not allowed in emulation mode');
-                else
-                    this.X = 0;
-            }
-            if (flags.indexOf('M1') !== -1) {
-                this.M = 1;
-            }
-            if (flags.indexOf('X1') !== -1) {
-                this.X = 1;
-            }
-            return;
-        }
         let mn = line.slice(0,3);
-        if (mn === 'REP') {
-            let operand = this.interpret_number(line.slice(4)).value;
-            if (operand & 0x10) this.X = 0;
-            if (operand & 0x20) this.M = 0;
-        }
-        else if (mn === 'SEP') {
-            let operand = this.interpret_number(line.slice(4)).value;
-            if (operand & 0x10) this.X = 1;
-            if (operand & 0x20) this.M = 1;
-        }
-
-        if (mn === 'REP' || mn === 'SEP') {
-
-        }
     }
 
     interpret_line(line) {
@@ -1196,7 +828,3 @@ class w65c816_assembler {
         if (this.enable_console) console.log('Done assembling!');
     }
 }
-
-/*
-
- */

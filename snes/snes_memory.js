@@ -49,10 +49,12 @@ class snes_memmap {
 		this.block_is_RAM = new Array(MEM_NUM_BLOCKS);
 		this.block_is_ROM = new Array(MEM_NUM_BLOCKS);
 
-		this.read_ppu = function(addr){};
+		this.read_ppu = function(addr, val){};
 		this.write_ppu = function(addr, data){};
-		this.read_cpu = function(addr){};
+		this.read_cpu = function(addr, val){};
 		this.write_cpu = function(addr, data){};
+		this.read_apu = function(addr, val){};
+		this.write_apu = function(addr, val){};
 
 		this.ROMSizebit = 0;
 		this.RAMSizebit = 0;
@@ -88,30 +90,30 @@ class snes_memmap {
 			this.setup_mem_map_hirom();
 	}
 
-	dispatch_read(addr) {
+	dispatch_read(addr, val, have_effect= true) {
 		let b = addr >>> 12;
 		let mkind = this.readmap[b].kind;
 		let outaddr = this.readmap[b].offset + (addr & 0xFFF);
-		console.log('IN ADDRESS', hex0x6(addr), 'CALC ADDRESS', hex0x6(outaddr));
+		//console.log('IN ADDRESS', hex0x6(addr), 'CALC ADDRESS', hex0x6(outaddr));
 		switch(mkind) {
 			case MAP_TI.OPEN_BUS:
 				console.log('OPEN BUS READ');
 				return null;
 			case MAP_TI.ROM:
-				console.log('ROM read')
+				//console.log('ROM read', hex0x6(addr), hex0x2(this.ROM[outaddr]), hex0x6(outaddr));
 				return this.ROM[outaddr];
 			case MAP_TI.RAM:
-				console.log('RAM read');
+				//console.log('RAM read', hex0x6(addr), hex0x2(this.ROM[outaddr]), hex0x6(outaddr));
 				return this.RAM[outaddr];
 			case MAP_TI.SRAM:
-				console.log('SRAM read');
+				//console.log('SRAM read');
 				return this.SRAM[outaddr];
 			case MAP_TI.PPU:
-				console.log('PPU read');
-				return this.read_ppu(outaddr);
+				//console.log('PPU read');
+				return this.read_ppu(outaddr, val, have_effect);
 			case MAP_TI.CPU:
-				console.log('CPU read');
-				return this.read_cpu(outaddr);
+				//console.log('CPU read');
+				return this.read_cpu(outaddr, val, have_effect);
 		}
 		return null;
 	};
@@ -120,7 +122,7 @@ class snes_memmap {
 		let b = addr >>> 12;
 		let mkind = this.writemap[b].kind;
 		let outaddr = this.writemap[b].offset + (addr & 0xFFF);
-		console.log('IN ADDRESS', hex0x6(addr), 'CALC ADDRESS', hex0x6(outaddr));
+		//console.log('IN ADDRESS', hex0x6(addr), 'CALC ADDRESS', hex0x6(outaddr));
 		switch(mkind) {
 			case MAP_TI.OPEN_BUS:
 				console.log('OPEN BUS WRITE');
@@ -129,19 +131,19 @@ class snes_memmap {
 				console.log('ROM write!?');
 				return;
 			case MAP_TI.RAM:
-				console.log('RAM write');
+				//console.log('RAM write', hex0x6(addr), hex0x2(data), hex0x6(outaddr));
 				this.RAM[outaddr] = data;
 				return;
 			case MAP_TI.SRAM:
-				console.log('SRAM write');
+				//console.log('SRAM write');
 				this.SRAM[outaddr] = data;
 				return;
 			case MAP_TI.PPU:
-				console.log('PPU write');
+				//console.log('PPU write');
 				this.write_ppu(outaddr, data);
 				return;
 			case MAP_TI.CPU:
-				console.log('CPU write');
+				//console.log('CPU write');
 				this.write_cpu(outaddr, data);
 				return;
 		}

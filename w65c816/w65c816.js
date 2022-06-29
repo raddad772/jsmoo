@@ -248,22 +248,28 @@ class w65c816 {
 					this.regs.STP = false;
 					this.pins.RES = 0;
 					this.#RES_pending = false;
+					console.log('STP OR WAI PAUSE')
 					return;
 				}
 				if (this.regs.STP || this.regs.WAI) {
+					console.log('STP OR WAI PAUSE')
 					return;
 				}
 			}
 			if (this.#RES_pending) {
+				console.log('RESET')
 				this.reset();
 			}
 			else if (this.#NMI_pending) {
+				console.log('NMI')
 				this.nmi();
 			}
 			else if (this.#IRQ_pending) {
+				console.log('IRQ')
 				this.irq();
 			}
 			else if (this.regs.STP || this.regs.WAI) {
+				console.log('STPWAI2');
 				return;
 			}
 		}
@@ -274,6 +280,7 @@ class w65c816 {
 			this.PCO = this.pins.Addr; // PCO is PC for tracing purposes
 			this.current_instruction = get_decoded_opcode(this.regs);
 			if (this.pins.trace_on) {
+				//console.log(hex0x4(this.PCO));
 				this.pins.traces.push(this.trace_format(this.disassemble(), this.PCO));
 			}
 		}
@@ -504,16 +511,10 @@ class w65c816 {
 		else if (da_out.data16 !== null) outstr += hex2((da_out.data16 & 0xFF00) >>> 8) + ' ' + hex2(da_out & 0xFF) + '   ';
 		else if (da_out.data24 !== null) outstr += hex2((da_out.data24 & 0xFF0000) >>> 16) + ' ' + hex2((da_out.data24 & 0xFF00) >>> 8) + ' ' + hex2((da_out.data24 & 0xFF) >>> 8);*/
 
-		let mx = 0;
-		if (this.regs.P.M) mx = 10;
-		if (this.regs.P.X) mx += 1;
-		mx = mx.toString();
-		if (mx.length < 2) mx = "0" + mx;
-
+		outstr += 'PC:' + hex0x4(this.regs.PC) + ' ';
 		outstr += 'E:' + this.regs.E + ' C:' + hex0x4(this.regs.C);
 		outstr += ' X:' + hex0x4(this.regs.X) + ' Y:' + hex0x4(this.regs.Y);
 		outstr += ' S:' + hex0x4(this.regs.S);
-		outstr += ' MX:' + mx;
 		outstr += ' P:';
 		if (this.regs.E) outstr += this.regs.P.formatbyte_emulated();
 		else             outstr += this.regs.P.formatbyte_native();
