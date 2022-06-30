@@ -45,6 +45,7 @@ class spc700_registers {
 
         this.TR = 0;  // Temporary variable for data
         this.TA = 0;  // Temporary variable for address
+        this.TA2 = 0; // Temporary address 2
         this.opc_cycles = 0; // Cycle count of current instruction
 
         this.A = 0; // 8 bits
@@ -68,6 +69,8 @@ class spc700 {
         this.clock = clock;
         this.mem_map.read_apu = this.read_reg.bind(this);
         this.mem_map.write_apu = this.write_reg.bind(this);
+
+        this.DSP = new SDSP();
 
         this.io = {
             // F1
@@ -178,6 +181,7 @@ class spc700 {
         this.cycles += howmany;
         while (this.cycles > 0) {
             if (this.STP || this.WAI) {
+                console.log('STOPPED OR WAID' + this.clock.apu_has);
                 this.clock.apu_has += (this.cycles * 20);
                 this.advance_timers(this.cycles);
                 this.cycles = 0;
@@ -201,6 +205,7 @@ class spc700 {
             this.clock.apu_has += (this.regs.opc_cycles * 20);
             this.trace_cycles += this.regs.opc_cycles;
             this.advance_timers(this.regs.opc_cycles);
+            this.regs.opc_cycles = 0;
         }
     }
 
@@ -234,7 +239,7 @@ class spc700 {
             case 0xF2:
                 return this.io.DSPADDR;
             case 0xF3:
-                return this.io.DSPDATA;
+                return this.DSP.read_reg(this.io.DSPADDR);
             case 0xF4:
                 return this.io.CPUI0;
             case 0xF5:
@@ -282,7 +287,7 @@ class spc700 {
                 this.io.DSPADDR = val;
                 return;
             case 0xF3:
-                this.io.DSPDATA = val;
+                this.DSP.write_reg(this.io.DSPADDR, val);
                 return;
             case 0xF4:
                 this.io.CPUO0 = val;

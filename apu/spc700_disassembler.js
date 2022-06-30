@@ -28,19 +28,63 @@ function spc700_disassemble(cpu) {
 		return cpu.trace_peek(addr & 0xFFFF);
 	}
 
+	let hread8 = function(addr) {
+		return hex2(read8(addr));
+	}
+
 	let read16 = function(addr) {
 		return cpu.trace_peek(addr) + (cpu.trace_peek((addr + 1) & 0xFFFF) << 8);
 	}
 
+	let hread16 = function(addr) {
+		return hex4(read16(addr));
+	}
+
 	PC += 1;
 	switch(parseInt(addr_mode)) {
+		case SPC_AM.RA_IMM: // A, #imm
+			output.disassembled += ' A, #$' + hread8(PC);
+			break;
+		case SPC_AM.RA_IND_X: // A, (X)
+			output.dissasembled += ' A, (X)';
+			break;
+		case SPC_AM.RA_IND_INDEXED_X: // A, [d+X]
+			output.disassembled += ' A, [$' + hread8(PC) + '+X]';
+			break;
+		case SPC_AM.RA_IND_Y_INDEXED: // A, [d]+Y
+			output.disassembled += ' A, [$' + hread8(PC) + ']+Y';
+			break;
+		case SPC_AM.RA_DP: // A, dp
+			output.disassembled = ' A, $' + hread8(PC);
+			break;
+		case SPC_AM.RA_A:
+			output.disassembled = ' A, !$' + hread16(PC);
+			break;
+		case SPC_AM.RA_A_X:
+			output.disassembled += ' A, !$' + hread16(PC) + '+X';
+			break;
+		case SPC_AM.RA_A_Y:
+			output.disassembled += ' A, !$' + hread16(PC) + '+Y';
+			break;
+		case SPC_AM.YA_DP:
+			output.disassembled += ' YA, $' + hread8(PC);
+			break;
+		case SPC_AM.RA_DP_X: // A, dp+X
+			output.disassembled += ' A, $' + hread8(PC) + '+X';
+			break;
 		case SPC_AM.I: // implied
 			break;
-		case SPC_AM.PC_R:
-			output.disassembled += ' ' + mksigned8(cpu.trace_peek(PC));
+		case SPC_AM.DP:
+			output.disassembled += ' $' + hex2(read8(PC));
 			break;
-		case SPC_AM.IND_XY:
-			output.disassembled += ' (X), (Y)';
+		case SPC_AM.DP_IMM:
+			output.disassembled += ' $' + hex2(read8(PC+1)) + ', #$' + hex2(read8(PC));
+			break;
+		case SPC_AM.DP_INDEXED_X:
+			output.disassembled += ' $' + hex2(read8(PC)) + '+X';
+			break;
+		case SPC_AM.RA:
+			output.disassembled += ' A';
 			break;
 		case SPC_AM.RX:
 			output.disassembled += ' X';
@@ -48,14 +92,31 @@ function spc700_disassemble(cpu) {
 		case SPC_AM.RY:
 			output.disassembled += ' Y';
 			break;
-		case SPC_AM.RA:
-			output.disassembled += ' A';
+		case SPC_AM.IND_XY:
+			output.disassembled += ' (X), (Y)';
 			break;
 		case SPC_AM.A_IND_X:
 			output.disassembled += ' [!$' + hex4(read16(PC)) + '+X]';
 			break;
-		case SPC_AM.DP_IMM:
-			output.disassembled += ' $' + hex2(read8(PC+1)) + ', #$' + hex2(read8(PC));
+		case SPC_AM.Y_DP:
+			output.disassembled += ' Y, $' + hex2(read8(PC));
+			break;
+		case SPC_AM.DP_DP:
+			output.disassembled += ' $' + hex2(read8(PC+1)) + ', $' + hex2(read8(PC));
+			break;
+		case SPC_AM.PC_R:
+			output.disassembled += ' ' + mksigned8(read8(PC));
+			break;
+		case SPC_AM.PC_R_BIT: // d.bit, r backwards
+			output.disassembled += ' $' + hex2(read8(PC)) + '.' + BBCS1bit[opcode_info.opcode] + ', r' + mksigned8(read8(PC+1));
+			break;
+		case SPC_AM.MEMBITR:
+		case SPC_AM.MEMBITW:
+			let r = read16(PC);
+			output.disassembled += ' d.' + (r >> 13) +', !$' + hex4(r & 0x1FFF);
+			break;
+		case SPC_AM.D_BIT: // d.bit
+			output.disassembled += '$' + hex2(read8(PC)) + '.' + BBCS1bit[opcode_info.opcode];
 			break;
 		case SPC_AM.X_IMM:
 			output.disassembled += ' X, #$' + hex2(read8(PC));
@@ -69,28 +130,8 @@ function spc700_disassemble(cpu) {
 		case SPC_AM.Y_IMM:
 			output.disassembled += ' Y, #$' + hex2(read8(PC));
 			break;
-		case SPC_AM.Y_DP:
-			output.disassembled += ' Y, $' + hex2(read8(PC));
-			break;
 		case SPC_AM.Y_A:
 			output.disassembled += " Y, !$" + hex4(read16(PC));
-			break;
-		case SPC_AM.DP_DP:
-			output.disassembled += ' $' + hex2(read8((PC+1) & 0xFFFF)) + ', $' + hex2(read8(PC));
-			break;
-		case SPC_AM.MEMBITR:
-		case SPC_AM.MEMBITW:
-			let r = read16(PC);
-			output.disassembled += ' d.' + (r >> 13) +', !$' + hex4(r & 0x1FFF);
-			break;
-		case SPC_AM.DP:
-			output.disassembled += ' $' + hex2(read8(PC));
-			break;
-		case SPC_AM.DP_INDEXED_X:
-			output.disassembled += ' $' + hex2(read8(PC)) + '+X';
-			break;
-		case SPC_AM.PC_R_BIT: // d.bit, r backwards
-			output.disassembled += '.' + (opcode_info.opcode >> 4) + ' !$' + hex2(read8(PC+1)) + ' ' + mksigned8(read8(PC));
 			break;
 		case SPC_AM.MOV:
 			switch(opcode_info.opcode) {
@@ -162,6 +203,9 @@ function spc700_disassemble(cpu) {
 					output.disassembled += ' $' + hex2(read8(PC)) + ', YA';
 					break;
 			}
+			break;
+		default:
+			console.log('DISASM UNKNOWN ADDR MODE', hex0x2(opcode));
 			break;
 	}
 	return output;
