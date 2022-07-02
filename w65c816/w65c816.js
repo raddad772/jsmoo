@@ -165,11 +165,6 @@ class w65c816_pins {
 		this.RES = 0; // RESET signal
 
 		this.PDV = 0; // combined program, data, vector pin, to simplify.
-
-		// For tracing processor...
-		this.trace_cycles = 0;
-		this.trace_on = false;
-		this.traces = [];
 	}
 }
 
@@ -207,7 +202,8 @@ class w65c816 {
 	#IRQ_pending;
 	#IRQ_servicing;
 
-	constructor() {
+	constructor(clock) {
+		this.clock = clock;
 		this.regs = new w65c816_registers();
 		this.pins = new w65c816_pins();
 		this.PCO = 0; // Old PC, for instruction fetch
@@ -223,6 +219,8 @@ class w65c816 {
 		this.#IRQ_pending = false;
 		this.#RES_pending = true;
 
+		this.trace_cycles = 0;
+		this.trace_on = false;
 		this.trace_peek = function(BA, Addr){return 0xC0;};
 	}
 	
@@ -231,7 +229,7 @@ class w65c816 {
 	}
 
 	cycle() {
-		this.pins.trace_cycles++;
+		this.trace_cycles++;
 		if (this.pins.NMI) {
 			console.log('NMI');
 			this.pins.NMI = false;
@@ -275,13 +273,11 @@ class w65c816 {
 		}
 		this.regs.TCU++;
 		if (this.regs.TCU === 1) {
-			//console.log('GOT INS', hex0x4(this.regs.PC), hex0x2(this.pins.D));
 			this.regs.IR = this.pins.D;
 			this.PCO = this.pins.Addr; // PCO is PC for tracing purposes
 			this.current_instruction = get_decoded_opcode(this.regs);
-			if (this.pins.trace_on) {
-				//console.log(hex0x4(this.PCO));
-				this.pins.traces.push(this.trace_format(this.disassemble(), this.PCO));
+			if (this.trace_on) {
+				dbg.traces.add(TRACERS.WDC, this.clock.cpu_has, this.trace_format(this.disassemble(), this.PCO));
 			}
 		}
 		this.current_instruction.exec_func(this.regs, this.pins);
@@ -474,35 +470,22 @@ class w65c816 {
 
 	enable_tracing(peek_func) {
 		this.trace_peek = peek_func;
-		this.pins.trace_cycles = 0;
-		this.pins.trace_on = true;
+		this.trace_cycles = 0;
+		this.trace_on = true;
 	}
 
 	disable_tracing() {
 		this.trace_peek = function(BA, Addr){return 0xC0;}
-		this.pins.trace_on = false;
-	}
-
-	trace_format_read(addr, val) {
-		return '(' + padl(this.pins.trace_cycles.toString(), 6) + ')r' + hex2((addr >> 16) & 0xFF) + ' ' + hex4(addr & 0xFFFF) + '  ' + hex0x2(val);
-	}
-
-	trace_format_write(addr, val) {
-		return '(' + padl(this.pins.trace_cycles.toString(), 6) + ')w' + hex2((addr >> 16) & 0xFF) + ' ' + hex4(addr & 0xFFFF) + '  WT  ' + hex0x2(val);
-	}
-
-	trace_format_IO(addr, val) {
-		return '(' + padl(this.pins.trace_cycles.toString(), 6) + ')   IO ' + hex2((addr >> 16) & 0xFF) + ' ' + hex4(addr & 0xFFFF);
+		this.trace_on = false;
 	}
 
 	trace_format(da_out, PCO) {
-		let outstr = '';
+		let outstr = trace_start_format('WDC', WDC_COLOR, this.trace_cycles, ' ', PCO, this.regs.PBR);
 		// General trace format is...
 		// (cycles) PC: LDA d,x   (any byte operands)   E: C: X: Y: S: MX: P: D: DBR:
-		outstr += '(' + padl((this.pins.trace_cycles - 1).toString(), 6) + ') ' + hex2(this.regs.PBR) + ' ' + hex4(PCO) + ' ';
-		outstr += ' ' + da_out.disassembled;
+		outstr += da_out.disassembled;
 		let sp = da_out.disassembled.length;
-		while(sp < 16) {
+		while(sp < TRACE_INS_PADDING) {
 			outstr += ' ';
 			sp++;
 		}
@@ -511,10 +494,10 @@ class w65c816 {
 		else if (da_out.data16 !== null) outstr += hex2((da_out.data16 & 0xFF00) >>> 8) + ' ' + hex2(da_out & 0xFF) + '   ';
 		else if (da_out.data24 !== null) outstr += hex2((da_out.data24 & 0xFF0000) >>> 16) + ' ' + hex2((da_out.data24 & 0xFF00) >>> 8) + ' ' + hex2((da_out.data24 & 0xFF) >>> 8);*/
 
-		outstr += 'PC:' + hex0x4(this.regs.PC) + ' ';
-		outstr += 'E:' + this.regs.E + ' C:' + hex0x4(this.regs.C);
-		outstr += ' X:' + hex0x4(this.regs.X) + ' Y:' + hex0x4(this.regs.Y);
-		outstr += ' S:' + hex0x4(this.regs.S);
+		outstr += 'PC:' + hex4(this.regs.PC) + ' ';
+		outstr += 'E:' + this.regs.E + ' C:' + hex4(this.regs.C);
+		outstr += ' X:' + hex4(this.regs.X) + ' Y:' + hex4(this.regs.Y);
+		outstr += ' S:' + hex4(this.regs.S);
 		outstr += ' P:';
 		if (this.regs.E) outstr += this.regs.P.formatbyte_emulated();
 		else             outstr += this.regs.P.formatbyte_native();

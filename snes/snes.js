@@ -38,96 +38,6 @@ class SNESrom {
     }
 }
 
-class SNEStiming {
-    constructor(version) {
-		this.ppu_y = 0;
-		this.dots = new Uint8Array(340);
-		for (let i = 0; i < 340; i++) {
-			this.dots[i] = 4; // 4 master cycles per dot...mostly!
-		}
-		this.dots[323] = 6;
-		this.dots[327] = 6;
-
-		// Technically we start in vblank and hblank but...not gonna trigger CPU first frame. ARE WE?
-		// Load up with first-frame data
-		this.vblank = false;
-		this.vblank_start = false;
-		this.hblank_stop = 21;
-		this.hblank_start = 277;
-		this.dots = 340;
-		this.hdma_setup_triggered = false;
-		this.frame_lines = 262;
-		this.version = version;
-		this.dram_refresh = this.version.rev === 1 ? 530 : 538
-		this.cycles = 1364;
-		this.interlaced = false;
-		this.frame = 0;  // 0 or 1 even or odd, basically
-		this.cycles_since_reset = 0; // Master cycles since reset. Yeah.
-		this.bottom_scanline = 0xE1; // by default
-		this.hdma_setup_position = (version.rev === 1 ? 12 + 8 - (this.cycles_since_reset & 7) : 12 + (this.cycles_since_reset & 7));
-		this.hdma_setup_triggered = false;
-
-		this.hdma_position = 1104;
-		this.hdma_triggered = false;
-
-		this.fblank = false;
-    }
-
-	set_interlaced(val) {
-		this.interlaced = val;
-		this.frame_lines = 262 + (1 * (this.interlaced && this.frame === 0));
-	}
-
-	new_frame() {
-		this.ppu_y = 0;
-		this.frame = (this.frame + 1) & 0x01;
-		this.frame_lines = 262 + (1 * (this.interlaced && this.frame === 1));
-	}
-
-	next() {
-		this.ppu_y += 1;
-		if (this.ppu_y > 261) this.new_frame();
-
-		this.cycles_since_reset += this.cycles;
-		this.cycles = 1364;
-
-		this.vblank_start = false;
-		if (this.ppu_y === 0) {
-			// vblank ends
-			// 1364 master cycles
-			// no output
-			this.hdma_setup_position = (this.version.rev === 1 ? 12 + 8 - (this.cycles_since_reset & 7) : 12 + (this.cycles_since_reset & 7));
-			this.hdma_setup_triggered = false;
-			this.vblank = false;
-			this.cycles = 1364;
-		}
-		else if ((this.ppu_y > 0) && (this.ppu_y < this.bottom_scanline)) {
-			// 1364 master cycles, 324 dots
-			this.cycles = 1364;
-		}
-		else if (this.ppu_y === this.bottom_scanline) {
-		    // vblank begins
-			this.vblank = true;
-			this.vblank_start = true;
-			this.cycles = 1364;
-		}
-		else {
-			// during vblank
-			this.cycles = 1364;
-		}
-		if (this.ppu_y === 0xF0 && !this.interlaced) {
-			this.cycles = 1360;
-		}
-
-		if (!this.vblank) { // Every visible scanline, hdma
-			this.hdma_position = 1104;
-			this.hdma_triggered = false;
-		}
-
-		this.dram_refresh = 538 - (this.cycles_since_reset & 7);
-	}
-}
-
 /*class SNESclock {
 	constructor(busA, busB) {
 		this.scanline = new SNESscanline();
@@ -254,16 +164,16 @@ class SNES {
 		this.cart = new snes_cart();
 		this.version = {rev: 0, nstc: true, pal: false}
 
-		this.clock = new SNES_clock();
-		this.timing = new SNEStiming(this.version);
+		this.clock = new SNES_clock(this.version);
 		this.mem_map = new snes_memmap();
 		this.cpu = new ricoh5A22(this.version, this.mem_map, this.clock);
 		this.ppu = new SNESPPU(null, this.version, this.mem_map, this.clock);
 		this.apu = new spc700(this.mem_map, this.clock);
 
 		this.interlaced_mode = 0;
+		this.frames_emulated = 0;
 	}
-	
+
 	load_ROM(file) {
 		this.cart.load_cart(file);
 	}
@@ -274,14 +184,92 @@ class SNES {
 		this.mem_map.cart_inserted(this.cart);
 	}
 
-	run_scanline() {
-		this.cpu.steps(this.timing);
-		this.ppu.steps(this.timing);
-		this.timing.next();
+	do_steps(steps) {
+		this.cpu.do_steps(steps);
 	}
 
-	step() {
-		console.log('STEP...')
+	step(master_clocks, scanlines, frames, seconds) {
+		/*if (scanlines < 0) {
+			let de = Math.ceil(Math.abs(scanlines / 262));
+			console.log('DE', de);
+			frames -= de;
+			scanlines += (262 * de);
+			if (frames < 0) {
+				de = Math.ceil(Math.abs(frames / 60));
+				console.log('DE2', de);
+				seconds -= de;
+				frames += (de * 60);
+				if (seconds < 0) seconds = 0;
+			}
+		}
+
+		frames += (seconds * 60);*/
+
+		if (!this.clock.start_of_scanline) {
+			let cycles_to_finish = this.clock.scanline.cycles - this.clock.cycles_since_scanline_start;
+			if ((cycles_to_finish > master_clocks) && (scanlines === 0) && (frames === 0) && (seconds === 0)) {
+				this.do_steps(master_clocks);
+				return;
+			}
+			this.do_steps(cycles_to_finish);
+			master_clocks -= cycles_to_finish;
+		}
+
+		frames += (seconds * 60);
+		if (scanlines === 0 && frames > 0) {
+			scanlines += this.clock.scanline.frame_lines - this.clock.scanline.ppu_y;
+			frames--;
+		}
+		let framenum = this.clock.scanline.frame;
+		while (scanlines > 0) {
+			this.do_steps(this.clock.scanline.cycles);
+			if (framenum !== this.clock.scanline.frame) {
+				framenum = this.clock.scanline.frame;
+				if (frames > 0) {
+					frames--;
+					scanlines += this.clock.scanline.frame_lines;
+				}
+			}
+			scanlines--;
+			if (scanlines === 0) {
+				if (frames === 0)
+					break;
+				scanlines = this.clock.scanline.frame_lines - this.clock.scanline.ppu_y;
+				frames--;
+			}
+		}
+		if (master_clocks > 0) {
+			console.log('Cleaning up', master_clocks);
+			this.do_steps(master_clocks);
+		}
+
+		/*let excess_scanlines = 0;
+		let discharged = false;
+		while(true) {
+			this.do_steps(this.clock.scanline.cycles);
+			// Check if we're the start of a frame
+			if (this.clock.scanline.ppu_y === 0 && !discharged) {
+				if (scanlines < this.clock.scanline.frame_lines) {
+					excess_scanlines = scanlines;
+					scanlines = 0;
+				}
+			}
+			scanlines--;
+			if (scanlines === 0) {
+				if (frames === 0)
+					break;
+				frames--;
+				scanlines += this.clock.scanline.frame_lines;
+			}
+		}
+
+		console.log('STEP...', master_clocks, scanlines, frames, seconds);
+		// First, we want to finish out our current scanline IF WE CAN,
+		// Then finish out our current frame IF WE CAN,
+		// Then emulate any remaining frames
+		// Then emulate any remaining scanlines
+		// Then emulate any remaining master_clocks
+		*/
 	}
 }
 
@@ -316,7 +304,8 @@ function init_gl() {
 
 function main3(ROM) {
 	snes = new SNES();
-	//console.log('Got...', ROM);
+	dbg.add_cpu(D_RESOURCE_TYPES.R5A22, snes.cpu);
+	dbg.add_cpu(D_RESOURCE_TYPES.SPC700, snes.apu)
 	if (ROM === null || typeof(ROM) === 'undefined') {
 		alert('No ROM! Upload then refresh please');
 		return;
@@ -326,19 +315,7 @@ function main3(ROM) {
 		return;
 	}
 
-	//let torun = 10000;
-	//this.console('Running ' + torun + ' cycles')
-	let scanlines = 26;
-	scanlines = 262 * 60;
-	console.log('EMULATING', scanlines)
-	let start = performance.now()
-	for (let i = 0; i < scanlines; i++) {
-		//console.log(i);
-		snes.run_scanline();
-	}
-	let duration = performance.now() - start;
-	console.log('EXECUTION TOOK', duration);
-	console.log(snes.clock);
+	dbg.init_done();
 }
 
 function main2() {
@@ -349,16 +326,8 @@ function main() {
 	initDb(main2);
 }
 
-function generate_js() {
-	save_js('w65c816_generated_opcodes.js', '"use strict";\n\nconst decoded_opcodes = Object.freeze(\n' + decode_opcodes() + ');');
-}
-
-function generate_js_SPC() {
-    save_js('spc700_generated_opcodes.js', '"use strict";\n\nconst SPC_decoded_opcodes = Object.freeze(\n' + SPC_decode_opcodes() + ');');
-}
-
-window.onload = main;
-//window.onload = test_65c816;
-//window.onload = generate_js;
-//window.onload = test_pt_65c816;
-//window.onload = generate_js_SPC;
+after_js = main;
+//after_js = test_65c816;
+//after_js = generate_js;
+//after_js = test_pt_65c816;
+//after_js = generate_js_SPC;

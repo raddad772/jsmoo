@@ -24,6 +24,11 @@ class r5a22DMAChannel {
 const HDMA_LENGTHS = Object.freeze([1, 2, 2, 4, 4, 4, 2, 4]);
 
 class dmaChannel {
+    /**
+     * @param {snes_memmap} mem_map
+     * @param {ricoh5A22.dma_edge} dma_edge
+     * @param {*} status
+     */
     constructor(mem_map, dma_edge, status, counters) {
         this.mem_map = mem_map;
         this.dma_enable = 0;
@@ -64,14 +69,16 @@ class dmaChannel {
         if (!this.dma_enable) return;
 
         this.counters.dma += 8;
-        this.dma_edge();
+        //this.dma_edge();
 
         let index = 0;
-        do {
-            this.transfer(this.source_bank << 16 | this.source_address, index);
-            index++;
-            this.dma_edge()
-        } while(this.dma_enable && --this.transfer_size);
+        if (this.transfer_size > 0) {
+            do {
+                this.transfer(this.source_bank << 16 | this.source_address, index);
+                index++;
+                //this.dma_edge()
+            } while (this.dma_enable && --this.transfer_size);
+        }
 
         this.dma_enable = false;
     }
@@ -150,12 +157,12 @@ class dmaChannel {
 
     readA(addr) {
         this.counters.dma += 8;
-        return this.validA(addr) ? mem_map.dispatch_read(addr) : 0
+        return this.validA(addr) ? this.mem_map.dispatch_read(addr) : 0
     }
 
     readB(addr, valid) {
         this.counters.dma += 8;
-        return valid ? mem_map.dispatch_read(0x2100 | addr) : 0
+        return valid ? this.mem_map.dispatch_read(0x2100 | addr) : 0
     }
 
     writeA(addr, val) {
@@ -209,7 +216,7 @@ class r5a22DMA {
 
         this.channels = [];
         for (let i = 0; i < 8; i++) {
-            this.channels.push(new dmaChannel(this.mem_map, this.dma_edge, this.status));
+            this.channels.push(new dmaChannel(this.mem_map, this.dma_edge, this.status, this.counters));
         }
         for (let i = 0; i < 8; i++) {
             if (i !== 7) this.channels[i].next = this.channels[i+1];
@@ -318,7 +325,7 @@ class r5a22DMA {
 
     dma_run() {
         this.counters.dma += 8;
-        this.dma_edge();
+        //this.dma_edge();
         for (let n = 0; n < 8; n++) { this.channels[n].dma_run(); }
         this.status.irq_lock = true;
     }
