@@ -1,11 +1,17 @@
 "use strict";
 
+/**
+ * @param {Number} val
+ */
 function hex2(val) {
     let outstr = val.toString(16);
     if (outstr.length === 1) outstr = '0' + outstr;
     return outstr.toUpperCase();
 }
 
+/**
+ * @param {Number} val
+ */
 function hex4(val) {
     let outstr = val.toString(16);
     if (outstr.length < 4) outstr = '0' + outstr;
@@ -14,6 +20,9 @@ function hex4(val) {
     return outstr.toUpperCase();
 }
 
+/**
+ * @param {Number} val
+ */
 function hex6(val) {
     let outstr = val.toString(16);
     if (outstr.length < 6) outstr = '0' + outstr;
@@ -24,14 +33,23 @@ function hex6(val) {
     return outstr.toUpperCase();
 }
 
+/**
+ * @param {Number} val
+ */
 function hex0x2(val) {
     return '0x' + hex2(val);
 }
 
+/**
+ * @param {Number} val
+ */
 function hex0x4(val) {
     return '0x' + hex4(val);
 }
 
+/**
+ * @param {Number} val
+ */
 function hex0x6(val) {
     return '0x' + hex6(val);
 }
@@ -64,6 +82,8 @@ function txf(instr) {
                             case 'r':
                             case 'B':
                             case 'b':
+                            case 'G':
+                            case 'g':
                                 outstr += '</span>';
                                 break;
                             case '*':
@@ -116,8 +136,15 @@ class console_t {
     draw() {
         let outstr = '';
         for (let i in this.buffer) {
-            if (i !== 0) outstr += '\n';
-            outstr += this.buffer[i];
+            if (i !== 0) outstr;
+            outstr += txf(this.buffer[i][1]);
+            let bgcolor = this.buffer[i][0];
+            if (bgcolor !== null) {
+                outstr = '<span style="display: block; background-color:' + bgcolor + ';">' + outstr + '</span>';
+            }
+            else {
+                if (i !== 0) outstr += '\n';
+            }
         }
         var tcxcontainer = this.container;
         this.textconsole.innerHTML = outstr;
@@ -132,21 +159,23 @@ class console_t {
         this.textconsole = document.getElementById(this.elname);
     }
 
-    addl(line) {
-        let ft = txf(line);
+    addl(line, draw=false, bgcolor=null) {
+        //let ft = txf(line);
+        let ft = line;
         if (this.textconsole === null) {
             this.init();
         }
-        this.buffer.push(ft);
+        this.buffer.push([bgcolor, ft]);
         if (this.buffer.length > this.max_lines) {
             this.buffer = this.buffer.slice(1);
         }
-        this.draw();
+        if (draw)
+            this.draw();
     }
 }
 
 var tconsole = new console_t('textconsole', 80);
-var dconsole = new console_t('disassembly', 200);
+var dconsole = new console_t('disassembly', 258);
 
 // https://stackoverflow.com/questions/3665115/how-to-create-a-file-in-memory-for-user-to-download-but-not-through-server
 function save_js(filename, data) {
@@ -162,4 +191,70 @@ function save_js(filename, data) {
         elem.click();
         document.body.removeChild(elem);
     }
+}
+
+
+function trace46(addr, bank=null) {
+    let outstr = '';
+    if (bank !== null)
+        outstr += hex2(bank) + ' ';
+    else
+        outstr += '   ';
+    outstr += hex4(addr);
+    return outstr + ' ';
+}
+
+function trace_start_format(kind, kind_color, trace_cycles, middle, addr, bank=null) {
+    let outstr;
+    if (TRACE_COLOR)
+        outstr = kind_color + kind + '{/}';
+    else
+        outstr = kind;
+    outstr += '(' + padl(trace_cycles.toString(), 6) + ')' + middle;
+    if (TRACE_COLOR)
+        outstr += TRACE_ADDR + trace46(addr, bank) + '{/} ';
+    else
+        outstr += trace46(addr, bank) + ' ';
+    return outstr;
+}
+
+function trace_format_read(kind, kind_color, trace_cycles, addr, val, bank=null) {
+    let outstr;
+    if (TRACE_COLOR) {
+        outstr = trace_start_format(kind, kind_color, trace_cycles, TRACE_READ + 'r', addr, bank)
+        outstr += ' {/}' + TRACE_READ + '$' + hex2(val) + '{/}';
+    }
+    else {
+        outstr = trace_start_format(kind, kind_color, trace_cycles, 'r', addr, bank)
+        outstr += ' ' + hex2(val);
+    }
+    return outstr;
+}
+
+function trace_format_write(kind, kind_color, trace_cycles, addr, val, bank=null) {
+    let outstr;
+    if (TRACE_COLOR) {
+        outstr = trace_start_format(kind, kind_color, trace_cycles, TRACE_WRITE + 'w', addr, bank)
+        outstr += ' {/}' + TRACE_WRITE + '$' + hex2(val) + '{/}';
+    }
+    else {
+        outstr = trace_start_format(kind, kind_color, trace_cycles, 'w', addr, bank)
+        outstr += ' $' + hex2(val) + '{/}';
+    }
+    return outstr;
+}
+
+function trace_format_IO(kind, kind_color, trace_cycles, addr, bank=null) {
+    let outstr;
+    if (TRACE_COLOR)
+        outstr = kind_color + kind + '{/}';
+    else
+        outstr = kind;
+    outstr += '(' + padl(trace_cycles.toString(), 6) + ')';
+    outstr += '   IO ';
+    if (TRACE_COLOR)
+        outstr += TRACE_ADDR + trace46(addr, bank) + '{/}';
+    else
+        outstr += trace46(addr, bank);
+    return outstr;
 }

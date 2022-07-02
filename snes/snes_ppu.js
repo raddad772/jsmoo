@@ -15,6 +15,7 @@ class SNESPPU {
 
 		mem_map.read_ppu = this.reg_read.bind(this);
 		mem_map.write_ppu = this.reg_write.bind(this);
+		clock.set_ppu(this);
 
 		this.wram_addr = 0;
 		this.wram_bank = 0x7E0000;
@@ -136,11 +137,9 @@ class SNESPPU {
 		}
 	}
 
-	/**
-	 * @param {SNEStiming} scanline
-	 */
-	steps(timing) {
-
+	catch_up() {
+		// We aren't actually emulating PPU yet
+		this.clock.ppu_deficit = 0;
 	}
 
 }

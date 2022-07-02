@@ -2,6 +2,7 @@
 <html lang="en-US">
 <head>
 <script type="text/javascript" src="helpers.js"></script>
+<script type="text/javascript" src="debugging.js"></script>
 <script type="text/javascript" src="w65c816/w65c816_opcodes.js"></script>
 <script type="text/javascript" src="w65c816/w65c816_assemble.js"></script>
 <script type="text/javascript" src="w65c816/w65c816.js"></script>
@@ -24,6 +25,7 @@
 <script type="text/javascript" src="snes/snes_clock_generator.js"></script>
 <script type="text/javascript" src="snes/snes_cart.js"></script>
 <script type="text/javascript" src="snes/snes_ppu.js"></script>
+<script type="text/javascript" src="snes/snes_ui.js"></script>
 <script type="text/javascript" src="snes/snes.js"></script>
 <script type="text/javascript" src="rom_upload.js"></script>
 <meta charset="utf-8">
@@ -49,7 +51,27 @@
     <!-- a few controls -->
     <div class="grid-child">
         <section>
-            <button id="step" type="button" onclick="testcpu.step()">Step</button>
+            <br>
+            Master clock steps: <input id="masterclocksteps"/><button id="stepclock" type="button" onclick="click_step_clock()">Step</button>
+            <br>
+            <hr>
+            Scanlines to step: <input id="scanlinesteps"/>
+            <br>
+            Frames to step: <input id="framesteps"/>
+            <br>
+            Seconds to step: <input id="secondsteps"/>
+            <br>
+            <button id="stepall" type="button" onclick="click_step_all()">Step Scanline</button>
+            <br>
+            <br>
+            <input type="checkbox" id="tracingbox"/><label for="tracingbox">Tracing enabled</label>
+            <br>
+            <input type="checkbox" id="tracing5a22"/><label for="tracing5a22">Trace CPU</label>
+            &nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="checkbox" id="tracingspc700"/><label for="tracingspc700">Trace APU</label>
+            <br>
+            <br>
+            <br>
             <button id="downloadjs" type="button" onclick="generate_js()">Generate 65816</button>
             <button id="downloadjsSPC" type="button" onclick="generate_js_SPC()">Generate SPC</button>
         </section>

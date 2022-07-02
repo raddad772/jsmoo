@@ -31,9 +31,59 @@ function SNES_mem_timing(addr, ROMspeed) {
 	return 12;
 }
 
-RMODES = Object.freeze({CPU: 0, DMA: 1, HDMA: 2})
-let SNES_DO_TRACING = false;
-let MAX_TRACES = 100;
+RMODES = Object.freeze({
+	WRAM_REFRESH: 0,
+	HDMA: 1,
+	DMA: 2,
+	CPU: 3,
+});
+
+// So
+// A 5A22 is basically a state machine that can be in 1 of 3 states,
+//  in these priorities:
+
+// 1. Do nothing during DRAM refresh for 40 cycles
+// 2. Execute HDMA for up to 8 master clocks
+// 3. Execute DMA (this is completely halted by HDMA) for up to 8 master clocks
+// 4. Execute CPU cycle, IRQ/NMI poll, ALU cycle for up to 12 master clocks
+
+// Furthermore, we want to be able to step in and out in arbitrary number
+//  of master clock cycles
+// SNES timing is based around a scanline. At the start of a scanline,
+//  things are latched (locked into stone):
+//   1) where HDMA setup will trigger
+//   2) where HDMA will trigger
+
+// So HDMA and DMA should be their own state machine just like CPU
+
+// In between each block, an "edge" should happen, which re-evaluates
+//  HDMA/DMA/DRAM refresh/etc.
+
+const R5A22_priorities = Object.freeze({
+	HIGHEST: 0,      // Mostly for internal CPU timers
+	WRAM_REFRESH: 1,
+	HDMA: 2,
+	DMA: 3,
+	CPU: 4
+});
+
+const R5A22_events = {
+	SCANLINE_START: 0,
+	IRQ: 1,  // HIRQ or HVIRQ
+	WRAM_REFRESH: 2,
+	HDMA_SETUP: 4,
+	HDMA: 5,
+	NONE: 19,
+	DMA: 20,  // This happens immediately on-demand
+	VIRQ: 21, // This happens on scanline start only
+}
+
+const RM = Object.freeze({
+	CPU: 0,
+	DMA: 1,
+	HDMA: 2,
+	WRAM_REFRESH: 3 // We could step out in the middle of it
+})
 
 class ricoh5A22 {
 	/**
@@ -42,27 +92,44 @@ class ricoh5A22 {
 	 * @param {SNES_clock} clock
 	 */
 	constructor(version, mem_map, clock) {
-		this.cpu = new w65c816();
+		this.cpu = new w65c816(clock);
 		this.CPUregs = new Uint8Array(0x100);
 		this.version = version;
 		this.timing = null;
 		this.clock = clock;
+		this.steps_to_do = 0;
+
+		this.events_list = [];
+
+		this.tracing = false;
 
 		this.ROMspeed = 8; // default to slow rom
 
         this.steps_for_CPU_cycle_left = 0;
-		this.scanline_start = 0;
 		this.steps_left = 0;
 		this.cpu_addr = 0;
-		if (SNES_DO_TRACING) {
-			this.cpu.enable_tracing(this.read_trace.bind(this))
-		}
-		this.cpu_addrlow = 0;
-		this.cpu_bank = 0;
 
 		this.mem_map = mem_map;
 		this.mem_map.read_cpu = this.reg_read.bind(this);
 		this.mem_map.write_cpu = this.reg_write.bind(this);
+		clock.set_cpu(this);
+
+		this.scanline = {
+			events: {},
+			current_priority: 7,
+		}
+
+		this.event_ptrs = {
+			[R5A22_events.HDMA]: null,
+			[R5A22_events.HDMA_SETUP]: null,
+			[R5A22_events.IRQ]: null,
+			[R5A22_events.WRAM_REFRESH]: null,
+			[R5A22_events.SCANLINE_START]: null
+		}
+
+		this.current_event = 0;
+		this.next_event = 0;
+		this.current_mode = RM.CPU;
 
 		this.status = {
 			nmi_hold: 0,
@@ -85,7 +152,8 @@ class ricoh5A22 {
 		this.dma = new r5a22DMA(mem_map, this.dma_edge, this.status, this.counters);
 
 		this.mode = RMODES.CPU;
-
+		this.old_mode = RMODES.CPU;
+		this.mode_left = 0; // How many cycles left in current mode, such as WRAM_REFRESH
 
 		this.io = {
 			hirq_enable: 0,
@@ -100,7 +168,10 @@ class ricoh5A22 {
 			wrdivb: 0xFF,   // $4026
 
 			rddiv: 0, // $4214-4215
-			rdmpy: 0 // $4216-4217
+			rdmpy: 0, // $4216-4217
+
+			htime: 0x1FF, // HIRQ time
+			vtime: 0x1FF, // VIRQ time
 		};
 
 		this.alu = {
@@ -109,12 +180,23 @@ class ricoh5A22 {
 			shift: 0
 		};
 
-
 		this.auto_joypad_counter = 33; // disabled
 	}
 
 	read_trace(bank, addr) {
 		return this.mem_map.dispatch_read(addr, 0, false);
+	}
+
+	enable_tracing() {
+		if (this.tracing) return;
+		this.cpu.enable_tracing(this.read_trace.bind(this))
+		this.tracing = true;
+	}
+
+	disable_tracing() {
+		if (!this.tracing) return;
+		this.cpu.disable_tracing();
+		this.tracing = false;
 	}
 
 	// Basically, check for DMA triggers and squashing each other, etc.
@@ -140,6 +222,7 @@ class ricoh5A22 {
 			if (this.status.dma_pending) {
 				this.status.dma_pending = false;
 				if (this.dma_is_enabled()) {
+					console.log('IS ENABLED!');
 					this.steps_left -= 8 - (this.timing.cycles_since_reset & 7);
 					this.dma.dma_run();
 					this.steps_left -= this.counters.dma;
@@ -198,6 +281,15 @@ class ricoh5A22 {
 		return val;
 	}
 
+	set_nmi_bit(newval) {
+		let onmi = this.io.nmi_enable;
+		this.io.nmi_enable = newval;
+
+		if ((!onmi && this.io.nmi_enable) && this.status.nmi_line) {
+			this.status.nmi_transition = 1;
+		}
+	}
+
 	reg_write(addr, val) {
 		console.log('5A22 write', hex0x4(addr), hex0x2(val));
 		if ((addr & 0x4300) === 0x4300) { this.dma.reg_write(addr, val); return; }
@@ -206,20 +298,17 @@ class ricoh5A22 {
 				this.io.hirq_enable = (val & 0x10) >>> 4;
 				this.io.virq_enable = (val & 0x20) >>> 5;
 				this.io.irq_enable = this.io.hirq_enable | this.io.virq_enable;
+				// If VIRQ is enabled, HIRQ is NOT enabled, and we're on the IRQ line...
 				if (this.io.virq_enable && !this.io.hirq_enable && this.status.irq_line) {
 					this.status.irq_transition = 1;
 				}
-				else if (!this.io.irq_enable) {
+				else if (!this.io.irq_enable) { // Else if IRQ is not enabled
 					this.status.irq_line = 0;
 					this.status.irq_transition = 0;
 				}
-				let onmi = this.io.nmi_enable;
-				this.io.nmi_enable = (val & 0x80) >>> 7;
+				this.set_nmi_bit(this.io.nmi_enable());
 
-				if ((!onmi && this.io.nmi_enable) && this.status.nmi_line) {
-					this.status.nmi_transition = 1;
-				}
-
+				this.reschedule_scanline();
 				this.status.irq_lock = 1;
 				return;
 			case 0x4202: // Multiplicand A
@@ -304,31 +393,209 @@ class ricoh5A22 {
 		this.dma.reset();
 	}
 
+	// So. We have a state machine
+	// When we enter, we may have more steps to subtract from last op
+	// Then, each time we advance, we determine:
+	// Is WRAM refresh pending/active? If so, do that
+	// Is HDMA setup pending & timing right? If so, do that
+	// Is HDMA pending/active and/or timing right? If so, do that
+	// Is DMA pending/active? If so, do that
+	// Else, cycle the CPU and run the ALU.
+
+	// But we're going to optimize this!
+
+	// If we're at the WRAM trigger point, we must...trigger WRAM!
+
+	// dma_pending is known INSTANTLY because it's a register write that hooks
+	//  this.dma_pending.
+
+	// hdma_setup only matters if
+	//  (a) we are at the trigger point and it is pending (for Y=0 I believe)
+
+	// hdma is more complex, but it only matters if
+	//  (a) it is active with a transfer
+	//  (b) we are at the trigger-point and it is pending
+
+	// IRQ bits may have changed...
+	reschedule_scanline_irqbits() {
+
+	}
+
+	// HDMA bits may have changed...
+	reschedule_scanline_HDMAbits() {
+
+	}
+
+	// e
+
+	schedule_scanline() {
+		// Setup events
+		// Events are in...cycle#, kind, triggered   order.
+		this.events_list = [[0, R5A22_events.SCANLINE_START, true]];
+		let e;
+		let scanline = this.clock.scanline;
+		this.event_ptrs[R5A22_events.HDMA_SETUP] = this.event_ptrs[R5A22_events.HDMA] =
+			this.event_ptrs[R5A22_events.IRQ] = null;
+
+		// Check HDMA setup
+		if (scanline.hdma_setup_position !== 0) {
+			e = [scanline.hdma_setup_position, R5A22_events.HDMA_SETUP, false];
+			this.event_ptrs[R5A22_events.HDMA_SETUP] = e;
+			this.events_list.push(e);
+		}
+		// Add WRAM refresh
+		e = [scanline.dram_refresh, R5A22_events.WRAM_REFRESH, false];
+		this.event_ptrs[R5A22_events.WRAM_REFRESH] = e;
+		this.events_list.push(e);
+
+		// Check HDMA trigger
+		if (scanline.hdma_position !== 0) {
+			e = [scanline.hdma_position, R5A22_events.HDMA, false];
+			this.event_ptrs[R5A22_events.HDMA] = e;
+			this.events_list.push(e);
+		}
+
+		// Check for HIRQ, HVIRQ
+		if (this.io.hirq_enable && (!this.io.virq_enable || (this.io.virq_enable && this.io.vtime === scanline.ppu_y))) {
+			e = [this.io.htime === 0 ? 10 : 14 + (this.io.htime * 4), R5A22_events.IRQ, false];
+			this.event_ptrs[R5A22_events.IRQ] = e;
+			this.events_list.push(e);
+		}
+		else if (!this.io.hirq_enable && (this.io.virq_enable && this.io.vtime === scanline.ppu_y)) {
+			e = [10, R5A22_events.IRQ, false];
+			this.event_ptrs[R5A22_events.IRQ] = e;
+			this.events_list.push(e);
+		}
+
+		// Sort the list
+		this.events_list = this.events_list.sort((a, b) => (a[0] > b[0] ? 1 : -1));
+
+		// Set current event pointer
+		this.current_event = 0;
+
+		// Set when next event will be
+		this.next_event = this.event_ptrs[this.current_event][1];
+	}
+
+
+	// dma can check if dma_active or dma_pending, and act accordingly
+
+	// If none of those, do a CPU cycle.
+
+	// Timers can also trigger for NMI or IRQ.
+
+	// HOWEVER! We can do BLOCKS of CPU cycles.
+	// NMI output low on first vblank line. clears $4200 bit 7
+	// NMI output high at H=0 V=0 or $4210 read
+	// H-IRQ goes low every scanline at (HTIME=0 ? 10 : 14+H*4) master cycles,
+	// V-IRQ goes low at scanline VTIME
+	// HV-IRQ only goes low at that dot of that scanline
+	// IRQ high when $4211 read, or when IRQs disabled by write to $4200
+
+	// So events that CAN happen in a scanline:
+	// V-IRQ at start if correct scanline
+	// H-IRQ at any time, if H-IRQ is enabled
+	// NMI set/clear at start of scanline depending on which scanline
+	// WRAM refresh at ~538 cycles
+	// HDMA setup at around ~28 cycles
+	// HDMA evaluation at ~1104 cycles
+
+	// We are going to have a scanline-based state machine.
+	// We can be part way through a scanline, for instance, when stepping.
+	// We will have a calculated timeline of events to follow. If someone writes to registers during
+	//  that time, the timeline will be recalculated.
+	do_steps(howmany) {
+		this.steps_to_do += howmany;
+
+		// Check if we're in WRAM refresh, in which case, nothing other than an IRQ timer check will happen
+		if (this.mode === RM.WRAM_REFRESH) {
+			let can_do = this.steps_to_do > this.mode_left ? this.mode_left : this.steps_to_do;
+			this.mode = RM.WRAM_REFRESH;
+			if (can_do < this.mode_left) {
+				this.mode_left = can_do < this.steps_to_do ? this.steps_to_do : 0;
+			}
+			this.steps_to_do -= can_do;
+			this.clock.advance_steps_from_cpu(can_do);
+			if (this.steps_to_do > 0)
+				this.mode = this.old_mode;
+			else
+				return;
+		}
+		let scanline = this.clock.scanline;
+		while(this.steps_to_do > 0) {
+			// Check if we tripped a new-scanline scheduling
+			if (scanline.cpu_new_scanline) {
+				scanline.cpu_new_scanline = false;
+				this.schedule_scanline();
+			}
+
+			if (this.clock.cycles_since_scanline_start >= this.next_event) {
+				let ev = this.events_list[this.current_event];
+				if (this.clock.cycles_since_scanline_start > ev[0]) {
+					let already_true = ev[2];
+					ev[2] = true;
+					this.current_event++;
+					this.next_event = this.current_event >= this.events_list.length ? 0xFFFF : this.events_list[this.current_event][0];
+					if (already_true) continue; // Somehow already got processed
+					switch(ev[1]) {
+						case R5A22_events.SCANLINE_START:
+							break;
+						case R5A22_events.IRQ:
+							this.eval_hvirqs();
+							break;
+						case R5A22_events.HDMA_SETUP:
+							this.eval_hdma_setup();
+							break;
+						case R5A22_events.HDMA:
+							this.eval_hdma();
+							break;
+						case R5A22_events.WRAM_REFRESH:
+							let can_do = this.steps_to_do > 40 ? 40 : this.steps_to_do;
+							if (can_do < 40) {
+								this.mode_left = can_do < 40 ? 40 - can_do : 0;
+								this.old_mode = this.mode;
+								this.mode = RM.WRAM_REFRESH;
+							}
+							this.steps_to_do -= can_do;
+							this.clock.advance_steps_from_cpu(can_do);
+							if (can_do < 40) {
+								return;
+							}
+							break;
+					}
+					continue;
+				}
+
+			}
+
+
+			if (this.clock.scanline.vblank_start) {
+				// NMI out low
+				this.set_nmi_bit(0);
+			}
+			else if (this.clock.scanline.ppu_y === 0) {
+				this.set_nmi_bit(1);
+			}
+
+		}
+	}
+
 	service_CPU_cycle() {
 		// Determine bus
 		//if (this.cpu.pins.Addr === 0x803C) console.log(this.cpu.pins.trace_cycles, '803C!', this.cpu.pins.PDV);
 		if (this.cpu.pins.PDV) { // Read/write
 			if (this.cpu.pins.RW) { // Write
 				this.mem_map.dispatch_write(this.cpu_addr, this.cpu.pins.D);
-				if (SNES_DO_TRACING) {
-					this.cpu.pins.traces.push(this.cpu.trace_format_write(this.cpu_addr, this.cpu.pins.D));
+				if (this.cpu.trace_on) {
+					dbg.traces.add(TRACERS.WDC, this.clock.cpu_has, trace_format_write('WDC', WDC_COLOR, this.cpu.trace_cycles, this.cpu_addr & 0xFFFF, this.cpu.pins.D, this.cpu_addr >>> 16));
 				}
 			}
 			else { // Read
 				let r = this.mem_map.dispatch_read(this.cpu_addr, this.cpu.pins.D);
-				//if (this.cpu_addr === 0x803C) console.log('GOT BACK-----------', hex0x2(r));
 				if (r !== null) this.cpu.pins.D = r;
-				if (SNES_DO_TRACING) {
-					this.cpu.pins.traces.push(this.cpu.trace_format_read(this.cpu_addr, this.cpu.pins.D));
+				if (this.cpu.trace_on) {
+					dbg.traces.add(TRACERS.WDC, this.clock.cpu_has, trace_format_read('WDC', WDC_COLOR, this.cpu.trace_cycles, this.cpu_addr & 0xFFFF, this.cpu.pins.D, this.cpu_addr >>> 16));
 				}
-			}
-		}
-		if (SNES_DO_TRACING) {
-			if (this.cpu.pins.traces.length > 0) {
-				for (let i in this.cpu.pins.traces) {
-					dconsole.addl(this.cpu.pins.traces[i]);
-				}
-				this.cpu.pins.traces = [];
 			}
 		}
 
@@ -415,7 +682,7 @@ class ricoh5A22 {
 
 			// DMA it out
 			if (this.status.dma_pending || this.status.hdma_pending) {
-				console.log('DMA!');
+				console.log('DMA!', this.status.dma_pending, this.status.hdma_pending);
 				this.dma_edge();
 				continue;
 			}

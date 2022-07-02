@@ -1,7 +1,5 @@
 "use strict";
 
-let SPC_DO_TRACING = false;
-
 class spc700_P {
     constructor() {
         this.C = this.Z = this.I = this.H = this.B = this.P = this.V = this.N = 0;
@@ -54,9 +52,7 @@ class spc700_registers {
         this.SP = 0xEF; // 8 bits
         this.PC = 0; // 16 bits
         this.P = new spc700_P()
-
-        this.traces = [];
-    }
+   }
 }
 
 class spc700 {
@@ -67,8 +63,9 @@ class spc700 {
     constructor(mem_map, clock) {
         this.mem_map = mem_map;
         this.clock = clock;
-        this.mem_map.read_apu = this.read_reg.bind(this);
-        this.mem_map.write_apu = this.write_reg.bind(this);
+        mem_map.read_apu = this.read_reg.bind(this);
+        mem_map.write_apu = this.write_reg.bind(this);
+        clock.set_apu(this);
 
         this.DSP = new SDSP();
 
@@ -121,27 +118,39 @@ class spc700 {
         this.regs.IR = this.ROM[this.regs.PC - 0xFFC0];
         this.regs.PC++;
 
-        this.traces = [];
         this.trace_cycles = 0;
         this.trace_on = false;
         this.trace_peek = function(addr){
-            let r = this.read8(addr, false);
-            return r;
+            return this.read8(addr, false);
         };
-        if (SPC_DO_TRACING) {
-            this.enable_tracing(this.trace_peek.bind(this));
-        }
+        this.read8 = this.read8_normal;
+        this.write8 = this.write8_normal;
     }
 
-    enable_tracing(peek_func) {
-        this.trace_peek = peek_func;
+    enable_tracing() {
+        if (this.trace_on) return;
+        this.read8 = this.read8_trace;
+        this.write8 = this.write8_trace;
         this.trace_cycles = 0;
         this.trace_on = true;
     }
 
     disable_tracing() {
-        this.trace_peek = function(){};
+        if (!this.trace_on) return;
         this.trace_on = false;
+        this.read8 = this.read8_normal;
+        this.write8 = this.write8_normal;
+    }
+
+    steps(timing) {
+        this.sync_to(this.clock.cpu_has);
+    }
+
+    catch_up(master_clocks) {
+        if (this.clock.apu_deficit < 1) return;
+        let catch_up = Math.floor(this.clock.apu_deficit / 20) + 1;
+        if (catch_up < 1) return;
+        this.cycle(catch_up);
     }
 
     sync_to(how_many) {
@@ -151,11 +160,10 @@ class spc700 {
     }
 
     trace_format(da_out, PCO) {
-        let outstr = '';
-        outstr += '(' + padl((this.trace_cycles - 1).toString(), 6) + ') ' + hex4(PCO) + ' ';
-		outstr += ' ' + da_out.disassembled;
+		let outstr = trace_start_format('SPC', SPC_COLOR, this.trace_cycles, ' ', PCO);
+		outstr += da_out.disassembled;
 		let sp = da_out.disassembled.length;
-		while(sp < 16) {
+		while(sp < TRACE_INS_PADDING) {
 			outstr += ' ';
 			sp++;
 		}
@@ -164,11 +172,11 @@ class spc700 {
 		else if (da_out.data16 !== null) outstr += hex2((da_out.data16 & 0xFF00) >>> 8) + ' ' + hex2(da_out & 0xFF) + '   ';
 		else if (da_out.data24 !== null) outstr += hex2((da_out.data24 & 0xFF0000) >>> 16) + ' ' + hex2((da_out.data24 & 0xFF00) >>> 8) + ' ' + hex2((da_out.data24 & 0xFF) >>> 8);*/
 
-		outstr += 'PC:' + hex0x4(this.regs.PC) + ' ';
-		outstr += 'YA:' + hex0x4((this.regs.Y << 8) + this.regs.A);
-        outstr += ' A:' + this.regs.A;
-		outstr += ' X:' + hex0x2(this.regs.X) + ' Y:' + hex0x2(this.regs.Y);
-		outstr += ' SP:' + hex0x2(this.regs.SP) + ' DO:' + hex0x2(this.regs.P.DO);
+		outstr += 'PC:' + hex4(this.regs.PC) + ' ';
+		outstr += 'YA:' + hex4((this.regs.Y << 8) + this.regs.A);
+        outstr += ' A:' + hex2(this.regs.A);
+		outstr += ' X:' + hex2(this.regs.X) + ' Y:' + hex2(this.regs.Y);
+		outstr += ' SP:' + hex2(this.regs.SP) + ' DO:' + hex2(this.regs.P.DO);
 		outstr += ' P:' + this.regs.P.formatbyte();
 		return outstr;
     }
@@ -181,8 +189,9 @@ class spc700 {
         this.cycles += howmany;
         while (this.cycles > 0) {
             if (this.STP || this.WAI) {
-                console.log('STOPPED OR WAID' + this.clock.apu_has);
-                this.clock.apu_has += (this.cycles * 20);
+                console.log('STOPPED OR WAID' + this.trace_cycles);
+                this.clock.apu_deficit -= (this.cycles * 20);
+                if (this.trace_on) this.trace_cycles += this.cycles;
                 this.advance_timers(this.cycles);
                 this.cycles = 0;
                 return;
@@ -195,30 +204,45 @@ class spc700 {
                 continue;
             }
             else {
-                if (this.trace_on) {
-                    this.traces.push(this.trace_format(this.disassemble(), (this.regs.PC - 1) & 0xFFFF));
-                    dconsole.addl(this.traces[0]);
-                    this.traces = [];
-                }
+                if (this.trace_on)
+                    dbg.traces.add(TRACERS.SPC, this.clock.apu_has, this.trace_format(this.disassemble(), (this.regs.PC - 1) & 0xFFFF));
                 opcode_func(this, this.regs);
+                if (this.trace_on)
+                    this.trace_cycles += this.regs.opc_cycles;
             }
-            this.clock.apu_has += (this.regs.opc_cycles * 20);
-            this.trace_cycles += this.regs.opc_cycles;
+            this.clock.apu_deficit -= (this.regs.opc_cycles * 20);
             this.advance_timers(this.regs.opc_cycles);
-            this.regs.opc_cycles = 0;
+            this.regs.opc_cycles = 2; // Keep moving along some if there's an error so there's no infinite loops
         }
     }
 
-    read8(addr, has_effect=true) {
-        if ((addr >= 0x00F1) && (addr <= 0x00FF)) {
-            let r = this.readIO(addr, has_effect);
-            return r;
-        }
+    read8_normal(addr, has_effect=true) {
+        if ((addr >= 0x00F1) && (addr <= 0x00FF)) return this.readIO(addr, has_effect);
         if ((addr >= 0xFFC0) && this.io.ROM_readable) return this.ROM[addr - 0xFFC0];
         return this.RAM[addr & 0xFFFF];
     }
 
-    write8(addr, val) {
+    read8_trace(addr, has_effect=true) {
+        let r;
+        if ((addr >= 0x00F1) && (addr <= 0x00FF))
+            r = this.readIO(addr, has_effect);
+        else if ((addr >= 0xFFC0) && this.io.ROM_readable)
+            r = this.ROM[addr - 0xFFC0];
+        else
+            r = this.RAM[addr & 0xFFFF];
+
+        if (has_effect) dbg.traces.add(TRACERS.SPC, this.clock.apu_has, trace_format_read('SPC', SPC_COLOR, this.trace_cycles, addr, r));
+        return r;
+    }
+
+    write8_trace(addr, val) {
+        dbg.traces.add(TRACERS.SPC, this.clock.apu_has, trace_format_write('SPC', SPC_COLOR, this.trace_cycles, addr, val));
+        if ((addr >= 0x00F1) && (addr <= 0x00FF))
+            this.writeIO(addr, val);
+        this.RAM[addr & 0xFFFF] = val;
+    }
+
+    write8_normal(addr, val) {
         if ((addr >= 0x00F1) && (addr <= 0x00FF))
             this.writeIO(addr, val);
         this.RAM[addr & 0xFFFF] = val;
@@ -326,8 +350,16 @@ class spc700 {
         return this.read8((addr & 0xFF) + this.regs.P.DO);
     }
 
+    read8DN(addr) {
+        return this.read8(addr + this.regs.P.DO);
+    }
+
     write8D(addr, val) {
         this.write8((addr & 0xFF) + this.regs.P.DO, val);
+    }
+
+    write8DN(addr, val) {
+        this.write8(addr + this.regs.P.Do, val);
     }
 
     advance_timers(cycles) {
@@ -367,8 +399,9 @@ class spc700 {
         }
     }
 
+    // External device reading here, APU may need to catch up
     read_reg(addr, val) {
-        this.sync_to(this.clock.cpu_has);
+        this.catch_up();
         switch(addr & 3) {
             case 0:
                 return this.io.CPUO0;
@@ -382,6 +415,7 @@ class spc700 {
         }
     }
 
+    // External device writing here, APU may need to catch up
     write_reg(addr, val) {
         switch(addr & 3) {
             case 0:
@@ -397,7 +431,7 @@ class spc700 {
                 this.io.CPUI3 = val;
                 return;
         }
-        this.sync_to(this.clock.cpu_has);
+        this.catch_up();
     }
 }
 

@@ -42,6 +42,15 @@ function spc700_disassemble(cpu) {
 
 	PC += 1;
 	switch(parseInt(addr_mode)) {
+		case SPC_AM.RX_IMM: // X, #imm
+			output.disassembled += ' X, #$' + hread8(PC);
+			break;
+		case SPC_AM.A:
+			output.disassembled += ' !$' + hread16(PC);
+			break;
+		case SPC_AM.A16:
+			output.disassembled += ' !$' + hread16(PC);
+			break;
 		case SPC_AM.RA_IMM: // A, #imm
 			output.disassembled += ' A, #$' + hread8(PC);
 			break;
@@ -159,6 +168,9 @@ function spc700_disassemble(cpu) {
 				case 0xCD:
 					output.disassembled += ' X, #$' + hex2(read8(PC));
 					break;
+				case 0xD5:
+					output.disassembled += ' !$' + hread16(PC) + '+X, A';
+					break;
 				case 0xD7:
 					output.disassembled += ' [$' + hex2(read8(PC)) + ']+Y, A';
 					break;
@@ -188,6 +200,9 @@ function spc700_disassemble(cpu) {
 					break;
 				case 0xFB:
 					output.disassembled += ' Y, $' + hex2(read8(PC)) + '+X';
+					break;
+				case 0xFD:
+					output.disassembled += ' Y, A';
 					break;
 				default:
 					output.disassembled += ' UKN ' + hex2(opcode_info.opcode);
