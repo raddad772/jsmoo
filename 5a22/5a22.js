@@ -308,7 +308,7 @@ class ricoh5A22 {
 				}
 				this.set_nmi_bit(this.io.nmi_enable());
 
-				this.reschedule_scanline();
+				this.reschedule_scanline_irqbits();
 				this.status.irq_lock = 1;
 				return;
 			case 0x4202: // Multiplicand A
@@ -418,7 +418,39 @@ class ricoh5A22 {
 
 	// IRQ bits may have changed...
 	reschedule_scanline_irqbits() {
+		let e = null;
+		let old_irq_time = -1;
+		let old_irq_event = -1;
+		let new_irq_time = -1;
+		if (this.event_ptrs[IRQ] !== null) {
+			for (let i in this.events_list) {
+				if (this.events_list[i][1] === R5A22_events.IRQ) {
+					old_irq_time = this.events_list[i][0];
+					old_irq_event = i;
+					break;
+				}
+			}
+		}
+		if (this.io.hirq_enable && (!this.io.virq_enable || (this.io.virq_enable && this.io.vtime === scanline.ppu_y))) {
+			new_irq_time = 0 ? 10 : 14 + (this.io.htime * 4);
+			e = [this.io.htime === new_irq_time, R5A22_events.IRQ, false];
+			this.event_ptrs[R5A22_events.IRQ] = e;
+		}
+		else if (!this.io.hirq_enable && (this.io.virq_enable && this.io.vtime === scanline.ppu_y)) {
+			new_irq_time = 10;
+			e = [new_irq_time, R5A22_events.IRQ, false];
+			this.event_ptrs[R5A22_events.IRQ] = e;
+		}
+		// Check different permutations of rescheduling
 
+		// Don't reschedule if it hasn't changed
+		if (old_irq_time === new_irq_time) return;
+		// Don't reschedule if new time is after current scanline position
+		if (this.scanline.cycles_since_scanline_start > new_irq_time) return;
+		// delete if new -1
+		// create if old -1
+		// modify otherwise?
+		// re-sort list
 	}
 
 	// HDMA bits may have changed...
