@@ -326,8 +326,8 @@ function main() {
 	initDb(main2);
 }
 
-after_js = main;
+//after_js = main;
 //after_js = test_65c816;
 //after_js = generate_js;
-//after_js = test_pt_65c816;
+after_js = test_pt_65c816;
 //after_js = generate_js_SPC;

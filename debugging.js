@@ -1,5 +1,6 @@
 "use strict";
 
+let R5A22_DO_TRACING_AT_START = true;
 let WDC_DO_TRACING_AT_START = true;
 let SPC_DO_TRACING_AT_START = false;
 let TRACE_COLOR = true;
@@ -18,12 +19,14 @@ let WDC_TRACE_IO = false;
 let TRACE_INS_PADDING = 20;
 
 const TRACERS = Object.freeze({
-    WDC: 0,
-    SPC: 1
+    R5A22: 0,
+    SPC: 1,
+    WDC: 2
 });
 
 const TRACE_BG_COLORS = Object.freeze({
-    [TRACERS.WDC]: '#ddf',
+    [TRACERS.R5A22]: '#ddf',
+    [TRACERS.WDC]: '#dfd',
     [TRACERS.SPC]: '#fdd',
 })
 
@@ -62,7 +65,7 @@ class traces_t {
 
 //let traces = new traces_t();
 
-const D_RESOURCE_TYPES = Object.freeze({R5A22: 0, SPC700: 1});
+const D_RESOURCE_TYPES = Object.freeze({R5A22: 0, SPC700: 1, WDC65C816: 2});
 
 class breakpoint_t {
     constructor(resource_type, resource) {
@@ -119,6 +122,9 @@ class debugger_t {
     add_cpu(kind, cpu) {
         this.cpus[kind] = cpu;
         if (kind === D_RESOURCE_TYPES.R5A22) {
+            this.tracing_for[kind] = R5A22_DO_TRACING_AT_START;
+        }
+        else if (kind === D_RESOURCE_TYPES.WDC65C816) {
             this.tracing_for[kind] = WDC_DO_TRACING_AT_START;
         }
         else if (kind === D_RESOURCE_TYPES.SPC700) {

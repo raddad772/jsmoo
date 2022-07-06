@@ -2,19 +2,22 @@
 
 // BIG TODO: implement diff-based RPDV, so pins are not set and reset SO MUCH
 
+
 // PROBLEMS
 // Code generation is complete. BUT:
 // Large code generation
 // * Direct addressing not correct when DL != 0 in Emulation mode
 //   * expected behavior: DL=0 means always zero page, DL!=0 means page boundaries can be crossed
-// * Absolute Indexed should be able to cross banks
-//   * yes not pages but BANKS
-// * MVP, MVN assume 16-bit. They are not tested, but if they did work, they will not in 8-bit.
-// * JMP (a) JML(a) use DBR? JMP (a,x) JSR(a)x) PBR?
-// * NMI etc. need logic
-// * Perhaps revise PRDV to just VD, RW, and make vector pull separate since it only happens in one place
-//  * this is done, but still, TODO: check any skipped_cycles don't break RPDV now, since RPDV added
-//    "intelligence"
+// * Actually lots of addressing issues in emulation mode
+// * MVP, MVN assume 16-bit. Only tested for 16-bit
+// * NMI etc. need logic. REP #04, SEP #04, CLI, SEI should update flags
+//    on last cycle, BEFORE IRQ poll/opcode fetch.
+// * process of opcode cycle should change to:
+//    1) check IRQ held 2 cycles, check NMI held 2 cycles
+//    2) elsewise fetch opcode
+// * do this by counting cycles at a certain state I guess?
+// * and NMI keep track of last trigger level?
+// * this.check_irq()
 // * RESET does not restart a STP'd processor like it should
 
 
@@ -108,23 +111,23 @@ let CONSOLE_TRACE = true;
 
 function get_vector(ins, E) {
     switch(ins) {
-        case OM.BRK:
+        case WDC_OM.BRK:
             if (E)
                 return VEC.BRK_E;
             return VEC.BRK_N;
-        case OM.COP:
+        case WDC_OM.COP:
             if (E)
                 return VEC.COP_E;
             return VEC.COP_N;
-        case OM.S_IRQ:
+        case WDC_OM.S_IRQ:
             if (E)
                 return VEC.IRQ_E;
             return VEC.IRQ_N;
-        case OM.S_ABORT:
+        case WDC_OM.S_ABORT:
             if (E)
                 return VEC.ABORT_E;
             return VEC.ABORT_N;
-        case OM.S_NMI:
+        case WDC_OM.S_NMI:
             if (E)
                 return VEC.NMI_E;
             return VEC.NMI_N;
@@ -148,8 +151,8 @@ function check_addressing_matrix() {
     for (let i = 0; i < 256; i++) {
         ourthere[i] = false;
     }
-    for (let i in opcode_AM_R) {
-        let opcodes = opcode_AM_R[i];
+    for (let i in WDC_opcode_AM_R) {
+        let opcodes = WDC_opcode_AM_R[i];
         for (let j = 0; j < opcodes.length; j++) {
             let opcode = opcodes[j];
             testourset(opcode, ourset, ourthere, opcodes, opcode_AM_MN[j]);
@@ -178,11 +181,11 @@ function check_mnemonic_matrix() {
     for (let i = 0; i < 256; i++) {
         ourthere[i] = false;
     }
-    for (let i in opcode_MN_R) {
-        let opcodes = opcode_MN_R[i];
+    for (let i in WDC_opcode_MN_R) {
+        let opcodes = WDC_opcode_MN_R[i];
         for (let j in opcodes) {
             let opcode = opcodes[j];
-            testourset(opcode, ourset, ourthere, opcodes, opcode_MN[j]);
+            testourset(opcode, ourset, ourthere, opcodes, WDC_OP_MN_str[j]);
         }
     }
     for(let i = 0; i < 256; i++) {
@@ -206,18 +209,18 @@ class opcode_info {
 
 function ins_backwards(ins) {
     ins = parseInt(ins);
-    for (let j in OM) {
-        if (OM[j] === ins)
-            return 'OM.' + j;
+    for (let j in WDC_OM) {
+        if (WDC_OM[j] === ins)
+            return 'WDC_OM.' + j;
     }
     return 'UNKNOWN';
 }
 
 function addr_backwards(addr_mode) {
     addr_mode = parseInt(addr_mode);
-    for (let j in AM) {
-        if (AM[j] === addr_mode)
-            return 'AM.' + j;
+    for (let j in WDC_AM) {
+        if (WDC_AM[j] === addr_mode)
+            return 'WDC_AM.' + j;
     }
     return 'UNKNOWN';
 }
@@ -225,287 +228,289 @@ function addr_backwards(addr_mode) {
 function generate_opcodes_struct(indent) {
     let outstr = indent + 'const opcode_matrix = Object.freeze({\n';
     let has_been = false;
-    for (let opcode = 0; opcode <= MAX_OPCODE; opcode++) {
+    for (let opcode = 0; opcode <= WDC_MAX_OPCODE; opcode++) {
         if (has_been)
             outstr += ',\n';
         has_been = true;
-        let ins = array_of_array_contains(opcode_MN_R, opcode);
-        let addr_mode = array_of_array_contains(opcode_AM_R, opcode);
-        let addr_mode_split = array_of_array_contains(opcode_AM_SPLIT_R, opcode);
+        let ins = array_of_array_contains(WDC_opcode_MN_R, opcode);
+        let addr_mode = array_of_array_contains(WDC_opcode_AM_R, opcode);
+        let addr_mode_split = array_of_array_contains(WDC_opcode_AM_SPLIT_R, opcode);
         if (ins === -1 || addr_mode === -1 || addr_mode_split === -1) {
             console.log('FAILED CONSTRUCTION could not find opcode ', hex2(opcode), ins, addr_mode, addr_mode_split);
             return '';
         }
-        let thistr = indent + '    0x' + hex2(opcode) + ': new opcode_info(0x' + hex2(opcode) + ', ' + ins_backwards(ins) + ', ' + addr_backwards(addr_mode_split) + ', "' + opcode_MN[ins] + ' ' + opcode_AM_MN[addr_mode] + '")'
+        let thistr = indent + '    0x' + hex2(opcode) + ': new opcode_info(0x' + hex2(opcode) + ', ' + ins_backwards(ins) + ', ' + addr_backwards(addr_mode_split) + ', "' + WDC_OP_MN_str[ins] + ' ' + opcode_AM_MN[addr_mode] + '")'
         outstr += thistr;
     }
     outstr += '\n' + indent + '});'
     return outstr;
 }
 
+
 // created by
-// console.log(generate_opcodes_struct());
+//console.log(generate_opcodes_struct(''));
+
 const opcode_matrix = Object.freeze({
-    0x00: new opcode_info(0x00, OM.BRK, AM.STACKj, "BRK s"),
-    0x01: new opcode_info(0x01, OM.ORA, AM.D_INDEXED_IND, "ORA (d,x)"),
-    0x02: new opcode_info(0x02, OM.COP, AM.STACKj, "COP s"),
-    0x03: new opcode_info(0x03, OM.ORA, AM.STACK_R, "ORA d,s"),
-    0x04: new opcode_info(0x04, OM.TSB, AM.Db, "TSB d"),
-    0x05: new opcode_info(0x05, OM.ORA, AM.D, "ORA d"),
-    0x06: new opcode_info(0x06, OM.ASL, AM.Db, "ASL d"),
-    0x07: new opcode_info(0x07, OM.ORA, AM.D_IND_L, "ORA [d]"),
-    0x08: new opcode_info(0x08, OM.PHP, AM.STACKc, "PHP s"),
-    0x09: new opcode_info(0x09, OM.ORA, AM.IMM, "ORA #"),
-    0x0A: new opcode_info(0x0A, OM.ASL, AM.ACCUM, "ASL A"),
-    0x0B: new opcode_info(0x0B, OM.PHD, AM.STACKc, "PHD s"),
-    0x0C: new opcode_info(0x0C, OM.TSB, AM.Ad, "TSB a"),
-    0x0D: new opcode_info(0x0D, OM.ORA, AM.A, "ORA a"),
-    0x0E: new opcode_info(0x0E, OM.ASL, AM.Ad, "ASL a"),
-    0x0F: new opcode_info(0x0F, OM.ORA, AM.AL, "ORA al"),
-    0x10: new opcode_info(0x10, OM.BPL, AM.PC_R, "BPL r"),
-    0x11: new opcode_info(0x11, OM.ORA, AM.D_IND_INDEXED, "ORA (d),y"),
-    0x12: new opcode_info(0x12, OM.ORA, AM.D_IND, "ORA (d)"),
-    0x13: new opcode_info(0x13, OM.ORA, AM.STACK_R_IND_INDEXED, "ORA (d,s),y"),
-    0x14: new opcode_info(0x14, OM.TRB, AM.Db, "TRB d"),
-    0x15: new opcode_info(0x15, OM.ORA, AM.D_INDEXED_X, "ORA d,x"),
-    0x16: new opcode_info(0x16, OM.ASL, AM.D_INDEXED_Xb, "ASL d,x"),
-    0x17: new opcode_info(0x17, OM.ORA, AM.D_IND_L_INDEXED, "ORA [d],y"),
-    0x18: new opcode_info(0x18, OM.CLC, AM.I, "CLC i"),
-    0x19: new opcode_info(0x19, OM.ORA, AM.A_INDEXED_Y, "ORA a,y"),
-    0x1A: new opcode_info(0x1A, OM.INC, AM.ACCUM, "INC A"),
-    0x1B: new opcode_info(0x1B, OM.TCS, AM.I, "TCS i"),
-    0x1C: new opcode_info(0x1C, OM.TRB, AM.Ad, "TRB a"),
-    0x1D: new opcode_info(0x1D, OM.ORA, AM.A_INDEXED_X, "ORA a,x"),
-    0x1E: new opcode_info(0x1E, OM.ASL, AM.A_INDEXED_Xb, "ASL a,x"),
-    0x1F: new opcode_info(0x1F, OM.ORA, AM.AL_INDEXED_X, "ORA al,x"),
-    0x20: new opcode_info(0x20, OM.JSR, AM.Ac, "JSR a"),
-    0x21: new opcode_info(0x21, OM.AND, AM.D_INDEXED_IND, "AND (d,x)"),
-    0x22: new opcode_info(0x22, OM.JSL, AM.ALc, "JSL al"),
-    0x23: new opcode_info(0x23, OM.AND, AM.STACK_R, "AND d,s"),
-    0x24: new opcode_info(0x24, OM.BIT, AM.D, "BIT d"),
-    0x25: new opcode_info(0x25, OM.AND, AM.D, "AND d"),
-    0x26: new opcode_info(0x26, OM.ROL, AM.Db, "ROL d"),
-    0x27: new opcode_info(0x27, OM.AND, AM.D_IND_L, "AND [d]"),
-    0x28: new opcode_info(0x28, OM.PLP, AM.STACKb, "PLP s"),
-    0x29: new opcode_info(0x29, OM.AND, AM.IMM, "AND #"),
-    0x2A: new opcode_info(0x2A, OM.ROL, AM.ACCUM, "ROL A"),
-    0x2B: new opcode_info(0x2B, OM.PLD, AM.STACKb, "PLD s"),
-    0x2C: new opcode_info(0x2C, OM.BIT, AM.A, "BIT a"),
-    0x2D: new opcode_info(0x2D, OM.AND, AM.A, "AND a"),
-    0x2E: new opcode_info(0x2E, OM.ROL, AM.Ad, "ROL a"),
-    0x2F: new opcode_info(0x2F, OM.AND, AM.AL, "AND al"),
-    0x30: new opcode_info(0x30, OM.BMI, AM.PC_R, "BMI r"),
-    0x31: new opcode_info(0x31, OM.AND, AM.D_IND_INDEXED, "AND (d),y"),
-    0x32: new opcode_info(0x32, OM.AND, AM.D_IND, "AND (d)"),
-    0x33: new opcode_info(0x33, OM.AND, AM.STACK_R_IND_INDEXED, "AND (d,s),y"),
-    0x34: new opcode_info(0x34, OM.BIT, AM.D_INDEXED_X, "BIT d,x"),
-    0x35: new opcode_info(0x35, OM.AND, AM.D_INDEXED_X, "AND d,x"),
-    0x36: new opcode_info(0x36, OM.ROL, AM.D_INDEXED_Xb, "ROL d,x"),
-    0x37: new opcode_info(0x37, OM.AND, AM.D_IND_L_INDEXED, "AND [d],y"),
-    0x38: new opcode_info(0x38, OM.SEC, AM.I, "SEC i"),
-    0x39: new opcode_info(0x39, OM.AND, AM.A_INDEXED_Y, "AND a,y"),
-    0x3A: new opcode_info(0x3A, OM.DEC, AM.ACCUM, "DEC A"),
-    0x3B: new opcode_info(0x3B, OM.TSC, AM.I, "TSC i"),
-    0x3C: new opcode_info(0x3C, OM.BIT, AM.A_INDEXED_X, "BIT a,x"),
-    0x3D: new opcode_info(0x3D, OM.AND, AM.A_INDEXED_X, "AND a,x"),
-    0x3E: new opcode_info(0x3E, OM.ROL, AM.A_INDEXED_Xb, "ROL a,x"),
-    0x3F: new opcode_info(0x3F, OM.AND, AM.AL_INDEXED_X, "AND al,x"),
-    0x40: new opcode_info(0x40, OM.RTI, AM.STACKg, "RTI s"),
-    0x41: new opcode_info(0x41, OM.EOR, AM.D_INDEXED_IND, "EOR (d,x)"),
-    0x42: new opcode_info(0x42, OM.WDM, AM.I, "WDM i"),
-    0x43: new opcode_info(0x43, OM.EOR, AM.STACK_R, "EOR d,s"),
-    0x44: new opcode_info(0x44, OM.MVP, AM.XYCb, "MVP xyc"),
-    0x45: new opcode_info(0x45, OM.EOR, AM.D, "EOR d"),
-    0x46: new opcode_info(0x46, OM.LSR, AM.Db, "LSR d"),
-    0x47: new opcode_info(0x47, OM.EOR, AM.D_IND_L, "EOR [d]"),
-    0x48: new opcode_info(0x48, OM.PHA, AM.STACKc, "PHA s"),
-    0x49: new opcode_info(0x49, OM.EOR, AM.IMM, "EOR #"),
-    0x4A: new opcode_info(0x4A, OM.LSR, AM.ACCUM, "LSR A"),
-    0x4B: new opcode_info(0x4B, OM.PHK, AM.STACKc, "PHK s"),
-    0x4C: new opcode_info(0x4C, OM.JMP, AM.Ab, "JMP a"),
-    0x4D: new opcode_info(0x4D, OM.EOR, AM.A, "EOR a"),
-    0x4E: new opcode_info(0x4E, OM.LSR, AM.Ad, "LSR a"),
-    0x4F: new opcode_info(0x4F, OM.EOR, AM.AL, "EOR al"),
-    0x50: new opcode_info(0x50, OM.BVC, AM.PC_R, "BVC r"),
-    0x51: new opcode_info(0x51, OM.EOR, AM.D_IND_INDEXED, "EOR (d),y"),
-    0x52: new opcode_info(0x52, OM.EOR, AM.D_IND, "EOR (d)"),
-    0x53: new opcode_info(0x53, OM.EOR, AM.STACK_R_IND_INDEXED, "EOR (d,s),y"),
-    0x54: new opcode_info(0x54, OM.MVN, AM.XYC, "MVN xyc"),
-    0x55: new opcode_info(0x55, OM.EOR, AM.D_INDEXED_X, "EOR d,x"),
-    0x56: new opcode_info(0x56, OM.LSR, AM.D_INDEXED_Xb, "LSR d,x"),
-    0x57: new opcode_info(0x57, OM.EOR, AM.D_IND_L_INDEXED, "EOR [d],y"),
-    0x58: new opcode_info(0x58, OM.CLI, AM.I, "CLI i"),
-    0x59: new opcode_info(0x59, OM.EOR, AM.A_INDEXED_Y, "EOR a,y"),
-    0x5A: new opcode_info(0x5A, OM.PHY, AM.STACKc, "PHY s"),
-    0x5B: new opcode_info(0x5B, OM.TCD, AM.I, "TCD i"),
-    0x5C: new opcode_info(0x5C, OM.JMP, AM.ALb, "JMP al"),
-    0x5D: new opcode_info(0x5D, OM.EOR, AM.A_INDEXED_X, "EOR a,x"),
-    0x5E: new opcode_info(0x5E, OM.LSR, AM.A_INDEXED_Xb, "LSR a,x"),
-    0x5F: new opcode_info(0x5F, OM.EOR, AM.AL_INDEXED_X, "EOR al,x"),
-    0x60: new opcode_info(0x60, OM.RTS, AM.STACKh, "RTS s"),
-    0x61: new opcode_info(0x61, OM.ADC, AM.D_INDEXED_IND, "ADC (d,x)"),
-    0x62: new opcode_info(0x62, OM.PER, AM.STACKf, "PER s"),
-    0x63: new opcode_info(0x63, OM.ADC, AM.STACK_R, "ADC d,s"),
-    0x64: new opcode_info(0x64, OM.STZ, AM.D, "STZ d"),
-    0x65: new opcode_info(0x65, OM.ADC, AM.D, "ADC d"),
-    0x66: new opcode_info(0x66, OM.ROR, AM.Db, "ROR d"),
-    0x67: new opcode_info(0x67, OM.ADC, AM.D_IND_L, "ADC [d]"),
-    0x68: new opcode_info(0x68, OM.PLA, AM.STACKb, "PLA s"),
-    0x69: new opcode_info(0x69, OM.ADC, AM.IMM, "ADC #"),
-    0x6A: new opcode_info(0x6A, OM.ROR, AM.ACCUM, "ROR A"),
-    0x6B: new opcode_info(0x6B, OM.RTL, AM.STACKi, "RTL s"),
-    0x6C: new opcode_info(0x6C, OM.JMP, AM.A_INDb, "JMP (a)"),
-    0x6D: new opcode_info(0x6D, OM.ADC, AM.A, "ADC a"),
-    0x6E: new opcode_info(0x6E, OM.ROR, AM.Ad, "ROR a"),
-    0x6F: new opcode_info(0x6F, OM.ADC, AM.AL, "ADC al"),
-    0x70: new opcode_info(0x70, OM.BVS, AM.PC_R, "BVS r"),
-    0x71: new opcode_info(0x71, OM.ADC, AM.D_IND_INDEXED, "ADC (d),y"),
-    0x72: new opcode_info(0x72, OM.ADC, AM.D_IND, "ADC (d)"),
-    0x73: new opcode_info(0x73, OM.ADC, AM.STACK_R_IND_INDEXED, "ADC (d,s),y"),
-    0x74: new opcode_info(0x74, OM.STZ, AM.D_INDEXED_X, "STZ d,x"),
-    0x75: new opcode_info(0x75, OM.ADC, AM.D_INDEXED_X, "ADC d,x"),
-    0x76: new opcode_info(0x76, OM.ROR, AM.D_INDEXED_Xb, "ROR d,x"),
-    0x77: new opcode_info(0x77, OM.ADC, AM.D_IND_L_INDEXED, "ADC [d],y"),
-    0x78: new opcode_info(0x78, OM.SEI, AM.I, "SEI i"),
-    0x79: new opcode_info(0x79, OM.ADC, AM.A_INDEXED_Y, "ADC a,y"),
-    0x7A: new opcode_info(0x7A, OM.PLY, AM.STACKb, "PLY s"),
-    0x7B: new opcode_info(0x7B, OM.TDC, AM.I, "TDC i"),
-    0x7C: new opcode_info(0x7C, OM.JMP, AM.A_INDEXED_IND, "JMP (a,x)"),
-    0x7D: new opcode_info(0x7D, OM.ADC, AM.A_INDEXED_X, "ADC a,x"),
-    0x7E: new opcode_info(0x7E, OM.ROR, AM.A_INDEXED_Xb, "ROR a,x"),
-    0x7F: new opcode_info(0x7F, OM.ADC, AM.AL_INDEXED_X, "ADC al,x"),
-    0x80: new opcode_info(0x80, OM.BRA, AM.PC_R, "BRA r"),
-    0x81: new opcode_info(0x81, OM.STA, AM.D_INDEXED_IND, "STA (d,x)"),
-    0x82: new opcode_info(0x82, OM.BRL, AM.PC_RL, "BRL rl"),
-    0x83: new opcode_info(0x83, OM.STA, AM.STACK_R, "STA d,s"),
-    0x84: new opcode_info(0x84, OM.STY, AM.D, "STY d"),
-    0x85: new opcode_info(0x85, OM.STA, AM.D, "STA d"),
-    0x86: new opcode_info(0x86, OM.STX, AM.D, "STX d"),
-    0x87: new opcode_info(0x87, OM.STA, AM.D_IND_L, "STA [d]"),
-    0x88: new opcode_info(0x88, OM.DEY, AM.I, "DEY i"),
-    0x89: new opcode_info(0x89, OM.BIT, AM.IMM, "BIT #"),
-    0x8A: new opcode_info(0x8A, OM.TXA, AM.I, "TXA i"),
-    0x8B: new opcode_info(0x8B, OM.PHB, AM.STACKc, "PHB s"),
-    0x8C: new opcode_info(0x8C, OM.STY, AM.A, "STY a"),
-    0x8D: new opcode_info(0x8D, OM.STA, AM.A, "STA a"),
-    0x8E: new opcode_info(0x8E, OM.STX, AM.A, "STX a"),
-    0x8F: new opcode_info(0x8F, OM.STA, AM.AL, "STA al"),
-    0x90: new opcode_info(0x90, OM.BCC, AM.PC_R, "BCC r"),
-    0x91: new opcode_info(0x91, OM.STA, AM.D_IND_INDEXED, "STA (d),y"),
-    0x92: new opcode_info(0x92, OM.STA, AM.D_IND, "STA (d)"),
-    0x93: new opcode_info(0x93, OM.STA, AM.STACK_R_IND_INDEXED, "STA (d,s),y"),
-    0x94: new opcode_info(0x94, OM.STY, AM.D_INDEXED_X, "STY d,x"),
-    0x95: new opcode_info(0x95, OM.STA, AM.D_INDEXED_X, "STA d,x"),
-    0x96: new opcode_info(0x96, OM.STX, AM.D_INDEXED_Y, "STX d,y"),
-    0x97: new opcode_info(0x97, OM.STA, AM.D_IND_L_INDEXED, "STA [d],y"),
-    0x98: new opcode_info(0x98, OM.TYA, AM.I, "TYA i"),
-    0x99: new opcode_info(0x99, OM.STA, AM.A_INDEXED_Y, "STA a,y"),
-    0x9A: new opcode_info(0x9A, OM.TXS, AM.I, "TXS i"),
-    0x9B: new opcode_info(0x9B, OM.TXY, AM.I, "TXY i"),
-    0x9C: new opcode_info(0x9C, OM.STZ, AM.A, "STZ a"),
-    0x9D: new opcode_info(0x9D, OM.STA, AM.A_INDEXED_X, "STA a,x"),
-    0x9E: new opcode_info(0x9E, OM.STZ, AM.A_INDEXED_X, "STZ a,x"),
-    0x9F: new opcode_info(0x9F, OM.STA, AM.AL_INDEXED_X, "STA al,x"),
-    0xA0: new opcode_info(0xA0, OM.LDY, AM.IMM, "LDY #"),
-    0xA1: new opcode_info(0xA1, OM.LDA, AM.D_INDEXED_IND, "LDA (d,x)"),
-    0xA2: new opcode_info(0xA2, OM.LDX, AM.IMM, "LDX #"),
-    0xA3: new opcode_info(0xA3, OM.LDA, AM.STACK_R, "LDA d,s"),
-    0xA4: new opcode_info(0xA4, OM.LDY, AM.D, "LDY d"),
-    0xA5: new opcode_info(0xA5, OM.LDA, AM.D, "LDA d"),
-    0xA6: new opcode_info(0xA6, OM.LDX, AM.D, "LDX d"),
-    0xA7: new opcode_info(0xA7, OM.LDA, AM.D_IND_L, "LDA [d]"),
-    0xA8: new opcode_info(0xA8, OM.TAY, AM.I, "TAY i"),
-    0xA9: new opcode_info(0xA9, OM.LDA, AM.IMM, "LDA #"),
-    0xAA: new opcode_info(0xAA, OM.TAX, AM.I, "TAX i"),
-    0xAB: new opcode_info(0xAB, OM.PLB, AM.STACKb, "PLB s"),
-    0xAC: new opcode_info(0xAC, OM.LDY, AM.A, "LDY a"),
-    0xAD: new opcode_info(0xAD, OM.LDA, AM.A, "LDA a"),
-    0xAE: new opcode_info(0xAE, OM.LDX, AM.A, "LDX a"),
-    0xAF: new opcode_info(0xAF, OM.LDA, AM.AL, "LDA al"),
-    0xB0: new opcode_info(0xB0, OM.BCS, AM.PC_R, "BCS r"),
-    0xB1: new opcode_info(0xB1, OM.LDA, AM.D_IND_INDEXED, "LDA (d),y"),
-    0xB2: new opcode_info(0xB2, OM.LDA, AM.D_IND, "LDA (d)"),
-    0xB3: new opcode_info(0xB3, OM.LDA, AM.STACK_R_IND_INDEXED, "LDA (d,s),y"),
-    0xB4: new opcode_info(0xB4, OM.LDY, AM.D_INDEXED_X, "LDY d,x"),
-    0xB5: new opcode_info(0xB5, OM.LDA, AM.D_INDEXED_X, "LDA d,x"),
-    0xB6: new opcode_info(0xB6, OM.LDX, AM.D_INDEXED_Y, "LDX d,y"),
-    0xB7: new opcode_info(0xB7, OM.LDA, AM.D_IND_L_INDEXED, "LDA [d],y"),
-    0xB8: new opcode_info(0xB8, OM.CLV, AM.I, "CLV i"),
-    0xB9: new opcode_info(0xB9, OM.LDA, AM.A_INDEXED_Y, "LDA a,y"),
-    0xBA: new opcode_info(0xBA, OM.TSX, AM.I, "TSX i"),
-    0xBB: new opcode_info(0xBB, OM.TYX, AM.I, "TYX i"),
-    0xBC: new opcode_info(0xBC, OM.LDY, AM.A_INDEXED_X, "LDY a,x"),
-    0xBD: new opcode_info(0xBD, OM.LDA, AM.A_INDEXED_X, "LDA a,x"),
-    0xBE: new opcode_info(0xBE, OM.LDX, AM.A_INDEXED_Y, "LDX a,y"),
-    0xBF: new opcode_info(0xBF, OM.LDA, AM.AL_INDEXED_X, "LDA al,x"),
-    0xC0: new opcode_info(0xC0, OM.CPY, AM.IMM, "CPY #"),
-    0xC1: new opcode_info(0xC1, OM.CMP, AM.D_INDEXED_IND, "CMP (d,x)"),
-    0xC2: new opcode_info(0xC2, OM.REP, AM.IMM, "REP #"),
-    0xC3: new opcode_info(0xC3, OM.CMP, AM.STACK_R, "CMP d,s"),
-    0xC4: new opcode_info(0xC4, OM.CPY, AM.D, "CPY d"),
-    0xC5: new opcode_info(0xC5, OM.CMP, AM.D, "CMP d"),
-    0xC6: new opcode_info(0xC6, OM.DEC, AM.Db, "DEC d"),
-    0xC7: new opcode_info(0xC7, OM.CMP, AM.D_IND_L, "CMP [d]"),
-    0xC8: new opcode_info(0xC8, OM.INY, AM.I, "INY i"),
-    0xC9: new opcode_info(0xC9, OM.CMP, AM.IMM, "CMP #"),
-    0xCA: new opcode_info(0xCA, OM.DEX, AM.I, "DEX i"),
-    0xCB: new opcode_info(0xCB, OM.WAI, AM.Id, "WAI i"),
-    0xCC: new opcode_info(0xCC, OM.CPY, AM.A, "CPY a"),
-    0xCD: new opcode_info(0xCD, OM.CMP, AM.A, "CMP a"),
-    0xCE: new opcode_info(0xCE, OM.DEC, AM.Ad, "DEC a"),
-    0xCF: new opcode_info(0xCF, OM.CMP, AM.AL, "CMP al"),
-    0xD0: new opcode_info(0xD0, OM.BNE, AM.PC_R, "BNE r"),
-    0xD1: new opcode_info(0xD1, OM.CMP, AM.D_IND_INDEXED, "CMP (d),y"),
-    0xD2: new opcode_info(0xD2, OM.CMP, AM.D_IND, "CMP (d)"),
-    0xD3: new opcode_info(0xD3, OM.CMP, AM.STACK_R_IND_INDEXED, "CMP (d,s),y"),
-    0xD4: new opcode_info(0xD4, OM.PEI, AM.STACKe, "PEI s"),
-    0xD5: new opcode_info(0xD5, OM.CMP, AM.D_INDEXED_X, "CMP d,x"),
-    0xD6: new opcode_info(0xD6, OM.DEC, AM.D_INDEXED_Xb, "DEC d,x"),
-    0xD7: new opcode_info(0xD7, OM.CMP, AM.D_IND_L_INDEXED, "CMP [d],y"),
-    0xD8: new opcode_info(0xD8, OM.CLD, AM.I, "CLD i"),
-    0xD9: new opcode_info(0xD9, OM.CMP, AM.A_INDEXED_Y, "CMP a,y"),
-    0xDA: new opcode_info(0xDA, OM.PHX, AM.STACKc, "PHX s"),
-    0xDB: new opcode_info(0xDB, OM.STP, AM.Ic, "STP i"),
-    0xDC: new opcode_info(0xDC, OM.JML, AM.A_IND, "JML (a)"),
-    0xDD: new opcode_info(0xDD, OM.CMP, AM.A_INDEXED_X, "CMP a,x"),
-    0xDE: new opcode_info(0xDE, OM.DEC, AM.A_INDEXED_Xb, "DEC a,x"),
-    0xDF: new opcode_info(0xDF, OM.CMP, AM.AL_INDEXED_X, "CMP al,x"),
-    0xE0: new opcode_info(0xE0, OM.CPX, AM.IMM, "CPX #"),
-    0xE1: new opcode_info(0xE1, OM.SBC, AM.D_INDEXED_IND, "SBC (d,x)"),
-    0xE2: new opcode_info(0xE2, OM.SEP, AM.IMM, "SEP #"),
-    0xE3: new opcode_info(0xE3, OM.SBC, AM.STACK_R, "SBC d,s"),
-    0xE4: new opcode_info(0xE4, OM.CPX, AM.D, "CPX d"),
-    0xE5: new opcode_info(0xE5, OM.SBC, AM.D, "SBC d"),
-    0xE6: new opcode_info(0xE6, OM.INC, AM.Db, "INC d"),
-    0xE7: new opcode_info(0xE7, OM.SBC, AM.D_IND_L, "SBC [d]"),
-    0xE8: new opcode_info(0xE8, OM.INX, AM.I, "INX i"),
-    0xE9: new opcode_info(0xE9, OM.SBC, AM.IMM, "SBC #"),
-    0xEA: new opcode_info(0xEA, OM.NOP, AM.I, "NOP i"),
-    0xEB: new opcode_info(0xEB, OM.XBA, AM.Ib, "XBA i"),
-    0xEC: new opcode_info(0xEC, OM.CPX, AM.A, "CPX a"),
-    0xED: new opcode_info(0xED, OM.SBC, AM.A, "SBC a"),
-    0xEE: new opcode_info(0xEE, OM.INC, AM.Ad, "INC a"),
-    0xEF: new opcode_info(0xEF, OM.SBC, AM.AL, "SBC al"),
-    0xF0: new opcode_info(0xF0, OM.BEQ, AM.PC_R, "BEQ r"),
-    0xF1: new opcode_info(0xF1, OM.SBC, AM.D_IND_INDEXED, "SBC (d),y"),
-    0xF2: new opcode_info(0xF2, OM.SBC, AM.D_IND, "SBC (d)"),
-    0xF3: new opcode_info(0xF3, OM.SBC, AM.STACK_R_IND_INDEXED, "SBC (d,s),y"),
-    0xF4: new opcode_info(0xF4, OM.PEA, AM.STACKd, "PEA s"),
-    0xF5: new opcode_info(0xF5, OM.SBC, AM.D_INDEXED_X, "SBC d,x"),
-    0xF6: new opcode_info(0xF6, OM.INC, AM.D_INDEXED_Xb, "INC d,x"),
-    0xF7: new opcode_info(0xF7, OM.SBC, AM.D_IND_L_INDEXED, "SBC [d],y"),
-    0xF8: new opcode_info(0xF8, OM.SED, AM.I, "SED i"),
-    0xF9: new opcode_info(0xF9, OM.SBC, AM.A_INDEXED_Y, "SBC a,y"),
-    0xFA: new opcode_info(0xFA, OM.PLX, AM.STACKb, "PLX s"),
-    0xFB: new opcode_info(0xFB, OM.XCE, AM.I, "XCE i"),
-    0xFC: new opcode_info(0xFC, OM.JSR, AM.A_INDEXED_INDb, "JSR (a,x)"),
-    0xFD: new opcode_info(0xFD, OM.SBC, AM.A_INDEXED_X, "SBC a,x"),
-    0xFE: new opcode_info(0xFE, OM.INC, AM.A_INDEXED_Xb, "INC a,x"),
-    0xFF: new opcode_info(0xFF, OM.SBC, AM.AL_INDEXED_X, "SBC al,x"),
-    0x100: new opcode_info(0x100, OM.S_RESET, AM.STACK, "RESET s"),
-    0x101: new opcode_info(0x101, OM.S_ABORT, AM.STACK, "ABORT s"),
-    0x102: new opcode_info(0x102, OM.S_IRQ, AM.STACK, "IRQ s"),
-    0x103: new opcode_info(0x103, OM.S_NMI, AM.STACK, "NMI s")
+    0x00: new opcode_info(0x00, WDC_OM.BRK, WDC_AM.STACKj, "BRK s"),
+    0x01: new opcode_info(0x01, WDC_OM.ORA, WDC_AM.D_INDEXED_IND, "ORA (d,x)"),
+    0x02: new opcode_info(0x02, WDC_OM.COP, WDC_AM.STACKj, "COP s"),
+    0x03: new opcode_info(0x03, WDC_OM.ORA, WDC_AM.STACK_R, "ORA d,s"),
+    0x04: new opcode_info(0x04, WDC_OM.TSB, WDC_AM.Db, "TSB d"),
+    0x05: new opcode_info(0x05, WDC_OM.ORA, WDC_AM.D, "ORA d"),
+    0x06: new opcode_info(0x06, WDC_OM.ASL, WDC_AM.Db, "ASL d"),
+    0x07: new opcode_info(0x07, WDC_OM.ORA, WDC_AM.D_IND_L, "ORA [d]"),
+    0x08: new opcode_info(0x08, WDC_OM.PHP, WDC_AM.STACKc, "PHP s"),
+    0x09: new opcode_info(0x09, WDC_OM.ORA, WDC_AM.IMM, "ORA #"),
+    0x0A: new opcode_info(0x0A, WDC_OM.ASL, WDC_AM.ACCUM, "ASL A"),
+    0x0B: new opcode_info(0x0B, WDC_OM.PHD, WDC_AM.STACKc, "PHD s"),
+    0x0C: new opcode_info(0x0C, WDC_OM.TSB, WDC_AM.Ad, "TSB a"),
+    0x0D: new opcode_info(0x0D, WDC_OM.ORA, WDC_AM.A, "ORA a"),
+    0x0E: new opcode_info(0x0E, WDC_OM.ASL, WDC_AM.Ad, "ASL a"),
+    0x0F: new opcode_info(0x0F, WDC_OM.ORA, WDC_AM.AL, "ORA al"),
+    0x10: new opcode_info(0x10, WDC_OM.BPL, WDC_AM.PC_R, "BPL r"),
+    0x11: new opcode_info(0x11, WDC_OM.ORA, WDC_AM.D_IND_INDEXED, "ORA (d),y"),
+    0x12: new opcode_info(0x12, WDC_OM.ORA, WDC_AM.D_IND, "ORA (d)"),
+    0x13: new opcode_info(0x13, WDC_OM.ORA, WDC_AM.STACK_R_IND_INDEXED, "ORA (d,s),y"),
+    0x14: new opcode_info(0x14, WDC_OM.TRB, WDC_AM.Db, "TRB d"),
+    0x15: new opcode_info(0x15, WDC_OM.ORA, WDC_AM.D_INDEXED_X, "ORA d,x"),
+    0x16: new opcode_info(0x16, WDC_OM.ASL, WDC_AM.D_INDEXED_Xb, "ASL d,x"),
+    0x17: new opcode_info(0x17, WDC_OM.ORA, WDC_AM.D_IND_L_INDEXED, "ORA [d],y"),
+    0x18: new opcode_info(0x18, WDC_OM.CLC, WDC_AM.I, "CLC i"),
+    0x19: new opcode_info(0x19, WDC_OM.ORA, WDC_AM.A_INDEXED_Y, "ORA a,y"),
+    0x1A: new opcode_info(0x1A, WDC_OM.INC, WDC_AM.ACCUM, "INC A"),
+    0x1B: new opcode_info(0x1B, WDC_OM.TCS, WDC_AM.I, "TCS i"),
+    0x1C: new opcode_info(0x1C, WDC_OM.TRB, WDC_AM.Ad, "TRB a"),
+    0x1D: new opcode_info(0x1D, WDC_OM.ORA, WDC_AM.A_INDEXED_X, "ORA a,x"),
+    0x1E: new opcode_info(0x1E, WDC_OM.ASL, WDC_AM.A_INDEXED_Xb, "ASL a,x"),
+    0x1F: new opcode_info(0x1F, WDC_OM.ORA, WDC_AM.AL_INDEXED_X, "ORA al,x"),
+    0x20: new opcode_info(0x20, WDC_OM.JSR, WDC_AM.Ac, "JSR a"),
+    0x21: new opcode_info(0x21, WDC_OM.AND, WDC_AM.D_INDEXED_IND, "AND (d,x)"),
+    0x22: new opcode_info(0x22, WDC_OM.JSL, WDC_AM.ALc, "JSL al"),
+    0x23: new opcode_info(0x23, WDC_OM.AND, WDC_AM.STACK_R, "AND d,s"),
+    0x24: new opcode_info(0x24, WDC_OM.BIT, WDC_AM.D, "BIT d"),
+    0x25: new opcode_info(0x25, WDC_OM.AND, WDC_AM.D, "AND d"),
+    0x26: new opcode_info(0x26, WDC_OM.ROL, WDC_AM.Db, "ROL d"),
+    0x27: new opcode_info(0x27, WDC_OM.AND, WDC_AM.D_IND_L, "AND [d]"),
+    0x28: new opcode_info(0x28, WDC_OM.PLP, WDC_AM.STACKb, "PLP s"),
+    0x29: new opcode_info(0x29, WDC_OM.AND, WDC_AM.IMM, "AND #"),
+    0x2A: new opcode_info(0x2A, WDC_OM.ROL, WDC_AM.ACCUM, "ROL A"),
+    0x2B: new opcode_info(0x2B, WDC_OM.PLD, WDC_AM.STACKb, "PLD s"),
+    0x2C: new opcode_info(0x2C, WDC_OM.BIT, WDC_AM.A, "BIT a"),
+    0x2D: new opcode_info(0x2D, WDC_OM.AND, WDC_AM.A, "AND a"),
+    0x2E: new opcode_info(0x2E, WDC_OM.ROL, WDC_AM.Ad, "ROL a"),
+    0x2F: new opcode_info(0x2F, WDC_OM.AND, WDC_AM.AL, "AND al"),
+    0x30: new opcode_info(0x30, WDC_OM.BMI, WDC_AM.PC_R, "BMI r"),
+    0x31: new opcode_info(0x31, WDC_OM.AND, WDC_AM.D_IND_INDEXED, "AND (d),y"),
+    0x32: new opcode_info(0x32, WDC_OM.AND, WDC_AM.D_IND, "AND (d)"),
+    0x33: new opcode_info(0x33, WDC_OM.AND, WDC_AM.STACK_R_IND_INDEXED, "AND (d,s),y"),
+    0x34: new opcode_info(0x34, WDC_OM.BIT, WDC_AM.D_INDEXED_X, "BIT d,x"),
+    0x35: new opcode_info(0x35, WDC_OM.AND, WDC_AM.D_INDEXED_X, "AND d,x"),
+    0x36: new opcode_info(0x36, WDC_OM.ROL, WDC_AM.D_INDEXED_Xb, "ROL d,x"),
+    0x37: new opcode_info(0x37, WDC_OM.AND, WDC_AM.D_IND_L_INDEXED, "AND [d],y"),
+    0x38: new opcode_info(0x38, WDC_OM.SEC, WDC_AM.I, "SEC i"),
+    0x39: new opcode_info(0x39, WDC_OM.AND, WDC_AM.A_INDEXED_Y, "AND a,y"),
+    0x3A: new opcode_info(0x3A, WDC_OM.DEC, WDC_AM.ACCUM, "DEC A"),
+    0x3B: new opcode_info(0x3B, WDC_OM.TSC, WDC_AM.I, "TSC i"),
+    0x3C: new opcode_info(0x3C, WDC_OM.BIT, WDC_AM.A_INDEXED_X, "BIT a,x"),
+    0x3D: new opcode_info(0x3D, WDC_OM.AND, WDC_AM.A_INDEXED_X, "AND a,x"),
+    0x3E: new opcode_info(0x3E, WDC_OM.ROL, WDC_AM.A_INDEXED_Xb, "ROL a,x"),
+    0x3F: new opcode_info(0x3F, WDC_OM.AND, WDC_AM.AL_INDEXED_X, "AND al,x"),
+    0x40: new opcode_info(0x40, WDC_OM.RTI, WDC_AM.STACKg, "RTI s"),
+    0x41: new opcode_info(0x41, WDC_OM.EOR, WDC_AM.D_INDEXED_IND, "EOR (d,x)"),
+    0x42: new opcode_info(0x42, WDC_OM.WDM, WDC_AM.I, "WDM i"),
+    0x43: new opcode_info(0x43, WDC_OM.EOR, WDC_AM.STACK_R, "EOR d,s"),
+    0x44: new opcode_info(0x44, WDC_OM.MVP, WDC_AM.XYCb, "MVP xyc"),
+    0x45: new opcode_info(0x45, WDC_OM.EOR, WDC_AM.D, "EOR d"),
+    0x46: new opcode_info(0x46, WDC_OM.LSR, WDC_AM.Db, "LSR d"),
+    0x47: new opcode_info(0x47, WDC_OM.EOR, WDC_AM.D_IND_L, "EOR [d]"),
+    0x48: new opcode_info(0x48, WDC_OM.PHA, WDC_AM.STACKc, "PHA s"),
+    0x49: new opcode_info(0x49, WDC_OM.EOR, WDC_AM.IMM, "EOR #"),
+    0x4A: new opcode_info(0x4A, WDC_OM.LSR, WDC_AM.ACCUM, "LSR A"),
+    0x4B: new opcode_info(0x4B, WDC_OM.PHK, WDC_AM.STACKc, "PHK s"),
+    0x4C: new opcode_info(0x4C, WDC_OM.JMP, WDC_AM.Ab, "JMP a"),
+    0x4D: new opcode_info(0x4D, WDC_OM.EOR, WDC_AM.A, "EOR a"),
+    0x4E: new opcode_info(0x4E, WDC_OM.LSR, WDC_AM.Ad, "LSR a"),
+    0x4F: new opcode_info(0x4F, WDC_OM.EOR, WDC_AM.AL, "EOR al"),
+    0x50: new opcode_info(0x50, WDC_OM.BVC, WDC_AM.PC_R, "BVC r"),
+    0x51: new opcode_info(0x51, WDC_OM.EOR, WDC_AM.D_IND_INDEXED, "EOR (d),y"),
+    0x52: new opcode_info(0x52, WDC_OM.EOR, WDC_AM.D_IND, "EOR (d)"),
+    0x53: new opcode_info(0x53, WDC_OM.EOR, WDC_AM.STACK_R_IND_INDEXED, "EOR (d,s),y"),
+    0x54: new opcode_info(0x54, WDC_OM.MVN, WDC_AM.XYC, "MVN xyc"),
+    0x55: new opcode_info(0x55, WDC_OM.EOR, WDC_AM.D_INDEXED_X, "EOR d,x"),
+    0x56: new opcode_info(0x56, WDC_OM.LSR, WDC_AM.D_INDEXED_Xb, "LSR d,x"),
+    0x57: new opcode_info(0x57, WDC_OM.EOR, WDC_AM.D_IND_L_INDEXED, "EOR [d],y"),
+    0x58: new opcode_info(0x58, WDC_OM.CLI, WDC_AM.Ie, "CLI i"),
+    0x59: new opcode_info(0x59, WDC_OM.EOR, WDC_AM.A_INDEXED_Y, "EOR a,y"),
+    0x5A: new opcode_info(0x5A, WDC_OM.PHY, WDC_AM.STACKc, "PHY s"),
+    0x5B: new opcode_info(0x5B, WDC_OM.TCD, WDC_AM.I, "TCD i"),
+    0x5C: new opcode_info(0x5C, WDC_OM.JMP, WDC_AM.ALb, "JMP al"),
+    0x5D: new opcode_info(0x5D, WDC_OM.EOR, WDC_AM.A_INDEXED_X, "EOR a,x"),
+    0x5E: new opcode_info(0x5E, WDC_OM.LSR, WDC_AM.A_INDEXED_Xb, "LSR a,x"),
+    0x5F: new opcode_info(0x5F, WDC_OM.EOR, WDC_AM.AL_INDEXED_X, "EOR al,x"),
+    0x60: new opcode_info(0x60, WDC_OM.RTS, WDC_AM.STACKh, "RTS s"),
+    0x61: new opcode_info(0x61, WDC_OM.ADC, WDC_AM.D_INDEXED_IND, "ADC (d,x)"),
+    0x62: new opcode_info(0x62, WDC_OM.PER, WDC_AM.STACKf, "PER s"),
+    0x63: new opcode_info(0x63, WDC_OM.ADC, WDC_AM.STACK_R, "ADC d,s"),
+    0x64: new opcode_info(0x64, WDC_OM.STZ, WDC_AM.D, "STZ d"),
+    0x65: new opcode_info(0x65, WDC_OM.ADC, WDC_AM.D, "ADC d"),
+    0x66: new opcode_info(0x66, WDC_OM.ROR, WDC_AM.Db, "ROR d"),
+    0x67: new opcode_info(0x67, WDC_OM.ADC, WDC_AM.D_IND_L, "ADC [d]"),
+    0x68: new opcode_info(0x68, WDC_OM.PLA, WDC_AM.STACKb, "PLA s"),
+    0x69: new opcode_info(0x69, WDC_OM.ADC, WDC_AM.IMM, "ADC #"),
+    0x6A: new opcode_info(0x6A, WDC_OM.ROR, WDC_AM.ACCUM, "ROR A"),
+    0x6B: new opcode_info(0x6B, WDC_OM.RTL, WDC_AM.STACKi, "RTL s"),
+    0x6C: new opcode_info(0x6C, WDC_OM.JMP, WDC_AM.A_INDb, "JMP (a)"),
+    0x6D: new opcode_info(0x6D, WDC_OM.ADC, WDC_AM.A, "ADC a"),
+    0x6E: new opcode_info(0x6E, WDC_OM.ROR, WDC_AM.Ad, "ROR a"),
+    0x6F: new opcode_info(0x6F, WDC_OM.ADC, WDC_AM.AL, "ADC al"),
+    0x70: new opcode_info(0x70, WDC_OM.BVS, WDC_AM.PC_R, "BVS r"),
+    0x71: new opcode_info(0x71, WDC_OM.ADC, WDC_AM.D_IND_INDEXED, "ADC (d),y"),
+    0x72: new opcode_info(0x72, WDC_OM.ADC, WDC_AM.D_IND, "ADC (d)"),
+    0x73: new opcode_info(0x73, WDC_OM.ADC, WDC_AM.STACK_R_IND_INDEXED, "ADC (d,s),y"),
+    0x74: new opcode_info(0x74, WDC_OM.STZ, WDC_AM.D_INDEXED_X, "STZ d,x"),
+    0x75: new opcode_info(0x75, WDC_OM.ADC, WDC_AM.D_INDEXED_X, "ADC d,x"),
+    0x76: new opcode_info(0x76, WDC_OM.ROR, WDC_AM.D_INDEXED_Xb, "ROR d,x"),
+    0x77: new opcode_info(0x77, WDC_OM.ADC, WDC_AM.D_IND_L_INDEXED, "ADC [d],y"),
+    0x78: new opcode_info(0x78, WDC_OM.SEI, WDC_AM.Ie, "SEI i"),
+    0x79: new opcode_info(0x79, WDC_OM.ADC, WDC_AM.A_INDEXED_Y, "ADC a,y"),
+    0x7A: new opcode_info(0x7A, WDC_OM.PLY, WDC_AM.STACKb, "PLY s"),
+    0x7B: new opcode_info(0x7B, WDC_OM.TDC, WDC_AM.I, "TDC i"),
+    0x7C: new opcode_info(0x7C, WDC_OM.JMP, WDC_AM.A_INDEXED_IND, "JMP (a,x)"),
+    0x7D: new opcode_info(0x7D, WDC_OM.ADC, WDC_AM.A_INDEXED_X, "ADC a,x"),
+    0x7E: new opcode_info(0x7E, WDC_OM.ROR, WDC_AM.A_INDEXED_Xb, "ROR a,x"),
+    0x7F: new opcode_info(0x7F, WDC_OM.ADC, WDC_AM.AL_INDEXED_X, "ADC al,x"),
+    0x80: new opcode_info(0x80, WDC_OM.BRA, WDC_AM.PC_R, "BRA r"),
+    0x81: new opcode_info(0x81, WDC_OM.STA, WDC_AM.D_INDEXED_IND, "STA (d,x)"),
+    0x82: new opcode_info(0x82, WDC_OM.BRL, WDC_AM.PC_RL, "BRL rl"),
+    0x83: new opcode_info(0x83, WDC_OM.STA, WDC_AM.STACK_R, "STA d,s"),
+    0x84: new opcode_info(0x84, WDC_OM.STY, WDC_AM.D, "STY d"),
+    0x85: new opcode_info(0x85, WDC_OM.STA, WDC_AM.D, "STA d"),
+    0x86: new opcode_info(0x86, WDC_OM.STX, WDC_AM.D, "STX d"),
+    0x87: new opcode_info(0x87, WDC_OM.STA, WDC_AM.D_IND_L, "STA [d]"),
+    0x88: new opcode_info(0x88, WDC_OM.DEY, WDC_AM.I, "DEY i"),
+    0x89: new opcode_info(0x89, WDC_OM.BIT, WDC_AM.IMM, "BIT #"),
+    0x8A: new opcode_info(0x8A, WDC_OM.TXA, WDC_AM.I, "TXA i"),
+    0x8B: new opcode_info(0x8B, WDC_OM.PHB, WDC_AM.STACKc, "PHB s"),
+    0x8C: new opcode_info(0x8C, WDC_OM.STY, WDC_AM.A, "STY a"),
+    0x8D: new opcode_info(0x8D, WDC_OM.STA, WDC_AM.A, "STA a"),
+    0x8E: new opcode_info(0x8E, WDC_OM.STX, WDC_AM.A, "STX a"),
+    0x8F: new opcode_info(0x8F, WDC_OM.STA, WDC_AM.AL, "STA al"),
+    0x90: new opcode_info(0x90, WDC_OM.BCC, WDC_AM.PC_R, "BCC r"),
+    0x91: new opcode_info(0x91, WDC_OM.STA, WDC_AM.D_IND_INDEXED, "STA (d),y"),
+    0x92: new opcode_info(0x92, WDC_OM.STA, WDC_AM.D_IND, "STA (d)"),
+    0x93: new opcode_info(0x93, WDC_OM.STA, WDC_AM.STACK_R_IND_INDEXED, "STA (d,s),y"),
+    0x94: new opcode_info(0x94, WDC_OM.STY, WDC_AM.D_INDEXED_X, "STY d,x"),
+    0x95: new opcode_info(0x95, WDC_OM.STA, WDC_AM.D_INDEXED_X, "STA d,x"),
+    0x96: new opcode_info(0x96, WDC_OM.STX, WDC_AM.D_INDEXED_Y, "STX d,y"),
+    0x97: new opcode_info(0x97, WDC_OM.STA, WDC_AM.D_IND_L_INDEXED, "STA [d],y"),
+    0x98: new opcode_info(0x98, WDC_OM.TYA, WDC_AM.I, "TYA i"),
+    0x99: new opcode_info(0x99, WDC_OM.STA, WDC_AM.A_INDEXED_Y, "STA a,y"),
+    0x9A: new opcode_info(0x9A, WDC_OM.TXS, WDC_AM.I, "TXS i"),
+    0x9B: new opcode_info(0x9B, WDC_OM.TXY, WDC_AM.I, "TXY i"),
+    0x9C: new opcode_info(0x9C, WDC_OM.STZ, WDC_AM.A, "STZ a"),
+    0x9D: new opcode_info(0x9D, WDC_OM.STA, WDC_AM.A_INDEXED_X, "STA a,x"),
+    0x9E: new opcode_info(0x9E, WDC_OM.STZ, WDC_AM.A_INDEXED_X, "STZ a,x"),
+    0x9F: new opcode_info(0x9F, WDC_OM.STA, WDC_AM.AL_INDEXED_X, "STA al,x"),
+    0xA0: new opcode_info(0xA0, WDC_OM.LDY, WDC_AM.IMM, "LDY #"),
+    0xA1: new opcode_info(0xA1, WDC_OM.LDA, WDC_AM.D_INDEXED_IND, "LDA (d,x)"),
+    0xA2: new opcode_info(0xA2, WDC_OM.LDX, WDC_AM.IMM, "LDX #"),
+    0xA3: new opcode_info(0xA3, WDC_OM.LDA, WDC_AM.STACK_R, "LDA d,s"),
+    0xA4: new opcode_info(0xA4, WDC_OM.LDY, WDC_AM.D, "LDY d"),
+    0xA5: new opcode_info(0xA5, WDC_OM.LDA, WDC_AM.D, "LDA d"),
+    0xA6: new opcode_info(0xA6, WDC_OM.LDX, WDC_AM.D, "LDX d"),
+    0xA7: new opcode_info(0xA7, WDC_OM.LDA, WDC_AM.D_IND_L, "LDA [d]"),
+    0xA8: new opcode_info(0xA8, WDC_OM.TAY, WDC_AM.I, "TAY i"),
+    0xA9: new opcode_info(0xA9, WDC_OM.LDA, WDC_AM.IMM, "LDA #"),
+    0xAA: new opcode_info(0xAA, WDC_OM.TAX, WDC_AM.I, "TAX i"),
+    0xAB: new opcode_info(0xAB, WDC_OM.PLB, WDC_AM.STACKb, "PLB s"),
+    0xAC: new opcode_info(0xAC, WDC_OM.LDY, WDC_AM.A, "LDY a"),
+    0xAD: new opcode_info(0xAD, WDC_OM.LDA, WDC_AM.A, "LDA a"),
+    0xAE: new opcode_info(0xAE, WDC_OM.LDX, WDC_AM.A, "LDX a"),
+    0xAF: new opcode_info(0xAF, WDC_OM.LDA, WDC_AM.AL, "LDA al"),
+    0xB0: new opcode_info(0xB0, WDC_OM.BCS, WDC_AM.PC_R, "BCS r"),
+    0xB1: new opcode_info(0xB1, WDC_OM.LDA, WDC_AM.D_IND_INDEXED, "LDA (d),y"),
+    0xB2: new opcode_info(0xB2, WDC_OM.LDA, WDC_AM.D_IND, "LDA (d)"),
+    0xB3: new opcode_info(0xB3, WDC_OM.LDA, WDC_AM.STACK_R_IND_INDEXED, "LDA (d,s),y"),
+    0xB4: new opcode_info(0xB4, WDC_OM.LDY, WDC_AM.D_INDEXED_X, "LDY d,x"),
+    0xB5: new opcode_info(0xB5, WDC_OM.LDA, WDC_AM.D_INDEXED_X, "LDA d,x"),
+    0xB6: new opcode_info(0xB6, WDC_OM.LDX, WDC_AM.D_INDEXED_Y, "LDX d,y"),
+    0xB7: new opcode_info(0xB7, WDC_OM.LDA, WDC_AM.D_IND_L_INDEXED, "LDA [d],y"),
+    0xB8: new opcode_info(0xB8, WDC_OM.CLV, WDC_AM.I, "CLV i"),
+    0xB9: new opcode_info(0xB9, WDC_OM.LDA, WDC_AM.A_INDEXED_Y, "LDA a,y"),
+    0xBA: new opcode_info(0xBA, WDC_OM.TSX, WDC_AM.I, "TSX i"),
+    0xBB: new opcode_info(0xBB, WDC_OM.TYX, WDC_AM.I, "TYX i"),
+    0xBC: new opcode_info(0xBC, WDC_OM.LDY, WDC_AM.A_INDEXED_X, "LDY a,x"),
+    0xBD: new opcode_info(0xBD, WDC_OM.LDA, WDC_AM.A_INDEXED_X, "LDA a,x"),
+    0xBE: new opcode_info(0xBE, WDC_OM.LDX, WDC_AM.A_INDEXED_Y, "LDX a,y"),
+    0xBF: new opcode_info(0xBF, WDC_OM.LDA, WDC_AM.AL_INDEXED_X, "LDA al,x"),
+    0xC0: new opcode_info(0xC0, WDC_OM.CPY, WDC_AM.IMM, "CPY #"),
+    0xC1: new opcode_info(0xC1, WDC_OM.CMP, WDC_AM.D_INDEXED_IND, "CMP (d,x)"),
+    0xC2: new opcode_info(0xC2, WDC_OM.REP, WDC_AM.IMMb, "REP #"),
+    0xC3: new opcode_info(0xC3, WDC_OM.CMP, WDC_AM.STACK_R, "CMP d,s"),
+    0xC4: new opcode_info(0xC4, WDC_OM.CPY, WDC_AM.D, "CPY d"),
+    0xC5: new opcode_info(0xC5, WDC_OM.CMP, WDC_AM.D, "CMP d"),
+    0xC6: new opcode_info(0xC6, WDC_OM.DEC, WDC_AM.Db, "DEC d"),
+    0xC7: new opcode_info(0xC7, WDC_OM.CMP, WDC_AM.D_IND_L, "CMP [d]"),
+    0xC8: new opcode_info(0xC8, WDC_OM.INY, WDC_AM.I, "INY i"),
+    0xC9: new opcode_info(0xC9, WDC_OM.CMP, WDC_AM.IMM, "CMP #"),
+    0xCA: new opcode_info(0xCA, WDC_OM.DEX, WDC_AM.I, "DEX i"),
+    0xCB: new opcode_info(0xCB, WDC_OM.WAI, WDC_AM.Id, "WAI i"),
+    0xCC: new opcode_info(0xCC, WDC_OM.CPY, WDC_AM.A, "CPY a"),
+    0xCD: new opcode_info(0xCD, WDC_OM.CMP, WDC_AM.A, "CMP a"),
+    0xCE: new opcode_info(0xCE, WDC_OM.DEC, WDC_AM.Ad, "DEC a"),
+    0xCF: new opcode_info(0xCF, WDC_OM.CMP, WDC_AM.AL, "CMP al"),
+    0xD0: new opcode_info(0xD0, WDC_OM.BNE, WDC_AM.PC_R, "BNE r"),
+    0xD1: new opcode_info(0xD1, WDC_OM.CMP, WDC_AM.D_IND_INDEXED, "CMP (d),y"),
+    0xD2: new opcode_info(0xD2, WDC_OM.CMP, WDC_AM.D_IND, "CMP (d)"),
+    0xD3: new opcode_info(0xD3, WDC_OM.CMP, WDC_AM.STACK_R_IND_INDEXED, "CMP (d,s),y"),
+    0xD4: new opcode_info(0xD4, WDC_OM.PEI, WDC_AM.STACKe, "PEI s"),
+    0xD5: new opcode_info(0xD5, WDC_OM.CMP, WDC_AM.D_INDEXED_X, "CMP d,x"),
+    0xD6: new opcode_info(0xD6, WDC_OM.DEC, WDC_AM.D_INDEXED_Xb, "DEC d,x"),
+    0xD7: new opcode_info(0xD7, WDC_OM.CMP, WDC_AM.D_IND_L_INDEXED, "CMP [d],y"),
+    0xD8: new opcode_info(0xD8, WDC_OM.CLD, WDC_AM.I, "CLD i"),
+    0xD9: new opcode_info(0xD9, WDC_OM.CMP, WDC_AM.A_INDEXED_Y, "CMP a,y"),
+    0xDA: new opcode_info(0xDA, WDC_OM.PHX, WDC_AM.STACKc, "PHX s"),
+    0xDB: new opcode_info(0xDB, WDC_OM.STP, WDC_AM.Ic, "STP i"),
+    0xDC: new opcode_info(0xDC, WDC_OM.JML, WDC_AM.A_IND, "JML (a)"),
+    0xDD: new opcode_info(0xDD, WDC_OM.CMP, WDC_AM.A_INDEXED_X, "CMP a,x"),
+    0xDE: new opcode_info(0xDE, WDC_OM.DEC, WDC_AM.A_INDEXED_Xb, "DEC a,x"),
+    0xDF: new opcode_info(0xDF, WDC_OM.CMP, WDC_AM.AL_INDEXED_X, "CMP al,x"),
+    0xE0: new opcode_info(0xE0, WDC_OM.CPX, WDC_AM.IMM, "CPX #"),
+    0xE1: new opcode_info(0xE1, WDC_OM.SBC, WDC_AM.D_INDEXED_IND, "SBC (d,x)"),
+    0xE2: new opcode_info(0xE2, WDC_OM.SEP, WDC_AM.IMMb, "SEP #"),
+    0xE3: new opcode_info(0xE3, WDC_OM.SBC, WDC_AM.STACK_R, "SBC d,s"),
+    0xE4: new opcode_info(0xE4, WDC_OM.CPX, WDC_AM.D, "CPX d"),
+    0xE5: new opcode_info(0xE5, WDC_OM.SBC, WDC_AM.D, "SBC d"),
+    0xE6: new opcode_info(0xE6, WDC_OM.INC, WDC_AM.Db, "INC d"),
+    0xE7: new opcode_info(0xE7, WDC_OM.SBC, WDC_AM.D_IND_L, "SBC [d]"),
+    0xE8: new opcode_info(0xE8, WDC_OM.INX, WDC_AM.I, "INX i"),
+    0xE9: new opcode_info(0xE9, WDC_OM.SBC, WDC_AM.IMM, "SBC #"),
+    0xEA: new opcode_info(0xEA, WDC_OM.NOP, WDC_AM.I, "NOP i"),
+    0xEB: new opcode_info(0xEB, WDC_OM.XBA, WDC_AM.Ib, "XBA i"),
+    0xEC: new opcode_info(0xEC, WDC_OM.CPX, WDC_AM.A, "CPX a"),
+    0xED: new opcode_info(0xED, WDC_OM.SBC, WDC_AM.A, "SBC a"),
+    0xEE: new opcode_info(0xEE, WDC_OM.INC, WDC_AM.Ad, "INC a"),
+    0xEF: new opcode_info(0xEF, WDC_OM.SBC, WDC_AM.AL, "SBC al"),
+    0xF0: new opcode_info(0xF0, WDC_OM.BEQ, WDC_AM.PC_R, "BEQ r"),
+    0xF1: new opcode_info(0xF1, WDC_OM.SBC, WDC_AM.D_IND_INDEXED, "SBC (d),y"),
+    0xF2: new opcode_info(0xF2, WDC_OM.SBC, WDC_AM.D_IND, "SBC (d)"),
+    0xF3: new opcode_info(0xF3, WDC_OM.SBC, WDC_AM.STACK_R_IND_INDEXED, "SBC (d,s),y"),
+    0xF4: new opcode_info(0xF4, WDC_OM.PEA, WDC_AM.STACKd, "PEA s"),
+    0xF5: new opcode_info(0xF5, WDC_OM.SBC, WDC_AM.D_INDEXED_X, "SBC d,x"),
+    0xF6: new opcode_info(0xF6, WDC_OM.INC, WDC_AM.D_INDEXED_Xb, "INC d,x"),
+    0xF7: new opcode_info(0xF7, WDC_OM.SBC, WDC_AM.D_IND_L_INDEXED, "SBC [d],y"),
+    0xF8: new opcode_info(0xF8, WDC_OM.SED, WDC_AM.I, "SED i"),
+    0xF9: new opcode_info(0xF9, WDC_OM.SBC, WDC_AM.A_INDEXED_Y, "SBC a,y"),
+    0xFA: new opcode_info(0xFA, WDC_OM.PLX, WDC_AM.STACKb, "PLX s"),
+    0xFB: new opcode_info(0xFB, WDC_OM.XCE, WDC_AM.I, "XCE i"),
+    0xFC: new opcode_info(0xFC, WDC_OM.JSR, WDC_AM.A_INDEXED_INDb, "JSR (a,x)"),
+    0xFD: new opcode_info(0xFD, WDC_OM.SBC, WDC_AM.A_INDEXED_X, "SBC a,x"),
+    0xFE: new opcode_info(0xFE, WDC_OM.INC, WDC_AM.A_INDEXED_Xb, "INC a,x"),
+    0xFF: new opcode_info(0xFF, WDC_OM.SBC, WDC_AM.AL_INDEXED_X, "SBC al,x"),
+    0x100: new opcode_info(0x100, WDC_OM.S_RESET, WDC_AM.STACK, "S_RESET s"),
+    0x101: new opcode_info(0x101, WDC_OM.S_ABORT, WDC_AM.STACK, "S_ABORT s"),
+    0x102: new opcode_info(0x102, WDC_OM.S_IRQ, WDC_AM.STACK, "S_IRQ s"),
+    0x103: new opcode_info(0x103, WDC_OM.S_NMI, WDC_AM.STACK, "S_NMI s")
 });
 
 class opcode_functions {
@@ -582,10 +587,15 @@ class switchgen {
             this.outstr += this.indent2 + 'case ' + what + ':\n';
     }
 
+    check_irqs() {
+        this.addl('// In the future we will check IRQs here');
+    }
+
     // This is a final "cycle" only SOME functions use, mostly to get final data read or written
     cleanup() {
         this.has_footer = true;
         this.addcycle('cleanup_custom');
+        this.check_irqs();
     }
 
     no_modify_addr() {
@@ -705,14 +715,11 @@ class switchgen {
         this.addl('regs.TR += pins.D << 8;');
     }
 
-    custom_end() {
-        this.has_custom_end = true;
-    }
-
     regular_end() {
         this.addl('// Following is auto-generated code for instruction finish')
         if (!this.has_footer) {
             this.addcycle('cleanup');
+            this.check_irqs();
         }
         if (!this.no_addr_at_end)
             this.addr_to_PC_then_inc();
@@ -1290,7 +1297,7 @@ class switchgen {
     }
 
     INTERRUPT(ins, E) {
-        if (ins === OM.BRK || ins === OM.COP) {
+        if (ins === WDC_OM.BRK || ins === WDC_OM.COP) {
             // Get Signature Byte. Not a thing for NMI, IRQ
             this.addcycle(2);
             this.RPDV(0, 1, 0, 0);
@@ -1320,7 +1327,7 @@ class switchgen {
 
         this.addcycle(6);
         this.addr_to_S_then_dec();
-        if (E && ins === OM.BRK)
+        if (E && ins === WDC_OM.BRK)
             this.addl('pins.D = regs.P.getbyte_emulated() | 8;'); // Set BRK bit
         else if (E)
             this.addl('pins.D = regs.P.getbyte_emulated() & 0xF7;'); // Clear BRK bit
@@ -1342,17 +1349,17 @@ class switchgen {
     }
 
     S_NMI(E) {
-        this.INTERRUPT(OM.S_NMI, E);
+        this.INTERRUPT(WDC_OM.S_NMI, E);
         this.addl('regs.P.I = 1;');
         this.addl('regs.P.D = 0;');
     }
 
     S_ABORT(E) {
-        this.INTERRUPT(OM.S_ABORT, E);
+        this.INTERRUPT(WDC_OM.S_ABORT, E);
     }
 
     S_IRQ(E) {
-        this.INTERRUPT(OM.S_IRQ, E);
+        this.INTERRUPT(WDC_OM.S_IRQ, E);
         this.addl('regs.P.I = 1;');
         this.addl('regs.P.D = 0;');
     }
@@ -1360,26 +1367,26 @@ class switchgen {
     add_ins(ins, E, M, X, addrmode=null) {
         this.addl('// instruction code follows')
         switch(ins) {
-            case OM.ADC:
+            case WDC_OM.ADC:
                 if (E || M)
                     this.ADC8();
                 else
                     this.ADC16();
                 break;
-            case OM.AND:
+            case WDC_OM.AND:
                 if (E || M)
                     this.AND8();
                 else
                     this.AND16();
                 break;
-            case OM.ASL:
+            case WDC_OM.ASL:
                 if (E || M)
                     this.ASL8();
                 else
                     this.ASL16();
                 break;
-            case OM.BIT:
-                if (addrmode === AM.IMM) {
+            case WDC_OM.BIT:
+                if (addrmode === WDC_AM.IMM) {
                     if (E || M)
                         this.BIT8IMM();
                     else
@@ -1391,323 +1398,323 @@ class switchgen {
                         this.BIT16();
                 }
                 break;
-            case OM.COP:
-            case OM.BRK:
+            case WDC_OM.COP:
+            case WDC_OM.BRK:
                 this.INTERRUPT(ins, E);
                 break;
-            case OM.CLC:
+            case WDC_OM.CLC:
                 this.addl('regs.P.C = 0;');
                 break;
-            case OM.CLD:
+            case WDC_OM.CLD:
                 this.addl('regs.P.D = 0;');
                 break;
-            case OM.CLI:
+            case WDC_OM.CLI:
                 this.addl('regs.P.I = 0;');
                 break;
-            case OM.CLV:
+            case WDC_OM.CLV:
                 this.addl('regs.P.V = 0;');
                 break;
-            case OM.CMP:
+            case WDC_OM.CMP:
                 if (E || M)
                     this.CMP8();
                 else
                     this.CMP16();
                 break;
-            case OM.CPX:
+            case WDC_OM.CPX:
                 if (E || X)
                     this.CPX8();
                 else
                     this.CPX16();
                 break;
-            case OM.CPY:
+            case WDC_OM.CPY:
                 if (E || X)
                     this.CPY8();
                 else
                     this.CPY16();
                 break;
-            case OM.DEC:
+            case WDC_OM.DEC:
                 if (E || M)
                     this.DEXY8('regs.TR');
                 else
                     this.DEXY16('regs.TR');
                 break;
-            case OM.DEX:
+            case WDC_OM.DEX:
                 if (E || X)
                     this.DEXY8('regs.X');
                 else
                     this.DEXY16('regs.X');
                 break;
-            case OM.DEY:
+            case WDC_OM.DEY:
                 if (E || X)
                     this.DEXY8('regs.Y');
                 else
                     this.DEXY16('regs.Y');
                 break;
-            case OM.EOR:
+            case WDC_OM.EOR:
                 if (E || M)
                     this.EOR8();
                 else
                     this.EOR16();
                 break;
-            case OM.INC:
+            case WDC_OM.INC:
                 if (E || M)
                     this.INXY8('regs.TR');
                 else
                     this.INXY16('regs.TR');
                 break;
-            case OM.INX:
+            case WDC_OM.INX:
                 if (E || X)
                     this.INXY8('regs.X');
                 else
                     this.INXY16('regs.X');
                 break;
-            case OM.INY:
+            case WDC_OM.INY:
                 if (E || X)
                     this.INXY8('regs.Y');
                 else
                     this.INXY16('regs.Y');
                 break;
-            case OM.JSL:
+            case WDC_OM.JSL:
                 console.log("Wait whats up with JSL?");
                 debugger;
                 break;
-            case OM.LDA:
+            case WDC_OM.LDA:
                 if (E || M)
                     this.LDA8();
                 else
                     this.LDA16();
                 break;
-            case OM.LDX:
+            case WDC_OM.LDX:
                 if (E || X)
                     this.LDXY8('regs.X');
                 else
                     this.LDXY16('regs.X');
                 break;
-            case OM.LDY:
+            case WDC_OM.LDY:
                 if (E || X)
                     this.LDXY8('regs.Y');
                 else
                     this.LDXY16('regs.Y');
                 break;
-            case OM.LSR:
+            case WDC_OM.LSR:
                 if (E || M)
                     this.LSR8();
                 else
                     this.LSR16();
                 break;
-            case OM.NOP:
+            case WDC_OM.NOP:
                 break;
-            case OM.ORA:
+            case WDC_OM.ORA:
                 if (E || M)
                     this.ORA8();
                 else
                     this.ORA16();
                 break;
-            case OM.PHA:
+            case WDC_OM.PHA:
                 if (E || M)
                     this.PUSH8('regs.C');
                 else
                     this.PUSH16('regs.C');
                 break;
-            case OM.PHB:
+            case WDC_OM.PHB:
                 this.PUSH8('regs.DBR');
                 break;
-            case OM.PHD:
+            case WDC_OM.PHD:
                 this.PUSH16('regs.D');
                 break;
-            case OM.PHK:
+            case WDC_OM.PHK:
                 this.PUSH8('regs.PBR');
                 break;
-            case OM.PHP:
+            case WDC_OM.PHP:
                 this.PUSHP(E);
                 break;
-            case OM.PHX:
+            case WDC_OM.PHX:
                 if (E || X)
                     this.PUSH8('regs.X');
                 else
                     this.PUSH16('regs.X');
                 break;
-            case OM.PHY:
+            case WDC_OM.PHY:
                 if (E || X)
                     this.PUSH8('regs.Y');
                 else
                     this.PUSH16('regs.Y');
                 break;
-            case OM.PLA:
+            case WDC_OM.PLA:
                 if (E || M)
                     this.PULL8('regs.C');
                 else
                     this.PULL16('regs.C');
                 break;
-            case OM.PLB:
+            case WDC_OM.PLB:
                 this.PULL8('regs.DBR');
                 break;
-            case OM.PLD:
+            case WDC_OM.PLD:
                 this.PULL16('regs.D');
                 break;
-            case OM.PLP:
+            case WDC_OM.PLP:
                 this.PULLP(E);
                 break;
-            case OM.PLX:
+            case WDC_OM.PLX:
                 if (E || X)
                     this.PULL8('regs.X');
                 else
                     this.PULL16('regs.X');
                 break;
-            case OM.PLY:
+            case WDC_OM.PLY:
                 if (E || X)
                     this.PULL8('regs.Y');
                 else
                     this.PULL16('regs.Y');
                 break;
-            case OM.REP:
+            case WDC_OM.REP:
                 if (E)
                     this.REPE();
                 else
                     this.REPN();
                 break;
-            case OM.ROL:
+            case WDC_OM.ROL:
                 if (E || M)
                     this.ROL8();
                 else
                     this.ROL16();
                 break;
-            case OM.ROR:
+            case WDC_OM.ROR:
                 if (E || M)
                     this.ROR8();
                 else
                     this.ROR16();
                 break;
-            case OM.SBC:
+            case WDC_OM.SBC:
                 if (E || M)
                     this.SBC8();
                 else
                     this.SBC16();
                 break;
-            case OM.SEC:
+            case WDC_OM.SEC:
                 this.addl('regs.P.C = 1;');
                 break;
-            case OM.SED:
+            case WDC_OM.SED:
                 this.addl('regs.P.D = 1;');
                 break;
-            case OM.SEI:
+            case WDC_OM.SEI:
                 this.addl('regs.P.I = 1;');
                 break;
-            case OM.SEP:
+            case WDC_OM.SEP:
                 if (E)
                     this.SEPE();
                 else
                     this.SEPN();
                 break;
-            case OM.STA: // hmmm???
+            case WDC_OM.STA: // hmmm???
                 this.addl('// #STA')
                 if (E || M)
                     this.addl('regs.TR = regs.C & 0xFF;');
                 else
                     this.addl('regs.TR = regs.C;');
                 break;
-            case OM.STX: // hmm...
+            case WDC_OM.STX: // hmm...
                 if (E || X)
                     this.addl('regs.TR = regs.X & 0xFF;');
                 else
                     this.addl('regs.TR = regs.X;');
                 break;
-            case OM.STY:
+            case WDC_OM.STY:
                 if (E || X)
                     this.addl('regs.TR = regs.Y & 0xFF;');
                 else
                     this.addl('regs.TR = regs.Y;');
                 break;
-            case OM.STZ: // really?
+            case WDC_OM.STZ: // really?
                 this.addl('regs.TR = 0;');
                 break;
             // Flag sets
-            case OM.TAX: // Transfer A->X
+            case WDC_OM.TAX: // Transfer A->X
                 if (E || X)
                     this.TAXY8('regs.X');
                 else
                     this.TAXY16('regs.X')
                 break;
-            case OM.TAY:
+            case WDC_OM.TAY:
                 if (E || X)
                     this.TAXY8('regs.Y');
                 else
                     this.TAXY16('regs.Y');
                 break;
-            case OM.TCD:
+            case WDC_OM.TCD:
                 this.TAXY16('regs.D');
                 break;
-            case OM.TCS:
+            case WDC_OM.TCS:
                 this.TCS(E);
                 break;
-            case OM.TDC:
+            case WDC_OM.TDC:
                 this.TXYA16('regs.D');
                 break;
-            case OM.TRB:
+            case WDC_OM.TRB:
                 if (E || M)
                     this.TRB8();
                 else
                     this.TRB16();
                 break;
-            case OM.TSC:
+            case WDC_OM.TSC:
                 this.TXYA16('regs.S');
                 break;
-            case OM.TSB:
+            case WDC_OM.TSB:
                 if (E || M)
                     this.TSB8();
                 else
                     this.TSB16();
                 break;
-            case OM.TSX:
+            case WDC_OM.TSX:
                 if (E || X)
                     this.TSX8()
                 else
                     this.TSX16();
                 break;
-            case OM.TXA:
+            case WDC_OM.TXA:
                 if (E || M)
                     this.TXYA8('regs.X');
                 else
                     this.TXYA16('regs.X');
                 break;
-            case OM.TXS:
+            case WDC_OM.TXS:
                 if (E || X)
                     this.TXS8();
                 else
                     this.TXS16();
                 break;
-            case OM.TXY:
+            case WDC_OM.TXY:
                 if (E || X)
                     this.TT8('regs.X', 'regs.Y');
                 else
                     this.TT16('regs.X', 'regs.Y');
                 break;
-            case OM.TYA:
+            case WDC_OM.TYA:
                 if (E || M)
                     this.TXYA8('regs.Y');
                 else
                     this.TXYA16('regs.Y');
                 break;
-            case OM.TYX:
+            case WDC_OM.TYX:
                 if (E || X)
                     this.TT8('regs.Y', 'regs.X');
                 else
                     this.TT16('regs.Y', 'regs.X');
                 break;
-            case OM.XBA:
+            case WDC_OM.XBA:
                 this.XBA();
                 break;
-            case OM.XCE:
+            case WDC_OM.XCE:
                 this.XCE();
                 break;
             // These are taken care of elsewhere or are meaningless
-            case OM.STP:
-            case OM.WAI:
+            case WDC_OM.STP:
+            case WDC_OM.WAI:
                 this.addcycle(2);
                 this.RPDV(0, 0, 0, 0);
                 this.addr_to_PC_then_inc();
                 break;
-            case OM.WDM:
+            case WDC_OM.WDM:
                 break;
             default:
                 console.log('UNKNOWN INSTRUCTION REQUESTED ' + ins);
@@ -1741,7 +1748,7 @@ class switchgen {
 
 
 function A_R_OR_W(ins) {
-    return +(!A_R_INS.has(ins));
+    return +(!WDC_A_R_INS.has(ins));
 }
 
 class generate_instruction_function_return {
@@ -1882,20 +1889,20 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
     }
 
     let setstackmem = function() {
-        affected_by_E = STACK_M.has(opcode_info.ins) || STACK_X.has(opcode_info.ins);
-        affected_by_M = STACK_M.has(opcode_info.ins);
-        affected_by_X = STACK_X.has(opcode_info.ins);
+        affected_by_E = WDC_STACK_M.has(opcode_info.ins) || WDC_STACK_X.has(opcode_info.ins);
+        affected_by_M = WDC_STACK_M.has(opcode_info.ins);
+        affected_by_X = WDC_STACK_X.has(opcode_info.ins);
         mem16 = false;
-        if (!X && STACK_X.has(opcode_info.ins)) mem16 = true;
-        if (!M && STACK_M.has(opcode_info.ins)) mem16 = true;
-        if (STACK_16.has(opcode_info.ins)) mem16 = true;
+        if (!X && WDC_STACK_X.has(opcode_info.ins)) mem16 = true;
+        if (!M && WDC_STACK_M.has(opcode_info.ins)) mem16 = true;
+        if (WDC_STACK_16.has(opcode_info.ins)) mem16 = true;
     }
 
     // Set for many instructions that can read or write and change mem size based on different
     //  flags
     let set_exm16rw = function() {
         affected_by_E = true;
-        affected_by_X = A_OR_M_X.has(opcode_info.ins);
+        affected_by_X = WDC_A_OR_M_X.has(opcode_info.ins);
         affected_by_M = !affected_by_X;
         if ((affected_by_X && !X) || (affected_by_M && !M))
             mem16 = true;
@@ -1950,9 +1957,9 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
     };
 
     ag.addl('// ' + opcode_info.mnemonic + ' E=' + E + " M=" + M + " X=" + X);
-    affected_by_D = ((opcode_info.ins === OM.ADC) || (opcode_info.ins === OM.SBC));
+    affected_by_D = ((opcode_info.ins === WDC_OM.ADC) || (opcode_info.ins === WDC_OM.SBC));
     switch(opcode_info.addr_mode) {
-        case AM.A:
+        case WDC_AM.A:
             set_exm16rw();
             ag.addcycle(2);
             ag.RPDV(0, 1, 0, 0);
@@ -1966,7 +1973,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addr_to_DBR('regs.TA + (pins.D << 8)');
             finish_RW8or16p();
             break; // AM.A absolute Af
-        case AM.Ab: // JMP a
+        case WDC_AM.Ab: // JMP a
             ag.addcycle(2);
             ag.RPDV(0, 1, 0, 0);
             ag.addr_to_PC_then_inc();
@@ -1978,7 +1985,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.cleanup();
             ag.addl('regs.PC = (pins.D << 8) + regs.TA;');
             break;
-        case AM.Ac: // JSR a
+        case WDC_AM.Ac: // JSR a
             affected_by_E = true;
             ag.get_TA_from_PC();
             ag.RPDV(0, 0, 0, 0)
@@ -1990,7 +1997,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.push_L('regs.TR');
             ag.addl('regs.PC = regs.TA;');
             break;
-        case AM.Ad: // Abslute a R-M-W
+        case WDC_AM.Ad: // Abslute a R-M-W
             ag.addl('//case AM.Ad')
             set_em16rmw();
 
@@ -2000,7 +2007,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
 
             finish_rmw();
             break;
-        case AM.A_INDEXED_IND:
+        case WDC_AM.A_INDEXED_IND:
             // JMP (a,x)
             ag.get_TA_from_PC(); // 1-3
             ag.addl('regs.TA = (regs.X + regs.TA) & 0xFFFF;');
@@ -2015,7 +2022,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.cleanup();
             ag.addl('regs.PC = regs.TR + (pins.D << 8);');
             break;
-        case AM.A_INDEXED_INDb: // JSR (a,x)
+        case WDC_AM.A_INDEXED_INDb: // JSR (a,x)
             // This one is REALLY FUNKY
             // Can't really do a lot of automatic code here
             affected_by_E = true;
@@ -2050,7 +2057,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.cleanup();
             ag.addl('regs.PC += (pins.D << 8);')
             break;
-        case AM.A_IND: // JML (a)
+        case WDC_AM.A_IND: // JML (a)
             ag.addcycle(2);
             ag.RPDV(0, 1, 0, 0);
             ag.addr_to_PC_then_inc();
@@ -2074,7 +2081,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.cleanup();
             ag.addl('regs.PBR = pins.D;');
             break;
-        case AM.A_INDb: // JMP (a)
+        case WDC_AM.A_INDb: // JMP (a)
             ag.addcycle(2);
             ag.RPDV(0, 1, 0, 0);
             ag.addr_to_PC_then_inc();
@@ -2094,7 +2101,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.cleanup();
             ag.addl('regs.PC = regs.TR + (pins.D << 8);');
             break;
-        case AM.AL:
+        case WDC_AM.AL:
             set_exm16rw();
             ag.addcycle(2);
             ag.RPDV(0, 1, 0, 0);
@@ -2137,7 +2144,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
                 }
             }
             break;
-        case AM.ALb: // JMP
+        case WDC_AM.ALb: // JMP
             ag.addcycle(2);
             ag.RPDV(0, 1, 0, 0);
             ag.addr_to_PC_then_inc();
@@ -2153,7 +2160,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.cleanup();
             ag.addl('regs.PBR = pins.D;');
             break;
-        case AM.ALc: // JSL al
+        case WDC_AM.ALc: // JSL al
             affected_by_E = true;
             ag.addcycle(2);
             ag.RPDV(0, 1, 0, 0);
@@ -2185,7 +2192,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.push_L('regs.TR');
             ag.addl('regs.PC = regs.TA;')
             break;
-        case AM.AL_INDEXED_X:
+        case WDC_AM.AL_INDEXED_X:
             set_exm16rw();
             ag.addcycle(2); // LD AAL
             ag.RPDV(0, 1, 0, 0);
@@ -2204,10 +2211,10 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addr_to('regs.TA & 0xFFFF', '(regs.TA >>> 16) & 0xFF');
             finish_RW8or16p();
             break;
-        case AM.A_INDEXED_X:
+        case WDC_AM.A_INDEXED_X:
             RMW_indexed('regs.X');
             break;
-        case AM.A_INDEXED_Xb: // R-M-W a,x  6b
+        case WDC_AM.A_INDEXED_Xb: // R-M-W a,x  6b
             set_em16rmw();
             ag.addcycle(2);
             ag.RPDV(0, 1, 0, 0);
@@ -2242,10 +2249,10 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
 
             finish_rmw();
             break;
-        case AM.A_INDEXED_Y:
+        case WDC_AM.A_INDEXED_Y:
             RMW_indexed('regs.Y');
             break;
-        case AM.ACCUM:
+        case WDC_AM.ACCUM:
             affected_by_E = affected_by_M = true;
             ag.addcycle(2);
             ag.addr_to_PC();
@@ -2256,7 +2263,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             if (M|E) ag.addl('regs.C = (regs.C & 0xFF00) | (regs.TR & 0x00FF);');
             else     ag.addl('regs.C = regs.TR & 0xFFFF;');
             break;
-        case AM.XYC: // MVN
+        case WDC_AM.XYC: // MVN
             affected_by_X = affected_by_E = true;
             ag.addcycle(2);
             ag.RPDV(0, 1, 0, 0);
@@ -2291,7 +2298,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             }
             ag.addl('if (regs.C !== 0xFFFF) regs.PC = (regs.PC - 3) & 0xFFFF;');
             break;
-        case AM.XYCb: // MVP
+        case WDC_AM.XYCb: // MVP
             affected_by_X = affected_by_E = true;
             ag.addcycle(2);
             ag.RPDV(0, 1, 0, 0);
@@ -2327,7 +2334,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             }
             ag.addl('if (regs.C !== 0xFFFF) regs.PC = (regs.PC - 3) & 0xFFFF;');
             break;
-        case AM.D:
+        case WDC_AM.D:
             set_exm16rw();
 
             fetch_D0_and_skip_cycle();
@@ -2335,7 +2342,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
 
             finish_RW8or16p(true);
             break;
-        case AM.Db:
+        case WDC_AM.Db:
             // R-M-W direct
             set_em16rmw();
 
@@ -2347,7 +2354,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
 
             finish_rmw(true);
             break;
-        case AM.D_INDEXED_IND: // (d,x)
+        case WDC_AM.D_INDEXED_IND: // (d,x)
             set_exm16rw();
 
             fetch_D0_and_skip_cycle();
@@ -2367,7 +2374,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addr_to_DBR('regs.TA + (pins.D << 8)');
             finish_RW8or16p();
             break;
-        case AM.D_IND: // "Direct indirect" (d)
+        case WDC_AM.D_IND: // "Direct indirect" (d)
             set_exm16rw();
             fetch_D0_and_skip_cycle();
             ag.RPDV(0, 0, 1, 0);
@@ -2382,7 +2389,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addr_to_DBR('(regs.TA + (pins.D << 8))');
             finish_RW8or16p();
             break;
-        case AM.D_IND_INDEXED: // (d), y
+        case WDC_AM.D_IND_INDEXED: // (d), y
             set_exm16rw();
             fetch_D0_and_skip_cycle();
             // Check into RMW_indexed
@@ -2424,7 +2431,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addr_to('regs.TA', 'regs.TR');
             finish_RW8or16p();
             break;
-        case AM.D_IND_L_INDEXED: // [d], y
+        case WDC_AM.D_IND_L_INDEXED: // [d], y
             set_exm16rw();
             fetch_D0_and_skip_cycle();
 
@@ -2446,7 +2453,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addr_to('regs.TA', 'regs.TR');
             finish_RW8or16p();
             break;
-        case AM.D_IND_L: // [d]
+        case WDC_AM.D_IND_L: // [d]
             set_exm16rw();
             fetch_D0_and_skip_cycle();
 
@@ -2468,7 +2475,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addr_to('regs.TA', 'regs.TR');
             finish_RW8or16p();
             break;
-        case AM.D_INDEXED_X: // d,x
+        case WDC_AM.D_INDEXED_X: // d,x
             set_exm16rw();
             fetch_D0_and_skip_cycle();
 
@@ -2482,7 +2489,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
                 ag.addr_to_ZB('(regs.TA + regs.X + regs.D) & 0xFFFF');
             finish_RW8or16p(true);
             break;
-        case AM.D_INDEXED_Xb: // d,x RMWs
+        case WDC_AM.D_INDEXED_Xb: // d,x RMWs
             set_em16rmw();
             fetch_D0_and_skip_cycle();
 
@@ -2497,7 +2504,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             fetch_rmw_8or16(true);
             finish_rmw(true);
             break;
-        case AM.D_INDEXED_Y:
+        case WDC_AM.D_INDEXED_Y:
             set_exm16rw();
             fetch_D0_and_skip_cycle();
             ag.RPDV(0, 0, 0, 0);
@@ -2508,33 +2515,29 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
                 ag.addr_to_ZB('(regs.TA + regs.Y + regs.D) & 0xFFFF');
             finish_RW8or16p(true);
             break;
-        case AM.IMM:
+        case WDC_AM.IMM:
             set_exm16rw();
-            if (opcode_info.ins === OM.SEP || opcode_info.ins === OM.REP)
-            {
-                // REP/SEP work a LITTLE different, they have an extra NOP cycle
-                ag.addcycle('2');
-                ag.RPDV(0,1,0,0);
-                ag.addr_to_PC_then_inc();
-                ag.addcycle('2a for REP/SEP');
-                ag.addl('regs.TR = pins.D;');
-                ag.RPDV(0, 0, 0, 0);
-                ag.cleanup();
-                ag.add_ins(opcode_info.ins, E, M, X);
-                break;
-            }
             ag.addcycle('2');
             ag.RPDV(0,1,0,0);
             ag.addr_to_PC_then_inc();
 
-            finish_R16p(true, false, AM.IMM);
+            finish_R16p(true, false, WDC_AM.IMM);
             break;
-        case AM.I:
+        case WDC_AM.IMMb: // REP, SEP
+            ag.addcycle('2');
+            ag.RPDV(0,1,0,0);
+            ag.addr_to_PC_then_inc();
+            ag.addcycle('2a for REP/SEP');
+            ag.addl('regs.TR = pins.D;');
+            ag.RPDV(0, 0, 0, 0);
+            ag.cleanup();
+            ag.add_ins(opcode_info.ins, E, M, X);
+            break
+        case WDC_AM.I:
             ag.addcycle(2);
-            ag.addl('//THAT WAS THE ONE')
             //ag.addr_to_PC_then_inc();
             ag.RPDV(0, 0, 0, 0);
-            if (opcode_info.ins === OM.WDM) {
+            if (opcode_info.ins === WDC_OM.WDM) {
                 ag.addr_to_PC_then_inc();
             }
             else {
@@ -2543,7 +2546,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.add_ins(opcode_info.ins, E, M, X);
             ag.cleanup();
             break;
-        case AM.Ib:
+        case WDC_AM.Ib:
             ag.addcycle();
             ag.RPDV(0, 0, 0, 0);
             ag.addr_to_PC();
@@ -2551,7 +2554,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.cleanup();
             ag.add_ins(opcode_info.ins, E, M, X);
             break;
-        case AM.Ic: // STP
+        case WDC_AM.Ic: // STP
             ag.addcycle(2);
             ag.addr_to_PC();
             ag.RPDV(0, 0, 0, 0);
@@ -2561,7 +2564,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.cleanup();
             ag.addl('regs.STP = true;');
             break;
-        case AM.Id: // WAI
+        case WDC_AM.Id: // WAI
             ag.addcycle(2);
             ag.addr_to_PC();
             ag.RPDV(0, 0, 0, 0);
@@ -2571,7 +2574,14 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.cleanup();
             ag.addl('regs.WAI = true;');
             break;
-        case AM.PC_R:
+        case WDC_AM.Ie: // SEI, CLI
+            ag.addcycle(2);
+            ag.RPDV(0, 0, 0, 0);
+            ag.addr_to_PC();
+            ag.cleanup();
+            ag.add_ins(opcode_info.ins, E, M, X);
+            break;
+        case WDC_AM.PC_R:
             // +1 if branch taken
             // +1 if branch taken across page boundaries in emulation mode
             ag.addcycle(2);
@@ -2579,31 +2589,31 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addr_to_PC_then_inc();
 
             switch(opcode_info.ins) {
-                case OM.BCC: // Branch if carry clear
+                case WDC_OM.BCC: // Branch if carry clear
                     ag.addl('regs.TR = regs.P.C === 0;');
                     break;
-                case OM.BCS: // Branch if carry set
+                case WDC_OM.BCS: // Branch if carry set
                     ag.addl('regs.TR = regs.P.C === 1;');
                     break;
-                case OM.BEQ: // Branch if zero flag set
+                case WDC_OM.BEQ: // Branch if zero flag set
                     ag.addl('regs.TR = regs.P.Z === 1;');
                     break;
-                case OM.BNE: // Branch if zero flag clear
+                case WDC_OM.BNE: // Branch if zero flag clear
                     ag.addl('regs.TR = regs.P.Z === 0;');
                     break;
-                case OM.BPL: // Branch if negative flag clear
+                case WDC_OM.BPL: // Branch if negative flag clear
                     ag.addl('regs.TR = regs.P.N === 0;');
                     break;
-                case OM.BRA:
+                case WDC_OM.BRA:
                     ag.addl('regs.TR = true;');
                     break;
-                case OM.BMI: // Branch if negative flag set
+                case WDC_OM.BMI: // Branch if negative flag set
                     ag.addl('regs.TR = regs.P.N === 1;');
                     break;
-                case OM.BVS: // Branch if overflow set
+                case WDC_OM.BVS: // Branch if overflow set
                     ag.addl('regs.TR = regs.P.V === 1;');
                     break;
-                case OM.BVC: // Branch if overflow clear
+                case WDC_OM.BVC: // Branch if overflow clear
                     ag.addl('regs.TR = regs.P.V === 0;');
                     break;
             }
@@ -2637,7 +2647,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             }
             ag.addl('if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;');
             break;
-        case AM.PC_RL:
+        case WDC_AM.PC_RL:
             ag.addcycle(2);
             ag.RPDV(0, 1, 0, 0);
             ag.addr_to_PC_then_inc();
@@ -2651,25 +2661,25 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addl('regs.TA = mksigned16(regs.TA + (pins.D << 8));');
             ag.addl('regs.PC = (regs.PC + regs.TA) & 0xFFFF;');
             break;
-        case AM.STACK:
+        case WDC_AM.STACK:
             switch(opcode_info.ins) {
-                case OM.S_RESET:
+                case WDC_OM.S_RESET:
                     ag.S_RESET();
                     break;
-                case OM.S_NMI:
+                case WDC_OM.S_NMI:
                     ag.S_NMI(E);
                     break;
-                case OM.S_IRQ:
+                case WDC_OM.S_IRQ:
                     ag.S_IRQ(E);
                     break;
-                case OM.S_ABORT:
+                case WDC_OM.S_ABORT:
                     ag.S_ABORT(E);
                     break;
             }
             break;
-        case AM.STACKb: // Pulls
+        case WDC_AM.STACKb: // Pulls
             setstackmem();
-            affected_by_E = (opcode_info.ins === OM.PLD);
+            affected_by_E = (opcode_info.ins === WDC_OM.PLD);
             // PLA, X, Y is 8 or 16
             // D is always 16
             // P is always 8bit, P
@@ -2682,7 +2692,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addcycle(4);
             ag.RPDV(0, 0, 1, 0);
             if (mem16) {
-                if (opcode_info.ins === OM.PLD)
+                if (opcode_info.ins === WDC_OM.PLD)
                     ag.addr_to_S_after_inc_unbound();
                 else
                     ag.addr_to_S_after_inc();
@@ -2690,14 +2700,14 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
 
                 ag.addcycle('4a');
                 ag.addl('regs.TR = pins.D;');
-                if (opcode_info.ins === OM.PLD)
+                if (opcode_info.ins === WDC_OM.PLD)
                     ag.addr_to_S_after_inc_unbound();
                 else
                     ag.addr_to_S_after_inc();
 
                 ag.cleanup();
                 ag.addl('regs.TR += (pins.D << 8);');
-                if (opcode_info.ins === OM.PLD && E)
+                if (opcode_info.ins === WDC_OM.PLD && E)
                     ag.addl('regs.S = (regs.S & 0xFF) + 0x100;');
             }
             else {
@@ -2708,9 +2718,9 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             }
             ag.add_ins(opcode_info.ins, E, M, X);
             break;
-        case AM.STACKc: // Pushes
+        case WDC_AM.STACKc: // Pushes
             setstackmem();
-            affected_by_E = (opcode_info.ins === OM.PHD);
+            affected_by_E = (opcode_info.ins === WDC_OM.PHD);
             ag.addcycle(2);
             ag.addr_to_PC();
             ag.RPDV(0, 0, 0, 0);
@@ -2719,19 +2729,19 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.RPDV(1, 0, 1, 0);
             ag.add_ins(opcode_info.ins, E, M, X);
             if (mem16) {
-                if (opcode_info.ins === OM.PHD)
+                if (opcode_info.ins === WDC_OM.PHD)
                     ag.addr_to_S_then_dec_unbound();
                 else
                     ag.addr_to_S_then_dec();
                 ag.addl('pins.D = (regs.TR & 0xFF00) >>> 8;');
 
                 ag.addcycle();
-                if (opcode_info.ins === OM.PHD)
+                if (opcode_info.ins === WDC_OM.PHD)
                     ag.addr_to_S_then_dec_unbound();
                 else
                     ag.addr_to_S_then_dec();
                 ag.addl('pins.D = regs.TR & 0xFF;');
-                if (opcode_info.ins === OM.PHD && E)
+                if (opcode_info.ins === WDC_OM.PHD && E)
                     ag.addl('regs.S = (regs.S & 0xFF) + 0x100;');
             }
             else {
@@ -2739,7 +2749,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
                 ag.addl('pins.D = regs.TR & 0xFF;');
             }
             break;
-        case AM.STACKd: // PEA
+        case WDC_AM.STACKd: // PEA
             ag.addcycle(2);
             affected_by_E = true;
             ag.RPDV(0, 1, 0, 0);
@@ -2761,7 +2771,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             if (E)
                 ag.addl('regs.S = (regs.S & 0xFF) + 0x100;');
             break;
-        case AM.STACKe: // PEI
+        case WDC_AM.STACKe: // PEI
             fetch_D0_and_skip_cycle();
             affected_by_E = true;
             // We're now INSIDE cycle #3 with d in regs.TA
@@ -2783,7 +2793,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             if (E)
                 ag.addl('regs.S = (regs.S & 0xFF) + 0x100;');
             break;
-        case AM.STACKf: // PER
+        case WDC_AM.STACKf: // PER
             affected_by_E = true;
             ag.addcycle(2);
             ag.RPDV(0, 1, 0, 0);
@@ -2809,7 +2819,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.cleanup();
             if (E) ag.addl('regs.S = (regs.S & 0xFF) + 0x100;');
             break;
-        case AM.STACKg: // RTI
+        case WDC_AM.STACKg: // RTI
             affected_by_E = true;
 
             ag.addcycle(2);
@@ -2853,7 +2863,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             }
             ag.addl('if (regs.NMI_servicing) regs.NMI_servicing = false;');
             break;
-        case AM.STACKh: // RTS
+        case WDC_AM.STACKh: // RTS
             ag.addcycle(2);
             ag.RPDV(0,0,0,0);
             ag.addr_to_PC();
@@ -2872,7 +2882,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.RPDV(0, 0, 0, 0);
             ag.addl('regs.PC = (regs.TA + (pins.D << 8) + 1) & 0xFFFF;');
             break;
-        case AM.STACKi: // RTL
+        case WDC_AM.STACKi: // RTL
             affected_by_E = true;
             ag.addcycle(2);
             ag.RPDV(0,0,0,0);
@@ -2896,7 +2906,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addl('regs.PBR = pins.D;')
             if (E) ag.addl('regs.S = (regs.S & 0xFF) + 0x100;');
             break;
-        case AM.STACKj: // BRK, COP
+        case WDC_AM.STACKj: // BRK, COP
             // dont push PBR if in emulation mode
             affected_by_E = true;
             ag.add_ins(opcode_info.ins, E, M, X);
@@ -2905,7 +2915,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addl('regs.P.I = 1;');
 
             break;
-        case AM.STACK_R:
+        case WDC_AM.STACK_R:
             set_exm16rw();
             ag.addcycle(2);
             ag.RPDV(0, 1, 0, 0);
@@ -2921,7 +2931,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addr_to_ZB('regs.TA');
             finish_RW8or16p();
             break;
-        case AM.STACK_R_IND_INDEXED:
+        case WDC_AM.STACK_R_IND_INDEXED:
             set_exm16rw();
             ag.addcycle(2);
             ag.RPDV(0, 1, 0, 0);
@@ -2960,7 +2970,7 @@ function generate_instruction_codes(indent, E, M, X) {
     let firstin = false;
     let aryo;
     let keep_it = false;
-    for (let opcode = 0; opcode <= MAX_OPCODE; opcode++) {
+    for (let opcode = 0; opcode <= WDC_MAX_OPCODE; opcode++) {
         let opcode_info = opcode_matrix[opcode];
         let opc2 = '0x' + hex2(opcode);
         let mystr = indent + '    ' + opc2 + ': new opcode_functions(opcode_matrix[' + opc2 + '],\n';
@@ -3101,15 +3111,15 @@ function generate_ins_AM(indent) {
     let ostr = 'const ins_AM = Object.freeze({\n';
     for (let ins = 0; ins <= MAX_INS; ins++) {
         ostr += indent + '[OM.';
-        for (let j in OM) {
-            if (OM[j] === ins) {
+        for (let j in WDC_OM) {
+            if (WDC_OM[j] === ins) {
                 ostr += j + ']: [ ';
                 break;
             }
         }
         let first = true;
         // Search through address modes
-        for (let opcoden = 0; opcoden <= MAX_OPCODE; opcoden++) {
+        for (let opcoden = 0; opcoden <= WDC_MAX_OPCODE; opcoden++) {
             let opcode = opcode_matrix[opcoden];
             if (opcode.ins !== ins) continue;
             let addr_mode = opcode.addr_mode;
@@ -3118,8 +3128,8 @@ function generate_ins_AM(indent) {
             }
             first = false;
             ostr += 'AM.';
-            for (let j in AM) {
-                if (AM[j] === addr_mode) {
+            for (let j in WDC_AM) {
+                if (WDC_AM[j] === addr_mode) {
                     ostr += j;
                     break;
                 }
@@ -3134,102 +3144,102 @@ function generate_ins_AM(indent) {
 //console.log(generate_ins_AM('    '));
 
 const ins_AM = Object.freeze({
-    [OM.ADC]: [ AM.D_INDEXED_IND, AM.STACK_R, AM.D, AM.D_IND_L, AM.IMM, AM.A, AM.AL, AM.D_IND_INDEXED, AM.D_IND, AM.STACK_R_IND_INDEXED, AM.D_INDEXED_X, AM.D_IND_L_INDEXED, AM.A_INDEXED_Y, AM.A_INDEXED_X, AM.AL_INDEXED_X ],
-    [OM.AND]: [ AM.D_INDEXED_IND, AM.STACK_R, AM.D, AM.D_IND_L, AM.IMM, AM.A, AM.AL, AM.D_IND_INDEXED, AM.D_IND, AM.STACK_R_IND_INDEXED, AM.D_INDEXED_X, AM.D_IND_L_INDEXED, AM.A_INDEXED_Y, AM.A_INDEXED_X, AM.AL_INDEXED_X ],
-    [OM.ASL]: [ AM.Db, AM.ACCUM, AM.Ad, AM.D_INDEXED_Xb, AM.A_INDEXED_Xb ],
-    [OM.BCC]: [ AM.PC_R ],
-    [OM.BCS]: [ AM.PC_R ],
-    [OM.BEQ]: [ AM.PC_R ],
-    [OM.BIT]: [ AM.D, AM.A, AM.D_INDEXED_X, AM.A_INDEXED_X, AM.IMM ],
-    [OM.BMI]: [ AM.PC_R ],
-    [OM.BNE]: [ AM.PC_R ],
-    [OM.BPL]: [ AM.PC_R ],
-    [OM.BRA]: [ AM.PC_R ],
-    [OM.BRK]: [ AM.STACKj ],
-    [OM.BRL]: [ AM.PC_RL ],
-    [OM.BVC]: [ AM.PC_R ],
-    [OM.BVS]: [ AM.PC_R ],
-    [OM.CLC]: [ AM.I ],
-    [OM.CLD]: [ AM.I ],
-    [OM.CLI]: [ AM.I ],
-    [OM.CLV]: [ AM.I ],
-    [OM.CMP]: [ AM.D_INDEXED_IND, AM.STACK_R, AM.D, AM.D_IND_L, AM.IMM, AM.A, AM.AL, AM.D_IND_INDEXED, AM.D_IND, AM.STACK_R_IND_INDEXED, AM.D_INDEXED_X, AM.D_IND_L_INDEXED, AM.A_INDEXED_Y, AM.A_INDEXED_X, AM.AL_INDEXED_X ],
-    [OM.COP]: [ AM.STACKj ],
-    [OM.CPX]: [ AM.IMM, AM.D, AM.A ],
-    [OM.CPY]: [ AM.IMM, AM.D, AM.A ],
-    [OM.DEC]: [ AM.ACCUM, AM.Db, AM.Ad, AM.D_INDEXED_Xb, AM.A_INDEXED_Xb ],
-    [OM.DEX]: [ AM.I ],
-    [OM.DEY]: [ AM.I ],
-    [OM.EOR]: [ AM.D_INDEXED_IND, AM.STACK_R, AM.D, AM.D_IND_L, AM.IMM, AM.A, AM.AL, AM.D_IND_INDEXED, AM.D_IND, AM.STACK_R_IND_INDEXED, AM.D_INDEXED_X, AM.D_IND_L_INDEXED, AM.A_INDEXED_Y, AM.A_INDEXED_X, AM.AL_INDEXED_X ],
-    [OM.INC]: [ AM.ACCUM, AM.Db, AM.Ad, AM.D_INDEXED_Xb, AM.A_INDEXED_Xb ],
-    [OM.INX]: [ AM.I ],
-    [OM.INY]: [ AM.I ],
-    [OM.JML]: [ AM.A_IND ],
-    [OM.JMP]: [ AM.Ab, AM.ALb, AM.A_INDb, AM.A_INDEXED_IND ],
-    [OM.JSL]: [ AM.ALc ],
-    [OM.JSR]: [ AM.Ac, AM.A_INDEXED_INDb ],
-    [OM.LDA]: [ AM.D_INDEXED_IND, AM.STACK_R, AM.D, AM.D_IND_L, AM.IMM, AM.A, AM.AL, AM.D_IND_INDEXED, AM.D_IND, AM.STACK_R_IND_INDEXED, AM.D_INDEXED_X, AM.D_IND_L_INDEXED, AM.A_INDEXED_Y, AM.A_INDEXED_X, AM.AL_INDEXED_X ],
-    [OM.LDX]: [ AM.IMM, AM.D, AM.A, AM.D_INDEXED_Y, AM.A_INDEXED_Y ],
-    [OM.LDY]: [ AM.IMM, AM.D, AM.A, AM.D_INDEXED_X, AM.A_INDEXED_X ],
-    [OM.LSR]: [ AM.Db, AM.ACCUM, AM.Ad, AM.D_INDEXED_Xb, AM.A_INDEXED_Xb ],
-    [OM.MVN]: [ AM.XYC ],
-    [OM.MVP]: [ AM.XYCb ],
-    [OM.NOP]: [ AM.I ],
-    [OM.ORA]: [ AM.D_INDEXED_IND, AM.STACK_R, AM.D, AM.D_IND_L, AM.IMM, AM.A, AM.AL, AM.D_IND_INDEXED, AM.D_IND, AM.STACK_R_IND_INDEXED, AM.D_INDEXED_X, AM.D_IND_L_INDEXED, AM.A_INDEXED_Y, AM.A_INDEXED_X, AM.AL_INDEXED_X ],
-    [OM.PEA]: [ AM.STACKd ],
-    [OM.PEI]: [ AM.STACKe ],
-    [OM.PER]: [ AM.STACKf ],
-    [OM.PHA]: [ AM.STACKc ],
-    [OM.PHB]: [ AM.STACKc ],
-    [OM.PHD]: [ AM.STACKc ],
-    [OM.PHK]: [ AM.STACKc ],
-    [OM.PHP]: [ AM.STACKc ],
-    [OM.PHX]: [ AM.STACKc ],
-    [OM.PHY]: [ AM.STACKc ],
-    [OM.PLA]: [ AM.STACKb ],
-    [OM.PLB]: [ AM.STACKb ],
-    [OM.PLD]: [ AM.STACKb ],
-    [OM.PLP]: [ AM.STACKb ],
-    [OM.PLX]: [ AM.STACKb ],
-    [OM.PLY]: [ AM.STACKb ],
-    [OM.REP]: [ AM.IMM ],
-    [OM.ROL]: [ AM.Db, AM.ACCUM, AM.Ad, AM.D_INDEXED_Xb, AM.A_INDEXED_Xb ],
-    [OM.ROR]: [ AM.Db, AM.ACCUM, AM.Ad, AM.D_INDEXED_Xb, AM.A_INDEXED_Xb ],
-    [OM.RTI]: [ AM.STACKg ],
-    [OM.RTL]: [ AM.STACKi ],
-    [OM.RTS]: [ AM.STACKh ],
-    [OM.SBC]: [ AM.D_INDEXED_IND, AM.STACK_R, AM.D, AM.D_IND_L, AM.IMM, AM.A, AM.AL, AM.D_IND_INDEXED, AM.D_IND, AM.STACK_R_IND_INDEXED, AM.D_INDEXED_X, AM.D_IND_L_INDEXED, AM.A_INDEXED_Y, AM.A_INDEXED_X, AM.AL_INDEXED_X ],
-    [OM.SEP]: [ AM.IMM ],
-    [OM.SEC]: [ AM.I ],
-    [OM.SED]: [ AM.I ],
-    [OM.SEI]: [ AM.I ],
-    [OM.STA]: [ AM.D_INDEXED_IND, AM.STACK_R, AM.D, AM.D_IND_L, AM.A, AM.AL, AM.D_IND_INDEXED, AM.D_IND, AM.STACK_R_IND_INDEXED, AM.D_INDEXED_X, AM.D_IND_L_INDEXED, AM.A_INDEXED_Y, AM.A_INDEXED_X, AM.AL_INDEXED_X ],
-    [OM.STP]: [ AM.Ic ],
-    [OM.STX]: [ AM.D, AM.A, AM.D_INDEXED_Y ],
-    [OM.STY]: [ AM.D, AM.A, AM.D_INDEXED_X ],
-    [OM.STZ]: [ AM.D, AM.D_INDEXED_X, AM.A, AM.A_INDEXED_X ],
-    [OM.TAX]: [ AM.I ],
-    [OM.TAY]: [ AM.I ],
-    [OM.TCD]: [ AM.I ],
-    [OM.TCS]: [ AM.I ],
-    [OM.TDC]: [ AM.I ],
-    [OM.TRB]: [ AM.Db, AM.Ad ],
-    [OM.TSB]: [ AM.Db, AM.Ad ],
-    [OM.TSC]: [ AM.I ],
-    [OM.TSX]: [ AM.I ],
-    [OM.TXA]: [ AM.I ],
-    [OM.TXS]: [ AM.I ],
-    [OM.TXY]: [ AM.I ],
-    [OM.TYA]: [ AM.I ],
-    [OM.TYX]: [ AM.I ],
-    [OM.WAI]: [ AM.Id ],
-    [OM.WDM]: [ AM.I ],
-    [OM.XBA]: [ AM.Ib ],
-    [OM.XCE]: [ AM.I ],
-    [OM.S_RESET]: [ AM.STACK ],
-    [OM.S_NMI]: [ AM.STACK ],
-    [OM.S_IRQ]: [ AM.STACK ],
-    [OM.S_ABORT]: [ AM.STACK ],
-    [OM.DCB]: [ AM.DCB ],
-    [OM.ASC]: [ AM.ASC ]
+    [WDC_OM.ADC]: [ WDC_AM.D_INDEXED_IND, WDC_AM.STACK_R, WDC_AM.D, WDC_AM.D_IND_L, WDC_AM.IMM, WDC_AM.A, WDC_AM.AL, WDC_AM.D_IND_INDEXED, WDC_AM.D_IND, WDC_AM.STACK_R_IND_INDEXED, WDC_AM.D_INDEXED_X, WDC_AM.D_IND_L_INDEXED, WDC_AM.A_INDEXED_Y, WDC_AM.A_INDEXED_X, WDC_AM.AL_INDEXED_X ],
+    [WDC_OM.AND]: [ WDC_AM.D_INDEXED_IND, WDC_AM.STACK_R, WDC_AM.D, WDC_AM.D_IND_L, WDC_AM.IMM, WDC_AM.A, WDC_AM.AL, WDC_AM.D_IND_INDEXED, WDC_AM.D_IND, WDC_AM.STACK_R_IND_INDEXED, WDC_AM.D_INDEXED_X, WDC_AM.D_IND_L_INDEXED, WDC_AM.A_INDEXED_Y, WDC_AM.A_INDEXED_X, WDC_AM.AL_INDEXED_X ],
+    [WDC_OM.ASL]: [ WDC_AM.Db, WDC_AM.ACCUM, WDC_AM.Ad, WDC_AM.D_INDEXED_Xb, WDC_AM.A_INDEXED_Xb ],
+    [WDC_OM.BCC]: [ WDC_AM.PC_R ],
+    [WDC_OM.BCS]: [ WDC_AM.PC_R ],
+    [WDC_OM.BEQ]: [ WDC_AM.PC_R ],
+    [WDC_OM.BIT]: [ WDC_AM.D, WDC_AM.A, WDC_AM.D_INDEXED_X, WDC_AM.A_INDEXED_X, WDC_AM.IMM ],
+    [WDC_OM.BMI]: [ WDC_AM.PC_R ],
+    [WDC_OM.BNE]: [ WDC_AM.PC_R ],
+    [WDC_OM.BPL]: [ WDC_AM.PC_R ],
+    [WDC_OM.BRA]: [ WDC_AM.PC_R ],
+    [WDC_OM.BRK]: [ WDC_AM.STACKj ],
+    [WDC_OM.BRL]: [ WDC_AM.PC_RL ],
+    [WDC_OM.BVC]: [ WDC_AM.PC_R ],
+    [WDC_OM.BVS]: [ WDC_AM.PC_R ],
+    [WDC_OM.CLC]: [ WDC_AM.I ],
+    [WDC_OM.CLD]: [ WDC_AM.I ],
+    [WDC_OM.CLI]: [ WDC_AM.I ],
+    [WDC_OM.CLV]: [ WDC_AM.I ],
+    [WDC_OM.CMP]: [ WDC_AM.D_INDEXED_IND, WDC_AM.STACK_R, WDC_AM.D, WDC_AM.D_IND_L, WDC_AM.IMM, WDC_AM.A, WDC_AM.AL, WDC_AM.D_IND_INDEXED, WDC_AM.D_IND, WDC_AM.STACK_R_IND_INDEXED, WDC_AM.D_INDEXED_X, WDC_AM.D_IND_L_INDEXED, WDC_AM.A_INDEXED_Y, WDC_AM.A_INDEXED_X, WDC_AM.AL_INDEXED_X ],
+    [WDC_OM.COP]: [ WDC_AM.STACKj ],
+    [WDC_OM.CPX]: [ WDC_AM.IMM, WDC_AM.D, WDC_AM.A ],
+    [WDC_OM.CPY]: [ WDC_AM.IMM, WDC_AM.D, WDC_AM.A ],
+    [WDC_OM.DEC]: [ WDC_AM.ACCUM, WDC_AM.Db, WDC_AM.Ad, WDC_AM.D_INDEXED_Xb, WDC_AM.A_INDEXED_Xb ],
+    [WDC_OM.DEX]: [ WDC_AM.I ],
+    [WDC_OM.DEY]: [ WDC_AM.I ],
+    [WDC_OM.EOR]: [ WDC_AM.D_INDEXED_IND, WDC_AM.STACK_R, WDC_AM.D, WDC_AM.D_IND_L, WDC_AM.IMM, WDC_AM.A, WDC_AM.AL, WDC_AM.D_IND_INDEXED, WDC_AM.D_IND, WDC_AM.STACK_R_IND_INDEXED, WDC_AM.D_INDEXED_X, WDC_AM.D_IND_L_INDEXED, WDC_AM.A_INDEXED_Y, WDC_AM.A_INDEXED_X, WDC_AM.AL_INDEXED_X ],
+    [WDC_OM.INC]: [ WDC_AM.ACCUM, WDC_AM.Db, WDC_AM.Ad, WDC_AM.D_INDEXED_Xb, WDC_AM.A_INDEXED_Xb ],
+    [WDC_OM.INX]: [ WDC_AM.I ],
+    [WDC_OM.INY]: [ WDC_AM.I ],
+    [WDC_OM.JML]: [ WDC_AM.A_IND ],
+    [WDC_OM.JMP]: [ WDC_AM.Ab, WDC_AM.ALb, WDC_AM.A_INDb, WDC_AM.A_INDEXED_IND ],
+    [WDC_OM.JSL]: [ WDC_AM.ALc ],
+    [WDC_OM.JSR]: [ WDC_AM.Ac, WDC_AM.A_INDEXED_INDb ],
+    [WDC_OM.LDA]: [ WDC_AM.D_INDEXED_IND, WDC_AM.STACK_R, WDC_AM.D, WDC_AM.D_IND_L, WDC_AM.IMM, WDC_AM.A, WDC_AM.AL, WDC_AM.D_IND_INDEXED, WDC_AM.D_IND, WDC_AM.STACK_R_IND_INDEXED, WDC_AM.D_INDEXED_X, WDC_AM.D_IND_L_INDEXED, WDC_AM.A_INDEXED_Y, WDC_AM.A_INDEXED_X, WDC_AM.AL_INDEXED_X ],
+    [WDC_OM.LDX]: [ WDC_AM.IMM, WDC_AM.D, WDC_AM.A, WDC_AM.D_INDEXED_Y, WDC_AM.A_INDEXED_Y ],
+    [WDC_OM.LDY]: [ WDC_AM.IMM, WDC_AM.D, WDC_AM.A, WDC_AM.D_INDEXED_X, WDC_AM.A_INDEXED_X ],
+    [WDC_OM.LSR]: [ WDC_AM.Db, WDC_AM.ACCUM, WDC_AM.Ad, WDC_AM.D_INDEXED_Xb, WDC_AM.A_INDEXED_Xb ],
+    [WDC_OM.MVN]: [ WDC_AM.XYC ],
+    [WDC_OM.MVP]: [ WDC_AM.XYCb ],
+    [WDC_OM.NOP]: [ WDC_AM.I ],
+    [WDC_OM.ORA]: [ WDC_AM.D_INDEXED_IND, WDC_AM.STACK_R, WDC_AM.D, WDC_AM.D_IND_L, WDC_AM.IMM, WDC_AM.A, WDC_AM.AL, WDC_AM.D_IND_INDEXED, WDC_AM.D_IND, WDC_AM.STACK_R_IND_INDEXED, WDC_AM.D_INDEXED_X, WDC_AM.D_IND_L_INDEXED, WDC_AM.A_INDEXED_Y, WDC_AM.A_INDEXED_X, WDC_AM.AL_INDEXED_X ],
+    [WDC_OM.PEA]: [ WDC_AM.STACKd ],
+    [WDC_OM.PEI]: [ WDC_AM.STACKe ],
+    [WDC_OM.PER]: [ WDC_AM.STACKf ],
+    [WDC_OM.PHA]: [ WDC_AM.STACKc ],
+    [WDC_OM.PHB]: [ WDC_AM.STACKc ],
+    [WDC_OM.PHD]: [ WDC_AM.STACKc ],
+    [WDC_OM.PHK]: [ WDC_AM.STACKc ],
+    [WDC_OM.PHP]: [ WDC_AM.STACKc ],
+    [WDC_OM.PHX]: [ WDC_AM.STACKc ],
+    [WDC_OM.PHY]: [ WDC_AM.STACKc ],
+    [WDC_OM.PLA]: [ WDC_AM.STACKb ],
+    [WDC_OM.PLB]: [ WDC_AM.STACKb ],
+    [WDC_OM.PLD]: [ WDC_AM.STACKb ],
+    [WDC_OM.PLP]: [ WDC_AM.STACKb ],
+    [WDC_OM.PLX]: [ WDC_AM.STACKb ],
+    [WDC_OM.PLY]: [ WDC_AM.STACKb ],
+    [WDC_OM.REP]: [ WDC_AM.IMM ],
+    [WDC_OM.ROL]: [ WDC_AM.Db, WDC_AM.ACCUM, WDC_AM.Ad, WDC_AM.D_INDEXED_Xb, WDC_AM.A_INDEXED_Xb ],
+    [WDC_OM.ROR]: [ WDC_AM.Db, WDC_AM.ACCUM, WDC_AM.Ad, WDC_AM.D_INDEXED_Xb, WDC_AM.A_INDEXED_Xb ],
+    [WDC_OM.RTI]: [ WDC_AM.STACKg ],
+    [WDC_OM.RTL]: [ WDC_AM.STACKi ],
+    [WDC_OM.RTS]: [ WDC_AM.STACKh ],
+    [WDC_OM.SBC]: [ WDC_AM.D_INDEXED_IND, WDC_AM.STACK_R, WDC_AM.D, WDC_AM.D_IND_L, WDC_AM.IMM, WDC_AM.A, WDC_AM.AL, WDC_AM.D_IND_INDEXED, WDC_AM.D_IND, WDC_AM.STACK_R_IND_INDEXED, WDC_AM.D_INDEXED_X, WDC_AM.D_IND_L_INDEXED, WDC_AM.A_INDEXED_Y, WDC_AM.A_INDEXED_X, WDC_AM.AL_INDEXED_X ],
+    [WDC_OM.SEP]: [ WDC_AM.IMM ],
+    [WDC_OM.SEC]: [ WDC_AM.I ],
+    [WDC_OM.SED]: [ WDC_AM.I ],
+    [WDC_OM.SEI]: [ WDC_AM.I ],
+    [WDC_OM.STA]: [ WDC_AM.D_INDEXED_IND, WDC_AM.STACK_R, WDC_AM.D, WDC_AM.D_IND_L, WDC_AM.A, WDC_AM.AL, WDC_AM.D_IND_INDEXED, WDC_AM.D_IND, WDC_AM.STACK_R_IND_INDEXED, WDC_AM.D_INDEXED_X, WDC_AM.D_IND_L_INDEXED, WDC_AM.A_INDEXED_Y, WDC_AM.A_INDEXED_X, WDC_AM.AL_INDEXED_X ],
+    [WDC_OM.STP]: [ WDC_AM.Ic ],
+    [WDC_OM.STX]: [ WDC_AM.D, WDC_AM.A, WDC_AM.D_INDEXED_Y ],
+    [WDC_OM.STY]: [ WDC_AM.D, WDC_AM.A, WDC_AM.D_INDEXED_X ],
+    [WDC_OM.STZ]: [ WDC_AM.D, WDC_AM.D_INDEXED_X, WDC_AM.A, WDC_AM.A_INDEXED_X ],
+    [WDC_OM.TAX]: [ WDC_AM.I ],
+    [WDC_OM.TAY]: [ WDC_AM.I ],
+    [WDC_OM.TCD]: [ WDC_AM.I ],
+    [WDC_OM.TCS]: [ WDC_AM.I ],
+    [WDC_OM.TDC]: [ WDC_AM.I ],
+    [WDC_OM.TRB]: [ WDC_AM.Db, WDC_AM.Ad ],
+    [WDC_OM.TSB]: [ WDC_AM.Db, WDC_AM.Ad ],
+    [WDC_OM.TSC]: [ WDC_AM.I ],
+    [WDC_OM.TSX]: [ WDC_AM.I ],
+    [WDC_OM.TXA]: [ WDC_AM.I ],
+    [WDC_OM.TXS]: [ WDC_AM.I ],
+    [WDC_OM.TXY]: [ WDC_AM.I ],
+    [WDC_OM.TYA]: [ WDC_AM.I ],
+    [WDC_OM.TYX]: [ WDC_AM.I ],
+    [WDC_OM.WAI]: [ WDC_AM.Id ],
+    [WDC_OM.WDM]: [ WDC_AM.I ],
+    [WDC_OM.XBA]: [ WDC_AM.Ib ],
+    [WDC_OM.XCE]: [ WDC_AM.I ],
+    [WDC_OM.S_RESET]: [ WDC_AM.STACK ],
+    [WDC_OM.S_NMI]: [ WDC_AM.STACK ],
+    [WDC_OM.S_IRQ]: [ WDC_AM.STACK ],
+    [WDC_OM.S_ABORT]: [ WDC_AM.STACK ],
+    [WDC_OM.DCB]: [ WDC_AM.DCB ],
+    [WDC_OM.ASC]: [ WDC_AM.ASC ]
 });

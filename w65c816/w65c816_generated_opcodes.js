@@ -49,6 +49,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PBR = 0;
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         // instruction code ends
                         regs.P.D = 0;
@@ -98,6 +99,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -157,6 +159,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PBR = 0;
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         // instruction code ends
                         regs.P.D = 0;
@@ -190,6 +193,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -248,6 +252,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -283,6 +288,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -343,6 +349,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -391,6 +398,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -425,6 +433,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 3: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -447,6 +456,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -479,6 +489,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -511,6 +522,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -559,6 +571,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -588,6 +601,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -644,6 +658,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -678,6 +693,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += (pins. D & 0xFF) << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -712,6 +728,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -769,6 +786,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -817,6 +835,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -866,6 +885,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -924,6 +944,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -961,6 +982,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -1023,6 +1045,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 9: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -1071,6 +1094,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -1090,7 +1114,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // CLC i E=0 M=0 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -1098,6 +1121,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -1140,6 +1164,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -1171,6 +1196,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -1184,7 +1210,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TCS i E=0 M=0 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -1192,6 +1217,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -1241,6 +1267,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -1282,6 +1309,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -1344,6 +1372,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 9: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -1379,6 +1408,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -1427,6 +1457,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -1472,6 +1503,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -1533,6 +1565,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -1562,6 +1595,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -1603,6 +1637,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFFFF) === 0);
@@ -1644,6 +1679,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -1705,6 +1741,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -1753,6 +1790,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -1784,6 +1822,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.P.setbyte_native(regs.TR);
@@ -1814,6 +1853,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -1847,6 +1887,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -1876,6 +1917,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += (pins.D << 8);
                         // instruction code follows
                         regs.D = regs.TR;
@@ -1911,6 +1953,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFFFF) === 0);
@@ -1946,6 +1989,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -2003,6 +2047,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -2037,6 +2082,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += (pins. D & 0xFF) << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -2071,6 +2117,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -2128,6 +2175,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -2176,6 +2224,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -2225,6 +2274,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -2268,6 +2318,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFFFF) === 0);
@@ -2311,6 +2362,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -2374,6 +2426,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 9: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -2422,6 +2475,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -2441,7 +2495,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // SEC i E=0 M=0 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -2449,6 +2502,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2491,6 +2545,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -2522,6 +2577,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -2535,7 +2591,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TSC i E=0 M=0 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -2545,6 +2600,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2587,6 +2643,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFFFF) === 0);
@@ -2634,6 +2691,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -2697,6 +2755,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 9: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -2732,6 +2791,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -2786,6 +2846,7 @@ const decoded_opcodes = Object.freeze(
                         regs.TA += pins.D << 8;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = regs.TA;
                         regs.PBR = pins.D;
                         if (regs.NMI_servicing) regs.NMI_servicing = false;
@@ -2834,6 +2895,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -2853,7 +2915,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // WDM i E=0 M=0 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2861,6 +2922,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2891,6 +2953,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -2932,6 +2995,7 @@ const decoded_opcodes = Object.freeze(
                     case 6: // 7
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.C = (regs.C - 1) & 0xFFFF;
                         regs.X = (regs.X - 1) & 0xFFFF;
                         regs.Y = (regs.Y - 1) & 0xFFFF;
@@ -2972,6 +3036,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -3032,6 +3097,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -3080,6 +3146,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -3120,6 +3187,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -3142,6 +3210,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -3174,6 +3243,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -3202,6 +3272,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 3: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -3224,6 +3295,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -3254,6 +3326,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -3310,6 +3383,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -3344,6 +3418,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += (pins. D & 0xFF) << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -3378,6 +3453,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -3435,6 +3511,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -3483,6 +3560,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -3532,6 +3610,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -3578,6 +3657,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -3615,6 +3695,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -3677,6 +3758,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 9: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -3725,6 +3807,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -3744,14 +3827,14 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // CLI i E=0 M=0 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        break;
+                    case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // instruction code follows
                         regs.P.I = 0;
                         // instruction code ends
-                        break;
-                    case 2: // cleanup_custom
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -3794,6 +3877,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -3834,6 +3918,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -3847,7 +3932,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TCD i E=0 M=0 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -3857,6 +3941,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -3884,6 +3969,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = regs.TA + (pins.D << 8);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PBR = pins.D;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -3926,6 +4012,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -3988,6 +4075,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 9: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -4023,6 +4111,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -4065,6 +4154,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -4110,6 +4200,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -4170,6 +4261,7 @@ const decoded_opcodes = Object.freeze(
                         pins.D = regs.TR & 0xFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -4200,6 +4292,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -4263,6 +4356,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -4298,6 +4392,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -4376,6 +4471,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -4424,6 +4520,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -4478,6 +4575,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += (pins.D << 8);
                         // instruction code follows
                         regs.C = regs.TR;
@@ -4506,6 +4604,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -4556,6 +4655,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -4593,6 +4693,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.TA + (pins.D << 8) + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PBR = pins.D;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -4623,6 +4724,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = regs.TR + (pins.D << 8);
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -4653,6 +4755,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -4727,6 +4830,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -4761,6 +4865,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += (pins. D & 0xFF) << 8;
                         // instruction code follows
                         let result;
@@ -4812,6 +4917,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -4869,6 +4975,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -4934,6 +5041,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -5000,6 +5108,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -5065,6 +5174,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -5102,6 +5212,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -5182,6 +5293,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 9: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -5230,6 +5342,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -5266,14 +5379,14 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // SEI i E=0 M=0 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        break;
+                    case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // instruction code follows
                         regs.P.I = 1;
                         // instruction code ends
-                        break;
-                    case 2: // cleanup_custom
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -5316,6 +5429,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -5370,6 +5484,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += (pins.D << 8);
                         // instruction code follows
                         regs.Y = regs.TR;
@@ -5389,7 +5504,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TDC i E=0 M=0 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -5399,6 +5513,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -5435,6 +5550,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = regs.TR + (pins.D << 8);
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -5477,6 +5593,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -5557,6 +5674,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 9: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -5592,6 +5710,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -5643,6 +5762,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -5698,6 +5818,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -5726,6 +5847,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -5761,6 +5883,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -5801,6 +5924,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -5842,6 +5966,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -5882,6 +6007,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -5937,6 +6063,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -5950,7 +6077,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // DEY i E=0 M=0 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -5960,6 +6086,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -5983,6 +6110,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFFFF) === 0);
@@ -6000,7 +6128,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TXA i E=0 M=0 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -6010,6 +6137,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -6039,6 +6167,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 3: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -6074,6 +6203,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -6110,6 +6240,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -6145,6 +6276,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -6186,6 +6318,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -6214,6 +6347,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -6277,6 +6411,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -6326,6 +6461,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -6375,6 +6511,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -6417,6 +6554,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -6460,6 +6598,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -6502,6 +6641,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -6557,6 +6697,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -6570,7 +6711,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TYA i E=0 M=0 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -6580,6 +6720,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -6628,6 +6769,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -6641,7 +6783,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TXS i E=0 M=0 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -6649,6 +6790,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -6663,7 +6805,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TXY i E=0 M=0 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -6673,6 +6814,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -6709,6 +6851,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -6756,6 +6899,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -6802,6 +6946,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -6844,6 +6989,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -6866,6 +7012,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.Y = regs.TR;
@@ -6917,6 +7064,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -6945,6 +7093,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.X = regs.TR;
@@ -6980,6 +7129,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -7021,6 +7171,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.Y = regs.TR;
@@ -7062,6 +7213,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -7103,6 +7255,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.X = regs.TR;
@@ -7157,6 +7310,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -7176,7 +7330,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TAY i E=0 M=0 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -7186,6 +7339,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -7209,6 +7363,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -7228,7 +7383,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TAX i E=0 M=0 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -7238,6 +7392,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -7264,6 +7419,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.DBR = ((regs.DBR) & 0xFF00) + (regs.TR & 0xFF);
@@ -7299,6 +7455,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.Y = regs.TR;
@@ -7334,6 +7491,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -7369,6 +7527,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.X = regs.TR;
@@ -7409,6 +7568,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += (pins. D & 0xFF) << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -7443,6 +7603,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -7500,6 +7661,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -7548,6 +7710,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -7597,6 +7760,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -7640,6 +7804,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.Y = regs.TR;
@@ -7683,6 +7848,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -7726,6 +7892,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.X = regs.TR;
@@ -7780,6 +7947,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -7799,7 +7967,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // CLV i E=0 M=0 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -7807,6 +7974,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -7849,6 +8017,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -7868,7 +8037,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TSX i E=0 M=0 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -7878,6 +8046,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -7892,7 +8061,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TYX i E=0 M=0 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -7902,6 +8070,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -7944,6 +8113,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.Y = regs.TR;
@@ -7991,6 +8161,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -8038,6 +8209,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.X = regs.TR;
@@ -8079,6 +8251,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -8107,6 +8280,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.Y) - regs.TR;
@@ -8159,6 +8333,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -8187,6 +8362,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 0;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         // instruction code follows
                         regs.P.setbyte_native(regs.P.getbyte_native() & (~regs.TR & 0xFF));
                         // instruction code ends
@@ -8198,7 +8374,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                 }
             },
-            true, true, false),
+            false, false, false),
         0xC3: new opcode_functions(opcode_matrix[0xC3],
             function(regs, pins) { // CMP d,s
                 switch(regs.TCU) {
@@ -8220,6 +8396,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -8262,6 +8439,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.Y) - regs.TR;
@@ -8304,6 +8482,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -8364,6 +8543,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -8412,6 +8592,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -8432,7 +8613,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // INY i E=0 M=0 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -8442,6 +8622,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8465,6 +8646,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -8485,7 +8667,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // DEX i E=0 M=0 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -8495,6 +8676,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8515,6 +8697,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.WAI = true;
                         // Following is auto-generated code for instruction finish
                         regs.TCU = 0;
@@ -8543,6 +8726,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.Y) - regs.TR;
@@ -8579,6 +8763,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -8635,6 +8820,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -8669,6 +8855,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += (pins. D & 0xFF) << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -8704,6 +8891,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -8761,6 +8949,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -8810,6 +8999,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -8860,6 +9050,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -8912,6 +9103,7 @@ const decoded_opcodes = Object.freeze(
                         regs.S = (regs.S - 1) & 0xFFFF;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8950,6 +9142,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -9012,6 +9205,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 9: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -9060,6 +9254,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -9080,7 +9275,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // CLD i E=0 M=0 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -9088,6 +9282,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -9130,6 +9325,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -9171,6 +9367,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -9190,6 +9387,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.STP = true;
                         // Following is auto-generated code for instruction finish
                         regs.TCU = 0;
@@ -9222,6 +9420,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PBR = pins.D;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -9264,6 +9463,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -9326,6 +9526,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 9: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -9361,6 +9562,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -9390,6 +9592,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.X) - regs.TR;
@@ -9442,6 +9645,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -9487,6 +9691,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 0;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         // instruction code follows
                         regs.P.setbyte_native(regs.P.getbyte_native() | regs.TR);
                         if (regs.P.X) { regs.X &= 0xFF, regs.Y &= 0xFF; }
@@ -9499,7 +9704,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                 }
             },
-            true, true, false),
+            false, false, false),
         0xE3: new opcode_functions(opcode_matrix[0xE3],
             function(regs, pins) { // SBC d,s
                 switch(regs.TCU) {
@@ -9521,6 +9726,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -9580,6 +9786,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.X) - regs.TR;
@@ -9622,6 +9829,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -9699,6 +9907,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -9747,6 +9956,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -9784,7 +9994,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // INX i E=0 M=0 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -9794,6 +10003,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -9817,6 +10027,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -9854,13 +10065,13 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // NOP i E=0 M=0 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -9881,6 +10092,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         // instruction code follows
                         regs.C = ((regs.C << 8) & 0xFF00) + ((regs.C >>> 8) & 0xFF);
                         regs.P.Z = +((regs.C & 0xFF) === 0);
@@ -9916,6 +10128,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.X) - regs.TR;
@@ -9952,6 +10165,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -10025,6 +10239,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -10059,6 +10274,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += (pins. D & 0xFF) << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -10111,6 +10327,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -10168,6 +10385,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -10234,6 +10452,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -10301,6 +10520,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -10357,6 +10577,7 @@ const decoded_opcodes = Object.freeze(
                         pins.D = regs.TR;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -10395,6 +10616,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -10474,6 +10696,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 9: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -10522,6 +10745,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -10559,7 +10783,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // SED i E=0 M=0 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -10567,6 +10790,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -10609,6 +10833,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -10664,6 +10889,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += (pins.D << 8);
                         // instruction code follows
                         regs.X = regs.TR;
@@ -10683,7 +10909,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // XCE i E=0 M=0 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -10697,6 +10922,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -10746,6 +10972,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = pins.D;
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC += (pins.D << 8);
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -10788,6 +11015,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -10867,6 +11095,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 9: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -10902,6 +11131,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -10935,9 +11165,9 @@ const decoded_opcodes = Object.freeze(
             },
             true, true, false),
         0x100: new opcode_functions(opcode_matrix[0x100],
-            function(regs, pins) { // RESET s
+            function(regs, pins) { // S_RESET s
                 switch(regs.TCU) {
-                        // RESET s E=0 M=0 X=0
+                        // S_RESET s E=0 M=0 X=0
                     case 1: // 3
                         pins.RW = 0; pins.PDV = 1;
                         pins.Addr = regs.S; pins.BA = 0;
@@ -10977,6 +11207,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC += (pins.D << 8);
                         pins.PDV = 1;
                         // Following is auto-generated code for instruction finish
@@ -10988,9 +11219,9 @@ const decoded_opcodes = Object.freeze(
             },
             false, false, false),
         0x101: new opcode_functions(opcode_matrix[0x101],
-            function(regs, pins) { // ABORT s
+            function(regs, pins) { // S_ABORT s
                 switch(regs.TCU) {
-                        // ABORT s E=0 M=0 X=0
+                        // S_ABORT s E=0 M=0 X=0
                     case 1: // 3
                         regs.TR = regs.PC;
                         pins.Addr = regs.S; pins.BA = 0;
@@ -11027,6 +11258,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PBR = 0;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -11037,9 +11269,9 @@ const decoded_opcodes = Object.freeze(
             },
             false, false, false),
         0x102: new opcode_functions(opcode_matrix[0x102],
-            function(regs, pins) { // IRQ s
+            function(regs, pins) { // S_IRQ s
                 switch(regs.TCU) {
-                        // IRQ s E=0 M=0 X=0
+                        // S_IRQ s E=0 M=0 X=0
                     case 1: // 3
                         regs.TR = regs.PC;
                         pins.Addr = regs.S; pins.BA = 0;
@@ -11076,6 +11308,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PBR = 0;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         regs.P.I = 1;
                         regs.P.D = 0;
@@ -11088,9 +11321,9 @@ const decoded_opcodes = Object.freeze(
             },
             false, false, false),
         0x103: new opcode_functions(opcode_matrix[0x103],
-            function(regs, pins) { // NMI s
+            function(regs, pins) { // S_NMI s
                 switch(regs.TCU) {
-                        // NMI s E=0 M=0 X=0
+                        // S_NMI s E=0 M=0 X=0
                     case 1: // 3
                         regs.TR = regs.PC;
                         pins.Addr = regs.S; pins.BA = 0;
@@ -11127,6 +11360,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PBR = 0;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         regs.P.I = 1;
                         regs.P.D = 0;
@@ -11186,6 +11420,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PBR = 0;
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         // instruction code ends
                         regs.P.D = 0;
@@ -11235,6 +11470,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -11294,6 +11530,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PBR = 0;
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         // instruction code ends
                         regs.P.D = 0;
@@ -11327,6 +11564,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -11385,6 +11623,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -11420,6 +11659,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -11480,6 +11720,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -11528,6 +11769,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -11562,6 +11804,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 3: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -11584,6 +11827,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -11616,6 +11860,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -11648,6 +11893,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -11696,6 +11942,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -11725,6 +11972,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -11781,6 +12029,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -11815,6 +12064,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += (pins. D & 0xFF) << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -11849,6 +12099,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -11907,6 +12158,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -11955,6 +12207,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -12004,6 +12257,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -12062,6 +12316,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -12099,6 +12354,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -12161,6 +12417,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 9: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -12209,6 +12466,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -12228,7 +12486,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // CLC i E=0 M=0 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -12236,6 +12493,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -12280,6 +12538,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -12311,6 +12570,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -12324,7 +12584,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TCS i E=0 M=0 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -12332,6 +12591,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -12381,6 +12641,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -12424,6 +12685,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -12486,6 +12748,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 9: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -12521,6 +12784,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C |= regs.TR;
@@ -12569,6 +12833,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -12614,6 +12879,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -12675,6 +12941,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -12704,6 +12971,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -12745,6 +13013,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFFFF) === 0);
@@ -12786,6 +13055,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -12847,6 +13117,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -12895,6 +13166,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -12926,6 +13198,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.P.setbyte_native(regs.TR);
@@ -12956,6 +13229,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -12989,6 +13263,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -13018,6 +13293,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += (pins.D << 8);
                         // instruction code follows
                         regs.D = regs.TR;
@@ -13053,6 +13329,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFFFF) === 0);
@@ -13088,6 +13365,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -13145,6 +13423,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -13179,6 +13458,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += (pins. D & 0xFF) << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -13213,6 +13493,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -13271,6 +13552,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -13319,6 +13601,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -13368,6 +13651,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -13411,6 +13695,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFFFF) === 0);
@@ -13454,6 +13739,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -13517,6 +13803,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 9: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -13565,6 +13852,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -13584,7 +13872,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // SEC i E=0 M=0 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -13592,6 +13879,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -13636,6 +13924,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -13667,6 +13956,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -13680,7 +13970,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TSC i E=0 M=0 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -13690,6 +13979,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -13734,6 +14024,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFFFF) === 0);
@@ -13783,6 +14074,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -13846,6 +14138,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 9: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -13881,6 +14174,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C &= regs.TR;
@@ -13935,6 +14229,7 @@ const decoded_opcodes = Object.freeze(
                         regs.TA += pins.D << 8;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = regs.TA;
                         regs.PBR = pins.D;
                         if (regs.NMI_servicing) regs.NMI_servicing = false;
@@ -13983,6 +14278,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -14002,7 +14298,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // WDM i E=0 M=0 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -14010,6 +14305,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -14040,6 +14336,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -14081,6 +14378,7 @@ const decoded_opcodes = Object.freeze(
                     case 6: // 7
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.C = (regs.C - 1) & 0xFFFF;
                         regs.X = (regs.X - 1) & 0xFF;
                         regs.Y = (regs.Y - 1) & 0xFF;
@@ -14121,6 +14419,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -14181,6 +14480,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -14229,6 +14529,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -14269,6 +14570,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -14291,6 +14593,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -14323,6 +14626,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -14351,6 +14655,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 3: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -14373,6 +14678,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -14403,6 +14709,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -14459,6 +14766,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -14493,6 +14801,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += (pins. D & 0xFF) << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -14527,6 +14836,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -14585,6 +14895,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -14633,6 +14944,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -14682,6 +14994,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -14728,6 +15041,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -14765,6 +15079,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -14827,6 +15142,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 9: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -14875,6 +15191,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -14894,14 +15211,14 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // CLI i E=0 M=0 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        break;
+                    case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // instruction code follows
                         regs.P.I = 0;
                         // instruction code ends
-                        break;
-                    case 2: // cleanup_custom
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -14946,6 +15263,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -14980,6 +15298,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 3: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -14993,7 +15312,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TCD i E=0 M=0 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -15003,6 +15321,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -15030,6 +15349,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = regs.TA + (pins.D << 8);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PBR = pins.D;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -15074,6 +15394,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -15136,6 +15457,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 9: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -15171,6 +15493,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C ^= regs.TR;
@@ -15213,6 +15536,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -15258,6 +15582,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -15318,6 +15643,7 @@ const decoded_opcodes = Object.freeze(
                         pins.D = regs.TR & 0xFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -15348,6 +15674,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -15411,6 +15738,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -15446,6 +15774,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -15524,6 +15853,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -15572,6 +15902,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -15626,6 +15957,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += (pins.D << 8);
                         // instruction code follows
                         regs.C = regs.TR;
@@ -15654,6 +15986,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -15704,6 +16037,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -15741,6 +16075,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.TA + (pins.D << 8) + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PBR = pins.D;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -15771,6 +16106,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = regs.TR + (pins.D << 8);
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -15801,6 +16137,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -15875,6 +16212,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -15909,6 +16247,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += (pins. D & 0xFF) << 8;
                         // instruction code follows
                         let result;
@@ -15960,6 +16299,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -16018,6 +16358,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -16083,6 +16424,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -16149,6 +16491,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -16214,6 +16557,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -16251,6 +16595,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -16331,6 +16676,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 9: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -16379,6 +16725,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -16415,14 +16762,14 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // SEI i E=0 M=0 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        break;
+                    case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // instruction code follows
                         regs.P.I = 1;
                         // instruction code ends
-                        break;
-                    case 2: // cleanup_custom
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -16467,6 +16814,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -16515,6 +16863,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.Y = ((regs.Y) & 0xFF00) + (regs.TR & 0xFF);
@@ -16534,7 +16883,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TDC i E=0 M=0 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -16544,6 +16892,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -16580,6 +16929,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = regs.TR + (pins.D << 8);
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -16624,6 +16974,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -16704,6 +17055,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 9: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -16739,6 +17091,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let result;
@@ -16790,6 +17143,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -16845,6 +17199,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -16873,6 +17228,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -16908,6 +17264,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -16944,6 +17301,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -16985,6 +17343,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -17021,6 +17380,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -17076,6 +17436,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -17089,7 +17450,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // DEY i E=0 M=0 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -17099,6 +17459,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -17122,6 +17483,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFFFF) === 0);
@@ -17139,7 +17501,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TXA i E=0 M=0 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -17149,6 +17510,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -17178,6 +17540,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 3: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -17209,6 +17572,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -17245,6 +17609,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -17276,6 +17641,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -17317,6 +17683,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -17345,6 +17712,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -17408,6 +17776,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -17457,6 +17826,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -17506,6 +17876,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -17544,6 +17915,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -17587,6 +17959,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -17625,6 +17998,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -17680,6 +18054,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -17693,7 +18068,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TYA i E=0 M=0 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -17703,6 +18077,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -17751,6 +18126,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -17764,7 +18140,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TXS i E=0 M=0 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -17772,6 +18147,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -17786,7 +18162,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TXY i E=0 M=0 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -17796,6 +18171,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -17832,6 +18208,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -17879,6 +18256,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -17925,6 +18303,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -17967,6 +18346,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -17984,6 +18364,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.Y = ((regs.Y) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -18035,6 +18416,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -18058,6 +18440,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.X = ((regs.X) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -18093,6 +18476,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -18130,6 +18514,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.Y = ((regs.Y) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -18171,6 +18556,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -18208,6 +18594,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.X = ((regs.X) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -18262,6 +18649,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -18281,7 +18669,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TAY i E=0 M=0 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -18291,6 +18678,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -18314,6 +18702,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -18333,7 +18722,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TAX i E=0 M=0 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -18343,6 +18731,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -18369,6 +18758,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.DBR = ((regs.DBR) & 0xFF00) + (regs.TR & 0xFF);
@@ -18400,6 +18790,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.Y = ((regs.Y) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -18435,6 +18826,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -18466,6 +18858,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.X = ((regs.X) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -18506,6 +18899,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += (pins. D & 0xFF) << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -18540,6 +18934,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -18598,6 +18993,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -18646,6 +19042,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -18695,6 +19092,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -18734,6 +19132,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.Y = ((regs.Y) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -18777,6 +19176,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -18816,6 +19216,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.X = ((regs.X) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -18870,6 +19271,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -18889,7 +19291,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // CLV i E=0 M=0 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -18897,6 +19298,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -18941,6 +19343,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -18960,7 +19363,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TSX i E=0 M=0 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -18970,6 +19372,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -18984,7 +19387,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TYX i E=0 M=0 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -18994,6 +19396,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -19034,6 +19437,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.Y = ((regs.Y) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -19083,6 +19487,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -19128,6 +19533,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.X = ((regs.X) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -19169,6 +19575,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.C = regs.TR & 0xFFFF;
@@ -19192,6 +19599,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.Y & 0xFF) - regs.TR;
@@ -19244,6 +19652,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -19272,6 +19681,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 0;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         // instruction code follows
                         regs.P.setbyte_native(regs.P.getbyte_native() & (~regs.TR & 0xFF));
                         // instruction code ends
@@ -19283,7 +19693,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                 }
             },
-            true, true, false),
+            false, false, false),
         0xC3: new opcode_functions(opcode_matrix[0xC3],
             function(regs, pins) { // CMP d,s
                 switch(regs.TCU) {
@@ -19305,6 +19715,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -19343,6 +19754,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.Y & 0xFF) - regs.TR;
@@ -19385,6 +19797,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -19445,6 +19858,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -19493,6 +19907,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -19513,7 +19928,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // INY i E=0 M=0 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -19523,6 +19937,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -19546,6 +19961,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -19566,7 +19982,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // DEX i E=0 M=0 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -19576,6 +19991,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -19596,6 +20012,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.WAI = true;
                         // Following is auto-generated code for instruction finish
                         regs.TCU = 0;
@@ -19620,6 +20037,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.Y & 0xFF) - regs.TR;
@@ -19656,6 +20074,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -19712,6 +20131,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -19746,6 +20166,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += (pins. D & 0xFF) << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -19781,6 +20202,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -19839,6 +20261,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -19888,6 +20311,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -19938,6 +20362,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -19990,6 +20415,7 @@ const decoded_opcodes = Object.freeze(
                         regs.S = (regs.S - 1) & 0xFFFF;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -20028,6 +20454,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -20090,6 +20517,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 9: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -20138,6 +20566,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -20158,7 +20587,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // CLD i E=0 M=0 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -20166,6 +20594,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -20210,6 +20639,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -20245,6 +20675,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 3: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -20264,6 +20695,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.STP = true;
                         // Following is auto-generated code for instruction finish
                         regs.TCU = 0;
@@ -20296,6 +20728,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PBR = pins.D;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -20340,6 +20773,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -20402,6 +20836,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 9: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -20437,6 +20872,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.C) - regs.TR;
@@ -20461,6 +20897,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.X & 0xFF) - regs.TR;
@@ -20513,6 +20950,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -20558,6 +20996,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 0;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         // instruction code follows
                         regs.P.setbyte_native(regs.P.getbyte_native() | regs.TR);
                         if (regs.P.X) { regs.X &= 0xFF, regs.Y &= 0xFF; }
@@ -20570,7 +21009,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                 }
             },
-            true, true, false),
+            false, false, false),
         0xE3: new opcode_functions(opcode_matrix[0xE3],
             function(regs, pins) { // SBC d,s
                 switch(regs.TCU) {
@@ -20592,6 +21031,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -20647,6 +21087,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.X & 0xFF) - regs.TR;
@@ -20689,6 +21130,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -20766,6 +21208,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -20814,6 +21257,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -20851,7 +21295,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // INX i E=0 M=0 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -20861,6 +21304,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -20884,6 +21328,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -20921,13 +21366,13 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // NOP i E=0 M=0 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -20948,6 +21393,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         // instruction code follows
                         regs.C = ((regs.C << 8) & 0xFF00) + ((regs.C >>> 8) & 0xFF);
                         regs.P.Z = +((regs.C & 0xFF) === 0);
@@ -20979,6 +21425,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.X & 0xFF) - regs.TR;
@@ -21015,6 +21462,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -21088,6 +21536,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -21122,6 +21571,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += (pins. D & 0xFF) << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -21174,6 +21624,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -21232,6 +21683,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -21298,6 +21750,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -21365,6 +21818,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -21421,6 +21875,7 @@ const decoded_opcodes = Object.freeze(
                         pins.D = regs.TR;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -21459,6 +21914,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -21538,6 +21994,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 9: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -21586,6 +22043,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -21623,7 +22081,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // SED i E=0 M=0 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -21631,6 +22088,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -21675,6 +22133,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -21724,6 +22183,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.X = ((regs.X) & 0xFF00) + (regs.TR & 0xFF);
@@ -21743,7 +22203,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // XCE i E=0 M=0 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -21757,6 +22216,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -21806,6 +22266,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = pins.D;
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC += (pins.D << 8);
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -21850,6 +22311,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -21929,6 +22391,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 9: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -21964,6 +22427,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         let data = (~regs.TR) & 0xFFFF;
@@ -21997,9 +22461,9 @@ const decoded_opcodes = Object.freeze(
             },
             true, true, false),
         0x100: new opcode_functions(opcode_matrix[0x100],
-            function(regs, pins) { // RESET s
+            function(regs, pins) { // S_RESET s
                 switch(regs.TCU) {
-                        // RESET s E=0 M=0 X=1
+                        // S_RESET s E=0 M=0 X=1
                     case 1: // 3
                         pins.RW = 0; pins.PDV = 1;
                         pins.Addr = regs.S; pins.BA = 0;
@@ -22039,6 +22503,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC += (pins.D << 8);
                         pins.PDV = 1;
                         // Following is auto-generated code for instruction finish
@@ -22050,9 +22515,9 @@ const decoded_opcodes = Object.freeze(
             },
             false, false, false),
         0x101: new opcode_functions(opcode_matrix[0x101],
-            function(regs, pins) { // ABORT s
+            function(regs, pins) { // S_ABORT s
                 switch(regs.TCU) {
-                        // ABORT s E=0 M=0 X=1
+                        // S_ABORT s E=0 M=0 X=1
                     case 1: // 3
                         regs.TR = regs.PC;
                         pins.Addr = regs.S; pins.BA = 0;
@@ -22089,6 +22554,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PBR = 0;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -22099,9 +22565,9 @@ const decoded_opcodes = Object.freeze(
             },
             false, false, false),
         0x102: new opcode_functions(opcode_matrix[0x102],
-            function(regs, pins) { // IRQ s
+            function(regs, pins) { // S_IRQ s
                 switch(regs.TCU) {
-                        // IRQ s E=0 M=0 X=1
+                        // S_IRQ s E=0 M=0 X=1
                     case 1: // 3
                         regs.TR = regs.PC;
                         pins.Addr = regs.S; pins.BA = 0;
@@ -22138,6 +22604,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PBR = 0;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         regs.P.I = 1;
                         regs.P.D = 0;
@@ -22150,9 +22617,9 @@ const decoded_opcodes = Object.freeze(
             },
             false, false, false),
         0x103: new opcode_functions(opcode_matrix[0x103],
-            function(regs, pins) { // NMI s
+            function(regs, pins) { // S_NMI s
                 switch(regs.TCU) {
-                        // NMI s E=0 M=0 X=1
+                        // S_NMI s E=0 M=0 X=1
                     case 1: // 3
                         regs.TR = regs.PC;
                         pins.Addr = regs.S; pins.BA = 0;
@@ -22189,6 +22656,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PBR = 0;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         regs.P.I = 1;
                         regs.P.D = 0;
@@ -22248,6 +22716,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PBR = 0;
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         // instruction code ends
                         regs.P.D = 0;
@@ -22293,6 +22762,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -22353,6 +22823,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PBR = 0;
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         // instruction code ends
                         regs.P.D = 0;
@@ -22382,6 +22853,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -22433,6 +22905,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -22464,6 +22937,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -22517,6 +22991,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -22561,6 +23036,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -22596,6 +23072,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 3: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -22613,6 +23090,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -22646,6 +23124,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -22678,6 +23157,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -22718,6 +23198,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -22743,6 +23224,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -22792,6 +23274,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -22822,6 +23305,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (pins.D);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -22857,6 +23341,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -22910,6 +23395,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -22955,6 +23441,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = ((regs.TA + (pins.D << 8))); pins.BA = (regs.DBR);
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -23001,6 +23488,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -23052,6 +23540,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -23085,6 +23574,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -23140,6 +23630,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -23184,6 +23675,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -23204,7 +23696,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // CLC i E=0 M=1 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -23212,6 +23703,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -23250,6 +23742,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -23282,6 +23775,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -23295,7 +23789,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TCS i E=0 M=1 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -23303,6 +23796,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -23344,6 +23838,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -23381,6 +23876,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -23436,6 +23932,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -23467,6 +23964,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA & 0xFFFF); pins.BA = ((regs.TA >>> 16) & 0xFF);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -23516,6 +24014,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -23557,6 +24056,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -23619,6 +24119,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -23644,6 +24145,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -23682,6 +24184,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFF) === 0);
@@ -23719,6 +24222,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -23773,6 +24277,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -23817,6 +24322,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -23849,6 +24355,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.P.setbyte_native(regs.TR);
@@ -23874,6 +24381,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -23908,6 +24416,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -23937,6 +24446,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += (pins.D << 8);
                         // instruction code follows
                         regs.D = regs.TR;
@@ -23968,6 +24478,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFF) === 0);
@@ -23999,6 +24510,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -24049,6 +24561,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -24079,6 +24592,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (pins.D);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -24114,6 +24628,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -24167,6 +24682,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -24212,6 +24728,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = ((regs.TA + (pins.D << 8))); pins.BA = (regs.DBR);
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -24258,6 +24775,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -24298,6 +24816,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFF) === 0);
@@ -24337,6 +24856,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -24393,6 +24913,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -24437,6 +24958,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -24457,7 +24979,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // SEC i E=0 M=1 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -24465,6 +24986,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -24503,6 +25025,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -24535,6 +25058,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -24548,7 +25072,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TSC i E=0 M=1 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -24558,6 +25081,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -24596,6 +25120,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFF) === 0);
@@ -24639,6 +25164,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -24695,6 +25221,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -24726,6 +25253,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA & 0xFFFF); pins.BA = ((regs.TA >>> 16) & 0xFF);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -24781,6 +25309,7 @@ const decoded_opcodes = Object.freeze(
                         regs.TA += pins.D << 8;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = regs.TA;
                         regs.PBR = pins.D;
                         if (regs.NMI_servicing) regs.NMI_servicing = false;
@@ -24825,6 +25354,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -24845,7 +25375,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // WDM i E=0 M=1 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -24853,6 +25382,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -24879,6 +25409,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -24921,6 +25452,7 @@ const decoded_opcodes = Object.freeze(
                     case 6: // 7
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.C = (regs.C - 1) & 0xFFFF;
                         regs.X = (regs.X - 1) & 0xFFFF;
                         regs.Y = (regs.Y - 1) & 0xFFFF;
@@ -24957,6 +25489,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -25010,6 +25543,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -25054,6 +25588,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -25089,6 +25624,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 3: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -25106,6 +25642,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -25139,6 +25676,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -25167,6 +25705,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 3: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -25189,6 +25728,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -25215,6 +25755,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -25264,6 +25805,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -25294,6 +25836,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (pins.D);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -25329,6 +25872,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -25382,6 +25926,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -25427,6 +25972,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = ((regs.TA + (pins.D << 8))); pins.BA = (regs.DBR);
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -25473,6 +26019,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -25520,6 +26067,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -25553,6 +26101,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -25608,6 +26157,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -25652,6 +26202,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -25672,14 +26223,14 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // CLI i E=0 M=1 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        break;
+                    case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // instruction code follows
                         regs.P.I = 0;
                         // instruction code ends
-                        break;
-                    case 2: // cleanup_custom
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -25718,6 +26269,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -25759,6 +26311,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -25772,7 +26325,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TCD i E=0 M=1 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -25782,6 +26334,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -25809,6 +26362,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = regs.TA + (pins.D << 8);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PBR = pins.D;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -25847,6 +26401,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -25902,6 +26457,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -25933,6 +26489,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA & 0xFFFF); pins.BA = ((regs.TA >>> 16) & 0xFF);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -25976,6 +26533,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -26017,6 +26575,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -26072,6 +26631,7 @@ const decoded_opcodes = Object.freeze(
                         pins.D = regs.TR & 0xFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -26098,6 +26658,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -26152,6 +26713,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -26183,6 +26745,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -26248,6 +26811,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -26292,6 +26856,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -26335,6 +26900,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + (regs.TR & 0xFF);
@@ -26358,6 +26924,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -26403,6 +26970,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -26440,6 +27008,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.TA + (pins.D << 8) + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PBR = pins.D;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -26470,6 +27039,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = regs.TR + (pins.D << 8);
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -26496,6 +27066,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -26557,6 +27128,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -26587,6 +27159,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (pins.D);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -26633,6 +27206,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -26686,6 +27260,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -26742,6 +27317,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = ((regs.TA + (pins.D << 8))); pins.BA = (regs.DBR);
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -26799,6 +27375,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -26855,6 +27432,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -26888,6 +27466,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -26955,6 +27534,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -26999,6 +27579,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -27030,14 +27611,14 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // SEI i E=0 M=1 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        break;
+                    case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // instruction code follows
                         regs.P.I = 1;
                         // instruction code ends
-                        break;
-                    case 2: // cleanup_custom
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -27076,6 +27657,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -27125,6 +27707,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += (pins.D << 8);
                         // instruction code follows
                         regs.Y = regs.TR;
@@ -27144,7 +27727,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TDC i E=0 M=1 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -27154,6 +27736,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -27190,6 +27773,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = regs.TR + (pins.D << 8);
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -27228,6 +27812,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -27295,6 +27880,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -27326,6 +27912,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA & 0xFFFF); pins.BA = ((regs.TA >>> 16) & 0xFF);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -27372,6 +27959,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -27423,6 +28011,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -27451,6 +28040,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -27482,6 +28072,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -27522,6 +28113,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -27559,6 +28151,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -27599,6 +28192,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -27650,6 +28244,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -27663,7 +28258,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // DEY i E=0 M=1 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -27673,6 +28267,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -27691,6 +28286,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFF) === 0);
@@ -27708,7 +28304,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TXA i E=0 M=1 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -27718,6 +28313,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -27747,6 +28343,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 3: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -27782,6 +28379,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -27814,6 +28412,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -27849,6 +28448,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -27886,6 +28486,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -27914,6 +28515,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -27973,6 +28575,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -28018,6 +28621,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -28063,6 +28667,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -28105,6 +28710,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -28144,6 +28750,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -28186,6 +28793,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -28237,6 +28845,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -28250,7 +28859,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TYA i E=0 M=1 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -28260,6 +28868,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -28304,6 +28913,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -28317,7 +28927,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TXS i E=0 M=1 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -28325,6 +28934,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -28339,7 +28949,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TXY i E=0 M=1 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -28349,6 +28958,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -28381,6 +28991,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -28424,6 +29035,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -28466,6 +29078,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -28504,6 +29117,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -28526,6 +29140,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.Y = regs.TR;
@@ -28573,6 +29188,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -28601,6 +29217,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.X = regs.TR;
@@ -28632,6 +29249,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -28673,6 +29291,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.Y = regs.TR;
@@ -28710,6 +29329,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -28751,6 +29371,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.X = regs.TR;
@@ -28801,6 +29422,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -28820,7 +29442,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TAY i E=0 M=1 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -28830,6 +29451,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -28848,6 +29470,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -28867,7 +29490,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TAX i E=0 M=1 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -28877,6 +29499,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -28903,6 +29526,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.DBR = ((regs.DBR) & 0xFF00) + (regs.TR & 0xFF);
@@ -28938,6 +29562,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.Y = regs.TR;
@@ -28969,6 +29594,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -29004,6 +29630,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.X = regs.TR;
@@ -29040,6 +29667,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (pins.D);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -29074,6 +29702,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -29127,6 +29756,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -29171,6 +29801,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = ((regs.TA + (pins.D << 8))); pins.BA = (regs.DBR);
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -29216,6 +29847,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -29259,6 +29891,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.Y = regs.TR;
@@ -29298,6 +29931,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -29341,6 +29975,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.X = regs.TR;
@@ -29391,6 +30026,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -29410,7 +30046,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // CLV i E=0 M=1 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -29418,6 +30053,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -29456,6 +30092,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -29475,7 +30112,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TSX i E=0 M=1 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -29485,6 +30121,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -29499,7 +30136,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TYX i E=0 M=1 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -29509,6 +30145,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -29551,6 +30188,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.Y = regs.TR;
@@ -29594,6 +30232,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -29641,6 +30280,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.X = regs.TR;
@@ -29678,6 +30318,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA & 0xFFFF); pins.BA = ((regs.TA >>> 16) & 0xFF);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -29706,6 +30347,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.Y) - regs.TR;
@@ -29754,6 +30396,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -29782,6 +30425,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 0;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         // instruction code follows
                         regs.P.setbyte_native(regs.P.getbyte_native() & (~regs.TR & 0xFF));
                         // instruction code ends
@@ -29793,7 +30437,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                 }
             },
-            true, true, false),
+            false, false, false),
         0xC3: new opcode_functions(opcode_matrix[0xC3],
             function(regs, pins) { // CMP d,s
                 switch(regs.TCU) {
@@ -29811,6 +30455,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -29853,6 +30498,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.Y) - regs.TR;
@@ -29891,6 +30537,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -29943,6 +30590,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -29987,6 +30635,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -30007,7 +30656,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // INY i E=0 M=1 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -30017,6 +30665,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -30035,6 +30684,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -30055,7 +30705,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // DEX i E=0 M=1 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -30065,6 +30714,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -30085,6 +30735,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.WAI = true;
                         // Following is auto-generated code for instruction finish
                         regs.TCU = 0;
@@ -30113,6 +30764,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.Y) - regs.TR;
@@ -30145,6 +30797,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -30193,6 +30846,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -30223,6 +30877,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (pins.D);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -30258,6 +30913,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -30311,6 +30967,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -30356,6 +31013,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = ((regs.TA + (pins.D << 8))); pins.BA = (regs.DBR);
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -30402,6 +31060,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -30454,6 +31113,7 @@ const decoded_opcodes = Object.freeze(
                         regs.S = (regs.S - 1) & 0xFFFF;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -30488,6 +31148,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -30542,6 +31203,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -30586,6 +31248,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -30606,7 +31269,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // CLD i E=0 M=1 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -30614,6 +31276,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -30652,6 +31315,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -30693,6 +31357,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -30712,6 +31377,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.STP = true;
                         // Following is auto-generated code for instruction finish
                         regs.TCU = 0;
@@ -30744,6 +31410,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PBR = pins.D;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -30782,6 +31449,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -30836,6 +31504,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -30867,6 +31536,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA & 0xFFFF); pins.BA = ((regs.TA >>> 16) & 0xFF);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -30896,6 +31566,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.X) - regs.TR;
@@ -30944,6 +31615,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -30983,6 +31655,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 0;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         // instruction code follows
                         regs.P.setbyte_native(regs.P.getbyte_native() | regs.TR);
                         if (regs.P.X) { regs.X &= 0xFF, regs.Y &= 0xFF; }
@@ -30995,7 +31668,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                 }
             },
-            true, true, false),
+            false, false, false),
         0xE3: new opcode_functions(opcode_matrix[0xE3],
             function(regs, pins) { // SBC d,s
                 switch(regs.TCU) {
@@ -31013,6 +31686,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -31066,6 +31740,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.X) - regs.TR;
@@ -31104,6 +31779,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -31167,6 +31843,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -31211,6 +31888,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -31242,7 +31920,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // INX i E=0 M=1 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -31252,6 +31929,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -31270,6 +31948,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -31301,13 +31980,13 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // NOP i E=0 M=1 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -31328,6 +32007,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         // instruction code follows
                         regs.C = ((regs.C << 8) & 0xFF00) + ((regs.C >>> 8) & 0xFF);
                         regs.P.Z = +((regs.C & 0xFF) === 0);
@@ -31363,6 +32043,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += pins.D << 8;
                         // instruction code follows
                         regs.TR = (regs.X) - regs.TR;
@@ -31395,6 +32076,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -31454,6 +32136,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -31484,6 +32167,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (pins.D);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -31530,6 +32214,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -31583,6 +32268,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -31639,6 +32325,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = ((regs.TA + (pins.D << 8))); pins.BA = (regs.DBR);
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -31696,6 +32383,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -31746,6 +32434,7 @@ const decoded_opcodes = Object.freeze(
                         pins.D = regs.TR;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -31780,6 +32469,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -31845,6 +32535,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -31889,6 +32580,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -31920,7 +32612,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // SED i E=0 M=1 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -31928,6 +32619,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -31966,6 +32658,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -32015,6 +32708,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += (pins.D << 8);
                         // instruction code follows
                         regs.X = regs.TR;
@@ -32034,7 +32728,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // XCE i E=0 M=1 X=0
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -32048,6 +32741,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -32097,6 +32791,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = pins.D;
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC += (pins.D << 8);
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -32135,6 +32830,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -32200,6 +32896,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -32231,6 +32928,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA & 0xFFFF); pins.BA = ((regs.TA >>> 16) & 0xFF);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -32258,9 +32956,9 @@ const decoded_opcodes = Object.freeze(
             },
             true, true, false),
         0x100: new opcode_functions(opcode_matrix[0x100],
-            function(regs, pins) { // RESET s
+            function(regs, pins) { // S_RESET s
                 switch(regs.TCU) {
-                        // RESET s E=0 M=1 X=0
+                        // S_RESET s E=0 M=1 X=0
                     case 1: // 3
                         pins.RW = 0; pins.PDV = 1;
                         pins.Addr = regs.S; pins.BA = 0;
@@ -32300,6 +32998,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC += (pins.D << 8);
                         pins.PDV = 1;
                         // Following is auto-generated code for instruction finish
@@ -32311,9 +33010,9 @@ const decoded_opcodes = Object.freeze(
             },
             false, false, false),
         0x101: new opcode_functions(opcode_matrix[0x101],
-            function(regs, pins) { // ABORT s
+            function(regs, pins) { // S_ABORT s
                 switch(regs.TCU) {
-                        // ABORT s E=0 M=1 X=0
+                        // S_ABORT s E=0 M=1 X=0
                     case 1: // 3
                         regs.TR = regs.PC;
                         pins.Addr = regs.S; pins.BA = 0;
@@ -32350,6 +33049,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PBR = 0;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -32360,9 +33060,9 @@ const decoded_opcodes = Object.freeze(
             },
             false, false, false),
         0x102: new opcode_functions(opcode_matrix[0x102],
-            function(regs, pins) { // IRQ s
+            function(regs, pins) { // S_IRQ s
                 switch(regs.TCU) {
-                        // IRQ s E=0 M=1 X=0
+                        // S_IRQ s E=0 M=1 X=0
                     case 1: // 3
                         regs.TR = regs.PC;
                         pins.Addr = regs.S; pins.BA = 0;
@@ -32399,6 +33099,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PBR = 0;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         regs.P.I = 1;
                         regs.P.D = 0;
@@ -32411,9 +33112,9 @@ const decoded_opcodes = Object.freeze(
             },
             false, false, false),
         0x103: new opcode_functions(opcode_matrix[0x103],
-            function(regs, pins) { // NMI s
+            function(regs, pins) { // S_NMI s
                 switch(regs.TCU) {
-                        // NMI s E=0 M=1 X=0
+                        // S_NMI s E=0 M=1 X=0
                     case 1: // 3
                         regs.TR = regs.PC;
                         pins.Addr = regs.S; pins.BA = 0;
@@ -32450,6 +33151,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PBR = 0;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         regs.P.I = 1;
                         regs.P.D = 0;
@@ -32509,6 +33211,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PBR = 0;
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         // instruction code ends
                         regs.P.D = 0;
@@ -32554,6 +33257,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -32614,6 +33318,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PBR = 0;
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         // instruction code ends
                         regs.P.D = 0;
@@ -32643,6 +33348,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -32694,6 +33400,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -32725,6 +33432,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -32778,6 +33486,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -32822,6 +33531,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -32857,6 +33567,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 3: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -32874,6 +33585,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -32907,6 +33619,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -32939,6 +33652,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -32979,6 +33693,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -33004,6 +33719,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -33053,6 +33769,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -33083,6 +33800,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (pins.D);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -33118,6 +33836,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -33172,6 +33891,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -33217,6 +33937,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = ((regs.TA + (pins.D << 8))); pins.BA = (regs.DBR);
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -33263,6 +33984,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -33314,6 +34036,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -33347,6 +34070,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -33402,6 +34126,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -33446,6 +34171,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -33466,7 +34192,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // CLC i E=0 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -33474,6 +34199,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -33514,6 +34240,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -33546,6 +34273,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -33559,7 +34287,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TCS i E=0 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -33567,6 +34294,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -33608,6 +34336,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -33647,6 +34376,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -33702,6 +34432,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -33733,6 +34464,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA & 0xFFFF); pins.BA = ((regs.TA >>> 16) & 0xFF);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -33782,6 +34514,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -33823,6 +34556,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -33885,6 +34619,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -33910,6 +34645,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -33948,6 +34684,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFF) === 0);
@@ -33985,6 +34722,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -34039,6 +34777,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -34083,6 +34822,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -34115,6 +34855,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.P.setbyte_native(regs.TR);
@@ -34140,6 +34881,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -34174,6 +34916,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -34203,6 +34946,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += (pins.D << 8);
                         // instruction code follows
                         regs.D = regs.TR;
@@ -34234,6 +34978,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFF) === 0);
@@ -34265,6 +35010,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -34315,6 +35061,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -34345,6 +35092,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (pins.D);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -34380,6 +35128,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -34434,6 +35183,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -34479,6 +35229,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = ((regs.TA + (pins.D << 8))); pins.BA = (regs.DBR);
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -34525,6 +35276,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -34565,6 +35317,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFF) === 0);
@@ -34604,6 +35357,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -34660,6 +35414,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -34704,6 +35459,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -34724,7 +35480,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // SEC i E=0 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -34732,6 +35487,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -34772,6 +35528,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -34804,6 +35561,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -34817,7 +35575,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TSC i E=0 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -34827,6 +35584,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -34867,6 +35625,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFF) === 0);
@@ -34912,6 +35671,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -34968,6 +35728,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -34999,6 +35760,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA & 0xFFFF); pins.BA = ((regs.TA >>> 16) & 0xFF);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -35054,6 +35816,7 @@ const decoded_opcodes = Object.freeze(
                         regs.TA += pins.D << 8;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = regs.TA;
                         regs.PBR = pins.D;
                         if (regs.NMI_servicing) regs.NMI_servicing = false;
@@ -35098,6 +35861,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -35118,7 +35882,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // WDM i E=0 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -35126,6 +35889,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -35152,6 +35916,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -35194,6 +35959,7 @@ const decoded_opcodes = Object.freeze(
                     case 6: // 7
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.C = (regs.C - 1) & 0xFFFF;
                         regs.X = (regs.X - 1) & 0xFF;
                         regs.Y = (regs.Y - 1) & 0xFF;
@@ -35230,6 +35996,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -35283,6 +36050,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -35327,6 +36095,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -35362,6 +36131,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 3: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -35379,6 +36149,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -35412,6 +36183,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -35440,6 +36212,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 3: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -35462,6 +36235,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -35488,6 +36262,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -35537,6 +36312,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -35567,6 +36343,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (pins.D);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -35602,6 +36379,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -35656,6 +36434,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -35701,6 +36480,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = ((regs.TA + (pins.D << 8))); pins.BA = (regs.DBR);
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -35747,6 +36527,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -35794,6 +36575,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -35827,6 +36609,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -35882,6 +36665,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -35926,6 +36710,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -35946,14 +36731,14 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // CLI i E=0 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        break;
+                    case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // instruction code follows
                         regs.P.I = 0;
                         // instruction code ends
-                        break;
-                    case 2: // cleanup_custom
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -35994,6 +36779,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -36029,6 +36815,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 3: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -36042,7 +36829,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TCD i E=0 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -36052,6 +36838,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -36079,6 +36866,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = regs.TA + (pins.D << 8);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PBR = pins.D;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -36119,6 +36907,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -36174,6 +36963,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -36205,6 +36995,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA & 0xFFFF); pins.BA = ((regs.TA >>> 16) & 0xFF);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -36248,6 +37039,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -36289,6 +37081,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -36344,6 +37137,7 @@ const decoded_opcodes = Object.freeze(
                         pins.D = regs.TR & 0xFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -36370,6 +37164,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -36424,6 +37219,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -36455,6 +37251,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -36520,6 +37317,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -36564,6 +37362,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -36607,6 +37406,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + (regs.TR & 0xFF);
@@ -36630,6 +37430,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -36675,6 +37476,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -36712,6 +37514,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.TA + (pins.D << 8) + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PBR = pins.D;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -36742,6 +37545,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = regs.TR + (pins.D << 8);
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -36768,6 +37572,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -36829,6 +37634,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -36859,6 +37665,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (pins.D);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -36905,6 +37712,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -36959,6 +37767,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -37015,6 +37824,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = ((regs.TA + (pins.D << 8))); pins.BA = (regs.DBR);
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -37072,6 +37882,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -37128,6 +37939,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -37161,6 +37973,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -37228,6 +38041,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -37272,6 +38086,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -37303,14 +38118,14 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // SEI i E=0 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        break;
+                    case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // instruction code follows
                         regs.P.I = 1;
                         // instruction code ends
-                        break;
-                    case 2: // cleanup_custom
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -37351,6 +38166,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -37394,6 +38210,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.Y = ((regs.Y) & 0xFF00) + (regs.TR & 0xFF);
@@ -37413,7 +38230,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TDC i E=0 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -37423,6 +38239,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -37459,6 +38276,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = regs.TR + (pins.D << 8);
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -37499,6 +38317,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -37566,6 +38385,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -37597,6 +38417,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA & 0xFFFF); pins.BA = ((regs.TA >>> 16) & 0xFF);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -37643,6 +38464,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -37694,6 +38516,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -37722,6 +38545,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -37753,6 +38577,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -37789,6 +38614,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -37826,6 +38652,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -37862,6 +38689,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -37913,6 +38741,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -37926,7 +38755,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // DEY i E=0 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -37936,6 +38764,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -37954,6 +38783,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFF) === 0);
@@ -37971,7 +38801,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TXA i E=0 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -37981,6 +38810,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -38010,6 +38840,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 3: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -38041,6 +38872,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -38073,6 +38905,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -38104,6 +38937,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -38141,6 +38975,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -38169,6 +39004,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -38228,6 +39064,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -38273,6 +39110,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -38318,6 +39156,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -38356,6 +39195,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -38395,6 +39235,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -38433,6 +39274,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -38484,6 +39326,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -38497,7 +39340,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TYA i E=0 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -38507,6 +39349,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -38551,6 +39394,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -38564,7 +39408,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TXS i E=0 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -38572,6 +39415,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -38586,7 +39430,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TXY i E=0 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -38596,6 +39439,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -38628,6 +39472,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -38671,6 +39516,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -38713,6 +39559,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -38751,6 +39598,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -38768,6 +39616,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.Y = ((regs.Y) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -38815,6 +39664,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -38838,6 +39688,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.X = ((regs.X) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -38869,6 +39720,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -38906,6 +39758,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.Y = ((regs.Y) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -38943,6 +39796,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -38980,6 +39834,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.X = ((regs.X) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -39030,6 +39885,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -39049,7 +39905,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TAY i E=0 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -39059,6 +39914,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -39077,6 +39933,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -39096,7 +39953,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TAX i E=0 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -39106,6 +39962,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -39132,6 +39989,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.DBR = ((regs.DBR) & 0xFF00) + (regs.TR & 0xFF);
@@ -39163,6 +40021,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.Y = ((regs.Y) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -39194,6 +40053,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -39225,6 +40085,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.X = ((regs.X) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -39261,6 +40122,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (pins.D);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -39295,6 +40157,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -39349,6 +40212,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -39393,6 +40257,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = ((regs.TA + (pins.D << 8))); pins.BA = (regs.DBR);
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -39438,6 +40303,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -39477,6 +40343,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.Y = ((regs.Y) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -39516,6 +40383,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -39555,6 +40423,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.X = ((regs.X) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -39605,6 +40474,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -39624,7 +40494,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // CLV i E=0 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -39632,6 +40501,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -39672,6 +40542,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -39691,7 +40562,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TSX i E=0 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -39701,6 +40571,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -39715,7 +40586,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TYX i E=0 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -39725,6 +40595,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -39765,6 +40636,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.Y = ((regs.Y) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -39810,6 +40682,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -39855,6 +40728,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.X = ((regs.X) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -39892,6 +40766,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA & 0xFFFF); pins.BA = ((regs.TA >>> 16) & 0xFF);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -39915,6 +40790,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.Y & 0xFF) - regs.TR;
@@ -39963,6 +40839,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -39991,6 +40868,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 0;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         // instruction code follows
                         regs.P.setbyte_native(regs.P.getbyte_native() & (~regs.TR & 0xFF));
                         // instruction code ends
@@ -40002,7 +40880,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                 }
             },
-            true, true, false),
+            false, false, false),
         0xC3: new opcode_functions(opcode_matrix[0xC3],
             function(regs, pins) { // CMP d,s
                 switch(regs.TCU) {
@@ -40020,6 +40898,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -40058,6 +40937,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.Y & 0xFF) - regs.TR;
@@ -40096,6 +40976,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -40148,6 +41029,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -40192,6 +41074,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -40212,7 +41095,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // INY i E=0 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -40222,6 +41104,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -40240,6 +41123,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -40260,7 +41144,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // DEX i E=0 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -40270,6 +41153,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -40290,6 +41174,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.WAI = true;
                         // Following is auto-generated code for instruction finish
                         regs.TCU = 0;
@@ -40314,6 +41199,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.Y & 0xFF) - regs.TR;
@@ -40346,6 +41232,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -40394,6 +41281,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -40424,6 +41312,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (pins.D);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -40459,6 +41348,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -40513,6 +41403,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -40558,6 +41449,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = ((regs.TA + (pins.D << 8))); pins.BA = (regs.DBR);
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -40604,6 +41496,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -40656,6 +41549,7 @@ const decoded_opcodes = Object.freeze(
                         regs.S = (regs.S - 1) & 0xFFFF;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -40690,6 +41584,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -40744,6 +41639,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -40788,6 +41684,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -40808,7 +41705,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // CLD i E=0 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -40816,6 +41712,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -40856,6 +41753,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -40891,6 +41789,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 3: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -40910,6 +41809,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.STP = true;
                         // Following is auto-generated code for instruction finish
                         regs.TCU = 0;
@@ -40942,6 +41842,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PBR = pins.D;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -40982,6 +41883,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -41036,6 +41938,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -41067,6 +41970,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA & 0xFFFF); pins.BA = ((regs.TA >>> 16) & 0xFF);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -41091,6 +41995,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.X & 0xFF) - regs.TR;
@@ -41139,6 +42044,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -41178,6 +42084,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 0;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         // instruction code follows
                         regs.P.setbyte_native(regs.P.getbyte_native() | regs.TR);
                         if (regs.P.X) { regs.X &= 0xFF, regs.Y &= 0xFF; }
@@ -41190,7 +42097,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                 }
             },
-            true, true, false),
+            false, false, false),
         0xE3: new opcode_functions(opcode_matrix[0xE3],
             function(regs, pins) { // SBC d,s
                 switch(regs.TCU) {
@@ -41208,6 +42115,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -41257,6 +42165,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.X & 0xFF) - regs.TR;
@@ -41295,6 +42204,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -41358,6 +42268,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -41402,6 +42313,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -41433,7 +42345,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // INX i E=0 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -41443,6 +42354,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -41461,6 +42373,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -41492,13 +42405,13 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // NOP i E=0 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -41519,6 +42432,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         // instruction code follows
                         regs.C = ((regs.C << 8) & 0xFF00) + ((regs.C >>> 8) & 0xFF);
                         regs.P.Z = +((regs.C & 0xFF) === 0);
@@ -41550,6 +42464,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.X & 0xFF) - regs.TR;
@@ -41582,6 +42497,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -41641,6 +42557,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -41671,6 +42588,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (pins.D);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -41717,6 +42635,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -41771,6 +42690,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -41827,6 +42747,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = ((regs.TA + (pins.D << 8))); pins.BA = (regs.DBR);
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -41884,6 +42805,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -41934,6 +42856,7 @@ const decoded_opcodes = Object.freeze(
                         pins.D = regs.TR;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -41968,6 +42891,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -42033,6 +42957,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -42077,6 +43002,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -42108,7 +43034,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // SED i E=0 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -42116,6 +43041,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -42156,6 +43082,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -42199,6 +43126,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.X = ((regs.X) & 0xFF00) + (regs.TR & 0xFF);
@@ -42218,7 +43146,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // XCE i E=0 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -42232,6 +43159,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -42281,6 +43209,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = pins.D;
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC += (pins.D << 8);
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -42321,6 +43250,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -42386,6 +43316,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -42417,6 +43348,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA & 0xFFFF); pins.BA = ((regs.TA >>> 16) & 0xFF);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -42444,9 +43376,9 @@ const decoded_opcodes = Object.freeze(
             },
             true, true, false),
         0x100: new opcode_functions(opcode_matrix[0x100],
-            function(regs, pins) { // RESET s
+            function(regs, pins) { // S_RESET s
                 switch(regs.TCU) {
-                        // RESET s E=0 M=1 X=1
+                        // S_RESET s E=0 M=1 X=1
                     case 1: // 3
                         pins.RW = 0; pins.PDV = 1;
                         pins.Addr = regs.S; pins.BA = 0;
@@ -42486,6 +43418,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC += (pins.D << 8);
                         pins.PDV = 1;
                         // Following is auto-generated code for instruction finish
@@ -42497,9 +43430,9 @@ const decoded_opcodes = Object.freeze(
             },
             false, false, false),
         0x101: new opcode_functions(opcode_matrix[0x101],
-            function(regs, pins) { // ABORT s
+            function(regs, pins) { // S_ABORT s
                 switch(regs.TCU) {
-                        // ABORT s E=0 M=1 X=1
+                        // S_ABORT s E=0 M=1 X=1
                     case 1: // 3
                         regs.TR = regs.PC;
                         pins.Addr = regs.S; pins.BA = 0;
@@ -42536,6 +43469,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PBR = 0;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -42546,9 +43480,9 @@ const decoded_opcodes = Object.freeze(
             },
             false, false, false),
         0x102: new opcode_functions(opcode_matrix[0x102],
-            function(regs, pins) { // IRQ s
+            function(regs, pins) { // S_IRQ s
                 switch(regs.TCU) {
-                        // IRQ s E=0 M=1 X=1
+                        // S_IRQ s E=0 M=1 X=1
                     case 1: // 3
                         regs.TR = regs.PC;
                         pins.Addr = regs.S; pins.BA = 0;
@@ -42585,6 +43519,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PBR = 0;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         regs.P.I = 1;
                         regs.P.D = 0;
@@ -42597,9 +43532,9 @@ const decoded_opcodes = Object.freeze(
             },
             false, false, false),
         0x103: new opcode_functions(opcode_matrix[0x103],
-            function(regs, pins) { // NMI s
+            function(regs, pins) { // S_NMI s
                 switch(regs.TCU) {
-                        // NMI s E=0 M=1 X=1
+                        // S_NMI s E=0 M=1 X=1
                     case 1: // 3
                         regs.TR = regs.PC;
                         pins.Addr = regs.S; pins.BA = 0;
@@ -42636,6 +43571,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PBR = 0;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         regs.P.I = 1;
                         regs.P.D = 0;
@@ -42689,6 +43625,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PBR = 0;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         // instruction code ends
                         regs.P.D = 0;
@@ -42734,6 +43671,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -42788,6 +43726,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PBR = 0;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         // instruction code ends
                         regs.P.D = 0;
@@ -42817,6 +43756,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -42868,6 +43808,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -42899,6 +43840,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -42952,6 +43894,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -42996,6 +43939,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -43031,6 +43975,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 3: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -43048,6 +43993,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -43081,6 +44027,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -43114,6 +44061,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -43154,6 +44102,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -43179,6 +44128,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -43228,6 +44178,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -43258,6 +44209,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (pins.D);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -43292,6 +44244,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -43346,6 +44299,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -43391,6 +44345,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = ((regs.TA + (pins.D << 8))); pins.BA = (regs.DBR);
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -43437,6 +44392,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -43488,6 +44444,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -43521,6 +44478,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -43576,6 +44534,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -43620,6 +44579,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -43640,7 +44600,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // CLC i E=1 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -43648,6 +44607,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -43688,6 +44648,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -43720,6 +44681,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -43733,7 +44695,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TCS i E=1 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -43742,6 +44703,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -43783,6 +44745,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -43822,6 +44785,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -43877,6 +44841,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -43908,6 +44873,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA & 0xFFFF); pins.BA = ((regs.TA >>> 16) & 0xFF);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.TR | regs.C) & 0xFF;
@@ -43957,6 +44923,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -43998,6 +44965,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -44060,6 +45028,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 8: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -44085,6 +45054,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -44123,6 +45093,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFF) === 0);
@@ -44160,6 +45131,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -44214,6 +45186,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -44258,6 +45231,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -44290,6 +45264,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.P.setbyte_emulated(regs.TR);
@@ -44315,6 +45290,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -44349,6 +45325,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -44378,6 +45355,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR += (pins.D << 8);
                         regs.S = (regs.S & 0xFF) + 0x100;
                         // instruction code follows
@@ -44410,6 +45388,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFF) === 0);
@@ -44441,6 +45420,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -44491,6 +45471,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -44521,6 +45502,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (pins.D);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -44555,6 +45537,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -44609,6 +45592,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -44654,6 +45638,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = ((regs.TA + (pins.D << 8))); pins.BA = (regs.DBR);
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -44700,6 +45685,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -44740,6 +45726,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFF) === 0);
@@ -44779,6 +45766,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -44835,6 +45823,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -44879,6 +45868,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -44899,7 +45889,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // SEC i E=1 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -44907,6 +45896,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -44947,6 +45937,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -44979,6 +45970,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -44992,7 +45984,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TSC i E=1 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -45002,6 +45993,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -45042,6 +46034,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFF) === 0);
@@ -45087,6 +46080,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -45143,6 +46137,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -45174,6 +46169,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA & 0xFFFF); pins.BA = ((regs.TA >>> 16) & 0xFF);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & regs.TR & 0xFF;
@@ -45223,6 +46219,7 @@ const decoded_opcodes = Object.freeze(
                         regs.TA = pins.D;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = regs.TA + (pins.D << 8);
                         if (regs.NMI_servicing) regs.NMI_servicing = false;
                         // Following is auto-generated code for instruction finish
@@ -45266,6 +46263,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -45286,7 +46284,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // WDM i E=1 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -45294,6 +46291,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -45320,6 +46318,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -45362,6 +46361,7 @@ const decoded_opcodes = Object.freeze(
                     case 6: // 7
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.C = (regs.C - 1) & 0xFFFF;
                         regs.X = (regs.X - 1) & 0xFF;
                         regs.Y = (regs.Y - 1) & 0xFF;
@@ -45398,6 +46398,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -45451,6 +46452,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -45495,6 +46497,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -45530,6 +46533,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 3: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -45547,6 +46551,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -45580,6 +46585,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -45608,6 +46614,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 3: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -45630,6 +46637,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -45656,6 +46664,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -45705,6 +46714,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -45735,6 +46745,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (pins.D);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -45769,6 +46780,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -45823,6 +46835,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -45868,6 +46881,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = ((regs.TA + (pins.D << 8))); pins.BA = (regs.DBR);
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -45914,6 +46928,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -45961,6 +46976,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -45994,6 +47010,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -46049,6 +47066,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -46093,6 +47111,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -46113,14 +47132,14 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // CLI i E=1 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        break;
+                    case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // instruction code follows
                         regs.P.I = 0;
                         // instruction code ends
-                        break;
-                    case 2: // cleanup_custom
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -46161,6 +47180,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -46196,6 +47216,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 3: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -46209,7 +47230,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TCD i E=1 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -46219,6 +47239,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -46246,6 +47267,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = regs.TA + (pins.D << 8);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PBR = pins.D;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -46286,6 +47308,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -46341,6 +47364,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -46372,6 +47396,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA & 0xFFFF); pins.BA = ((regs.TA >>> 16) & 0xFF);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) ^ regs.TR;
@@ -46415,6 +47440,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -46456,6 +47482,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -46511,6 +47538,7 @@ const decoded_opcodes = Object.freeze(
                         pins.D = regs.TR & 0xFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.S = (regs.S & 0xFF) + 0x100;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -46538,6 +47566,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -46592,6 +47621,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -46623,6 +47653,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -46688,6 +47719,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -46732,6 +47764,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -46775,6 +47808,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + (regs.TR & 0xFF);
@@ -46798,6 +47832,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -46843,6 +47878,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 2: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -46880,6 +47916,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.TA + (pins.D << 8) + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PBR = pins.D;
                         regs.S = (regs.S & 0xFF) + 0x100;
                         // Following is auto-generated code for instruction finish
@@ -46911,6 +47948,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = regs.TR + (pins.D << 8);
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -46937,6 +47975,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -46998,6 +48037,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -47028,6 +48068,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (pins.D);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -47073,6 +48114,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -47127,6 +48169,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -47183,6 +48226,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = ((regs.TA + (pins.D << 8))); pins.BA = (regs.DBR);
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -47240,6 +48284,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -47296,6 +48341,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -47329,6 +48375,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -47396,6 +48443,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -47440,6 +48488,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -47471,14 +48520,14 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // SEI i E=1 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
+                        break;
+                    case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // instruction code follows
                         regs.P.I = 1;
                         // instruction code ends
-                        break;
-                    case 2: // cleanup_custom
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -47519,6 +48568,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -47562,6 +48612,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.Y = ((regs.Y) & 0xFF00) + (regs.TR & 0xFF);
@@ -47581,7 +48632,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TDC i E=1 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -47591,6 +48641,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -47627,6 +48678,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = regs.TR + (pins.D << 8);
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -47667,6 +48719,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -47734,6 +48787,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -47765,6 +48819,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA & 0xFFFF); pins.BA = ((regs.TA >>> 16) & 0xFF);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; regs.TR &= 0xFF;
@@ -47810,6 +48865,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -47861,6 +48917,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -47889,6 +48946,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.PDV = 1;
@@ -47920,6 +48978,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -47956,6 +49015,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -47993,6 +49053,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -48029,6 +49090,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -48080,6 +49142,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -48093,7 +49156,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // DEY i E=1 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -48103,6 +49165,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -48121,6 +49184,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.P.Z = +((regs.C & regs.TR & 0xFF) === 0);
@@ -48138,7 +49202,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TXA i E=1 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -48148,6 +49211,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -48177,6 +49241,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 3: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -48208,6 +49273,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -48240,6 +49306,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -48271,6 +49338,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -48308,6 +49376,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -48335,6 +49404,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -48394,6 +49464,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -48439,6 +49510,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -48484,6 +49556,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -48522,6 +49595,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -48561,6 +49635,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -48599,6 +49674,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -48650,6 +49726,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -48663,7 +49740,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TYA i E=1 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -48673,6 +49749,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -48717,6 +49794,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -48730,7 +49808,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TXS i E=1 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -48738,6 +49815,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -48752,7 +49830,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TXY i E=1 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -48762,6 +49839,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -48794,6 +49872,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 4: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -48837,6 +49916,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -48879,6 +49959,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -48917,6 +49998,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 5: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -48934,6 +50016,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.Y = ((regs.Y) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -48981,6 +50064,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -49004,6 +50088,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.X = ((regs.X) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -49035,6 +50120,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -49072,6 +50158,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.Y = ((regs.Y) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -49109,6 +50196,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -49146,6 +50234,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.X = ((regs.X) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -49196,6 +50285,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -49215,7 +50305,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TAY i E=1 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -49225,6 +50314,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -49243,6 +50333,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -49262,7 +50353,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TAX i E=1 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -49272,6 +50362,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -49298,6 +50389,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.DBR = ((regs.DBR) & 0xFF00) + (regs.TR & 0xFF);
@@ -49329,6 +50421,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.Y = ((regs.Y) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -49360,6 +50453,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -49391,6 +50485,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.X = ((regs.X) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -49427,6 +50522,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (pins.D);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -49460,6 +50556,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -49514,6 +50611,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -49558,6 +50656,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = ((regs.TA + (pins.D << 8))); pins.BA = (regs.DBR);
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -49603,6 +50702,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -49642,6 +50742,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.Y = ((regs.Y) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -49681,6 +50782,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -49720,6 +50822,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.X = ((regs.X) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -49770,6 +50873,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -49789,7 +50893,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // CLV i E=1 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -49797,6 +50900,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -49837,6 +50941,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -49856,7 +50961,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TSX i E=1 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -49866,6 +50970,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -49880,7 +50985,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // TYX i E=1 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -49890,6 +50994,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -49930,6 +51035,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.Y = ((regs.Y) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -49975,6 +51081,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -50020,6 +51127,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.X = ((regs.X) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -50057,6 +51165,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA & 0xFFFF); pins.BA = ((regs.TA >>> 16) & 0xFF);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.C = ((regs.C) & 0xFF00) + ((regs.TR) & 0xFF);
@@ -50080,6 +51189,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.Y & 0xFF) - regs.TR;
@@ -50128,6 +51238,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -50156,6 +51267,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 0;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         // instruction code follows
                         regs.P.setbyte_emulated(regs.P.getbyte_emulated() & (~(regs.TR | 0x30) & 0xFF));
                         // instruction code ends
@@ -50167,7 +51279,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                 }
             },
-            true, true, false),
+            false, false, false),
         0xC3: new opcode_functions(opcode_matrix[0xC3],
             function(regs, pins) { // CMP d,s
                 switch(regs.TCU) {
@@ -50185,6 +51297,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -50223,6 +51336,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.Y & 0xFF) - regs.TR;
@@ -50261,6 +51375,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -50313,6 +51428,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -50357,6 +51473,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -50377,7 +51494,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // INY i E=1 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -50387,6 +51503,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -50405,6 +51522,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -50425,7 +51543,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // DEX i E=1 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -50435,6 +51552,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -50455,6 +51573,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.WAI = true;
                         // Following is auto-generated code for instruction finish
                         regs.TCU = 0;
@@ -50479,6 +51598,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.Y & 0xFF) - regs.TR;
@@ -50511,6 +51631,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -50559,6 +51680,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -50589,6 +51711,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (pins.D);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -50623,6 +51746,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -50677,6 +51801,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -50722,6 +51847,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = ((regs.TA + (pins.D << 8))); pins.BA = (regs.DBR);
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -50768,6 +51894,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -50820,6 +51947,7 @@ const decoded_opcodes = Object.freeze(
                         regs.S = (regs.S - 1) & 0xFFFF;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.S = (regs.S & 0xFF) + 0x100;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -50855,6 +51983,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -50909,6 +52038,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -50953,6 +52083,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -50973,7 +52104,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // CLD i E=1 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -50981,6 +52111,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -51021,6 +52152,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -51056,6 +52188,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 3: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -51075,6 +52208,7 @@ const decoded_opcodes = Object.freeze(
                     case 2: // 3
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.STP = true;
                         // Following is auto-generated code for instruction finish
                         regs.TCU = 0;
@@ -51107,6 +52241,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (pins.Addr + 1) & 0xFFFF;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PBR = pins.D;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -51147,6 +52282,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -51201,6 +52337,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -51232,6 +52369,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA & 0xFFFF); pins.BA = ((regs.TA >>> 16) & 0xFF);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.C & 0xFF) - regs.TR;
@@ -51256,6 +52394,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.X & 0xFF) - regs.TR;
@@ -51304,6 +52443,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -51343,6 +52483,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 0;
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         // instruction code follows
                         regs.P.setbyte_emulated(regs.P.getbyte_emulated() | regs.TR);
                         // instruction code ends
@@ -51354,7 +52495,7 @@ const decoded_opcodes = Object.freeze(
                         break;
                 }
             },
-            true, true, false),
+            false, false, false),
         0xE3: new opcode_functions(opcode_matrix[0xE3],
             function(regs, pins) { // SBC d,s
                 switch(regs.TCU) {
@@ -51372,6 +52513,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -51421,6 +52563,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.X & 0xFF) - regs.TR;
@@ -51459,6 +52602,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -51522,6 +52666,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -51566,6 +52711,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -51597,7 +52743,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // INX i E=1 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -51607,6 +52752,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -51625,6 +52771,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -51656,13 +52803,13 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // NOP i E=1 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -51683,6 +52830,7 @@ const decoded_opcodes = Object.freeze(
                     case 2:
                         break;
                     case 3: // cleanup_custom
+                        // In the future we will check IRQs here
                         // instruction code follows
                         regs.C = ((regs.C << 8) & 0xFF00) + ((regs.C >>> 8) & 0xFF);
                         regs.P.Z = +((regs.C & 0xFF) === 0);
@@ -51714,6 +52862,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.TR = (regs.X & 0xFF) - regs.TR;
@@ -51746,6 +52895,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA + (pins.D << 8)); pins.BA = (regs.DBR);
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -51805,6 +52955,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 6: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -51835,6 +52986,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (pins.D);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -51880,6 +53032,7 @@ const decoded_opcodes = Object.freeze(
                         if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } 
                         if (regs.TR) regs.PC = (regs.PC + mksigned8(regs.TA)) & 0xFFFF;
                         // Following is auto-generated code for instruction finish
@@ -51934,6 +53087,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -51990,6 +53144,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = ((regs.TA + (pins.D << 8))); pins.BA = (regs.DBR);
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -52047,6 +53202,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -52097,6 +53253,7 @@ const decoded_opcodes = Object.freeze(
                         pins.D = regs.TR;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.S = (regs.S & 0xFF) + 0x100;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -52132,6 +53289,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -52197,6 +53355,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -52241,6 +53400,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA); pins.BA = (regs.TR);
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -52272,7 +53432,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // SED i E=1 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -52280,6 +53439,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -52320,6 +53480,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -52363,6 +53524,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = regs.S; pins.BA = 0;
                         break;
                     case 4: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         regs.X = ((regs.X) & 0xFF00) + (regs.TR & 0xFF);
@@ -52382,7 +53544,6 @@ const decoded_opcodes = Object.freeze(
                 switch(regs.TCU) {
                         // XCE i E=1 M=1 X=1
                     case 1: // 2
-                        //THAT WAS THE ONE
                         pins.PDV = 0;
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         // instruction code follows
@@ -52396,6 +53557,7 @@ const decoded_opcodes = Object.freeze(
                         // instruction code ends
                         break;
                     case 2: // cleanup_custom
+                        // In the future we will check IRQs here
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -52445,6 +53607,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PC = pins.D;
                         break;
                     case 8: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC += (pins.D << 8);
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -52485,6 +53648,7 @@ const decoded_opcodes = Object.freeze(
                         pins.PDV = 1;
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -52550,6 +53714,7 @@ const decoded_opcodes = Object.freeze(
                         // Following is auto-generated code for instruction finish
                         break;
                     case 7: // cleanup
+                        // In the future we will check IRQs here
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         pins.RW = 0;
@@ -52581,6 +53746,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr = (regs.TA & 0xFFFF); pins.BA = ((regs.TA >>> 16) & 0xFF);
                         break;
                     case 5: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.TR = pins.D;
                         // instruction code follows
                         let A = regs.C & 0xFF; let data = (~regs.TR) & 0xFF;
@@ -52608,9 +53774,9 @@ const decoded_opcodes = Object.freeze(
             },
             true, true, false),
         0x100: new opcode_functions(opcode_matrix[0x100],
-            function(regs, pins) { // RESET s
+            function(regs, pins) { // S_RESET s
                 switch(regs.TCU) {
-                        // RESET s E=1 M=1 X=1
+                        // S_RESET s E=1 M=1 X=1
                     case 1: // 3
                         pins.RW = 0; pins.PDV = 1;
                         pins.Addr = regs.S; pins.BA = 0;
@@ -52650,6 +53816,7 @@ const decoded_opcodes = Object.freeze(
                         pins.Addr++; if (pins.Addr === 0x10000) { pins.Addr = 0; pins.BA = (pins.BA + 1) & 0xFF; };
                         break;
                     case 7: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC += (pins.D << 8);
                         pins.PDV = 1;
                         // Following is auto-generated code for instruction finish
@@ -52661,9 +53828,9 @@ const decoded_opcodes = Object.freeze(
             },
             false, false, false),
         0x101: new opcode_functions(opcode_matrix[0x101],
-            function(regs, pins) { // ABORT s
+            function(regs, pins) { // S_ABORT s
                 switch(regs.TCU) {
-                        // ABORT s E=1 M=1 X=1
+                        // S_ABORT s E=1 M=1 X=1
                     case 1: // 4
                         regs.TR = regs.PC;
                         pins.RW = 1;
@@ -52694,6 +53861,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PBR = 0;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
@@ -52704,9 +53872,9 @@ const decoded_opcodes = Object.freeze(
             },
             false, false, false),
         0x102: new opcode_functions(opcode_matrix[0x102],
-            function(regs, pins) { // IRQ s
+            function(regs, pins) { // S_IRQ s
                 switch(regs.TCU) {
-                        // IRQ s E=1 M=1 X=1
+                        // S_IRQ s E=1 M=1 X=1
                     case 1: // 4
                         regs.TR = regs.PC;
                         pins.RW = 1;
@@ -52737,6 +53905,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PBR = 0;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         regs.P.I = 1;
                         regs.P.D = 0;
@@ -52749,9 +53918,9 @@ const decoded_opcodes = Object.freeze(
             },
             false, false, false),
         0x103: new opcode_functions(opcode_matrix[0x103],
-            function(regs, pins) { // NMI s
+            function(regs, pins) { // S_NMI s
                 switch(regs.TCU) {
-                        // NMI s E=1 M=1 X=1
+                        // S_NMI s E=1 M=1 X=1
                     case 1: // 4
                         regs.TR = regs.PC;
                         pins.RW = 1;
@@ -52782,6 +53951,7 @@ const decoded_opcodes = Object.freeze(
                         regs.PBR = 0;
                         break;
                     case 6: // cleanup_custom
+                        // In the future we will check IRQs here
                         regs.PC = (pins.D << 8) + regs.TA;
                         regs.P.I = 1;
                         regs.P.D = 0;

@@ -47,7 +47,7 @@ const EMU_COP = 0xFFF4
 const NAT_COP = 0xFFE4
 const NAT_BRK = 0xFFE6
    
-const BOOTUP = OM.S_RESET;
+const BOOTUP = WDC_OM.S_RESET;
 
 let VEC_RST_LO = 0x00FFFC;
 let VEC_RST_HI = 0x00FFFD;
@@ -165,6 +165,8 @@ class w65c816_pins {
 		this.RES = 0; // RESET signal
 
 		this.PDV = 0; // combined program, data, vector pin, to simplify.
+
+		this.poll_IRQ = 0; // Set when last instruction cycle has executed
 	}
 }
 
@@ -246,11 +248,11 @@ class w65c816 {
 					this.regs.STP = false;
 					this.pins.RES = 0;
 					this.#RES_pending = false;
-					console.log('STP OR WAI PAUSE')
+					//console.log('STP OR WAI PAUSE')
 					return;
 				}
 				if (this.regs.STP || this.regs.WAI) {
-					console.log('STP OR WAI PAUSE')
+					//console.log('STP OR WAI PAUSE')
 					return;
 				}
 			}
@@ -309,41 +311,42 @@ class w65c816 {
 		let opcode_info = opcode_matrix[opcode];
 		let output = new disassembly_output(this.regs.E, this.regs.P.M, this.regs.P.X);
 		output.mnemonic = opcode_info.mnemonic;
-		let addr_mode = array_of_array_contains(opcode_AM_R, opcode);
+		let addr_mode = array_of_array_contains(WDC_opcode_AM_R, opcode);
 		PC += 1;
 		switch (parseInt(addr_mode)) {
-			case AM.A:
-			case AM.A_INDEXED_IND:
-			case AM.A_IND:
+			case WDC_AM.A:
+			case WDC_AM.A_INDEXED_IND:
+			case WDC_AM.A_IND:
 				output.data16 = this.trace_peek16(PBR, PC);
 				break;
-			case AM.AL:
-			case AM.AL_INDEXED_X:
+			case WDC_AM.AL:
+			case WDC_AM.AL_INDEXED_X:
 				output.data24 = this.trace_peek24(PBR, PC);
 				break;
-			case AM.A_INDEXED_X:
-			case AM.A_INDEXED_Y:
+			case WDC_AM.A_INDEXED_X:
+			case WDC_AM.A_INDEXED_Y:
 				output.data16 = this.trace_peek16(PBR, PC);
 				break;
-			case AM.ACCUM:
+			case WDC_AM.ACCUM:
 				break;
-			case AM.XYC:
+			case WDC_AM.XYC:
 				output.data16 = this.trace_peek16(PBR, PC);
 				break;
-			case AM.D:
-			case AM.D_INDEXED_IND:
-			case AM.D_IND:
-			case AM.D_IND_INDEXED:
-			case AM.D_IND_L_INDEXED:
-			case AM.D_IND_L:
-			case AM.D_INDEXED_X:
-			case AM.D_INDEXED_Y:
+			case WDC_AM.D:
+			case WDC_AM.D_INDEXED_IND:
+			case WDC_AM.D_IND:
+			case WDC_AM.D_IND_INDEXED:
+			case WDC_AM.D_IND_L_INDEXED:
+			case WDC_AM.D_IND_L:
+			case WDC_AM.D_INDEXED_X:
+			case WDC_AM.D_INDEXED_Y:
 				output.data8 = this.trace_peek8(PBR, PC);
 				break;
-			case AM.IMM:
-				let affected_by_X = A_OR_M_X.has(opcode_info.ins);
+			case WDC_AM.IMMb:
+			case WDC_AM.IMM:
+				let affected_by_X = WDC_A_OR_M_X.has(opcode_info.ins);
 				let affected_by_M = !affected_by_X;
-				if (opcode_info.ins === OM.SEP || opcode_info.ins === OM.REP) {
+				if (opcode_info.ins === WDC_OM.SEP || opcode_info.ins === WDC_OM.REP) {
 					output.data8 = this.trace_peek8(PBR, PC);
 				}
 				else if ((affected_by_X && !this.regs.P.X) || (affected_by_M && !this.regs.P.M))
@@ -352,26 +355,26 @@ class w65c816 {
 					output.data8 = this.trace_peek8(PBR, PC);
 				break;
 			// argh
-			case AM.I:
+			case WDC_AM.I:
 				break;
-			case AM.PC_R:
+			case WDC_AM.PC_R:
 				output.data8 = this.trace_peek8(PBR, PC);
 				break;
-			case AM.PC_RL:
+			case WDC_AM.PC_RL:
 				output.data16 = this.trace_peek16(PBR, PC);
 				break;
-			case AM.STACK:
+			case WDC_AM.STACK:
 				break;
-			case AM.STACKd:
-			case AM.STACKf:
+			case WDC_AM.STACKd:
+			case WDC_AM.STACKf:
 				output.data16 = this.trace_peek16(PBR, PC);
 				break;
-			case AM.STACKe:
-			case AM.STACKj:
+			case WDC_AM.STACKe:
+			case WDC_AM.STACKj:
 				output.data8 = this.trace_peek8(PBR, PC);
 				break;
-			case AM.STACK_R:
-			case AM.STACK_R_IND_INDEXED:
+			case WDC_AM.STACK_R:
+			case WDC_AM.STACK_R_IND_INDEXED:
 				output.data8 = this.trace_peek8(PBR, PC);
 				break;
 		}
@@ -379,88 +382,93 @@ class w65c816 {
 		let dis_out = 'UKN ###';
 
 		// Now make actual disassembly output
-		dis_out = opcode_MN[opcode_info.ins];
+		dis_out = WDC_OP_MN_str[opcode_info.ins];
 		switch(parseInt(addr_mode)) {
-			case AM.A:
+			case WDC_AM.A:
 				dis_out += ' !$' + hex4(output.data16);
 				break;
-			case AM.A_INDEXED_IND:
+			case WDC_AM.A_INDEXED_IND:
 				dis_out += ' (!$' + hex4(output.data16) + ', x)';
 				break;
-			case AM.A_IND:
+			case WDC_AM.A_IND:
 				dis_out += ' (!$' + hex4(output.data16) + ')';
 				break;
-			case AM.AL:
-				if (opcode_info.ins === OM.JSL) {
+			case WDC_AM.AL:
+				if (opcode_info.ins === WDC_OM.JSL) {
 					dis_out += ' >$' + hex6(output.data24);
 				}
 				else {
 					dis_out += ' (>$' + hex6(output.data24) + ')';
 				}
 				break;
-			case AM.AL_INDEXED_X:
+			case WDC_AM.AL_INDEXED_X:
 				dis_out += ' >$' + hex6(output.data24) + ', x';
 				break;
-			case AM.A_INDEXED_X:
+			case WDC_AM.A_INDEXED_X:
 				dis_out += ' !$' + hex4(output.data16) + ', x';
 				break;
-			case AM.A_INDEXED_Y:
+			case WDC_AM.A_INDEXED_Y:
 				dis_out += ' !$' + hex4(output.data16) + ', y';
 				break;
-			case AM.XYC:
+			case WDC_AM.XYC:
 				dis_out += ' $' + hex2(output.data16 >> 8) + ', $' + hex2(output.data16 & 0xFF);
 				break;
-			case AM.ACCUM:
+			case WDC_AM.ACCUM:
 				dis_out += ' A';
 				break;
-			case AM.D:
+			case WDC_AM.D:
 				dis_out += ' <$' + hex2(output.data8);
 				break;
-			case AM.D_INDEXED_IND:
+			case WDC_AM.D_INDEXED_IND:
 				dis_out += ' (<$' + hex2(output.data8) + ', x)';
 				break;
-			case AM.D_IND:
+			case WDC_AM.D_IND:
 				dis_out += ' (<$' + hex2(output.data8) + ')';
 				break;
-			case AM.D_IND_INDEXED:
+			case WDC_AM.D_IND_INDEXED:
 				dis_out += ' (<$' + hex2(output.data8) + '), y';
 				break;
-			case AM.D_IND_L_INDEXED:
+			case WDC_AM.D_IND_L_INDEXED:
 				dis_out += ' [<$' + hex2(output.data8) + '], y';
 				break;
-			case AM.D_IND_L:
+			case WDC_AM.D_IND_L:
 				dis_out += ' [<$' + hex2(output.data8) + ']';
 				break;
-			case AM.D_INDEXED_X:
+			case WDC_AM.D_INDEXED_X:
 				dis_out += ' <$' + hex2(output.data8) + ', x';
 				break;
-			case AM.D_INDEXED_Y:
+			case WDC_AM.D_INDEXED_Y:
 				dis_out += ' <$' + hex2(output.data8) + ', y';
 				break;
-			case AM.IMM:
+			case WDC_AM.IMMb:
+			case WDC_AM.IMM:
 				if (output.data8 !== null) dis_out += ' #$' + hex2(output.data8);
 				if (output.data16 !== null) dis_out += ' #$' + hex4(output.data16);
 				break;
-			case AM.I:
+			case WDC_AM.Ib:
+			case WDC_AM.Ic:
+			case WDC_AM.Id:
+			case WDC_AM.Ie:
+			case WDC_AM.I:
 				break;
-			case AM.PC_R:
+			case WDC_AM.PC_R:
 				dis_out += ' r' + mksigned8(output.data8);
 				break;
-			case AM.PC_RL:
+			case WDC_AM.PC_RL:
 				dis_out += ' r' + mksigned16(output.data16);
 				break;
-			case AM.STACKd:
-			case AM.STACKf:
+			case WDC_AM.STACKd:
+			case WDC_AM.STACKf:
 				dis_out += ' $' + hex4(output.data16);
 				break;
-			case AM.STACKe:
-			case AM.STACKj:
+			case WDC_AM.STACKe:
+			case WDC_AM.STACKj:
 				dis_out += ' $' + hex2(output.data8);
 				break;
-			case AM.STACK_R:
+			case WDC_AM.STACK_R:
 				dis_out += ' $' + hex2(output.data8) + ', s';
 				break;
-			case AM.STACK_R_IND_INDEXED:
+			case WDC_AM.STACK_R_IND_INDEXED:
 				dis_out += ' ($' + hex2(output.data8) + ',s),y';
 				break;
 		}

@@ -97,7 +97,7 @@ class test_return {
     }
 }
 
-let DO_TRACING = true;
+let DO_TRACING = false;
 let BRK_ON_IO = false;
 
 function faddr(addr) {
@@ -225,20 +225,20 @@ function test_it_automated(cpu, tests) {
                 }
                 if (cpu.pins.RW) { // Write
                     if (DO_TRACING) {
-                        cpu.pins.traces.push(cpu.trace_format_write(addr, cpu.pins.D));
+                        dbg.traces.add(D_RESOURCE_TYPES.WDC65C816, cpu.clock.cpu_has, trace_format_write('WDC', WDC_COLOR, cpu.trace_cycles, (addr & 0xFFFF), cpu.pins.D, (addr >>> 16)));
                     }
                     testRAM[addr] = cpu.pins.D;
                 }
                 else {
                     cpu.pins.D = testRAM[addr];
                     if (DO_TRACING) {
-                        cpu.pins.traces.push(cpu.trace_format_read(addr, cpu.pins.D));
+                        dbg.traces.add(D_RESOURCE_TYPES.WDC65C816, cpu.clock.cpu_has, trace_format_read('WDC', WDC_COLOR, cpu.trace_cycles, addr & 0xFFFF, cpu.pins.D, addr >>> 16));
                     }
                 }
             }
             else {
                 if (DO_TRACING) {
-                    cpu.pins.traces.push(cpu.trace_format_IO(addr, cpu.pins.D));
+                    dbg.traces.add(D_RESOURCE_TYPES.WDC65C816, cpu.clock.cpu_has, trace_format_IO('WDC', WDC_COLOR, cpu.trace_cycles, addr & 0xFFFF, cpu.pins.D, addr >>> 16));
                 }
             }
         }
@@ -318,14 +318,7 @@ async function test_pt_65c816_ins(cpu, ins) {
         tconsole.addl(txf('{r}POTENTIAL CYCLE LENGTH MISMATCHES: {/}' + result.length_mismatches))
     }
     if (!result.passed) {
-        let strt = cpu.pins.traces.length - 25;
-        //let strt = 0;
-        strt = strt > 0 ? strt : 0;
-        for (let i = strt; i < cpu.pins.traces.length; i++) {
-            dconsole.addl(cpu.pins.traces[i]);
-        }
-        console.log(cpu.pins.trace_cycles);
-        //console.log(cpu.pins.traces);
+        dbg.traces.draw(dconsole);
     }
     cpu.pins.traces = [];
     /*
@@ -356,8 +349,14 @@ async function test_pt_65c816() {
      let read8 = function(bank, addr) {
         return testRAM[(bank << 16) | addr];
     }
-    let cpu = new w65c816();
-    let start_test = 0x00;
+    let clock = new SNES_clock({rev: 1});
+    let cpu = new w65c816(clock);
+    dbg.add_cpu(D_RESOURCE_TYPES.WDC65C816, cpu);
+    if (DO_TRACING) {
+        dbg.enable_tracing_for(D_RESOURCE_TYPES.WDC65C816);
+        dbg.enable_tracing();
+    }
+    let start_test = 0;
     let skip_tests = [0x22, // cycel4 addr is S-1 instead of S
         0xCB, // Last cycle wrong 0xFFFF addr
         0xDB,

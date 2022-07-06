@@ -157,6 +157,7 @@ const SPC_AM = Object.freeze({
     YA_X: 45, // YA, X for DIV
     RYA: 46, // YA for MUL
     STACK: 47, // Stack pop
+    DCB: 48, // For assembler
 });
 
 class SPC_OP_INFO {
