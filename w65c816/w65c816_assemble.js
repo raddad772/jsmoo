@@ -35,113 +35,113 @@ const OPE = Object.freeze({
 });
 
 const AM_simplifier_by_encoding = Object.freeze({
-    [AM.A]: OPE.bytes2,
-    [AM.Ab]: OPE.bytes2,
-    [AM.Ac]: OPE.bytes2,
-    [AM.Ad]: OPE.bytes2,
-    [AM.ACCUM]: OPE.none,
-    [AM.A_INDEXED_X]: OPE.bytes2,
-    [AM.A_INDEXED_Xb]: OPE.bytes2,
-    [AM.A_INDEXED_Y]: OPE.bytes2,
-    [AM.AL]: OPE.bytes3,
-    [AM.ALb]: OPE.bytes3,
-    [AM.ALc]: OPE.bytes3,
-    [AM.AL_INDEXED_X]: OPE.bytes3,
-    [AM.A_IND]: OPE.bytes2,
-    [AM.A_INDb]: OPE.bytes2,
-    [AM.A_INDEXED_IND]: OPE.bytes2,
-    [AM.A_INDEXED_INDb]: OPE.bytes2,
-    [AM.D]: OPE.bytes1,
-    [AM.Db]: OPE.bytes1,
-    [AM.STACK_R]: OPE.bytes1,
-    [AM.D_INDEXED_X]: OPE.bytes1,
-    [AM.D_INDEXED_Xb]: OPE.bytes1,
-    [AM.D_INDEXED_Y]: OPE.bytes1,
-    [AM.D_IND]: OPE.bytes1,
-    [AM.D_IND_L]: OPE.bytes1,
-    [AM.STACK_R_IND_INDEXED]: OPE.bytes1,
-    [AM.D_INDEXED_IND]: OPE.bytes1,
-    [AM.D_IND_INDEXED]: OPE.bytes1,
-    [AM.D_IND_L_INDEXED]: OPE.bytes1,
-    [AM.I]: OPE.none,
-    [AM.Ib]: OPE.none,
-    [AM.Ic]: OPE.none,
-    [AM.Id]: OPE.none,
-    [AM.PC_R]: OPE.bytes1,
-    [AM.PC_RL]: OPE.bytes2,
-    [AM.STACK]: OPE.none,
-    [AM.STACKb]: OPE.none,
-    [AM.STACKc]: OPE.none,
-    [AM.STACKd]: OPE.bytes2,
-    [AM.STACKe]: OPE.bytes1,
-    [AM.STACKf]: OPE.bytes2,
-    [AM.STACKg]: OPE.none,
-    [AM.STACKh]: OPE.none,
-    [AM.STACKi]: OPE.none,
-    [AM.STACKj]: OPE.bytes1,
-    [AM.XYC]: OPE.operands2,
-    [AM.XYCb]: OPE.operands2,
-    [AM.IMM]: OPE.bymode
+    [WDC_AM.A]: OPE.bytes2,
+    [WDC_AM.Ab]: OPE.bytes2,
+    [WDC_AM.Ac]: OPE.bytes2,
+    [WDC_AM.Ad]: OPE.bytes2,
+    [WDC_AM.ACCUM]: OPE.none,
+    [WDC_AM.A_INDEXED_X]: OPE.bytes2,
+    [WDC_AM.A_INDEXED_Xb]: OPE.bytes2,
+    [WDC_AM.A_INDEXED_Y]: OPE.bytes2,
+    [WDC_AM.AL]: OPE.bytes3,
+    [WDC_AM.ALb]: OPE.bytes3,
+    [WDC_AM.ALc]: OPE.bytes3,
+    [WDC_AM.AL_INDEXED_X]: OPE.bytes3,
+    [WDC_AM.A_IND]: OPE.bytes2,
+    [WDC_AM.A_INDb]: OPE.bytes2,
+    [WDC_AM.A_INDEXED_IND]: OPE.bytes2,
+    [WDC_AM.A_INDEXED_INDb]: OPE.bytes2,
+    [WDC_AM.D]: OPE.bytes1,
+    [WDC_AM.Db]: OPE.bytes1,
+    [WDC_AM.STACK_R]: OPE.bytes1,
+    [WDC_AM.D_INDEXED_X]: OPE.bytes1,
+    [WDC_AM.D_INDEXED_Xb]: OPE.bytes1,
+    [WDC_AM.D_INDEXED_Y]: OPE.bytes1,
+    [WDC_AM.D_IND]: OPE.bytes1,
+    [WDC_AM.D_IND_L]: OPE.bytes1,
+    [WDC_AM.STACK_R_IND_INDEXED]: OPE.bytes1,
+    [WDC_AM.D_INDEXED_IND]: OPE.bytes1,
+    [WDC_AM.D_IND_INDEXED]: OPE.bytes1,
+    [WDC_AM.D_IND_L_INDEXED]: OPE.bytes1,
+    [WDC_AM.I]: OPE.none,
+    [WDC_AM.Ib]: OPE.none,
+    [WDC_AM.Ic]: OPE.none,
+    [WDC_AM.Id]: OPE.none,
+    [WDC_AM.PC_R]: OPE.bytes1,
+    [WDC_AM.PC_RL]: OPE.bytes2,
+    [WDC_AM.STACK]: OPE.none,
+    [WDC_AM.STACKb]: OPE.none,
+    [WDC_AM.STACKc]: OPE.none,
+    [WDC_AM.STACKd]: OPE.bytes2,
+    [WDC_AM.STACKe]: OPE.bytes1,
+    [WDC_AM.STACKf]: OPE.bytes2,
+    [WDC_AM.STACKg]: OPE.none,
+    [WDC_AM.STACKh]: OPE.none,
+    [WDC_AM.STACKi]: OPE.none,
+    [WDC_AM.STACKj]: OPE.bytes1,
+    [WDC_AM.XYC]: OPE.operands2,
+    [WDC_AM.XYCb]: OPE.operands2,
+    [WDC_AM.IMM]: OPE.bymode
 });
 
 const AM_simplifier_by_encoding_R = Object.freeze({
-    [OPE.none]: [AM.ACCUM, AM.I, AM.Ib, AM.Ic, AM.Id, AM.STACK, AM.STACKb, AM.STACKc, AM.STACKg, AM.STACKh, AM.STACKi],
-    [OPE.bytes1]: [AM.STACK_R, AM.D_INDEXED_X, AM.D_INDEXED_Xb, AM.D_INDEXED_Y, AM.D_IND, AM.D_IND_L, AM.STACK_R_IND_INDEXED, AM.D_INDEXED_IND, AM.D_IND_INDEXED, AM.D_IND_L_INDEXED, AM.PC_R, AM.STACKe, AM.STACKj],
-    [OPE.bytes2]: [AM.A, AM.Ab, AM.Ac, AM.Ad, AM.A_INDEXED_X, AM.A_INDEXED_Xb, AM.A_INDEXED_Y, AM.A_IND, AM.A_INDb, AM.A_INDEXED_IND, AM.A_INDEXED_INDb, AM.PC_RL, AM.STACKd, AM.STACKf],
-    [OPE.bytes3]: [AM.AL, AM.ALb, AM.ALc, AM.AL_INDEXED_X],
-    [OPE.bymode]: [AM.IMM],
-    [OPE.operands2]: [AM.XYC, AM.XYCb]
+    [OPE.none]: [WDC_AM.ACCUM, WDC_AM.I, WDC_AM.Ib, WDC_AM.Ic, WDC_AM.Id, WDC_AM.STACK, WDC_AM.STACKb, WDC_AM.STACKc, WDC_AM.STACKg, WDC_AM.STACKh, WDC_AM.STACKi],
+    [OPE.bytes1]: [WDC_AM.STACK_R, WDC_AM.D_INDEXED_X, WDC_AM.D_INDEXED_Xb, WDC_AM.D_INDEXED_Y, WDC_AM.D_IND, WDC_AM.D_IND_L, WDC_AM.STACK_R_IND_INDEXED, WDC_AM.D_INDEXED_IND, WDC_AM.D_IND_INDEXED, WDC_AM.D_IND_L_INDEXED, WDC_AM.PC_R, WDC_AM.STACKe, WDC_AM.STACKj],
+    [OPE.bytes2]: [WDC_AM.A, WDC_AM.Ab, WDC_AM.Ac, WDC_AM.Ad, WDC_AM.A_INDEXED_X, WDC_AM.A_INDEXED_Xb, WDC_AM.A_INDEXED_Y, WDC_AM.A_IND, WDC_AM.A_INDb, WDC_AM.A_INDEXED_IND, WDC_AM.A_INDEXED_INDb, WDC_AM.PC_RL, WDC_AM.STACKd, WDC_AM.STACKf],
+    [OPE.bytes3]: [WDC_AM.AL, WDC_AM.ALb, WDC_AM.ALc, WDC_AM.AL_INDEXED_X],
+    [OPE.bymode]: [WDC_AM.IMM],
+    [OPE.operands2]: [WDC_AM.XYC, WDC_AM.XYCb]
 });
 
 
 const opcode_AM_MN = Object.freeze({
-    [AM.A]: 'a',
-    [AM.Ab]: 'a',
-    [AM.Ac]: 'a',
-    [AM.Ad]: 'a',
-    [AM.ACCUM]: 'A',
-    [AM.A_INDEXED_X]: 'a,x',
-    [AM.A_INDEXED_Xb]: 'a,x',
-    [AM.A_INDEXED_Y]: 'a,y',
-    [AM.AL]: 'al',
-    [AM.ALb]: 'al',
-    [AM.ALc]: 'al',
-    [AM.AL_INDEXED_X]: 'al,x',
-    [AM.A_IND]: '(a)',
-    [AM.A_INDb]: '(a)',
-    [AM.A_INDEXED_IND]: '(a,x)',
-    [AM.A_INDEXED_INDb]: '(a,x)',
-    [AM.D]: 'd',
-    [AM.Db]: 'd',
-    [AM.STACK_R]: 'd,s',
-    [AM.D_INDEXED_X]: 'd,x',
-    [AM.D_INDEXED_Xb]: 'd,x',
-    [AM.D_INDEXED_Y]: 'd,y',
-    [AM.D_IND]: '(d)',
-    [AM.D_IND_L]: '[d]',
-    [AM.STACK_R_IND_INDEXED]: '(d,s),y',
-    [AM.D_INDEXED_IND]: '(d,x)',
-    [AM.D_IND_INDEXED]: '(d),y',
-    [AM.D_IND_L_INDEXED]: '[d],y',
-    [AM.I]: 'i',
-    [AM.Ib]: 'i',
-    [AM.Ic]: 'i',
-    [AM.Id]: 'i',
-    [AM.PC_R]: 'r',
-    [AM.PC_RL]: 'rl',
-    [AM.STACK]: 's',
-    [AM.STACKb]: 's',
-    [AM.STACKc]: 's',
-    [AM.STACKd]: 's',
-    [AM.STACKe]: 's',
-    [AM.STACKf]: 's',
-    [AM.STACKg]: 's',
-    [AM.STACKh]: 's',
-    [AM.STACKi]: 's',
-    [AM.STACKj]: 's',
-    [AM.XYC]: 'xyc',
-    [AM.XYCb]: 'xyc',
-    [AM.IMM]: '#'
+    [WDC_AM.A]: 'a',
+    [WDC_AM.Ab]: 'a',
+    [WDC_AM.Ac]: 'a',
+    [WDC_AM.Ad]: 'a',
+    [WDC_AM.ACCUM]: 'A',
+    [WDC_AM.A_INDEXED_X]: 'a,x',
+    [WDC_AM.A_INDEXED_Xb]: 'a,x',
+    [WDC_AM.A_INDEXED_Y]: 'a,y',
+    [WDC_AM.AL]: 'al',
+    [WDC_AM.ALb]: 'al',
+    [WDC_AM.ALc]: 'al',
+    [WDC_AM.AL_INDEXED_X]: 'al,x',
+    [WDC_AM.A_IND]: '(a)',
+    [WDC_AM.A_INDb]: '(a)',
+    [WDC_AM.A_INDEXED_IND]: '(a,x)',
+    [WDC_AM.A_INDEXED_INDb]: '(a,x)',
+    [WDC_AM.D]: 'd',
+    [WDC_AM.Db]: 'd',
+    [WDC_AM.STACK_R]: 'd,s',
+    [WDC_AM.D_INDEXED_X]: 'd,x',
+    [WDC_AM.D_INDEXED_Xb]: 'd,x',
+    [WDC_AM.D_INDEXED_Y]: 'd,y',
+    [WDC_AM.D_IND]: '(d)',
+    [WDC_AM.D_IND_L]: '[d]',
+    [WDC_AM.STACK_R_IND_INDEXED]: '(d,s),y',
+    [WDC_AM.D_INDEXED_IND]: '(d,x)',
+    [WDC_AM.D_IND_INDEXED]: '(d),y',
+    [WDC_AM.D_IND_L_INDEXED]: '[d],y',
+    [WDC_AM.I]: 'i',
+    [WDC_AM.Ib]: 'i',
+    [WDC_AM.Ic]: 'i',
+    [WDC_AM.Id]: 'i',
+    [WDC_AM.PC_R]: 'r',
+    [WDC_AM.PC_RL]: 'rl',
+    [WDC_AM.STACK]: 's',
+    [WDC_AM.STACKb]: 's',
+    [WDC_AM.STACKc]: 's',
+    [WDC_AM.STACKd]: 's',
+    [WDC_AM.STACKe]: 's',
+    [WDC_AM.STACKf]: 's',
+    [WDC_AM.STACKg]: 's',
+    [WDC_AM.STACKh]: 's',
+    [WDC_AM.STACKi]: 's',
+    [WDC_AM.STACKj]: 's',
+    [WDC_AM.XYC]: 'xyc',
+    [WDC_AM.XYCb]: 'xyc',
+    [WDC_AM.IMM]: '#'
 });
 
 function collapse_AMs_to_encodings(alist) {
@@ -284,8 +284,8 @@ class a_ins_t {
 
 
 const ONE_BYTE_ADDRESS_MODES = Object.freeze([
-    AM.ACCUM, AM.I, AM.Ib, AM.Ic, AM.Id, AM.STACK, AM.STACKb, AM.STACKc,
-    AM.STACKg, AM.STACKh, AM.STACKi]);
+    WDC_AM.ACCUM, WDC_AM.I, WDC_AM.Ib, WDC_AM.Ic, WDC_AM.Id, WDC_AM.STACK, WDC_AM.STACKb, WDC_AM.STACKc,
+    WDC_AM.STACKg, WDC_AM.STACKh, WDC_AM.STACKi]);
 
 class w65c816_assembler {
     constructor() {
@@ -318,8 +318,8 @@ class w65c816_assembler {
 
     writeinstruction(ins) {
         let addr = ins.addr;
-        if (this.enable_console && opcode_MN[ins.ins] !== 'DCB' && opcode_MN[ins.ins] !== 'ASC') {
-          let cstr = hex0x6(addr) + ' ' + hex0x2(ins.bytecodes[0]) + ' ' + opcode_MN[ins.ins];
+        if (this.enable_console && WDC_OP_MN_str[ins.ins] !== 'DCB' && WDC_OP_MN_str[ins.ins] !== 'ASC') {
+          let cstr = hex0x6(addr) + ' ' + hex0x2(ins.bytecodes[0]) + ' ' + WDC_OP_MN_str[ins.ins];
           if (ins.bytecodes.length > 1) {
               for (let i in ins.bytecodes) {
                   if (i < 1) continue;
@@ -585,8 +585,8 @@ class w65c816_assembler {
         op.addr = this.addr;
         let mnemonic = line.slice(0, 3);
         let ins = -1;
-        for (let j in opcode_MN) {
-            if (opcode_MN[j] === mnemonic.toUpperCase()) {
+        for (let j in WDC_OP_MN_str) {
+            if (WDC_OP_MN_str[j] === mnemonic.toUpperCase()) {
                 ins = j;
                 break;
             }
@@ -597,9 +597,9 @@ class w65c816_assembler {
         }
         op.ins = parseInt(ins);
         // Now attempt to find an addressing mode
-        if (op.ins === OM.DCB) {
+        if (op.ins === WDC_OM.DCB) {
             op.needs_resolve = false;
-            op.addr_mode = AM.DCB;
+            op.addr_mode = WDC_AM.DCB;
             let to_parse = line.slice(4).split(',');
             for (let i = 0; i < to_parse.length; i++) {
                 let v = this.interpret_number(to_parse[i]);
@@ -613,10 +613,10 @@ class w65c816_assembler {
             this.addr += to_parse.length;
             return;
         }
-        if (op.ins === OM.ASC) {
+        if (op.ins === WDC_OM.ASC) {
             console.log('ASC!!!', line)
             op.needs_resolve = false;
-            op.addr_mode = AM.DCB;
+            op.addr_mode = WDC_AM.DCB;
             let to_parse = line.slice(5, line.length - 1);
             let j;
             for (let i = 0; i < to_parse.length; i++) {
@@ -634,7 +634,7 @@ class w65c816_assembler {
         let ams = ins_AM[ins];
         if ((ams.length === 1) && (ONE_BYTE_ADDRESS_MODES.indexOf(ams[0]) !== -1)) {
             op.addr_mode = ams[0];
-            op.bytecodes[0] = opcode_MN_R[op.ins][0];
+            op.bytecodes[0] = WDC_opcode_MN_R[op.ins][0];
             op.needs_resolve = false;
             this.instructions.push(op);
             this.addr += 1;
@@ -642,8 +642,8 @@ class w65c816_assembler {
         }
 
         // Now handle MVN, MVP which have custom encodings and are easy to just do
-        if (ins === OM.MVP || ins === OM.MVN) {
-            op.bytecodes[0] = ins === OM.MVP ? 0x44 : 0x54;
+        if (ins === WDC_OM.MVP || ins === WDC_OM.MVN) {
+            op.bytecodes[0] = ins === WDC_OM.MVP ? 0x44 : 0x54;
 
             let operands = line.slice(4).trim();
             if (operands.indexOf(',') === -1) {
@@ -686,7 +686,7 @@ class w65c816_assembler {
         let candidate_ams2 = [];
         for (let i in candidate_ams1) {
             let cam = candidate_ams1[i];
-            let rx = AM_operand_regexes[cam];
+            let rx = WDC_AM_operand_regexes[cam];
             if (rx.test(operand)) {
                 candidate_ams2.push(cam);
             }
@@ -734,36 +734,36 @@ class w65c816_assembler {
 
         let valid_modes = [];
         if (nummerthing.kind === VT.accumulator) {
-            valid_modes = [AM.ACCUM];
+            valid_modes = [WDC_AM.ACCUM];
         }
         else if (with_care) {
-            valid_modes = [AM.A, AM.Ab, AM.Ac, AM.Ad, AM.AL, AM.ALb, AM.ALc, AM.PC_R, AM.PC_RL]
+            valid_modes = [WDC_AM.A, WDC_AM.Ab, WDC_AM.Ac, WDC_AM.Ad, WDC_AM.AL, WDC_AM.ALb, WDC_AM.ALc, WDC_AM.PC_R, WDC_AM.PC_RL]
         }
         else if (poperand.indexOf('#') !== -1) {
             // We are forced to immediate
-            valid_modes = [AM.IMM];
+            valid_modes = [WDC_AM.IMM];
         }
         else if (poperand.indexOf('<') !== -1) {
             // We are forced to direct page mode
-            valid_modes = [AM.D, AM.Db, AM.D_INDEXED_X, AM.D_INDEXED_Xb,
-            AM.D_INDEXED_Y, AM.D_IND, AM.D_IND_L, AM.D_INDEXED_IND, AM.D_IND_INDEXED, AM.D_IND_L_INDEXED];
+            valid_modes = [WDC_AM.D, WDC_AM.Db, WDC_AM.D_INDEXED_X, WDC_AM.D_INDEXED_Xb,
+            WDC_AM.D_INDEXED_Y, WDC_AM.D_IND, WDC_AM.D_IND_L, WDC_AM.D_INDEXED_IND, WDC_AM.D_IND_INDEXED, WDC_AM.D_IND_L_INDEXED];
         }
         else if (poperand.indexOf('|') !== -1 || poperand.indexOf('!') !== -1) {
             // We are forced to absolute
-            valid_modes = [AM.A, AM.Ab, AM.Ac, AM.Ad, AM.A_INDEXED_X,
-            AM.A_INDEXED_Xb, AM.A_INDEXED_Y, AM.A_IND, AM.A_INDb, AM.A_INDEXED_IND, AM.A_INDEXED_INDb];
+            valid_modes = [WDC_AM.A, WDC_AM.Ab, WDC_AM.Ac, WDC_AM.Ad, WDC_AM.A_INDEXED_X,
+            WDC_AM.A_INDEXED_Xb, WDC_AM.A_INDEXED_Y, WDC_AM.A_IND, WDC_AM.A_INDb, WDC_AM.A_INDEXED_IND, WDC_AM.A_INDEXED_INDb];
         }
         else if (poperand.indexOf('>') !== -1) {
             // We are forced to 24-bit absolute long
-            valid_modes = [AM.AL, AM.ALb, AM.ALc, AM.AL_INDEXED_X];
+            valid_modes = [WDC_AM.AL, WDC_AM.ALb, WDC_AM.ALc, WDC_AM.AL_INDEXED_X];
         }
         else {
-            valid_modes = [AM.ACCUM, AM.D, AM.Db, AM.D_INDEXED_X, AM.D_INDEXED_Xb,
-            AM.D_INDEXED_Y, AM.D_IND, AM.D_IND_L, AM.D_INDEXED_IND, AM.D_IND_INDEXED, AM.D_IND_L_INDEXED,
-            AM.A, AM.Ab, AM.Ac, AM.Ad, AM.A_INDEXED_X,
-            AM.A_INDEXED_Xb, AM.A_INDEXED_Y, AM.A_IND, AM.A_INDb, AM.A_INDEXED_IND, AM.A_INDEXED_INDb,
-                AM.AL, AM.ALb, AM.ALc, AM.AL_INDEXED_X,
-                AM.PC_R, AM.PC_RL
+            valid_modes = [WDC_AM.ACCUM, WDC_AM.D, WDC_AM.Db, WDC_AM.D_INDEXED_X, WDC_AM.D_INDEXED_Xb,
+            WDC_AM.D_INDEXED_Y, WDC_AM.D_IND, WDC_AM.D_IND_L, WDC_AM.D_INDEXED_IND, WDC_AM.D_IND_INDEXED, WDC_AM.D_IND_L_INDEXED,
+            WDC_AM.A, WDC_AM.Ab, WDC_AM.Ac, WDC_AM.Ad, WDC_AM.A_INDEXED_X,
+            WDC_AM.A_INDEXED_Xb, WDC_AM.A_INDEXED_Y, WDC_AM.A_IND, WDC_AM.A_INDb, WDC_AM.A_INDEXED_IND, WDC_AM.A_INDEXED_INDb,
+                WDC_AM.AL, WDC_AM.ALb, WDC_AM.ALc, WDC_AM.AL_INDEXED_X,
+                WDC_AM.PC_R, WDC_AM.PC_RL
             ]
         }
 
@@ -827,13 +827,13 @@ class w65c816_assembler {
         let encoding = OPE.none;
         let amode = -1;
         if (candidate_encodings.indexOf(OPE.bymode) !== -1) {
-            amode = AM.IMM;
+            amode = WDC_AM.IMM;
             // BAD ASSUMPTION! TODO: fix it
             if (this.E)
                 encoding = OPE.bytes1;
             else {
                 // Check if it's A, M, X, or Y
-                encoding = A_OR_M_X.has(ins) ? (this.X ? OPE.bytes1 : OPE.bytes2) : this.M ? OPE.bytes1 : OPE.bytes2;
+                encoding = WDC_A_OR_M_X.has(ins) ? (this.X ? OPE.bytes1 : OPE.bytes2) : this.M ? OPE.bytes1 : OPE.bytes2;
                 /*if ()
                     encoding =
                 else
@@ -843,11 +843,11 @@ class w65c816_assembler {
         else {
             // Deobfuscate between DirectPage and Absolute
             if (candidate_ams1.length === 2) {
-                if ((candidate_ams1.indexOf(AM.D) !== -1) &&
-                    ((candidate_ams1.indexOf(AM.A) !== -1) || (candidate_ams1.indexOf(AM.Ad) !== -1))
+                if ((candidate_ams1.indexOf(WDC_AM.D) !== -1) &&
+                    ((candidate_ams1.indexOf(WDC_AM.A) !== -1) || (candidate_ams1.indexOf(WDC_AM.Ad) !== -1))
                 ) {
                     if (bytes_needed === 1) {
-                        candidate_ams1 = [AM.D];
+                        candidate_ams1 = [WDC_AM.D];
                         candidate_encodings = [OPE.bytes1];
                     }
                 }
@@ -890,11 +890,11 @@ class w65c816_assembler {
                     let am = candidate_ams1[amn];
                     let bad = false;
                     if (am.length === 0) bad = true;
-                    for (let i in AM_operand_allowed_types[am]) {
-                        for (let j in AM_operand_allowed_types[i]) {
-                            let flooper = AM_operand_allowed_types[i][j];
+                    for (let i in WDC_AM_operand_allowed_types[am]) {
+                        for (let j in WDC_AM_operand_allowed_types[i]) {
+                            let flooper = WDC_AM_operand_allowed_types[i][j];
                         }
-                        let a_ty = AM_operand_allowed_types[i];
+                        let a_ty = WDC_AM_operand_allowed_types[i];
                     }
                 }
                 console.log('HERES WINNOWED', candidate_ams2);
@@ -912,7 +912,7 @@ class w65c816_assembler {
         op.addr_mode = amode;
         let foundcode = -1;
         ins = parseInt(ins);
-        for (let opcode = 0; opcode <= MAX_OPCODE; opcode++) {
+        for (let opcode = 0; opcode <= WDC_MAX_OPCODE; opcode++) {
             let omi = opcode_matrix[opcode];
             if (omi.ins === ins && omi.addr_mode === amode) {
                 foundcode = opcode;
@@ -928,29 +928,29 @@ class w65c816_assembler {
         op.bytecodes[0] = foundcode;
 
         switch(op.ins) {
-            case OM.REP:
+            case WDC_OM.REP:
                 encoding = OPE.bytes1;
                 //if (operand & 0x10) this.EMX[this.lnum+1].X = 0;
                 //if (operand & 0x20) this.EMX[this.lnum+1].M = 0;
                 break;
-            case OM.SEP:
+            case WDC_OM.SEP:
                 encoding = OPE.bytes1;
                 //if (operand & 0x10) this.EMX[this.lnum+1].X = 1;
                 //if (operand & 0x20) this.EMX[this.lnum+1].M = 1;
                 break;
-            case OM.BNE: // X
-            case OM.BCC: // X
-            case OM.BCS: // X
-            case OM.BEQ: // X
-            case OM.BMI: // X
-            case OM.BRA: // X
-            case OM.BPL: // X
-            case OM.BVS: // X
-            case OM.BVC: // X
+            case WDC_OM.BNE: // X
+            case WDC_OM.BCC: // X
+            case WDC_OM.BCS: // X
+            case WDC_OM.BEQ: // X
+            case WDC_OM.BMI: // X
+            case WDC_OM.BRA: // X
+            case WDC_OM.BPL: // X
+            case WDC_OM.BVS: // X
+            case WDC_OM.BVC: // X
                 this.addr += 2;
                 if (operand === 0) {
                     op.needs_resolve = true;
-                    op.addr_mode = AM.PC_R;
+                    op.addr_mode = WDC_AM.PC_R;
                     this.instructions.push(op);
                     return;
                 }
@@ -965,12 +965,12 @@ class w65c816_assembler {
                     this.instructions.push(op);
                     return;
                 }
-            case OM.BRL:
+            case WDC_OM.BRL:
                 this.addr += 3;
                 if (operand === 0) {
                     console.log('BRL UNRESOLVED ' + line)
                     op.needs_resolve = true;
-                    op.addr_mode = AM.PC_RL;
+                    op.addr_mode = WDC_AM.PC_RL;
                     this.instructions.push(op);
                     return;
                 }
@@ -986,38 +986,38 @@ class w65c816_assembler {
                     this.instructions.push(op);
                     return;
                 }
-            case OM.JMP: // JMP a or al or (a) or (al)
+            case WDC_OM.JMP: // JMP a or al or (a) or (al)
                 console.log('JMP ADDRMODE', op.addr_mode);
                 switch(op.addr_mode) {
-                    case AM.ALb: // al
+                    case WDC_AM.ALb: // al
                         this.addr += 4;
                         break;
-                    case AM.Ab: // a
+                    case WDC_AM.Ab: // a
                         this.addr += 3;
                         break;
-                    case AM.A_INDb: // (a)
+                    case WDC_AM.A_INDb: // (a)
                         this.addr += 3;
                         break;
-                    case AM.A_INDEXED_IND: // (a, x)
+                    case WDC_AM.A_INDEXED_IND: // (a, x)
                         this.addr += 3;
                         break;
                 }
                 op.needs_resolve = true;
                 this.instructions.push(op);
                 return;
-            case OM.JML: // JML (al)
+            case WDC_OM.JML: // JML (al)
                 console.log('JML addrmode', op.addr_mode)
                 this.addr += 3;
                 op.needs_resolve = true;
                 this.instructions.push(op);
                 return;
-            case OM.JSL: // JSL al
+            case WDC_OM.JSL: // JSL al
                 console.log('JSL addrmode', op.addr_mode)
                 this.addr += 4;
                 op.needs_resolve = true;
                 this.instructions.push(op);
                 return;
-            case OM.JSR: // JSR a, (a,x)
+            case WDC_OM.JSR: // JSR a, (a,x)
                 console.log('JSR addrmode', op.addr_mode)
                 this.addr += 3;
                 op.needs_resolve = true;
@@ -1121,7 +1121,7 @@ class w65c816_assembler {
                     continue;
                 }
                 switch(op.addr_mode) {
-                    case AM.PC_R:
+                    case WDC_AM.PC_R:
                         dist = op.label.addr - (op.addr + 2);
                         if ((dist < -128) || (dist > 127)) {
                             this.errormsg('Jump too long: ' + dist + ' ' + op.label.name);
@@ -1130,7 +1130,7 @@ class w65c816_assembler {
                         op.bytecodes[1] = dist & 0xFF;
                         op.needs_resolve = false;
                         continue;
-                    case AM.PC_RL:
+                    case WDC_AM.PC_RL:
                         dist = op.label.addr - (op.addr + 3);
                         if ((dist < -32768) || (dist > 32767)) {
                             this.errormsg('LJump too long: ' + dist + ' ' + op.label.name);
@@ -1140,12 +1140,12 @@ class w65c816_assembler {
                         op.bytecodes[2] = (dist & 0xFF00) >>> 8;
                         op.needs_resolve = false;
                         continue;
-                    case AM.Ab: // JMP a
+                    case WDC_AM.Ab: // JMP a
                         op.bytecodes[1] = op.label.addr & 0xFF;
                         op.bytecodes[2] = (op.label.addr & 0xFF00) >>> 8;
                         continue;
-                    case AM.ALb: // JMP al
-                    case AM.ALc: // JSL al
+                    case WDC_AM.ALb: // JMP al
+                    case WDC_AM.ALc: // JSL al
                         op.bytecodes[1] = op.label.addr & 0xFF;
                         op.bytecodes[2] = (op.label.addr & 0xFF00) >>> 8;
                         op.bytecodes[3] = (op.label.addr & 0xFF0000) >>> 16;

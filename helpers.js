@@ -159,7 +159,7 @@ class console_t {
         this.textconsole = document.getElementById(this.elname);
     }
 
-    addl(line, draw=false, bgcolor=null) {
+    addl(line, draw=true, bgcolor=null) {
         //let ft = txf(line);
         let ft = line;
         if (this.textconsole === null) {

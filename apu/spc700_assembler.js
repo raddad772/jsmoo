@@ -231,7 +231,7 @@ class spc700_assembler {
         // Now attempt to find an addressing mode
         if (op.ins === OM.DCB) {
             op.needs_resolve = false;
-            op.addr_mode = AM.DCB;
+            op.addr_mode = SPC_AM.DCB;
             let to_parse = line.slice(4).split(',');
             for (let i = 0; i < to_parse.length; i++) {
                 let v = this.interpret_number(to_parse[i]);
@@ -248,7 +248,7 @@ class spc700_assembler {
         if (op.ins === OM.ASC) {
             console.log('ASC!!!', line)
             op.needs_resolve = false;
-            op.addr_mode = AM.DCB;
+            op.addr_mode = SPC_AM.DCB;
             let to_parse = line.slice(5, line.length - 1);
             let j;
             for (let i = 0; i < to_parse.length; i++) {
@@ -365,11 +365,11 @@ class spc700_assembler {
         }
 
         let valid_modes = [];
-        if (nummerthing.kind === VT.accumulator) {
-            valid_modes = [AM.ACCUM];
+        /*if (nummerthing.kind === VT.accumulator) {
+            valid_modes = [SPC_AM.ACCUM];
         }
         else if (with_care) {
-            valid_modes = [AM.A, AM.Ab, AM.Ac, AM.Ad, AM.AL, AM.ALb, AM.ALc, AM.PC_R, AM.PC_RL]
+            valid_modes = [SPC_AM.A, SPC_AM.Ab, SPC_AM.Ac, SPC_AM.Ad, SPC_AM.AL, SPC_AM.ALb, SPC_AM.ALc, SPC_AM.PC_R, AM.PC_RL]
         }
         else if (poperand.indexOf('#') !== -1) {
             // We are forced to immediate
@@ -397,7 +397,7 @@ class spc700_assembler {
                 AM.AL, AM.ALb, AM.ALc, AM.AL_INDEXED_X,
                 AM.PC_R, AM.PC_RL
             ]
-        }
+        }*/
 
         //console.log('AMS1h', with_care, candidate_ams1, valid_modes, line);
         //console.log('VALID MODES!', valid_modes, line);
@@ -753,7 +753,7 @@ class spc700_assembler {
                     continue;
                 }
                 switch(op.addr_mode) {
-                    case AM.PC_R:
+                    case SPC_AM.PC_R:
                         dist = op.label.addr - (op.addr + 2);
                         if ((dist < -128) || (dist > 127)) {
                             this.errormsg('Jump too long: ' + dist + ' ' + op.label.name);
@@ -762,7 +762,7 @@ class spc700_assembler {
                         op.bytecodes[1] = dist & 0xFF;
                         op.needs_resolve = false;
                         continue;
-                    case AM.PC_RL:
+                    case SPC_AM.PC_RL:
                         dist = op.label.addr - (op.addr + 3);
                         if ((dist < -32768) || (dist > 32767)) {
                             this.errormsg('LJump too long: ' + dist + ' ' + op.label.name);
@@ -772,12 +772,12 @@ class spc700_assembler {
                         op.bytecodes[2] = (dist & 0xFF00) >>> 8;
                         op.needs_resolve = false;
                         continue;
-                    case AM.Ab: // JMP a
+                    case SPC_AM.Ab: // JMP a
                         op.bytecodes[1] = op.label.addr & 0xFF;
                         op.bytecodes[2] = (op.label.addr & 0xFF00) >>> 8;
                         continue;
-                    case AM.ALb: // JMP al
-                    case AM.ALc: // JSL al
+                    case SPC_AM.ALb: // JMP al
+                    case SPC_AM.ALc: // JSL al
                         op.bytecodes[1] = op.label.addr & 0xFF;
                         op.bytecodes[2] = (op.label.addr & 0xFF00) >>> 8;
                         op.bytecodes[3] = (op.label.addr & 0xFF0000) >>> 16;

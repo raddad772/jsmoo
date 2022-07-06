@@ -445,20 +445,34 @@ class ricoh5A22 {
 
 		// Don't reschedule if it hasn't changed
 		if (old_irq_time === new_irq_time) return;
-		// Don't reschedule if new time is after current scanline position
-		if (this.scanline.cycles_since_scanline_start > new_irq_time) return;
+		// Don't reschedule if new time is after current scanline position 'cuz it won't trigger
+		if (this.scanline.cycles_since_scanline_start > new_irq_time && old_irq_time < this.scanline.cycles_since_scanline_start) return;
 		// delete if new -1
-		// create if old -1
-		// modify otherwise?
-		// re-sort list
+		if (new_irq_time === -1) {
+			this.event_ptrs[R5A22_events.IRQ] = null; // Quick "delete"
+			this.events_list = this.events_list.splice(old_irq_event, 1);
+		}
+		else if (old_irq_time === -1) { // create if old -1, and re-sort
+			this.events_list.push(e);
+			this.events_list = this.events_list.sort((a, b) => (a[0] > b[0] ? 1 : -1));
+		}
+		else { // Modify otherwise, by delete and re-add
+			this.events_list.splice(old_irq_event, 1);
+			this.events_list.push(e);
+			this.events_list = this.events_list.sort((a, b) => (a[0] > b[0] ? 1 : -1));
+		}
+		// Reset our current event index
+		// This is a naive slow way of doing ALL of this, it is just proof-of-concept
+		let oldi = 0;
+		for (let i = 1; i < this.events_list.length; i++) {
+			if (this.events_list[i][0] > this.scanline.cycles_since_scanline_start)
+				break;
+			oldi = i;
+		}
+		this.current_event = oldi;
+		// Set when next event will be
+		this.next_event = this.event_ptrs[this.current_event][1];
 	}
-
-	// HDMA bits may have changed...
-	reschedule_scanline_HDMAbits() {
-
-	}
-
-	// e
 
 	schedule_scanline() {
 		// Setup events
@@ -475,6 +489,7 @@ class ricoh5A22 {
 			this.event_ptrs[R5A22_events.HDMA_SETUP] = e;
 			this.events_list.push(e);
 		}
+
 		// Add WRAM refresh
 		e = [scanline.dram_refresh, R5A22_events.WRAM_REFRESH, false];
 		this.event_ptrs[R5A22_events.WRAM_REFRESH] = e;
@@ -561,6 +576,7 @@ class ricoh5A22 {
 				this.schedule_scanline();
 			}
 
+			// Check if we need to process an event
 			if (this.clock.cycles_since_scanline_start >= this.next_event) {
 				let ev = this.events_list[this.current_event];
 				if (this.clock.cycles_since_scanline_start > ev[0]) {
@@ -600,7 +616,22 @@ class ricoh5A22 {
 
 			}
 
+			if (this.status.hdma_setup_pending) {
+				this.newrun_hdma_setup();
+				continue;
+			if (this.status.hdma_pending) {
+				// run HDMA
+				this.newrun_hdma();
+				continue;
+			}
+			if (this.status.dma_pending) {
+				// run DMA
+				this.newrun_dma();
+				continue;
+			}
 
+
+			}
 			if (this.clock.scanline.vblank_start) {
 				// NMI out low
 				this.set_nmi_bit(0);
@@ -610,6 +641,28 @@ class ricoh5A22 {
 			}
 
 		}
+	}
+
+	// Called from inside do_steps() when an IRQ is to be triggered and ONLY THEN
+	eval_hvirqs() {
+		console.log('IRQ TRIGGERED!');
+		if (this.status.irq_line) {
+			this.status.irq_transition = 1;
+			this.status.irq_line = 1; // ??
+		}
+	}
+
+	// Run HDMA setup each frame
+	eval_hdma_setup() {
+		for (let n = 0; n < 8; n++) {
+			this.dma.channels[n].hdma_setup();
+		}
+		this.status.irq_lock = 1;
+	}
+
+	// Evaluate if we should launch HDMA, and do so
+	eval_hdma() {
+
 	}
 
 	service_CPU_cycle() {
@@ -634,6 +687,19 @@ class ricoh5A22 {
 		this.steps_left -= this.steps_for_CPU_cycle_left;
 		this.clock.cpu_has += this.steps_for_CPU_cycle_left;
 		this.steps_for_CPU_cycle_left = 0;
+		if (!this.status.irq_lock) {
+			if (this.status.nmi_transition) {
+				this.status.nmi_transition = 0;
+				this.status.nmi_pending = 1;
+				this.cpu.regs.WAI = 0;
+			}
+			if (this.status.irq_transition) {
+				this.status.irq_transition = 0;
+				this.cpu.regs.WAI = 0;
+				this.status.irq_pending = !this.cpu.regs.P.I;
+			}
+		}
+		this.status.irq_lock = 0;
 	}
 
 	dma_is_enabled() {
