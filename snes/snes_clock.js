@@ -109,8 +109,6 @@ class SNEStiming {
 
 class SNES_clock {
     constructor(version) {
-        this.master_cycles_since_reset = 0;
-
         // The "master clock" against which everything is judged.
         // Things should not go more than a little ahead of this.
         this.version = version;
@@ -139,6 +137,8 @@ class SNES_clock {
         this.frame_counter = 0;
 
         this.scanline = new SNEStiming(version);
+
+		this.dma_counter = 0;
     }
 
     /**
@@ -163,7 +163,8 @@ class SNES_clock {
     }
 
     new_frame() {
-        // I forget why I even put this logic in here...delay maybe?
+        // I forget why I even put this logic in here...delay maybe? 1/0 on that register???
+		console.log('NEW FRAME');
     }
 
     // This function is called from inside the main CPU scheduler
@@ -172,7 +173,7 @@ class SNES_clock {
         this.cpu_deficit -= howmany;
         this.apu_deficit += howmany;
         this.ppu_deficit += howmany;
-        this.master_cycles_since_reset += howmany;
+        this.cycles_since_reset += howmany;
         this.cycles_since_scanline_start += howmany;
         if (this.cycles_since_scanline_start >= this.scanline.cycles) {
             // Make sure other processors are caught up
@@ -181,7 +182,9 @@ class SNES_clock {
             this.cycles_since_scanline_start -= this.scanline.cycles;
 
             this.start_of_scanline = true;
-            this.scanline.next_scanline();
+            this.scanline.cycles_since_reset = 0;
+			this.scanline.next_scanline();
+			this.cycles_since_reset += this.scanline.cycles_since_reset;
             if (this.scanline.frame_since_restart !== this.frame_counter) {
                 this.new_frame();
                 this.frame_counter = this.scanline.frame_since_restart();

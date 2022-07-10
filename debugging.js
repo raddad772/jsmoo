@@ -151,10 +151,10 @@ class debugger_t {
 
     init_done() {
         this.disable_tracing();
-        snes.step(INITIAL_STEPS.master, INITIAL_STEPS.scanlines-1, INITIAL_STEPS.frames, INITIAL_STEPS.seconds)
+        //snes.step(INITIAL_STEPS.master, INITIAL_STEPS.scanlines-1, INITIAL_STEPS.frames, INITIAL_STEPS.seconds)
         this.enable_tracing();
-        snes.step(0, 1);
-        this.traces.draw();
+        //snes.step(0, 1);
+        //this.traces.draw(dconsole);
     }
 }
 
