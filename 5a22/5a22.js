@@ -394,7 +394,9 @@ class ricoh5A22 {
 	}
 
 	reset() {
-		this.cpu.pins.RES = 1;
+		//this.cpu.pins.RES = 1;
+		this.cpu.pins.TCU = 0;
+		this.cpu.pins.D = OP_RESET;
 		this.dma.reset();
 	}
 
@@ -428,7 +430,7 @@ class ricoh5A22 {
 		let old_irq_time = -1;
 		let old_irq_event = -1;
 		let new_irq_time = -1;
-		if (this.event_ptrs[IRQ] !== null) {
+		if (this.event_ptrs[R5A22_events.IRQ] !== null) {
 			for (let i in this.events_list) {
 				if (this.events_list[i][1] === R5A22_events.IRQ) {
 					old_irq_time = this.events_list[i][0];
@@ -530,8 +532,8 @@ class ricoh5A22 {
 
 		// Set when next event will be
 		this.next_event = this.events_list[this.current_event][1];
-		console.log('NEXT EVENT', this.current_event, this.next_event);
-		console.log('EVENT LIST', this.events_list);
+		//console.log('NEXT EVENT', this.current_event, this.next_event);
+		//console.log('EVENT LIST', this.events_list);
 	}
 
 
@@ -659,6 +661,7 @@ class ricoh5A22 {
 			// Do HDMA setup
 			if (this.status.hdma_pending) {
 				// run HDMA
+				console.log('HDMA!')
 				this.clock.dma_counter = 0;
 				if (!this.status.dma_running) {
 					// Wait up to 8 cycles
@@ -680,10 +683,12 @@ class ricoh5A22 {
 
 			// Run DMA for any available cycles
 			let maxe = this.next_event > this.clock.scanline.cycles ? this.clock.scanline.cycles : this.next_event;
-			let can_do = (maxe - this.clock.cycles_since_scanline_start);
+			//let can_do = (maxe - this.clock.cycles_since_scanline_start);
+			let can_do = this.clock.cpu_deficit > maxe ? maxe : this.clock.cpu_deficit;
 			//debugger;
 			if (this.status.dma_pending || this.status.dma_running) {
 				// run DMA for X cycles
+				console.log('DMA!');
 				this.clock.dma_counter = 0;
 				if (this.status.dma_pending) {
 					this.clock.dma_counter += 8;

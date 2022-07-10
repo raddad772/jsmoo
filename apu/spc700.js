@@ -146,7 +146,7 @@ class spc700 {
         this.sync_to(this.clock.cpu_has);
     }
 
-    catch_up(master_clocks) {
+    catch_up() {
         if (this.clock.apu_deficit < 1) return;
         let catch_up = Math.floor(this.clock.apu_deficit / 20) + 1;
         if (catch_up < 1) return;
@@ -191,6 +191,7 @@ class spc700 {
             if (this.STP || this.WAI) {
                 console.log('STOPPED OR WAID' + this.trace_cycles);
                 this.clock.apu_deficit -= (this.cycles * 20);
+                this.clock.apu_has += (this.cycles * 20);
                 if (this.trace_on) this.trace_cycles += this.cycles;
                 this.advance_timers(this.cycles);
                 this.cycles = 0;
@@ -204,6 +205,7 @@ class spc700 {
                 continue;
             }
             else {
+                console.log('TRACE ON?', this.trace_on);
                 if (this.trace_on)
                     dbg.traces.add(TRACERS.SPC, this.clock.apu_has, this.trace_format(this.disassemble(), (this.regs.PC - 1) & 0xFFFF));
                 opcode_func(this, this.regs);
@@ -211,6 +213,7 @@ class spc700 {
                     this.trace_cycles += this.regs.opc_cycles;
             }
             this.clock.apu_deficit -= (this.regs.opc_cycles * 20);
+            this.clock.apu_has += (this.regs.opc_cycles * 20);
             this.advance_timers(this.regs.opc_cycles);
             this.regs.opc_cycles = 2; // Keep moving along some if there's an error so there's no infinite loops
         }

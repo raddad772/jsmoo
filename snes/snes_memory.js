@@ -122,10 +122,10 @@ class snes_memmap {
 		let b = addr >>> 12;
 		let mkind = this.writemap[b].kind;
 		let outaddr = this.writemap[b].offset + (addr & 0xFFF);
-		//console.log('IN ADDRESS', hex0x6(addr), 'CALC ADDRESS', hex0x6(outaddr));
 		switch(mkind) {
 			case MAP_TI.OPEN_BUS:
 				console.log('OPEN BUS WRITE');
+				debugger;
 				return;
 			case MAP_TI.ROM:
 				console.log('ROM write!?');

@@ -169,6 +169,7 @@ class SNES {
 		this.cpu = new ricoh5A22(this.version, this.mem_map, this.clock);
 		this.ppu = new SNESPPU(null, this.version, this.mem_map, this.clock);
 		this.apu = new spc700(this.mem_map, this.clock);
+		this.cpu.reset();
 
 		this.interlaced_mode = 0;
 		this.frames_emulated = 0;
@@ -251,7 +252,7 @@ class SNES {
 			console.log('Cleaning up', master_clocks);
 			this.do_steps(master_clocks);
 		}
-		console.log('STEPS DONE');
+		console.log('STEPS DONE', this.clock.cpu_deficit);
 		/*let excess_scanlines = 0;
 		let discharged = false;
 		while(true) {
