@@ -142,7 +142,10 @@ class w65c816_registers {
 		this.DBR = 0; // Data Bank Register
 		this.E = 0; // Hidden "Emulation" bit
 
-		this.NMI_servicing = false;
+
+		this.old_I = 0; // old I flag, for use with certain instructions.
+		this.NMI_pending = false;
+		this.IRQ_pending = false;
 	}
 }
 
@@ -166,7 +169,8 @@ class w65c816_pins {
 
 		this.PDV = 0; // combined program, data, vector pin, to simplify.
 
-		this.poll_IRQ = 0; // Set when last instruction cycle has executed
+		this.NMI = 0;
+		this.IRQ = 0;
 	}
 }
 
@@ -196,86 +200,72 @@ class disassembly_output {
 // 1 cycle read vector high
 
 class w65c816 {
-	#last_RES = 0;
-	#NMI_count = 0;
-	#NMI_pending;
-	#ABORT_pending;
-	#RES_pending;
-	#IRQ_pending;
-	#IRQ_servicing;
-
 	constructor(clock) {
 		this.clock = clock;
 		this.regs = new w65c816_registers();
 		this.pins = new w65c816_pins();
 		this.PCO = 0; // Old PC, for instruction fetch
-		this.#last_RES = 0;
-		this.#NMI_count = 0;
 		this.regs.IR = BOOTUP;
 
 		this.regs.STP = false;
 		this.regs.WAI = false;
-		this.#IRQ_servicing = false;
-		this.#NMI_pending = false;
-		this.#ABORT_pending = false;
-		this.#IRQ_pending = false;
-		this.#RES_pending = true;
+		this.RES_pending = true;
 
 		this.trace_cycles = 0;
 		this.trace_on = false;
 		this.trace_peek = function(BA, Addr){return 0xC0;};
+
+
+		this.NMI_old = 0;
+		this.NMI_ack = false;
+		this.NMI_count = 0;
+
+		this.IRQ_ack = false;
+		this.IRQ_count = 0;
 	}
 	
-	clear_RES() {
-		this.#RES_pending = false;
-	}
-
 	cycle() {
 		this.trace_cycles++;
-		if (this.pins.NMI) {
-			console.log('NMI');
-			this.pins.NMI = false;
-			this.#NMI_pending = true;
-		}
+		if (this.regs.STP) return;
 		if (this.pins.IRQ) {
-			console.log('IRQ');
-			this.pins.IRQ = false;
-			this.#IRQ_pending = true;
-		}
-		if (this.regs.TCU === 0) {
-			if ((this.regs.STP || this.regs.WAI)) {
-				if (this.regs.STP && (this.pins.RES || this.#RES_pending)) {
-					this.regs.STP = false;
-					this.pins.RES = 0;
-					this.#RES_pending = false;
-					//console.log('STP OR WAI PAUSE')
-					return;
-				}
-				if (this.regs.STP || this.regs.WAI) {
-					//console.log('STP OR WAI PAUSE')
-					return;
-				}
-			}
-			if (this.#RES_pending) {
-				console.log('RESET')
-				this.reset();
-			}
-			else if (this.#NMI_pending) {
-				console.log('NMI')
-				this.nmi();
-			}
-			else if (this.#IRQ_pending) {
-				console.log('IRQ')
-				this.irq();
-			}
-			else if (this.regs.STP || this.regs.WAI) {
-				console.log('STPWAI2');
-				return;
+			this.IRQ_count++;
+			if (this.IRQ_count >= 2) {
+				this.pins.IRQ = 0; // This is an optimization, not an actual behavior
+				this.IRQ_count = 0;
+				this.regs.IRQ_pending = true;
+				this.IRQ_ack = false;
 			}
 		}
+		// NMI fires
+		//  anytime there's a transition and it is held for two cycles
+		if (this.pins.NMI === this.NMI_old)
+			this.NMI_count = 0;
+		else
+			this.NMI_count++;
+		if (this.NMI_count > 1) {
+			this.NMI_old = this.pins.NMI;
+			this.NMI_ack = false;
+			this.NMI_count = 0;
+			this.regs.NMI_pending = true;
+		}
+
 		this.regs.TCU++;
 		if (this.regs.TCU === 1) {
+			// Do NMI check
+			this.PCO = this.pins.Addr; // PCO is PC for tracing purposes
 			this.regs.IR = this.pins.D;
+			if (this.regs.NMI_pending && !this.NMI_ack) {
+				this.NMI_ack = true;
+				this.regs.NMI_pending = false;
+				this.regs.IR = OP_NMI;
+			}
+			// Do IRQ check
+			else if (this.regs.IRQ_pending && !this.IRQ_ack && !this.regs.old_I) {
+				this.IRQ_ack = true;
+				this.regs.IRQ_pending = false;
+				this.regs.IR = OP_IRQ;
+			}
+			this.regs.old_I = this.regs.P.I;
 			this.PCO = this.pins.Addr; // PCO is PC for tracing purposes
 			this.current_instruction = get_decoded_opcode(this.regs);
 			if (this.trace_on) {
@@ -513,29 +503,11 @@ class w65c816 {
 		return outstr;
 	}
 
-	nmi() {
-		console.log('NMI!');
-		this.regs.TCU = 0;
-		this.pins.D = OP_NMI;
-		this.pins.NMI = 0;
-		this.#NMI_pending = false;
-		this.regs.NMI_servicing = true;
-	}
-
-	irq() {
-		console.log('IRQ!');
-		if (this.regs.NMI_servicing)
-			return;
-		this.regs.TCU = 0;
-		this.pins.D = OP_IRQ;
-		this.#IRQ_pending = false;
-	}
-
 	reset() {
 		// Do more
 		console.log("RESET!");
 		this.pins.RES = 0;
-		this.#RES_pending = false;
+		this.RES_pending = false;
 		this.regs.TCU = 0;
 		if (this.regs.STP) {
 			console.log('RST clearing STP');

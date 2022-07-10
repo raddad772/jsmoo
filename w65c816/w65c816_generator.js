@@ -588,7 +588,7 @@ class switchgen {
     }
 
     check_irqs() {
-        this.addl('// In the future we will check IRQs here');
+        // Nevermind this was pointless
     }
 
     // This is a final "cycle" only SOME functions use, mostly to get final data read or written
@@ -1476,7 +1476,7 @@ class switchgen {
                 break;
             case WDC_OM.JSL:
                 console.log("Wait whats up with JSL?");
-                debugger;
+                //debugger;
                 break;
             case WDC_OM.LDA:
                 if (E || M)
@@ -1707,13 +1707,8 @@ class switchgen {
             case WDC_OM.XCE:
                 this.XCE();
                 break;
-            // These are taken care of elsewhere or are meaningless
             case WDC_OM.STP:
             case WDC_OM.WAI:
-                this.addcycle(2);
-                this.RPDV(0, 0, 0, 0);
-                this.addr_to_PC_then_inc();
-                break;
             case WDC_OM.WDM:
                 break;
             default:
@@ -2568,11 +2563,9 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addcycle(2);
             ag.addr_to_PC();
             ag.RPDV(0, 0, 0, 0);
+            ag.addl('if (!regs.IRQ_pending && !regs.NMI_pending) regs.TCU--;')
             ag.addcycle(3);
-            ag.no_modify_RPDV();
-            ag.no_modify_addr();
-            ag.cleanup();
-            ag.addl('regs.WAI = true;');
+            ag.addl('regs.PC = (regs.PC + 1) & 0xFFFF;');
             break;
         case WDC_AM.Ie: // SEI, CLI
             ag.addcycle(2);
@@ -2861,7 +2854,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
                 ag.cleanup();
                 ag.addl('regs.PC = regs.TA + (pins.D << 8);');
             }
-            ag.addl('if (regs.NMI_servicing) regs.NMI_servicing = false;');
+            //ag.addl('if (regs.NMI_servicing) regs.NMI_servicing = false;');
             break;
         case WDC_AM.STACKh: // RTS
             ag.addcycle(2);

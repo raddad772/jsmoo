@@ -2849,7 +2849,6 @@ const decoded_opcodes = Object.freeze(
                         // In the future we will check IRQs here
                         regs.PC = regs.TA;
                         regs.PBR = pins.D;
-                        if (regs.NMI_servicing) regs.NMI_servicing = false;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -14232,7 +14231,6 @@ const decoded_opcodes = Object.freeze(
                         // In the future we will check IRQs here
                         regs.PC = regs.TA;
                         regs.PBR = pins.D;
-                        if (regs.NMI_servicing) regs.NMI_servicing = false;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -25312,7 +25310,6 @@ const decoded_opcodes = Object.freeze(
                         // In the future we will check IRQs here
                         regs.PC = regs.TA;
                         regs.PBR = pins.D;
-                        if (regs.NMI_servicing) regs.NMI_servicing = false;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -35819,7 +35816,6 @@ const decoded_opcodes = Object.freeze(
                         // In the future we will check IRQs here
                         regs.PC = regs.TA;
                         regs.PBR = pins.D;
-                        if (regs.NMI_servicing) regs.NMI_servicing = false;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -46221,7 +46217,6 @@ const decoded_opcodes = Object.freeze(
                     case 6: // cleanup_custom
                         // In the future we will check IRQs here
                         regs.PC = regs.TA + (pins.D << 8);
-                        if (regs.NMI_servicing) regs.NMI_servicing = false;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC; pins.BA = regs.PBR;
                         regs.PC = (regs.PC + 1) & 0xFFFF;

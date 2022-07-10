@@ -27,6 +27,7 @@ function generate_js_SPC() {
 
 let tracing_checkbox, tracing_5a22_checkbox, tracing_spc700_checkbox;
 let mc_input, scanline_input, frame_input, seconds_input;
+let ppu_y_output;
 
 function get_mc_steps() {
 	console.log(mc_input.value());
@@ -40,6 +41,8 @@ function init_js() {
 	scanline_input = document.getElementById('scanlinesteps');
 	frame_input = document.getElementById('framesteps');
 	seconds_input = document.getElementById('secondsteps');
+
+	ppu_y_output = document.getElementById('ppu_y_output')
 
 	mc_input.value = DEFAULT_STEPS.master;
 	scanline_input.value = DEFAULT_STEPS.scanlines;
@@ -97,7 +100,7 @@ function click_step_all() {
 	let scanlines = parseInt(scanline_input.value);
 	let frames = parseInt(frame_input.value);
 	let seconds = parseInt(seconds_input.value);
-	snes.step(0, scanlines. frames, seconds);
+	snes.step(0, scanlines, frames, seconds);
 
 	after_step();
 }
@@ -106,6 +109,7 @@ function click_step_all() {
 function after_step() {
 	if (dbg.tracing) {
 		dbg.traces.draw(dconsole);
+		ppu_y_output.innerHTML = snes.clock.scanline.ppu_y;
 	}
 }
 

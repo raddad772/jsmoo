@@ -185,10 +185,12 @@ class SNES {
 	}
 
 	do_steps(steps) {
+		//debugger;
 		this.cpu.do_steps(steps);
 	}
 
 	step(master_clocks, scanlines, frames, seconds) {
+		//debugger;
 		/*if (scanlines < 0) {
 			let de = Math.ceil(Math.abs(scanlines / 262));
 			console.log('DE', de);
@@ -208,9 +210,11 @@ class SNES {
 		if (!this.clock.start_of_scanline) {
 			let cycles_to_finish = this.clock.scanline.cycles - this.clock.cycles_since_scanline_start;
 			if ((cycles_to_finish > master_clocks) && (scanlines === 0) && (frames === 0) && (seconds === 0)) {
+				console.log('DOIN1', master_clocks);
 				this.do_steps(master_clocks);
 				return;
 			}
+			console.log('FINISHIN LINE', cycles_to_finish);
 			this.do_steps(cycles_to_finish);
 			master_clocks -= cycles_to_finish;
 		}
@@ -221,8 +225,11 @@ class SNES {
 			frames--;
 		}
 		let framenum = this.clock.scanline.frame;
+		console.log('DOIN SCANLINES', scanlines)
 		while (scanlines > 0) {
+			console.log('DO', this.clock.scanline.cycles);
 			this.do_steps(this.clock.scanline.cycles);
+			console.log('DONE!')
 			if (framenum !== this.clock.scanline.frame) {
 				framenum = this.clock.scanline.frame;
 				if (frames > 0) {
@@ -231,10 +238,12 @@ class SNES {
 				}
 			}
 			scanlines--;
-			if (scanlines === 0) {
-				if (frames === 0)
+			if (scanlines < 1) {
+				if (frames < 1)
 					break;
+				console.log('SCANLINES BEFORE', scanlines)
 				scanlines = this.clock.scanline.frame_lines - this.clock.scanline.ppu_y;
+				console.log('SCANLIENS AFTER', scanlines)
 				frames--;
 			}
 		}
@@ -242,7 +251,7 @@ class SNES {
 			console.log('Cleaning up', master_clocks);
 			this.do_steps(master_clocks);
 		}
-
+		console.log('STEPS DONE');
 		/*let excess_scanlines = 0;
 		let discharged = false;
 		while(true) {
@@ -326,8 +335,8 @@ function main() {
 	initDb(main2);
 }
 
-//after_js = main;
+after_js = main;
 //after_js = test_65c816;
 //after_js = generate_js;
-after_js = test_pt_65c816;
+//after_js = test_pt_65c816;
 //after_js = generate_js_SPC;

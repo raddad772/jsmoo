@@ -26,10 +26,10 @@ const HDMA_LENGTHS = Object.freeze([1, 2, 2, 4, 4, 4, 2, 4]);
 class dmaChannel {
     /**
      * @param {snes_memmap} mem_map
-     * @param {ricoh5A22.dma_edge} dma_edge
      * @param {*} status
+     * @param {SNES_clock} clock
      */
-    constructor(mem_map, dma_edge, status, counters) {
+    constructor(mem_map, status, clock) {
         this.mem_map = mem_map;
         this.dma_enable = 0;
         this.status = status;
@@ -51,9 +51,9 @@ class dmaChannel {
         this.hdma_completed = 0;
         this.hdma_do_transfer = 0;
         this.next = null;
-        this.dma_edge = dma_edge;
+        this.clock = clock;
         this.took_cycles = 0;
-        this.counters = counters;
+        this.index = 0;
     }
 
     hdma_is_active() {
@@ -65,27 +65,32 @@ class dmaChannel {
         this.hdma_do_transfer = false;
     }
 
-    dma_run() {
-        if (!this.dma_enable) return;
+    dma_run(howmany) {
+        if (!this.dma_enable) return howmany;
 
-        this.counters.dma += 8;
         //this.dma_edge();
 
-        let index = 0;
         if (this.transfer_size > 0) {
+            if (this.index === 0) { // 8 cycles for setup
+                this.clock.dma_counter += 8;
+            }
             do {
-                this.transfer(this.source_bank << 16 | this.source_address, index);
-                index++;
+                this.transfer(this.source_bank << 16 | this.source_address, this.index);
+                this.index++;
+                this.clock.dma_counter += 8;
+                howmany -= 8;
+                if (howmany < 1) break;
                 //this.dma_edge()
             } while (this.dma_enable && --this.transfer_size);
         }
+        this.dma_enable = this.transfer_size === 0
 
-        this.dma_enable = false;
+        return howmany;
     }
 
     hdma_setup() {
         this.hdma_do_transfer = true;
-        if (this.hdma_enable) return;
+        if (!this.hdma_enable) return;
 
         this.dma_enable = false;
         this.hdma_address = this.source_address;
@@ -103,6 +108,7 @@ class dmaChannel {
     }
 
     hdma_reload() {
+        this.clock.dma_counter += 8;
         let data = this.mem_map.dispatch_read(this.source_bank << 16 | this.hdma_address);
         if ((this.line_counter & 0x7F) === 0) {
             this.line_counter = data;
@@ -112,11 +118,13 @@ class dmaChannel {
             this.hdma_do_transfer = !this.hdma_completed;
 
             if (this.indirect) {
+                this.clock.dma_counter += 8;
                 data = this.mem_map.dispatch_read(this.source_bank << 16 | this.hdma_address);
                 this.hdma_address++;
                 this.indirect_address = data << 8;
                 if (this.hdma_completed && this.hdma_is_finished()) return;
 
+                this.clock.dma_counter += 8;
                 data = this.mem_map.dispatch_read(this.source_bank << 16 | this.hdma_address);
                 this.hdma_address++;
                 this.indirect_address = (data << 8) | (this.indirect_address >>> 8);
@@ -135,7 +143,7 @@ class dmaChannel {
         if (!this.hdma_is_active()) return;
         this.dma_enable = false; // HDMA interrupt DMA
         if (!this.hdma_do_transfer) return;
-        for (let index = 0; index < lengths[this.transfer_mode]; index++) {
+        for (let index = 0; index < HDMA_LENGTHS[this.transfer_mode]; index++) {
             let addr;
             if (this.indirect) {
                 addr = (this.indirect_bank << 16) | this.indirect_address;
@@ -201,25 +209,22 @@ class dmaChannel {
 class r5a22DMA {
     /**
      * @param {snes_memmap} mem_map
-     * @param {ricoh5A22.dma_edge} dma_edge
      * @param {*} status
-     * @param {*} counters
+     * @param {SNES_clock} clock
      */
-    constructor(mem_map, dma_edge, status, counters) {
+    constructor(mem_map, status, clock) {
         this.mem_map = mem_map;
 
         this.status = status;
-        this.counters = counters;
+        this.counters = {};
+        this.clock = clock;
 
-        this.dma_setup_triggered = false;
-        this.dma_edge = dma_edge;
-
-        this.channels = [];
+        this.channels = {};
         for (let i = 0; i < 8; i++) {
-            this.channels.push(new dmaChannel(this.mem_map, this.dma_edge, this.status, this.counters));
+            this.channels[i] = new dmaChannel(this.mem_map, this.status, this.clock);
         }
-        for (let i = 0; i < 8; i++) {
-            if (i !== 7) this.channels[i].next = this.channels[i+1];
+        for (let i = 0; i < 7; i++) {
+            this.channels[i].next = this.channels[i+1];
         }
     }
 
@@ -323,17 +328,26 @@ class r5a22DMA {
         this.status.irq_lock = 1;
     }
 
-    dma_run() {
-        this.counters.dma += 8;
-        //this.dma_edge();
-        for (let n = 0; n < 8; n++) { this.channels[n].dma_run(); }
-        this.status.irq_lock = true;
+    dma_start() {
+        for (let n = 0; n < 8; n++) {
+            this.channels[n].index = 0;
+        }
+    }
+
+    dma_run(howmany) {
+        // Note we're not emulating 8 cycle per channel setup yet
+        for (let n = 0; n < 8; n++) {
+            howmany = this.channels[n].dma_run(howmany);
+            if (howmany < 1) break;
+        }
+        this.status.irq_lock = 1;
+        return howmany;
     }
 
     hdma_setup() {
-        this.counters.dma += 8;
+        this.clock.dma_counter += 8;
         for (let n = 0; n < 8; n++) { this.channels[n].hdma_setup(); }
-        this.status.irq_lock = true;
+        this.status.irq_lock = 1;
     }
 
 

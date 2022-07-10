@@ -155,7 +155,7 @@ function test_it_automated(cpu, tests) {
         cpu.regs.TCU = 0;
         cpu.regs.WAI = false;
         cpu.regs.STP = false;
-        cpu.clear_RES();
+        cpu.RES_pending = false;
         let addr;
         let passed = true;
         for (let cyclei in tests[i].cycles)
@@ -364,7 +364,7 @@ async function test_pt_65c816() {
 
     // 6502 emulation mode
     //skip_tests = [ 0x00, 0x01, 0x02 ];
-    skip_tests = [];
+    skip_tests = [0xCB, 0xDB]; // Infinite-loop instructions
     if (DO_TRACING) cpu.enable_tracing(read8);
     //console.log('DO TRACING?', DO_TRACING);
     for (let i = start_test; i < 256; i++) {
