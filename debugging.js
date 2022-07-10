@@ -53,12 +53,16 @@ class traces_t {
     draw(where) {
         if (this.traces.length > 0)
         {
+            //console.log(this.traces);
             this.traces = this.traces.sort(function(a, b) { return a[0] - b[0]; });
             for (let i in this.traces) {
                 where.addl(this.traces[i][2], false, TRACE_BG_COLORS[this.traces[i][1]]);
             }
         }
         where.draw();
+    }
+    clear() {
+        this.traces = [];
     }
 
 }
@@ -112,11 +116,15 @@ class debugger_t {
     }
 
     enable_tracing_for(kind) {
+        let old = this.tracing_for[kind];
         this.tracing_for[kind] = true;
+        if (old === false)  this.cpu_refresh_tracing();
     }
 
     disable_tracing_for(kind) {
+        let old = this.tracing_for[kind];
         this.tracing_for[kind] = false;
+        if (old === true)  this.cpu_refresh_tracing();
     }
 
     add_cpu(kind, cpu) {

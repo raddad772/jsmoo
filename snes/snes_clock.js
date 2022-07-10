@@ -173,13 +173,16 @@ class SNES_clock {
         this.cpu_deficit -= howmany;
         this.apu_deficit += howmany;
         this.ppu_deficit += howmany;
+		this.cpu_has += howmany;
         this.cycles_since_reset += howmany;
-        this.cycles_since_scanline_start += howmany;
+        //console.log('CYCLES SINCE', this.cycles_since_scanline_start,howmany);
+		this.cycles_since_scanline_start += howmany;
         if (this.cycles_since_scanline_start >= this.scanline.cycles) {
-            // Make sure other processors are caught up
+            console.log('%c Oh my heavens! ', 'background: #222; color: #bada55');
+			// Make sure other processors are caught up
             this.apu.catch_up();
             this.ppu.catch_up();
-            this.cycles_since_scanline_start -= this.scanline.cycles;
+			this.cycles_since_scanline_start -= this.scanline.cycles;
 
             this.start_of_scanline = true;
             this.scanline.cycles_since_reset = 0;
