@@ -64,6 +64,8 @@ function padl(what, howmuch) {
 	}
 	return what;
 }
+let TRACE_CYCLES_BREAK = 131000;
+let TRACE_BROKE = false
 
 class w65c816_P {
 	constructor(pins) {
@@ -268,6 +270,14 @@ class w65c816 {
 			this.regs.old_I = this.regs.P.I;
 			this.PCO = this.pins.Addr; // PCO is PC for tracing purposes
 			this.current_instruction = get_decoded_opcode(this.regs);
+			if (this.regs.IR === 0) {// || this.regs.IR === OP_IRQ || this.regs.IR === OP_NMI || this.regs.IR === 0x40) {
+				console.log('BREAK at cycle', this.trace_cycles, ' FOR IR ', hex2(this.regs.IR));
+				dbg.break();
+			}
+			if ((this.trace_cycles > TRACE_CYCLES_BREAK) && (!TRACE_BROKE)) {
+				TRACE_BROKE = true;
+				dbg.break();
+			}
 			if (this.trace_on) {
 				dbg.traces.add(TRACERS.WDC, this.clock.cpu_has, this.trace_format(this.disassemble(), this.PCO));
 			}
@@ -492,7 +502,7 @@ class w65c816 {
 		else if (da_out.data16 !== null) outstr += hex2((da_out.data16 & 0xFF00) >>> 8) + ' ' + hex2(da_out & 0xFF) + '   ';
 		else if (da_out.data24 !== null) outstr += hex2((da_out.data24 & 0xFF0000) >>> 16) + ' ' + hex2((da_out.data24 & 0xFF00) >>> 8) + ' ' + hex2((da_out.data24 & 0xFF) >>> 8);*/
 
-		outstr += 'PC:' + hex4(this.regs.PC) + ' ';
+		outstr += 'PC:' + hex2(this.regs.PBR) + hex4(this.regs.PC) + ' ';
 		outstr += 'E:' + this.regs.E + ' C:' + hex4(this.regs.C);
 		outstr += ' X:' + hex4(this.regs.X) + ' Y:' + hex4(this.regs.Y);
 		outstr += ' S:' + hex4(this.regs.S);

@@ -205,7 +205,6 @@ class spc700 {
                 continue;
             }
             else {
-                console.log('TRACE ON?', this.trace_on);
                 if (this.trace_on)
                     dbg.traces.add(TRACERS.SPC, this.clock.apu_has, this.trace_format(this.disassemble(), (this.regs.PC - 1) & 0xFFFF));
                 opcode_func(this, this.regs);

@@ -139,6 +139,9 @@ class SNES_clock {
         this.scanline = new SNEStiming(version);
 
 		this.dma_counter = 0;
+
+		this.scanline_render_due = false;
+		this.ppu_display_due = false;
     }
 
     /**
@@ -149,7 +152,7 @@ class SNES_clock {
     }
 
     /**
-     * @param {SNESPPU} ppu
+     * @param {SNES_slow_1st_PPU} ppu
      */
     set_ppu(ppu) {
         this.ppu = ppu;
@@ -178,7 +181,7 @@ class SNES_clock {
         //console.log('CYCLES SINCE', this.cycles_since_scanline_start,howmany);
 		this.cycles_since_scanline_start += howmany;
         if (this.cycles_since_scanline_start >= this.scanline.cycles) {
-            console.log('%c Oh my heavens! ', 'background: #222; color: #bada55');
+            //console.log('%c Oh my heavens! ', 'background: #222; color: #bada55');
 			// Make sure other processors are caught up
             this.apu.catch_up();
             this.ppu.catch_up();
@@ -187,10 +190,16 @@ class SNES_clock {
             this.start_of_scanline = true;
             this.scanline.cycles_since_reset = 0;
 			this.scanline.next_scanline();
+			if (this.scanline.ppu_y < this.scanline.frame_lines) {
+				this.ppu.render_scanline();
+			}
+			if (this.scanline.vblank_start) {
+				this.ppu_display_due = true;
+			}
 			this.cycles_since_reset += this.scanline.cycles_since_reset;
             if (this.scanline.frame_since_restart !== this.frame_counter) {
                 this.new_frame();
-                this.frame_counter = this.scanline.frame_since_restart();
+                this.frame_counter = this.scanline.frame_since_restart;
             }
         }
     }
