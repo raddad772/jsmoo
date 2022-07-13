@@ -167,12 +167,16 @@ class SNES {
 		this.clock = new SNES_clock(this.version);
 		this.mem_map = new snes_memmap();
 		this.cpu = new ricoh5A22(this.version, this.mem_map, this.clock);
-		this.ppu = new SNESPPU(null, this.version, this.mem_map, this.clock);
+		this.ppu = new SNES_slow_1st_PPU(document.getElementById('snescanvas'), this.version, this.mem_map, this.clock);
 		this.apu = new spc700(this.mem_map, this.clock);
 		this.cpu.reset();
+	}
 
-		this.interlaced_mode = 0;
-		this.frames_emulated = 0;
+	do_display(force) {
+		if (this.clock.ppu_display_due || force) {
+			this.clock.ppu_display_due = false;
+			this.ppu.present();
+		}
 	}
 
 	load_ROM(file) {
@@ -218,6 +222,11 @@ class SNES {
 			console.log('FINISHIN LINE', cycles_to_finish);
 			this.do_steps(cycles_to_finish);
 			master_clocks -= cycles_to_finish;
+			if (dbg.do_break) {
+				dbg.do_break = false;
+				this.do_display(true);
+				return;
+			}
 		}
 
 		frames += (seconds * 60);
@@ -228,9 +237,7 @@ class SNES {
 		let framenum = this.clock.scanline.frame;
 		console.log('DOIN SCANLINES', scanlines)
 		while (scanlines > 0) {
-			console.log('DO', this.clock.scanline.cycles);
 			this.do_steps(this.clock.scanline.cycles);
-			console.log('DONE!')
 			if (framenum !== this.clock.scanline.frame) {
 				framenum = this.clock.scanline.frame;
 				if (frames > 0) {
@@ -247,12 +254,19 @@ class SNES {
 				console.log('SCANLIENS AFTER', scanlines)
 				frames--;
 			}
+			if (dbg.do_break) {
+				dbg.do_break = false;
+				this.do_display(true);
+				return;
+			}
 		}
 		if (master_clocks > 0) {
 			console.log('Cleaning up', master_clocks);
 			this.do_steps(master_clocks);
+			this.do_display(false);
 		}
 		console.log('STEPS DONE', this.clock.cpu_deficit);
+		dbg.do_break = false;
 		/*let excess_scanlines = 0;
 		let discharged = false;
 		while(true) {
@@ -260,7 +274,7 @@ class SNES {
 			// Check if we're the start of a frame
 			if (this.clock.scanline.ppu_y === 0 && !discharged) {
 				if (scanlines < this.clock.scanline.frame_lines) {
-					excess_scanlines = scanlines;
+	 				excess_scanlines = scanlines;
 					scanlines = 0;
 				}
 			}
@@ -299,16 +313,16 @@ function gl_cls() {
 }
 
 function init_gl() {
-	canvas = document.querySelector("#glCanvas");
+	//canvas = document.querySelector("#glCanvas");
   	// Initialize the GL context
-  	gl = canvas.getContext("webgl");
+  	//gl = canvas.getContext("webgl");
 
   	// Only continue if WebGL is available and working
-  	if (gl === null) {
+  	/*if (gl === null) {
     	alert("Unable to initialize WebGL. Your browser or machine may not support it.");
     	return false;
   	}
-	gl_cls();
+	gl_cls();*/
 	return true;
 }
 

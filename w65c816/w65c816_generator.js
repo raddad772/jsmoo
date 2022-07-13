@@ -1303,10 +1303,15 @@ class switchgen {
             this.RPDV(0, 1, 0, 0);
             this.addr_to_PC_then_inc();
         }
-
+        // After an NMI or IRQ, an instruction fetch will have happened and PC been incremented.
         if (!E) {
             this.addcycle(3);
-            this.addl('regs.TR = regs.PC;');
+            if ((ins === WDC_OM.S_NMI) || (ins === WDC_OM.S_IRQ)) {
+                this.addl('regs.TR = (regs.PC - 1) & 0xFFFF;');
+            }
+            else {
+                this.addl('regs.TR = regs.PC;');
+            }
             this.addr_to_S_then_dec();
             this.RPDV(1, 0, 1, 0);
             this.addl('pins.D = regs.PBR;');
@@ -1315,7 +1320,12 @@ class switchgen {
         }
         else {
             this.addcycle(4);
-            this.addl('regs.TR = regs.PC;');
+            if ((ins === WDC_OM.S_NMI) || (ins === WDC_OM.S_IRQ)) {
+                this.addl('regs.TR = (regs.PC - 1) & 0xFFFF;');
+            }
+            else {
+                this.addl('regs.TR = regs.PC;');
+            }
             this.RPDV(1, 0, 1, 0);
         }
         this.addr_to_S_then_dec();

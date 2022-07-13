@@ -78,13 +78,6 @@ const R5A22_events = {
 	VIRQ: 21, // This happens on scanline start only
 }
 
-const RM = Object.freeze({
-	CPU: 0,
-	DMA: 1,
-	HDMA: 2,
-	WRAM_REFRESH: 3 // We could step out in the middle of it
-})
-
 class ricoh5A22 {
 	/**
 	 * @param {*} version
@@ -113,11 +106,6 @@ class ricoh5A22 {
 		this.mem_map.write_cpu = this.reg_write.bind(this);
 		clock.set_cpu(this);
 
-		this.scanline = {
-			events: {},
-			current_priority: 7,
-		}
-
 		this.event_ptrs = {
 			[R5A22_events.HDMA]: null,
 			[R5A22_events.HDMA_SETUP]: null,
@@ -128,7 +116,7 @@ class ricoh5A22 {
 
 		this.current_event = 0;
 		this.next_event = 0;
-		this.current_mode = RM.CPU;
+		this.current_mode = RMODES.CPU;
 
 		this.status = {
 			nmi_hold: 0,
@@ -292,7 +280,7 @@ class ricoh5A22 {
 	}
 
 	reg_write(addr, val) {
-		console.log('5A22 write', hex0x4(addr), hex0x2(val));
+		//console.log('5A22 write', hex0x4(addr), hex0x2(val));
 		if ((addr & 0x4300) === 0x4300) { this.dma.reg_write(addr, val); return; }
 		switch(addr) {
 			case 0x4200: // NMI timing
@@ -444,7 +432,7 @@ class ricoh5A22 {
 			e = [this.io.htime === new_irq_time, R5A22_events.IRQ, false];
 			this.event_ptrs[R5A22_events.IRQ] = e;
 		}
-		else if (!this.io.hirq_enable && (this.io.virq_enable && this.io.vtime === scanline.ppu_y)) {
+		else if (!this.io.hirq_enable && (this.io.virq_enable && this.io.vtime === this.clock.scanline.ppu_y)) {
 			new_irq_time = 10;
 			e = [new_irq_time, R5A22_events.IRQ, false];
 			this.event_ptrs[R5A22_events.IRQ] = e;
@@ -454,7 +442,7 @@ class ricoh5A22 {
 		// Don't reschedule if it hasn't changed
 		if (old_irq_time === new_irq_time) return;
 		// Don't reschedule if new time is after current scanline position 'cuz it won't trigger
-		if (this.scanline.cycles_since_scanline_start > new_irq_time && old_irq_time < this.scanline.cycles_since_scanline_start) return;
+		if (this.clock.cycles_since_scanline_start > new_irq_time && old_irq_time < this.clock.cycles_since_scanline_start) return;
 		// Let CPU inner loop know its timing data is now invalid
 		this.rescheduled = true;
 		// delete if new -1
@@ -564,12 +552,16 @@ class ricoh5A22 {
 	// We will have a calculated timeline of events to follow. If someone writes to registers during
 	//  that time, the timeline will be recalculated.
 	do_steps(howmany) {
+		if (this.clock.cpu_deficit > 1364) {
+			debugger;
+		}
+		//console.log('CPU DEFICIT', this.clock.cpu_deficit, this.clock.cycles_since_scanline_start, this.next_event);
 		this.clock.cpu_deficit += howmany;
 
 		// Check if we're in WRAM refresh, in which case, nothing other than an IRQ timer check will happen
-		if (this.mode === RM.WRAM_REFRESH) {
+		if (this.mode === RMODES.WRAM_REFRESH) {
 			let can_do = this.clock.cpu_deficit > this.mode_left ? this.mode_left : this.clock.cpu_deficit;
-			this.mode = RM.WRAM_REFRESH;
+			this.mode = RMODES.WRAM_REFRESH;
 			if (can_do < this.mode_left) {
 				this.mode_left = can_do < this.clock.cpu_deficit ? this.clock.cpu_deficit : 0;
 			}
@@ -581,7 +573,6 @@ class ricoh5A22 {
 		}
 		let scanline = this.clock.scanline;
 		while(this.clock.cpu_deficit > 0) {
-			console.log('CPU DEFICIT', this.clock.cpu_deficit, this.clock.cycles_since_scanline_start, this.next_event);
 			// Check if we tripped a new-scanline scheduling
 			//debugger;
 			if (scanline.cpu_new_scanline) {
@@ -633,8 +624,11 @@ class ricoh5A22 {
 						let can_do = this.clock.cpu_deficit > 40 ? 40 : this.clock.cpu_deficit;
 						if (can_do < 40) {
 							this.mode_left = can_do < 40 ? 40 - can_do : 0;
+/*							if (this.mode === 3) {
+								debugger; // WRAM refresh in middle of WRAM refresh!?
+							}*/
 							this.old_mode = this.mode;
-							this.mode = RM.WRAM_REFRESH;
+							this.mode = RMODES.WRAM_REFRESH;
 						}
 						this.clock.advance_steps_from_cpu(can_do);
 						if (can_do < 40) {
@@ -642,6 +636,7 @@ class ricoh5A22 {
 						}
 						break;
 				}
+				if (dbg.do_break) return;
 				continue;
 			}
 
@@ -661,7 +656,7 @@ class ricoh5A22 {
 			// Do HDMA setup
 			if (this.status.hdma_pending) {
 				// run HDMA
-				console.log('HDMA!')
+				//console.log('HDMA!')
 				this.clock.dma_counter = 0;
 				if (!this.status.dma_running) {
 					// Wait up to 8 cycles
@@ -676,8 +671,9 @@ class ricoh5A22 {
 				this.status.hdma_pending = false;
 				this.dma.hdma_run();
 				this.clock.advance_steps_from_cpu(this.clock.dma_counter);
-				console.log('after HDMA run, cycle is at ' + this.clock.cycles_since_scanline_start + ' of ' + this.clock.scanline.cycles + ' after running ' + this.clock.dma_counter + ' cycles.');
+				//console.log('after HDMA run, cycle is at ' + this.clock.cycles_since_scanline_start + ' of ' + this.clock.scanline.cycles + ' after running ' + this.clock.dma_counter + ' cycles.');
 				this.clock.dma_counter = 0;
+				if (dbg.do_break) return;
 				continue;
 			}
 
@@ -688,7 +684,7 @@ class ricoh5A22 {
 			//debugger;
 			if (this.status.dma_pending || this.status.dma_running) {
 				// run DMA for X cycles
-				console.log('DMA!');
+				//console.log('DMA!');
 				this.clock.dma_counter = 0;
 				if (this.status.dma_pending) {
 					this.clock.dma_counter += 8;
@@ -696,9 +692,12 @@ class ricoh5A22 {
 					if (!this.status.dma_running) this.dma.dma_start();
 					this.status.dma_running = true;
 				}
-				this.dma.dma_run(can_do);
+				let anyleft = this.dma.dma_run(can_do);
 				this.clock.advance_steps_from_cpu(this.clock.dma_counter)
+				// Leftover cycles mean DMA is no longer running
+				if (anyleft > 8) this.status.dma_running = false;
 				this.clock.dma_counter = 0;
+				if (dbg.do_break) return;
 				continue;
 			}
 
@@ -718,6 +717,7 @@ class ricoh5A22 {
 
 			// OK now we're not in DMA or HDMA so cycle the processor
 			this.cycle_cpu(can_do);
+			if (dbg.do_break) return;
 		}
 	}
 
@@ -760,6 +760,12 @@ class ricoh5A22 {
 				}
 			}
 		}
+		if (dbg.watch_on) {
+			if (dbg.watch.evaluate()) {
+				dbg.break();
+				console.log('BREAK FOR WATCHPOINT')
+			}
+		}
 	}
 
 	dma_is_enabled() {
@@ -792,13 +798,19 @@ class ricoh5A22 {
 		this.rescheduled = false;
 		while (steps > 0) {
 			this.cpu.cycle();
+			if (typeof(this.cpu.pins.D) === 'undefined') {
+				console.log(this.cpu);
+				dbg.break();
+				return;
+			}
 			this.cpu_addr = (this.cpu.pins.BA << 16) + this.cpu.pins.Addr;
-			let master_cycles =this.cpu.pins.PDV ? SNES_mem_timing(this.cpu_addr, this.ROMspeed) : 6;
+			let master_cycles = this.cpu.pins.PDV ? SNES_mem_timing(this.cpu_addr, this.ROMspeed) : 6;
 			this.clock.advance_steps_from_cpu(master_cycles);
 			// Do timing info...
 			this.service_CPU_cycle();
 			steps -= master_cycles;
 			if (this.rescheduled) return;
+			if (dbg.do_break) return;
 		}
 	}
 
@@ -855,7 +867,7 @@ class ricoh5A22 {
 
 			// DMA it out
 			if (this.status.dma_pending || this.status.hdma_pending) {
-				console.log('DMA!', this.status.dma_pending, this.status.hdma_pending);
+				//console.log('DMA!', this.status.dma_pending, this.status.hdma_pending);
 				this.dma_edge();
 				continue;
 			}

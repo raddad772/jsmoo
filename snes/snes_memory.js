@@ -95,10 +95,12 @@ class snes_memmap {
 		let mkind = this.readmap[b].kind;
 		let outaddr = this.readmap[b].offset + (addr & 0xFFF);
 		//console.log('IN ADDRESS', hex0x6(addr), 'CALC ADDRESS', hex0x6(outaddr));
+		//if (addr === 16379267) debugger;
+		if (addr === 0x800000) debugger;
 		switch(mkind) {
 			case MAP_TI.OPEN_BUS:
-				console.log('OPEN BUS READ');
-				return null;
+				//console.log('OPEN BUS READ');
+				return val;
 			case MAP_TI.ROM:
 				//console.log('ROM read', hex0x6(addr), hex0x2(this.ROM[outaddr]), hex0x6(outaddr));
 				return this.ROM[outaddr];
@@ -106,8 +108,8 @@ class snes_memmap {
 				//console.log('RAM read', hex0x6(addr), hex0x2(this.ROM[outaddr]), hex0x6(outaddr));
 				return this.RAM[outaddr];
 			case MAP_TI.SRAM:
-				//console.log('SRAM read');
-				return this.SRAM[outaddr];
+				//console.log('SRAM ADDDR', hex6(addr), 'OUTADDR', hex4(outaddr));
+				return this.SRAM[outaddr % this.SRAMSize];
 			case MAP_TI.PPU:
 				//console.log('PPU read');
 				return this.read_ppu(outaddr, val, have_effect);
@@ -115,7 +117,7 @@ class snes_memmap {
 				//console.log('CPU read');
 				return this.read_cpu(outaddr, val, have_effect);
 		}
-		return null;
+		return val;
 	};
 
 	dispatch_write(addr, data) {
@@ -125,7 +127,7 @@ class snes_memmap {
 		switch(mkind) {
 			case MAP_TI.OPEN_BUS:
 				console.log('OPEN BUS WRITE');
-				debugger;
+				//debugger;
 				return;
 			case MAP_TI.ROM:
 				console.log('ROM write!?');
@@ -155,7 +157,7 @@ class snes_memmap {
 			for (let i = addr_start; i <= addr_end; i += 0x1000) {
 				let b = (c << 4) | (i >>> 12);
 				this.readmap[b].kind = this.writemap[b].kind = MAP_TI.RAM;
-				this.readmap[b].offset = this.writemap[b].offset = (i - bank_start) + offset;
+				this.readmap[b].offset = this.writemap[b].offset = (i - addr_start) + offset;
 				this.block_is_ROM[b] = false;
 				this.block_is_RAM[b] = true;
 			}
@@ -247,6 +249,8 @@ class snes_memmap {
 		else
 			hi = 0xFFFF;
 
+		// HMMM...
+		hi = 0x7FFF;
 		this.map_sram(0x70, 0x7D, 0x0000, hi);
 		this.map_sram(0xF0, 0xFF, 0x0000, hi);
 	}
@@ -262,6 +266,8 @@ class snes_memmap {
 		this.map_lorom(0xC0, 0xFF, 0x8000, 0xFFFF);
 
 		this.map_lorom_sram();
+		this.map_loram(0x00, 0x3F, 0x0000, 0x1FFF, 0);
+		this.map_loram(0x80, 0xBF, 0x0000, 0x1FFF, 0);
 		this.map_wram(0x7E, 0x7F, 0x0000, 0xFFFF);
 	}
 

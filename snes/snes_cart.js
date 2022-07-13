@@ -40,7 +40,7 @@ class snes_cart {
 	read_ver1_header() {
 		this.header.flash_RAM_size = (2 ** this.ROM[this.header.header_offset + 0xD8]) * 1024;
 		this.header.sram_sizebit = this.ROM[this.header.header_offset + 0xD8];
-		this.header.rom_sizebit = this.ROM[this.header.header_offset + 0xD7]
+		this.header.rom_sizebit = this.ROM[this.header.header_offset + 0xD7];
 		//tconsole.addl('SRAM size ' + this.header.flash_RAM_size.toString());
 		this.header.internal_name = new TextDecoder().decode(this.ROM.slice(this.header.header_offset + 0xC0, this.header.header_offset + 0xD4));
 		//tconsole.addl('Internal name "' + this.header.internal_name +'"');

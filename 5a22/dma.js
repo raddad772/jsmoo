@@ -80,6 +80,7 @@ class dmaChannel {
                 this.clock.dma_counter += 8;
                 howmany -= 8;
                 if (howmany < 1) break;
+                //console.log(this.transfer_size);
                 //this.dma_edge()
             } while (this.dma_enable && --this.transfer_size);
         }
@@ -152,7 +153,7 @@ class dmaChannel {
                 addr = (this.source_bank << 16) | this.source_address;
                 this.source_address++;
             }
-            this.transfer(addr, index)
+            this.transfer(addr, index);
         }
     }
 
@@ -164,12 +165,14 @@ class dmaChannel {
     }
 
     readA(addr) {
-        this.counters.dma += 8;
+        //console.log('READA +8')
+        this.clock.dma_counter += 8;
         return this.validA(addr) ? this.mem_map.dispatch_read(addr) : 0
     }
 
     readB(addr, valid) {
-        this.counters.dma += 8;
+        //console.log('READB +8')
+        this.clock.dma_counter += 8;
         return valid ? this.mem_map.dispatch_read(0x2100 | addr) : 0
     }
 
@@ -216,7 +219,6 @@ class r5a22DMA {
         this.mem_map = mem_map;
 
         this.status = status;
-        this.counters = {};
         this.clock = clock;
 
         this.channels = {};
@@ -318,12 +320,14 @@ class r5a22DMA {
     }
 
     hdma_run() {
-        this.counters.dma += 8;
+        this.clock.dma_counter += 8;
         for (let n = 0; n < 8; n++) {
             this.channels[n].hdma_transfer();
         }
+        let active = 0;
         for (let n = 0; n < 8; n++) {
             this.channels[n].hdma_advance();
+            //if (this.channels[n].hdma_)
         }
         this.status.irq_lock = 1;
     }

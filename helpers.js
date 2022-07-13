@@ -165,9 +165,9 @@ class console_t {
         if (this.textconsole === null) {
             this.init();
         }
-        this.buffer.push([bgcolor, ft]);
+        this.buffer.unshift([bgcolor, ft]);
         if (this.buffer.length > this.max_lines) {
-            this.buffer = this.buffer.slice(1);
+            this.buffer = this.buffer.slice(-1);
         }
         if (draw)
             this.draw();
@@ -219,14 +219,24 @@ function trace_start_format(kind, kind_color, trace_cycles, middle, addr, bank=n
 }
 
 function trace_format_read(kind, kind_color, trace_cycles, addr, val, bank=null) {
+    if (trace_cycles === 321133) dbg.break();
     let outstr;
+    if (typeof val === 'undefined') {
+        val = 'UNDEFINED';
+    }
+    if (val === null) {
+        val = 'OPENBUS';
+    }
+    else {
+        val = hex2(val);
+    }
     if (TRACE_COLOR) {
         outstr = trace_start_format(kind, kind_color, trace_cycles, TRACE_READ + 'r', addr, bank)
-        outstr += ' {/}' + TRACE_READ + '$' + hex2(val) + '{/}';
+        outstr += ' {/}' + TRACE_READ + '$' + val + '{/}';
     }
     else {
         outstr = trace_start_format(kind, kind_color, trace_cycles, 'r', addr, bank)
-        outstr += ' ' + hex2(val);
+        outstr += ' ' + val;
     }
     return outstr;
 }

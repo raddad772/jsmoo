@@ -25,7 +25,7 @@ function generate_js_SPC() {
     save_js('spc700_generated_opcodes.js', '"use strict";\n\nconst SPC_decoded_opcodes = Object.freeze(\n' + SPC_decode_opcodes() + ');');
 }
 
-let tracing_checkbox, tracing_5a22_checkbox, tracing_spc700_checkbox;
+let watching_checkbox, tracing_checkbox, tracing_5a22_checkbox, tracing_spc700_checkbox;
 let mc_input, scanline_input, frame_input, seconds_input;
 let ppu_y_output;//, scanline_dot_output;
 
@@ -37,6 +37,7 @@ function init_js() {
 	tracing_checkbox = document.getElementById('tracingbox');
 	tracing_5a22_checkbox = document.getElementById('tracing5a22');
 	tracing_spc700_checkbox = document.getElementById('tracingspc700');
+	watching_checkbox = document.getElementById('tracingspc700');
 	mc_input = document.getElementById('masterclocksteps');
 	scanline_input = document.getElementById('scanlinesteps');
 	frame_input = document.getElementById('framesteps');
@@ -61,6 +62,16 @@ function init_js() {
 
 	tracing_5a22_checkbox.checked = WDC_DO_TRACING_AT_START;
 	tracing_spc700_checkbox.checked = SPC_DO_TRACING_AT_START;
+
+	watching_checkbox.addEventListener('change', (event) => {
+		if (event.currentTarget.checked) {
+			dbg.watch_on = true;
+		}
+		else {
+			dbg.watch_off = true;
+		}
+	});
+
 
 	tracing_5a22_checkbox.addEventListener('change', (event) => {
 		if (event.currentTarget.checked) {
@@ -107,11 +118,10 @@ function click_step_all() {
 	after_step();
 }
 
-
 function after_step() {
 	if (dbg.tracing) {
 		dbg.traces.draw(dconsole);
-		dbg.traces.clear();
+		//dbg.traces.clear();
 		//scanline_dot_output.innerHTML = Math.floor(snes.clock.scanline.cycles_since_reset / 4);
 		//console.log(snes.clock.cycles_since_scanline_start);
 		ppu_y_output.innerHTML = Math.floor(snes.clock.cycles_since_scanline_start / 4) + ', ' + snes.clock.scanline.ppu_y;
