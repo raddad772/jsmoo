@@ -246,7 +246,7 @@ class ricoh5A22 {
 	}
 
 	reg_read(addr, val=0, have_effect=true) { // Val is for open bus
-		console.log('5A22 read', hex0x4(addr));
+		//console.log('5A22 read', hex0x4(addr));
 		if ((addr & 0x4300) === 0x4300) { this.dma.reg_read(addr, val, have_effect); return; }
 		switch(addr) {
 			case 0x4210: // NMI read
@@ -351,7 +351,7 @@ class ricoh5A22 {
 				for (let n = 0; n < 8; n++) {
 					this.dma.channels[n].hdma_enable = (val >>> (n - 1)) & 1;
 				}
-				console.log('HDMA CHANNEL WRITE', val);
+				//console.log('HDMA CHANNEL WRITE', val);
 				return;
 			case 0x420D: // Cycle speed of ROM
 				this.ROMspeed = (val & 1) ? 6 : 8;

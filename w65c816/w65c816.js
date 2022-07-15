@@ -64,7 +64,7 @@ function padl(what, howmuch) {
 	}
 	return what;
 }
-let TRACE_CYCLES_BREAK = 131000;
+let TRACE_CYCLES_BREAK = (1364 * 260 * 60 * 10);
 let TRACE_BROKE = false
 
 class w65c816_P {
@@ -275,6 +275,7 @@ class w65c816 {
 				dbg.break();
 			}
 			if ((this.trace_cycles > TRACE_CYCLES_BREAK) && (!TRACE_BROKE)) {
+				console.log('BREAK at cycle', this.trace_cycles, ' FOR TRACE CYCLE COUNT BREAK');
 				TRACE_BROKE = true;
 				dbg.break();
 			}
