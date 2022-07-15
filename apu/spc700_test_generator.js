@@ -1,3 +1,5 @@
+"use strict";
+
 let TEST_TO_GENERATE = 0x05;
 let NUM_TO_GENERATE = 1;
 
@@ -109,6 +111,15 @@ class proc_test {
     }
 }
 
+const SPC_FN = 0x80;
+const SPC_FV = 0x40;
+const SPC_FP = 0x20;
+const SPC_FB = 0x10;
+const SPC_FH = 0x08;
+const SPC_FI = 0x04;
+const SPC_FZ = 0x02;
+const SPC_FC = 0x01;
+
 class SPC_PSW {
     constructor(from) {
         this.N = 0;
@@ -187,11 +198,11 @@ class SPC_state {
 }
 
 function pt_rnd8() {
-    return Math.floor(Math.random() * 256);
+    return Math.floor(Math.random() * 255);
 }
 
 function pt_rnd16() {
-    return Math.floor(Math.random() * 65536);
+    return Math.floor(Math.random() * 65535);
 }
 
 function SPC_generate_registers(where) {
@@ -203,19 +214,158 @@ function SPC_generate_registers(where) {
     where.psw = pt_rnd8() & 0xF7; // Break flag
 }
 
+function _isbset(val, bit) {
+    let bm = 1 << bit;
+    return (val & bit) ? 1 : 0;
+}
+
+function _getbit(val, bit) {
+    return (val >>> bit) & 1;
+}
+
+function _ngetbit(val, bit) {
+    return ((val >>> bit) & 1) ? 0 : 1;
+}
+
+function _setbit(val, bit, setto) {
+    let bm = (setto << bit);
+    if (setto) return val | bm;
+    bm = (~bm) & 0xFF;
+    return val & bm;
+}
+
 class SPC_test_generator {
     constructor() {
         this.test = null;
         this.regs = null;
     }
 
+    algorithmADC(x, y) {
+        let z = x + y + this.regs.P.C;
+        this.regs.P.C = +(z > 0xFF);
+        this.setz(z);
+        this.regs.P.H = ((x ^ y ^ z) >> 4) & 1;
+        this.regs.P.V = ((~(x ^ y)) & (x ^ z) & 0x80) >>> 7;
+        this.setn8(z);
+        return (z & 0xFF);
+    }
+
+    algorithmAND(x, y) {
+        x &= y;
+        this.setz(x);
+        this.setn8(x);
+        return x;
+    }
+
+    algorithmASL(x) {
+        this.regs.P.C = (x & 0x80) >>> 7;
+        x <<= 1;
+        this.setz(x);
+        this.setn8(x);
+        return x;
+    }
+
+    algorithmCMP(x, y) {
+        let z = x - y;
+        this.regs.P.C = +(z >= 0);
+        this.setz(z);
+        this.setn8(z);
+        return x;
+    }
+
+    algorithmDEC(x) {
+        x = (x - 1) & 0xFF;
+        this.setz(x);
+        this.setn8(x);
+        return x;
+    }
+
+    algorithmEOR(x, y) {
+        x ^= y;
+        this.setz(x);
+        this.setn8(x);
+        return x;
+    }
+
+    algorithmINC(x) {
+        x = (x + 1) & 0xFF;
+        this.setz(x);
+        this.setn8(x);
+        return x;
+    }
+
+    algorithmLD(x, y) {
+        this.setz(y);
+        this.setn8(y);
+        return y;
+    }
+
+    algorithmLSR(x) {
+        this.regs.P.C = x & 1;
+        x >>>= 1;
+        this.setz(x);
+        this.setn8(x);
+        return x;
+    }
+
     algorithmOR(x, y) {
-        console.log('OR', x, y)
         x |= y;
         this.setz(x);
         this.setn8(x);
-        console.log('RESULT', x);
         return x;
+    }
+
+    algorithmROL(x) {
+        let carry = this.regs.P.C;
+        this.regs.P.C = (x >>> 7) & 1;
+        x = (x << 1) | carry;
+        this.setz(x);
+        this.setn8(x);
+        return x;
+    }
+
+    algorithmROR(x) {
+        let carry = this.regs.P.C << 7;
+        this.regs.P.C = x & 1;
+        x = (x >>> 1) | carry;
+        this.setz(x);
+        this.setn8(x);
+        return x;
+    }
+
+    algorithmSBC(x, y) {
+        return this.algorithmADC(x, (~y) & 0xFF);
+    }
+
+    algorithmADW(x, y) {
+        let z;
+        this.regs.P.C = 0;
+        z = this.algorithmADC(x & 0xFF, y & 0xFF);
+        z |= this.algorithmADC((x >>> 8) & 0xFF, (y >>> 8) & 0xFF) << 8;
+        this.regs.P.Z = +((z & 0xFFFF) === 0);
+    }
+
+    algorithmCPW(x, y) {
+        let z = x - y;
+        this.regs.P.C = +(z >= 0);
+        this.regs.P.Z = +((z & 0xFFFF) === 0);
+        this.regs.P.N = (z >>> 15) & 1;
+        return x;
+    }
+
+    algorithmLDW(x, y) {
+        this.regs.P.Z = +(y === 0);
+        this.regs.P.N = ((y & 0xFFFF) >>> 15) & 1;
+        return y;
+    }
+
+    algorithmSBW(x, y) {
+        let z;
+        this.regs.P.C = 1;
+        z = this.algorithmSBC(x & 0xFF, y & 0xFF);
+        z |= this.algorithmSBC((x >>> 8) & 0xFF, (y >>> 8) & 0xFF) << 8;
+        this.regs.P.Z = +((z & 0xFFFF) === 0);
+        return z;
     }
 
     setn8(from) {
@@ -247,6 +397,10 @@ class SPC_test_generator {
         return val;
     }
 
+    write(whereto, what) {
+        this.test.add_cycle(whereto & 0xFFFF, what, 'write');
+    }
+
     read_discard(wherefrom) {
         let val = null;
         this.test.add_cycle(wherefrom & 0xFFFF, val, 'read');
@@ -257,14 +411,60 @@ class SPC_test_generator {
         this.test.add_cycle(null, null, 'wait');
     }
 
-    pull(what) {
+    pull() {
+        let val = pt_rnd8();
         this.regs.inc_SP();
-        this.test.add_cycle(0x100 | this.regs.SP, what & 0xFF, 'read');
+        this.test.add_cycle(0x100 | this.regs.SP, val, 'read');
+        return val;
     }
 
     push(what) {
         this.test.add_cycle(0x100 | this.regs.SP, what & 0xFF, 'write');
         this.regs.dec_SP();
+    }
+
+    alu(op) {
+        return this['algorithm' + op].bind(this);
+    }
+
+    AbsoluteBitModify(mode) {
+        let addr = this.fetch();
+        addr |= this.fetch() << 8;
+        let bit = addr >>> 13;
+        addr &= 0x1FFF;
+        let data = this.read(addr);
+        switch(mode) {
+            case 0: // or
+                this.idle();
+                this.regs.P.C |= _getbit(data, bit);
+                break;
+            case 1: // !or
+                this.idle();
+                this.regs.P.C |= _ngetbit(data, bit);
+                break;
+            case 2: // and
+                this.regs.P.C &= _getbit(data, bit);
+                break;
+            case 3: // !and
+                this.regs.P.C &= _ngetbit(data, bit);
+                break;
+            case 4: // eor
+                this.idle();
+                this.regs.P.C ^= _getbit(data, bit);
+                break;
+            case 5: // ld
+                this.regs.P.C = _getbit(data, bit);
+                break;
+            case 6: // st
+                this.idle();
+                data = _setbit(data, bit, this.regs.P.C);
+                this.write(addr, data);
+                break;
+            case 7: // not
+                data = _setbit(data, bit, _ngetbit(data, bit));
+                this.write(addr, data);
+                break;
+        }
     }
 
     AbsoluteBitSet(bit, val) {
@@ -275,18 +475,44 @@ class SPC_test_generator {
             val |= bm;
         else // CLR
             val &= ((~bm) & 0xFF);
-        this.store(addr, data);
+        this.store(addr,val);
     }
 
-    alu(op) {
-        return this['algorithm' + op].bind(this);
+    AbsoluteIndexedRead(op, index) {
+        let addr = this.fetch();
+        addr |= this.fetch() << 8;
+        this.idle();
+        let data = this.read(addr + index);
+        this.regs.A = this.alu(op)(this.regs.A, data);
     }
+
+    AbsoluteModify(op) {
+        let addr = this.fetch();
+        addr |= this.fetch() << 8;
+        let data = this.read(addr);
+        this.write(addr, this.alu(op)(data));
+    }
+
     AbsoluteRead(op, target) {
         let addr = this.fetch();
         addr |= this.fetch() << 8;
         let data = this.read(addr);
-        console.log('TARGET!', target, this.regs[target], data);
         this.regs[target] = this.alu(op)(this.regs[target], data);
+    }
+
+    AbsoluteWrite(data) {
+        let addr = this.fetch();
+        addr |= this.fetch() << 8;
+        this.read_discard(addr);
+        this.write(addr, data);
+    }
+
+    Branch(shouldi) {
+        let data = this.fetch();
+        if (!shouldi) return;
+        this.idle();
+        this.idle();
+        this.regs.PC += mksigned8(data);
     }
 
     BranchBit(bit, val) {
@@ -306,6 +532,73 @@ class SPC_test_generator {
         this.regs.PC += mksigned8(displacement);
     }
 
+    BranchNotDirect() {
+        let addr = this.fetch();
+        let data = this.load(addr);
+        this.idle();
+        let displacement = this.fetch();
+        if (this.regs.A === data) return;
+        this.idle();
+        this.idle();
+        this.regs.PC += mksigned8(displacement);
+    }
+
+    BranchNotDirectDecrement() {
+        let addr = this.fetch();
+        let data = this.load(addr);
+        data = (data - 1) & 0xFF;
+        this.store(addr, data);
+        let displacement = this.fetch();
+        if (data === 0) return;
+        this.idle();
+        this.idle();
+        this.regs.PC += mksigned8(displacement);
+    }
+
+    BranchNotYDecrement() {
+        this.read_discard(this.regs.PC);
+        this.idle();
+        let displacement = this.fetch();
+        this.regs.Y = (this.regs.Y - 1) & 0xFF;
+        if (this.regs.Y === 0) return;
+        this.idle();
+        this.idle();
+        this.regs.PC += mksigned8(displacement);
+    }
+
+    Break() {
+        this.read_discard();
+        this.push(this.regs.PC >>> 8);
+        this.push(this.regs.PC & 0xFF);
+        this.push(this.regs.P.getbyte());
+        this.idle();
+        let addr = this.read(0xFFDE);
+        addr |= this.read(0xFFDF) << 8;
+        this.regs.PC = addr;
+        this.regs.P.I = 0;
+        this.regs.P.B = 1;
+    }
+
+    CallAbsolute() {
+        let addr = this.fetch();
+        addr |= this.fetch() << 8;
+        this.idle();
+        this.push(PC >>> 8);
+        this.push(PC & 0xFF);
+        this.idle();
+        this.idle();
+        this.regs.PC = addr;
+    }
+
+    CallPage() {
+        let addr = this.fetch();
+        this.idle();
+        this.push(this.regs.PC >>> 8);
+        this.push(this.regs.PC & 0xFF);
+        this.idle();
+        this.regs.PC = 0xFF00 | addr;
+    }
+
     CallTable(vector) {
         this.read(this.regs.PC, null);
         this.idle();
@@ -317,10 +610,172 @@ class SPC_test_generator {
         this.regs.PC |= this.read(address + 1) << 8;
     }
 
+    DirectCompareWord(op) {
+        let addr = this.fetch();
+        let data = this.load(addr);
+        data |= this.load(addr + 1) << 8;
+        let YA = this.regs.A | (this.regs.Y << 8);
+        YA = this.alu(op)(YA, data);
+        this.regs.Y = (YA & 0xFF00) >> 8;
+        this.regs.A = YA & 0xFF;
+    }
+
+    DirectDirectCompare(op) {
+        let source = this.fetch();
+        let rhs = this.load(source);
+        let target = this.fetch();
+        let lhs = this.load(target);
+        lhs = this.alu(op)(lhs, rhs);
+        this.idle();
+    }
+
+    DirectDirectModify(op) {
+        let source = this.fetch();
+        let rhs = this.load(source);
+        let target = this.fetch();
+        let lhs = this.load(target);
+        lhs = this.alu(op)(lhs, rhs);
+        this.store(target, lhs);
+    }
+
+    DirectImmediateCompare(op) {
+        let immediate = this.fetch();
+        let addr = this.fetch();
+        let data = this.load(addr);
+        data = this.alu(op)(data, immediate);
+        this.idle();
+    }
+
+    DirectImmediateModify(op) {
+        let immediate = this.fetch();
+        let addr = this.fetch();
+        let data = this.load(addr);
+        data = this.alu(op)(data, immediate);
+        this.store(addr, data);
+    }
+
+    DirectImmediateWrite() {
+        let imm = this.fetch();
+        let addr = this.fetch();
+        this.load(addr);
+        this.store(addr, imm);
+    }
+
+    DirectIndexedModify(op, index) {
+        let addr = this.fetch();
+        this.idle();
+        let data = this.load(addr + index);
+        this.store(addr + index, this.alu(op)(data));
+    }
+
+    DirectIndexedRead(op, target, index) {
+        let addr = this.fetch();
+        this.idle();
+        let data = this.load(addr + index)
+        this.regs[target] = this.alu(op)(target, data);
+    }
+
+    DirectModify(op) {
+        let addr = this.fetch();
+        let data = this.load(addr);
+        this.store(addr, this.alu(op)(data));
+    }
+
+    DirectModifyWord(adjust) {
+        let addr = this.fetch();
+        let data = (this.load(addr) + adjust) & 0xFFFF;
+        this.store(addr, data & 0xFF);
+        data += this.load(addr+1) << 8;
+        this.store(addr+1, (data >>> 8) & 0xFF);
+        this.regs.P.Z = +(data === 0);
+        this.regs.P.N = (data & 0x8000) >>> 15;
+    }
+
     DirectRead(op, target) {
         let addr = this.fetch();
         let data = this.load(addr);
         this.regs[target] = this.alu(op)(this.regs[target], data);
+    }
+
+    DirectReadWord(op) {
+        let addr = this.fetch();
+        let data = this.load(addr);
+        this.idle();
+        data |= this.load(addr + 1) << 8;
+        let YA = (this.regs.Y << 8) | this.regs.A;
+        YA = this.alu(op)(YA, data);
+        this.regs.Y = (YA & 0xFF00) >> 8;
+        this.regs.A = YA & 0xFF;
+    }
+
+    Divide() {
+        this.read_discard();
+        for (let i =0; i < 10; i++) this.idle();
+        let YA = (this.regs.Y << 8) | this.regs.A;
+        this.regs.P.H = +((this.regs.Y & 15) >= (this.regs.X & 15));
+        this.regs.P.V = +(this.regs.Y >= this.regs.X);
+        if (this.regs.Y < (this.regs.X << 1)) {
+            this.regs.A = (Math.floor(YA / this.regs.X)) & 0xFF;
+            this.regs.Y = (YA % this.regs.X) & 0xFF;
+        } else {
+            this.regs.A = (255 - Math.floor((YA - (this.regs.X << 9)) / (256 - this.regs.X))) & 0xFF;
+            this.regs.Y = (this.regs.X + ((YA - (this.regs.X << 9)) % (256 - this.regs.X))) & 0xFF;
+        }
+        this.regs.P.Z = +(this.regs.A === 0);
+        this.regs.P.N = (this.regs.A & 0x80) >>> 7;
+    }
+
+    ExchangeNibble() {
+        this.read_discard(this.regs.PC);
+        this.idle();
+        this.idle();
+        this.idle();
+        this.regs.A = (this.regs.A >>> 4) | ((this.regs.A << 4) & 0xF0);
+        this.setz(this.regs.A);
+        this.setn8(this.regs.A);
+    }
+
+    FlagSet(flag, value) {
+        this.read_discard(this.regs.PC);
+        if (flag === SPC_FI) this.idle();
+        let cf = this.regs.P.getbyte();
+
+        if (value) cf |= value;
+        else cf &= (~value) & 0xFF;
+
+        this.regs.P.setbyte(cf);
+    }
+
+    IndirectIndexedRead(op, index) {
+        let indirect = this.fetch();
+        this.idle();
+        let addr = this.load(indirect);
+        addr |= this.load(indirect + 1) << 8;
+        let data = this.read(addr + index);
+        this.regs.A = this.alu(op)(this.regs.A, data);
+    }
+
+    IndexedIndirectRead(op, index) {
+        let indirect = this.fetch();
+        this.idle();
+        let addr = this.load(indirect + index);
+        addr |= this.load(indirect + index + 1) << 8;
+        let data = this.read(addr);
+        this.regs.A = this.alu(op)(this.regs.A, data)
+    }
+
+    IndirectXCompareIndirectY(op) {
+        this.read_discard(this.regs.PC);
+        let rhs = this.load(this.regs.Y);
+        let lhs = this.load(this.regs.X);
+        lhs = this.alu(op)(lhs, rhs);
+        this.idle();
+    }
+
+    IndirectXIncrementWrite(val) {
+        this.read_discard(this.regs.PC);
+        this.idle();
+        this.store(this.regs.X++, val);
     }
 
     IndirectXRead(op) {
@@ -329,13 +784,81 @@ class SPC_test_generator {
         this.regs.A = this.alu(op)(this.regs.A, data);
     }
 
-    IndexedIndirectRead(op, reg) {
-        let indirect = this.fetch();
+    IndirectXWriteIndirectY(op) {
+        this.read_discard(this.regs.PC);
+        let rhs = this.load(this.regs.Y);
+        let lhs = this.load(this.regs.X);
+        lhs = this.alu(op)(lhs, rhs);
+        this.store(this.regs.X, lhs);
+    }
+
+    ImmediateRead(op, target) {
+        let data = this.fetch();
+        this.regs[target] = this.alu(op)(this.regs[target], data);
+    }
+
+    ImpliedModify(op, target) {
+        this.read_discard();
+        this.regs[target] = this.alu(op)(this.regs[target]);
+    }
+
+    JumpIndirectX() {
+        let addr = this.fetch();
+        addr |= this.fetch() << 8;
         this.idle();
-        let addr = this.load(indirect + this.regs[reg]);
-        addr |= this.load(indirect + index + 1) << 8;
+        this.regs.PC = this.read(addr + this.regs.X);
+        this.regs.PC |= this.read(addr + this.regs.X + 1) << 8;
+    }
+
+    Pull(target) {
+        this.read_discard();
+        this.idle();
+        this.regs[target] = this.pull();
+    }
+
+    PullP() {
+        this.read_discard(this.regs.PC);
+        this.idle();
+        this.regs.P.setbyte(this.pull());
+    }
+
+    Push(val) {
+        this.read_discard(this.regs.PC);
+        this.push(val);
+        this.idle();
+    }
+
+    ReturnInterrupt() {
+        this.read_discard(this.regs.PC);
+        this.idle();
+        this.regs.P.setbyte(this.pull())
+        this.regs.PC = this.pull();
+        this.regs.PC |= this.pull() << 8;
+    }
+
+    ReturnSubroutine() {
+        this.read_discard(this.regs.PC);
+        this.idle();
+        this.regs.PC = this.pull();
+        this.regs.PC |= this.pull() << 8;
+    }
+
+    TestSetBitsAbsolute(set) {
+        let addr = this.fetch();
+        addr |= this.fetch() << 8;
         let data = this.read(addr);
-        this.regs.A = this.alu(op)(this.regs.A, data)
+        this.regs.P.Z = +((this.regs.A - data) === 0);
+        this.regs.P.N = ((this.regs.A - data) & 0x80) >>> 7;
+        this.read_discard(addr);
+        this.write(addr, set ? data | this.regs.A : data & (~this.regs.A) & 0xFF);
+    }
+
+    Transfer(from, to) {
+        this.read_discard(this.regs.PC);
+        this.regs[to] = this.regs[from];
+        if (to === 'S') return;
+        this.setz(this.regs[to]);
+        this.setn8(this.regs[to]);
     }
 
     generate_test(opcode, number) {
@@ -423,8 +946,422 @@ class SPC_test_generator {
                 case 0x06: // OR A, (X)
                     this.IndirectXRead('OR');
                     break;
-                case 0x07:
-                    this.IndexedIndirectRead('OR', 'X');
+                case 0x07: // OR A, [d+x]
+                    this.IndexedIndirectRead('OR', this.regs.X);
+                    break;
+                case 0x08: // OR A, #i
+                    this.ImmediateRead('OR', 'A');
+                    break;
+                case 0x09: // OR dp, dp
+                    this.DirectDirectModify('OR');
+                    break;
+                case 0x0A: // OR1 C, m.b
+                    this.AbsoluteBitModify(0);
+                    break;
+                case 0x0B: // ASL d
+                    this.DirectModify('ASL');
+                    break;
+                case 0x0C: // ASL !abs
+                    this.AbsoluteModify('ASL')
+                    break;
+                case 0x0D: // Push P
+                    this.Push(this.regs.P.getbyte());
+                    break;
+                case 0x0E: // TSET1 !a
+                    this.TestSetBitsAbsolute(true);
+                    break;
+                case 0x0F:
+                    this.Break(); // Break!
+                    break;
+                case 0x10: // Branch if NF === 0
+                    this.Branch(this.regs.P.N === 0);
+                    break;
+                case 0x14: // OR A, d+X
+                    this.DirectIndexedRead('OR', 'A', this.regs.X);
+                    break;
+                case 0x15: // OR A, !abs+X
+                    this.AbsoluteIndexedRead('OR', this.regs.X);
+                    break;
+                case 0x16: // OR A, !abs+Y
+                    this.AbsoluteIndexedRead('OR', this.regs.Y);
+                    break;
+                case 0x17: // OR A, [d]+Y
+                    this.IndirectIndexedRead('OR', this.regs.Y);
+                    break;
+                case 0x18: // OR d, #imm ?
+                    this.DirectImmediateModify('OR');
+                    break;
+                case 0x19:  // OR (X), (Y)
+                    this.IndirectXWriteIndirectY('OR');
+                    break;
+                case 0x1A: // DEC d
+                    this.DirectModifyWord(-1);
+                    break;
+                case 0x1B: // ASL d+X
+                    this.DirectIndexedModify('ASL', this.regs.X);
+                    break;
+                case 0x1C:
+                    this.ImpliedModify('ASL', 'A');
+                    break;
+                case 0x1D:
+                    this.ImpliedModify('DEC', 'X');
+                    break;
+                case 0x1E:
+                    this.AbsoluteRead('CMP', 'X');
+                    break;
+                case 0x1F:
+                    this.JumpIndirectX();
+                    break;
+                case 0x20:
+                    this.FlagSet(SPC_FP, false);
+                    break;
+                case 0x24:
+                    this.DirectRead('AND', 'A');
+                    break;
+                case 0x25:
+                    this.AbsoluteRead('AND', 'A');
+                    break;
+                case 0x26:
+                    this.IndirectXRead('AND');
+                    break;
+                case 0x27:
+                    this.IndexedIndirectRead('AND', this.regs.X);
+                    break;
+                case 0x28:
+                    this.ImmediateRead('AND', 'A');
+                    break;
+                case 0x29:
+                    this.DirectDirectModify('AND');
+                    break;
+                case 0x2A:
+                    this.AbsoluteBitModify(1);
+                    break;
+                case 0x2B:
+                    this.DirectModify('ROL');
+                    break;
+                case 0x2C:
+                    this.AbsoluteModify('ROL');
+                    break;
+                case 0x2D:
+                    this.Push(this.regs.A);
+                    break;
+                case 0x2E:
+                    this.BranchNotDirect();
+                    break;
+                case 0x2F:
+                    this.Branch(true);
+                    break;
+                case 0x30:
+                    this.Branch(this.regs.P.N === 1);
+                    break;
+                case 0x34:
+                    this.DirectIndexedRead('AND', 'A', this.regs.X);
+                    break;
+                case 0x35:
+                    this.AbsoluteIndexedRead('AND', this.regs.X);
+                    break;
+                case 0x36:
+                    this.AbsoluteIndexedRead('AND', this.regs.Y);
+                    break;
+                case 0x37:
+                    this.IndirectIndexedRead('AND', this.regs.Y);
+                    break;
+                case 0x38:
+                    this.DirectImmediateModify('AND');
+                    break;
+                case 0x39:
+                    this.IndirectXWriteIndirectY('AND');
+                    break;
+                case 0x3A:
+                    this.DirectModifyWord(1);
+                    break;
+                case 0x3B:
+                    this.DirectIndexedModify('ROL', this.regs.X);
+                    break;
+                case 0x3C:
+                    this.ImpliedModify('ROL', 'A');
+                    break;
+                case 0x3D:
+                    this.ImpliedModify('INC', 'X');
+                    break;
+                case 0x3E:
+                    this.DirectRead('CMP', 'X');
+                    break;
+                case 0x3F:
+                    this.CallAbsolute();
+                    break;
+                case 0x40:
+                    this.FlagSet(SPC_FP, true);
+                    break;
+                case 0x44:
+                    this.DirectRead('EOR', 'A');
+                    break;
+                case 0x45:
+                    this.AbsoluteRead('EOR', 'A');
+                    break;
+                case 0x46:
+                    this.IndirectXRead('EOR');
+                    break;
+                case 0x47:
+                    this.IndexedIndirectRead('EOR', this.regs.X);
+                    break;
+                case 0x48:
+                    this.ImmediateRead('EOR', 'A');
+                    break;
+                case 0x49:
+                    this.DirectDirectModify('EOR');
+                    break;
+                case 0x4A:
+                    this.AbsoluteBitSet(2);
+                    break;
+                case 0x4B:
+                    this.DirectModify('LSR');
+                    break;
+                case 0x4C:
+                    this.AbsoluteModify('LSR');
+                    break;
+                case 0x4D:
+                    this.Push(this.regs.X);
+                    break;
+                case 0x4E:
+                    this.TestSetBitsAbsolute(0);
+                    break;
+                case 0x4F:
+                    this.CallPage();
+                    break;
+                case 0x50:
+                    this.Branch(this.regs.P.V === 0);
+                    break;
+                case 0x54:
+                    this.DirectIndexedRead('EOR', 'A', this.regs.X);
+                    break;
+                case 0x55:
+                    this.AbsoluteIndexedRead('EOR', this.regs.X);
+                    break;
+                case 0x56:
+                    this.AbsoluteIndexedRead('EOR', this.regs.Y);
+                    break;
+                case 0x57:
+                    this.IndirectIndexedRead('EOR', this.regs.Y);
+                    break;
+                case 0x58:
+                    this.DirectImmediateModify('EOR');
+                    break;
+                case 0x59:
+                    this.IndirectXWriteIndirectY('EOR');
+                    break;
+                case 0x5A:
+                    this.DirectCompareWord('CPW');
+                    break;
+                case 0x5B:
+                    this.DirectIndexedModify('LSR', this.regs.X);
+                    break;
+                case 0x5C:
+                    this.ImpliedModify('LSR', 'A');
+                    break;
+                case 0x5D:
+                    this.Transfer('A', 'X');
+                    break;
+                case 0x5E:
+                    this.AbsoluteRead('CMP', 'Y');
+                    break;
+                case 0x60:
+                    this.FlagSet(SPC_FC, false);
+                    break;
+                case 0x64:
+                    this.DirectRead('CMP', 'A');
+                    break;
+                case 0x65:
+                    this.AbsoluteRead('CMP', 'A');
+                    break;
+                case 0x66:
+                    this.IndirectXRead('CMP');
+                    break;
+                case 0x67:
+                    this.IndexedIndirectRead('CMP', this.regs.X);
+                    break;
+                case 0x68:
+                    this.ImmediateRead('CMP', 'A');
+                    break;
+                case 0x69:
+                    this.DirectDirectCompare('CMP');
+                    break;
+                case 0x6A:
+                    this.AbsoluteBitModify(3);
+                    break;
+                case 0x6B:
+                    this.DirectModify('ROR');
+                    break;
+                case 0x6C:
+                    this.AbsoluteModify('ROR');
+                    break;
+                case 0x6D:
+                    this.Push(this.regs.Y);
+                    break;
+                case 0x6E:
+                    this.BranchNotDirect();
+                    break;
+                case 0x6F:
+                    this.ReturnSubroutine();
+                    break;
+                case 0x70:
+                    this.Branch(this.regs.P.V === 1);
+                    break;
+                case 0x74:
+                    this.DirectIndexedRead('CMP', 'A', this.regs.X);
+                    break;
+                case 0x75:
+                    this.AbsoluteIndexedRead('CMP', this.regs.X);
+                    break;
+                case 0x76:
+                    this.AbsoluteIndexedRead('CMP', this.regs.Y);
+                    break;
+                case 0x77:
+                    this.IndirectIndexedRead('CMP', this.regs.Y);
+                    break;
+                case 0x78:
+                    this.DirectImmediateCompare('CMP');
+                    break;
+                case 0x79:
+                    this.IndirectXCompareIndirectY('CMP');
+                    break;
+                case 0x7A:
+                    this.DirectReadWord('ADW');
+                    break;
+                case 0x7B:
+                    this.DirectIndexedModify('ROR', this.regs.X);
+                    break;
+                case 0x7C:
+                    this.ImpliedModify('ROR', 'A');
+                    break;
+                case 0x7D:
+                    this.Transfer('X', 'A');
+                    break;
+                case 0x7E:
+                    this.DirectRead('CMP', 'Y');
+                    break;
+                case 0x7F:
+                    this.ReturnInterrupt();
+                    break;
+                case 0x80:
+                    this.FlagSet(SPC_FC, true);
+                    break;
+                case 0x84:
+                    this.DirectRead('ADC', 'A');
+                    break;
+                case 0x85:
+                    this.AbsoluteRead('ADC', 'A');
+                    break;
+                case 0x86:
+                    this.IndirectXRead('ADC');
+                    break;
+                case 0x87:
+                    this.IndexedIndirectRead('ADC', this.regs.X);
+                    break;
+                case 0x88:
+                    this.ImmediateRead('ADC', 'A');
+                    break;
+                case 0x89:
+                    this.DirectDirectModify('ADC');
+                    break;
+                case 0x8A:
+                    this.AbsoluteBitModify(4);
+                    break;
+                case 0x8B:
+                    this.DirectModify('DEC');
+                    break;
+                case 0x8C:
+                    this.AbsoluteModify('DEC');
+                    break;
+                case 0x8D:
+                    this.ImmediateRead('LD', 'Y');
+                    break;
+                case 0x8E:
+                    this.PullP();
+                    break;
+                case 0x8F:
+                    this.DirectImmediateWrite();
+                    break;
+                case 0x90:
+                    this.Branch(this.regs.P.C === 0);
+                    break;
+                case 0x94:
+                    this.DirectIndexedRead('ADC', 'A', this.regs.X);
+                    break;
+                case 0x95:
+                    this.AbsoluteIndexedRead('ADC', this.regs.X);
+                    break;
+                case 0x96:
+                    this.AbsoluteIndexedRead('ADC', this.regs.Y);
+                    break;
+                case 0x97:
+                    this.IndirectIndexedRead('ADC', this.regs.Y);
+                    break;
+                case 0x98:
+                    this.DirectImmediateModify('ADC');
+                    break;
+                case 0x99:
+                    this.IndirectXWriteIndirectY('ADC');
+                    break;
+                case 0x9A:
+                    this.DirectReadWord('SBW');
+                    break;
+                case 0x9B:
+                    this.DirectIndexedModify('DEC', this.regs.X);
+                    break;
+                case 0x9C:
+                    this.ImpliedModify('DEC', 'A');
+                    break;
+                case 0x9D:
+                    this.Transfer('S', 'X');
+                    break;
+                case 0x9E:
+                    this.Divide();
+                    break;
+                case 0x9F:
+                    this.ExchangeNibble();
+                    break;
+                case 0xA0:
+                    this.FlagSet(SPC_FI, true);
+                    break;
+                case 0xA4:
+                    this.DirectRead('SBC', 'A');
+                    break;
+                case 0xA5:
+                    this.AbsoluteRead('SBC', 'A');
+                    break;
+                case 0xA6:
+                    this.IndirectXRead('SBC');
+                    break;
+                case 0xA7:
+                    this.IndexedIndirectRead('SBC', this.regs.X);
+                    break;
+                case 0xA8:
+                    this.ImmediateRead('SBC', 'A');
+                    break;
+                case 0xA9:
+                    this.DirectDirectModify('SBC');
+                    break;
+                case 0xAA:
+                    this.AbsoluteBitModify(5);
+                    break;
+                case 0xAB:
+                    this.DirectModify('INC');
+                    break;
+                case 0xAC:
+                    this.AbsoluteModify('INC');
+                    break;
+                case 0xAD:
+                    this.ImmediateRead('CMP', 'Y');
+                    break;
+                case 0xAE:
+                    this.Pull('A');
+                    break;
+                case 0xAF:
+                    this.IndirectXIncrementWrite(this.regs.A);
+                    break;
+                case 0xB0:
+                    this.Branch(this.regs.P.C === 1);
                     break;
             }
             this.test.finalize(this.regs);
