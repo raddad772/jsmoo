@@ -37,7 +37,7 @@ function init_js() {
 	tracing_checkbox = document.getElementById('tracingbox');
 	tracing_5a22_checkbox = document.getElementById('tracing5a22');
 	tracing_spc700_checkbox = document.getElementById('tracingspc700');
-	watching_checkbox = document.getElementById('tracingspc700');
+	watching_checkbox = document.getElementById('watchpt');
 	mc_input = document.getElementById('masterclocksteps');
 	scanline_input = document.getElementById('scanlinesteps');
 	frame_input = document.getElementById('framesteps');
@@ -68,7 +68,7 @@ function init_js() {
 			dbg.watch_on = true;
 		}
 		else {
-			dbg.watch_off = true;
+			dbg.watch_on = false;
 		}
 	});
 

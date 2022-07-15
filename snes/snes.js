@@ -170,6 +170,8 @@ class SNES {
 		this.ppu = new SNES_slow_1st_PPU(document.getElementById('snescanvas'), this.version, this.mem_map, this.clock);
 		this.apu = new spc700(this.mem_map, this.clock);
 		this.cpu.reset();
+		dbg.watch.wdc = this.cpu;
+		dbg.watch.spc = this.apu;
 	}
 
 	do_display(force) {
@@ -350,7 +352,10 @@ function main() {
 	initDb(main2);
 }
 
-after_js = main;
+//after_js = main;
+after_js = generate_SPC700_test_test;
+
+
 //after_js = test_65c816;
 //after_js = generate_js;
 //after_js = test_pt_65c816;

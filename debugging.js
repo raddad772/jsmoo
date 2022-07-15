@@ -281,6 +281,7 @@ class debugger_t {
         snes.clock.cpu_deficit = 0;
         //snes.clock.apu_deficit -= overflow;
         //snes.clock.ppu_deficit -= overflow;
+        debugger;
         console.log('AFTER BREAK deficits', snes.clock.cpu_deficit, snes.clock.apu_deficit, snes.clock.ppu_deficit)
         snes.apu.catch_up();
         snes.ppu.catch_up();

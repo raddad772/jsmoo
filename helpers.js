@@ -219,7 +219,6 @@ function trace_start_format(kind, kind_color, trace_cycles, middle, addr, bank=n
 }
 
 function trace_format_read(kind, kind_color, trace_cycles, addr, val, bank=null) {
-    if (trace_cycles === 321133) dbg.break();
     let outstr;
     if (typeof val === 'undefined') {
         val = 'UNDEFINED';
