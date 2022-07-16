@@ -1,7 +1,7 @@
 "use strict";
 
 let TEST_TO_GENERATE = 0x05;
-let SPC_NUM_TO_GENERATE = 1; // Generate 1 of each test
+let SPC_NUM_TO_GENERATE = 3; // Generate 1 of each test
 const SPC_GEN_WAIT_HOW_LONG = 6; // 6 cycles of Wait are generated
 
 // Format target...
@@ -606,8 +606,8 @@ class SPC_test_generator {
         let addr = this.fetch();
         addr |= this.fetch() << 8;
         this.idle();
-        this.push(PC >>> 8);
-        this.push(PC & 0xFF);
+        this.push(this.regs.PC >>> 8);
+        this.push(this.regs.PC & 0xFF);
         this.idle();
         this.idle();
         this.regs.PC = addr;
@@ -646,7 +646,7 @@ class SPC_test_generator {
             this.regs.A = (this.regs.A + 0x60) & 0xFF;
             this.regs.P.C = 1;
         }
-        if (this.regs.P.H || ((A & 15) > 0x09)) {
+        if (this.regs.P.H || ((this.regs.A & 15) > 0x09)) {
             this.regs.A = (this.regs.A - 0x06) & 0xFF;
         }
         this.setz(this.regs.A);
@@ -932,8 +932,8 @@ class SPC_test_generator {
         let ya = this.regs.Y * this.regs.A;
         this.regs.A = ya & 0xFF;
         this.regs.Y = (ya >>> 8) & 0xFF;
-        this.regs.setz(this.regs.Y);
-        this.regs.setn8(this.regs.Y);
+        this.setz(this.regs.Y);
+        this.setn8(this.regs.Y);
     }
 
     OverflowClear() {
@@ -1696,7 +1696,7 @@ class SPC_test_generator {
                     this.Transfer('A', 'Y');
                     break;
                 case 0xFE:
-                    tis.BranchNotYDecrement();
+                    this.BranchNotYDecrement();
                     break;
                 case 0xFF:
                     this.Stop();
@@ -1712,6 +1712,10 @@ class SPC_test_generator {
 
 function generate_SPC700_test_test() {
     let test_generator = new SPC_test_generator();
-    let tests = test_generator.generate_test(TEST_TO_GENERATE, SPC_NUM_TO_GENERATE);
+    let tests = {};
+    for (let i = 0; i < 256; i++) {
+        tests[i] = test_generator.generate_test(i, SPC_NUM_TO_GENERATE);
+    }
     console.log('GENERATED TESTS', tests);
 }
+
