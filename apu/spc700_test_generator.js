@@ -1,8 +1,10 @@
 "use strict";
 
 let TEST_TO_GENERATE = 0x05;
-let NUM_TO_GENERATE = 1;
+let SPC_NUM_TO_GENERATE = 1; // Generate 1 of each test
+const SPC_GEN_WAIT_HOW_LONG = 6; // 6 cycles of Wait are generated
 
+// Format target...
 // { "name": "0a 78 2d",
 // "initial": {
 //   "pc": 55578,
@@ -244,7 +246,7 @@ class SPC_test_generator {
         let z = x + y + this.regs.P.C;
         this.regs.P.C = +(z > 0xFF);
         this.setz(z);
-        this.regs.P.H = ((x ^ y ^ z) >> 4) & 1;
+        this.regs.P.H = ((x ^ y ^ z) >>> 4) & 1;
         this.regs.P.V = ((~(x ^ y)) & (x ^ z) & 0x80) >>> 7;
         this.setn8(z);
         return (z & 0xFF);
@@ -401,7 +403,8 @@ class SPC_test_generator {
         this.test.add_cycle(whereto & 0xFFFF, what, 'write');
     }
 
-    read_discard(wherefrom) {
+    read_discard(wherefrom=null) {
+        if (wherefrom === null) wherefrom = this.regs.PC;
         let val = null;
         this.test.add_cycle(wherefrom & 0xFFFF, val, 'read');
         return val;
@@ -486,6 +489,14 @@ class SPC_test_generator {
         this.regs.A = this.alu(op)(this.regs.A, data);
     }
 
+    AbsoluteIndexedWrite(index) {
+        let addr = this.fetch();
+        addr |= this.fetch() << 8;
+        this.idle();
+        this.read(addr + index);
+        this.write(addr + index, this.regs.A);
+    }
+
     AbsoluteModify(op) {
         let addr = this.fetch();
         addr |= this.fetch() << 8;
@@ -500,11 +511,11 @@ class SPC_test_generator {
         this.regs[target] = this.alu(op)(this.regs[target], data);
     }
 
-    AbsoluteWrite(data) {
+    AbsoluteWrite(val) {
         let addr = this.fetch();
         addr |= this.fetch() << 8;
-        this.read_discard(addr);
-        this.write(addr, data);
+        this.read(addr);
+        this.write(addr, val);
     }
 
     Branch(shouldi) {
@@ -555,8 +566,20 @@ class SPC_test_generator {
         this.regs.PC += mksigned8(displacement);
     }
 
+    BranchNotDirectIndexed(index) {
+        let addr = this.fetch();
+        this.idle();
+        let data = this.load(addr + index);
+        this.idle();
+        let displacement = this.fetch();
+        if (this.regs.A === data) return;
+        this.idle();
+        this.idle();
+        this.regs.PC += mksigned8(displacement);
+    }
+
     BranchNotYDecrement() {
-        this.read_discard(this.regs.PC);
+        this.read_discard();
         this.idle();
         let displacement = this.fetch();
         this.regs.Y = (this.regs.Y - 1) & 0xFF;
@@ -610,13 +633,47 @@ class SPC_test_generator {
         this.regs.PC |= this.read(address + 1) << 8;
     }
 
+    ComplementCarry() {
+        this.read_discard();
+        this.idle();
+        this.regs.P.C = this.regs.P.C ? 0 : 1;
+    }
+
+    DecimalAdjustAdd() {
+        this.read_discard();
+        this.idle();
+        if (this.regs.P.C || (this.regs.A > 0x99)) {
+            this.regs.A = (this.regs.A + 0x60) & 0xFF;
+            this.regs.P.C = 1;
+        }
+        if (this.regs.P.H || ((A & 15) > 0x09)) {
+            this.regs.A = (this.regs.A - 0x06) & 0xFF;
+        }
+        this.setz(this.regs.A);
+        this.setn8(this.regs.A);
+    }
+
+    DecimalAdjustSub() {
+        this.read_discard();
+        this.idle();
+        if (!this.regs.P.C || (this.regs.A > 0x99)) {
+            this.regs.A = (this.regs.A - 0x60) & 0xFF;
+            this.regs.P.C = 0;
+        }
+        if (!this.regs.P.H || ((this.regs.A & 15) > 0x09)) {
+            this.regs.A = (this.regs.A - 0x06) & 0xFF;
+        }
+        this.setz(this.regs.A);
+        this.setn8(this.regs.A);
+    }
+
     DirectCompareWord(op) {
         let addr = this.fetch();
         let data = this.load(addr);
         data |= this.load(addr + 1) << 8;
         let YA = this.regs.A | (this.regs.Y << 8);
         YA = this.alu(op)(YA, data);
-        this.regs.Y = (YA & 0xFF00) >> 8;
+        this.regs.Y = (YA & 0xFF00) >>> 8;
         this.regs.A = YA & 0xFF;
     }
 
@@ -636,6 +693,13 @@ class SPC_test_generator {
         let lhs = this.load(target);
         lhs = this.alu(op)(lhs, rhs);
         this.store(target, lhs);
+    }
+
+    DirectDirectWrite() {
+        let source = this.fetch();
+        let data = this.load(source);
+        let target = this.fetch();
+        this.store(target, data);
     }
 
     DirectImmediateCompare(op) {
@@ -675,6 +739,13 @@ class SPC_test_generator {
         this.regs[target] = this.alu(op)(target, data);
     }
 
+    DirectIndexedWrite(val, index) {
+        let addr = this.fetch();
+        this.idle();
+        this.load(addr + index);
+        this.store(addr + index, val);
+    }
+
     DirectModify(op) {
         let addr = this.fetch();
         let data = this.load(addr);
@@ -704,8 +775,21 @@ class SPC_test_generator {
         data |= this.load(addr + 1) << 8;
         let YA = (this.regs.Y << 8) | this.regs.A;
         YA = this.alu(op)(YA, data);
-        this.regs.Y = (YA & 0xFF00) >> 8;
+        this.regs.Y = (YA & 0xFF00) >>> 8;
         this.regs.A = YA & 0xFF;
+    }
+
+    DirectWrite(val) {
+        let addr = this.fetch();
+        this.load(addr);
+        this.store(addr, val);
+    }
+
+    DirectWriteWord() {
+        let addr = this.fetch();
+        this.load(addr);
+        this.store(addr, this.regs.A);
+        this.store(addr + 1, this.regs.Y);
     }
 
     Divide() {
@@ -726,7 +810,7 @@ class SPC_test_generator {
     }
 
     ExchangeNibble() {
-        this.read_discard(this.regs.PC);
+        this.read_discard();
         this.idle();
         this.idle();
         this.idle();
@@ -736,7 +820,7 @@ class SPC_test_generator {
     }
 
     FlagSet(flag, value) {
-        this.read_discard(this.regs.PC);
+        this.read_discard();
         if (flag === SPC_FI) this.idle();
         let cf = this.regs.P.getbyte();
 
@@ -755,6 +839,15 @@ class SPC_test_generator {
         this.regs.A = this.alu(op)(this.regs.A, data);
     }
 
+    IndirectIndexedWrite(val, index) {
+        let indirect = this.fetch();
+        let addr = this.load(indirect);
+        addr |= this.load(indirect + 1) << 8;
+        this.idle();
+        this.read(addr + index);
+        this.write(addr + index, val);
+    }
+
     IndexedIndirectRead(op, index) {
         let indirect = this.fetch();
         this.idle();
@@ -764,28 +857,51 @@ class SPC_test_generator {
         this.regs.A = this.alu(op)(this.regs.A, data)
     }
 
+    IndexedIndirectWrite(val, index) {
+        let indirect = this.fetch();
+        this.idle();
+        let addr = this.load(indirect + index);
+        addr |= this.load(indirect + index + 1) << 8;
+        this.read(addr);
+        this.write(addr, val);
+    }
+
     IndirectXCompareIndirectY(op) {
-        this.read_discard(this.regs.PC);
+        this.read_discard();
         let rhs = this.load(this.regs.Y);
         let lhs = this.load(this.regs.X);
         lhs = this.alu(op)(lhs, rhs);
         this.idle();
     }
 
+    IndirectXIncrementRead(target) {
+        this.read_discard();
+        this.regs[target] = this.load(this.regs.X++);
+        this.idle();
+        this.setz(this.regs[target]);
+        this.setn8(this.regs[target]);
+    }
+
     IndirectXIncrementWrite(val) {
-        this.read_discard(this.regs.PC);
+        this.read_discard();
         this.idle();
         this.store(this.regs.X++, val);
     }
 
     IndirectXRead(op) {
-        this.read_discard(this.regs.PC);
+        this.read_discard();
         let data = this.load(this.regs.X);
         this.regs.A = this.alu(op)(this.regs.A, data);
     }
 
+    IndirectXWrite(val) {
+        this.read_discard();
+        this.load(this.regs.X);
+        this.store(this.regs.X, val);
+    }
+
     IndirectXWriteIndirectY(op) {
-        this.read_discard(this.regs.PC);
+        this.read_discard();
         let rhs = this.load(this.regs.Y);
         let lhs = this.load(this.regs.X);
         lhs = this.alu(op)(lhs, rhs);
@@ -810,6 +926,22 @@ class SPC_test_generator {
         this.regs.PC |= this.read(addr + this.regs.X + 1) << 8;
     }
 
+    Multiply() {
+        this.read_discard();
+        for (let i = 0; i < 7; i++) { this.idle(); }
+        let ya = this.regs.Y * this.regs.A;
+        this.regs.A = ya & 0xFF;
+        this.regs.Y = (ya >>> 8) & 0xFF;
+        this.regs.setz(this.regs.Y);
+        this.regs.setn8(this.regs.Y);
+    }
+
+    OverflowClear() {
+        this.read_discard();
+        this.regs.P.H = 0;
+        this.regs.P.V = 0;
+    }
+
     Pull(target) {
         this.read_discard();
         this.idle();
@@ -817,19 +949,19 @@ class SPC_test_generator {
     }
 
     PullP() {
-        this.read_discard(this.regs.PC);
+        this.read_discard();
         this.idle();
         this.regs.P.setbyte(this.pull());
     }
 
     Push(val) {
-        this.read_discard(this.regs.PC);
+        this.read_discard();
         this.push(val);
         this.idle();
     }
 
     ReturnInterrupt() {
-        this.read_discard(this.regs.PC);
+        this.read_discard();
         this.idle();
         this.regs.P.setbyte(this.pull())
         this.regs.PC = this.pull();
@@ -837,10 +969,17 @@ class SPC_test_generator {
     }
 
     ReturnSubroutine() {
-        this.read_discard(this.regs.PC);
+        this.read_discard();
         this.idle();
         this.regs.PC = this.pull();
         this.regs.PC |= this.pull() << 8;
+    }
+
+    Stop() {
+        for (let i = 0; i < (SPC_GEN_WAIT_HOW_LONG >>> 1); i++) {
+            this.read_discard();
+            this.idle();
+        }
     }
 
     TestSetBitsAbsolute(set) {
@@ -849,16 +988,23 @@ class SPC_test_generator {
         let data = this.read(addr);
         this.regs.P.Z = +((this.regs.A - data) === 0);
         this.regs.P.N = ((this.regs.A - data) & 0x80) >>> 7;
-        this.read_discard(addr);
+        this.read(addr);
         this.write(addr, set ? data | this.regs.A : data & (~this.regs.A) & 0xFF);
     }
 
     Transfer(from, to) {
-        this.read_discard(this.regs.PC);
+        this.read_discard();
         this.regs[to] = this.regs[from];
         if (to === 'S') return;
         this.setz(this.regs[to]);
         this.setn8(this.regs[to]);
+    }
+
+    Wait() {
+        for (let i = 0; i < (SPC_GEN_WAIT_HOW_LONG >>> 1); i++) {
+            this.read_discard();
+            this.idle();
+        }
     }
 
     generate_test(opcode, number) {
@@ -872,7 +1018,7 @@ class SPC_test_generator {
             this.regs.inc_PC();
             switch (opcode) {
                 case 0x00: // Nop
-                    this.read_discard(this.regs.PC);
+                    this.read_discard();
                     break;
                 case 0x01: // TCALL 0
                 case 0x11: // TCALL 1
@@ -1363,6 +1509,198 @@ class SPC_test_generator {
                 case 0xB0:
                     this.Branch(this.regs.P.C === 1);
                     break;
+                case 0xB4:
+                    this.DirectIndexedRead('SBC', 'A', this.regs.X);
+                    break;
+                case 0xB5:
+                    this.AbsoluteIndexedRead('SBC', this.regs.X);
+                    break;
+                case 0xB6:
+                    this.AbsoluteIndexedRead('SBC', this.regs.Y);
+                    break;
+                case 0xB7:
+                    this.IndirectIndexedRead('SBC', this.regs.Y);
+                    break;
+                case 0xB8:
+                    this.DirectImmediateModify('SBC');
+                    break;
+                case 0xB9:
+                    this.IndirectXWriteIndirectY('SBC');
+                    break;
+                case 0xBA:
+                    this.DirectReadWord('LDW');
+                    break;
+                case 0xBB:
+                    this.DirectIndexedModify('INC', this.regs.X);
+                    break;
+                case 0xBC:
+                    this.ImpliedModify('INC', 'A');
+                    break;
+                case 0xBD:
+                    this.Transfer('X', 'S');
+                    break;
+                case 0xBE:
+                    this.DecimalAdjustSub();
+                    break;
+                case 0xBF:
+                    this.IndirectXIncrementRead('A');
+                    break;
+                case 0xC0:
+                    this.FlagSet(SPC_FI, false);
+                    break;
+                case 0xC4:
+                    this.DirectWrite(this.regs.A);
+                    break;
+                case 0xC5:
+                    this.AbsoluteWrite(this.regs.A);
+                    break;
+                case 0xC6:
+                    this.IndirectXWrite(this.regs.A);
+                    break;
+                case 0xC7:
+                    this.IndexedIndirectWrite(this.regs.A, this.regs.X);
+                    break;
+                case 0xC8:
+                    this.ImmediateRead('CMP', 'X');
+                    break;
+                case 0xC9:
+                    this.AbsoluteWrite(this.regs.X);
+                    break;
+                case 0xCA:
+                    this.AbsoluteBitModify(6);
+                    break;
+                case 0xCB:
+                    this.DirectWrite(this.regs.Y);
+                    break;
+                case 0xCC:
+                    this.AbsoluteWrite(this.regs.Y);
+                    break;
+                case 0xCD:
+                    this.ImmediateRead('LD', 'X');
+                    break;
+                case 0xCE:
+                    this.Pull('X');
+                    break;
+                case 0xCF:
+                    this.Multiply();
+                    break;
+                case 0xD0:
+                    this.Branch(this.regs.P.Z === 0);
+                    break;
+                case 0xD4:
+                    this.DirectIndexedWrite(this.regs.A, this.regs.X);
+                    break;
+                case 0xD5:
+                    this.AbsoluteIndexedWrite(this.regs.X);
+                    break;
+                case 0xD6:
+                    this.AbsoluteIndexedWrite(this.regs.Y);
+                    break;
+                case 0xD7:
+                    this.IndirectIndexedWrite(this.regs.A, this.regs.Y);
+                    break;
+                case 0xD8:
+                    this.DirectWrite(this.regs.X);
+                    break;
+                case 0xD9:
+                    this.DirectIndexedWrite(this.regs.X, this.regs.Y);
+                    break;
+                case 0xDA:
+                    this.DirectWriteWord();
+                    break;
+                case 0xDB:
+                    this.DirectIndexedWrite(this.regs.Y, this.regs.X);
+                    break;
+                case 0xDC:
+                    this.ImpliedModify('DEC', 'Y');
+                    break;
+                case 0xDD:
+                    this.Transfer('Y', 'A');
+                    break;
+                case 0xDE:
+                    this.BranchNotDirectIndexed(this.regs.X);
+                    break;
+                case 0xDF:
+                    this.DecimalAdjustAdd();
+                    break;
+                case 0xE0:
+                    this.OverflowClear();
+                    break;
+                case 0xE4:
+                    this.DirectRead('LD', 'A');
+                    break;
+                case 0xE5:
+                    this.AbsoluteRead('LD', 'A');
+                    break;
+                case 0xE6:
+                    this.IndirectXRead('LD');
+                    break;
+                case 0xE7:
+                    this.IndexedIndirectRead('LD', this.regs.X);
+                    break;
+                case 0xE8:
+                    this.ImmediateRead('LD', 'A');
+                    break;
+                case 0xE9:
+                    this.AbsoluteRead('LD', 'A');
+                    break;
+                case 0xEA:
+                    this.AbsoluteBitModify(7);
+                    break;
+                case 0xEB:
+                    this.DirectRead('LD', 'Y');
+                    break;
+                case 0xEC:
+                    this.AbsoluteRead('LD', 'Y');
+                    break;
+                case 0xED:
+                    this.ComplementCarry();
+                    break;
+                case 0xEE:
+                    this.Pull('Y');
+                    break;
+                case 0xEF:
+                    this.Wait();
+                    break;
+                case 0xF0:
+                    this.Branch(this.regs.P.Z === 1);
+                    break;
+                case 0xF4:
+                    this.DirectIndexedRead('LD', 'X');
+                    break;
+                case 0xF5:
+                    this.AbsoluteIndexedRead('LD', 'X');
+                    break;
+                case 0xF6:
+                    this.AbsoluteIndexedRead('LD', 'Y');
+                    break;
+                case 0xF7:
+                    this.IndirectIndexedRead('LD', this.regs.Y);
+                    break;
+                case 0xF8:
+                    this.DirectRead('LD', 'X');
+                    break;
+                case 0xF9:
+                    this.DirectIndexedRead('LD', 'Y', this.regs.X);
+                    break;
+                case 0xFA:
+                    this.DirectDirectWrite();
+                    break;
+                case 0xFB:
+                    this.DirectIndexedRead('LD', 'Y', this.regs.X);
+                    break;
+                case 0xFC:
+                    this.ImpliedModify('INC', 'Y');
+                    break;
+                case 0xFD:
+                    this.Transfer('A', 'Y');
+                    break;
+                case 0xFE:
+                    tis.BranchNotYDecrement();
+                    break;
+                case 0xFF:
+                    this.Stop();
+                    break;
             }
             this.test.finalize(this.regs);
             this.test.name = hex2(opcode) + ' ' + hex4(testnum)
@@ -1374,6 +1712,6 @@ class SPC_test_generator {
 
 function generate_SPC700_test_test() {
     let test_generator = new SPC_test_generator();
-    let tests = test_generator.generate_test(TEST_TO_GENERATE, NUM_TO_GENERATE);
+    let tests = test_generator.generate_test(TEST_TO_GENERATE, SPC_NUM_TO_GENERATE);
     console.log('GENERATED TESTS', tests);
 }
