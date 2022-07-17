@@ -261,12 +261,12 @@ class tester_65c816 {
             //}
             if (this.cpu.pins.VDA || this.cpu.pins.VPA || this.cpu.pins.PDV) {
                 if (this.cpu.pins.RW) {
-                    //dconsole.addl('(' + padl(this.cpu.pins.trace_cycles.toString(), 6) + ')w' + hex0x2(this.cpu.pins.BA) + ' ' + hex0x4(this.cpu.pins.Addr) + ' WT   ' + hex0x2(this.cpu.pins.D));
+                    //dconsole.addl(null, '(' + padl(this.cpu.pins.trace_cycles.toString(), 6) + ')w' + hex0x2(this.cpu.pins.BA) + ' ' + hex0x4(this.cpu.pins.Addr) + ' WT   ' + hex0x2(this.cpu.pins.D));
                     this.trace_write8(this.cpu.pins.BA, this.cpu.pins.Addr, this.cpu.pins.D);
                 }
                 else {
                     this.cpu.pins.D = this.trace_read8(this.cpu.pins.BA, this.cpu.pins.Addr);
-                    //dconsole.addl('(' + padl(this.cpu.pins.trace_cycles.toString(), 6) + ')r' + hex0x2(this.cpu.pins.BA) + ' ' + hex0x4(this.cpu.pins.Addr) + '  ' + hex0x2(this.cpu.pins.D));
+                    //dconsole.addl(null, '(' + padl(this.cpu.pins.trace_cycles.toString(), 6) + ')r' + hex0x2(this.cpu.pins.BA) + ' ' + hex0x4(this.cpu.pins.Addr) + '  ' + hex0x2(this.cpu.pins.D));
                 }
             }
         }

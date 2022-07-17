@@ -120,6 +120,112 @@ function txf(instr) {
 }
 
 class console_t {
+    constructor(el, direction = 1, maxlines = 30, scrollbar=false, draw_on_add = false) {
+        this.elname = el;
+        this.direction = direction;
+        this.buffer = [];
+        this.draw_on_add = draw_on_add;
+        this.scrollbar = scrollbar;
+        this.max_lines = maxlines;
+        this.container = null;
+        this.textconsole = null;
+        this.init_done = false;
+        this.last_order = 0;
+    }
+
+    init() {
+        if (this.init_done) return;
+        this.container = document.getElementById(this.elname + "container");
+        this.textconsole = document.getElementById(this.elname);
+        this.init_done = true;
+    }
+
+    clear(draw=null) {
+        this.buffer = [];
+        if (draw === null) draw = this.draw_on_add;
+        if (draw) {
+            this.init();
+            this.textconsole.innerHTML = "";
+        }
+    }
+
+    draw() {
+        this.init();
+        let outstr = '';
+        for (let i in this.buffer) {
+            let bgcolor = this.buffer[i][1];
+            let fmt_txt = txf(this.buffer[i][2]);
+            if (bgcolor !== null) {
+                outstr += '<span style="display: block; background-color: ' + bgcolor + ';">' + fmt_txt + '</span>';
+            }
+            else {
+                if (i !== 0) outstr += '\n';
+                outstr += fmt_txt;
+            }
+        }
+        this.textconsole.innerHTML = outstr;
+        if (this.scrollbar) {
+            var txcontainer = this.container;
+            if (this.direction === 1) {
+                window.setTimeout(function () {
+                    txcontainer.scrollTop = txcontainer.scrollHeight;
+                }, 0);
+            }
+            else {
+                window.setTimeout(function () {
+                    txcontainer.scrollTop = 0;
+                }, 0);
+            }
+        }
+    }
+
+    addl(order, line, bgcolor=null, draw= null) {
+        if (order === null) {
+            order = this.last_order;
+            this.last_order++;
+        }
+        if (draw === null) draw = this.draw_on_add;
+        if (this.direction === 1)
+            this.addl_down(order, line, bgcolor);
+        else
+            this.addl_up(order, line, bgcolor);
+        if (draw)
+            this.draw();
+    }
+
+    sort_down() {
+        this.buffer = this.buffer.sort((a, b) => {return a[0] - b[0];})
+    }
+
+    sort_up() {
+        this.buffer = this.buffer.sort((a, b) => {return b[0] - a[0];})
+    }
+
+    sort() {
+        if (this.direction === 1) this.sort_down();
+        else this.sort_up();
+    }
+
+    addl_up(order, line, bgcolor) {
+        this.buffer.unshift([order, bgcolor, line]);
+        this.sort_up();
+        if (this.buffer.length > this.max_lines) {
+            this.buffer = this.buffer.slice(0, this.buffer.length-1);
+            //this.buffer = this.buffer.slice(1);
+        }
+    }
+
+    addl_down(order, line, bgcolor) {
+        this.buffer.push([order, bgcolor, line]);
+        this.sort_down();
+        if (this.buffer.length > this.max_lines) {
+            this.buffer = this.buffer.slice(1);
+        }
+    }
+
+}
+
+/*class old_console_t {
     constructor(elname, maxlines=30) {
         this.elname = elname;
         this.buffer = [];
@@ -167,15 +273,17 @@ class console_t {
         }
         this.buffer.unshift([bgcolor, ft]);
         if (this.buffer.length > this.max_lines) {
-            //this.buffer = this.buffer.slice(-1);
+            this.buffer = this.buffer.slice(-1);
         }
         if (draw)
             this.draw();
     }
-}
+}*/
 
-var tconsole = new console_t('textconsole', 80);
-var dconsole = new console_t('disassembly', 258);
+// Top one, going up.
+var dconsole = new console_t('disassembly', -1, 258, false, false);
+// Bottom one, going down.
+var tconsole = new console_t('textconsole', 1, 20, true, true);
 
 // https://stackoverflow.com/questions/3665115/how-to-create-a-file-in-memory-for-user-to-download-but-not-through-server
 function save_js(filename, data, kind = 'text/javascript') {

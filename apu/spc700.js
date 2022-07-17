@@ -67,6 +67,8 @@ class spc700 {
         mem_map.write_apu = this.write_reg.bind(this);
         clock.set_apu(this);
 
+        this.waiting_for_master_clock = 0;
+
         this.DSP = new SDSP();
 
         this.io = {
