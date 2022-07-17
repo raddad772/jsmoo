@@ -158,6 +158,8 @@ const SPC_AM = Object.freeze({
     RYA: 46, // YA for MUL
     STACK: 47, // Stack pop
     DCB: 48, // For assembler
+    JMPA: 49, // Jump Absolute
+    IMM: 50 // Immediate
 });
 
 class SPC_OP_INFO {
@@ -302,7 +304,7 @@ const SPC_INS = Object.freeze({
     0x5B: new SPC_OP_INFO(0x5B, 'LSR', 'dp+X', SPC_MN.LSR, SPC_AM.DP_INDEXED_X, 5),
     0x5C: new SPC_OP_INFO(0x5C, 'LSR', 'A', SPC_MN.LSR, SPC_AM.RA, 2),
     0x5E: new SPC_OP_INFO(0x5E, 'CMP', 'Y, !abs', SPC_MN.CMP, SPC_AM.RY_A, 4),
-    0x5F: new SPC_OP_INFO(0x5F, 'JMP', '!abs', SPC_MN.JMP, SPC_AM.A, 3),
+    0x5F: new SPC_OP_INFO(0x5F, 'JMP', '!abs', SPC_MN.JMP, SPC_AM.JMPA, 3),
     0x60: new SPC_OP_INFO(0x60, 'CLRC', 'i', SPC_MN.CLRC, SPC_AM.I, 2),
     0x61: new SPC_OP_INFO(0x61, 'TCALL', '6', SPC_MN.TCALL, SPC_AM.I, 8),
     0x62: new SPC_OP_INFO(0x62, 'SET1', 'dp.3', SPC_MN.SET1, SPC_AM.D_BIT, 4), // X
@@ -332,7 +334,7 @@ const SPC_INS = Object.freeze({
     0x7B: new SPC_OP_INFO(0x7B, 'ROR', 'dp+X', SPC_MN.ROR, SPC_AM.DP_INDEXED_X, 5),
     0x7C: new SPC_OP_INFO(0x7C, 'ROR', 'A', SPC_MN.ROR, SPC_AM.RA, 2),
     0x7D: new SPC_OP_INFO(0x7D, 'MOV', 'A, X', SPC_MN.MOV, SPC_AM.MOV, 2),
-    0x7F: new SPC_OP_INFO(0x7F, 'RET1', 'i', SPC_MN.RET1, SPC_AM.I, 5),
+    0x7F: new SPC_OP_INFO(0x7F, 'RET1', 'i', SPC_MN.RET1, SPC_AM.I, 6),
     0x80: new SPC_OP_INFO(0x80, 'SETC', 'i', SPC_MN.SETC, SPC_AM.I, 2),
     0x81: new SPC_OP_INFO(0x81, 'TCALL', '8', SPC_MN.TCALL, SPC_AM.I, 8),
     0x82: new SPC_OP_INFO(0x82, 'SET1', 'dp.4', SPC_MN.SET1, SPC_AM.D_BIT, 4), // X
@@ -574,7 +576,7 @@ class SPC_funcgen {
         this.addl('regs.A = z & 0xFF;')
 
         this.addl('y = (regs.TR >>> 8) & 0xFF;');
-        this.addl('z = regs.Y + y;');
+        this.addl('z = regs.Y + y + regs.P.C;');
         this.addl('regs.P.C = +(z > 0xFF);');
         this.addl('regs.P.H = ((regs.Y ^ y ^ z) & 0x10) >>> 4;');
         this.addl('regs.P.V = (((~(regs.Y ^ y)) & (regs.Y ^ z)) & 0x80) >>> 7;');
@@ -613,7 +615,7 @@ class SPC_funcgen {
     }
 
     XCN() {
-        this.addl('regs.A = (regs.A << 4) | (regs.A >>> 4);');
+        this.addl('regs.A = ((regs.A << 4) | (regs.A >>> 4)) & 0xFF;');
         this.setn('regs.A');
         this.setz('regs.A');
     }
@@ -698,11 +700,11 @@ class SPC_funcgen {
         this.addl('regs.P.H = +((regs.Y & 15) >= (regs.X & 15));');
         this.addl('regs.P.V = +(regs.Y >= regs.X);');
         this.addl('if (regs.Y < (regs.X << 1)) {');
-        this.addl('    regs.A = Math.floor(YA / regs.X);');
-        this.addl('    regs.Y = YA % regs.X;')
+        this.addl('    regs.A = Math.floor(YA / regs.X) & 0xFF;');
+        this.addl('    regs.Y = (YA % regs.X) & 0xFF;')
         this.addl('} else {');
-        this.addl('    regs.A = 255 - Math.floor((YA - (regs.X << 9)) / (256 - regs.X));');
-        this.addl('    regs.Y = regs.X + (YA - (regs.X << 9)) % (256 - regs.X);');
+        this.addl('    regs.A = (255 - Math.floor((YA - (regs.X << 9)) / (256 - regs.X))) & 0xFF;');
+        this.addl('    regs.Y = (regs.X + (YA - (regs.X << 9)) % (256 - regs.X)) & 0xFF;');
         this.addl('}');
         this.setz('regs.A');
         this.setn('regs.A');
@@ -746,9 +748,9 @@ class SPC_funcgen {
 
     NOT1(val, bit) {
         // bit = !bit
-        this.addl('let mask = (1 << ' + bit + ');');
+        this.addl('let mask = 1 << ' + bit + ';');
         this.addl('if (mask & ' + val + ')'); // We gotta unset, which means and the inverse
-        this.addl('    ' + val + ' &= (~mask) & 0xFF;');
+        this.addl('    ' + val + ' &= ((~mask) & 0xFF);');
         this.addl('else')
         this.addl('    ' + val + ' |= mask;');
     }
@@ -807,14 +809,13 @@ class SPC_funcgen {
     }
 
     DAA() {
-        this.addl('if (regs.P.C || regs.A > 0x99) {');
-        this.addl('    regs.A += 0x60;');
+        this.addl('if (regs.P.C || (regs.A > 0x99)) {');
+        this.addl('    regs.A = (regs.A + 0x60) & 0xFF;');
         this.addl('    regs.P.C = 1;')
         this.addl('}');
         this.addl('if (regs.P.H || ((regs.A & 15) > 0x09)) {');
-        this.addl('    regs.A += 0x06;');
+        this.addl('    regs.A = (regs.A + 0x06) & 0xFF;');
         this.addl('}');
-        this.addl('regs.A &= 0xFF;');
         this.setz('regs.A');
         this.setn('regs.A');
     }
@@ -1050,7 +1051,7 @@ class SPC_funcgen {
                 if (addr_mode === SPC_AM.MEMBITR)
                     this.addl('regs.P.C = ((' + operand + ') >>> (' + operand2 + ')) & 1;');
                 else
-                    this.addl(operand + ' = regs.P.C ? ' + operand + ' | (regs.P.C << ' + operand2 + ') : + ' + operand + ' & (~(regs.P.C << ' + operand2 + ')) & 0xFF;');
+                    this.addl(operand + ' = regs.P.C ? ' + operand + ' | (regs.P.C << ' + operand2 + ') : ' + operand + ' & ((~(1 << ' + operand2 + ')) & 0xFF);');
                 break;
             case SPC_MN.SLEEP:
                 this.addl('cpu.WAI = true;');
@@ -1195,7 +1196,7 @@ class SPC_funcgen {
                 break;
             case SPC_AM.Y_DP: // Y, d
                 this.fetch_TA();
-                this.read('regs.TA', 'regs.TR');
+                this.load('regs.TA', 'regs.TR');
                 this.DOINS(ins,'regs.Y', 'regs.TR');
                 break;
             case SPC_AM.DP_DP: // dp, dp2
@@ -1273,21 +1274,25 @@ class SPC_funcgen {
                 break;
             case SPC_AM.MEMBITW:
                 this.fetch16();
-                this.addl('regs.TR = (regs.TA >>> 13) & 7;');
-                this.addl('regs.TA &= 0x1FFF;');
-                this.read('regs.TA', 'regs.TA2');
+                this.addl('regs.TR = (regs.TA >>> 13) & 7;'); // regs.TR is bit
+                this.addl('regs.TA &= 0x1FFF;'); // regs.TA is addr
+                this.read('regs.TA', 'regs.TA2'); // regs.TA2 is data
                 this.DOINS(ins, 'regs.TA2', 'regs.TR', addr_mode);
-                this.write('regs.TA', 'regs.TA2');
+                this.write('regs.TA', 'regs.TA2'); // write addr, data
                 break;
             case SPC_AM.D_BIT:
                 this.fetch_TA();
                 this.DOINS(ins, 'regs.TA', null, addr_mode, opcode);
                 break;
+            case SPC_AM.JMPA:
+                this.fetch16();
+                this.addl('regs.PC = regs.TA');
+                break;
             case SPC_AM.A:
                 this.fetch16();
-                this.read('regs.TA', 'regs.TR');
+                if (opcode !== 0x5F) this.read('regs.TA', 'regs.TR');
                 this.DOINS(ins, 'regs.TR');
-                if ((opcode !== SPC_MN.CALL) && (opcode !== SPC_MN.JMP)) {
+                if ((ins !== SPC_MN.CALL) && (ins !== SPC_MN.JMP)) {
                     this.write('regs.TA', 'regs.TR');
                 }
                 break;
@@ -1394,7 +1399,7 @@ class SPC_funcgen {
                 this.addl('regs.X = regs.SP');
                 break;
             case 0xAF: // (X)+, A
-                this.write('regs.X', 'regs.A');
+                this.store('regs.X', 'regs.A');
                 this.addl('regs.X = (regs.X + 1) & 0xFF;');
                 break;
             case 0xBD: // SP, X
@@ -1402,7 +1407,7 @@ class SPC_funcgen {
                 break;
             case 0xBF: // A, (X)+
                 test = 'regs.A';
-                this.read('regs.X', 'regs.A');
+                this.load('regs.X', 'regs.A');
                 this.addl('regs.X = (regs.X + 1) & 0xFF;');
                 break;
             case 0xC4: // dp, A
@@ -1414,12 +1419,12 @@ class SPC_funcgen {
                 this.write('regs.TA', 'regs.A');
                 break;
             case 0xC6: // (X), A
-                this.write('regs.X', 'regs.A')
+                this.store('regs.X', 'regs.A')
                 break;
             case 0xC7: // [dp+X], A
                 this.fetch_TA();
                 this.addl('regs.TA += regs.X;');
-                this.read16('regs.TA', 'regs.TA');
+                this.load16('regs.TA', 'regs.TA');
                 this.write('regs.TA', 'regs.A');
                 break;
             case 0xC9: // !abs, X
@@ -1455,7 +1460,7 @@ class SPC_funcgen {
                 break;
             case 0xD7: // [dp]+Y, A
                 this.fetch_TR();
-                this.read16('regs.TR', 'regs.TA');
+                this.load16('regs.TR', 'regs.TA');
                 this.addl('regs.TA = (regs.TA + regs.Y) & 0xFFFF;');
                 this.write('regs.TA', 'regs.A');
                 break;
@@ -1487,12 +1492,13 @@ class SPC_funcgen {
                 break;
             case 0xE6: // A, (X)
                 test = 'regs.A';
-                this.read('regs.X', 'regs.A');
+                this.load('regs.X', 'regs.A');
                 break;
             case 0xE7: // A, [dp+X]
                 test = 'regs.A';
                 this.fetch_TA();
-                this.read('regs.TA + regs.X', 'regs.A');
+                this.load16('regs.TA + regs.X', 'regs.TA2');
+                this.read('regs.TA2', 'regs.A');
                 break;
             case 0xE8: // A, #imm
                 test = 'regs.A';
@@ -1531,7 +1537,7 @@ class SPC_funcgen {
             case 0xF7: // A, [dp]+Y
                 test = 'regs.A';
                 this.fetch_TR();
-                this.read16('regs.TR', 'regs.TA');
+                this.load16('regs.TR', 'regs.TA');
                 this.addl('regs.TA = (regs.TA + regs.Y) & 0xFFFF;');
                 this.read('regs.TA', 'regs.A');
                 break;
@@ -1554,7 +1560,7 @@ class SPC_funcgen {
             case 0xFB: // Y, dp+X
                 test = 'regs.Y';
                 this.fetch_TA();
-                this.load('regs.TA + regs.X', 'regs.A');
+                this.load('regs.TA + regs.X', 'regs.Y');
                 break;
             case 0xFD: // Y, A
                 test = 'regs.Y';
@@ -1572,8 +1578,8 @@ class SPC_funcgen {
             case 0xBA: // YA, dp
                 this.fetch_TA();
                 this.load16_2D('regs.TA', 'regs.A', 'regs.Y');
-                this.addl('regs.P.N = (regs.Y & 0x80) >>> 8;');
-                this.addl('regs.P.Z = +(regs.Y === 0 && regs.A === 0);');
+                this.addl('regs.P.N = (regs.Y & 0x80) >>> 7;');
+                this.addl('regs.P.Z = +(0 === regs.A === regs.Y);');
                 break;
             case 0xDA: // dp, YA
                 this.fetch_TA();

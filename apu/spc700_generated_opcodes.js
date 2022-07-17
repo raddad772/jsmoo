@@ -1327,10 +1327,7 @@ const SPC_decoded_opcodes = Object.freeze(
             regs.PC &= 0xFFFF;
             regs.TA += cpu.read8(regs.PC++) << 8;
             regs.PC &= 0xFFFF;
-            regs.TR = cpu.read8(regs.TA);
-            // INS 38 ADDR MODE undefined
-            regs.PC = regs.TR;
-            cpu.write8(regs.TA, regs.TR);
+            regs.PC = regs.TA
             cpu.cycles -= regs.opc_cycles;
             regs.IR = cpu.read8(regs.PC);
             regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -1721,7 +1718,7 @@ const SPC_decoded_opcodes = Object.freeze(
             regs.P.C = +(z > 0xFF);
             regs.A = z & 0xFF;
             y = (regs.TR >>> 8) & 0xFF;
-            z = regs.Y + y;
+            z = regs.Y + y + regs.P.C;
             regs.P.C = +(z > 0xFF);
             regs.P.H = ((regs.Y ^ y ^ z) & 0x10) >>> 4;
             regs.P.V = (((~(regs.Y ^ y)) & (regs.Y ^ z)) & 0x80) >>> 7;
@@ -1774,7 +1771,7 @@ const SPC_decoded_opcodes = Object.freeze(
             regs.opc_cycles = 3;
             regs.TA = cpu.read8(regs.PC++);
             regs.PC &= 0xFFFF;
-            regs.TR = cpu.read8(regs.TA);
+            regs.TR = cpu.read8D(regs.TA);
             // INS 24 ADDR MODE undefined
             let z = regs.Y - regs.TR;
             regs.P.C = +(z >= 0)
@@ -1785,7 +1782,7 @@ const SPC_decoded_opcodes = Object.freeze(
             regs.PC = (regs.PC + 1) & 0xFFFF;
         }
 ,        0x7F: function(cpu, regs) { // RET1 i
-            regs.opc_cycles = 5;
+            regs.opc_cycles = 6;
             // INS 53 ADDR MODE 0
             regs.SP = (regs.SP + 1) & 0xFF;
             regs.TR = cpu.read8(0x100 + regs.SP);
@@ -2266,11 +2263,11 @@ const SPC_decoded_opcodes = Object.freeze(
             regs.P.H = +((regs.Y & 15) >= (regs.X & 15));
             regs.P.V = +(regs.Y >= regs.X);
             if (regs.Y < (regs.X << 1)) {
-                regs.A = Math.floor(YA / regs.X);
-                regs.Y = YA % regs.X;
+                regs.A = Math.floor(YA / regs.X) & 0xFF;
+                regs.Y = (YA % regs.X) & 0xFF;
             } else {
-                regs.A = 255 - Math.floor((YA - (regs.X << 9)) / (256 - regs.X));
-                regs.Y = regs.X + (YA - (regs.X << 9)) % (256 - regs.X);
+                regs.A = (255 - Math.floor((YA - (regs.X << 9)) / (256 - regs.X))) & 0xFF;
+                regs.Y = (regs.X + (YA - (regs.X << 9)) % (256 - regs.X)) & 0xFF;
             }
             regs.P.Z = +((regs.A) === 0);
             regs.P.N = ((regs.A) & 0x80) >>> 7;
@@ -2281,7 +2278,7 @@ const SPC_decoded_opcodes = Object.freeze(
 ,        0x9F: function(cpu, regs) { // XCN i
             regs.opc_cycles = 5;
             // INS 66 ADDR MODE 0
-            regs.A = (regs.A << 4) | (regs.A >>> 4);
+            regs.A = ((regs.A << 4) | (regs.A >>> 4)) & 0xFF;
             regs.P.N = ((regs.A) & 0x80) >>> 7;
             regs.P.Z = +((regs.A) === 0);
             cpu.cycles -= regs.opc_cycles;
@@ -2517,7 +2514,7 @@ const SPC_decoded_opcodes = Object.freeze(
         }
 ,        0xAF: function(cpu, regs) { // MOV (X)+, A
             regs.opc_cycles = 4;
-            cpu.write8(regs.X, regs.A);
+            cpu.write8D((regs.X), regs.A);
             regs.X = (regs.X + 1) & 0xFF;
             cpu.cycles -= regs.opc_cycles;
             regs.IR = cpu.read8(regs.PC);
@@ -2701,8 +2698,8 @@ const SPC_decoded_opcodes = Object.freeze(
             regs.PC &= 0xFFFF;
             regs.A = cpu.read8D(regs.TA);
             regs.Y = cpu.read8D(regs.TA + 1);
-            regs.P.N = (regs.Y & 0x80) >>> 8;
-            regs.P.Z = +(regs.Y === 0 && regs.A === 0);
+            regs.P.N = (regs.Y & 0x80) >>> 7;
+            regs.P.Z = +(0 === regs.A === regs.Y);
             cpu.cycles -= regs.opc_cycles;
             regs.IR = cpu.read8(regs.PC);
             regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2758,7 +2755,7 @@ const SPC_decoded_opcodes = Object.freeze(
         }
 ,        0xBF: function(cpu, regs) { // MOV A, (X)+
             regs.opc_cycles = 4;
-            regs.A = cpu.read8(regs.X);
+            regs.A = cpu.read8D(regs.X);
             regs.X = (regs.X + 1) & 0xFF;
             regs.P.Z = +((regs.A) === 0);
             regs.P.N = ((regs.A) & 0x80) >>> 7;
@@ -2836,7 +2833,7 @@ const SPC_decoded_opcodes = Object.freeze(
         }
 ,        0xC6: function(cpu, regs) { // MOV (X), A
             regs.opc_cycles = 4;
-            cpu.write8(regs.X, regs.A);
+            cpu.write8D((regs.X), regs.A);
             cpu.cycles -= regs.opc_cycles;
             regs.IR = cpu.read8(regs.PC);
             regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2846,7 +2843,7 @@ const SPC_decoded_opcodes = Object.freeze(
             regs.TA = cpu.read8(regs.PC++);
             regs.PC &= 0xFFFF;
             regs.TA += regs.X;
-            regs.TA = cpu.read8((regs.TA) & 0xFFFF) + (cpu.read8(((regs.TA) + 1) & 0xFFFF) << 8);
+            regs.TA = cpu.read8D((regs.TA)) + (cpu.read8D((regs.TA) + 1) << 8);
             cpu.write8(regs.TA, regs.A);
             cpu.cycles -= regs.opc_cycles;
             regs.IR = cpu.read8(regs.PC);
@@ -2886,7 +2883,7 @@ const SPC_decoded_opcodes = Object.freeze(
             regs.TA &= 0x1FFF;
             regs.TA2 = cpu.read8(regs.TA);
             // INS 41 ADDR MODE 1
-            regs.TA2 = regs.P.C ? regs.TA2 | (regs.P.C << regs.TR) : + regs.TA2 & (~(regs.P.C << regs.TR)) & 0xFF;
+            regs.TA2 = regs.P.C ? regs.TA2 | (regs.P.C << regs.TR) : regs.TA2 & ((~(1 << regs.TR)) & 0xFF);
             cpu.write8(regs.TA, regs.TA2);
             cpu.cycles -= regs.opc_cycles;
             regs.IR = cpu.read8(regs.PC);
@@ -3033,7 +3030,7 @@ const SPC_decoded_opcodes = Object.freeze(
             regs.opc_cycles = 7;
             regs.TR = cpu.read8(regs.PC++);
             regs.PC &= 0xFFFF;
-            regs.TA = cpu.read8((regs.TR) & 0xFFFF) + (cpu.read8(((regs.TR) + 1) & 0xFFFF) << 8);
+            regs.TA = cpu.read8D((regs.TR)) + (cpu.read8D((regs.TR) + 1) << 8);
             regs.TA = (regs.TA + regs.Y) & 0xFFFF;
             cpu.write8(regs.TA, regs.A);
             cpu.cycles -= regs.opc_cycles;
@@ -3115,14 +3112,13 @@ const SPC_decoded_opcodes = Object.freeze(
 ,        0xDF: function(cpu, regs) { // DAA A
             regs.opc_cycles = 3;
             // INS 26 ADDR MODE 0
-            if (regs.P.C || regs.A > 0x99) {
-                regs.A += 0x60;
+            if (regs.P.C || (regs.A > 0x99)) {
+                regs.A = (regs.A + 0x60) & 0xFF;
                 regs.P.C = 1;
             }
             if (regs.P.H || ((regs.A & 15) > 0x09)) {
-                regs.A += 0x06;
+                regs.A = (regs.A + 0x06) & 0xFF;
             }
-            regs.A &= 0xFF;
             regs.P.Z = +((regs.A) === 0);
             regs.P.N = ((regs.A) & 0x80) >>> 7;
             cpu.cycles -= regs.opc_cycles;
@@ -3204,7 +3200,7 @@ const SPC_decoded_opcodes = Object.freeze(
         }
 ,        0xE6: function(cpu, regs) { // MOV A, (X)
             regs.opc_cycles = 3;
-            regs.A = cpu.read8(regs.X);
+            regs.A = cpu.read8D(regs.X);
             regs.P.Z = +((regs.A) === 0);
             regs.P.N = ((regs.A) & 0x80) >>> 7;
             cpu.cycles -= regs.opc_cycles;
@@ -3215,7 +3211,8 @@ const SPC_decoded_opcodes = Object.freeze(
             regs.opc_cycles = 6;
             regs.TA = cpu.read8(regs.PC++);
             regs.PC &= 0xFFFF;
-            regs.A = cpu.read8(regs.TA + regs.X);
+            regs.TA2 = cpu.read8D((regs.TA + regs.X)) + (cpu.read8D((regs.TA + regs.X) + 1) << 8);
+            regs.A = cpu.read8(regs.TA2);
             regs.P.Z = +((regs.A) === 0);
             regs.P.N = ((regs.A) & 0x80) >>> 7;
             cpu.cycles -= regs.opc_cycles;
@@ -3255,9 +3252,9 @@ const SPC_decoded_opcodes = Object.freeze(
             regs.TA &= 0x1FFF;
             regs.TA2 = cpu.read8(regs.TA);
             // INS 45 ADDR MODE 1
-            let mask = (1 << regs.TR);
+            let mask = 1 << regs.TR;
             if (mask & regs.TA2)
-                regs.TA2 &= (~mask) & 0xFF;
+                regs.TA2 &= ((~mask) & 0xFF);
             else
                 regs.TA2 |= mask;
             cpu.write8(regs.TA, regs.TA2);
@@ -3408,7 +3405,7 @@ const SPC_decoded_opcodes = Object.freeze(
             regs.opc_cycles = 6;
             regs.TR = cpu.read8(regs.PC++);
             regs.PC &= 0xFFFF;
-            regs.TA = cpu.read8((regs.TR) & 0xFFFF) + (cpu.read8(((regs.TR) + 1) & 0xFFFF) << 8);
+            regs.TA = cpu.read8D((regs.TR)) + (cpu.read8D((regs.TR) + 1) << 8);
             regs.TA = (regs.TA + regs.Y) & 0xFFFF;
             regs.A = cpu.read8(regs.TA);
             regs.P.Z = +((regs.A) === 0);
@@ -3455,7 +3452,7 @@ const SPC_decoded_opcodes = Object.freeze(
             regs.opc_cycles = 4;
             regs.TA = cpu.read8(regs.PC++);
             regs.PC &= 0xFFFF;
-            regs.A = cpu.read8D(regs.TA + regs.X);
+            regs.Y = cpu.read8D(regs.TA + regs.X);
             regs.P.Z = +((regs.Y) === 0);
             regs.P.N = ((regs.Y) & 0x80) >>> 7;
             cpu.cycles -= regs.opc_cycles;

@@ -164,7 +164,7 @@ async function test_pt_spc700() {
     }
     let skip_tests = [0xEF, 0xFF]; // WAIT and STOP
     let start_test = 0x0; // 0
-    let end_test = 0x65; // 255
+    let end_test = 0xFF; // 255
 
     cpu.enable_test_mode();
     if (DO_TRACING) cpu.enable_tracing();
