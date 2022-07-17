@@ -2,8 +2,8 @@
 
 let SPC_NUM_TO_GENERATE = 1000; // Generate 1 of each test
 const SPC_GEN_WAIT_HOW_LONG = 6; // 6 cycles of Wait are generated
-let rand_seed = cyrb128('apples and bananas');
-var rand_seeded = sfc32(rand_seed[0], rand_seed[1], rand_seed[2], rand_seed[3]);
+let rand_seed = 'apples and bananas';
+let rand_seeded;
 
 // Format target...
 // { "name": "0a 78 2d",
@@ -200,7 +200,7 @@ class SPC_state {
     }
 
     inc_SP() {
-        this.SP = (this.PC + 1) & 0xFF;
+        this.SP = (this.SP + 1) & 0xFF;
     }
 
     dec_SP() {
@@ -242,10 +242,15 @@ function _ngetbit(val, bit) {
 }
 
 function _setbit(val, bit, setto) {
-    let bm = (setto << bit);
-    if (setto) return val | bm;
-    bm = (~bm) & 0xFF;
-    return val & bm;
+    // Set bit X of val to setto
+    let mask = 1 << bit;
+    if (val & mask) { // Bit is set
+        if (!setto) val &= ((~mask) & 0xFF);
+    }
+    else { // Bit is not set
+        if (setto) val |= mask;
+    }
+    return val;
 }
 
 class SPC_test_generator {
@@ -360,6 +365,7 @@ class SPC_test_generator {
         z = this.algorithmADC(x & 0xFF, y & 0xFF);
         z |= this.algorithmADC((x >>> 8) & 0xFF, (y >>> 8) & 0xFF) << 8;
         this.regs.P.Z = +((z & 0xFFFF) === 0);
+        return (z & 0xFFFF);
     }
 
     algorithmCPW(x, y) {
@@ -394,8 +400,7 @@ class SPC_test_generator {
     }
 
     fetch() {
-        let val = pt_rnd8();
-        this.test.add_cycle(this.regs.PC, val, 'read');
+        let val = this.read(this.regs.PC);
         this.regs.inc_PC();
         return val;
     }
@@ -437,6 +442,9 @@ class SPC_test_generator {
     read_discard(wherefrom=null) {
         if (wherefrom === null) wherefrom = this.regs.PC;
         let val = null;
+        if (wherefrom in this.already_done_addrs) {
+            val = this.already_done_addrs[wherefrom];
+        }
         this.test.add_cycle(wherefrom & 0xFFFF, val, 'read');
         return val;
     }
@@ -678,7 +686,7 @@ class SPC_test_generator {
             this.regs.P.C = 1;
         }
         if (this.regs.P.H || ((this.regs.A & 15) > 0x09)) {
-            this.regs.A = (this.regs.A - 0x06) & 0xFF;
+            this.regs.A = (this.regs.A + 0x06) & 0xFF;
         }
         this.setz(this.regs.A);
         this.setn8(this.regs.A);
@@ -766,7 +774,7 @@ class SPC_test_generator {
     DirectIndexedRead(op, target, index) {
         let addr = this.fetch();
         this.idle();
-        let data = this.load(addr + index)
+        let data = this.load(addr + index);
         this.regs[target] = this.alu(op)(this.regs[target], data);
     }
 
@@ -909,6 +917,7 @@ class SPC_test_generator {
     IndirectXIncrementRead(target) {
         this.read_discard();
         this.regs[target] = this.load(this.regs.X++);
+        this.regs.X &= 0xFF;
         this.idle();
         this.setz(this.regs[target]);
         this.setn8(this.regs[target]);
@@ -918,6 +927,7 @@ class SPC_test_generator {
         this.read_discard();
         this.idle();
         this.store(this.regs.X++, val);
+        this.regs.X &= 0xFF;
     }
 
     IndirectXRead(op) {
@@ -948,6 +958,12 @@ class SPC_test_generator {
     ImpliedModify(op, target) {
         this.read_discard();
         this.regs[target] = this.alu(op)(this.regs[target]);
+    }
+
+    JumpAbsolute() {
+        let addr = this.fetch();
+        addr |= this.fetch() << 8;
+        this.regs.PC = addr;
     }
 
     JumpIndirectX() {
@@ -1027,7 +1043,7 @@ class SPC_test_generator {
     Transfer(from, to) {
         this.read_discard();
         this.regs[to] = this.regs[from];
-        if (to === 'S') return;
+        if (to === 'SP') return;
         this.setz(this.regs[to]);
         this.setn8(this.regs[to]);
     }
@@ -1043,6 +1059,8 @@ class SPC_test_generator {
         let tests = [];
         let bnum, vector;
         for (let testnum = 0; testnum < number; testnum++) {
+            let seed = cyrb128(rand_seed + hex2(opcode) + hex4(testnum));
+            rand_seeded = sfc32(seed[0], seed[1], seed[2], seed[3]);
             this.test = new proc_test();
             SPC_generate_registers(this.test.initial);
             this.regs = new SPC_state(this.test.initial);
@@ -1291,7 +1309,7 @@ class SPC_test_generator {
                     this.DirectDirectModify('EOR');
                     break;
                 case 0x4A:
-                    this.AbsoluteBitSet(2);
+                    this.AbsoluteBitModify(2);
                     break;
                 case 0x4B:
                     this.DirectModify('LSR');
@@ -1343,6 +1361,9 @@ class SPC_test_generator {
                     break;
                 case 0x5E:
                     this.AbsoluteRead('CMP', 'Y');
+                    break;
+                case 0x5F:
+                    this.JumpAbsolute();
                     break;
                 case 0x60:
                     this.FlagSet(SPC_FC, false);
@@ -1492,7 +1513,7 @@ class SPC_test_generator {
                     this.ImpliedModify('DEC', 'A');
                     break;
                 case 0x9D:
-                    this.Transfer('S', 'X');
+                    this.Transfer('SP', 'X');
                     break;
                 case 0x9E:
                     this.Divide();
@@ -1570,7 +1591,7 @@ class SPC_test_generator {
                     this.ImpliedModify('INC', 'A');
                     break;
                 case 0xBD:
-                    this.Transfer('X', 'S');
+                    this.Transfer('X', 'SP');
                     break;
                 case 0xBE:
                     this.DecimalAdjustSub();
@@ -1675,7 +1696,7 @@ class SPC_test_generator {
                     this.ImmediateRead('LD', 'A');
                     break;
                 case 0xE9:
-                    this.AbsoluteRead('LD', 'A');
+                    this.AbsoluteRead('LD', 'X');
                     break;
                 case 0xEA:
                     this.AbsoluteBitModify(7);
@@ -1699,13 +1720,13 @@ class SPC_test_generator {
                     this.Branch(this.regs.P.Z === 1);
                     break;
                 case 0xF4:
-                    this.DirectIndexedRead('LD', 'X');
+                    this.DirectIndexedRead('LD', 'A', this.regs.X);
                     break;
                 case 0xF5:
-                    this.AbsoluteIndexedRead('LD', 'X');
+                    this.AbsoluteIndexedRead('LD', this.regs.X);
                     break;
                 case 0xF6:
-                    this.AbsoluteIndexedRead('LD', 'Y');
+                    this.AbsoluteIndexedRead('LD', this.regs.Y);
                     break;
                 case 0xF7:
                     this.IndirectIndexedRead('LD', this.regs.Y);
@@ -1714,7 +1735,7 @@ class SPC_test_generator {
                     this.DirectRead('LD', 'X');
                     break;
                 case 0xF9:
-                    this.DirectIndexedRead('LD', 'Y', this.regs.X);
+                    this.DirectIndexedRead('LD', 'X', this.regs.Y);
                     break;
                 case 0xFA:
                     this.DirectDirectWrite();
@@ -1734,6 +1755,9 @@ class SPC_test_generator {
                 case 0xFF:
                     this.Stop();
                     break;
+            }
+            if (opcode === 0x9D && testnum === 0) {
+                console.log('REGS!', this.regs);
             }
             this.test.finalize(this.regs);
             this.test.name = hex2(opcode) + ' ' + hex4(testnum)
