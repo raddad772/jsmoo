@@ -1770,21 +1770,21 @@ class SPC_test_generator {
 function generate_SPC700_test_test() {
     let test_generator = new SPC_test_generator();
     let tests = {};
-    dconsole.addl('Generating tests...');
+    dconsole.addl(null,'Generating tests...');
     for (let i = 0; i < 256; i++) {
         tests[i] = test_generator.generate_test(i, SPC_NUM_TO_GENERATE);
     }
-    dconsole.addl('Zipping tests...');
+    dconsole.addl(null,'Zipping tests...');
     let zip = new JSZip();
     for (let i = 0; i < 256; i++) {
         zip.file((hex2(i) + '.json').toLowerCase(), JSON.stringify(tests[i]));
     }
 
-    dconsole.addl('Finalizing ZIP for download...')
+    dconsole.addl(null,'Finalizing ZIP for download...')
     zip.generateAsync({type:"blob"}).then(function(content) {
-        dconsole.addl('Downloading...');
+        dconsole.addl(null, 'Downloading...');
         save_js("spc700 tests.zip", content, 'application/zip');
-        dconsole.addl('Done!');
+        dconsole.addl(null, 'Done!');
     });
     //save_js('spcalltests.json', JSON.stringify(tests));
 }

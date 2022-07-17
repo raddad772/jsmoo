@@ -168,6 +168,7 @@ class SNES_clock {
     new_frame() {
         // I forget why I even put this logic in here...delay maybe? 1/0 on that register???
 		console.log('NEW FRAME');
+		this.frames_since_restart++;
     }
 
     // This function is called from inside the main CPU scheduler
@@ -180,6 +181,9 @@ class SNES_clock {
         this.cycles_since_reset += howmany;
         //console.log('CYCLES SINCE', this.cycles_since_scanline_start,howmany);
 		this.cycles_since_scanline_start += howmany;
+		/*if (dbg.keep_up_APU) {
+				this.apu.catch_up();
+		}*/
         if (this.cycles_since_scanline_start >= this.scanline.cycles) {
             //console.log('%c Oh my heavens! ', 'background: #222; color: #bada55');
 			// Make sure other processors are caught up

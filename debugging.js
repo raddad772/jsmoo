@@ -145,9 +145,9 @@ class traces_t {
 
     add(kind, master_clock, trace) {
         //console.log('MASTER CLOCK', master_clock, this.oldest_trace);
-        if (this.limit_traces) {
+        /*if (this.limit_traces) {
             if (master_clock < this.oldest_trace) return;
-        }
+        }*/
         this.traces.push([master_clock, kind, trace]);
     }
 
@@ -155,7 +155,6 @@ class traces_t {
      * @param {console_t} where
      */
     draw(where) {
-        console.log('DRAWOIN!');
         if (this.traces.length > 0)
         {
             //console.log(this.traces);
@@ -167,13 +166,14 @@ class traces_t {
             }
             //where.buffer = [];
             for (let i in this.traces) {
-                where.addl(this.traces[i][2], false, TRACE_BG_COLORS[this.traces[i][1]]);
+                where.addl(this.traces[i][0], this.traces[i][2], TRACE_BG_COLORS[this.traces[i][1]], false);
             }
         }
         this.drew_to = where;
+        this.clear();
         where.draw();
-        //this.clear();
     }
+
     clear() {
         //if (this.drew_to !== null) this.drew_to.buffer = [];
         this.traces = [];

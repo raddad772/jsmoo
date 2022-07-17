@@ -27,7 +27,7 @@ function generate_js_SPC() {
 
 let watching_checkbox, tracing_checkbox, tracing_5a22_checkbox, tracing_spc700_checkbox;
 let mc_input, scanline_input, frame_input, seconds_input;
-let ppu_y_output;//, scanline_dot_output;
+let frame_count_output, ppu_y_output;//, scanline_dot_output;
 
 function get_mc_steps() {
 	console.log(mc_input.value());
@@ -44,6 +44,7 @@ function init_js() {
 	seconds_input = document.getElementById('secondsteps');
 
 	ppu_y_output = document.getElementById('ppu_y_output')
+	frame_count_output = document.getElementById('frame_count_output')
 	//scanline_dot_output = document.getElementById('scanline_dot_output')
 
 	mc_input.value = DEFAULT_STEPS.master;
@@ -109,7 +110,16 @@ function click_step_clock() {
 	after_step();
 }
 
+let dc = 0;
+let tc = 0;
 function click_step_all() {
+	/*dconsole.addl(dc, tc.toString() + 'YARRR', null, true);
+	tconsole.addl(tc, dc.toString() + 'YOLOOO', null, true);
+	tc++;
+	dc++;
+	dconsole.draw();
+	tconsole.draw();
+	return;*/
 	let scanlines = parseInt(scanline_input.value);
 	let frames = parseInt(frame_input.value);
 	let seconds = parseInt(seconds_input.value);
@@ -125,6 +135,7 @@ function after_step() {
 		//scanline_dot_output.innerHTML = Math.floor(snes.clock.scanline.cycles_since_reset / 4);
 		//console.log(snes.clock.cycles_since_scanline_start);
 		ppu_y_output.innerHTML = Math.floor(snes.clock.cycles_since_scanline_start / 4) + ', ' + snes.clock.scanline.ppu_y;
+		frame_count_output.innerHTML = snes.clock.frames_since_restart;
 	}
 }
 

@@ -127,11 +127,11 @@ async function test_pt_spc700_ins(cpu, ins) {
     let data = await getJSON(tt + opc + '.json');
     let result = test_spc700_automated(cpu, data);
     if (!result.passed) {
-        tconsole.addl('TEST FOR ' + hex2(ins) + ' FAILED! ');
+        tconsole.addl(null, 'TEST FOR ' + hex2(ins) + ' FAILED! ');
         console.log(result.failed_test_struct);
     }
     if (result.messages.length !== 0) {
-        tconsole.addl('------Messages:');
+        tconsole.addl(null, '------Messages:');
         for (let i in result.messages) {
             tconsole.addl(result.messages[i]);
         }
@@ -149,7 +149,7 @@ async function test_pt_spc700_ins(cpu, ins) {
 }
 
 async function test_pt_spc700() {
-    dconsole.addl('Workin on tests...')
+    dconsole.addl(null, 'Workin on tests...')
     let read8 = function(addr) {
         return testRAM[addr];
     }
@@ -170,12 +170,12 @@ async function test_pt_spc700() {
     if (DO_TRACING) cpu.enable_tracing();
     for (let opcode = start_test; opcode <= end_test; opcode++) {
         if (skip_tests.indexOf(opcode) !== -1) {
-            tconsole.addl('Text for ' + hex2(opcode) + ' skipped!');
+            tconsole.addl(null, 'Text for ' + hex2(opcode) + ' skipped!');
             continue;
         }
         let result = await test_pt_spc700_ins(cpu, opcode);
         if (!result) break;
-        tconsole.addl('Test for ' + hex2(opcode) + ' passed!');
+        tconsole.addl(null, 'Test for ' + hex2(opcode) + ' passed!');
     }
     if (SPC_PT_cycle_mismatches.length > 0) console.log('IO mismatches occurred for', SPC_PT_cycle_mismatches);
 }

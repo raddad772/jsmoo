@@ -217,11 +217,9 @@ class SNES {
 		if (!this.clock.start_of_scanline) {
 			let cycles_to_finish = this.clock.scanline.cycles - this.clock.cycles_since_scanline_start;
 			if ((cycles_to_finish > master_clocks) && (scanlines === 0) && (frames === 0) && (seconds === 0)) {
-				console.log('DOIN1', master_clocks);
 				this.do_steps(master_clocks);
 				return;
 			}
-			console.log('FINISHIN LINE', cycles_to_finish);
 			this.do_steps(cycles_to_finish);
 			master_clocks -= cycles_to_finish;
 			if (dbg.do_break) {
@@ -267,7 +265,6 @@ class SNES {
 			this.do_steps(master_clocks);
 			this.do_display(false);
 		}
-		console.log('STEPS DONE', this.clock.cpu_deficit);
 		dbg.do_break = false;
 		/*let excess_scanlines = 0;
 		let discharged = false;
@@ -352,12 +349,8 @@ function main() {
 	initDb(main2);
 }
 
-//after_js = main;
-//after_js = generate_SPC700_test_test;
-
+after_js = main;
 
 //after_js = test_65c816;
-//after_js = generate_js;
 //after_js = test_pt_65c816;
-after_js = test_pt_spc700;
-//after_js = generate_js_SPC;
+//after_js = test_pt_spc700;

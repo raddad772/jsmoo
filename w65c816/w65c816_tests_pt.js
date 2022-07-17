@@ -210,7 +210,7 @@ function test_it_automated(cpu, tests) {
             }
 
             last_pc = cpu.regs.PC;
-            //if (DO_TRACING)dconsole.addl('CALL CYCLE');
+            //if (DO_TRACING)dconsole.addl(null, 'CALL CYCLE');
             if (parseInt(cyclei) === (tests[i].cycles.length-1)) {
                 if (cpu.regs.TCU === 0)
                     length_mismatch++;
@@ -305,7 +305,7 @@ async function test_pt_65c816_ins(cpu, ins) {
         console.log(result.failed_test_struct);
     }
     if (result.messages.length !== 0) {
-        tconsole.addl('------Messages:');
+        tconsole.addl(null, '------Messages:');
         for (let i in result.messages) {
             tconsole.addl(result.messages[i]);
         }
@@ -374,7 +374,7 @@ async function test_pt_65c816() {
         }
         let result = await test_pt_65c816_ins(cpu,i);
         if (!result) break;
-        tconsole.addl('Test for ' + hex0x2(i) + ' passed!');
+        tconsole.addl(null, 'Test for ' + hex0x2(i) + ' passed!');
     }
     if (io_mismatches.length > 0) console.log('IO mismatches occured for', io_mismatches);
 }
