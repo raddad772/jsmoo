@@ -94,7 +94,6 @@ function getFromDb(fileId, func) {
     };
 }
 
-
 function downloadFile(fileId) {
     console.log('downloading');
     var trans = db.transaction(['files'], 'readonly');

@@ -42,6 +42,15 @@ function spc700_disassemble(cpu) {
 
 	PC += 1;
 	switch(parseInt(addr_mode)) {
+		case SPC_AM.DPW:
+			output.disassembled += ' $' + hread8(PC);
+			break;
+		case SPC_AM.RX_A: // X, !abs
+			output.disassembled += ' X, !$' + hread16(PC);
+			break;
+		case SPC_AM.STACK:
+			output.disassembled += ' ' + opcode_info.operand;
+			break;
 		case SPC_AM.RX_IMM: // X, #imm
 			output.disassembled += ' X, #$' + hread8(PC);
 			break;
@@ -55,7 +64,7 @@ function spc700_disassemble(cpu) {
 			output.disassembled += ' A, #$' + hread8(PC);
 			break;
 		case SPC_AM.RA_IND_X: // A, (X)
-			output.dissasembled += ' A, (X)';
+			output.disassembled += ' A, (X)';
 			break;
 		case SPC_AM.RA_IND_INDEXED_X: // A, [d+X]
 			output.disassembled += ' A, [$' + hread8(PC) + '+X]';
@@ -125,7 +134,7 @@ function spc700_disassemble(cpu) {
 			output.disassembled += ' d.' + (r >> 13) +', !$' + hex4(r & 0x1FFF);
 			break;
 		case SPC_AM.D_BIT: // d.bit
-			output.disassembled += '$' + hex2(read8(PC)) + '.' + BBCS1bit[opcode_info.opcode];
+			output.disassembled += ' $' + hex2(read8(PC)) + '.' + BBCS1bit[opcode_info.opcode];
 			break;
 		case SPC_AM.X_IMM:
 			output.disassembled += ' X, #$' + hex2(read8(PC));
@@ -208,6 +217,9 @@ function spc700_disassemble(cpu) {
 					output.disassembled += ' UKN ' + hex2(opcode_info.opcode);
 					break;
 			}
+			break;
+		case SPC_AM.PC_R_D: // dp, r
+			output.disassembled += ' $' + hex2(read8(PC)) + ', ' + mksigned8(read8(PC + 1));
 			break;
 		case SPC_AM.MOVW:
 			switch(opcode_info.opcode) {

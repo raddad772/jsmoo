@@ -1,8 +1,9 @@
 "use strict";
 
-let TEST_TO_GENERATE = 0x05;
-let SPC_NUM_TO_GENERATE = 3; // Generate 1 of each test
+let SPC_NUM_TO_GENERATE = 1000; // Generate 1 of each test
 const SPC_GEN_WAIT_HOW_LONG = 6; // 6 cycles of Wait are generated
+let rand_seed = cyrb128('apples and bananas');
+var rand_seeded = sfc32(rand_seed[0], rand_seed[1], rand_seed[2], rand_seed[3]);
 
 // Format target...
 // { "name": "0a 78 2d",
@@ -84,21 +85,30 @@ class proc_test {
             let addr = cycle[0];
             let val = cycle[1];
             let rw = cycle[2];
-            if (rw === 'read') {
-                if (!initial_set.has(addr)) {
-                    initial_set.add(addr);
-                    initial_RAMs.push([addr, val]);
+            if (addr !== null && val !== null) {
+                if (rw === 'read') {
+                    if (!initial_set.has(addr)) {
+                        initial_set.add(addr);
+                        initial_RAMs.push([addr, val]);
+                    }
                 }
-            }
-            if (rw === 'write') {
-                if (!initial_set.has(addr)) {
-                    initial_set.add(addr);
-                    initial_RAMs.push([addr, 0]);
+                if (rw === 'write') {
+                    if (!initial_set.has(addr)) {
+                        initial_set.add(addr);
+                        initial_RAMs.push([addr, 0]);
+                    }
                 }
-            }
-            if (!final_set.has(addr)) {
-                final_set.add(addr);
-                final_RAMs.push([addr, val]);
+                if (!final_set.has(addr)) {
+                    final_set.add(addr);
+                    final_RAMs.push([addr, val]);
+                } else {
+                    for (let j in final_RAMs) {
+                        if (final_RAMs[j][0] === addr) {
+                            final_RAMs[j][1] = val;
+                            break;
+                        }
+                    }
+                }
             }
             //}
         }
@@ -178,7 +188,7 @@ class SPC_state {
         where.y = this.Y;
         where.sp = this.SP;
         where.pc = this.PC;
-        where.psw = this.P;
+        where.psw = this.P.getbyte();
     }
 
     inc_PC() {
@@ -200,11 +210,13 @@ class SPC_state {
 }
 
 function pt_rnd8() {
-    return Math.floor(Math.random() * 255);
+    //return Math.floor(Math.random() * 255);
+    return Math.floor(rand_seeded() * 256) & 0xFF;
 }
 
 function pt_rnd16() {
-    return Math.floor(Math.random() * 65535);
+    //return Math.floor(Math.random() * 65535);
+    return Math.floor(rand_seeded() * 65536) & 0xFFFF;
 }
 
 function SPC_generate_registers(where) {
@@ -239,7 +251,9 @@ function _setbit(val, bit, setto) {
 class SPC_test_generator {
     constructor() {
         this.test = null;
-        this.regs = null;
+        this.regs = new SPC_state();
+
+        this.already_done_addrs = {};
     }
 
     algorithmADC(x, y) {
@@ -261,7 +275,7 @@ class SPC_test_generator {
 
     algorithmASL(x) {
         this.regs.P.C = (x & 0x80) >>> 7;
-        x <<= 1;
+        x = (x << 1) & 0xFF;
         this.setz(x);
         this.setn8(x);
         return x;
@@ -311,6 +325,7 @@ class SPC_test_generator {
     }
 
     algorithmOR(x, y) {
+        if (typeof x === 'string') debugger;
         x |= y;
         this.setz(x);
         this.setn8(x);
@@ -320,7 +335,7 @@ class SPC_test_generator {
     algorithmROL(x) {
         let carry = this.regs.P.C;
         this.regs.P.C = (x >>> 7) & 1;
-        x = (x << 1) | carry;
+        x = ((x << 1) | carry) & 0xFF;
         this.setz(x);
         this.setn8(x);
         return x;
@@ -386,21 +401,37 @@ class SPC_test_generator {
     }
 
     load(addr) {
-        return this.read(this.regs.P.P << 8 | (addr & 0xFF));
+        addr &= 0xFF;
+        //if (addr === 0x31) { console.log('P IS1!', this.regs.P.P);}
+        if (this.regs.P.P) {
+            addr += 0x100;
+        }
+        return this.read(addr);
     }
 
     store(addr, val) {
-        this.test.add_cycle(addr & 0xFFFF, val, 'write');
+        addr &= 0xFF;
+        //if (addr === 0x31) { console.log('P IS2!', this.regs.P.P);}
+        if (this.regs.P.P) {
+            addr += 0x100;
+        }
+        this.test.add_cycle(addr, val, 'write');
     }
 
-    read(wherefrom) {
-        let val = pt_rnd8();
+    read(wherefrom, val=null) {
+        if (val === null) val = pt_rnd8();
+        if (wherefrom in this.already_done_addrs) {
+            val = this.already_done_addrs[wherefrom];
+        }
+        else {
+            this.already_done_addrs[wherefrom] = val;
+        }
         this.test.add_cycle(wherefrom & 0xFFFF, val, 'read');
         return val;
     }
 
     write(whereto, what) {
-        this.test.add_cycle(whereto & 0xFFFF, what, 'write');
+        this.test.add_cycle(whereto & 0xFFFF, what & 0xFF, 'write');
     }
 
     read_discard(wherefrom=null) {
@@ -475,10 +506,10 @@ class SPC_test_generator {
         let data = this.load(addr);
         let bm = 1 << bit;
         if (val) // SET
-            val |= bm;
+            data |= bm;
         else // CLR
-            val &= ((~bm) & 0xFF);
-        this.store(addr,val);
+            data &= ((~bm) & 0xFF);
+        this.store(addr, data);
     }
 
     AbsoluteIndexedRead(op, index) {
@@ -523,7 +554,7 @@ class SPC_test_generator {
         if (!shouldi) return;
         this.idle();
         this.idle();
-        this.regs.PC += mksigned8(data);
+        this.regs.PC = (this.regs.PC + mksigned8(data)) & 0xFFFF;
     }
 
     BranchBit(bit, val) {
@@ -540,7 +571,7 @@ class SPC_test_generator {
         if (!do_branch) return;
         this.idle();
         this.idle();
-        this.regs.PC += mksigned8(displacement);
+        this.regs.PC = (this.regs.PC + mksigned8(displacement)) & 0xFFFF;
     }
 
     BranchNotDirect() {
@@ -551,7 +582,7 @@ class SPC_test_generator {
         if (this.regs.A === data) return;
         this.idle();
         this.idle();
-        this.regs.PC += mksigned8(displacement);
+        this.regs.PC = (this.regs.PC + mksigned8(displacement)) & 0xFFFF;
     }
 
     BranchNotDirectDecrement() {
@@ -563,7 +594,7 @@ class SPC_test_generator {
         if (data === 0) return;
         this.idle();
         this.idle();
-        this.regs.PC += mksigned8(displacement);
+        this.regs.PC = (this.regs.PC + mksigned8(displacement)) & 0xFFFF;
     }
 
     BranchNotDirectIndexed(index) {
@@ -575,7 +606,7 @@ class SPC_test_generator {
         if (this.regs.A === data) return;
         this.idle();
         this.idle();
-        this.regs.PC += mksigned8(displacement);
+        this.regs.PC = (this.regs.PC + mksigned8(displacement)) & 0xFFFF;
     }
 
     BranchNotYDecrement() {
@@ -586,7 +617,7 @@ class SPC_test_generator {
         if (this.regs.Y === 0) return;
         this.idle();
         this.idle();
-        this.regs.PC += mksigned8(displacement);
+        this.regs.PC = (this.regs.PC + mksigned8(displacement)) & 0xFFFF;
     }
 
     Break() {
@@ -736,7 +767,7 @@ class SPC_test_generator {
         let addr = this.fetch();
         this.idle();
         let data = this.load(addr + index)
-        this.regs[target] = this.alu(op)(target, data);
+        this.regs[target] = this.alu(op)(this.regs[target], data);
     }
 
     DirectIndexedWrite(val, index) {
@@ -824,8 +855,9 @@ class SPC_test_generator {
         if (flag === SPC_FI) this.idle();
         let cf = this.regs.P.getbyte();
 
-        if (value) cf |= value;
-        else cf &= (~value) & 0xFF;
+
+        if (value) cf |= flag;
+        else cf &= ((~flag) & 0xFF);
 
         this.regs.P.setbyte(cf);
     }
@@ -988,7 +1020,7 @@ class SPC_test_generator {
         let data = this.read(addr);
         this.regs.P.Z = +((this.regs.A - data) === 0);
         this.regs.P.N = ((this.regs.A - data) & 0x80) >>> 7;
-        this.read(addr);
+        this.read(addr, data);
         this.write(addr, set ? data | this.regs.A : data & (~this.regs.A) & 0xFF);
     }
 
@@ -1015,6 +1047,7 @@ class SPC_test_generator {
             SPC_generate_registers(this.test.initial);
             this.regs = new SPC_state(this.test.initial);
             this.test.add_cycle(this.regs.PC, opcode, 'read');
+            this.already_done_addrs = {[this.regs.PC]: opcode};
             this.regs.inc_PC();
             switch (opcode) {
                 case 0x00: // Nop
@@ -1345,7 +1378,7 @@ class SPC_test_generator {
                     this.Push(this.regs.Y);
                     break;
                 case 0x6E:
-                    this.BranchNotDirect();
+                    this.BranchNotDirectDecrement();
                     break;
                 case 0x6F:
                     this.ReturnSubroutine();
@@ -1713,9 +1746,22 @@ class SPC_test_generator {
 function generate_SPC700_test_test() {
     let test_generator = new SPC_test_generator();
     let tests = {};
+    dconsole.addl('Generating tests...');
     for (let i = 0; i < 256; i++) {
         tests[i] = test_generator.generate_test(i, SPC_NUM_TO_GENERATE);
     }
-    console.log('GENERATED TESTS', tests);
+    dconsole.addl('Zipping tests...');
+    let zip = new JSZip();
+    for (let i = 0; i < 256; i++) {
+        zip.file((hex2(i) + '.json').toLowerCase(), JSON.stringify(tests[i]));
+    }
+
+    dconsole.addl('Finalizing ZIP for download...')
+    zip.generateAsync({type:"blob"}).then(function(content) {
+        dconsole.addl('Downloading...');
+        save_js("spc700 tests.zip", content, 'application/zip');
+        dconsole.addl('Done!');
+    });
+    //save_js('spcalltests.json', JSON.stringify(tests));
 }
 

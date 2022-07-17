@@ -125,7 +125,7 @@ const SPC_AM = Object.freeze({
     Y_A: 15, // Y, !abs
     DP_DP: 16, // dp, dp
     MEMBITR: 17, // 2 bytes. 13 bits absolute address, 3 bits bit #. read-only
-    MEMBITW: 22, // 2 bytes. 13 bits absolute address, 3 bits bit #. write after
+    MEMBITW: 1, // 2 bytes. 13 bits absolute address, 3 bits bit #. write after
     DP: 18, // dp
     DP_INDEXED_X: 19, // dp+X
     MOVW: 20,
@@ -182,7 +182,7 @@ const SPC_INS = Object.freeze({
     0x19: new SPC_OP_INFO(0x19, 'OR', '(X), (Y)', SPC_MN.OR, SPC_AM.IND_XY, 5), // X
     0x1D: new SPC_OP_INFO(0x1D, 'DEC', 'X', SPC_MN.DEC, SPC_AM.RX, 2), // X
     0x1F: new SPC_OP_INFO(0x1F, 'JMP', '[!abs+X]', SPC_MN.JMP, SPC_AM.A_IND_X, 6), // X
-    0x2F: new SPC_OP_INFO(0x2F, 'BRA', 'r', SPC_MN.BRA, SPC_AM.PC_R, 4), // X
+    0x2F: new SPC_OP_INFO(0x2F, 'BRA', 'r', SPC_MN.BRA, SPC_AM.PC_R, 2), // X
     0x5D: new SPC_OP_INFO(0x5D, 'MOV', 'X, A', SPC_MN.MOV, SPC_AM.MOV, 2), // X
     0x78: new SPC_OP_INFO(0x78, 'CMP', 'dp, #imm', SPC_MN.CMP, SPC_AM.DP_IMM, 5), // X
     0x7E: new SPC_OP_INFO(0x7E, 'CMP', 'Y, dp', SPC_MN.CMP, SPC_AM.Y_DP, 3), // X
@@ -445,82 +445,64 @@ class SPC_funcgen {
         this.addl('regs.opc_cycles = ' + opc_info.cycles + ';');
     }
 
-    from_PC_inc(who) {
+    fetch(who) {
         this.addl(who + ' = cpu.read8(regs.PC++);');
         this.addl('regs.PC &= 0xFFFF;');
     }
 
-    TR_from_PC_inc() {
-        this.from_PC_inc('regs.TR')
+    fetch_TR() {
+        this.fetch('regs.TR')
     }
 
-    TA_from_PC_inc() {
-        this.from_PC_inc('regs.TA');
+    fetch_TA() {
+        this.fetch('regs.TA');
     }
 
-    TA16_from_PC_incs() {
+    fetch16() {
         this.addl('regs.TA = cpu.read8(regs.PC++);');
         this.addl('regs.PC &= 0xFFFF;');
         this.addl('regs.TA += cpu.read8(regs.PC++) << 8;');
         this.addl('regs.PC &= 0xFFFF;');
     }
 
-    TA16_from_DP_1inc(who) {
-        this.addl('regs.TA = cpu.read8D(' + who +'++);');
-        this.addl(who + ' &= 0xFF;');
-        this.addl('regs.TA += cpu.read8D(' + who + ') << 8;');
-    }
-
-    load(where, what) {
+    read(where, what) {
         this.addl(what + ' = cpu.read8(' + where + ');');
     }
 
-    load_D(where, what) {
-        this.addl(what + ' = cpu.read8D((' + where + '));');
+    load(where, what) {
+        this.addl(what + ' = cpu.read8D(' + where + ');');
     }
 
-    load_DN(where, what) {
-        this.addl(what + ' = cpu.read8((' + where + ') & 0xFFFF);');
-    }
-
-    store_DN(where, what) {
-        this.addl('cpu.write8((' + where + ') & 0xFFFF, what);');
-    }
-
-    load_DN16(where, what) {
+    read16(where, what) {
         this.addl(what + ' = cpu.read8((' + where + ') & 0xFFFF) + (cpu.read8(((' + where + ') + 1) & 0xFFFF) << 8);');
     }
 
-    load_D16(where, what)
+    load16(where, what)
     {
         this.addl(what + ' = cpu.read8D((' + where + ')) + (cpu.read8D((' + where + ') + 1) << 8);');
     }
 
-    store(where, what) {
+    write(where, what) {
         this.addl('cpu.write8(' + where + ', ' + what +');');
     }
 
-    store_D(where, what) {
+    store(where, what) {
         this.addl('cpu.write8D((' + where + '), ' + what + ');');
     }
 
-    store_D16(where, what) {
+    store16(where, what) {
         this.addl('cpu.write8D((' + where + '), ' + what + ' & 0xFF);')
         this.addl('cpu.write8D((' + where + ') + 1, ((' + what + ') >>> 8) & 0xFF);')
     }
 
-    load16(where, what) {
-        this.addl(what + ' = cpu.read8('+ where + ') + (cpu.read8(((' + where + ') + 1) & 0xFFFF) << 8);');
-    }
-
     load16_2D(where, lo, hi) {
-        this.load_D(where, lo);
-        this.load_D(where + ' + 1', hi);
+        this.load(where, lo);
+        this.load(where + ' + 1', hi);
     }
 
     store16_2D(where, lo, hi) {
-        this.store_D(where, lo);
-        this.store_D(where + ' + 1', hi);
+        this.store(where, lo);
+        this.store(where + ' + 1', hi);
     }
 
     ADC(who, y) {
@@ -644,7 +626,7 @@ class SPC_funcgen {
 
     ASL(who) {
         this.addl('regs.P.C = ((' + who + ') & 0x80) >>> 7;');
-        this.addl(who + ' <<= 1;');
+        this.addl(who + ' = (' + who + ' << 1) & 0xFF;');
         this.setz(who);
         this.setn(who);
     }
@@ -660,10 +642,10 @@ class SPC_funcgen {
         let indent = '';
         if (when !== 'true') {
             this.addl('if (' + when + ') {');
-            indent = '    '
+            indent = '    ';
         }
         this.addl(indent + 'regs.PC = (regs.PC + mksigned8(' + where + ')) & 0xFFFF;');
-        this.addl(indent + 'regs.opc_cycles += 2');
+        this.addl(indent + 'regs.opc_cycles += 2;');
         if (when !== 'true') {
             this.addl('}');
         }
@@ -737,7 +719,7 @@ class SPC_funcgen {
     ROL(who) {
         this.addl('let carry = regs.P.C;');
         this.addl('regs.P.C = (' + who + ' & 0x80) >>> 7;');
-        this.addl(who + ' = (' + who + ' << 1) | carry;');
+        this.addl(who + ' = ((' + who + ' << 1) | carry) & 0xFF;');
         this.setz(who);
         this.setn(who);
     }
@@ -772,7 +754,7 @@ class SPC_funcgen {
     }
 
     OR(who, who2) {
-        this.addl(who + ' |= ' + who2);
+        this.addl(who + ' |= ' + who2 + ';');
         this.setz(who);
         this.setn(who);
     }
@@ -800,7 +782,7 @@ class SPC_funcgen {
         this.PUSH('regs.P.getbyte()');
         this.addl('regs.P.I = 0;');
         this.addl('regs.P.B = 1;');
-        this.load16('0xFFDE', 'regs.PC');
+        this.read16('0xFFDE', 'regs.PC');
     }
 
     TCLR1(who) {
@@ -851,62 +833,16 @@ class SPC_funcgen {
     }
 
     TCALL(opcode) {
-        let vec;
-        switch(opcode) {
-            case 0x01:
-                vec = 0xFFDE;
-                break;
-            case 0x11:
-                vec = 0xFFDC;
-                break;
-            case 0x21:
-                vec = 0xFFDA;
-                break;
-            case 0x31:
-                vec = 0xFFD8;
-                break;
-            case 0x41:
-                vec = 0xFFD6;
-                break;
-            case 0x51:
-                vec = 0xFFD4;
-                break;
-            case 0x61:
-                vec = 0xFFD2;
-                break;
-            case 0x71:
-                vec = 0xFFD0;
-                break;
-            case 0x81:
-                vec = 0xFFCE;
-                break;
-            case 0x91:
-                vec = 0xFFCC;
-                break;
-            case 0xA1:
-                vec = 0xFFCA;
-                break;
-            case 0xB1:
-                vec = 0xFFC8;
-                break;
-            case 0xC1:
-                vec = 0xFFC6;
-                break;
-            case 0xD1:
-                vec = 0xFFC4;
-                break;
-            case 0xE1:
-                vec = 0xFFC2;
-                break;
-            case 0xF1:
-                vec = 0xFFC0;
-                break;
-        }
-        this.CALL(vec, true);
+        let vec = 0xFFDE - ((opcode & 0xF0) >>> 3);
+        this.PUSH('(regs.PC >>> 8) & 0xFF');
+        this.PUSH('(regs.PC & 0xFF)');
+        this.read(vec, 'regs.PC');
+        this.addl('regs.PC |= cpu.read8(' + (vec+1) + ') << 8;');
     }
 
     DOINS(ins, operand, operand2, addr_mode, opcode) {
         let mask1, mask2;
+        this.addl('// INS ' + ins + ' ADDR MODE ' + addr_mode);
         switch(ins) {
             case SPC_MN.RET: // PCL, PCH
                 this.POP16('regs.PC');
@@ -1054,39 +990,39 @@ class SPC_funcgen {
                 this.BRK();
                 break;
             case SPC_MN.BCC: // Branch C = 0
-                this.TR_from_PC_inc();
+                this.fetch_TR();
                 this.BR('!regs.P.C', 'regs.TR');
                 break;
             case SPC_MN.BCS: // Branch C = 1
-                this.TR_from_PC_inc();
+                this.fetch_TR();
                 this.BR('regs.P.C', 'regs.TR');
                 break;
             case SPC_MN.BEQ: // Branch Z = 1
-                this.TR_from_PC_inc();
+                this.fetch_TR();
                 this.BR('regs.P.Z', 'regs.TR');
                 break;
             case SPC_MN.BMI: // Branch N = 1
-                this.TR_from_PC_inc();
+                this.fetch_TR();
                 this.BR('regs.P.N', 'regs.TR');
                 break;
             case SPC_MN.BNE: // branch Z = 0
-                this.TR_from_PC_inc();
+                this.fetch_TR();
                 this.BR('!regs.P.Z', 'regs.TR');
                 break;
             case SPC_MN.BPL: // branch N = 0
-                this.TR_from_PC_inc();
+                this.fetch_TR();
                 this.BR('!regs.P.N', 'regs.TR');
                 break;
             case SPC_MN.BVC: // branch V = 0
-                this.TR_from_PC_inc();
+                this.fetch_TR();
                 this.BR('!regs.P.V', 'regs.TR');
                 break;
             case SPC_MN.BVS: // branch V = 1
-                this.TR_from_PC_inc();
+                this.fetch_TR();
                 this.BR('regs.P.V', 'regs.TR');
                 break;
             case SPC_MN.BRA: // Always branch
-                this.TR_from_PC_inc();
+                this.fetch_TR();
                 this.BR('true', 'regs.TR');
                 break;
             case SPC_MN.JMP:
@@ -1126,16 +1062,16 @@ class SPC_funcgen {
                 this.CALL('regs.TR + 0xFF00');
                 break;
             case SPC_MN.CLR1:
-                this.load_D(operand, 'regs.TR');
+                this.load(operand, 'regs.TR');
                 mask1 = 1 << BBCS1bit[opcode];
                 this.addl('regs.TR &= ' + hex0x2(~mask1 & 0xFF) + ';');
-                this.store_D(operand, 'regs.TR');
+                this.store(operand, 'regs.TR');
                 break;
             case SPC_MN.SET1:
-                this.load_D(operand, 'regs.TR');
+                this.load(operand, 'regs.TR');
                 mask1 = 1 << BBCS1bit[opcode];
                 this.addl('regs.TR |= ' + hex0x2(mask1) + ';');
-                this.store_D(operand, 'regs.TR');
+                this.store(operand, 'regs.TR');
                 break;
             case SPC_MN.NOT1:
                 this.NOT1(operand, operand2);
@@ -1152,7 +1088,7 @@ class SPC_funcgen {
     ADDRINS(addr_mode, ins, opcode) {
         switch(addr_mode) {
             case SPC_AM.RA_IMM: // A, #imm
-                this.TR_from_PC_inc();
+                this.fetch_TR();
                 this.DOINS(ins, 'regs.A', 'regs.TR');
                 break;
             case SPC_AM.RA_IND_X: // A, (X)
@@ -1160,76 +1096,76 @@ class SPC_funcgen {
                 this.DOINS(ins, 'regs.A', 'regs.TR');
                 break;
             case SPC_AM.RA_IND_INDEXED_X: // A, [dp+X]
-                this.TA_from_PC_inc();
+                this.fetch_TA();
                 this.addl('regs.TA += regs.X;')
-                this.load_DN16('regs.TA', 'regs.TA');
-                this.load('regs.TA', 'regs.TR');
+                this.load16('regs.TA', 'regs.TA');
+                this.read('regs.TA', 'regs.TR');
                 this.DOINS(ins, 'regs.A', 'regs.TR');
                 break;
             case SPC_AM.RA_IND_Y_INDEXED: // A, [dp]+Y
-                this.TA_from_PC_inc();
-                this.load_DN16('regs.TA', 'regs.TA');
+                this.fetch_TA();
+                this.load16('regs.TA', 'regs.TA');
                 this.addl('regs.TA += regs.Y;');
-                this.load('regs.TA & 0xFFFF', 'regs.TR');
+                this.read('regs.TA', 'regs.TR');
                 this.DOINS(ins, 'regs.A', 'regs.TR');
                 break;
             case SPC_AM.RA_DP: // A, dp
-                this.TA_from_PC_inc();
-                this.load_D('regs.TA', 'regs.TR');
-                this.DOINS(ins, 'regs.A', 'regs.TR');
-                break;
-            case SPC_AM.RA_A: // A, !abs
-                this.TA16_from_PC_incs();
+                this.fetch_TA();
                 this.load('regs.TA', 'regs.TR');
                 this.DOINS(ins, 'regs.A', 'regs.TR');
                 break;
+            case SPC_AM.RA_A: // A, !abs
+                this.fetch16();
+                this.read('regs.TA', 'regs.TR');
+                this.DOINS(ins, 'regs.A', 'regs.TR');
+                break;
             case SPC_AM.RA_A_X: // RA, !abs+X
-                this.TA16_from_PC_incs();
+                this.fetch16();
                 this.addl('regs.TA += regs.X;');
-                this.load('regs.TA & 0xFFFF', 'regs.TR');
+                this.read('regs.TA & 0xFFFF', 'regs.TR');
                 this.DOINS(ins, 'regs.A', 'regs.TR');
                 break;
             case SPC_AM.RA_A_Y: // RA, !abs+Y
-                this.TA16_from_PC_incs();
+                this.fetch16();
                 this.addl('regs.TA += regs.Y;');
-                this.load('regs.TA & 0xFFFF', 'regs.TR');
+                this.read('regs.TA & 0xFFFF', 'regs.TR');
                 this.DOINS(ins, 'regs.A', 'regs.TR');
                 break;
             case SPC_AM.YA_DP: // YA, dp
-                this.TA_from_PC_inc();
-                this.load_D('regs.TA', 'regs.TR');
-                this.load_D('regs.TA+1', 'regs.TA');
+                this.fetch_TA();
+                this.load('regs.TA', 'regs.TR');
+                this.load('regs.TA+1', 'regs.TA');
                 this.addl('regs.TR += (regs.TA << 8);')
                 this.DOINS(ins, 'regs.TR');
                 break;
             case SPC_AM.RA_DP_X: // A, dp+X
-                this.TA_from_PC_inc();
-                this.load_D('regs.TA + regs.X', 'regs.TR');
+                this.fetch_TA();
+                this.load('regs.TA + regs.X', 'regs.TR');
                 this.DOINS(ins, 'regs.A', 'regs.TR');
                 break;
             case SPC_AM.I: // implied
                 this.DOINS(ins, null, null, addr_mode, opcode);
                 break;
             case SPC_AM.DP: // dp
-                this.TA_from_PC_inc();
-                this.load_D('regs.TA', 'regs.TR');
+                this.fetch_TA();
+                this.load('regs.TA', 'regs.TR');
                 this.DOINS(ins, 'regs.TR');
-                this.store_D('regs.TA', 'regs.TR');
+                this.store('regs.TA', 'regs.TR');
                 break;
             case SPC_AM.DP_IMM: // dp, #imm
-                this.TR_from_PC_inc();
-                this.TA_from_PC_inc();
-                this.load_D('regs.TA', 'regs.TA2');
+                this.fetch_TR();
+                this.fetch_TA();
+                this.load('regs.TA', 'regs.TA2');
                 this.DOINS(ins, 'regs.TA2', 'regs.TR');
                 if (ins === SPC_MN.CMP) break;
-                this.store_D('regs.TA', 'regs.TA2')
+                this.store('regs.TA', 'regs.TA2')
                 break;
             case SPC_AM.DP_INDEXED_X: // dp+X
-                this.TA_from_PC_inc();
+                this.fetch_TA();
                 this.addl('regs.TA += regs.X;');
-                this.load_D('regs.TA', 'regs.TR');
+                this.load('regs.TA', 'regs.TR');
                 this.DOINS(ins,  'regs.TR');
-                this.store_D('regs.TA', 'regs.TR');
+                this.store('regs.TA', 'regs.TR');
                 break;
             case SPC_AM.RA: // A
                 this.DOINS(ins, 'regs.A');
@@ -1241,43 +1177,43 @@ class SPC_funcgen {
                 this.DOINS(ins,'regs.Y');
                 break;
             case SPC_AM.IND_XY: // (X), (Y)
-                this.load('regs.X', 'regs.TA');
-                this.load('regs.Y', 'regs.TR');
+                this.load('regs.Y', 'regs.TA');
+                this.load('regs.X', 'regs.TR');
                 this.DOINS(ins,'regs.TR', 'regs.TA');
                 if (ins === SPC_MN.CMP) break;
                 this.store('regs.X', 'regs.TR');
                 break;
             case SPC_AM.IMM:
-                this.TR_from_PC_inc();
+                this.fetch_TR();
                 this.DOINS(ins, 'regs.TR');
                 break;
             case SPC_AM.A_IND_X: // [!abs+X]
-                this.TA16_from_PC_incs();
+                this.fetch16();
                 this.addl('regs.TA = (regs.TA + regs.X) & 0xFFFF;');
-                this.load16('regs.TA', 'regs.TR');
+                this.read16('regs.TA', 'regs.TR');
                 this.DOINS(ins, 'regs.TR');
                 break;
             case SPC_AM.Y_DP: // Y, d
-                this.TA_from_PC_inc();
-                this.load('regs.TA', 'regs.TR');
+                this.fetch_TA();
+                this.read('regs.TA', 'regs.TR');
                 this.DOINS(ins,'regs.Y', 'regs.TR');
                 break;
             case SPC_AM.DP_DP: // dp, dp2
-                this.TR_from_PC_inc(); // dp2
-                this.TA_from_PC_inc(); // dp
-                this.load_D('regs.TR', 'regs.TR');
-                this.load_D('regs.TA', 'regs.TA2');
+                this.fetch_TR(); // dp2   TR = source, rhs
+                this.fetch_TA(); // dp    TA = target, lhs
+                this.load('regs.TR', 'regs.TR');
+                this.load('regs.TA', 'regs.TA2');
                 this.DOINS(ins, 'regs.TA2', 'regs.TR');
                 if (ins === SPC_MN.CMP) break;
-                this.store_D('regs.TA', 'regs.TA2');
+                this.store('regs.TA', 'regs.TA2');
                 break;
             case SPC_AM.PC_R:
                 this.DOINS(ins, 'regs.TA', null);
                 break;
             case SPC_AM.PC_R_BIT: // d.bit, r  .. but backwards from normal
-                this.TR_from_PC_inc();
-                this.TA_from_PC_inc();
+                this.fetch_TA();
                 this.load('regs.TA', 'regs.TA');
+                this.fetch_TR();
                 switch(opcode) {
                     case 0x03: // BBS 0
                         this.BR('regs.TA & 1', 'regs.TR');
@@ -1330,92 +1266,92 @@ class SPC_funcgen {
                 }
                 break;
             case SPC_AM.MEMBITR:
-                this.TA16_from_PC_incs();
+                this.fetch16();
                 this.addl('regs.TR = (regs.TA >>> 13) & 7;');
-                this.load('regs.TA & 0x1FFF', 'regs.TA');
+                this.read('regs.TA & 0x1FFF', 'regs.TA');
                 this.DOINS(ins, 'regs.TA', 'regs.TR', addr_mode);
                 break;
             case SPC_AM.MEMBITW:
-                this.TA16_from_PC_incs();
+                this.fetch16();
                 this.addl('regs.TR = (regs.TA >>> 13) & 7;');
                 this.addl('regs.TA &= 0x1FFF;');
-                this.load('regs.TA', 'regs.TA2');
+                this.read('regs.TA', 'regs.TA2');
                 this.DOINS(ins, 'regs.TA2', 'regs.TR', addr_mode);
-                this.store('regs.TA', 'regs.TA2');
+                this.write('regs.TA', 'regs.TA2');
                 break;
             case SPC_AM.D_BIT:
-                this.TA_from_PC_inc();
+                this.fetch_TA();
                 this.DOINS(ins, 'regs.TA', null, addr_mode, opcode);
                 break;
             case SPC_AM.A:
-                this.TA16_from_PC_incs();
-                this.load('regs.TA', 'regs.TR');
+                this.fetch16();
+                this.read('regs.TA', 'regs.TR');
                 this.DOINS(ins, 'regs.TR');
                 if ((opcode !== SPC_MN.CALL) && (opcode !== SPC_MN.JMP)) {
-                    this.store('regs.TA', 'regs.TR');
+                    this.write('regs.TA', 'regs.TR');
                 }
                 break;
             case SPC_AM.A16:
-                this.TA16_from_PC_incs();
+                this.fetch16();
                 //this.load16('regs.TA', 'regs.TR');
                 this.DOINS(ins, 'regs.TR');
                 break;
             case SPC_AM.PC_R_D: // dp, r  r second byte
-                this.TA_from_PC_inc();
-                this.TR_from_PC_inc();
-                this.load_D('regs.TA', 'regs.TA');
+                this.fetch_TA();
+                this.fetch_TR();
+                this.load('regs.TA', 'regs.TA');
                 this.DOINS(ins, 'regs.TA', 'regs.TR');
                 break;
             case SPC_AM.PC_R_D_X: // dp+X, r  second byte
-                this.TA_from_PC_inc();
-                this.TR_from_PC_inc();
-                this.load_D('regs.TA + regs.X', 'regs.TA');
+                this.fetch_TA();
+                this.fetch_TR();
+                this.load('regs.TA + regs.X', 'regs.TA');
                 this.DOINS(ins, 'regs.TA', 'regs.TR');
                 break;
             case SPC_AM.RX_IMM: // X, #imm
-                this.TR_from_PC_inc();
+                this.fetch_TR();
                 this.DOINS(ins, 'regs.X', 'regs.TR');
                 break;
             case SPC_AM.RX_DP: // X, dp
-                this.TA_from_PC_inc();
-                this.load_D('regs.TA', 'regs.TR');
+                this.fetch_TA();
+                this.load('regs.TA', 'regs.TR');
                 this.DOINS(ins, 'regs.X', 'regs.TR');
                 break;
             case SPC_AM.RX_A: // X, !abs
-                this.TA16_from_PC_incs();
-                this.load_D('regs.TA', 'regs.TR');
+                this.fetch16();
+                this.read('regs.TA', 'regs.TR');
                 this.DOINS(ins, 'regs.X', 'regs.TR');
                 break;
             case SPC_AM.RY_IMM: // Y, #imm
-                this.TR_from_PC_inc();
+                this.fetch_TR();
                 this.DOINS(ins, 'regs.Y', 'regs.TR');
                 break;
             case SPC_AM.RY_DP: // Y, dp
-                this.TA_from_PC_inc();
-                this.load_D('regs.TA', 'regs.TR');
-                this.DOINS(ins, 'regs.Y', 'regs.TR');
-                break;
-            case SPC_AM.RY_A: // Y, !abs
-                this.TA16_from_PC_incs();
+                this.fetch_TA();
                 this.load('regs.TA', 'regs.TR');
                 this.DOINS(ins, 'regs.Y', 'regs.TR');
                 break;
+            case SPC_AM.RY_A: // Y, !abs
+                this.fetch16();
+                this.read('regs.TA', 'regs.TR');
+                this.DOINS(ins, 'regs.Y', 'regs.TR');
+                break;
             case SPC_AM.RY_R: // Y, r
-                this.TR_from_PC_inc();
+                this.fetch_TR();
                 this.DOINS(ins, 'regs.Y', 'regs.TR');
                 break;
             case SPC_AM.DP_R: // dp, r
-                this.TA_from_PC_inc();
-                this.TR_from_PC_inc();
-                this.load_D('regs.TA', 'regs.TA2');
+                this.fetch_TA();
+                this.fetch_TR();
+                this.load('regs.TA', 'regs.TA2');
                 this.DOINS(ins, 'regs.TA2', 'regs.TR');
-                this.store_D('regs.TA', 'regs.TA2');
+                this.store('regs.TA', 'regs.TA2');
                 break;
             case SPC_AM.DPW: // dp (word)
-                this.TA_from_PC_inc();
-                this.load_D16('regs.TA', 'regs.TR');
+                this.fetch_TA();
+                this.load16('regs.TA', 'regs.TR');
                 this.DOINS(ins, 'regs.TR');
-                this.store_D16('regs.TA', 'regs.TR');
+                this.store16('regs.TA', 'regs.TR');
                 break;
             case SPC_AM.YA_X:
                 this.DIV();
@@ -1445,20 +1381,20 @@ class SPC_funcgen {
                 break;
             case 0x8D: // Y, #imm
                 test = 'regs.Y';
-                this.TR_from_PC_inc();
+                this.fetch_TR();
                 this.addl('regs.Y = regs.TR;');
                 break;
             case 0x8F: // dp, #imm     operands last to first, except BBC, BBS, CBNE, and DBNZ
-                this.TR_from_PC_inc();
-                this.TA_from_PC_inc();
-                this.store_D('regs.TA', 'regs.TR');
+                this.fetch_TR();
+                this.fetch_TA();
+                this.store('regs.TA', 'regs.TR');
                 break;
             case 0x9D: // X, SP
                 test = 'regs.X';
                 this.addl('regs.X = regs.SP');
                 break;
             case 0xAF: // (X)+, A
-                this.store('regs.X', 'regs.A');
+                this.write('regs.X', 'regs.A');
                 this.addl('regs.X = (regs.X + 1) & 0xFF;');
                 break;
             case 0xBD: // SP, X
@@ -1466,74 +1402,74 @@ class SPC_funcgen {
                 break;
             case 0xBF: // A, (X)+
                 test = 'regs.A';
-                this.load('regs.X', 'regs.A');
+                this.read('regs.X', 'regs.A');
                 this.addl('regs.X = (regs.X + 1) & 0xFF;');
                 break;
             case 0xC4: // dp, A
-                this.TA_from_PC_inc();
-                this.store_D('regs.TA', 'regs.A');
+                this.fetch_TA();
+                this.store('regs.TA', 'regs.A');
                 break;
             case 0xC5: // !abs, A
-                this.TA16_from_PC_incs();
-                this.store('regs.TA', 'regs.A');
+                this.fetch16();
+                this.write('regs.TA', 'regs.A');
                 break;
             case 0xC6: // (X), A
-                this.store('regs.X', 'regs.A')
+                this.write('regs.X', 'regs.A')
                 break;
             case 0xC7: // [dp+X], A
-                this.TA_from_PC_inc();
+                this.fetch_TA();
                 this.addl('regs.TA += regs.X;');
-                this.load_DN16('regs.TA', 'regs.TA');
-                this.store('regs.TA', 'regs.A');
+                this.read16('regs.TA', 'regs.TA');
+                this.write('regs.TA', 'regs.A');
                 break;
             case 0xC9: // !abs, X
-                this.TA16_from_PC_incs();
-                this.store('regs.TA', 'regs.X');
+                this.fetch16();
+                this.write('regs.TA', 'regs.X');
                 break;
             case 0xCB: // dp, Y
-                this.TA_from_PC_inc();
-                this.store_D('regs.TA', 'regs.Y');
+                this.fetch_TA();
+                this.store('regs.TA', 'regs.Y');
                 break;
             case 0xCC: // !a, Y
-                this.TA16_from_PC_incs();
-                this.store('regs.TA', 'regs.Y');
+                this.fetch16();
+                this.write('regs.TA', 'regs.Y');
                 break;
             case 0xCD: // X, #imm
                 test = 'regs.X';
-                this.TR_from_PC_inc();
+                this.fetch_TR();
                 this.addl('regs.X = regs.TR;');
                 break;
             case 0xD4: // dp+X, A
-                this.TA_from_PC_inc();
-                this.store_D('regs.TA + regs.X', 'regs.A');
+                this.fetch_TA();
+                this.store('regs.TA + regs.X', 'regs.A');
                 break;
             case 0xD5: // !abs+X, A
-                this.TA16_from_PC_incs();
+                this.fetch16();
                 this.addl('regs.TA += regs.X;');
-                this.store('regs.TA', 'regs.A');
+                this.write('regs.TA', 'regs.A');
                 break;
             case 0xD6: // !abs+Y, A
-                this.TA16_from_PC_incs();
+                this.fetch16();
                 this.addl('regs.TA += regs.Y;');
-                this.store('regs.TA', 'regs.A');
+                this.write('regs.TA', 'regs.A');
                 break;
             case 0xD7: // [dp]+Y, A
-                this.TR_from_PC_inc();
-                this.load_DN16('regs.TR', 'regs.TA');
+                this.fetch_TR();
+                this.read16('regs.TR', 'regs.TA');
                 this.addl('regs.TA = (regs.TA + regs.Y) & 0xFFFF;');
-                this.store('regs.TA', 'regs.A');
+                this.write('regs.TA', 'regs.A');
                 break;
             case 0xD8: // dp, X
-                this.TA_from_PC_inc();
-                this.store_D('regs.TA', 'regs.X');
+                this.fetch_TA();
+                this.store('regs.TA', 'regs.X');
                 break;
             case 0xD9: // dp+Y, X
-                this.TA_from_PC_inc();
-                this.store_D('regs.TA + regs.Y', 'regs.X');
+                this.fetch_TA();
+                this.store('regs.TA + regs.Y', 'regs.X');
                 break;
             case 0xDB: // dp+X, Y
-                this.TA_from_PC_inc();
-                this.store_D('regs.TA + regs.X', 'regs.Y');
+                this.fetch_TA();
+                this.store('regs.TA + regs.X', 'regs.Y');
                 break;
             case 0xDD: // A, Y
                 test = 'regs.A';
@@ -1541,84 +1477,84 @@ class SPC_funcgen {
                 break;
             case 0xE4: // A, d
                 test = 'regs.A';
-                this.TA_from_PC_inc();
-                this.load_D('regs.TA', 'regs.A');
+                this.fetch_TA();
+                this.load('regs.TA', 'regs.A');
                 break;
             case 0xE5: // A, !abs
                 test = 'regs.A';
-                this.TA16_from_PC_incs();
-                this.load('regs.TA', 'regs.A');
+                this.fetch16();
+                this.read('regs.TA', 'regs.A');
                 break;
             case 0xE6: // A, (X)
                 test = 'regs.A';
-                this.load('regs.X', 'regs.A');
+                this.read('regs.X', 'regs.A');
                 break;
             case 0xE7: // A, [dp+X]
                 test = 'regs.A';
-                this.TA_from_PC_inc();
-                this.load_DN('regs.TA + regs.X', 'regs.A');
+                this.fetch_TA();
+                this.read('regs.TA + regs.X', 'regs.A');
                 break;
             case 0xE8: // A, #imm
                 test = 'regs.A';
-                this.from_PC_inc('regs.A');
+                this.fetch('regs.A');
                 break;
             case 0xE9: // X, !abs
                 test = 'regs.X';
-                this.TA16_from_PC_incs();
-                this.load('regs.TA', 'regs.X');
+                this.fetch16();
+                this.read('regs.TA', 'regs.X');
                 break;
             case 0xEB: // Y, d
                 test = 'regs.Y';
-                this.TA_from_PC_inc();
-                this.load_D('regs.TA', 'regs.Y');
+                this.fetch_TA();
+                this.load('regs.TA', 'regs.Y');
                 break;
             case 0xEC: // Y, !abs
                 test = 'regs.Y';
-                this.TA16_from_PC_incs();
-                this.load('regs.TA', 'regs.Y');
+                this.fetch16();
+                this.read('regs.TA', 'regs.Y');
                 break;
             case 0xF4: // A, dp+X
                 test = 'regs.A';
-                this.TA_from_PC_inc();
-                this.load_D('regs.TA + regs.X', 'regs.A');
+                this.fetch_TA();
+                this.load('regs.TA + regs.X', 'regs.A');
                 break;
             case 0xF5: // A, !a+X
                 test = 'regs.A';
-                this.TA16_from_PC_incs();
-                this.load('(regs.TA + regs.X) & 0xFFFF', 'regs.A');
+                this.fetch16();
+                this.read('(regs.TA + regs.X) & 0xFFFF', 'regs.A');
                 break;
             case 0xF6: // A, !a+Y
                 test = 'regs.A';
-                this.TA16_from_PC_incs();
-                this.load('(regs.TA + regs.Y) & 0xFFFF', 'regs.A');
+                this.fetch16();
+                this.read('(regs.TA + regs.Y) & 0xFFFF', 'regs.A');
                 break;
             case 0xF7: // A, [dp]+Y
                 test = 'regs.A';
-                this.TR_from_PC_inc();
-                this.load_DN16('regs.TR', 'regs.TA');
+                this.fetch_TR();
+                this.read16('regs.TR', 'regs.TA');
                 this.addl('regs.TA = (regs.TA + regs.Y) & 0xFFFF;');
-                this.load('regs.TA', 'regs.A');
+                this.read('regs.TA', 'regs.A');
                 break;
             case 0xF8: // X, dp
                 test = 'regs.X';
-                this.TR_from_PC_inc();
-                this.load_D('regs.TR', 'regs.X');
+                this.fetch_TR();
+                this.load('regs.TR', 'regs.X');
                 break;
             case 0xF9: // X, dp+Y
                 test = 'regs.X';
-                this.TA_from_PC_inc();
-                this.load_D('regs.TA + regs.Y', 'regs.X');
+                this.fetch_TA();
+                this.load('regs.TA + regs.Y', 'regs.X');
                 break;
             case 0xFA: // TA, TR  dp, dp
-                this.TR_from_PC_inc();
-                this.TA_from_PC_inc();
-                this.load_D('regs.TR', 'regs.TR');
-                this.store_D('regs.TA', 'regs.TR');
+                this.fetch_TR();
+                this.fetch_TA();
+                this.load('regs.TR', 'regs.TR');
+                this.store('regs.TA', 'regs.TR');
                 break;
             case 0xFB: // Y, dp+X
                 test = 'regs.Y';
-                this.TA_from_PC_inc();
-                this.load_D('regs.TA + regs.X', 'regs.A');
+                this.fetch_TA();
+                this.load('regs.TA + regs.X', 'regs.A');
                 break;
             case 0xFD: // Y, A
                 test = 'regs.Y';
@@ -1634,13 +1570,13 @@ class SPC_funcgen {
     MOVW(ins) {
         switch(ins) {
             case 0xBA: // YA, dp
-                this.TA_from_PC_inc();
+                this.fetch_TA();
                 this.load16_2D('regs.TA', 'regs.A', 'regs.Y');
                 this.addl('regs.P.N = (regs.Y & 0x80) >>> 8;');
                 this.addl('regs.P.Z = +(regs.Y === 0 && regs.A === 0);');
                 break;
             case 0xDA: // dp, YA
-                this.TA_from_PC_inc();
+                this.fetch_TA();
                 this.store16_2D('regs.TA', 'regs.A', 'regs.Y');
                 break;
         }
