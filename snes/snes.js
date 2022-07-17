@@ -353,10 +353,11 @@ function main() {
 }
 
 //after_js = main;
-after_js = generate_SPC700_test_test;
+//after_js = generate_SPC700_test_test;
 
 
 //after_js = test_65c816;
 //after_js = generate_js;
 //after_js = test_pt_65c816;
+after_js = test_pt_spc700;
 //after_js = generate_js_SPC;

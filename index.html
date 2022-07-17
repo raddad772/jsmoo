@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
 <html lang="en-US">
 <head>
+<script type="text/javascript" src="helpers/jszip/dist/jszip.js"></script>
 <script type="text/javascript" src="helpers.js"></script>
 <script type="text/javascript" src="debugging.js"></script>
 <script type="text/javascript" src="w65c816/w65c816_opcodes.js"></script>
@@ -17,6 +18,7 @@
 <script type="text/javascript" src="apu/spc700_boot_rom.js"></script>
 <script type="text/javascript" src="apu/spc700_assembler.js"></script>
 <script type="text/javascript" src="apu/spc700_disassembler.js"></script>
+<script type="text/javascript" src="apu/spc700_tests_pt.js"></script>
 <script type="text/javascript" src="apu/sdsp.js"></script>
 <script type="text/javascript" src="apu/spc700.js"></script>
 <script type="text/javascript" src="apu/spc700_generated_opcodes.js"></script>
@@ -73,6 +75,9 @@
             <br>
             PPU output: <span id="ppu_y_output"></span>
             <br>
+            <hr>
+            <button id="generate_spc" type="button" onclick="generate_SPC700_test_test()">Generate SPC700 tests</button>
+            <hr>
             <br>
             <button id="downloadjs" type="button" onclick="generate_js()">Generate 65816</button>
             <button id="downloadjsSPC" type="button" onclick="generate_js_SPC()">Generate SPC</button>
