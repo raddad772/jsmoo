@@ -886,7 +886,7 @@ const SPC_decoded_opcodes = Object.freeze(
             regs.SP &= 0xFF;
             cpu.write8(0x100 + regs.SP--, (regs.PC & 0xFF));
             regs.SP &= 0xFF;
-            regs.PC = regs.TR;
+            regs.PC = regs.TA;
             cpu.cycles -= regs.opc_cycles;
             regs.IR = cpu.read8(regs.PC);
             regs.PC = (regs.PC + 1) & 0xFFFF;
