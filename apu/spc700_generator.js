@@ -1293,8 +1293,8 @@ class SPC_funcgen {
                 break;
             case SPC_AM.A16:
                 this.fetch16();
-                //this.load16('regs.TA', 'regs.TR');
-                this.DOINS(ins, 'regs.TR');
+                //this.read16('regs.TA', 'regs.TR');
+                this.DOINS(ins, 'regs.TA');
                 break;
             case SPC_AM.PC_R_D: // dp, r  r second byte
                 this.fetch_TA();
