@@ -1,7 +1,7 @@
 "use strict";
 
-let R5A22_DO_TRACING_AT_START = true;
-let WDC_DO_TRACING_AT_START = true;
+let R5A22_DO_TRACING_AT_START = false;
+let WDC_DO_TRACING_AT_START = false;
 let SPC_DO_TRACING_AT_START = false;
 let TRACE_COLOR = true;
 let SPC_TRACING_START = 20 * 68 * 262 * 9;
@@ -183,13 +183,22 @@ class traces_t {
 
 //let traces = new traces_t();
 
-const D_RESOURCE_TYPES = Object.freeze({R5A22: 0, SPC700: 1, WDC65C816: 2});
+const D_RESOURCE_TYPES = Object.freeze({R5A22: 0, SPC700: 1, WDC65C816: 2, SNESPPU: 3});
 
 class breakpoint_t {
     constructor(resource_type, resource) {
         this.res_type = resource_type;
         this.res = resource;
 
+    }
+}
+
+class SNES_DMA_log_entry_t {
+    constructor() {
+        this.source_addr = 0;
+        this.dest_addr = 0;
+        this.bytes = 0;
+        this.transfer_mode = 0;
     }
 }
 
@@ -206,6 +215,8 @@ class debugger_t {
 
         this.watch_on = false;
         this.watch = new watch_t(WATCH_WHICH.WDC_IR, WATCH_RELATIONSHIP.GTE, 0x40); // 0x1F6
+
+        this.brk_on_NMIRQ = false;
     }
 
     cpu_refresh_tracing() {
@@ -273,17 +284,22 @@ class debugger_t {
         snes.step(master_clocks, scanlines, frames, seconds);
     }
 
-    break() {
+    break(whodidit) {
         // CASUE BREAK
         this.state = DBG_STATES.PAUSE;
         this.do_break = true;
         let overflow = snes.clock.cpu_deficit;
-        snes.clock.cpu_deficit = 0;
+        if (whodidit === D_RESOURCE_TYPES.WDC65C816 || whodidit === D_RESOURCE_TYPES.R5A22) {
+            snes.clock.cpu_deficit = 0;
+            snes.apu.catch_up();
+            snes.ppu.catch_up();
+        }
+        else if (whodidit === D_RESOURCE_TYPES.SPC700) {
+            snes.ppu.catch_up();
+        }
         //snes.clock.apu_deficit -= overflow;
         //snes.clock.ppu_deficit -= overflow;
         console.log('AFTER BREAK deficits', snes.clock.cpu_deficit, snes.clock.apu_deficit, snes.clock.ppu_deficit)
-        snes.apu.catch_up();
-        snes.ppu.catch_up();
     }
 
     init_done() {

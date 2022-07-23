@@ -1,26 +1,5 @@
 "use strict";
 
-class r5a22DMAChannel {
-    constructor() {
-        this.reverse_transfer = 0;
-        this.HDMA_indirect_addressing = 0;
-        this.unused_bit_43x0 = 0;
-        this.a_address_fixed = 0;
-        this.a_address_decrement = 0;
-        this.transfer_mode = 0;
-        this.b_address = 0;
-        this.a_address = 0;
-        this.a_bank = 0;
-        this.dma_count_or_hdma_indirect_address = 0;
-        this.indirect_bank = 0;
-        this.address = 0;
-        this.repeat = 0;
-        this.line_count = 0;
-        this.unknown_byte = 0;
-        this.do_transfer = 0;
-    }
-}
-
 const HDMA_LENGTHS = Object.freeze([1, 2, 2, 4, 4, 4, 2, 4]);
 
 class dmaChannel {
@@ -28,8 +7,10 @@ class dmaChannel {
      * @param {snes_memmap} mem_map
      * @param {*} status
      * @param {SNES_clock} clock
+     * @param {Number} dma_num
      */
-    constructor(mem_map, status, clock) {
+    constructor(mem_map, status, clock, dma_num) {
+        this.dma_num = dma_num
         this.mem_map = mem_map;
         this.dma_enable = 0;
         this.status = status;
@@ -42,6 +23,7 @@ class dmaChannel {
         this.transfer_mode = 0;
         this.target_address = 0;
         this.source_address = 0;
+        this.dma_pause = false;
         this.source_bank = 0;
         this.transfer_size = 0;
         this.indirect_bank = 0;
@@ -67,6 +49,9 @@ class dmaChannel {
 
     dma_run(howmany) {
         if (!this.dma_enable) return howmany;
+        console.log('DMA #', this.dma_num, 'RUN WITH', this.transfer_size, 'BYTES LEFT AND', howmany, 'CYCLES');
+        console.log('DMA INFO:', this.direction, this.fixed_transfer, this.source_address, this.source_bank);
+        if (this.dma_pause) return howmany;
 
         //this.dma_edge();
 
@@ -78,25 +63,35 @@ class dmaChannel {
                 this.transfer(this.source_bank << 16 | this.source_address, this.index);
                 this.index++;
                 this.clock.dma_counter += 8;
+                if (!this.fixed_transfer) {
+                    if (this.reverse_transfer)
+                        this.source_address--;
+                    else
+                        this.source_address++;
+                    this.source_address &= 0xFFFF;
+                }
                 howmany -= 8;
                 if (howmany < 1) break;
                 //console.log(this.transfer_size);
                 //this.dma_edge()
             } while (this.dma_enable && --this.transfer_size);
         }
-        this.dma_enable = this.transfer_size === 0
+        this.dma_enable = !(this.transfer_size < 1);
 
         return howmany;
     }
 
     hdma_setup() {
+        console.log('HDMA SETUP!');
         this.hdma_do_transfer = true;
         if (!this.hdma_enable) return;
 
-        this.dma_enable = false;
+        //this.dma_enable = false;
+        this.dma_pause = true;
         this.hdma_address = this.source_address;
         this.line_counter = 0;
         this.hdma_reload();
+        this.dma_pause = false;
     }
 
     hdma_is_finished() {
@@ -181,7 +176,8 @@ class dmaChannel {
     }
 
     writeB(addr, val, valid) {
-        if (valid) this.mem_map.dispatch_write(2100 | addr, val);
+        //console.log('WRITEB!', hex2(addr), hex2(val), valid);
+        if (valid) this.mem_map.dispatch_write(0x2100 | addr, val);
     }
 
     transfer(addrA, index) {
@@ -198,11 +194,14 @@ class dmaChannel {
         }
         let valid = addrB !== 0x80 || ((addrA & 0xFE0000) !== 0x7E0000 && (addrA & 0x40E000) !== 0x0000);
         let data;
+        //console.log('TRANSFER ACTUAL ADDR', this.direction, valid, hex6(addrA), hex2(addrB));
         if (this.direction === 0) {
             data = this.readA(addrA);
+            console.log('DMA AB ' + hex6(addrA) + ' to ' + hex4(0x2100 | addrB) + ': ' + hex2(data));
             this.writeB(addrB, data, valid);
         } else {
             data = this.readB(addrB, valid);
+            console.log('DMA BA ' + hex4(0x2100 | addrB) + ' to ' + hex6(addrA) + ': ' + hex2(data));
             this.writeA(addrA, data);
         }
     }
@@ -223,7 +222,7 @@ class r5a22DMA {
 
         this.channels = {};
         for (let i = 0; i < 8; i++) {
-            this.channels[i] = new dmaChannel(this.mem_map, this.status, this.clock);
+            this.channels[i] = new dmaChannel(this.mem_map, this.status, this.clock, i);
         }
         for (let i = 0; i < 7; i++) {
             this.channels[i].next = this.channels[i+1];
@@ -270,8 +269,9 @@ class r5a22DMA {
 
     reg_write(addr, val) {
         let channel = this.channels[((addr >>> 4) & 7)];
+        console.log('DMA WRITE', channel.dma_num, hex4(addr), hex4(addr & 0xFF8F), hex2(val));
         switch(addr & 0xFF8F) {
-            case 0x4300: // DMAPx varios controls
+            case 0x4300: // DMAPx various controls
                 channel.transfer_mode = val & 7;
                 channel.fixed_transfer = (val >>> 3) & 1;
                 channel.reverse_transfer = (val >>> 4) & 1;
@@ -279,7 +279,6 @@ class r5a22DMA {
                 channel.indirect = (val >>> 6) & 1;
                 channel.direction = (val >>> 7) & 1;
                 return;
-
             case 0x4301:
                 channel.target_address = val;
                 return;

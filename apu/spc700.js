@@ -1,5 +1,8 @@
 "use strict";
 
+let SPC_did_lowPC_break = true;
+let SPC_lowPC_break = 0xF000;
+
 class spc700_P {
     constructor() {
         this.C = this.Z = this.I = this.H = this.B = this.P = this.V = this.N = 0;
@@ -63,6 +66,7 @@ class spc700 {
     constructor(mem_map, clock) {
         this.mem_map = mem_map;
         this.clock = clock;
+        this.break_on_IO = false;
         mem_map.read_apu = this.read_reg.bind(this);
         mem_map.write_apu = this.write_reg.bind(this);
         clock.set_apu(this);
@@ -181,11 +185,13 @@ class spc700 {
         this.sync_to(this.clock.cpu_has);
     }
 
-    catch_up() {
+    catch_up(break_on_IO=false) {
+        this.break_on_IO = break_on_IO;
         if (this.clock.apu_deficit < 1) return;
-        let catch_up = Math.floor(this.clock.apu_deficit / 20) + 1;
-        if (catch_up < 1) return;
-        this.cycle(catch_up);
+        let catch_up_amt = Math.floor(this.clock.apu_deficit / 20) + 1;
+        if (catch_up_amt < 1) return;
+        this.cycle(catch_up_amt);
+        this.break_on_IO = false;
     }
 
     sync_to(how_many) {
@@ -195,7 +201,7 @@ class spc700 {
     }
 
     trace_format(da_out, PCO) {
-		let outstr = trace_start_format('SPC', SPC_COLOR, this.trace_cycles, ' ', PCO);
+		let outstr = trace_start_format('SPC', SPC_COLOR, this.clock.apu_has, ' ', PCO);
 		outstr += da_out.disassembled;
 		let sp = da_out.disassembled.length;
 		while(sp < TRACE_INS_PADDING) {
@@ -246,9 +252,15 @@ class spc700 {
                 if (this.trace_on)
                     this.trace_cycles += this.regs.opc_cycles;
             }
+            if ((!SPC_did_lowPC_break) && (this.regs.PC < SPC_lowPC_break)) {
+                console.log('break for low PC');
+                dbg.break(D_RESOURCE_TYPES.SPC700);
+                SPC_did_lowPC_break = true;
+            }
             this.clock.apu_deficit -= (this.regs.opc_cycles * 20);
             this.clock.apu_has += (this.regs.opc_cycles * 20);
             this.advance_timers(this.regs.opc_cycles);
+            if (dbg.do_break) return;
         }
     }
 
@@ -262,12 +274,12 @@ class spc700 {
 
     read8_test_trace(addr) {
         let val = this.RAM[addr & 0xFFFF];
-        dbg.traces.add(TRACERS.SPC, this.clock.apu_has, trace_format_read('SPC', SPC_COLOR, this.trace_cycles, addr, val));
+        dbg.traces.add(TRACERS.SPC, this.clock.apu_has, trace_format_read('SPC', SPC_COLOR, this.clock.apu_has, addr, val));
         return val;
     }
 
     write8_test_trace(addr, val) {
-        dbg.traces.add(TRACERS.SPC, this.clock.apu_has, trace_format_write('SPC', SPC_COLOR, this.trace_cycles, addr, val));
+        dbg.traces.add(TRACERS.SPC, this.clock.apu_has, trace_format_write('SPC', SPC_COLOR, this.clock.apu_has, addr, val));
         this.RAM[addr & 0xFFFF] = val;
     }
 
@@ -286,12 +298,12 @@ class spc700 {
         else
             r = this.RAM[addr & 0xFFFF];
 
-        if (has_effect) dbg.traces.add(TRACERS.SPC, this.clock.apu_has, trace_format_read('SPC', SPC_COLOR, this.trace_cycles, addr, r));
+        if (has_effect) dbg.traces.add(TRACERS.SPC, this.clock.apu_has, trace_format_read('SPC', SPC_COLOR, this.clock.apu_has, addr, r));
         return r;
     }
 
     write8_trace(addr, val) {
-        dbg.traces.add(TRACERS.SPC, this.clock.apu_has, trace_format_write('SPC', SPC_COLOR, this.trace_cycles, addr, val));
+        dbg.traces.add(TRACERS.SPC, this.clock.apu_has, trace_format_write('SPC', SPC_COLOR, this.clock.apu_has, addr, val));
         if ((addr >= 0x00F1) && (addr <= 0x00FF))
             this.writeIO(addr, val);
         this.RAM[addr & 0xFFFF] = val;
@@ -448,7 +460,7 @@ class spc700 {
 
     // External device reading here, APU may need to catch up
     read_reg(addr, val) {
-        this.catch_up();
+        if (!this.break_on_IO) this.catch_up();
         switch(addr & 3) {
             case 0:
                 return this.io.CPUO0;
@@ -458,7 +470,6 @@ class spc700 {
                 return this.io.CPUO2;
             case 3:
                 return this.io.CPUO3;
-
         }
     }
 
@@ -478,7 +489,7 @@ class spc700 {
                 this.io.CPUI3 = val;
                 return;
         }
-        this.catch_up();
+        if (!this.break_on_IO) this.catch_up();
     }
 }
 
