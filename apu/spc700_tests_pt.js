@@ -124,7 +124,7 @@ function test_spc700_automated(cpu, tests) {
 
 async function test_pt_spc700_ins(cpu, ins) {
     let opc = hex2(ins).toLowerCase();
-    let data = await getJSON(tt + opc + '.json');
+    let data = await getJSON(local_server_url + opc + '.json');
     let result = test_spc700_automated(cpu, data);
     if (!result.passed) {
         tconsole.addl(null, 'TEST FOR ' + hex2(ins) + ' FAILED! ');

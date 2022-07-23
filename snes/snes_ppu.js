@@ -22,6 +22,8 @@ const PPU_tile_mode = Object.freeze({
 	Inactive: 4
 });
 
+const PPU_BPPBACK = {0: 'BPP2', 1: 'BPP4', 2: 'BPP8', 3: 'Mode7', 4: 'Inactive'}
+
 const PPU_screen_mode = Object.freeze({
 	above: 0,
 	below: 1
@@ -246,9 +248,9 @@ class PPU_bg {
 	 * @param below
 	 */
 	render(y, source, io, VRAM, CGRAM, above, below) {
-		if (!this.above_enable && !this.below_enable) return;
-		if (this.tile_mode === PPU_tile_mode.Mode7) return;
-		if (this.tile_mode === PPU_tile_mode.Inactive) return;
+		//if (!this.above_enable && !this.below_enable) return;
+		//if (this.tile_mode === PPU_tile_mode.Mode7) return;
+		//if (this.tile_mode === PPU_tile_mode.Inactive) return;
 
 		this.window.render_layer(this.window.above_enable, this.window_above, io);
 		this.window.render_layer(this.window.below_enable, this.window_below, io);
@@ -258,6 +260,7 @@ class PPU_bg {
 		let direct_color_mode = io.col.direct_color && source === PPU_source.BG1 && (io.bg_mode === 3 || io.bg_mode === 4);
 		let color_shift = 3 + this.tile_mode;
 		let width = 256 << hires;
+		//console.log('RENDERING PPU y:', y, 'BG MODE', io.bg_mode);
 
 		let tile_height = 3 + this.tile_size;
 		let tile_width = !hires ? tile_height : 4;
@@ -319,7 +322,7 @@ class PPU_bg {
 			let tile_number = this.get_tile(VRAM, io, this, hoffset, voffset);
 			let mirror_x = tile_number & 0x8000 ? 7 : 0;
 			let mirror_y = tile_number & 0x4000 ? 7 : 0;
-			let tile_priority = this.priority(+(tile_number & 0x2000));
+			let tile_priority = this.priority[+(tile_number & 0x2000)];
 			let palette_number = (tile_number >>> 10) & 7;
 			let palette_index = (this.palette_base + (palette_number << this.palette_shift)) & 0xFF;
 
@@ -481,6 +484,8 @@ class SNES_slow_1st_PPU {
 				tile_addr: 0,
 				first: 0,
 				interlace: 0,
+				above_enable: 0,
+				below_enable: 0
 			},
 			col: {
 				window: new PPU_window_layer(),
@@ -564,7 +569,9 @@ class SNES_slow_1st_PPU {
 	}
 
 	reg_read(addr, val, have_effect= true) {
-		if ((addr - 0x3F) & 0x3F) { return this.mem_map.read_apu(addr, val); }
+		//if ((addr - 0x3F) & 0x3F) { return this.mem_map.read_apu(addr, val); }
+		if (addr >= 0x2140 && addr < 0x217F) { return this.mem_map.read_apu(addr, val, have_effect); }
+
 		//console.log('PPU read', hex0x6(addr));
 		switch(addr) {
 			case 0x2180: // WRAM access port
@@ -583,8 +590,10 @@ class SNES_slow_1st_PPU {
 				return (this.wram_addr & 0xFF00) >>> 8;
 			case 0x2183: // WRAM address bank
 				return this.wram_bank === 0x7E ? 0 : 1;
+			default:
+				console.log('UNIMPLEMENTED PPU READ FROM', hex4(addr), hex2(val));
+				return val;
 		}
-		return val;
 	}
 
 	set_first_obj() {
@@ -621,6 +630,7 @@ class SNES_slow_1st_PPU {
 
 	OAM_write(addr, val) {
 		let n;
+		console.log('OAM WRITE', hex2(addr), hex2(val));
 		if (!(addr & 0x200)) {
 			n = addr >> 2; // object #
 			addr &= 3;
@@ -755,13 +765,15 @@ class SNES_slow_1st_PPU {
 	 * @param {number} val
 	 */
 	reg_write(addr, val) {
-		if ((addr - 0x3F) & 0x3F) { this.mem_map.write_apu(addr, val); return; }
-		console.log('PPU write', hex0x6(addr), hex0x2(val));
+		//if ((addr - 0x3F) & 0x3F) { this.mem_map.write_apu(addr, val); return; }
+		if (addr >= 0x2140 && addr < 0x217F) { this.mem_map.write_apu(addr, val); return; }
+		console.log('PPU write', hex0x4(addr), hex0x2(val));
 		let addre, latchbit;
 		switch(addr) {
-			case 0x2100:
+			case 0x2100: // INIDISP
 				this.io.display_brightness = val & 15;
 				this.io.display_disable = (val >>> 7) & 1;
+				this.clock.set_fblank(!this.io.display_disable);
 				break;
 			case 0x2101: // OBSEL
 				this.io.obj.size = val >>> 5;
@@ -888,11 +900,12 @@ class SNES_slow_1st_PPU {
 				addre = this.get_addr_by_map();
 				this.VRAM[addre] = (this.VRAM[addre] & 0xFF00) | val;
 				if (this.io.vram_increment_mode === 0) this.io.vram_addr = (this.io.vram_addr + this.io.vram_increment_step) & 0x7FFF;
+				console.log('PPU write to lo', hex4(addre), hex2(val));
 				return;
 			case 0x2119: // VRAM data hi
 				addre = this.get_addr_by_map();
 				this.VRAM[addre] = (val << 8) | (this.VRAM[addre] & 0xFF);
-				if (this.io.vram_increment_mode === 0) this.io.vram_addr = (this.io.vram_addr + this.io.vram_increment_step) & 0x7FFF;
+				if (this.io.vram_increment_mode === 1) this.io.vram_addr = (this.io.vram_addr + this.io.vram_increment_step) & 0x7FFF;
 				return;
 			case 0x211A: // M7SEL
 				this.io.mode7.hflip = val & 1;
@@ -903,23 +916,23 @@ class SNES_slow_1st_PPU {
 				this.io.mode7.a = (val << 8) | this.latch.mode7;
 				this.latch.mode7 = val;
 				return;
-			case 0x211C: // M7A
+			case 0x211C: // M7B
 				this.io.mode7.b = (val << 8) | this.latch.mode7;
 				this.latch.mode7 = val;
 				return;
-			case 0x211D: // M7A
+			case 0x211D: // M7C
 				this.io.mode7.c = (val << 8) | this.latch.mode7;
 				this.latch.mode7 = val;
 				return;
-			case 0x211E: // M7A
+			case 0x211E: // M7D
 				this.io.mode7.d = (val << 8) | this.latch.mode7;
 				this.latch.mode7 = val;
 				return;
-			case 0x211F: // M7A
+			case 0x211F: // M7E
 				this.io.mode7.x = (val << 8) | this.latch.mode7;
 				this.latch.mode7 = val;
 				return;
-			case 0x2120: // M7A
+			case 0x2120: // M7F
 				this.io.mode7.y = (val << 8) | this.latch.mode7;
 				this.latch.mode7 = val;
 				return;
@@ -935,6 +948,7 @@ class SNES_slow_1st_PPU {
 				else {
 					this.latch.cram_addr = 0;
 					this.CRAM[this.io.cram_addr] = ((val & 0x7F) << 8) | this.latch.cram;
+					console.log('CRAM WRITE', hex2(this.io.cram_addr), hex2(val));
 					this.io.cram_addr = (this.io.cram_addr + 1) & 0xFF;
 				}
 				return;
@@ -1066,7 +1080,79 @@ class SNES_slow_1st_PPU {
 			case 0x2183: // WRAM bank
 				this.wram_bank = (val & 1) ? 0x7F: 0x7E;
 				return;
+			default:
+				console.log('UNIMPLEMENTED PPU WRITE TO', hex4(addr), hex2(val));
+				return;
 		}
+	}
+
+	/**
+	 * @param {number} y_origin
+	 * @param {number} x_origin
+	 * @param {PPU_bg} bg
+	 */
+	render_bg1_from_memory(y_origin, x_origin, bg) {
+		// Grab raw buffer
+		console.log(this.objects);
+
+		let ctx = this.canvas.getContext('2d');
+		let imgdata = ctx.getImageData(x_origin, y_origin, 256, 224);
+		console.log('PPU INFO: BG MODE', this.io.bg_mode);
+		console.log('size', bg.tile_size);
+		console.log('BPP', PPU_BPPBACK[bg.tile_mode]);
+		console.log('h, v scrolls', bg.hoffset, bg.voffset);
+		let tile_mask = 0xFFF >> bg.tile_mode;
+		let tiledata_index = bg.tiledata_addr >>> (3 + bg.tile_mode);
+		let color_shift = 3 + bg.tile_mode;
+		let tile_height = 3 + bg.tile_size;
+		let hires = +(this.io.bg_mode === 5 || this.io.bg_mode === 6);
+		let tile_width = !hires ? tile_height : 4;
+		/*let tile_map = '';
+		// 33x33 text (with \n at end of each line), cells are 3 wide.
+		for (let y = 0; y < 33; y++) {
+			for (let x = 0; x < 33; x++) {
+				tile_map += '.. '
+			}
+			tile_map += '\n';
+		}*/
+
+
+		let hoffset = 0;
+		let voffset = 0;
+		for (let sy = 0; sy < 224; sy++) {
+			for (let sx = 0; sx < 256; sx++) {
+				let di = (sy * 256 * 4) + (sx * 4);
+				let R = 0;
+				let G = 0;
+				let B = 0;
+
+				let tile_number = bg.get_tile(this.VRAM, this.io, bg, sx, sy)
+				let mirror_x = tile_number & 0x8000 ? 7 : 0;
+				let mirror_y = tile_number & 0x4000 ? 7 : 0;
+				let tile_palette = (tile_number >>> 10) & 7;
+				tile_number = ((tile_number & 0x3FF) + tiledata_index) & tile_mask;
+
+				if (tile_width === 4 && (+(hoffset & 8) ^ +(mirror_x))) tile_number += 1;
+				if (tile_height === 4 && (+(voffset & 8) ^ +(mirror_y))) tile_number += 16;
+				tile_number = ((tile_number & 0x3FF) + tiledata_index) & tile_mask;
+				let address = (tile_number << color_shift) + ((voffset & 7) ^ mirror_y) & 0x7FFF;
+				if (tile_number !== 0) console.log(sx, sy, tile_number, hex4(address));
+				// Calculate R,G,B from BG data
+
+				imgdata.data[di] = R;
+				imgdata.data[di+1] = G;
+				imgdata.data[di+2] = B;
+				imgdata.data[di+3] = 255;
+			}
+		}
+		ctx.putImageData(imgdata, x_origin, y_origin);
+	}
+
+	/**
+	 * @param {{tile_addr: number, size: number, nametable: number, window: PPU_window_layer, interlace: number, first: number}} self
+	 */
+	renderObject(self) {
+		if (this.io.obj.above)
 	}
 
 	render_scanline() {
@@ -1092,6 +1178,7 @@ class SNES_slow_1st_PPU {
 		if (this.io.extbg === 0) this.io.bg2.render(this.clock.scanline.ppu_y, PPU_source.BG2, this.io, this.VRAM, this.CRAM, this.above, this.below);
 		this.io.bg3.render(this.clock.scanline.ppu_y, PPU_source.BG3, this.io, this.VRAM, this.CRAM, this.above, this.below);
 		this.io.bg4.render(this.clock.scanline.ppu_y, PPU_source.BG4, this.io, this.VRAM, this.CRAM, this.above, this.below);
+		this.renderObject(io.obj);
 		// renderObjects here
 		if (this.io.extbg === 1) this.io.bg2.render(this.clock.scanline.ppu_y, PPU_source.BG2, this.io, this.VRAM, this.CRAM, this.above, this.below);
 		// render background color windows here
@@ -1133,7 +1220,7 @@ class SNES_slow_1st_PPU {
 		if (!this.window_below[x]) return above.color;
 		if (!this.io.col.enable[above.source]) return above.color;
 		if (!this.io.col.blend_mode) return this.blend(above.color, this.io.col.fixed_color, this.io.col.halve && this.window_above[x]);
-		return this.blend(above.color, below.color. this.io.col.halve && this.window_above[x] && below.source !== PPU_source.COL);
+		return this.blend(above.color, below.color, this.io.col.halve && this.window_above[x] && below.source !== PPU_source.COL);
 	}
 
 	catch_up() {

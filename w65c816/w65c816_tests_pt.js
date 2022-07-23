@@ -22,7 +22,7 @@ function getJSONP(url, success) {
 //let tt = 'ProcessorTests/65816/v1/00.e.json'
 //let tt = 'https://github.com/TomHarte/ProcessorTests/raw/main/65816/v1/00.e.json'
 //let tt = 'http://127.0.0.1:8000/00.e.json'
-let tt = 'http://[::1]:8000/'
+let local_server_url = 'http://[::1]:8000/'
 
 function PARSEP(w, E) {
     let outstr;
@@ -48,6 +48,19 @@ const getJSON = async url => {
 
   const data = response.json(); // get JSON from the response
   return data; // returns a promise, which resolves to this data value
+}
+
+const getBinary = async url => {
+    const response = await fetch(url);
+    if (!response.ok) { // check if response worked (no 404 errors etc...)
+        console.log(response);
+        }
+    //throw new Error(response.statusText);
+
+  //const data = response.json(); // get JSON from the response
+    const data = response.arrayBuffer();
+    //console.log(response);
+    return data; // returns a promise, which resolves to this data value
 }
 
 let testRAM = new Uint8Array(16 * 1024 * 1024);
@@ -298,7 +311,7 @@ let io_mismatches = [];
 
 async function test_pt_65c816_ins(cpu, ins) {
     let opc = hex2(ins).toLowerCase() + '.n';
-    let data = await getJSON(tt + opc + '.json');
+    let data = await getJSON(local_server_url + opc + '.json');
     let result = test_it_automated(cpu, data);
     if (!result.passed) {
         tconsole.addl(txf('{r}TEST FOR {/b}' + hex0x2(ins) + ' {/r*}FAILED!{/} See console for test deets'));

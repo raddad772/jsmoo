@@ -236,6 +236,7 @@ class w65c816 {
 				this.IRQ_count = 0;
 				this.regs.IRQ_pending = true;
 				this.IRQ_ack = false;
+				console.log('IRQ pending');
 			}
 		}
 		// NMI fires
@@ -249,6 +250,7 @@ class w65c816 {
 			this.NMI_ack = false;
 			this.NMI_count = 0;
 			this.regs.NMI_pending = true;
+			console.log('NMI pending');
 		}
 
 		this.regs.TCU++;
@@ -260,17 +262,19 @@ class w65c816 {
 				this.NMI_ack = true;
 				this.regs.NMI_pending = false;
 				this.regs.IR = OP_NMI;
+				console.log('NMI EXEC!');
 			}
 			// Do IRQ check
 			else if (this.regs.IRQ_pending && !this.IRQ_ack && !this.regs.old_I) {
 				this.IRQ_ack = true;
 				this.regs.IRQ_pending = false;
 				this.regs.IR = OP_IRQ;
+				console.log('IRQ EXEC!')
 			}
 			this.regs.old_I = this.regs.P.I;
 			this.PCO = this.pins.Addr; // PCO is PC for tracing purposes
 			this.current_instruction = get_decoded_opcode(this.regs);
-			if (this.regs.IR === 0) {// || this.regs.IR === OP_IRQ || this.regs.IR === OP_NMI || this.regs.IR === 0x40) {
+			if ((this.regs.IR === 0) || (dbg.brk_on_NMIRQ && (this.regs.IR === OP_IRQ || this.regs.IR === OP_NMI))) {
 				console.log('BREAK at cycle', this.trace_cycles, ' FOR IR ', hex2(this.regs.IR));
 				dbg.break();
 			}
@@ -283,6 +287,9 @@ class w65c816 {
 				dbg.traces.add(TRACERS.WDC, this.clock.cpu_has, this.trace_format(this.disassemble(), this.PCO));
 			}
 		}
+		this.IRQ_ack = false;
+		this.NMI_ack = false;
+
 		this.current_instruction.exec_func(this.regs, this.pins);
 	}
 
@@ -489,7 +496,7 @@ class w65c816 {
 	}
 
 	trace_format(da_out, PCO) {
-		let outstr = trace_start_format('WDC', WDC_COLOR, this.trace_cycles, ' ', PCO, this.regs.PBR);
+		let outstr = trace_start_format('WDC', WDC_COLOR, this.clock.cpu_has, ' ', PCO, this.regs.PBR);
 		// General trace format is...
 		// (cycles) PC: LDA d,x   (any byte operands)   E: C: X: Y: S: MX: P: D: DBR:
 		outstr += da_out.disassembled;

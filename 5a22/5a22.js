@@ -188,46 +188,6 @@ class ricoh5A22 {
 		this.tracing = false;
 	}
 
-	// Basically, check for DMA triggers and squashing each other, etc.
-	dma_edge() {
-		this.counters.dma = 0;
-		if (this.status.dma_active) {
-			if (this.status.hdma_pending) {
-				this.status.hdma_pending = false;
-				if (this.hdma_is_enabled()) {
-					if (!this.dma_is_enabled()) {
-						this.steps_left -= 8 - (this.timing.cycles_since_reset & 7);
-						this.clock.cpu_has += 8 - (this.timing.cycles_since_reset & 7);
-					}
-					if (this.status.hdma_mode === 0) this.dma.hdma_setup();
-					else this.dma.hdma_run();
-					if (!this.dma_is_enabled()) {
-						this.steps_left -= this.counters.dma;
-						this.status.dma_active = false;
-					}
-				}
-			}
-
-			if (this.status.dma_pending) {
-				this.status.dma_pending = false;
-				if (this.dma_is_enabled()) {
-					console.log('IS ENABLED!');
-					this.steps_left -= 8 - (this.timing.cycles_since_reset & 7);
-					this.dma.dma_run();
-					this.steps_left -= this.counters.dma;
-					this.counters.dma = 0;
-					this.status.dma_active = false;
-				}
-			}
-		}
-
-		if (!this.status.dma_active) {
-			if (this.status.dma_pending || this.status.hdma_pending) {
-				this.status.dma_active = true;
-			}
-		}
-	}
-
 	read_nmi(have_effect=true) {
 		let r = this.status.nmi_line;
 		if (!this.status.nmi_hold && have_effect) {
@@ -247,7 +207,8 @@ class ricoh5A22 {
 
 	reg_read(addr, val=0, have_effect=true) { // Val is for open bus
 		//console.log('5A22 read', hex0x4(addr));
-		if ((addr & 0x4300) === 0x4300) { this.dma.reg_read(addr, val, have_effect); return; }
+		//if ((addr & 0x4300) === 0x4300) { return this.dma.reg_read(addr, val, have_effect); }
+		if ((addr >= 0x4300) && (addr <= 0x43FF)) { return this.dma.reg_read(addr, val, have_effect); }
 		switch(addr) {
 			case 0x4210: // NMI read
 				val &= 0x70;
@@ -266,6 +227,9 @@ class ricoh5A22 {
 				return this.io.rdmpy & 0xFF;
 			case 0x4217:
 				return (this.io.rdmpy >>> 8) & 0xFF;
+			default:
+				console.log('UNIMPLEMENTED CPU READ', hex4(addr), hex2(val));
+				break;
 		}
 		return val;
 	}
@@ -281,7 +245,8 @@ class ricoh5A22 {
 
 	reg_write(addr, val) {
 		//console.log('5A22 write', hex0x4(addr), hex0x2(val));
-		if ((addr & 0x4300) === 0x4300) { this.dma.reg_write(addr, val); return; }
+		//if ((addr & 0x4300) === 0x4300) { this.dma.reg_write(addr, val); return; }
+		if ((addr >= 0x4300) && (addr <= 0x43FF)) { this.dma.reg_write(addr, val); return; }
 		switch(addr) {
 			case 0x4200: // NMI timing
 				this.io.hirq_enable = (val & 0x10) >>> 4;
@@ -295,8 +260,9 @@ class ricoh5A22 {
 					this.status.irq_line = 0;
 					this.status.irq_transition = 0;
 				}
-				this.set_nmi_bit(this.io.nmi_enable);
+				this.set_nmi_bit((val & 0x80) >>> 7);
 
+				console.log('Reschedule canline due to write of ', hex2(val));
 				this.reschedule_scanline_irqbits();
 				this.status.irq_lock = 1;
 				return;
@@ -339,23 +305,30 @@ class ricoh5A22 {
 				this.io.vtime = (this.io.vtime & 0xFF) | ((val & 1) << 8);
 				return;
 			case 0x420B: // DMA enables
+				console.log('DMA ENABLE', hex2(val));
 				for (let n = 0; n < 8; n++) {
-					this.dma.channels[n].dma_enable = (val >>> (n - 1)) & 1;
+					console.log('CHANNEL ', n, (val >>> n) & 1);
+					this.dma.channels[n].dma_enable = (val >>> n) & 1;
 				}
 				if (val !== 0) {
+					console.log('DMA AT FRAME ', this.clock.frames_since_restart, ' SCANLINE', this.clock.scanline.ppu_y, hex2(val));
+					console.log('DMA INFO', this.dma.channels[1]);
 					this.status.dma_pending = true;
 					this.rescheduled = true;
 				}
 				return;
 			case 0x420C: // HDMA enables
 				for (let n = 0; n < 8; n++) {
-					this.dma.channels[n].hdma_enable = (val >>> (n - 1)) & 1;
+					this.dma.channels[n].hdma_enable = (val >>> n) & 1;
 				}
-				//console.log('HDMA CHANNEL WRITE', val);
+				if (val !== 0) console.log('HDMA CHANNEL WRITE', val);
 				return;
 			case 0x420D: // Cycle speed of ROM
 				this.ROMspeed = (val & 1) ? 6 : 8;
 				return;
+			default:
+				console.log('UNIMPLEMENTED CPU WRITE', hex4(addr), hex2(val));
+				break;
 		}
 	}
 
@@ -418,6 +391,7 @@ class ricoh5A22 {
 		let old_irq_time = -1;
 		let old_irq_event = -1;
 		let new_irq_time = -1;
+		let scanline = this.clock.scanline;
 		if (this.event_ptrs[R5A22_events.IRQ] !== null) {
 			for (let i in this.events_list) {
 				if (this.events_list[i][1] === R5A22_events.IRQ) {
@@ -463,7 +437,7 @@ class ricoh5A22 {
 		// This is a naive slow way of doing ALL of this, it is just proof-of-concept
 		let oldi = 0;
 		for (let i = 1; i < this.events_list.length; i++) {
-			if (this.events_list[i][0] > this.scanline.cycles_since_scanline_start)
+			if (this.events_list[i][0] > this.clock.scanline.cycles_since_scanline_start)
 				break;
 			oldi = i;
 		}
@@ -640,19 +614,6 @@ class ricoh5A22 {
 				continue;
 			}
 
-			/*if (this.clock.scanline.vblank_start) {
-				// NMI out low (1)
-				if (this.status.nmi_line !== 1) {
-					this.status.nmi_transition = 1;
-					this.status.nmi_line = 1;
-				}
-			}
-			else if (this.clock.scanline.ppu_y === 0) {
-				if (this.status.nmi_line !== 0) {
-					this.status.nmi_transition = 0;
-					this.status.nmi_line = 0;
-				}
-			}*/
 			// Do HDMA setup
 			if (this.status.hdma_pending) {
 				// run HDMA
@@ -664,8 +625,9 @@ class ricoh5A22 {
 				}
 				else {
 					// Step on DMA and cancel it
-					this.status.dma_running = false;
-					this.status.dma_pending = false;
+					// NEVERMIND this is per-channel
+					//this.status.dma_running = false;
+					//this.status.dma_pending = false;
 				}
 
 				this.status.hdma_pending = false;
@@ -695,7 +657,10 @@ class ricoh5A22 {
 				let anyleft = this.dma.dma_run(can_do);
 				this.clock.advance_steps_from_cpu(this.clock.dma_counter)
 				// Leftover cycles mean DMA is no longer running
-				if (anyleft > 8) this.status.dma_running = false;
+				if (anyleft > 8) {
+					console.log('SETTING DMA RUNNING TO FALSE BECASE', anyleft);
+					this.status.dma_running = false;
+				}
 				this.clock.dma_counter = 0;
 				if (dbg.do_break) return;
 				continue;
@@ -704,11 +669,11 @@ class ricoh5A22 {
 			// Now that we're out of all the HDMA and DMA junk,
 			//  we can set our lines...
 			if (!this.status.irq_lock) {
-				if (this.status.nmi_transition) {
+				if (this.status.nmi_transition && this.io.nmi_enable) {
 					this.cpu.pins.NMI = this.status.nmi_line;
 					this.status.nmi_transition = 0;
 				}
-				if (this.status.irq_transition) {
+				if (this.status.irq_transition && this.io.irq_enable) {
 					this.cpu.pins.IRQ = this.status.irq_line;
 					this.status.irq_transition = 0;
 				}
@@ -749,14 +714,14 @@ class ricoh5A22 {
 			if (this.cpu.pins.RW) { // Write
 				this.mem_map.dispatch_write(this.cpu_addr, this.cpu.pins.D);
 				if (this.cpu.trace_on) {
-					dbg.traces.add(TRACERS.WDC, this.clock.cpu_has, trace_format_write('WDC', WDC_COLOR, this.cpu.trace_cycles, this.cpu_addr & 0xFFFF, this.cpu.pins.D, this.cpu_addr >>> 16));
+					dbg.traces.add(TRACERS.WDC, this.clock.cpu_has, trace_format_write('WDC', WDC_COLOR, this.clock.cpu_has, this.cpu_addr & 0xFFFF, this.cpu.pins.D, this.cpu_addr >>> 16));
 				}
 			}
 			else { // Read
 				let r = this.mem_map.dispatch_read(this.cpu_addr, this.cpu.pins.D);
 				if (r !== null) this.cpu.pins.D = r;
 				if (this.cpu.trace_on) {
-					dbg.traces.add(TRACERS.WDC, this.clock.cpu_has, trace_format_read('WDC', WDC_COLOR, this.cpu.trace_cycles, this.cpu_addr & 0xFFFF, this.cpu.pins.D, this.cpu_addr >>> 16));
+					dbg.traces.add(TRACERS.WDC, this.clock.cpu_has, trace_format_read('WDC', WDC_COLOR, this.clock.cpu_has, this.cpu_addr & 0xFFFF, this.cpu.pins.D, this.cpu_addr >>> 16));
 				}
 			}
 		}
@@ -811,84 +776,6 @@ class ricoh5A22 {
 			steps -= master_cycles;
 			if (this.rescheduled) return;
 			if (dbg.do_break) return;
-		}
-	}
-
-	/**
-	 * @param {SNEStiming} timing
-	 */
-	steps(timing) {
-		this.timing = timing;
-		// Dispatch IRQ, NMI, DMA, CPU cycles, etc.
-		if (timing.ppu_y === 0) {
-			// HDMA setup
-			this.auto_joypad_counter = 33;
-		}
-
-		this.steps_left += timing.cycles;
-		if (this.steps_left < 0) {
-			this.steps_left -= 40; // RAM refresh
-			this.clock.cpu_has += 40;
-			console.log('SKIPPED WHOLE LINE FROM ' + Math.abs(this.steps_left) + ' STEPS LEFT!');
-		}
-
-		while(this.steps_left > 0) {
-			let place_in_scanline = (timing.cycles - this.steps_left);
-
-			// Shall we refresh DRAM?
-			if ((place_in_scanline >= timing.dram_refresh) && (place_in_scanline < (timing.dram_refresh + 40))) {
-				this.steps_left -= 40;
-				this.clock.cpu_has += 40;
-				place_in_scanline += 40;
-				this.alu_cycle(5); // mul/div goes on during DRAM refresh
-				// We don't need a continue; here
-			}
-
-			// Shall we setup HDMA?
-			if (!timing.hdma_setup_triggered && (place_in_scanline >= timing.hdma_setup_position)) {
-				timing.hdma_setup_triggered = true;
-				this.hdma_reset();
-				if (this.hdma_is_enabled()) {
-					// Restart-ish HDMA
-					this.status.hdma_pending = true;
-					this.status.hdma_mode = 0;
-				}
-			}
-
-			// Shall we execute HDMA?
-			if (!timing.hdma_triggered && (place_in_scanline >= timing.hdma_position)) {
-				timing.hdma_triggered = true;
-				if (this.hdma_is_active()) {
-					this.status.hdma_pending = true;
-					this.status.hdma_mode = 1;
-				}
-				// if hdmaActive()    hdma_pending = true. hdma_mode = 1;
-			}
-
-			// DMA it out
-			if (this.status.dma_pending || this.status.hdma_pending) {
-				//console.log('DMA!', this.status.dma_pending, this.status.hdma_pending);
-				this.dma_edge();
-				continue;
-			}
-			this.clock.cpu_has += this.counters.dma;
-			this.steps_left -= this.counters.dma;
-			this.counters.dma = 0;
-
-			switch(RMODES.CPU) {
-				case RMODES.HDMA:
-					break;
-				case RMODES.DMA:
-					break;
-				case RMODES.CPU:
-					this.cpu.cycle();
-
-					this.cpu_addr = (this.cpu.pins.BA << 16) + this.cpu.pins.Addr;
-					this.steps_for_CPU_cycle_left = this.cpu.pins.PDV ? SNES_mem_timing(this.cpu_addr, this.ROMspeed) : 6;
-					// Do timing info...
-					this.service_CPU_cycle();
-					break;
-			}
 		}
 	}
 }

@@ -66,12 +66,15 @@
             <br>
             <button id="stepall" type="button" onclick="click_step_all()">Step</button>
             <br>
+            <button id="dumpbg1" type="button" onclick="click_bg1_dump()">Dump BG1</button>
             <br>
             <input type="checkbox" id="tracingbox"/><label for="tracingbox">Tracing enabled</label>
             <br>
             <input type="checkbox" id="tracing5a22"/><label for="tracing5a22">Trace CPU</label>
             <input type="checkbox" id="tracingspc700"/><label for="tracingspc700">Trace APU</label>
             <input type="checkbox" id="watchpt"/><label for="watchpt">Watching</label>
+            <br>
+            <input type="checkbox" id="brknmirq"><label for="brknmirq">Break on NMI/IRQ</label>
             <br>
             PPU output: <span id="ppu_y_output"></span>
             <br>

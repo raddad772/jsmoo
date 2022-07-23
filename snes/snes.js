@@ -196,6 +196,12 @@ class SNES {
 		this.cpu.do_steps(steps);
 	}
 
+	catch_up() {
+		// Catch up anything that needs to
+		this.apu.catch_up(true);
+		this.ppu.catch_up();
+	}
+
 	step(master_clocks, scanlines, frames, seconds) {
 		//debugger;
 		/*if (scanlines < 0) {
@@ -345,8 +351,30 @@ function main2() {
 	load_ROM('test', main3);
 }
 
-function main() {
+function main_old() {
 	initDb(main2);
+}
+
+async function main() {
+	let ROM_to_get;
+	ROM_to_get = 'snes-test-roms/PeterLemon/SNES-CPUTest-CPU/ADC/CPUADC.sfc';
+	//ROM_to_get = 'blargg/controller_strobebehavior.smc';
+	ROM_to_get = 'commercial/smw.smc';
+	let rtg = await getBinary(local_server_url + ROM_to_get);
+	console.log('GOT IT!', rtg);
+	snes = new SNES();
+	dbg.add_cpu(D_RESOURCE_TYPES.R5A22, snes.cpu);
+	dbg.add_cpu(D_RESOURCE_TYPES.SPC700, snes.apu)
+	if (rtg === null || typeof(rtg) === 'undefined') {
+		alert('No ROM! Upload then refresh please');
+		return;
+	}
+	snes.load_ROM_from_RAM(rtg);
+	if (!init_gl()) {
+		return;
+	}
+
+	dbg.init_done();
 }
 
 after_js = main;

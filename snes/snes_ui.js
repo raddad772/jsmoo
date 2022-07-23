@@ -26,6 +26,7 @@ function generate_js_SPC() {
 }
 
 let watching_checkbox, tracing_checkbox, tracing_5a22_checkbox, tracing_spc700_checkbox;
+let brknmirq_checkbox;
 let mc_input, scanline_input, frame_input, seconds_input;
 let frame_count_output, ppu_y_output;//, scanline_dot_output;
 
@@ -42,6 +43,7 @@ function init_js() {
 	scanline_input = document.getElementById('scanlinesteps');
 	frame_input = document.getElementById('framesteps');
 	seconds_input = document.getElementById('secondsteps');
+	brknmirq_checkbox = document.getElementById('brknmirq');
 
 	ppu_y_output = document.getElementById('ppu_y_output')
 	frame_count_output = document.getElementById('frame_count_output')
@@ -65,13 +67,12 @@ function init_js() {
 	tracing_spc700_checkbox.checked = SPC_DO_TRACING_AT_START;
 
 	watching_checkbox.addEventListener('change', (event) => {
-		if (event.currentTarget.checked) {
-			dbg.watch_on = true;
-		}
-		else {
-			dbg.watch_on = false;
-		}
+		dbg.watch_on = !!event.currentTarget.checked;
 	});
+
+	brknmirq_checkbox.addEventListener('change', (event) => {
+		dbg.brk_on_NMIRQ = !!event.currentTarget.checked;
+	})
 
 
 	tracing_5a22_checkbox.addEventListener('change', (event) => {
@@ -107,7 +108,12 @@ function click_disable_tracing() {
 function click_step_clock() {
 	let steps = parseInt(mc_input.value);
 	snes.step(steps, 0, 0, 0);
+	snes.catch_up();
 	after_step();
+}
+
+function click_bg1_dump() {
+	snes.ppu.render_bg1_from_memory(0, 260, snes.ppu.io.bg1);
 }
 
 let dc = 0;
@@ -136,6 +142,9 @@ function after_step() {
 		//console.log(snes.clock.cycles_since_scanline_start);
 		ppu_y_output.innerHTML = Math.floor(snes.clock.cycles_since_scanline_start / 4) + ', ' + snes.clock.scanline.ppu_y;
 		frame_count_output.innerHTML = snes.clock.frames_since_restart;
+		console.log('PPU', snes.ppu.io);
+		console.log('CGRAM', snes.ppu.CRAM);
+		console.log('CPU', snes.cpu.io, snes.cpu.status);
 	}
 }
 

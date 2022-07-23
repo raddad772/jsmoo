@@ -167,9 +167,16 @@ class SNES_clock {
 
     new_frame() {
         // I forget why I even put this logic in here...delay maybe? 1/0 on that register???
-		console.log('NEW FRAME');
+		console.log('NEW FRAME', this.frames_since_restart+1);
+		this.ppu.present();
 		this.frames_since_restart++;
     }
+
+	set_fblank(to_what) {
+		this.scanline.fblank = to_what;
+		//console.log('%c Oh my heavens! ', 'background: #222; color: #bada55');
+		console.log('%c FBLANK: '+ to_what, 'background: #222; color: #bada55');
+	}
 
     // This function is called from inside the main CPU scheduler
     advance_steps_from_cpu(howmany) {

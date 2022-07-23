@@ -124,6 +124,9 @@ class snes_memmap {
 		let b = addr >>> 12;
 		let mkind = this.writemap[b].kind;
 		let outaddr = this.writemap[b].offset + (addr & 0xFFF);
+		if (addr === 0x2104) {
+			console.log('2104 HERE!', mkind, outaddr, this.writemap[b].offset, data);
+		}
 		switch(mkind) {
 			case MAP_TI.OPEN_BUS:
 				console.log('OPEN BUS WRITE');
