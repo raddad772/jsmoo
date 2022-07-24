@@ -326,7 +326,7 @@ class ricoh5A22 {
 				for (let n = 0; n < 8; n++) {
 					this.dma.channels[n].hdma_enable = (val >>> n) & 1;
 				}
-				if (val !== 0) console.log('HDMA CHANNEL WRITE', val);
+				if (val !== 0) console.log('HDMA CHANNEL WRITE', val, this.dma.channels[7]);
 				return;
 			case 0x420D: // Cycle speed of ROM
 				this.ROMspeed = (val & 1) ? 6 : 8;
@@ -442,13 +442,15 @@ class ricoh5A22 {
 		// This is a naive slow way of doing ALL of this, it is just proof-of-concept
 		let oldi = 0;
 		for (let i = 1; i < this.events_list.length; i++) {
-			if (this.events_list[i][0] > this.clock.scanline.cycles_since_scanline_start)
+			if (this.events_list[i][0] > this.clock.cycles_since_scanline_start)
 				break;
 			oldi = i;
 		}
-		this.current_event = oldi;
+		//this.current_event = oldi;
+		this.current_event = 0;
 		// Set when next event will be
 		this.next_event = this.event_ptrs[this.current_event][0];
+		console.log('NEW EVENTS LIST', this.current_event, this.next_event, this.events_list);
 	}
 
 	schedule_scanline() {
@@ -474,6 +476,7 @@ class ricoh5A22 {
 
 		// Check HDMA trigger
 		if (scanline.hdma_position !== 0) {
+			//console.log('WE HAVE ONE HERE', scanline.ppu_y);
 			e = [scanline.hdma_position, R5A22_events.HDMA, false];
 			this.event_ptrs[R5A22_events.HDMA] = e;
 			this.events_list.push(e);
@@ -498,7 +501,8 @@ class ricoh5A22 {
 		this.current_event = 0;
 
 		// Set when next event will be
-		this.next_event = this.events_list[this.current_event][1];
+		this.next_event = this.events_list[this.current_event][0];
+		//console.log(this.events_list);
 		//console.log('NEXT EVENT', this.current_event, this.next_event);
 		//console.log('EVENT LIST', this.events_list);
 	}
@@ -577,10 +581,12 @@ class ricoh5A22 {
 			// Check if we need to process an event
 			if (this.clock.cycles_since_scanline_start >= this.next_event) {
 				let ev = this.events_list[this.current_event];
+				//console.log(this.clock.scanline.ppu_y, 'EVENT HIT', ev, this.clock.cycles_since_scanline_start)
 				let already_true = ev[2];
 				ev[2] = true;
 				this.current_event++;
 				this.next_event = this.current_event >= this.events_list.length ? this.clock.scanline.cycles : this.events_list[this.current_event][0];
+				//console.log('ENXT EVENT:', this.next_event);
 				if (already_true) continue; // Somehow already got processed
 				switch(ev[1]) {
 					case R5A22_events.SCANLINE_START:
@@ -601,7 +607,9 @@ class ricoh5A22 {
 						}
 						break;
 					case R5A22_events.HDMA:
-						if (this.hdma_is_enabled) {
+						//console.log('HDMA hit');
+						if (this.hdma_is_enabled()) {
+							console.log('HDMA PEND SET');
 							this.status.hdma_pending = true;
 						}
 						break;
@@ -612,11 +620,13 @@ class ricoh5A22 {
 /*							if (this.mode === 3) {
 								debugger; // WRAM refresh in middle of WRAM refresh!?
 							}*/
+							console.log('WRAM REFRESH SPLIT');
 							this.old_mode = this.mode;
 							this.mode = RMODES.WRAM_REFRESH;
 						}
 						this.clock.advance_steps_from_cpu(can_do);
 						if (can_do < 40) {
+							console.log('WRAM REFRESH RETURN');
 							return;
 						}
 						break;
@@ -652,6 +662,7 @@ class ricoh5A22 {
 
 			// Run DMA for any available cycles
 			let maxe = this.next_event > this.clock.scanline.cycles ? this.clock.scanline.cycles : this.next_event;
+			maxe -= this.clock.cycles_since_scanline_start;
 			//let can_do = (maxe - this.clock.cycles_since_scanline_start);
 			let can_do = this.clock.cpu_deficit > maxe ? maxe : this.clock.cpu_deficit;
 			//debugger;
@@ -692,6 +703,7 @@ class ricoh5A22 {
 					this.status.irq_transition = 0;
 				}
 			}
+			//console.log('RUNNING CPU FOR', can_do, 'CYCLES. CURRENT', this.clock.cycles_since_scanline_start, ' AND NEXT EVENT IS', this.next_event);
 			this.cycle_cpu(can_do);
 			if (dbg.do_break) return;
 		}

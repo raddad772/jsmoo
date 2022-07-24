@@ -705,7 +705,7 @@ class SNES_slow_1st_PPU {
 			this.objects[n+1].size = (val >>> 3) & 1;
 			this.objects[n+2].size = (val >>> 5) & 1;
 			this.objects[n+3].size = (val >>> 7) & 1;
-			console.log('OBJECT', addr, hex4(addr), n, hex2(val), this.objects[n].size);
+			//console.log('OBJECT', addr, hex4(addr), n, hex2(val), this.objects[n].size);
 		}
 	}
 
@@ -1388,10 +1388,7 @@ class SNES_slow_1st_PPU {
 				this.tiles[tile_count - 1] = tile;
 			}
 		}
-		//if (force) {
-		if ((item_count>0 || tile_count>0) && (y !== 241))
-			console.log('ITEM AND TILE COUNT', y, item_count, tile_count);
-		//}
+		//if ((item_count>0 || tile_count>0) && (y < 241)) console.log('ITEM AND TILE COUNT', y, item_count, tile_count);
 
 		this.io.obj.range_over |= (item_count > PPU_ITEM_LIMIT);
 		this.io.obj.time_over |= (tile_count > PPU_TILE_LIMIT);

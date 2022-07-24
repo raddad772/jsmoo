@@ -82,16 +82,15 @@ class dmaChannel {
     }
 
     hdma_setup() {
-        //console.log('HDMA SETUP!');
         this.hdma_do_transfer = true;
         if (!this.hdma_enable) return;
 
-        //this.dma_enable = false;
-        this.dma_pause = true;
+        console.log('HDMA SETUP!', this.dma_num);
+        this.dma_enable = false; // Stomp on DMA if HDMA runs on a channel at same time
         this.hdma_address = this.source_address;
         this.line_counter = 0;
         this.hdma_reload();
-        this.dma_pause = false;
+        //this.dma_pause = false;
     }
 
     hdma_is_finished() {
@@ -130,6 +129,7 @@ class dmaChannel {
 
     hdma_advance() {
         if (!this.hdma_is_active()) return;
+        console.log('ADVANCING', this.dma_num, this.line_counter);
         this.line_counter--;
         this.hdma_do_transfer = (this.line_counter & 0x80) >>> 7;
         this.hdma_reload();
@@ -148,7 +148,7 @@ class dmaChannel {
                 addr = (this.source_bank << 16) | this.source_address;
                 this.source_address++;
             }
-            this.transfer(addr, index);
+            this.transfer(addr, index, true);
         }
     }
 
@@ -180,7 +180,7 @@ class dmaChannel {
         if (valid) this.mem_map.dispatch_write(0x2100 | addr, val);
     }
 
-    transfer(addrA, index) {
+    transfer(addrA, index, hdma_mode=false) {
         let addrB = this.target_address;
         switch(this.transfer_mode) {
             case 1:
@@ -197,11 +197,11 @@ class dmaChannel {
         //console.log('TRANSFER ACTUAL ADDR', this.direction, valid, hex6(addrA), hex2(addrB));
         if (this.direction === 0) {
             data = this.readA(addrA);
-            //console.log('DMA AB ' + hex6(addrA) + ' to ' + hex4(0x2100 | addrB) + ': ' + hex2(data));
+            if (hdma_mode) console.log('HDMA AB ' + hex6(addrA) + ' to ' + hex4(0x2100 | addrB) + ': ' + hex2(data));
             this.writeB(addrB, data, valid);
         } else {
             data = this.readB(addrB, valid);
-            //console.log('DMA BA ' + hex4(0x2100 | addrB) + ' to ' + hex6(addrA) + ': ' + hex2(data));
+            if (hdma_mode) console.log('HDMA BA ' + hex4(0x2100 | addrB) + ' to ' + hex6(addrA) + ': ' + hex2(data));
             this.writeA(addrA, data);
         }
     }
