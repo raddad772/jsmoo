@@ -114,6 +114,25 @@ function click_step_clock() {
 
 function click_bg1_dump() {
 	snes.ppu.render_bg1_from_memory(0, 260, snes.ppu.io.bg1);
+	snes.ppu.present();
+}
+
+function click_sprite_dump() {
+	snes.ppu.render_sprites_from_memory(0, 520, false);
+	for (let y = 1; y < 240; y++) {
+		snes.ppu.renderObject(y, snes.ppu.io.obj, true);
+	}
+	snes.ppu.present();
+}
+
+function flick_render_scr() {
+	let old_scanline = snes.clock.scanline.ppu_y;
+	for (let y = 1; y < 240; y++) {
+		snes.clock.scanline.ppu_y = y;
+		snes.ppu.render_scanline(true)
+	}
+	snes.clock.scanline.ppu_y = old_scanline;
+	snes.ppu.present();
 }
 
 let dc = 0;
@@ -142,9 +161,9 @@ function after_step() {
 		//console.log(snes.clock.cycles_since_scanline_start);
 		ppu_y_output.innerHTML = Math.floor(snes.clock.cycles_since_scanline_start / 4) + ', ' + snes.clock.scanline.ppu_y;
 		frame_count_output.innerHTML = snes.clock.frames_since_restart;
-		console.log('PPU', snes.ppu.io);
-		console.log('CGRAM', snes.ppu.CRAM);
-		console.log('CPU', snes.cpu.io, snes.cpu.status);
+		//console.log('PPU', snes.ppu.io);
+		//console.log('CGRAM', snes.ppu.CRAM);
+		//console.log('CPU', snes.cpu.io, snes.cpu.status);
 	}
 }
 

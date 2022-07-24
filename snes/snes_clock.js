@@ -174,8 +174,10 @@ class SNES_clock {
 
 	set_fblank(to_what) {
 		this.scanline.fblank = to_what;
+		//this.scanline.fblank = false;
 		//console.log('%c Oh my heavens! ', 'background: #222; color: #bada55');
-		console.log('%c FBLANK: '+ to_what, 'background: #222; color: #bada55');
+		console.log('%c FBLANK: '+ to_what + ' y' + this.scanline.ppu_y, 'background: #222; color: #bada55');
+		//dbg.break();
 	}
 
     // This function is called from inside the main CPU scheduler
@@ -200,10 +202,10 @@ class SNES_clock {
 
             this.start_of_scanline = true;
             this.scanline.cycles_since_reset = 0;
-			this.scanline.next_scanline();
-			if (this.scanline.ppu_y < this.scanline.frame_lines) {
+			if (this.scanline.ppu_y < (this.scanline.frame_lines-1)) {
 				this.ppu.render_scanline();
 			}
+			this.scanline.next_scanline();
 			if (this.scanline.vblank_start) {
 				this.ppu_display_due = true;
 			}

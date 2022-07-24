@@ -49,8 +49,8 @@ class dmaChannel {
 
     dma_run(howmany) {
         if (!this.dma_enable) return howmany;
-        console.log('DMA #', this.dma_num, 'RUN WITH', this.transfer_size, 'BYTES LEFT AND', howmany, 'CYCLES');
-        console.log('DMA INFO:', this.direction, this.fixed_transfer, this.source_address, this.source_bank);
+        //console.log('DMA #', this.dma_num, 'RUN WITH', this.transfer_size, 'BYTES LEFT AND', howmany, 'CYCLES');
+        //console.log('DMA INFO:', this.direction, this.fixed_transfer, this.source_address, this.source_bank);
         if (this.dma_pause) return howmany;
 
         //this.dma_edge();
@@ -82,7 +82,7 @@ class dmaChannel {
     }
 
     hdma_setup() {
-        console.log('HDMA SETUP!');
+        //console.log('HDMA SETUP!');
         this.hdma_do_transfer = true;
         if (!this.hdma_enable) return;
 
@@ -192,16 +192,16 @@ class dmaChannel {
             case 4:
                 addrB += index; break;
         }
-        let valid = addrB !== 0x80 || ((addrA & 0xFE0000) !== 0x7E0000 && (addrA & 0x40E000) !== 0x0000);
+        let valid = addrB !== 0x80 || ((addr & 0xFE0000) !== 0x7E0000 && (addrA & 0x40E000) !== 0x0000);
         let data;
         //console.log('TRANSFER ACTUAL ADDR', this.direction, valid, hex6(addrA), hex2(addrB));
         if (this.direction === 0) {
             data = this.readA(addrA);
-            console.log('DMA AB ' + hex6(addrA) + ' to ' + hex4(0x2100 | addrB) + ': ' + hex2(data));
+            //console.log('DMA AB ' + hex6(addrA) + ' to ' + hex4(0x2100 | addrB) + ': ' + hex2(data));
             this.writeB(addrB, data, valid);
         } else {
             data = this.readB(addrB, valid);
-            console.log('DMA BA ' + hex4(0x2100 | addrB) + ' to ' + hex6(addrA) + ': ' + hex2(data));
+            //console.log('DMA BA ' + hex4(0x2100 | addrB) + ' to ' + hex6(addrA) + ': ' + hex2(data));
             this.writeA(addrA, data);
         }
     }
@@ -269,7 +269,7 @@ class r5a22DMA {
 
     reg_write(addr, val) {
         let channel = this.channels[((addr >>> 4) & 7)];
-        console.log('DMA WRITE', channel.dma_num, hex4(addr), hex4(addr & 0xFF8F), hex2(val));
+        //console.log('DMA WRITE', channel.dma_num, hex4(addr), hex4(addr & 0xFF8F), hex2(val));
         switch(addr & 0xFF8F) {
             case 0x4300: // DMAPx various controls
                 channel.transfer_mode = val & 7;

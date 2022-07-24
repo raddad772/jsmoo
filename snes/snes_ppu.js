@@ -4,6 +4,11 @@
 // First go at a PPU
 // R/W code should be fine, but drawing...we'll see.
 
+const PPU_ITEM_LIMIT = 32;
+const PPU_TILE_LIMIT = 34;
+const PPU_obj_widths = [[8, 8, 8, 16, 16, 32, 16, 16], [16, 32, 64, 32, 64, 64, 32, 32]];
+const PPU_obj_heights = [[8, 8, 8, 16, 16, 32, 32, 32], [16, 32, 64, 32, 64, 64, 64, 32]];
+
 const PPU_source = Object.freeze({
 	BG1: 0,
 	BG2: 1,
@@ -29,6 +34,27 @@ const PPU_screen_mode = Object.freeze({
 	below: 1
 });
 
+
+class PPU_object_item {
+	constructor() {
+		this.valid = 0;
+		this.index = 0;
+		this.width = 0;
+		this.height = 0;
+	}
+}
+
+class PPU_object_tile {
+	constructor() {
+		this.valid = 0;
+		this.x = 0;
+		this.y = 0;
+		this.priority = 0;
+		this.palette = 0;
+		this.hflip = 0;
+		this.data = 0;
+	}
+}
 
 class PPU_window_layer {
 	constructor() {
@@ -248,9 +274,9 @@ class PPU_bg {
 	 * @param below
 	 */
 	render(y, source, io, VRAM, CGRAM, above, below) {
-		//if (!this.above_enable && !this.below_enable) return;
-		//if (this.tile_mode === PPU_tile_mode.Mode7) return;
-		//if (this.tile_mode === PPU_tile_mode.Inactive) return;
+		if (!this.above_enable && !this.below_enable) return;
+		if (this.tile_mode === PPU_tile_mode.Mode7) return;
+		if (this.tile_mode === PPU_tile_mode.Inactive) return;
 
 		this.window.render_layer(this.window.above_enable, this.window_above, io);
 		this.window.render_layer(this.window.below_enable, this.window_below, io);
@@ -430,7 +456,6 @@ class SNES_slow_1st_PPU {
 		}
 		this.output = new Uint16Array(512 * 512);
 
-
 		this.latch = {
 			ppu1: {
 				mdr: 0,
@@ -479,13 +504,16 @@ class SNES_slow_1st_PPU {
 			},
 			obj: {
 				window: new PPU_window_layer(),
-				size: 0,
-				nametable: 0,
+				name_select: 0,
 				tile_addr: 0,
 				first: 0,
 				interlace: 0,
 				above_enable: 0,
-				below_enable: 0
+				below_enable: 0,
+				base_size: 0,
+				range_over: 0,
+				time_over: 0,
+				priority: new Array(4)
 			},
 			col: {
 				window: new PPU_window_layer(),
@@ -535,22 +563,34 @@ class SNES_slow_1st_PPU {
 		}
 
 		this.ppu_inc = [1, 32, 128, 128];
+		this.items = [];
+		this.tiles = [];
+		for (let i = 0; i < 128; i++) {
+			this.items[i] = new PPU_object_item();
+			this.tiles[i] = new PPU_object_tile();
+		}
 	}
 
 	present() {
-		console.log('PRESENTING!!!!');
+		//console.log('PRESENTING!!!!');
+		/*for (let i in this.output) {
+			if (this.output[i] !== 0) {
+				console.log('NONZERO OUTPUT AT', (i % 256), Math.floor(i / 256));
+			}
+		}*/
 		let ctx = this.canvas.getContext('2d');
 		let imgdata = ctx.getImageData(0, 0, 256, 224);
 		for (let y = 0; y < 224; y++) {
 			for (let x = 0; x < 256; x++) {
 				let di = (y * 256 * 4) + (x * 4);
 				let ppui = (y * 256) + x;
-				imgdata.data[di] = (this.output[ppui] & 0x1F) << 3;
-				imgdata.data[di+1] = (this.output[ppui] & 0x3E0) >> 2;
-				imgdata.data[di+2] = (this.output[ppui] & 0x7C00) >> 7;
-				if (imgdata.data[di] !== 0) {
-					console.log('NON BLACK!');
-				}
+				let ppuo = this.output[ppui];
+				/*if (ppuo !== 0) {
+					console.log('NOn-ZERO PPUO AT', x, y, ppuo);
+				}*/
+				imgdata.data[di] = (ppuo & 0x1F) << 3;
+				imgdata.data[di+1] = (ppuo & 0x3E0) >> 2;
+				imgdata.data[di+2] = (ppuo & 0x7C00) >> 7;
 				imgdata.data[di+3] = 255;
 			}
 		}
@@ -630,7 +670,11 @@ class SNES_slow_1st_PPU {
 
 	OAM_write(addr, val) {
 		let n;
-		console.log('OAM WRITE', hex2(addr), hex2(val));
+		if (!this.clock.scanline.vblank && !this.clock.scanline.fblank) {
+			console.log('SKIP OAM');
+			return;
+		}
+		//console.log('OAM WRITE', hex2(addr), hex2(val));
 		if (!(addr & 0x200)) {
 			n = addr >> 2; // object #
 			addr &= 3;
@@ -651,6 +695,7 @@ class SNES_slow_1st_PPU {
 			this.objects[n].hflip = (val >>> 6) & 1;
 			this.objects[n].vflip = (val >>> 7) & 1;
 		} else {
+			if (addr >= 544) return;
 			n = (addr & 0x1F) << 2; // object #.... PPU is weird
 			this.objects[n].x = (this.objects[n].x & 0xFF) | ((val << 8) & 0x100);
 			this.objects[n+1].x = (this.objects[n+1].x & 0xFF) | ((val << 6) & 0x100);
@@ -660,6 +705,7 @@ class SNES_slow_1st_PPU {
 			this.objects[n+1].size = (val >>> 3) & 1;
 			this.objects[n+2].size = (val >>> 5) & 1;
 			this.objects[n+3].size = (val >>> 7) & 1;
+			console.log('OBJECT', addr, hex4(addr), n, hex2(val), this.objects[n].size);
 		}
 	}
 
@@ -767,21 +813,22 @@ class SNES_slow_1st_PPU {
 	reg_write(addr, val) {
 		//if ((addr - 0x3F) & 0x3F) { this.mem_map.write_apu(addr, val); return; }
 		if (addr >= 0x2140 && addr < 0x217F) { this.mem_map.write_apu(addr, val); return; }
-		console.log('PPU write', hex0x4(addr), hex0x2(val));
+		//console.log('PPU write', hex0x4(addr), hex0x2(val));
 		let addre, latchbit;
 		switch(addr) {
 			case 0x2100: // INIDISP
 				this.io.display_brightness = val & 15;
 				this.io.display_disable = (val >>> 7) & 1;
-				this.clock.set_fblank(!this.io.display_disable);
+				this.clock.set_fblank(this.io.display_disable);
 				break;
 			case 0x2101: // OBSEL
-				this.io.obj.size = val >>> 5;
-				this.io.obj.nametable = (val >>> 3) & 3;
+				this.io.obj.base_size = (val >>> 5) & 7;
+				console.log('BASESIZE', this.io.obj.base_size, hex2(val));
+				this.io.obj.name_select = (val >>> 3) & 3;
 				this.io.obj.tile_addr = (val << 13) & 0x6000;
 				return;
 			case 0x2102: // OAMADDL
-				this.io.oam_base_addr = (this.io.oam_base_addr & 0x200) | (val << 1);
+				this.io.oam_base_addr = (this.io.oam_base_addr & 0xFE00) | (val << 1);
 
 				this.io.oam_addr = this.io.oam_base_addr;
 				this.set_first_obj();
@@ -797,6 +844,7 @@ class SNES_slow_1st_PPU {
 				addre = this.io.oam_addr;
 				this.io.oam_addr = (this.io.oam_addr + 1) & 0x3FF;
 				if (latchbit === 0) this.latch.oam = val;
+				//console.log('OAM WRITE', hex4(addre))
 				if (addre & 0x200) {
 					this.OAM_write(addre, val);
 				}
@@ -900,7 +948,7 @@ class SNES_slow_1st_PPU {
 				addre = this.get_addr_by_map();
 				this.VRAM[addre] = (this.VRAM[addre] & 0xFF00) | val;
 				if (this.io.vram_increment_mode === 0) this.io.vram_addr = (this.io.vram_addr + this.io.vram_increment_step) & 0x7FFF;
-				console.log('PPU write to lo', hex4(addre), hex2(val));
+				//console.log('PPU write to lo', hex4(addre), hex2(val));
 				return;
 			case 0x2119: // VRAM data hi
 				addre = this.get_addr_by_map();
@@ -948,7 +996,7 @@ class SNES_slow_1st_PPU {
 				else {
 					this.latch.cram_addr = 0;
 					this.CRAM[this.io.cram_addr] = ((val & 0x7F) << 8) | this.latch.cram;
-					console.log('CRAM WRITE', hex2(this.io.cram_addr), hex2(val));
+					//console.log('CRAM WRITE', hex2(this.io.cram_addr), hex2(val));
 					this.io.cram_addr = (this.io.cram_addr + 1) & 0xFF;
 				}
 				return;
@@ -1086,6 +1134,117 @@ class SNES_slow_1st_PPU {
 		}
 	}
 
+	render_sprites_from_memory(y_origin, x_origin, builtin_color) {
+		console.log('THESE OBJECTS', this.objects);
+		let ctx = this.canvas.getContext('2d');
+		let imgdata = ctx.getImageData(x_origin, y_origin, 256, 224);
+		for (let sy = 1; sy < 240; sy++) {
+			for (let sx = 0; sx < 256; sx++) {
+				let addr = (sy * 256 * 4) + (sx * 4);
+				imgdata.data[addr] = 0;
+				imgdata.data[addr+1] = 0;
+				imgdata.data[addr+2] = 0;
+				imgdata.data[addr+3] = 255;
+			}
+		}
+
+		let widths = [8, 16];
+		let heights = [8, 16];
+		switch(this.io.obj.base_size) {
+			case 0:
+				break;
+			case 1:
+				widths[1] = heights[1] = 32;
+				break;
+			case 2:
+				widths[1] = heights[1] = 64;
+				break;
+			case 3:
+				widths = [16, 32];
+				heights = [16, 32];
+				break;
+			case 4:
+				widths = [16, 64];
+				heights = [16, 64];
+				break;
+			case 5:
+				widths = [32, 64];
+				heights = [32, 64];
+				break;
+			case 6:
+				widths = [16, 32];
+				heights = [32, 64];
+				break;
+			case 7:
+				widths = [16, 32];
+				heights = [32, 32];
+				break;
+		}
+		for (let n = 0; n < 128; n++) {
+			let tile_width = 1;
+			let tile_height = 1;
+			let obj = this.objects[n];
+			if ((obj.x > 256 && ((obj.x + 16) < 512))) continue;
+			if (obj.y === 241) continue;
+			//console.log('DRAWING SPRITE #', n, obj.x, obj.y);
+
+			let obj_width = widths[obj.size];
+			let obj_height = heights[obj.size];
+			//console.log('HEIGHT AND WIDTH:', this.io.obj.base_size, obj.size, obj_height, obj_width);
+
+			for (let sy = y_origin; sy < (y_origin + obj_height); sy++) {
+				if ((sy === 0) || ((sy & 255) > this.clock.scanline.bottom_scanline)) continue;
+				for (let sx = x_origin; sx < (x_origin + obj_width); sx++) {
+					// rsx, rsy are our "real X/Y positions" as far as SNES is concerned
+					let rsx = ((sx - x_origin) + obj.x) & 511;
+					let rsy = ((sy - y_origin) + obj.y) & 255;
+					if (rsx > 255) continue;
+					// Position inside sprite
+					let sprite_x = (sx - x_origin);
+					let sprite_y = (sy - y_origin);
+					// Which tile #
+					let tile_x = sprite_x >>> 3;
+					let tile_y = sprite_y >>> 3;
+
+
+					// itcan use tile 00-FF
+					// it will wrap around
+					// In memory, every 8 pixels of X, addr goes up by 1. but warps 0x0F
+
+					let addr = obj.character + (obj.nameselect ? 0 : 0x100);
+					let addr_lo = ((addr & 0x0F) + tile_x) & 0x0F;
+					let addr_hi = ((addr & 0xF0) + (tile_y << 4)) & 0xF0;
+					addr += addr_lo + addr_hi + this.io.obj.tile_addr;
+
+					// Now addr is the address of the character #
+					let tile_in_x = (sprite_x % 8);
+					let tile_in_y = (sprite_y % 8);
+					// Add 2 to y for each
+					addr += (tile_in_y * 2);
+
+					let data = this.VRAM[addr] + (this.VRAM[addr+8] << 16);
+					let shift = tile_in_x;
+					let bp0 = (data >>> shift) & 1;
+					bp0 += (data >>> (shift + 7)) & 2;
+					bp0 += (data >>> (shift + 14)) & 4;
+					bp0 += (data >>> (shift + 21)) & 8;
+					//console.log('BP0', bp0);
+
+					let oaddr = ((sy - y_origin + obj.y) * 256 * 4) + ((sx - x_origin + obj.x) * 4);
+					//console.log('plotting white at', sx - x_origin + obj.x, sy - y_origin + obj.y);
+					imgdata.data[oaddr] = 0xFF;
+					imgdata.data[oaddr+1] = 0xFF;
+					imgdata.data[oaddr+2] = 0xFF;
+					imgdata.data[oaddr+3] = 0xFF;
+				}
+			}
+
+			let addr = this.io.obj.name_select << 14;
+
+		}
+		ctx.putImageData(imgdata, x_origin, y_origin);
+	}
+
 	/**
 	 * @param {number} y_origin
 	 * @param {number} x_origin
@@ -1093,8 +1252,6 @@ class SNES_slow_1st_PPU {
 	 */
 	render_bg1_from_memory(y_origin, x_origin, bg) {
 		// Grab raw buffer
-		console.log(this.objects);
-
 		let ctx = this.canvas.getContext('2d');
 		let imgdata = ctx.getImageData(x_origin, y_origin, 256, 224);
 		console.log('PPU INFO: BG MODE', this.io.bg_mode);
@@ -1147,22 +1304,152 @@ class SNES_slow_1st_PPU {
 		}
 		ctx.putImageData(imgdata, x_origin, y_origin);
 	}
-
 	/**
-	 * @param {{tile_addr: number, size: number, nametable: number, window: PPU_window_layer, interlace: number, first: number}} self
+	 * @param {number} y
+	 * @param {{name_select: number, tile_addr: number, base_size: number, below_enable: number, window: PPU_window_layer, interlace: number, range_over: number, time_over: number, priority: *[], first: number, above_enable: number}} obj
 	 */
-	renderObject(self) {
-		if (this.io.obj.above)
+	renderObject(y, obj, force=false) {
+		if (!force && !obj.above_enable && !obj.below_enable) return;
+		obj.window.render_layer(obj.window.above_enable, this.window_above, this.io);
+		obj.window.render_layer(obj.window.below_enable, this.window_below, this.io);
+		let item_count = 0;
+		let tile_count = 0;
+		for (let n=0; n < PPU_ITEM_LIMIT; n++) {
+			this.items[n].valid = this.tiles[n].valid = false;
+		}
+
+		for (let n=0; n<128; n++) {
+			let item = new PPU_object_item();
+			item.valid = true;
+			item.index = (obj.first + n) & 127;
+			let object = this.objects[item.index];
+
+			item.width = PPU_obj_widths[object.size][obj.base_size];
+			item.height = PPU_obj_heights[object.size][obj.base_size];
+			// If off right edge of screen and not wrapped to left side
+			if ((object.x > 256) && ((object.x + item.width - 1) < 512)) continue;
+			let height = item.height >>> this.io.interlace;
+			if ((y >= object.y && (y < object.y + height)) ||
+			   (object.y + height >= 256 && y < ((object.y + height) & 255))) {
+				if (item_count++ >= PPU_ITEM_LIMIT) break;
+				this.items[item_count - 1] = item;
+			}
+		}
+
+		for(let n = PPU_ITEM_LIMIT-1; n >= 0; n--) {
+			let item = this.items[n];
+			if (!item.valid) continue;
+
+			let object = this.objects[item.index];
+			let tile_width = item.width >>> 3;
+			let mx = object.x;
+			let my = (y - object.y) & 0xFF;
+			if (this.io.interlace) my <<= 1;
+
+			if (object.vflip) {
+				if (item.width === item.height) {
+					my = item.height - 1 - my;
+				} else if (my < item.width) {
+					my = item.width - 1 - my;
+				} else {
+					my = item.width + (item.width - 1) - (y - item.width);
+				}
+			}
+			if (this.io.interlace) {
+				my = !object.vflip ? my + this.clock.scanline.frame : my - this.clock.scanline.frame;
+			}
+
+			mx &= 511;
+			my &= 255;
+			let tile_addr = obj.tile_addr;
+			if (object.nameselect) tile_addr += (1 + object.nameselect) << 12; // SUS
+			let character_x = object.character & 15;
+			let character_y = (((object.character >>> 4) + (my >>> 3)) & 15) << 4;
+
+			for (let tile_x = 0; tile_x < tile_width; tile_x++) {
+				let object_x = (mx + (tile_x << 3)) & 511;
+				if ((mx !== 256) && (object_x >= 256) && ((object_x + 7) < 512)) continue;
+
+				let tile = new PPU_object_tile();
+				tile.valid = true;
+				tile.x = object_x;
+				tile.y = my;
+				tile.priority = object.priority;
+				tile.palette = 128 + (object.palette << 4);
+				tile.hflip = object.hflip;
+
+				let mirror_x = !object.hflip ? tile_x : tile_width - 1 - tile_x;
+				let addr = tile_addr + ((character_y + (character_x + mirror_x & 15)) << 4);
+				addr = (addr & 0x7FF0) + (my & 7);
+				tile.data = this.VRAM[addr];
+				tile.data |= this.VRAM[(addr+8) & 0x7FFF] << 16;
+
+				if (tile_count++ >= PPU_TILE_LIMIT) break;
+				this.tiles[tile_count - 1] = tile;
+			}
+		}
+		//if (force) {
+		if ((item_count>0 || tile_count>0) && (y !== 241))
+			console.log('ITEM AND TILE COUNT', y, item_count, tile_count);
+		//}
+
+		this.io.obj.range_over |= (item_count > PPU_ITEM_LIMIT);
+		this.io.obj.time_over |= (tile_count > PPU_TILE_LIMIT);
+
+		let palette = new Array(256);
+		let priority = new Array(256);
+		for (let n = 0; n < PPU_TILE_LIMIT; n++) {
+			let tile = this.tiles[n];
+			if (!tile.valid) continue;
+
+			let tile_x = tile.x;
+			for (let mx = 0; mx < 8; mx++) {
+				tile_x &= 511;
+				if (tile_x < 256) {
+					let color = 0;
+					let shift = tile.hflip ? mx : 7 - mx;
+					color = (tile.data >>> (shift)) & 1; // SUS?
+					color += (tile.data >>> (shift + 7)) & 2;
+					color += (tile.data >>> (shift + 14)) & 4;
+					color += (tile.data >>> (shift + 21)) & 8;
+					if (color !== 0) {
+						palette[tile_x] = tile.palette + color;
+						priority[tile_x] = obj.priority[tile.priority];
+					}
+				}
+				tile_x++;
+			}
+		}
+
+		for (let x=0; x<256; x++) {
+			if (!priority[x]) continue;
+			let source = palette[x] < 192 ? PPU_source.OBJ1 : PPU_source.OBJ2;
+			//console.log('SPR!', x, this.clock.scanline.ppu_y, palette[x], this.CRAM[palette[x]]);
+			if (force) {
+				//console.log('SETTING', x);
+				this.output[(y * 256) + x] = this.CRAM[palette[x]];
+				//this.above[x].set(source, priority[x], this.CRAM[palette[x]]);
+				//this.below[x].set(source, priority[x], this.CRAM[palette[x]]);
+			}
+			else {
+				if (obj.above_enable && (this.window_above[x] === 0) && priority[x] > this.above[x].priority) this.above[x].set(source, priority[x], this.CRAM[palette[x]]);
+				if (obj.below_enable && (this.window_below[x] === 0) && priority[x] > this.below[x].priority) this.below[x].set(source, priority[x], this.CRAM[palette[x]]);
+			}
+		}
 	}
 
-	render_scanline() {
+	render_scanline(force=false) {
 		// render background lines
 		let width = 256;
 		let y = this.clock.scanline.ppu_y;
 		let output = y * 256;
+		//console.log('ENABLED?', y, !this.clock.scanline.fblank);
 
 		if (this.clock.scanline.fblank) {
-			this.output.fill(0);
+			//this.output.fill(0);
+			for (let x = 0; x < 256; x++) {
+				this.output[x+y] = 0;
+			}
 			return;
 		}
 
@@ -1178,7 +1465,7 @@ class SNES_slow_1st_PPU {
 		if (this.io.extbg === 0) this.io.bg2.render(this.clock.scanline.ppu_y, PPU_source.BG2, this.io, this.VRAM, this.CRAM, this.above, this.below);
 		this.io.bg3.render(this.clock.scanline.ppu_y, PPU_source.BG3, this.io, this.VRAM, this.CRAM, this.above, this.below);
 		this.io.bg4.render(this.clock.scanline.ppu_y, PPU_source.BG4, this.io, this.VRAM, this.CRAM, this.above, this.below);
-		this.renderObject(io.obj);
+		this.renderObject(this.clock.scanline.ppu_y, this.io.obj, false);
 		// renderObjects here
 		if (this.io.extbg === 1) this.io.bg2.render(this.clock.scanline.ppu_y, PPU_source.BG2, this.io, this.VRAM, this.CRAM, this.above, this.below);
 		// render background color windows here
@@ -1190,7 +1477,16 @@ class SNES_slow_1st_PPU {
 		let prev = 0;
 
 		for (let x = 0; x < 256; x++) {
-			this.output[output++] = luma[this.pixel(x, this.above[x], this.below[x])];
+			let logit = false;
+			if (this.above[x].color !== 0 || this.below[x].color !== 0) {
+				//console.log('ABOVE, BELOW', this.above[x].color, this.below[x].color);
+				//logit = true;
+			}
+			let px = this.pixel(x, this.above[x], this.below[x], logit);
+			this.output[output++] = px;
+			//this.output[output++] = luma[[px]];
+			//if (logit) console.log('PIXEL WAS', px, luma[px]);
+			if (logit) console.log('OUTPUT IS NOW', this.output[output-1]);
 		}
 
 	}
@@ -1215,11 +1511,24 @@ class SNES_slow_1st_PPU {
 		}
 	}
 
-	pixel(x, above, below) {
-		if (!this.window_above[x]) above.color = 0;
-		if (!this.window_below[x]) return above.color;
-		if (!this.io.col.enable[above.source]) return above.color;
-		if (!this.io.col.blend_mode) return this.blend(above.color, this.io.col.fixed_color, this.io.col.halve && this.window_above[x]);
+	pixel(x, above, below, logit=false) {
+		if (!this.window_above[x]) {
+			if (logit) console.log('SET ABOVE 0');
+			above.color = 0;
+		}
+		if (!this.window_below[x]) {
+			if (logit) console.log('RETURN ABOVE COLOR');
+			return above.color;
+		}
+		if (!this.io.col.enable[above.source]) {
+			if (logit) console.log('RETURN ABOVE COLOR');
+			return above.color;
+		}
+		if (!this.io.col.blend_mode) {
+			if (logit) console.log('BLEND IT1');
+			return this.blend(above.color, this.io.col.fixed_color, this.io.col.halve && this.window_above[x]);
+		}
+		if (logit) console.log('BLEND IT2');
 		return this.blend(above.color, below.color, this.io.col.halve && this.window_above[x] && below.source !== PPU_source.COL);
 	}
 

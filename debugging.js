@@ -289,6 +289,7 @@ class debugger_t {
         this.state = DBG_STATES.PAUSE;
         this.do_break = true;
         let overflow = snes.clock.cpu_deficit;
+        console.log('BREAK AT PPU Y', snes.clock.scanline.ppu_y);
         if (whodidit === D_RESOURCE_TYPES.WDC65C816 || whodidit === D_RESOURCE_TYPES.R5A22) {
             snes.clock.cpu_deficit = 0;
             snes.apu.catch_up();

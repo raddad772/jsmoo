@@ -189,10 +189,14 @@ class ricoh5A22 {
 	}
 
 	read_nmi(have_effect=true) {
-		let r = this.status.nmi_line;
-		if (!this.status.nmi_hold && have_effect) {
+		//let r = this.status.nmi_line;
+		let r = this.cpu.pins.NMI;
+		/*if (!this.status.nmi_hold && have_effect) {
+			console.log('READ NMI CLEAR', this.status.nmi_line, this.status.nmi_transition);
 			this.status.nmi_line = 0;
-		}
+		}*/
+		if (have_effect)
+			this.cpu.pins.NMI = 0;
 		return r;
 	}
 
@@ -239,6 +243,7 @@ class ricoh5A22 {
 		this.io.nmi_enable = newval;
 
 		if ((!onmi && this.io.nmi_enable) && this.status.nmi_line) {
+			//console.log('SET NMI TRANSITION IF NMI WENT FROMO FF TO ON AND NMI LINE 1');
 			this.status.nmi_transition = 1;
 		}
 	}
@@ -262,7 +267,7 @@ class ricoh5A22 {
 				}
 				this.set_nmi_bit((val & 0x80) >>> 7);
 
-				console.log('Reschedule canline due to write of ', hex2(val));
+				console.log('Reschedule canline due to write of ', hex2(val), ' at ', this.clock.scanline.ppu_y);
 				this.reschedule_scanline_irqbits();
 				this.status.irq_lock = 1;
 				return;
@@ -305,14 +310,14 @@ class ricoh5A22 {
 				this.io.vtime = (this.io.vtime & 0xFF) | ((val & 1) << 8);
 				return;
 			case 0x420B: // DMA enables
-				console.log('DMA ENABLE', hex2(val));
+				//console.log('DMA ENABLE', hex2(val));
 				for (let n = 0; n < 8; n++) {
-					console.log('CHANNEL ', n, (val >>> n) & 1);
+					//console.log('CHANNEL ', n, (val >>> n) & 1);
 					this.dma.channels[n].dma_enable = (val >>> n) & 1;
 				}
 				if (val !== 0) {
-					console.log('DMA AT FRAME ', this.clock.frames_since_restart, ' SCANLINE', this.clock.scanline.ppu_y, hex2(val));
-					console.log('DMA INFO', this.dma.channels[1]);
+					//console.log('DMA AT FRAME ', this.clock.frames_since_restart, ' SCANLINE', this.clock.scanline.ppu_y, hex2(val));
+					//console.log('DMA INFO', this.dma.channels[1]);
 					this.status.dma_pending = true;
 					this.rescheduled = true;
 				}
@@ -555,10 +560,16 @@ class ricoh5A22 {
 				if (scanline.ppu_y === 0) {
 					this.status.nmi_transition = +(this.status.nmi_line !== 0);
 					this.status.nmi_line = 0;
+					if (this.io.nmi_enable)
+						this.cpu.pins.NMI = 0;
+					//console.log('VB END', this.status.nmi_line, this.status.nmi_transition);
 				}
 				if (scanline.vblank_start) {
 					this.status.nmi_transition = +(this.status.nmi_line === 0);
+					if (this.io.nmi_enable)
+						this.cpu.pins.NMI = 1;
 					this.status.nmi_line = 1;
+					//console.log('VB START', this.status.nmi_line, this.status.nmi_transition);
 				}
 			}
 
@@ -658,7 +669,7 @@ class ricoh5A22 {
 				this.clock.advance_steps_from_cpu(this.clock.dma_counter)
 				// Leftover cycles mean DMA is no longer running
 				if (anyleft > 8) {
-					console.log('SETTING DMA RUNNING TO FALSE BECASE', anyleft);
+					//console.log('SETTING DMA RUNNING TO FALSE BECASE', anyleft);
 					this.status.dma_running = false;
 				}
 				this.clock.dma_counter = 0;
@@ -668,19 +679,19 @@ class ricoh5A22 {
 
 			// Now that we're out of all the HDMA and DMA junk,
 			//  we can set our lines...
+
+			// OK now we're not in DMA or HDMA so cycle the processor
 			if (!this.status.irq_lock) {
-				if (this.status.nmi_transition && this.io.nmi_enable) {
-					this.cpu.pins.NMI = this.status.nmi_line;
-					this.status.nmi_transition = 0;
-				}
+				/*if (this.status.nmi_transition && this.io.nmi_enable) {
+					this.status.nmi_transition = 0;*/
+				//this.cpu.pins.NMI = this.status.nmi_line;
+				//console.log('SETTING CPU PIN NMI TO', this.status.nmi_line, this.status.nmi_transition);
+				//}
 				if (this.status.irq_transition && this.io.irq_enable) {
 					this.cpu.pins.IRQ = this.status.irq_line;
 					this.status.irq_transition = 0;
 				}
 			}
-			this.status.irq_lock = 0;
-
-			// OK now we're not in DMA or HDMA so cycle the processor
 			this.cycle_cpu(can_do);
 			if (dbg.do_break) return;
 		}
@@ -762,6 +773,7 @@ class ricoh5A22 {
 		let steps = howmany;
 		this.rescheduled = false;
 		while (steps > 0) {
+			this.status.irq_lock = 0;
 			this.cpu.cycle();
 			if (typeof(this.cpu.pins.D) === 'undefined') {
 				console.log(this.cpu);
