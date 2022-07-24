@@ -638,7 +638,7 @@ class ricoh5A22 {
 			// Do HDMA setup
 			if (this.status.hdma_pending) {
 				// run HDMA
-				//console.log('HDMA!')
+				console.log('HDMA TRIGGERED!!')
 				this.clock.dma_counter = 0;
 				if (!this.status.dma_running) {
 					// Wait up to 8 cycles
@@ -656,6 +656,7 @@ class ricoh5A22 {
 				this.clock.advance_steps_from_cpu(this.clock.dma_counter);
 				//console.log('after HDMA run, cycle is at ' + this.clock.cycles_since_scanline_start + ' of ' + this.clock.scanline.cycles + ' after running ' + this.clock.dma_counter + ' cycles.');
 				this.clock.dma_counter = 0;
+				console.log('HDMA FINISHED!');
 				if (dbg.do_break) return;
 				continue;
 			}
@@ -665,6 +666,7 @@ class ricoh5A22 {
 			maxe -= this.clock.cycles_since_scanline_start;
 			//let can_do = (maxe - this.clock.cycles_since_scanline_start);
 			let can_do = this.clock.cpu_deficit > maxe ? maxe : this.clock.cpu_deficit;
+			if (can_do < 1) debugger;
 			//debugger;
 			if (this.status.dma_pending || this.status.dma_running) {
 				// run DMA for X cycles
