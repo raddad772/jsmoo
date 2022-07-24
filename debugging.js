@@ -10,6 +10,8 @@ let SPC_TRACING_START = 20 * 68 * 262 * 9;
                                // 262 scanlines per frame
                                      // 9 frames
 SPC_TRACING_START = 0; // Start at beginning
+let WDC_LOG_DMAs = true;
+let WDC_LOG_HDMAs = false;
 let TRACE_ADDR = '{*}'
 let TRACE_READ = '{g}';
 let TRACE_WRITE = '{b}';
@@ -195,10 +197,15 @@ class breakpoint_t {
 
 class SNES_DMA_log_entry_t {
     constructor() {
-        this.source_addr = 0;
-        this.dest_addr = 0;
+        this.A_addr = '000000';
+        this.B_addr = '00';
         this.bytes = 0;
         this.transfer_mode = 0;
+
+        this.frame = 0;
+        this.ppu_y = 0;
+        this.channel = 0;
+        this.master_clock = 0;
     }
 }
 
@@ -212,11 +219,20 @@ class debugger_t {
         this.do_break = false;
         this.cpus = {};
         this.tracing_for = {};
+        this.DMA_logs = [];
 
         this.watch_on = false;
         this.watch = new watch_t(WATCH_WHICH.WDC_IR, WATCH_RELATIONSHIP.GTE, 0x40); // 0x1F6
 
         this.brk_on_NMIRQ = false;
+    }
+
+    console_DMA_logs() {
+        for (let i in this.DMA_logs) {
+            let log = this.DMA_logs[i];
+            console.log('DMA#' + log.channel + ' FRAME:' + log.frame + ' Y:' + log.ppu_y + ' addrA:' + log.A_addr + ' addrB:' + log.B_addr + ' #bytes:' + log.bytes + ' transfermode:' + log.transfer_mode);
+        }
+        this.DMA_logs = [];
     }
 
     cpu_refresh_tracing() {

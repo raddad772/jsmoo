@@ -695,7 +695,9 @@ class SNES_slow_1st_PPU {
 			this.objects[n].hflip = (val >>> 6) & 1;
 			this.objects[n].vflip = (val >>> 7) & 1;
 		} else {
-			if (addr >= 544) return;
+			if (addr >= 544) {
+				 console.log('GOT OVER 544 HERE!');
+			}
 			n = (addr & 0x1F) << 2; // object #.... PPU is weird
 			this.objects[n].x = (this.objects[n].x & 0xFF) | ((val << 8) & 0x100);
 			this.objects[n+1].x = (this.objects[n+1].x & 0xFF) | ((val << 6) & 0x100);

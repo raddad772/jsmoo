@@ -165,6 +165,9 @@ function after_step() {
 		//console.log('CGRAM', snes.ppu.CRAM);
 		//console.log('CPU', snes.cpu.io, snes.cpu.status);
 	}
+	if (WDC_LOG_DMAs) {
+		dbg.console_DMA_logs();
+	}
 }
 
 

@@ -315,6 +315,26 @@ class ricoh5A22 {
 					//console.log('CHANNEL ', n, (val >>> n) & 1);
 					this.dma.channels[n].dma_enable = (val >>> n) & 1;
 				}
+				if ((WDC_LOG_DMAs) && (val !== 0))
+				{
+					for (let n = 0; n < 8; n++) {
+						if ((val >>> n) & 1) {
+							let nle = new SNES_DMA_log_entry_t();
+							let chan = this.dma.channels[n];
+							nle.frame = this.clock.frames_since_restart;
+							nle.ppu_y = this.clock.scanline.ppu_y;
+							nle.channel = n;
+							nle.master_clock = this.clock.cycles_since_reset;
+
+							nle.A_addr = hex6((chan.source_bank << 16) | (chan.source_address));
+							nle.B_addr = hex2(chan.target_address);
+							nle.bytes = chan.transfer_size;
+							nle.fixed_transfer = chan.fixed_transfer;
+							nle.transfer_mode = chan.transfer_mode;
+							dbg.DMA_logs.push(nle);
+						}
+					}
+				}
 				if (val !== 0) {
 					//console.log('DMA AT FRAME ', this.clock.frames_since_restart, ' SCANLINE', this.clock.scanline.ppu_y, hex2(val));
 					//console.log('DMA INFO', this.dma.channels[1]);
@@ -446,11 +466,11 @@ class ricoh5A22 {
 				break;
 			oldi = i;
 		}
-		//this.current_event = oldi;
-		this.current_event = 0;
+		this.current_event = oldi;
+		//this.current_event = 0;
 		// Set when next event will be
 		this.next_event = this.event_ptrs[this.current_event][0];
-		console.log('NEW EVENTS LIST', this.current_event, this.next_event, this.events_list);
+		//console.log('NEW EVENTS LIST', this.current_event, this.next_event, this.events_list);
 	}
 
 	schedule_scanline() {
@@ -544,15 +564,23 @@ class ricoh5A22 {
 		// Check if we're in WRAM refresh, in which case, nothing other than an IRQ timer check will happen
 		if (this.mode === RMODES.WRAM_REFRESH) {
 			let can_do = this.clock.cpu_deficit > this.mode_left ? this.mode_left : this.clock.cpu_deficit;
-			this.mode = RMODES.WRAM_REFRESH;
-			if (can_do < this.mode_left) {
-				this.mode_left = can_do < this.clock.cpu_deficit ? this.clock.cpu_deficit : 0;
-			}
-			this.clock.advance_steps_from_cpu(can_do);
-			if (this.clock.cpu_deficit > 0)
+			if (this.mode === this.old_mode)
+				debugger;
+			if (this.mode_left < 1) {
 				this.mode = this.old_mode;
-			else
-				return;
+			}
+			else {
+				if (can_do < 1) debugger;
+				this.mode = RMODES.WRAM_REFRESH;
+				if (can_do < this.mode_left) {
+					this.mode_left = can_do < this.clock.cpu_deficit ? this.clock.cpu_deficit : 0;
+				}
+				this.clock.advance_steps_from_cpu(can_do);
+				if (this.clock.cpu_deficit > 0)
+					this.mode = this.old_mode;
+				else
+					return;
+			}
 		}
 		let scanline = this.clock.scanline;
 		while(this.clock.cpu_deficit > 0) {
@@ -615,6 +643,7 @@ class ricoh5A22 {
 						break;
 					case R5A22_events.WRAM_REFRESH:
 						let can_do = this.clock.cpu_deficit > 40 ? 40 : this.clock.cpu_deficit;
+						if (can_do < 1) debugger;
 						if (can_do < 40) {
 							this.mode_left = can_do < 40 ? 40 - can_do : 0;
 /*							if (this.mode === 3) {
@@ -664,6 +693,8 @@ class ricoh5A22 {
 			// Run DMA for any available cycles
 			let maxe = this.next_event > this.clock.scanline.cycles ? this.clock.scanline.cycles : this.next_event;
 			maxe -= this.clock.cycles_since_scanline_start;
+			if (typeof maxe === 'undefined')
+				debugger;
 			//let can_do = (maxe - this.clock.cycles_since_scanline_start);
 			let can_do = this.clock.cpu_deficit > maxe ? maxe : this.clock.cpu_deficit;
 			if (can_do < 1) debugger;
@@ -678,11 +709,12 @@ class ricoh5A22 {
 					if (!this.status.dma_running) this.dma.dma_start();
 					this.status.dma_running = true;
 				}
-				let anyleft = this.dma.dma_run(can_do);
+				let rt = this.dma.dma_run(can_do);
+				let anyleft = rt[0];
+				let anyactive = rt[1];
 				this.clock.advance_steps_from_cpu(this.clock.dma_counter)
 				// Leftover cycles mean DMA is no longer running
-				if (anyleft > 8) {
-					//console.log('SETTING DMA RUNNING TO FALSE BECASE', anyleft);
+				if (!anyactive) {
 					this.status.dma_running = false;
 				}
 				this.clock.dma_counter = 0;
