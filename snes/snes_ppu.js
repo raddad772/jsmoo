@@ -1482,8 +1482,8 @@ class SNES_slow_1st_PPU {
 				//logit = true;
 			}
 			let px = this.pixel(x, this.above[x], this.below[x], logit);
-			this.output[output++] = px;
-			//this.output[output++] = luma[[px]];
+			//this.output[output++] = px;
+			this.output[output++] = luma[[px]];
 			//if (logit) console.log('PIXEL WAS', px, luma[px]);
 			if (logit) console.log('OUTPUT IS NOW', this.output[output-1]);
 		}
