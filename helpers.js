@@ -284,6 +284,8 @@ class console_t {
 var dconsole = new console_t('disassembly', -1, 258, false, false);
 // Bottom one, going down.
 var tconsole = new console_t('textconsole', 1, 20, true, true);
+// Memory dump console
+var mconsole = new console_t('memdumpconsole', 1, 30, false, false);
 
 // https://stackoverflow.com/questions/3665115/how-to-create-a-file-in-memory-for-user-to-download-but-not-through-server
 function save_js(filename, data, kind = 'text/javascript') {

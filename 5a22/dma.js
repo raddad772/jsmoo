@@ -72,9 +72,6 @@ class dmaChannel {
                         this.source_address++;
                     this.source_address &= 0xFFFF;
                 }
-                else {
-                    console.log('FIXED TRANSFER!!! WHAT?');
-                }
                 howmany -= 8;
                 this.transfer_size--;
                 if (howmany < 1) break;

@@ -357,7 +357,9 @@ function main_old() {
 
 async function main() {
 	let ROM_to_get;
-	ROM_to_get = 'snes-test-roms/PeterLemon/SNES-CPUTest-CPU/ADC/CPUADC.sfc';
+	//ROM_to_get = 'snes-test-roms/PeterLemon/SNES-CPUTest-CPU/ADC/CPUADC.sfc';
+	// C:\dev\personal\jsmoo\roms\snes-test-roms\PeterLemon\SNES-CPUTest-CPU\BIT
+	ROM_to_get = 'snes-test-roms/PeterLemon/SNES-CPUTest-CPU/BIT/CPUBIT.sfc';
 	//ROM_to_get = 'blargg/controller_strobebehavior.smc';
 	ROM_to_get = 'commercial/smw.smc';
 	let rtg = await getBinary(local_server_url + ROM_to_get);

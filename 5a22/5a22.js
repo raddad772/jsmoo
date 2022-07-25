@@ -147,6 +147,7 @@ class ricoh5A22 {
 			dma_running: false,
 			hdma_running: false,
         	dma_active: false,
+			auto_joypad_counter: 33,
 		}
 
 		this.counters = {
@@ -196,8 +197,6 @@ class ricoh5A22 {
 			divctr: 0,
 			shift: 0
 		};
-
-		this.auto_joypad_counter = 33; // disabled
 
 		this.controller_port1 = new SNES_controllerport(1);
 		this.controller_port2 = new SNES_controllerport(2);
@@ -326,7 +325,7 @@ class ricoh5A22 {
 				break;
 			case 0x4200: // NMI timing
 				this.io.auto_joypad_poll = val & 1;
-				if (!this.io.auto_joypad_poll) this.auto_joypad_counter = 33; // 33 is disable
+				if (!this.io.auto_joypad_poll) this.status.auto_joypad_counter = 33; // 33 is disable
 				this.io.hirq_enable = (val & 0x10) >>> 4;
 				this.io.virq_enable = (val & 0x20) >>> 5;
 				this.io.irq_enable = this.io.hirq_enable | this.io.virq_enable;

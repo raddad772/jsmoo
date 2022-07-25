@@ -359,23 +359,26 @@ class PPU_bg {
 			let address = (tile_number << color_shift) + ((voffset & 7) ^ mirror_y) & 0x7FFF;
 
 			// Javascript only has 54 bits for integers. Algorithm wants 64.
-			let datalo = (VRAM[address + 8] << 16) | (VRAM[address]);
-			let datahi = (VRAM[address + 24] << 16) | (VRAM[address + 16]);
-			datalo = datalo + ((datahi & 0xFF) << 32);
+			let datalo = (VRAM[(address + 8) & 0x7FFF] << 16) | (VRAM[address]);
+			let datahi = (VRAM[(address + 24) & 0x7FFF] << 16) | (VRAM[(address + 16) & 0x7FFF]);
+			let datamid = ((datalo >>> 16) & 0xFFFF) | ((datahi << 16) & 0xFFFF0000); // upper 16 bits of data lo or lower 16 bits of data high
+			//datalo = datalo + ((datahi & 0xFF) << 32);
 			for (let tile_x = 0; tile_x < 8; tile_x++, x++) {
 				if (x < 0 || x >= width) continue; // x < 0 || x >= width
 				let color;
 				if (--mosaic_counter === 0) {
-					let shift = color = mirror_x ? tile_x : 7 - tile_x;
-					color = (datalo >>> shift) & 1;
-					color += (datalo >>> (shift + 7)) & 2;
+					let shift = mirror_x ? tile_x : 7 - tile_x;
+					{
+						color = (datalo >>> shift) & 1;
+						color += (datalo >>> (shift + 7)) & 2; // 0-2 + 7-9
+					}
 					if (this.tile_mode >= PPU_tile_mode.BPP4) {
-						color += (datalo >>> (shift + 14)) & 4;
-						color += (datalo >>> (shift + 21)) & 8;
+						color += (datalo >>> (shift + 14)) & 4; // bits 16-24
+						color += (datalo >>> (shift + 21)) & 8; // bits 24-31
 					}
 					if (this.tile_mode >= PPU_tile_mode.BPP8) {
-						color += (datalo >>> (shift + 28)) & 16;
-						color += (datalo >>> (shift + 35)) & 32;
+						color += (datamid >>> (shift + 12)) & 16;
+						color += (datamid >>> (shift + 19)) & 32;
 						color += (datahi >>> (shift + 10)) & 64;
 						color += (datahi >>> (shift + 17)) & 128;
 					}
@@ -589,9 +592,9 @@ class SNES_slow_1st_PPU {
 				/*if (ppuo !== 0) {
 					console.log('NOn-ZERO PPUO AT', x, y, ppuo);
 				}*/
-				imgdata.data[di] = (ppuo & 0x1F) << 3;
+				imgdata.data[di] = (ppuo & 0x7C00) >> 7;
 				imgdata.data[di+1] = (ppuo & 0x3E0) >> 2;
-				imgdata.data[di+2] = (ppuo & 0x7C00) >> 7;
+				imgdata.data[di+2] = (ppuo & 0x1F) << 3;
 				imgdata.data[di+3] = 255;
 			}
 		}
@@ -601,10 +604,16 @@ class SNES_slow_1st_PPU {
 	get_addr_by_map() {
 		let addr = this.io.vram_addr;
 		switch(this.io.vram_mapping) {
-			case 0: return addr & 0x7FFF;
-			case 1: return (addr & 0x7F00) | (addr << 3 & 0x00F8) | ((addr >>> 5) & 7);
-			case 2: return (addr & 0x7E00) | (addr << 3 & 0x01F8) | ((addr >>> 6) & 7);
-			case 3: return (addr & 0x7C00) | (addr << 3 & 0x03F8) | ((addr >>> 7) & 7);
+			case 0: return addr;
+			case 1:
+				let v1 = (addr && 0x007F00);
+				let v2 = (addr & 0x1F) << 3;
+				let v3 = (addr >> 5) & 7;
+				return (addr & 0x7F00) | ((addr << 3) & 0x00F8) | ((addr >>> 5) & 7);
+			case 2:
+				return (addr & 0x7E00) | ((addr << 3) & 0x01F8) | ((addr >>> 6) & 7);
+			case 3:
+				return (addr & 0x7C00) | ((addr << 3) & 0x03F8) | ((addr >>> 7) & 7);
 		}
 		return 0x8000;
 	}
@@ -949,12 +958,14 @@ class SNES_slow_1st_PPU {
 				this.latch.vram = this.VRAM[this.get_addr_by_map()];
 				return;
 			case 0x2118: // VRAM data lo
+				if (!this.clock.scanline.vblank && !this.clock.scanline.fblank) return;
 				addre = this.get_addr_by_map();
 				this.VRAM[addre] = (this.VRAM[addre] & 0xFF00) | val;
 				if (this.io.vram_increment_mode === 0) this.io.vram_addr = (this.io.vram_addr + this.io.vram_increment_step) & 0x7FFF;
 				//console.log('PPU write to lo', hex4(addre), hex2(val));
 				return;
 			case 0x2119: // VRAM data hi
+				if (!this.clock.scanline.vblank && !this.clock.scanline.fblank) return;
 				addre = this.get_addr_by_map();
 				this.VRAM[addre] = (val << 8) | (this.VRAM[addre] & 0xFF);
 				if (this.io.vram_increment_mode === 1) this.io.vram_addr = (this.io.vram_addr + this.io.vram_increment_step) & 0x7FFF;
@@ -1405,10 +1416,13 @@ class SNES_slow_1st_PPU {
 				if (tile_x < 256) {
 					let color = 0;
 					let shift = tile.hflip ? mx : 7 - mx;
+					//let datahi = (tile.data & 0xFF00);
+					//let datalo = (tile.data & 0x00FF);
+					//let datamid = (tile.data >> 8) & 0x0FFF;
 					color = (tile.data >>> (shift)) & 1; // SUS?
-					color += (tile.data >>> (shift + 7)) & 2;
-					color += (tile.data >>> (shift + 14)) & 4;
-					color += (tile.data >>> (shift + 21)) & 8;
+					color += (tile.data >>> (shift + 7)) & 2; // 7-10 to 14-17
+					color += (tile.data >>> (shift + 14)) & 4; // 14-17 to 21-24
+					color += (tile.data >>> (shift + 21)) & 8; // 21-28 to 28-31
 					if (color !== 0) {
 						palette[tile_x] = tile.palette + color;
 						priority[tile_x] = obj.priority[tile.priority];

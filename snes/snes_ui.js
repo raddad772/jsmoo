@@ -25,74 +25,67 @@ function generate_js_SPC() {
     save_js('spc700_generated_opcodes.js', '"use strict";\n\nconst SPC_decoded_opcodes = Object.freeze(\n' + SPC_decode_opcodes() + ');');
 }
 
-let watching_checkbox, tracing_checkbox, tracing_5a22_checkbox, tracing_spc700_checkbox;
-let brknmirq_checkbox;
-let mc_input, scanline_input, frame_input, seconds_input;
-let frame_count_output, ppu_y_output;//, scanline_dot_output;
+// Things should have 'checkbox' in their name if they are a checkbox
+//   and have a default value.
+// It goes: programming name: [dom ID, default value] where null is no
+//   default value.
+let ui_el = {
+	tracing_checkbox: ['tracingbox', null],
+	tracing_5a22_checkbox: ['tracing5a22', WDC_DO_TRACING_AT_START],
+	tracing_spc700_checkbox: ['tracingspc700', SPC_DO_TRACING_AT_START],
+	watching_checkbox: ['watchpt', null],
+	mc_input: ['masterclocksteps', DEFAULT_STEPS.master],
+	scanline_input: ['scanlinesteps', DEFAULT_STEPS.scanlines],
+	frame_input: ['framesteps', DEFAULT_STEPS.frames],
+	seconds_input: ['secondsteps', DEFAULT_STEPS.seconds],
+	brknmirq_checkbox: ['brknmirq', null],
+	memaddr_input: ['memaddr', null],
+	ppu_y_output: ['ppu_y_output', null],
+	frame_count_output: ['frame_count_output', null],
+}
+
 
 function get_mc_steps() {
-	console.log(mc_input.value());
 }
 
 function init_js() {
-	tracing_checkbox = document.getElementById('tracingbox');
-	tracing_5a22_checkbox = document.getElementById('tracing5a22');
-	tracing_spc700_checkbox = document.getElementById('tracingspc700');
-	watching_checkbox = document.getElementById('watchpt');
-	mc_input = document.getElementById('masterclocksteps');
-	scanline_input = document.getElementById('scanlinesteps');
-	frame_input = document.getElementById('framesteps');
-	seconds_input = document.getElementById('secondsteps');
-	brknmirq_checkbox = document.getElementById('brknmirq');
-
-	ppu_y_output = document.getElementById('ppu_y_output')
-	frame_count_output = document.getElementById('frame_count_output')
-	//scanline_dot_output = document.getElementById('scanline_dot_output')
-
-	mc_input.value = DEFAULT_STEPS.master;
-	scanline_input.value = DEFAULT_STEPS.scanlines;
-	frame_input.value = DEFAULT_STEPS.frames;
-	seconds_input.value = DEFAULT_STEPS.seconds;
-
-	tracing_checkbox.addEventListener('change', (event) => {
-		if (event.currentTarget.checked) {
-			click_enable_tracing();
+	for (let k in ui_el) {
+		let v = ui_el[k];
+		let dom_id = v[0];
+		let default_value = v[1];
+		ui_el[k] = document.getElementById(dom_id);
+		if (default_value !== null) {
+			if (k.indexOf('checkbox') !== -1) {
+				ui_el[k].checked = default_value;
+			} else {
+				ui_el[k].value = default_value;
+			}
 		}
-		else {
-			click_disable_tracing();
-		}
+	}
+
+	ui_el.tracing_checkbox.addEventListener('change', (event) => {
+		if (event.currentTarget.checked) click_enable_tracing();
+		else click_disable_tracing();
 	});
 
-	tracing_5a22_checkbox.checked = WDC_DO_TRACING_AT_START;
-	tracing_spc700_checkbox.checked = SPC_DO_TRACING_AT_START;
-
-	watching_checkbox.addEventListener('change', (event) => {
+	ui_el.watching_checkbox.addEventListener('change', (event) => {
 		dbg.watch_on = !!event.currentTarget.checked;
 	});
 
-	brknmirq_checkbox.addEventListener('change', (event) => {
+	ui_el.brknmirq_checkbox.addEventListener('change', (event) => {
 		dbg.brk_on_NMIRQ = !!event.currentTarget.checked;
-	})
+	});
 
 
-	tracing_5a22_checkbox.addEventListener('change', (event) => {
-		if (event.currentTarget.checked) {
-			dbg.enable_tracing_for(D_RESOURCE_TYPES.R5A22);
-		}
-		else {
-			dbg.disable_tracing_for(D_RESOURCE_TYPES.R5A22);
-		}
-	})
+	ui_el.tracing_5a22_checkbox.addEventListener('change', (event) => {
+		if (event.currentTarget.checked) dbg.enable_tracing_for(D_RESOURCE_TYPES.R5A22);
+		else dbg.disable_tracing_for(D_RESOURCE_TYPES.R5A22);
+	});
 
-	tracing_spc700_checkbox.addEventListener('change', (event) => {
-		console.log('EVENT!', event);
-		if (event.currentTarget.checked) {
-			dbg.enable_tracing_for(D_RESOURCE_TYPES.SPC700);
-		}
-		else {
-			dbg.disable_tracing_for(D_RESOURCE_TYPES.SPC700);
-		}
-	})
+	ui_el.tracing_spc700_checkbox.addEventListener('change', (event) => {
+		if (event.currentTarget.checked) dbg.enable_tracing_for(D_RESOURCE_TYPES.SPC700);
+		else dbg.disable_tracing_for(D_RESOURCE_TYPES.SPC700);
+	});
 
 	after_js();
 }
@@ -106,7 +99,7 @@ function click_disable_tracing() {
 }
 
 function click_step_clock() {
-	let steps = parseInt(mc_input.value);
+	let steps = parseInt(ui_el.mc_input.value);
 	snes.step(steps, 0, 0, 0);
 	snes.catch_up();
 	after_step();
@@ -128,7 +121,7 @@ function click_bg_dump(which) {
 			bg = snes.ppu.io.bg4;
 			break;
 	}
-	snes.ppu.render_bg1_from_memory(0, 260, snes.ppu.io.bg1);
+	snes.ppu.render_bg1_from_memory(0, 260, bg);
 	snes.ppu.present();
 }
 
@@ -140,7 +133,7 @@ function click_sprite_dump() {
 	snes.ppu.present();
 }
 
-function flick_render_scr() {
+function click_render_scr() {
 	let old_scanline = snes.clock.scanline.ppu_y;
 	for (let y = 1; y < 240; y++) {
 		snes.clock.scanline.ppu_y = y;
@@ -151,7 +144,6 @@ function flick_render_scr() {
 }
 
 let dc = 0;
-let tc = 0;
 function click_step_all() {
 	/*dconsole.addl(dc, tc.toString() + 'YARRR', null, true);
 	tconsole.addl(tc, dc.toString() + 'YOLOOO', null, true);
@@ -160,9 +152,9 @@ function click_step_all() {
 	dconsole.draw();
 	tconsole.draw();
 	return;*/
-	let scanlines = parseInt(scanline_input.value);
-	let frames = parseInt(frame_input.value);
-	let seconds = parseInt(seconds_input.value);
+	let scanlines = parseInt(ui_el.scanline_input.value);
+	let frames = parseInt(ui_el.frame_input.value);
+	let seconds = parseInt(ui_el.seconds_input.value);
 	snes.step(0, scanlines, frames, seconds);
 
 	after_step();
@@ -174,8 +166,8 @@ function after_step() {
 		//dbg.traces.clear();
 		//scanline_dot_output.innerHTML = Math.floor(snes.clock.scanline.cycles_since_reset / 4);
 		//console.log(snes.clock.cycles_since_scanline_start);
-		ppu_y_output.innerHTML = Math.floor(snes.clock.cycles_since_scanline_start / 4) + ', ' + snes.clock.scanline.ppu_y;
-		frame_count_output.innerHTML = snes.clock.frames_since_restart;
+		ui_el.ppu_y_output.innerHTML = Math.floor(snes.clock.cycles_since_scanline_start / 4) + ', ' + snes.clock.scanline.ppu_y;
+		ui_el.frame_count_output.innerHTML = snes.clock.frames_since_restart;
 		//console.log('PPU', snes.ppu.io);
 		//console.log('CGRAM', snes.ppu.CRAM);
 		//console.log('CPU', snes.cpu.io, snes.cpu.status);
@@ -183,6 +175,25 @@ function after_step() {
 	if (WDC_LOG_DMAs) {
 		dbg.console_DMA_logs();
 	}
+}
+
+function get_addr_from_dump_box() {
+	return parseInt(ui_el.memaddr_input.value, 16);
+}
+
+function click_dump_ram() {
+	let iaddr = get_addr_from_dump_box();
+	let MDUMP_COLS = 16;
+	let NUM_BYTES = 256;
+	for (let addr = iaddr; addr < (iaddr + NUM_BYTES); addr += MDUMP_COLS) {
+		let ln = hex6(addr) + ' ';
+		for (let baddr = addr; baddr < (addr + MDUMP_COLS); baddr++) {
+			ln += hex2(snes.mem_map.dispatch_read(baddr, 0, false)) + ' ';
+		}
+		mconsole.addl(ln);
+		console.log(ln);
+	}
+	mconsole.draw();
 }
 
 
