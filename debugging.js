@@ -230,7 +230,7 @@ class debugger_t {
     console_DMA_logs() {
         for (let i in this.DMA_logs) {
             let log = this.DMA_logs[i];
-            console.log('DMA#' + log.channel + ' FRAME:' + log.frame + ' Y:' + log.ppu_y + ' addrA:' + log.A_addr + ' addrB:' + log.B_addr + ' #bytes:' + log.bytes + ' transfermode:' + log.transfer_mode);
+            console.log('DMA#' + log.channel + ' FRAME:' + log.frame + ' Y:' + log.ppu_y + ' addrA:' + log.A_addr + ' addrB:' + log.B_addr + ' #bytes:' + log.bytes + ' transfermode:' + log.transfer_mode + ' fixed:' + log.fixed_transfer);
         }
         this.DMA_logs = [];
     }

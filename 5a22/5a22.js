@@ -78,6 +78,22 @@ const R5A22_events = {
 	VIRQ: 21, // This happens on scanline start only
 }
 
+class SNES_controllerport {
+	constructor() {
+		this.device = null;
+		this.mdata = 0;
+	}
+
+	data() {
+		if (this.device) return this.device.data & 2;
+		return 0;
+	}
+
+	latch(what) {
+		if (this.device) return this.device.latch(what);
+	}
+}
+
 class ricoh5A22 {
 	/**
 	 * @param {*} version
@@ -86,7 +102,6 @@ class ricoh5A22 {
 	 */
 	constructor(version, mem_map, clock) {
 		this.cpu = new w65c816(clock);
-		this.CPUregs = new Uint8Array(0x100);
 		this.version = version;
 		this.clock = clock;
 		this.clock.cpu_deficit = 0;
@@ -150,6 +165,7 @@ class ricoh5A22 {
 			irq_enable: 0,
 			nmi_enable: 0,
 			auto_joypad_poll: 0,
+			pio: 0,
 
 			wrmpya: 0xFF,   // $4202
 			wrmpyb: 0xFF,   // $4203
@@ -159,9 +175,21 @@ class ricoh5A22 {
 			rddiv: 0, // $4214-4215
 			rdmpy: 0, // $4216-4217
 
+			hcounter: 0,
+			vcounter: 0,
+
 			htime: 0x1FF, // HIRQ time
 			vtime: 0x1FF, // VIRQ time
+
+			joy1: 0,
+			joy2: 0,
+			joy3: 0,
+			joy4: 0,
 		};
+
+		this.latch = {
+			counters: 0,
+		}
 
 		this.alu = {
 			mpyctr: 0,
@@ -170,6 +198,9 @@ class ricoh5A22 {
 		};
 
 		this.auto_joypad_counter = 33; // disabled
+
+		this.controller_port1 = new SNES_controllerport(1);
+		this.controller_port2 = new SNES_controllerport(2);
 	}
 
 	read_trace(bank, addr) {
@@ -209,11 +240,21 @@ class ricoh5A22 {
 		return r;
 	}
 
+	latch_ppu_counters() {
+		this.io.vcounter = this.clock.scanline.ppu_y;
+		this.io.hcounter = Math.floor(this.clock.cycles_since_scanline_start / 4)
+		this.latch.counters = 1;
+	}
+
 	reg_read(addr, val=0, have_effect=true) { // Val is for open bus
 		//console.log('5A22 read', hex0x4(addr));
 		//if ((addr & 0x4300) === 0x4300) { return this.dma.reg_read(addr, val, have_effect); }
 		if ((addr >= 0x4300) && (addr <= 0x43FF)) { return this.dma.reg_read(addr, val, have_effect); }
 		switch(addr) {
+			case 0x4016: // URGH
+				return this.controller_port1.data();
+			case 0x4017:
+				return this.controller_port2.data();
 			case 0x4210: // NMI read
 				val &= 0x70;
 				val |= this.read_nmi(have_effect) << 7;
@@ -223,6 +264,16 @@ class ricoh5A22 {
 				val &= 0x7F;
 				val |= this.read_irq(have_effect) << 7;
 				return val;
+			case 0x4212: // HVBJOY
+				val = +(this.io.auto_joypad_poll && this.status.auto_joypad_counter < 33);
+				// hblank
+				let hdot = Math.floor(this.clock.cycles_since_scanline_start / 4);
+				val |= ((hdot === 0) || (hdot >= 256)) ? 0x40 : 0;
+				val |= this.clock.scanline.vblank ? 0x80 : 0;
+				console.log('4212', hex2(val));
+				return val;
+			case 0x4213: // JOYSER1
+				return this.io.pio;
 			case 0x4214: // Hardware multiplier stuff
 				return this.io.rddiv & 0xFF;
 			case 0x4215:
@@ -231,6 +282,22 @@ class ricoh5A22 {
 				return this.io.rdmpy & 0xFF;
 			case 0x4217:
 				return (this.io.rdmpy >>> 8) & 0xFF;
+			case 0x4218:
+				return this.io.joy1 & 0xFF;
+			case 0x4219:
+				return ((this.io.joy1) >>> 8) & 0xFF;
+			case 0x421A:
+				return this.io.joy2 & 0xFF;
+			case 0x421B:
+				return ((this.io.joy2) >>> 8) & 0xFF;
+			case 0x421C:
+				return this.io.joy3 & 0xFF;
+			case 0x421D:
+				return ((this.io.joy3) >>> 8) & 0xFF;
+			case 0x421E:
+				return this.io.joy4 & 0xFF;
+			case 0x421F:
+				return ((this.io.joy4) >>> 8) & 0xFF;
 			default:
 				console.log('UNIMPLEMENTED CPU READ', hex4(addr), hex2(val));
 				break;
@@ -238,7 +305,7 @@ class ricoh5A22 {
 		return val;
 	}
 
-	set_nmi_bit(newval) {
+	set_nmi_enabled(newval) {
 		let onmi = this.io.nmi_enable;
 		this.io.nmi_enable = newval;
 
@@ -253,7 +320,13 @@ class ricoh5A22 {
 		//if ((addr & 0x4300) === 0x4300) { this.dma.reg_write(addr, val); return; }
 		if ((addr >= 0x4300) && (addr <= 0x43FF)) { this.dma.reg_write(addr, val); return; }
 		switch(addr) {
+			case 0x4016: // JOYSER0
+				this.controller_port1.latch(0);
+				this.controller_port2.latch(0);
+				break;
 			case 0x4200: // NMI timing
+				this.io.auto_joypad_poll = val & 1;
+				if (!this.io.auto_joypad_poll) this.auto_joypad_counter = 33; // 33 is disable
 				this.io.hirq_enable = (val & 0x10) >>> 4;
 				this.io.virq_enable = (val & 0x20) >>> 5;
 				this.io.irq_enable = this.io.hirq_enable | this.io.virq_enable;
@@ -265,9 +338,9 @@ class ricoh5A22 {
 					this.status.irq_line = 0;
 					this.status.irq_transition = 0;
 				}
-				this.set_nmi_bit((val & 0x80) >>> 7);
+				this.set_nmi_enabled((val & 0x80) >>> 7);
 
-				console.log('Reschedule canline due to write of ', hex2(val), ' at ', this.clock.scanline.ppu_y);
+				console.log('Reschedule scanline due to write of ', hex2(val), ' at ', this.clock.scanline.ppu_y);
 				this.reschedule_scanline_irqbits();
 				this.status.irq_lock = 1;
 				return;
@@ -685,7 +758,7 @@ class ricoh5A22 {
 				this.clock.advance_steps_from_cpu(this.clock.dma_counter);
 				//console.log('after HDMA run, cycle is at ' + this.clock.cycles_since_scanline_start + ' of ' + this.clock.scanline.cycles + ' after running ' + this.clock.dma_counter + ' cycles.');
 				this.clock.dma_counter = 0;
-				console.log('HDMA FINISHED!');
+				//console.log('HDMA FINISHED!');
 				if (dbg.do_break) return;
 				continue;
 			}

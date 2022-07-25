@@ -392,9 +392,11 @@ class PPU_bg {
 				if (!mosaic_palette) continue;
 
 				if (!hires) {
-					if (this.above_enable && !this.window_above[x] && mosaic_priority > above[x].priority)
+					//if (this.above_enable && !this.window_above[x] && mosaic_priority > above[x].priority)
+					if (this.above_enable && mosaic_priority > above[x].priority)
 						above[x].set(source, mosaic_priority, mosaic_color);
-					if (this.below_enable && !this.window_below[x] && mosaic_priority > below[x].priority)
+					//if (this.below_enable && !this.window_below[x] && mosaic_priority > below[x].priority)
+					if (this.below_enable && mosaic_priority > below[x].priority)
 						below[x].set(source, mosaic_priority, mosaic_color);
 				} else {
 					let bx = x >>> 1;
@@ -426,8 +428,7 @@ class SNES_slow_1st_PPU {
 		mem_map.write_ppu = this.reg_write.bind(this);
 		clock.set_ppu(this);
 
-		this.wram_addr = 0;
-		this.wram_bank = 0x7E0000;
+		//this.wram_bank = 0x7E0000;
 
 		this.window_above = new Uint8Array(256);
 		this.window_below = new Uint8Array(256);
@@ -615,21 +616,22 @@ class SNES_slow_1st_PPU {
 		//console.log('PPU read', hex0x6(addr));
 		switch(addr) {
 			case 0x2180: // WRAM access port
-				let r = this.mem_map.dispatch_read(this.wram_bank + this.wram_addr, have_effect);
+				let r = this.mem_map.dispatch_read(0x7E0000 | this.io.wram_addr, have_effect);
 				if (have_effect) {
-					this.wram_addr++;
-					if (this.wram_addr > 0x10000) {
+					this.io.wram_addr++;
+					if (this.io.wram_addr > 0x1FFFF) this.io.wram_addr = 0;
+					/*if (this.wram_addr > 0x10000) {
 						this.wram_addr -= 0x10000;
 						this.wram_bank = (this.wram_bank === 0x7E0000) ? 0x7F0000 : 0x7E0000;
-					}
+					}*/
 				}
 				return r;
-			case 0x2181: // WRAM address low
+			/*case 0x2181: // WRAM address low
 				return this.wram_addr & 0xFF;
 			case 0x2182: // WRAM address high
 				return (this.wram_addr & 0xFF00) >>> 8;
 			case 0x2183: // WRAM address bank
-				return this.wram_bank === 0x7E ? 0 : 1;
+				return this.wram_bank === 0x7E ? 0 : 1;*/
 			default:
 				console.log('UNIMPLEMENTED PPU READ FROM', hex4(addr), hex2(val));
 				return val;
@@ -1114,21 +1116,17 @@ class SNES_slow_1st_PPU {
 				return;
 
 			case 0x2180: // WRAM access port
-				this.mem_map.dispatch_write((this.wram_bank << 16) + this.wram_addr, val);
-				this.wram_addr++;
-				if (this.wram_addr > 0x10000) {
-					this.wram_addr -= 0x10000;
-					this.wram_bank = (this.wram_bank === 0x7E) ? 0x7F : 0x7E;
-				}
+				this.mem_map.dispatch_write(0x7E0000 | this.io.wram_addr++, val);
+				if (this.io.wram_addr > 0x1FFFF) this.io.wram_addr = 0;
 				return;
 			case 0x2181: // WRAM addr low
-				this.wram_addr = (this.wram_addr & 0xFF00) + val;
+				this.io.wram_addr = (this.io.wram_addr & 0xFFF00) + val;
 				return;
 			case 0x2182: // WRAM addr med
-				this.wram_addr = (val << 8) + (this.wram_addr & 0xFF);
+				this.io.wram_addr = (val << 8) + (this.io.wram_addr & 0xF00FF);
 				return;
 			case 0x2183: // WRAM bank
-				this.wram_bank = (val & 1) ? 0x7F: 0x7E;
+				this.io.wram_addr = ((val & 1) << 16) | (this.io.wram_addr & 0xFFFF);
 				return;
 			default:
 				console.log('UNIMPLEMENTED PPU WRITE TO', hex4(addr), hex2(val));
@@ -1476,16 +1474,16 @@ class SNES_slow_1st_PPU {
 		let prev = 0;
 
 		for (let x = 0; x < 256; x++) {
-			let logit = false;
-			if (this.above[x].color !== 0 || this.below[x].color !== 0) {
+			//let logit = false;
+			//if (this.above[x].color !== 0 || this.below[x].color !== 0) {
 				//console.log('ABOVE, BELOW', this.above[x].color, this.below[x].color);
 				//logit = true;
-			}
-			let px = this.pixel(x, this.above[x], this.below[x], logit);
+			//}
+			let px = this.pixel(x, this.above[x], this.below[x], false);
 			//this.output[output++] = px;
 			this.output[output++] = luma[[px]];
 			//if (logit) console.log('PIXEL WAS', px, luma[px]);
-			if (logit) console.log('OUTPUT IS NOW', this.output[output-1]);
+			//if (logit) console.log('OUTPUT IS NOW', this.output[output-1]);
 		}
 
 	}
@@ -1511,6 +1509,7 @@ class SNES_slow_1st_PPU {
 	}
 
 	pixel(x, above, below, logit=false) {
+		return this.blend(above.color, below.color, this.io.col.halve);
 		if (!this.window_above[x]) {
 			if (logit) console.log('SET ABOVE 0');
 			above.color = 0;

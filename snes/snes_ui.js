@@ -112,7 +112,22 @@ function click_step_clock() {
 	after_step();
 }
 
-function click_bg1_dump() {
+function click_bg_dump(which) {
+	let bg;
+	switch(which) {
+		case 1:
+			bg = snes.ppu.io.bg1;
+			break;
+		case 2:
+			bg = snes.ppu.io.bg2;
+			break;
+		case 3:
+			bg = snes.ppu.io.bg3;
+			break;
+		case 4:
+			bg = snes.ppu.io.bg4;
+			break;
+	}
 	snes.ppu.render_bg1_from_memory(0, 260, snes.ppu.io.bg1);
 	snes.ppu.present();
 }
