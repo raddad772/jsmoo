@@ -225,6 +225,18 @@ class debugger_t {
         this.watch = new watch_t(WATCH_WHICH.WDC_IR, WATCH_RELATIONSHIP.GTE, 0x40); // 0x1F6
 
         this.brk_on_NMIRQ = false;
+
+        this.bg1_on = true;
+        this.bg2_on = true;
+        this.bg3_on = true;
+        this.bg4_on = true;
+        this.obj_on = true;
+        this.log_windows = false;
+        this.render_windows = true;
+        this.log_HDMA = false;
+        this.cur_bg = 1;
+
+        this.frames_til_pause = 0;
     }
 
     console_DMA_logs() {
@@ -314,6 +326,7 @@ class debugger_t {
         else if (whodidit === D_RESOURCE_TYPES.SPC700) {
             snes.ppu.catch_up();
         }
+        snes.jsanimator.pause();
         //snes.clock.apu_deficit -= overflow;
         //snes.clock.ppu_deficit -= overflow;
         console.log('AFTER BREAK deficits', snes.clock.cpu_deficit, snes.clock.apu_deficit, snes.clock.ppu_deficit)

@@ -36,6 +36,7 @@ class dmaChannel {
         this.clock = clock;
         this.took_cycles = 0;
         this.index = 0;
+        this.unknown_byte = 0;
     }
 
     hdma_is_active() {
@@ -49,10 +50,10 @@ class dmaChannel {
 
     dma_run(howmany) {
         if (!this.dma_enable) return howmany;
-        if (this.dma_num === 2) {
+        /*if (this.dma_num === 2) {
             console.log('DMA #', this.dma_num, 'RUN WITH', this.transfer_size, 'BYTES LEFT AND', howmany, 'CYCLES');
             console.log('DMA INFO:', this.direction, this.fixed_transfer, this.source_address, this.source_bank);
-        }
+        }*/
         //if (this.dma_pause) return howmany;
 
         //this.dma_edge();
@@ -88,7 +89,7 @@ class dmaChannel {
         this.hdma_do_transfer = true;
         if (!this.hdma_enable) return;
 
-        console.log('HDMA SETUP!', this.dma_num);
+        //console.log('HDMA SETUP!', this.dma_num);
         this.dma_enable = false; // Stomp on DMA if HDMA runs on a channel at same time
         this.hdma_address = this.source_address;
         this.line_counter = 0;
@@ -132,7 +133,7 @@ class dmaChannel {
 
     hdma_advance() {
         if (!this.hdma_is_active()) return;
-        console.log('ADVANCING', this.dma_num, this.line_counter);
+        //console.log('ADVANCING', this.dma_num, this.line_counter);
         this.line_counter--;
         this.hdma_do_transfer = (this.line_counter & 0x80) >>> 7;
         this.hdma_reload();
@@ -146,10 +147,11 @@ class dmaChannel {
             let addr;
             if (this.indirect) {
                 addr = (this.indirect_bank << 16) | this.indirect_address;
-                this.indirect_address++;
+                this.indirect_address = (this.indirect_address + 1) & 0xFFFF;
             } else {
                 addr = (this.source_bank << 16) | this.source_address;
-                this.source_address++;
+                this.source_address = (this.source_address + 1) & 0xFFFF;
+                //this.source_address++;
             }
             this.transfer(addr, index, true);
         }
@@ -201,11 +203,12 @@ class dmaChannel {
         //console.log('TRANSFER ACTUAL ADDR', this.direction, valid, hex6(addrA), hex2(addrB));
         if (this.direction === 0) {
             data = this.readA(addrA);
-            if ((hdma_mode && WDC_LOG_HDMAs) || this.dma_num === 1) console.log('HDMA AB ' + hex6(addrA) + ' to ' + hex4(0x2100 | addrB) + ': ' + hex2(data));
+            //if ((data === 128) && (addrB === 0x27)) debugger;
+            if (hdma_mode && dbg.log_HDMA) console.log('HDMA AB ' + hex6(addrA) + ' to ' + hex4(0x2100 | addrB) + ': ' + hex2(data));
             this.writeB(addrB, data, valid);
         } else {
             data = this.readB(addrB, valid);
-            if ((hdma_mode && WDC_LOG_HDMAs) || this.dma_num === 1) console.log('HDMA BA ' + hex4(0x2100 | addrB) + ' to ' + hex6(addrA) + ': ' + hex2(data));
+            if (hdma_mode && dbg.log_HDMA) console.log('HDMA BA ' + hex4(0x2100 | addrB) + ' to ' + hex6(addrA) + ': ' + hex2(data));
             this.writeA(addrA, data);
         }
     }

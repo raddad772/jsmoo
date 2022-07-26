@@ -160,7 +160,7 @@ scanline
 */	
 
 class SNES {
-	constructor() {
+	constructor(jsanimator) {
 		this.cart = new snes_cart();
 		this.version = {rev: 0, nstc: true, pal: false}
 
@@ -170,6 +170,8 @@ class SNES {
 		this.ppu = new SNES_slow_1st_PPU(document.getElementById('snescanvas'), this.version, this.mem_map, this.clock);
 		this.apu = new spc700(this.mem_map, this.clock);
 		this.cpu.reset();
+		this.jsanimator = jsanimator;
+		this.jsanimator.callback = this.do_frame.bind(this);
 		dbg.watch.wdc = this.cpu;
 		dbg.watch.spc = this.apu;
 	}
@@ -200,6 +202,20 @@ class SNES {
 		// Catch up anything that needs to
 		this.apu.catch_up(true);
 		this.ppu.catch_up();
+	}
+
+	do_frame(elapsed) {
+		if (elapsed > 15) {
+			if (dbg.frames_til_pause !== 0) {
+				dbg.frames_til_pause--;
+				ui_el.frames_til_pause.value = dbg.frames_til_pause;
+				if (dbg.frames_til_pause === 0) {
+					this.jsanimator.pause();
+					stop_fps_count();
+				}
+			}
+			this.step(0, 0, 1, 0);
+		}
 	}
 
 	step(master_clocks, scanlines, frames, seconds) {
@@ -241,7 +257,7 @@ class SNES {
 			frames--;
 		}
 		let framenum = this.clock.scanline.frame;
-		console.log('DOIN SCANLINES', scanlines)
+		//console.log('DOIN SCANLINES', scanlines)
 		while (scanlines > 0) {
 			this.do_steps(this.clock.scanline.cycles);
 			if (framenum !== this.clock.scanline.frame) {
@@ -359,12 +375,14 @@ async function main() {
 	let ROM_to_get;
 	//ROM_to_get = 'snes-test-roms/PeterLemon/SNES-CPUTest-CPU/ADC/CPUADC.sfc';
 	// C:\dev\personal\jsmoo\roms\snes-test-roms\PeterLemon\SNES-CPUTest-CPU\BIT
+	let jsa = new js_animator(60, function(yo){});
+
 	ROM_to_get = 'snes-test-roms/PeterLemon/SNES-CPUTest-CPU/BIT/CPUBIT.sfc';
 	//ROM_to_get = 'blargg/controller_strobebehavior.smc';
 	ROM_to_get = 'commercial/smw.smc';
 	let rtg = await getBinary(local_server_url + ROM_to_get);
 	console.log('GOT IT!', rtg);
-	snes = new SNES();
+	snes = new SNES(jsa);
 	dbg.add_cpu(D_RESOURCE_TYPES.R5A22, snes.cpu);
 	dbg.add_cpu(D_RESOURCE_TYPES.SPC700, snes.apu)
 	if (rtg === null || typeof(rtg) === 'undefined') {

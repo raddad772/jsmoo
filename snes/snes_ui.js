@@ -42,6 +42,17 @@ let ui_el = {
 	memaddr_input: ['memaddr', null],
 	ppu_y_output: ['ppu_y_output', null],
 	frame_count_output: ['frame_count_output', null],
+	bg1on_checkbox: ['bg1on', true],
+	bg2on_checkbox: ['bg2on', true],
+	bg3on_checkbox: ['bg3on', true],
+	bg4on_checkbox: ['bg4on', true],
+	objon_checkbox: ['objon', true],
+	log_windows_checkbox: ['log_windows', false],
+	render_windows_checkbox: ['render_windows', true],
+	play_button: ['playbutton', null],
+	pause_button: ['pausebutton', null],
+	frames_til_pause: ['framestilpause', 0],
+	fps: ['fps', 0]
 }
 
 
@@ -86,6 +97,34 @@ function init_js() {
 		if (event.currentTarget.checked) dbg.enable_tracing_for(D_RESOURCE_TYPES.SPC700);
 		else dbg.disable_tracing_for(D_RESOURCE_TYPES.SPC700);
 	});
+
+	ui_el.bg1on_checkbox.addEventListener('change', (event) => {
+		dbg.bg1_on = !!event.currentTarget.checked;
+	})
+
+	ui_el.bg2on_checkbox.addEventListener('change', (event) => {
+		dbg.bg2_on = !!event.currentTarget.checked;
+	})
+
+	ui_el.bg3on_checkbox.addEventListener('change', (event) => {
+		dbg.bg3_on = !!event.currentTarget.checked;
+	})
+
+	ui_el.bg4on_checkbox.addEventListener('change', (event) => {
+		dbg.bg4_on = !!event.currentTarget.checked;
+	})
+
+	ui_el.objon_checkbox.addEventListener('change', (event) => {
+		dbg.obj_on = !!event.currentTarget.checked;
+	})
+
+	ui_el.log_windows_checkbox.addEventListener('change', (event) => {
+		dbg.log_windows = !!event.currentTarget.checked;
+	})
+
+	ui_el.render_windows_checkbox.addEventListener('change', (event) => {
+		dbg.render_windows = !!event.currentTarget.checked;
+	})
 
 	after_js();
 }
@@ -175,6 +214,7 @@ function after_step() {
 	if (WDC_LOG_DMAs) {
 		dbg.console_DMA_logs();
 	}
+	//ui_el.scanline_input.value = 1;
 }
 
 function get_addr_from_dump_box() {
@@ -196,11 +236,77 @@ function click_dump_ram() {
 	mconsole.draw();
 }
 
+class js_animator {
+	constructor(hz, func) {
+		this.hz = hz;
+		this.callback = func;
+
+		this.running = false;
+		this.last_timestamp = 0;
+		this.frame_to_cancel = null;
+	}
+
+	play() {
+		//console.log('RUNNING?', this.running)
+		if (this.running) return;
+		//console.log('REQEUESTING FRAME');
+		this.running = true;
+		this.frame_to_cancel = requestAnimationFrame(this.doframe.bind(this));
+	}
+
+	doframe(timestamp) {
+		//console.log
+		if (!this.running) {
+			this.frame_to_cancel = null;
+			return;
+		}
+		let elapsed = 0;
+		if (this.last_timestamp) elapsed = timestamp - this.last_timestamp;
+		this.last_timestamp = timestamp;
+		this.callback(elapsed);
+
+		this.frame_to_cancel = requestAnimationFrame(this.doframe.bind(this));
+	}
+
+	pause() {
+		if (!this.running) return;
+		this.running = false;
+		if (this.frame_to_cancel !== null) {
+			cancelAnimationFrame(this.frame_to_cancel);
+			this.frame_to_cancel = null;
+		}
+		this.last_timestamp = 0;
+	}
+}
+
+var fps_old_frames = 0;
+var fps_interval = null;
 
 function click_play() {
+	dbg.frames_til_pause = parseInt(ui_el.frames_til_pause.value);
+	fps_old_frames = snes.clock.frames_since_restart;
+	start_fps_count();
+	snes.jsanimator.play();
+}
 
+function do_fps() {
+	let fps = snes.clock.frames_since_restart - fps_old_frames;
+	fps_old_frames = snes.clock.frames_since_restart;
+	ui_el.fps.value = fps;
+}
+
+function start_fps_count() {
+	if (fps_interval !== null) return;
+	fps_interval = setInterval(do_fps,1000);
+}
+
+function stop_fps_count() {
+	if (fps_interval === null) return;
+	clearInterval(fps_interval);
+	fps_interval = null;
 }
 
 function click_pause() {
-
+	snes.jsanimator.pause();
+	stop_fps_count();
 }

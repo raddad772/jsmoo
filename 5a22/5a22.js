@@ -339,7 +339,7 @@ class ricoh5A22 {
 				}
 				this.set_nmi_enabled((val & 0x80) >>> 7);
 
-				console.log('Reschedule scanline due to write of ', hex2(val), ' at ', this.clock.scanline.ppu_y);
+				//console.log('Reschedule scanline due to write of ', hex2(val), ' at ', this.clock.scanline.ppu_y);
 				this.reschedule_scanline_irqbits();
 				this.status.irq_lock = 1;
 				return;
@@ -418,7 +418,7 @@ class ricoh5A22 {
 				for (let n = 0; n < 8; n++) {
 					this.dma.channels[n].hdma_enable = (val >>> n) & 1;
 				}
-				if (val !== 0) console.log('HDMA CHANNEL WRITE', val, this.dma.channels[7]);
+				//if (val !== 0) console.log('HDMA CHANNEL WRITE', val, this.dma.channels[7]);
 				return;
 			case 0x420D: // Cycle speed of ROM
 				this.ROMspeed = (val & 1) ? 6 : 8;
@@ -483,7 +483,7 @@ class ricoh5A22 {
 
 	// IRQ bits may have changed...
 	reschedule_scanline_irqbits() {
-		console.log('scanline reschedule due to IRQ bit write...')
+		//console.log('scanline reschedule due to IRQ bit write...')
 		let e = null;
 		let old_irq_time = -1;
 		let old_irq_event = -1;
@@ -709,7 +709,7 @@ class ricoh5A22 {
 					case R5A22_events.HDMA:
 						//console.log('HDMA hit');
 						if (this.hdma_is_enabled()) {
-							console.log('HDMA PEND SET');
+							//console.log('HDMA PEND SET');
 							this.status.hdma_pending = true;
 						}
 						break;
@@ -739,7 +739,6 @@ class ricoh5A22 {
 			// Do HDMA setup
 			if (this.status.hdma_pending) {
 				// run HDMA
-				console.log('HDMA TRIGGERED!!')
 				this.clock.dma_counter = 0;
 				if (!this.status.dma_running) {
 					// Wait up to 8 cycles

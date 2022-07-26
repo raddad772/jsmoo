@@ -167,7 +167,7 @@ class SNES_clock {
 
     new_frame() {
         // I forget why I even put this logic in here...delay maybe? 1/0 on that register???
-		console.log('NEW FRAME', this.frames_since_restart+1);
+		//console.log('NEW FRAME', this.frames_since_restart+1);
 		this.ppu.present();
 		this.frames_since_restart++;
     }
@@ -176,7 +176,7 @@ class SNES_clock {
 		this.scanline.fblank = to_what;
 		//this.scanline.fblank = false;
 		//console.log('%c Oh my heavens! ', 'background: #222; color: #bada55');
-		console.log('%c FBLANK: '+ to_what + ' y' + this.scanline.ppu_y, 'background: #222; color: #bada55');
+		//console.log('%c FBLANK: '+ to_what + ' y' + this.scanline.ppu_y, 'background: #222; color: #bada55');
 		//dbg.break();
 	}
 

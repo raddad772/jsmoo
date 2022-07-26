@@ -55,6 +55,11 @@
     <div class="grid-child">
         <section>
             <br>
+            <button id="playbutton" onclick="click_play()">Play</button>
+            <button id="pausebutton" onclick="click_pause()">Pause</button>
+            <input id="framestilpause"/>
+            FPS:<input id="fps"/>
+            <br>
             Master clock steps: <input id="masterclocksteps"/><button id="stepclock" type="button" onclick="click_step_clock()">Step</button>
             <br>
             <hr>
@@ -65,6 +70,15 @@
             Seconds to step: <input id="secondsteps"/>
             <br>
             <button id="stepall" type="button" onclick="click_step_all()">Step</button>
+            <br>
+            <input type="checkbox" id="bg1on"/><label for="bg1on">BG1 on</label>
+            <input type="checkbox" id="bg2on"/><label for="bg2on">BG2 on</label>
+            <input type="checkbox" id="bg3on"/><label for="bg3on">BG3 on</label>
+            <input type="checkbox" id="bg4on"/><label for="bg4on">BG4 on</label>
+            <input type="checkbox" id="objon"/><label for="objon">Objects on</label>
+            <br>
+            <input type="checkbox" id="render_windows"/><label for="render_windows">Render windows</label>
+            <input type="checkbox" id="log_windows"/><label for="log_windows">Log windows</label>
             <br>
             <button id="dumpbg1" type="button" onclick="click_bg_dump(1)">Dump BG1</button>
             <button id="dumpbg2" type="button" onclick="click_bg_dump(2)">Dump BG2</button>

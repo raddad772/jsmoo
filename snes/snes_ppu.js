@@ -144,15 +144,18 @@ class PPU_window_layer {
 		}
 	}
 
-	render_layer(enable, output, io) {
+	render_layer(enable, output, io, extended_log=false) {
 		if (!enable || (!this.one_enable && !this.two_enable)) {
+			if (dbg.log_windows) console.log(snes.clock.scanline.ppu_y, dbg.cur_bg, 'FILL 0')
 			output.fill(0);
 			return;
 		}
+		if (dbg.log_windows) console.log(snes.clock.scanline.ppu_y, dbg.cur_bg, io.window.one_left, io.window.one_right, this.one_invert, this.one_enable, this.two_enable)
 
 		if (this.one_enable && !this.two_enable) {
 			let set = 1 ^ this.one_invert;
 			let clear = +(!set);
+			if (dbg.log_windows && extended_log) console.log('CASE 1 clear set', clear, set);
 			for (let x in output) {
 				output[x] = x >= io.window.one_left && x <= io.window.one_right ? set : clear;
 			}
@@ -162,12 +165,14 @@ class PPU_window_layer {
 		if (this.two_enable && !this.one_enable) {
 			let set = 1 ^ this.two_invert;
 			let clear = +(!set);
+			if (dbg.log_windows && extended_log) console.log('CASE 2 clear set', clear, set);
 			for (let x in output) {
 				output[x] = x >= io.window.two_left && x <= io.window.two_right ? set : clear;
 			}
 			return;
 		}
 		
+		if (dbg.log_windows && extended_log) console.log('CASE 3 left right', io.window.one_left, io.window.one_right);
 		for (let x in output) {
 			let one_mask = +(x >= io.window.one_left && x <= io.window.one_right) ^ this.one_invert;
 			let two_mask = +(x >= io.window.two_left && x <= io.window.two_right) ^ this.two_invert;
@@ -346,8 +351,8 @@ class PPU_bg {
 			voffset &= vmask;
 
 			let tile_number = this.get_tile(VRAM, io, this, hoffset, voffset);
-			let mirror_x = tile_number & 0x8000 ? 7 : 0;
-			let mirror_y = tile_number & 0x4000 ? 7 : 0;
+			let mirror_x = tile_number & 0x4000 ? 7 : 0;
+			let mirror_y = tile_number & 0x8000 ? 7 : 0;
 			let tile_priority = this.priority[+(tile_number & 0x2000)];
 			let palette_number = (tile_number >>> 10) & 7;
 			let palette_index = (this.palette_base + (palette_number << this.palette_shift)) & 0xFF;
@@ -395,12 +400,20 @@ class PPU_bg {
 				if (!mosaic_palette) continue;
 
 				if (!hires) {
-					//if (this.above_enable && !this.window_above[x] && mosaic_priority > above[x].priority)
-					if (this.above_enable && mosaic_priority > above[x].priority)
-						above[x].set(source, mosaic_priority, mosaic_color);
-					//if (this.below_enable && !this.window_below[x] && mosaic_priority > below[x].priority)
-					if (this.below_enable && mosaic_priority > below[x].priority)
-						below[x].set(source, mosaic_priority, mosaic_color);
+					if (dbg.render_windows) {
+						if (this.above_enable && !this.window_above[x] && mosaic_priority > above[x].priority)
+						//if (this.above_enable && mosaic_priority > above[x].priority)
+							above[x].set(source, mosaic_priority, mosaic_color);
+						if (this.below_enable && !this.window_below[x] && mosaic_priority > below[x].priority)
+						//if (this.below_enable && mosaic_priority > below[x].priority)
+							below[x].set(source, mosaic_priority, mosaic_color);
+					}
+					else {
+						if (this.above_enable && mosaic_priority > above[x].priority)
+							above[x].set(source, mosaic_priority, mosaic_color);
+						if (this.below_enable && mosaic_priority > below[x].priority)
+							below[x].set(source, mosaic_priority, mosaic_color);
+					}
 				} else {
 					let bx = x >>> 1;
 					if (x & 1) {
@@ -914,7 +927,7 @@ class SNES_slow_1st_PPU {
 				return;
 			case 0x210D: // BG1HOFS
 				this.io.bg1.hoffset = (val << 8) | (this.latch.ppu1.bgofs & 0xF8) | (this.latch.ppu2.bgofs & 7);
-				this.latch.ppu1.bgofs = this.latch.ppu2.offs = val;
+				this.latch.ppu1.bgofs = this.latch.ppu2.bgofs = val;
 				return;
 			case 0x210E: // BG1VOFS
 				this.io.bg1.voffset = (val << 8) | (this.latch.ppu1.bgofs);
@@ -922,7 +935,7 @@ class SNES_slow_1st_PPU {
 				return;
 			case 0x210F: // BG2HOFS
 				this.io.bg2.hoffset = (val << 8) | (this.latch.ppu1.bgofs & 0xF8) | (this.latch.ppu2.bgofs & 7);
-				this.latch.ppu1.bgofs = this.latch.ppu2.offs = val;
+				this.latch.ppu1.bgofs = this.latch.ppu2.bgofs = val;
 				return;
 			case 0x2110: // BG2VOFS
 				this.io.bg2.voffset = (val << 8) | (this.latch.ppu1.bgofs);
@@ -930,7 +943,7 @@ class SNES_slow_1st_PPU {
 				return;
 			case 0x2111: // BG3HOFS
 				this.io.bg3.hoffset = (val << 8) | (this.latch.ppu1.bgofs & 0xF8) | (this.latch.ppu2.bgofs & 7);
-				this.latch.ppu1.bgofs = this.latch.ppu2.offs = val;
+				this.latch.ppu1.bgofs = this.latch.ppu2.bgofs = val;
 				return;
 			case 0x2112: // BG3VOFS
 				this.io.bg3.voffset = (val << 8) | (this.latch.ppu1.bgofs);
@@ -938,14 +951,14 @@ class SNES_slow_1st_PPU {
 				return;
 			case 0x2113: // BG4HOFS
 				this.io.bg4.hoffset = (val << 8) | (this.latch.ppu1.bgofs & 0xF8) | (this.latch.ppu2.bgofs & 7);
-				this.latch.ppu1.bgofs = this.latch.ppu2.offs = val;
+				this.latch.ppu1.bgofs = this.latch.ppu2.bgofs = val;
 				return;
 			case 0x2114: // BG4VOFS
 				this.io.bg4.voffset = (val << 8) | (this.latch.ppu1.bgofs);
 				this.latch.ppu1.bgofs = val;
 				return;
 			case 0x2115: // VRAM increment
-				this.io.increment_size = this.ppu_inc[val & 3];
+				this.io.vram_increment_step = this.ppu_inc[val & 3];
 				this.io.vram_mapping = (val >>> 2) & 3;
 				this.io.vram_increment_mode = (val >>> 7) & 1;
 				return;
@@ -1046,10 +1059,15 @@ class SNES_slow_1st_PPU {
 				this.io.col.window.two_enable = (val >>> 7) & 1;
 				return;
 			case 0x2126: // WH0
-				this.io.window.one_left = val;
+				if (dbg.log_windows) console.log('WINDOW ONE LEFT WRITE', val);
+				this.io.window.one_left = 0;
+				//this.io.window.one_left = val;
 				return;
 			case 0x2127: // WH1...
-				this.io.window.one_right = val;
+				//if (val === 128) debugger;
+				if (dbg.log_windows) console.log('WINDOW ONE RIGHT WRITE', val);
+				//this.io.window.one_right = val;
+				this.io.window.one_right = 256;
 				return;
 			case 0x2128: // WH2
 				this.io.window.two_left = val;
@@ -1318,11 +1336,14 @@ class SNES_slow_1st_PPU {
 	/**
 	 * @param {number} y
 	 * @param {{name_select: number, tile_addr: number, base_size: number, below_enable: number, window: PPU_window_layer, interlace: number, range_over: number, time_over: number, priority: *[], first: number, above_enable: number}} obj
+	 * @param force
 	 */
 	renderObject(y, obj, force=false) {
 		if (!force && !obj.above_enable && !obj.below_enable) return;
-		obj.window.render_layer(obj.window.above_enable, this.window_above, this.io);
+		obj.window.render_layer(obj.window.above_enable, this.window_above, this.io, true);
 		obj.window.render_layer(obj.window.below_enable, this.window_below, this.io);
+		if (dbg.log_windows) console.log(obj.window);
+		if (dbg.log_windows) console.log(snes.clock.scanline.ppu_y, this.window_above, this.window_below);
 		let item_count = 0;
 		let tile_count = 0;
 		for (let n=0; n < PPU_ITEM_LIMIT; n++) {
@@ -1472,16 +1493,24 @@ class SNES_slow_1st_PPU {
 			this.below[x].set(PPU_source.COL, 0, below_color);
 		}
 
-		this.io.bg1.render(this.clock.scanline.ppu_y, PPU_source.BG1, this.io, this.VRAM, this.CRAM, this.above, this.below);
-		if (this.io.extbg === 0) this.io.bg2.render(this.clock.scanline.ppu_y, PPU_source.BG2, this.io, this.VRAM, this.CRAM, this.above, this.below);
-		this.io.bg3.render(this.clock.scanline.ppu_y, PPU_source.BG3, this.io, this.VRAM, this.CRAM, this.above, this.below);
-		this.io.bg4.render(this.clock.scanline.ppu_y, PPU_source.BG4, this.io, this.VRAM, this.CRAM, this.above, this.below);
-		this.renderObject(this.clock.scanline.ppu_y, this.io.obj, false);
+		dbg.cur_bg = 1;
+		if (dbg.bg1_on) this.io.bg1.render(this.clock.scanline.ppu_y, PPU_source.BG1, this.io, this.VRAM, this.CRAM, this.above, this.below);
+		dbg.cur_bg = 2;
+		if (this.io.extbg === 0) if (dbg.bg2_on) this.io.bg2.render(this.clock.scanline.ppu_y, PPU_source.BG2, this.io, this.VRAM, this.CRAM, this.above, this.below);
+		dbg.cur_bg = 3;
+		if (dbg.bg3_on) this.io.bg3.render(this.clock.scanline.ppu_y, PPU_source.BG3, this.io, this.VRAM, this.CRAM, this.above, this.below);
+		dbg.cur_bg = 4;
+		if (dbg.bg4_on) this.io.bg4.render(this.clock.scanline.ppu_y, PPU_source.BG4, this.io, this.VRAM, this.CRAM, this.above, this.below);
+		dbg.cur_bg = 5;
+		if (dbg.obj_on) this.renderObject(this.clock.scanline.ppu_y, this.io.obj, false);
 		// renderObjects here
-		if (this.io.extbg === 1) this.io.bg2.render(this.clock.scanline.ppu_y, PPU_source.BG2, this.io, this.VRAM, this.CRAM, this.above, this.below);
+		dbg.cur_bg = 2;
+		if (this.io.extbg === 1) if (dbg.bg2_on) this.io.bg2.render(this.clock.scanline.ppu_y, PPU_source.BG2, this.io, this.VRAM, this.CRAM, this.above, this.below);
 		// render background color windows here
-		this.io.col.window.render_layer_mask(this.io.col.window.above_mask, this.window_above, this.io);
-		this.io.col.window.render_layer_mask(this.io.col.window.below_mask, this.window_below, this.io);
+		if (dbg.render_windows) {
+			this.io.col.window.render_layer_mask(this.io.col.window.above_mask, this.window_above, this.io);
+			this.io.col.window.render_layer_mask(this.io.col.window.below_mask, this.window_below, this.io);
+		}
 
 		let luma = this.light_table[this.io.display_brightness];
 		let cur = 0;
@@ -1523,7 +1552,13 @@ class SNES_slow_1st_PPU {
 	}
 
 	pixel(x, above, below, logit=false) {
-		return this.blend(above.color, below.color, this.io.col.halve);
+		//return this.blend(above.color, below.color, this.io.col.halve);
+		if (!dbg.render_windows) {
+			if (!this.io.col.blend_mode) {
+				return this.blend(above.color, this.io.col.fixed_color, this.io.col.halve && this.window_above[x]);
+			}
+			return this.blend(above.color, below.color, this.io.col.halve && this.window_above[x] && below.source !== PPU_source.COL);
+		}
 		if (!this.window_above[x]) {
 			if (logit) console.log('SET ABOVE 0');
 			above.color = 0;
