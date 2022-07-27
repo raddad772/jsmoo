@@ -310,3 +310,58 @@ function click_pause() {
 	snes.jsanimator.pause();
 	stop_fps_count();
 }
+
+class keyboard_input_t {
+	constructor() {
+		this.keys_cared_about = ['a', 's', 'z', 'x', 'tab', 'up', 'down', 'left', 'right', 'q', 'w', 'f'];
+
+		this.keys_cared_about_codes = [];
+		this.conversion = {
+			'a': 'a',
+			's': 's',
+			'z': 'z',
+			'x': 'x',
+			'f': 'f',
+			'q': 'q',
+			'w': 'w',
+			'up': 'ArrowUp',
+			'down': 'ArrowDown',
+			'left': 'ArrowLeft',
+			'right': 'ArrowRight',
+			'enter': 'Enter',
+			'tab': 'Tab'
+		}
+		this.conversion_back = {}
+		for (let i in this.conversion) {
+			this.conversion_back[this.conversion[i]] = i;
+		}
+		for (let i in this.keys_cared_about) {
+			this.keys_cared_about_codes.push(this.conversion[this.keys_cared_about[i]]);
+		}
+
+		this.keys = {};
+		for (let i in this.keys_cared_about) {
+			this.keys[this.keys_cared_about[i]] = false;
+		}
+	}
+
+	keydown(keycode) {
+		if (this.keys_cared_about_codes.indexOf(keycode) !== -1)
+			this.keys[this.conversion_back[keycode]] = true;
+	}
+
+	keyup(keycode) {
+		if (this.keys_cared_about_codes.indexOf(keycode) !== -1)
+			this.keys[this.conversion_back[keycode]] = false;
+	}
+}
+
+var keyboard_input = new keyboard_input_t();
+
+window.addEventListener('keydown', function(ev) {
+	keyboard_input.keydown(ev.key)
+});
+
+window.addEventListener('keyup', function(ev) {
+	keyboard_input.keyup(ev.key);
+});

@@ -200,6 +200,11 @@ class ricoh5A22 {
 
 		this.controller_port1 = new SNES_controllerport(1);
 		this.controller_port2 = new SNES_controllerport(2);
+
+		this.joypad1 = new SNES_joypad(1);
+		this.joypad2 = new SNES_joypad(2);
+		this.controller_port1.device = this.joypad1;
+		this.controller_port2.device = this.joypad2;
 	}
 
 	read_trace(bank, addr) {
@@ -859,6 +864,43 @@ class ricoh5A22 {
 				console.log('BREAK FOR WATCHPOINT')
 			}
 		}
+	}
+
+	auto_joypad_edge() {
+		//console.log('JOYPAD EDGE', this.io.auto_joypad_poll);
+		if (!this.io.auto_joypad_poll) return;
+		let hcounter = Math.floor(this.clock.cycles_since_scanline_start / 4);
+		if ((this.clock.scanline.ppu_y === this.clock.scanline.bottom_scanline) && (hcounter >= 130) && (hcounter <= 256)) {
+			// Begin new polling sequence at bottom scanline near right edge I guess
+			this.status.auto_joypad_counter = 0;
+		}
+		if (this.status.auto_joypad_counter >= 33) return;
+
+		if (this.status.auto_joypad_counter === 0) {
+			// latch controller states on the first polling cycle
+			this.controller_port1.latch(1);
+			this.controller_port2.latch(1);
+		}
+
+		if (this.status.auto_joypad_counter === 1) {
+			// Release latch and begin reading on the second cycle
+			this.controller_port1.latch(0);
+			this.controller_port2.latch(0);
+
+			this.io.joy1 = this.io.joy2 = this.io.joy3 = this.io.joy4 = 0;
+		}
+
+		if (this.status.auto_joypad_counter >= 2 && (!(this.status.auto_joypad_counter & 1))) {
+			// sixteen bits are shifted into joy(1-4), 1 bit per 256 clocks
+			let p0 = this.controller_port1.data();
+			let p1 = this.controller_port2.data();
+
+			this.io.joy1 = ((this.io.joy1 << 1) | (p0 & 1)) & 0xFFFF;
+			this.io.joy2 = ((this.io.joy2 << 1) | (p1 & 1)) & 0xFFFF;
+			this.io.joy3 = ((this.io.joy3 << 1) | ((p0 >>> 1) & 1)) & 0xFFFF;
+			this.io.joy4 = ((this.io.joy4 << 1) | ((p1 >>> 1) & 1)) & 0xFFFF;
+		}
+		this.status.auto_joypad_counter++;
 	}
 
 	dma_is_enabled() {

@@ -132,6 +132,9 @@ class SNES_clock {
         this.cpu_deficit = 0;
         this.apu_deficit = 0;
         this.ppu_deficit = 0;
+		this.last_autojoypad = 0;
+
+		this.cycles_since_reset = 0;
 
         // Frame counter
         this.frame_counter = 0;
@@ -188,6 +191,18 @@ class SNES_clock {
         this.ppu_deficit += howmany;
 		this.cpu_has += howmany;
         this.cycles_since_reset += howmany;
+
+		let keycycles = howmany + (this.cycles_since_reset - this.last_autojoypad);
+		//console.log('KEYCYCLES:', keycycles, this.cycles_since_reset, this.last_autojoypad);
+
+		if (Math.floor(keycycles / 128) >= 1) {
+			while(keycycles > 0) {
+				keycycles -= 128;
+				this.cpu.auto_joypad_edge();
+			}
+			this.last_autojoypad = this.cycles_since_reset;
+		}
+
         //console.log('CYCLES SINCE', this.cycles_since_scanline_start,howmany);
 		this.cycles_since_scanline_start += howmany;
 		/*if (dbg.keep_up_APU) {
