@@ -220,6 +220,7 @@ class debugger_t {
         this.cpus = {};
         this.tracing_for = {};
         this.DMA_logs = [];
+        this.log_DMAs = false;
 
         this.watch_on = false;
         this.watch = new watch_t(WATCH_WHICH.WDC_IR, WATCH_RELATIONSHIP.GTE, 0x40); // 0x1F6
@@ -342,3 +343,19 @@ class debugger_t {
 }
 
 let dbg = new debugger_t();
+
+const SNES_REG_NAMES = Object.freeze({
+    0x2100: 'INIDISP',
+    0x2101: 'OBSEL',
+    0x2102: 'OAMADDL',
+    0x2103: 'OAMADDH',
+    0x2104: 'OAMDATA',
+    0x2105: 'BGMODE',
+    0x2106: 'MOSAIC',
+    0x2107: 'BG1SC',
+    0x2108: 'BG2SC',
+    0x2109: 'BG3SC',
+    0x210A: 'BG4SC',
+    0x2142: 'APUIO2',
+    0x210F: 'BG2HOFS',
+});

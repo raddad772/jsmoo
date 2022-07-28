@@ -392,7 +392,7 @@ class ricoh5A22 {
 					//console.log('CHANNEL ', n, (val >>> n) & 1);
 					this.dma.channels[n].dma_enable = (val >>> n) & 1;
 				}
-				if ((WDC_LOG_DMAs) && (val !== 0))
+				if ((dbg.log_DMAs) && (val !== 0))
 				{
 					for (let n = 0; n < 8; n++) {
 						if ((val >>> n) & 1) {
@@ -435,6 +435,7 @@ class ricoh5A22 {
 	}
 
 	alu_cycle(num=1) {
+		if (!this.alu.mpyctr  && !this.alu.divctr) return;
 		while (num > 0) {
 			if (this.alu.mpyctr) {
 				this.alu.mpyctr--;
@@ -858,12 +859,13 @@ class ricoh5A22 {
 				}
 			}
 		}
-		if (dbg.watch_on) {
+		/*if (dbg.watch_on) {
 			if (dbg.watch.evaluate()) {
 				dbg.break();
 				console.log('BREAK FOR WATCHPOINT')
 			}
-		}
+		}*/
+		this.alu_cycle(1);
 	}
 
 	auto_joypad_edge() {

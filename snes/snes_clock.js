@@ -116,6 +116,8 @@ class SNES_clock {
         this.start_of_scanline = true;
         this.cycles_since_scanline_start = 0;
 
+		this.last_alu_edge = 0;
+
         this.cpu_step = 12; // Biggest possible CPU step is 12, with the exception of DRAM refresh.
         this.apu_step = 20; // Every 20 cycles, 1 APU cycle
         this.ppu_step = 0; // Every 4 cycles, 1 PPU dot, but we will step it accordingly.

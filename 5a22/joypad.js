@@ -67,7 +67,7 @@ class SNES_joypad {
         this.counter = 0;
         if (this.latched === 0) {
             this.fill_input_buffer();
-            if (this.joynum === 1) console.log(this.input_buffer['start']);//this.pprint();
+            //if (this.joynum === 1) console.log(this.input_buffer['start']);//this.pprint();
 
             // if U/D not held down, update
             if (!(this.input_buffer['up'] & this.input_buffer['down'])) {

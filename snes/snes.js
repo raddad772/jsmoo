@@ -5,7 +5,6 @@ let PAL_MASTER_CLOCK =  21281370
 
 let MASTER_CLOCK = NTSC_MASTER_CLOCK;
 let CLOCKS_PER_FRAME = MASTER_CLOCK / 60;
-console.log('CLocks per frame', CLOCKS_PER_FRAME)
 
 
 /*

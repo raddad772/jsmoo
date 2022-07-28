@@ -30,7 +30,8 @@ function generate_js_SPC() {
 // It goes: programming name: [dom ID, default value] where null is no
 //   default value.
 let ui_el = {
-	tracing_checkbox: ['tracingbox', null],
+	//tracing_checkbox: ['tracingbox', null],
+	log_hdma_checkbox: ['loghdma', false],
 	tracing_5a22_checkbox: ['tracing5a22', WDC_DO_TRACING_AT_START],
 	tracing_spc700_checkbox: ['tracingspc700', SPC_DO_TRACING_AT_START],
 	watching_checkbox: ['watchpt', null],
@@ -74,9 +75,12 @@ function init_js() {
 		}
 	}
 
-	ui_el.tracing_checkbox.addEventListener('change', (event) => {
+	/*ui_el.tracing_checkbox.addEventListener('change', (event) => {
 		if (event.currentTarget.checked) click_enable_tracing();
 		else click_disable_tracing();
+	});*/
+	ui_el.log_hdma_checkbox.addEventListener('change', (event) => {
+		dbg.log_HDMA = !!event.currentTarget.checked;
 	});
 
 	ui_el.watching_checkbox.addEventListener('change', (event) => {
@@ -160,7 +164,8 @@ function click_bg_dump(which) {
 			bg = snes.ppu.io.bg4;
 			break;
 	}
-	snes.ppu.render_bg1_from_memory(0, 260, bg);
+	//snes.ppu.render_bg1_from_memory(0, 260, bg);
+	console.log(hex4(snes.ppu.io.bg3.get_tile(snes.ppu.VRAM, snes.ppu.io, snes.ppu.io.bg3, 10*8, 5*8)))
 	snes.ppu.present();
 }
 

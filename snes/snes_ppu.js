@@ -277,8 +277,9 @@ class PPU_bg {
 	 * @param {Uint16Array} CGRAM
 	 * @param above
 	 * @param below
+	 * @param verbose
 	 */
-	render(y, source, io, VRAM, CGRAM, above, below) {
+	render(y, source, io, VRAM, CGRAM, above, below, verbose=false) {
 		if (!this.above_enable && !this.below_enable) return;
 		if (this.tile_mode === PPU_tile_mode.Mode7) return;
 		if (this.tile_mode === PPU_tile_mode.Inactive) return;
@@ -351,14 +352,15 @@ class PPU_bg {
 			voffset &= vmask;
 
 			let tile_number = this.get_tile(VRAM, io, this, hoffset, voffset);
+
 			let mirror_x = tile_number & 0x4000 ? 7 : 0;
 			let mirror_y = tile_number & 0x8000 ? 7 : 0;
-			let tile_priority = this.priority[+(tile_number & 0x2000)];
+			let tile_priority = this.priority[((tile_number & 0x2000) >>> 13) & 1];
 			let palette_number = (tile_number >>> 10) & 7;
 			let palette_index = (this.palette_base + (palette_number << this.palette_shift)) & 0xFF;
 
-			if (tile_width === 4 && (+(hoffset & 8) ^ +(mirror_x))) tile_number += 1;
-			if (tile_height === 4 && (+(voffset & 8) ^ +(mirror_y))) tile_number += 16;
+			if (tile_width === 4 && (((hoffset & 8) >>> 3) ^ +(mirror_x !== 0))) tile_number += 1;
+			if (tile_height === 4 && (((voffset & 8) >>> 3) ^ +(mirror_y !== 0))) tile_number += 16;
 			tile_number = ((tile_number & 0x3FF) + this.tiledata_index) & tile_mask;
 
 			let address = (tile_number << color_shift) + ((voffset & 7) ^ mirror_y) & 0x7FFF;
@@ -367,7 +369,6 @@ class PPU_bg {
 			let datalo = (VRAM[(address + 8) & 0x7FFF] << 16) | (VRAM[address]);
 			let datahi = (VRAM[(address + 24) & 0x7FFF] << 16) | (VRAM[(address + 16) & 0x7FFF]);
 			let datamid = ((datalo >>> 16) & 0xFFFF) | ((datahi << 16) & 0xFFFF0000); // upper 16 bits of data lo or lower 16 bits of data high
-			//datalo = datalo + ((datahi & 0xFF) << 32);
 			for (let tile_x = 0; tile_x < 8; tile_x++, x++) {
 				if (x < 0 || x >= width) continue; // x < 0 || x >= width
 				let color;
@@ -391,6 +392,7 @@ class PPU_bg {
 					mosaic_counter = this.mosaic_enable ? io.mosaic.size << hires : 1;
 					mosaic_palette = color;
 					mosaic_priority = tile_priority;
+
 					if (direct_color_mode) {
 						mosaic_color = PPU_direct_color(palette_number, mosaic_palette);
 					} else {
@@ -849,7 +851,6 @@ class SNES_slow_1st_PPU {
 				break;
 			case 0x2101: // OBSEL
 				this.io.obj.base_size = (val >>> 5) & 7;
-				console.log('BASESIZE', this.io.obj.base_size, hex2(val));
 				this.io.obj.name_select = (val >>> 3) & 3;
 				this.io.obj.tile_addr = (val << 13) & 0x6000;
 				return;
@@ -1059,15 +1060,15 @@ class SNES_slow_1st_PPU {
 				this.io.col.window.two_enable = (val >>> 7) & 1;
 				return;
 			case 0x2126: // WH0
-				if (dbg.log_windows) console.log('WINDOW ONE LEFT WRITE', val);
-				this.io.window.one_left = 0;
-				//this.io.window.one_left = val;
+				//if (dbg.log_windows) console.log('WINDOW ONE LEFT WRITE', val);
+				//this.io.window.one_left = 0;
+				this.io.window.one_left = val;
 				return;
 			case 0x2127: // WH1...
 				//if (val === 128) debugger;
-				if (dbg.log_windows) console.log('WINDOW ONE RIGHT WRITE', val);
-				//this.io.window.one_right = val;
-				this.io.window.one_right = 256;
+				//if (dbg.log_windows) console.log('WINDOW ONE RIGHT WRITE', val);
+				this.io.window.one_right = val;
+				//this.io.window.one_right = 256;
 				return;
 			case 0x2128: // WH2
 				this.io.window.two_left = val;
@@ -1361,8 +1362,8 @@ class SNES_slow_1st_PPU {
 			// If off right edge of screen and not wrapped to left side
 			if ((object.x > 256) && ((object.x + item.width - 1) < 512)) continue;
 			let height = item.height >>> this.io.interlace;
-			if ((y >= object.y && (y < object.y + height)) ||
-			   (object.y + height >= 256 && y < ((object.y + height) & 255))) {
+			if (((y >= object.y) && (y < object.y + height)) ||
+				(((object.y + height) >= 256) && (y < ((object.y + height) & 255)))) {
 				if (item_count++ >= PPU_ITEM_LIMIT) break;
 				this.items[item_count - 1] = item;
 			}
@@ -1394,7 +1395,7 @@ class SNES_slow_1st_PPU {
 			mx &= 511;
 			my &= 255;
 			let tile_addr = obj.tile_addr;
-			if (object.nameselect) tile_addr += (1 + object.nameselect) << 12; // SUS
+			if (object.nameselect) tile_addr += 1 + (object.nameselect << 12); // SUS
 			let character_x = object.character & 15;
 			let character_y = (((object.character >>> 4) + (my >>> 3)) & 15) << 4;
 
@@ -1498,7 +1499,7 @@ class SNES_slow_1st_PPU {
 		dbg.cur_bg = 2;
 		if (this.io.extbg === 0) if (dbg.bg2_on) this.io.bg2.render(this.clock.scanline.ppu_y, PPU_source.BG2, this.io, this.VRAM, this.CRAM, this.above, this.below);
 		dbg.cur_bg = 3;
-		if (dbg.bg3_on) this.io.bg3.render(this.clock.scanline.ppu_y, PPU_source.BG3, this.io, this.VRAM, this.CRAM, this.above, this.below);
+		if (dbg.bg3_on) this.io.bg3.render(this.clock.scanline.ppu_y, PPU_source.BG3, this.io, this.VRAM, this.CRAM, this.above, this.below, true);
 		dbg.cur_bg = 4;
 		if (dbg.bg4_on) this.io.bg4.render(this.clock.scanline.ppu_y, PPU_source.BG4, this.io, this.VRAM, this.CRAM, this.above, this.below);
 		dbg.cur_bg = 5;
@@ -1559,6 +1560,7 @@ class SNES_slow_1st_PPU {
 			}
 			return this.blend(above.color, below.color, this.io.col.halve && this.window_above[x] && below.source !== PPU_source.COL);
 		}
+
 		if (!this.window_above[x]) {
 			if (logit) console.log('SET ABOVE 0');
 			above.color = 0;
