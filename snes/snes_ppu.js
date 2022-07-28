@@ -296,7 +296,7 @@ class PPU_bg {
 
 		let tile_height = 3 + this.tile_size;
 		let tile_width = !hires ? tile_height : 4;
-		let tile_mask = 0xFFF >> this.tile_mode;
+		let tile_mask = 0xFFF >>> this.tile_mode;
 		this.tiledata_index = this.tiledata_addr >>> (3 + this.tile_mode);
 
 		this.palette_base = io.bg_mode === 0 ? source << 5 : 0;
@@ -607,8 +607,8 @@ class SNES_slow_1st_PPU {
 				/*if (ppuo !== 0) {
 					console.log('NOn-ZERO PPUO AT', x, y, ppuo);
 				}*/
-				imgdata.data[di] = (ppuo & 0x7C00) >> 7;
-				imgdata.data[di+1] = (ppuo & 0x3E0) >> 2;
+				imgdata.data[di] = (ppuo & 0x7C00) >>> 7;
+				imgdata.data[di+1] = (ppuo & 0x3E0) >>> 2;
 				imgdata.data[di+2] = (ppuo & 0x1F) << 3;
 				imgdata.data[di+3] = 255;
 			}
@@ -621,9 +621,6 @@ class SNES_slow_1st_PPU {
 		switch(this.io.vram_mapping) {
 			case 0: return addr;
 			case 1:
-				let v1 = (addr && 0x007F00);
-				let v2 = (addr & 0x1F) << 3;
-				let v3 = (addr >> 5) & 7;
 				return (addr & 0x7F00) | ((addr << 3) & 0x00F8) | ((addr >>> 5) & 7);
 			case 2:
 				return (addr & 0x7E00) | ((addr << 3) & 0x01F8) | ((addr >>> 6) & 7);
@@ -636,9 +633,64 @@ class SNES_slow_1st_PPU {
 	reg_read(addr, val, have_effect= true) {
 		//if ((addr - 0x3F) & 0x3F) { return this.mem_map.read_apu(addr, val); }
 		if (addr >= 0x2140 && addr < 0x217F) { return this.mem_map.read_apu(addr, val, have_effect); }
-
+		let addre, result;
 		//console.log('PPU read', hex0x6(addr));
 		switch(addr) {
+			case 0x2134: // MPYL
+				result = (this.io.mode7.a * (this.io.mode7.b >>> 8));
+				return result & 0xFF;
+			case 0x2135: // MPYM
+				result = (this.io.mode7.a * (this.io.mode7.b >>> 8)) & 0xFFFF;
+				return (result >>> 8) & 0xFF;
+			case 0x2136: // MPYH
+				result = (this.io.mode7.a * (this.io.mode7.b >>> 8)) & 0xFFFF;
+				return (result >>> 16) & 0xFF;
+			case 0x2137: // SLHV?
+				if (snes.cpu.io.pio & 0x80) snes.cpu.latch_ppu_counters();
+				return val;
+			case 0x2138: // OAMDATAREAD
+				let data = this.OAM_read(this.io.oam_addr);
+				this.io.oam_addr = (this.io.oam_addr + 1) & 0x3FF;
+				this.set_first_obj();
+				return data;
+			case 0x2139: // VMDATAREADL
+				result = this.latch.vram & 0xFF;
+				if (this.io.vram_increment_mode === 0) {
+					this.latch.vram = this.VRAM[this.get_addr_by_map()];
+					this.io.vram_addr = (this.io.vram_addr + this.io.vram_increment_step) & 0x7FFF;
+				}
+				return result;
+			case 0x213A: // VMDATAREADH
+				result = (this.latch.vram >>> 8) & 0xFF;
+				if (this.io.vram_increment_mode === 1) {
+					this.latch.vram = this.VRAM[this.get_addr_by_map()];
+					this.io.vram_addr = (this.io.vram_addr + this.io.vram_increment_step) & 0x7FFF;
+				}
+				return result;
+			case 0x213D: // OPVCT
+				if (this.latch.vcounter === 0) {
+					this.latch.vcounter = 1;
+					this.latch.ppu2.mdr = this.clock.scanline.ppu_y;
+				} else {
+					this.latch.vcounter = 0;
+					this.latch.ppu2.mdr = (this.clock.scanline.ppu_y >>> 8) | (this.latch.ppu2.mdr & 0xFE);
+				}
+				return this.latch.ppu2.mdr;
+			case 0x213E: // STAT77
+				this.latch.ppu1.mdr = 1 | (this.io.obj.range_over << 6) | (this.io.obj.time_over << 7);
+				return this.latch.ppu1.mdr;
+			case 0x213F:
+				this.latch.hcounter = 0;
+				this.latch.vcounter = 0;
+				this.latch.ppu2.mdr &= 32;
+				this.latch.ppu2.mdr |= 0x03 | (this.clock.scanline.frame << 7);
+				if (!(snes.cpu.io.pio & 0x80)) {
+					this.latch.ppu2.mdr |= 1 << 6;
+				} else {
+					this.latch.ppu2.mdr |= this.latch.counters << 6;
+					this.latch.counters = 0;
+				}
+				return this.latch.ppu2.mdr;
 			case 0x2180: // WRAM access port
 				let r = this.mem_map.dispatch_read(0x7E0000 | this.io.wram_addr, have_effect);
 				if (have_effect) {
@@ -670,7 +722,7 @@ class SNES_slow_1st_PPU {
 		let val = 0;
 		let n;
 		if (!(addr & 0x200)) {
-			n = addr >> 2;
+			n = addr >>> 2;
 			addr &= 3;
 			switch(addr) {
 				case 0:
@@ -702,7 +754,7 @@ class SNES_slow_1st_PPU {
 		}
 		//console.log('OAM WRITE', hex2(addr), hex2(val));
 		if (!(addr & 0x200)) {
-			n = addr >> 2; // object #
+			n = addr >>> 2; // object #
 			addr &= 3;
 			switch(addr) {
 				case 0:
@@ -1288,7 +1340,7 @@ class SNES_slow_1st_PPU {
 		console.log('size', bg.tile_size);
 		console.log('BPP', PPU_BPPBACK[bg.tile_mode]);
 		console.log('h, v scrolls', bg.hoffset, bg.voffset);
-		let tile_mask = 0xFFF >> bg.tile_mode;
+		let tile_mask = 0xFFF >>> bg.tile_mode;
 		let tiledata_index = bg.tiledata_addr >>> (3 + bg.tile_mode);
 		let color_shift = 3 + bg.tile_mode;
 		let tile_height = 3 + bg.tile_size;
@@ -1423,8 +1475,8 @@ class SNES_slow_1st_PPU {
 		}
 		//if ((item_count>0 || tile_count>0) && (y < 241)) console.log('ITEM AND TILE COUNT', y, item_count, tile_count);
 
-		this.io.obj.range_over |= (item_count > PPU_ITEM_LIMIT);
-		this.io.obj.time_over |= (tile_count > PPU_TILE_LIMIT);
+		this.io.obj.range_over |= +(item_count > PPU_ITEM_LIMIT);
+		this.io.obj.time_over |= +(tile_count > PPU_TILE_LIMIT);
 
 		let palette = new Array(256);
 		let priority = new Array(256);
@@ -1547,7 +1599,7 @@ class SNES_slow_1st_PPU {
 			if (!halve) {
 				return (diff - borrow) & (borrow - (borrow >>> 5));
 			} else {
-				return (((diff - borrow) & (borrow - (borrow >>> 5))) & 0x7BDE) >> 1;
+				return (((diff - borrow) & (borrow - (borrow >>> 5))) & 0x7BDE) >>> 1;
 			}
 		}
 	}

@@ -134,7 +134,9 @@ class SNES_joypad {
             case 0: return this.input_buffer['b'];
             case 1: return this.input_buffer['y'];
             case 2: return this.input_buffer['select'];
-            case 3: return this.input_buffer['start'];
+            case 3:
+                if (dbg.watch_on) console.log('RETURNING', this.input_buffer['start']);
+                return this.input_buffer['start'];
             case 4: return this.up_latch;
             case 5: return this.down_latch;
             case 6: return this.left_latch;

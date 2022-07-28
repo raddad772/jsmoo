@@ -65,7 +65,7 @@ function padl(what, howmuch) {
 	return what;
 }
 let TRACE_CYCLES_BREAK = (1364 * 260 * 60 * 10);
-let TRACE_BROKE = false
+let TRACE_BROKE = true;
 
 class w65c816_P {
 	constructor(pins) {

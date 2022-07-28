@@ -370,8 +370,8 @@ class spc700 {
                 this.io.ROM_readable = (val >>> 7) & 1;
                 if (val & 0x20) this.io.CPUI2 = this.io.CPUI3 = 0;
                 if (val & 0x10) this.io.CPUI0 = this.io.CPUI1 = 0;
-                this.io.T2_enable = (val >> 2) & 1;
-                this.io.T1_enable = (val >> 1) & 1;
+                this.io.T2_enable = (val >>> 2) & 1;
+                this.io.T1_enable = (val >>> 1) & 1;
                 this.io.T0_enable = val & 1;
                 return;
             case 0xF2:

@@ -159,7 +159,7 @@ function spc700_disassemble(cpu) {
 		case SPC_AM.MEMBITR:
 		case SPC_AM.MEMBITW:
 			let r = read16(PC);
-			output.disassembled += ' ' + hex4(r & 0x1FFF) + '.' + (r >> 13) +', ?';
+			output.disassembled += ' ' + hex4(r & 0x1FFF) + '.' + (r >>> 13) +', ?';
 			break;
 		case SPC_AM.D_BIT: // d.bit
 			output.disassembled += ' $' + hex2(read8(PC)) + '.' + BBCS1bit[opcode_info.opcode];

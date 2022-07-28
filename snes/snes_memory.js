@@ -186,7 +186,7 @@ class snes_memmap {
 		let offset = 0;
 		for (let c = bank_start; c <= bank_end; c++) {
 			for (let i = addr_start; i <= addr_end; i += 0x1000) {
-				let b = (c << 4) | (i >> 12);
+				let b = (c << 4) | (i >>> 12);
 				//console.log('MAPPING ROM', hex0x6(b << 12), 'offset', hex0x6(offset));
 				this.readmap[b].kind = MAP_TI.ROM;
 				this.writemap[b].kind = MAP_TI.OPEN_BUS;
@@ -205,7 +205,7 @@ class snes_memmap {
 		let offset = 0;
 		for (let c = bank_start; c <= bank_end; c++) {
 			for (let i = addr_start; i <= addr_end; i += 0x1000) {
-				let b = (c << 4) | (i >> 12);
+				let b = (c << 4) | (i >>> 12);
 				this.readmap[b].kind = this.writemap[b].kind = MAP_TI.SRAM;
 				this.readmap[b].offset = this.writemap[b].offset = offset;
 				this.block_is_ROM[b] = false;
@@ -222,7 +222,7 @@ class snes_memmap {
 		let offset = 0;
 		for (let c = bank_start; c <= bank_end; c++) {
 			for (let i = addr_start; i <= addr_end; i += 0x1000) {
-				let b = (c << 4) | (i >> 12);
+				let b = (c << 4) | (i >>> 12);
 				this.readmap[b].kind = this.writemap[b].kind = MAP_TI.RAM;
 				this.readmap[b].offset = this.writemap[b].offset = offset;
 				this.block_is_ROM[b] = false;

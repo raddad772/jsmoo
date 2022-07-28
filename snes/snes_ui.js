@@ -350,23 +350,29 @@ class keyboard_input_t {
 		}
 	}
 
-	keydown(keycode) {
-		if (this.keys_cared_about_codes.indexOf(keycode) !== -1)
+	keydown(keycode, event) {
+		if (this.keys_cared_about_codes.indexOf(keycode) !== -1) {
 			this.keys[this.conversion_back[keycode]] = true;
+			event.stopPropagation();
+			event.preventDefault();
+		}
 	}
 
-	keyup(keycode) {
-		if (this.keys_cared_about_codes.indexOf(keycode) !== -1)
+	keyup(keycode, event) {
+		if (this.keys_cared_about_codes.indexOf(keycode) !== -1) {
 			this.keys[this.conversion_back[keycode]] = false;
+			event.stopPropagation();
+			event.preventDefault();
+		}
 	}
 }
 
 var keyboard_input = new keyboard_input_t();
 
 window.addEventListener('keydown', function(ev) {
-	keyboard_input.keydown(ev.key)
+	keyboard_input.keydown(ev.key, ev)
 });
 
 window.addEventListener('keyup', function(ev) {
-	keyboard_input.keyup(ev.key);
+	keyboard_input.keyup(ev.key, ev);
 });

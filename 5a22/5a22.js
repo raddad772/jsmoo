@@ -85,7 +85,7 @@ class SNES_controllerport {
 	}
 
 	data() {
-		if (this.device) return this.device.data & 2;
+		if (this.device) return this.device.data() & 3;
 		return 0;
 	}
 
@@ -246,7 +246,7 @@ class ricoh5A22 {
 
 	latch_ppu_counters() {
 		this.io.vcounter = this.clock.scanline.ppu_y;
-		this.io.hcounter = Math.floor(this.clock.cycles_since_scanline_start / 4)
+		this.io.hcounter = Math.floor(this.clock.cycles_since_scanline_start / 4);
 		this.latch.counters = 1;
 	}
 
@@ -274,7 +274,7 @@ class ricoh5A22 {
 				let hdot = Math.floor(this.clock.cycles_since_scanline_start / 4);
 				val |= ((hdot === 0) || (hdot >= 256)) ? 0x40 : 0;
 				val |= this.clock.scanline.vblank ? 0x80 : 0;
-				console.log('4212', hex2(val));
+				//console.log('4212', hex2(val));
 				return val;
 			case 0x4213: // JOYSER1
 				return this.io.pio;
@@ -347,6 +347,10 @@ class ricoh5A22 {
 				//console.log('Reschedule scanline due to write of ', hex2(val), ' at ', this.clock.scanline.ppu_y);
 				this.reschedule_scanline_irqbits();
 				this.status.irq_lock = 1;
+				return;
+			case 0x4201: // WRIO, a weird one
+				if ((!(this.io.pio & 0x80)) && !(val & 0x80)) this.latch_ppu_counters();
+				this.io.pio = val;
 				return;
 			case 0x4202: // Multiplicand A
 				this.io.wrmpya = val;
@@ -896,6 +900,7 @@ class ricoh5A22 {
 			// sixteen bits are shifted into joy(1-4), 1 bit per 256 clocks
 			let p0 = this.controller_port1.data();
 			let p1 = this.controller_port2.data();
+			if (dbg.watch_on) console.log(p0);
 
 			this.io.joy1 = ((this.io.joy1 << 1) | (p0 & 1)) & 0xFFFF;
 			this.io.joy2 = ((this.io.joy2 << 1) | (p1 & 1)) & 0xFFFF;
