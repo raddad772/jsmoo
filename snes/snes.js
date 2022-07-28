@@ -378,8 +378,9 @@ async function main() {
 
 	//ROM_to_get = 'snes-test-roms/PeterLemon/SNES-CPUTest-CPU/BIT/CPUBIT.sfc';
 	//ROM_to_get = 'blargg/controller_strobebehavior.smc';
-	//ROM_to_get = 'commercial/smw.smc';
-	ROM_to_get = 'commercial/zelda.smc';
+	ROM_to_get = 'commercial/smw.smc';
+	//ROM_to_get = 'commercial/zelda.smc';
+	//ROM_to_get = 'commercial/fzero.sfc';
 	let rtg = await getBinary(local_server_url + ROM_to_get);
 	console.log('GOT IT!', rtg);
 	snes = new SNES(jsa);

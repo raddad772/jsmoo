@@ -236,7 +236,7 @@ class w65c816 {
 				this.IRQ_count = 0;
 				this.regs.IRQ_pending = true;
 				this.IRQ_ack = false;
-				console.log('IRQ pending');
+				//console.log('IRQ pending');
 			}
 		}
 		// NMI fires
@@ -269,7 +269,7 @@ class w65c816 {
 				this.IRQ_ack = true;
 				this.regs.IRQ_pending = false;
 				this.regs.IR = OP_IRQ;
-				console.log('IRQ EXEC!')
+				//console.log('IRQ EXEC!')
 			}
 			this.regs.old_I = this.regs.P.I;
 			this.PCO = this.pins.Addr; // PCO is PC for tracing purposes

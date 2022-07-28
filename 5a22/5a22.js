@@ -379,10 +379,15 @@ class ricoh5A22 {
 				this.alu.shift = this.io.wrdivb << 16;
 				return;
 			case 0x4207: // HTIME lo
-				this.io.htime = (((((this.io.htime >>> 2) - 1) & 0x100) | val) + 1) << 2;
+				//this.io.htime = (((((this.io.htime >>> 2) - 1) & 0x100) | val) + 1) << 2;
+				this.io.htime = (this.io.htime >>> 2) - 1;
+				this.io.htime = (this.io.htime & 0x100) | val;
+				this.io.htime = (this.io.htime + 1) << 2;
 				return;
 			case 0x4208: // HTIME hi
-				this.io.htime = (((((this.io.htime >>> 2) - 1) & 0xFF) | ((val & 1) << 8)) + 1) << 2;
+				this.io.htime = (this.io.htime >>> 2) - 1;
+				this.io.htime = (this.io.htime & 0xFF) | ((val & 1) << 8);
+				this.io.htime = (this.io.htime + 1) << 2;
 				return;
 			case 0x4209: // VTIME lo
 				this.io.vtime = (this.io.vtime & 0x100) | val;
@@ -509,7 +514,7 @@ class ricoh5A22 {
 			}
 		}
 		if (this.io.hirq_enable && (!this.io.virq_enable || (this.io.virq_enable && this.io.vtime === scanline.ppu_y))) {
-			new_irq_time = 0 ? 10 : 14 + (this.io.htime * 4);
+			new_irq_time = 0 ? 10 : 14 + this.io.htime;
 			e = [this.io.htime === new_irq_time, R5A22_events.IRQ, false];
 			this.event_ptrs[R5A22_events.IRQ] = e;
 		}
@@ -586,7 +591,7 @@ class ricoh5A22 {
 
 		// Check for HIRQ, HVIRQ
 		if (this.io.hirq_enable && (!this.io.virq_enable || (this.io.virq_enable && this.io.vtime === scanline.ppu_y))) {
-			e = [this.io.htime === 0 ? 10 : 14 + (this.io.htime * 4), R5A22_events.IRQ, false];
+			e = [this.io.htime === 0 ? 10 : 14 + this.io.htime, R5A22_events.IRQ, false];
 			this.event_ptrs[R5A22_events.IRQ] = e;
 			this.events_list.push(e);
 		}
@@ -702,6 +707,7 @@ class ricoh5A22 {
 					case R5A22_events.SCANLINE_START:
 						break;
 					case R5A22_events.IRQ:
+						//console.log('IRQ HIT', this.clock.scanline.ppu_y, this.clock.cycles_since_scanline_start, this.io.htime, 'VT', this.io.vtime, this.io.hirq_enable, this.io.virq_enable, ev[0]);
 						if (!this.status.irq_line) {
 							this.status.irq_transition = 1;
 							this.status.irq_line = 1;
@@ -900,7 +906,6 @@ class ricoh5A22 {
 			// sixteen bits are shifted into joy(1-4), 1 bit per 256 clocks
 			let p0 = this.controller_port1.data();
 			let p1 = this.controller_port2.data();
-			if (dbg.watch_on) console.log(p0);
 
 			this.io.joy1 = ((this.io.joy1 << 1) | (p0 & 1)) & 0xFFFF;
 			this.io.joy2 = ((this.io.joy2 << 1) | (p1 & 1)) & 0xFFFF;

@@ -269,6 +269,76 @@ class PPU_bg {
 		return VRAM[(bg.screen_addr + offset) & 0x7FFF];
 	}
 
+	render_mode7(ppuy, source, io, VRAM, CGRAM, above, below) {
+		//if (!this.mosaic_enable || !io.mosaic.size === 1)
+		if (dbg.watch_on) console.log('M7!');
+		let Y = ppuy;
+		if (this.mosaic_enable) Y -= io.mosaic.size - io.mosaic.counter;
+		let y = !io.mode7.vflip ? Y : 255 - Y;
+
+		let a = (io.mode7.a) & 0xFFFF;
+		let b = (io.mode7.b) & 0xFFFF;
+		let c = (io.mode7.c) & 0xFFFF;
+		let d = (io.mode7.d) & 0xFFFF;
+		let hcenter = io.mode7.x & 0x1FFF;
+		let vcenter = io.mode7.y & 0x1FFF;
+		let hoffset = io.mode7.hoffset & 0x1FFF;
+		let voffset = io.mode7.voffset & 0x1FFF;
+
+		let mosaic_counter = 1;
+		let mosaic_palette = 0;
+		let mosaic_priority = 0;
+		let mosaic_color = 0;
+
+		let clip = function(n) { return n & 0x2000 ? (n & 0xFC00) : (n & 1023); }
+		let origin_x = (a * clip(hoffset - hcenter) & ~63) + (b * clip(voffset - vcenter) & ~63) + (b * y & ~63) + (hcenter << 8);
+		let origin_y = (c * clip(hoffset - hcenter) & ~63) + (d * clip(voffset - vcenter) & ~63) + (d * y & ~63) + (vcenter << 8);
+
+		this.window.render_layer(this.window.above_enable, this.window_above, io);
+		this.window.render_layer(this.window.below_enable, this.window_below, io);
+
+		for (let X = 0; X < 256; X++) {
+			let x = !io.mode7.hflip ? X : 255 - X;
+			let pixel_x = origin_x + a * x >>> 8;
+			let pixel_y = origin_y + c * x >>> 8;
+			let tile_x = (pixel_x >>> 3) & 127;
+			let tile_y = (pixel_y >>> 3) & 127;
+			let out_of_bounds = +(((pixel_x | pixel_y) & 0xFC00) === 0)
+			let tile_address = tile_y * 128 + tile_x;
+			let palette_address = ((pixel_y & 7) << 3) + (pixel_x & 7);
+			let tile = ((io.mode7.repeat === 3) && out_of_bounds) ? 0 : VRAM[tile_address & 0x7FFF];
+			let palette = ((io.mode7.repeat === 2) && out_of_bounds) ? 0 : VRAM[(tile << 6 | palette_address) & 0x7FFF] >>> 8;
+
+			let priority;
+			if (source === PPU_source.BG1) {
+				priority = this.priority[0];
+			} else if (source === PPU_source.BG2) {
+				priority = this.priority[palette >> 7];
+				palette &= 0x7F;
+			}
+
+			if (--mosaic_counter === 0) {
+				mosaic_counter = this.mosaic_enable ? io.mosaic.size : 1;
+				mosaic_palette = palette;
+				mosaic_priority = priority;
+				if (io.col.direct_color && source === PPU_source.BG1) {
+					mosaic_color = PPU_direct_color(0, palette);
+				} else {
+					//if (dbg.watch_on) console.log('MOSAIC COLOR', mosaic_color);
+					mosaic_color = CGRAM[palette];
+				}
+			}
+			//if (dbg.watch_on) console.log('MOSAIC PALETTE', mosaic_palette);
+			if (!mosaic_palette) {
+				continue;
+			}
+			//if (dbg.watch_on) console.log(this.above_enable, this.window_below[X], mosaic_priority, mosaic_color, mosaic_palette, source);
+
+			if (this.above_enable && !this.window_above[X] && (mosaic_priority > above[X].priority)) above[X].set(source, mosaic_priority, mosaic_color);
+			if (this.below_enable && !this.window_below[X] && (mosaic_priority > below[X].priority)) below[X].set(source, mosaic_priority, mosaic_color);
+		}
+	}
+
 	/**
 	 * @param {number} y
 	 * @param {number} source
@@ -281,7 +351,7 @@ class PPU_bg {
 	 */
 	render(y, source, io, VRAM, CGRAM, above, below, verbose=false) {
 		if (!this.above_enable && !this.below_enable) return;
-		if (this.tile_mode === PPU_tile_mode.Mode7) return;
+		if (this.tile_mode === PPU_tile_mode.Mode7) return this.render_mode7(y, source, io, VRAM, CGRAM, above, below);
 		if (this.tile_mode === PPU_tile_mode.Inactive) return;
 
 		this.window.render_layer(this.window.above_enable, this.window_above, io);
@@ -637,13 +707,14 @@ class SNES_slow_1st_PPU {
 		//console.log('PPU read', hex0x6(addr));
 		switch(addr) {
 			case 0x2134: // MPYL
-				result = (this.io.mode7.a * (this.io.mode7.b >>> 8));
+				result = ((this.io.mode7.a & 0xFFFF) * ((this.io.mode7.b >>> 8) & 0xFF)) & 0xFFFF;
 				return result & 0xFF;
 			case 0x2135: // MPYM
-				result = (this.io.mode7.a * (this.io.mode7.b >>> 8)) & 0xFFFF;
+				//result = (this.io.mode7.a * (this.io.mode7.b >>> 8)) & 0xFFFF;
+				result = ((this.io.mode7.a & 0xFFFF) * ((this.io.mode7.b >>> 8) & 0xFF)) & 0xFFFF;
 				return (result >>> 8) & 0xFF;
 			case 0x2136: // MPYH
-				result = (this.io.mode7.a * (this.io.mode7.b >>> 8)) & 0xFFFF;
+				result = ((this.io.mode7.a & 0xFFFF) * ((this.io.mode7.b >>> 8) & 0xFF)) & 0xFFFF;
 				return (result >>> 16) & 0xFF;
 			case 0x2137: // SLHV?
 				if (snes.cpu.io.pio & 0x80) snes.cpu.latch_ppu_counters();
