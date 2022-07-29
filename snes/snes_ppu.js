@@ -707,15 +707,15 @@ class SNES_slow_1st_PPU {
 		//console.log('PPU read', hex0x6(addr));
 		switch(addr) {
 			case 0x2134: // MPYL
-				result = ((this.io.mode7.a & 0xFFFF) * ((this.io.mode7.b >>> 8) & 0xFF)) & 0xFFFF;
+				result = ((this.io.mode7.a & 0xFFFF) * ((this.io.mode7.b >> 8) & 0xFF));
 				return result & 0xFF;
 			case 0x2135: // MPYM
 				//result = (this.io.mode7.a * (this.io.mode7.b >>> 8)) & 0xFFFF;
-				result = ((this.io.mode7.a & 0xFFFF) * ((this.io.mode7.b >>> 8) & 0xFF)) & 0xFFFF;
-				return (result >>> 8) & 0xFF;
+				result = ((this.io.mode7.a & 0xFFFF) * ((this.io.mode7.b >> 8) & 0xFF));
+				return (result >> 8) & 0xFF;
 			case 0x2136: // MPYH
-				result = ((this.io.mode7.a & 0xFFFF) * ((this.io.mode7.b >>> 8) & 0xFF)) & 0xFFFF;
-				return (result >>> 16) & 0xFF;
+				result = ((this.io.mode7.a & 0xFFFF) * ((this.io.mode7.b >> 8) & 0xFF));
+				return (result >> 16) & 0xFF;
 			case 0x2137: // SLHV?
 				if (snes.cpu.io.pio & 0x80) snes.cpu.latch_ppu_counters();
 				return val;
@@ -818,11 +818,11 @@ class SNES_slow_1st_PPU {
 	}
 
 	OAM_write(addr, val) {
-		let n;
 		if (!this.clock.scanline.vblank && !this.clock.scanline.fblank) {
 			console.log('SKIP OAM');
 			return;
 		}
+		let n;
 		//console.log('OAM WRITE', hex2(addr), hex2(val));
 		if (!(addr & 0x200)) {
 			n = addr >>> 2; // object #
@@ -846,6 +846,7 @@ class SNES_slow_1st_PPU {
 		} else {
 			if (addr >= 544) {
 				 console.log('GOT OVER 544 HERE!');
+				 //return;
 			}
 			n = (addr & 0x1F) << 2; // object #.... PPU is weird
 			this.objects[n].x = (this.objects[n].x & 0xFF) | ((val << 8) & 0x100);
@@ -1033,7 +1034,7 @@ class SNES_slow_1st_PPU {
 				this.io.bg2.screen_size = val & 3;
 				this.io.bg2.screen_addr = (val << 8) & 0x7C00;
 				return;
-			case 0x2109: // BG3Sc
+			case 0x2109: // BG3SC
 				this.io.bg3.screen_size = val & 3;
 				this.io.bg3.screen_addr = (val << 8) & 0x7C00;
 				return;
@@ -1458,11 +1459,11 @@ class SNES_slow_1st_PPU {
 		ctx.putImageData(imgdata, x_origin, y_origin);
 	}
 	/**
-	 * @param {number} y
+	 * @param {number} ppu_y
 	 * @param {{name_select: number, tile_addr: number, base_size: number, below_enable: number, window: PPU_window_layer, interlace: number, range_over: number, time_over: number, priority: *[], first: number, above_enable: number}} obj
 	 * @param force
 	 */
-	renderObject(y, obj, force=false) {
+	renderObject(ppu_y, obj, force=false) {
 		if (!force && !obj.above_enable && !obj.below_enable) return;
 		obj.window.render_layer(obj.window.above_enable, this.window_above, this.io, true);
 		obj.window.render_layer(obj.window.below_enable, this.window_below, this.io);
@@ -1471,12 +1472,15 @@ class SNES_slow_1st_PPU {
 		let item_count = 0;
 		let tile_count = 0;
 		for (let n=0; n < PPU_ITEM_LIMIT; n++) {
-			this.items[n].valid = this.tiles[n].valid = false;
+			this.items[n].valid = 0;
+		}
+		for (let n=0; n < PPU_TILE_LIMIT; n++) {
+			this.tiles[n].valid = 0;
 		}
 
 		for (let n=0; n<128; n++) {
 			let item = new PPU_object_item();
-			item.valid = true;
+			item.valid = 1;
 			item.index = (obj.first + n) & 127;
 			let object = this.objects[item.index];
 
@@ -1485,8 +1489,10 @@ class SNES_slow_1st_PPU {
 			// If off right edge of screen and not wrapped to left side
 			if ((object.x > 256) && ((object.x + item.width - 1) < 512)) continue;
 			let height = item.height >>> this.io.interlace;
-			if (((y >= object.y) && (y < object.y + height)) ||
-				(((object.y + height) >= 256) && (y < ((object.y + height) & 255)))) {
+			if (
+				((ppu_y >= object.y) && (ppu_y < (object.y + height))) ||
+				(((object.y + height) >= 256) && (ppu_y < ((object.y + height) & 255)))
+			) {
 				if (item_count++ >= PPU_ITEM_LIMIT) break;
 				this.items[item_count - 1] = item;
 			}
@@ -1499,44 +1505,44 @@ class SNES_slow_1st_PPU {
 			let object = this.objects[item.index];
 			let tile_width = item.width >>> 3;
 			let mx = object.x;
-			let my = (y - object.y) & 0xFF;
-			if (this.io.interlace) my <<= 1;
+			let y = (ppu_y - object.y) & 0xFF;
+			if (this.io.interlace) y <<= 1;
 
 			if (object.vflip) {
 				if (item.width === item.height) {
-					my = item.height - 1 - my;
-				} else if (my < item.width) {
-					my = item.width - 1 - my;
+					y = item.height - 1 - y;
+				} else if (y < item.width) {
+					y = item.width - 1 - y;
 				} else {
-					my = item.width + (item.width - 1) - (y - item.width);
+					y = item.width + (item.width - 1) - (y - item.width);
 				}
 			}
 			if (this.io.interlace) {
-				my = !object.vflip ? my + this.clock.scanline.frame : my - this.clock.scanline.frame;
+				y = !object.vflip ? y + this.clock.scanline.frame : y - this.clock.scanline.frame;
 			}
 
 			mx &= 511;
-			my &= 255;
+			y &= 255;
 			let tile_addr = obj.tile_addr;
 			if (object.nameselect) tile_addr += 1 + (object.nameselect << 12); // SUS
 			let character_x = object.character & 15;
-			let character_y = (((object.character >>> 4) + (my >>> 3)) & 15) << 4;
+			let character_y = (((object.character >>> 4) + (y >>> 3)) & 15) << 4;
 
 			for (let tile_x = 0; tile_x < tile_width; tile_x++) {
 				let object_x = (mx + (tile_x << 3)) & 511;
 				if ((mx !== 256) && (object_x >= 256) && ((object_x + 7) < 512)) continue;
 
 				let tile = new PPU_object_tile();
-				tile.valid = true;
+				tile.valid = 1;
 				tile.x = object_x;
-				tile.y = my;
+				tile.y = y;
 				tile.priority = object.priority;
 				tile.palette = 128 + (object.palette << 4);
 				tile.hflip = object.hflip;
 
 				let mirror_x = !object.hflip ? tile_x : tile_width - 1 - tile_x;
 				let addr = tile_addr + ((character_y + (character_x + mirror_x & 15)) << 4);
-				addr = (addr & 0x7FF0) + (my & 7);
+				addr = (addr & 0x7FF0) + (y & 7);
 				tile.data = this.VRAM[addr];
 				tile.data |= this.VRAM[(addr+8) & 0x7FFF] << 16;
 
@@ -1577,13 +1583,15 @@ class SNES_slow_1st_PPU {
 			}
 		}
 
+		if (force & dbg.watch_on) console.log(this.items, this.tiles);
+
 		for (let x=0; x<256; x++) {
 			if (!priority[x]) continue;
 			let source = palette[x] < 192 ? PPU_source.OBJ1 : PPU_source.OBJ2;
 			//console.log('SPR!', x, this.clock.scanline.ppu_y, palette[x], this.CRAM[palette[x]]);
 			if (force) {
 				//console.log('SETTING', x);
-				this.output[(y * 256) + x] = this.CRAM[palette[x]];
+				this.output[(ppu_y * 256) + x] = this.CRAM[palette[x]];
 				//this.above[x].set(source, priority[x], this.CRAM[palette[x]]);
 				//this.below[x].set(source, priority[x], this.CRAM[palette[x]]);
 			}
@@ -1598,6 +1606,11 @@ class SNES_slow_1st_PPU {
 		// render background lines
 		let width = 256;
 		let y = this.clock.scanline.ppu_y;
+		let mosaic_enable = this.io.bg1.mosaic_enable || this.io.bg2.mosaic_enable || this.io.bg3.mosaic_enable || this.io.bg4.mosaic_enable;
+		if (y === 1)
+			this.io.mosaic.counter = mosaic_enable ? this.io.mosaic.size + 1 : 0;
+		if (this.io.mosaic.counter && --this.io.mosaic.counter)
+			this.io.mosaic.counter = mosaic_enable ? this.io.mosaic.size : 0;
 		let output = y * 256;
 		//console.log('ENABLED?', y, !this.clock.scanline.fblank);
 
