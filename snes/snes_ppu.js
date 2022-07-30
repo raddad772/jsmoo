@@ -700,6 +700,10 @@ class SNES_slow_1st_PPU {
 		return 0x8000;
 	}
 
+	mode7_mul() {
+		return mksigned16(this.io.mode7.a) * mksigned8(this.io.mode7.b >> 8);
+		//return ((this.io.mode7.a & 0xFFFF) * ((this.io.mode7.b >> 8) & 0xFF));
+	}
 	reg_read(addr, val, have_effect= true) {
 		//if ((addr - 0x3F) & 0x3F) { return this.mem_map.read_apu(addr, val); }
 		if (addr >= 0x2140 && addr < 0x217F) { return this.mem_map.read_apu(addr, val, have_effect); }
@@ -707,14 +711,13 @@ class SNES_slow_1st_PPU {
 		//console.log('PPU read', hex0x6(addr));
 		switch(addr) {
 			case 0x2134: // MPYL
-				result = ((this.io.mode7.a & 0xFFFF) * ((this.io.mode7.b >> 8) & 0xFF));
+				result = this.mode7_mul();
 				return result & 0xFF;
 			case 0x2135: // MPYM
-				//result = (this.io.mode7.a * (this.io.mode7.b >>> 8)) & 0xFFFF;
-				result = ((this.io.mode7.a & 0xFFFF) * ((this.io.mode7.b >> 8) & 0xFF));
+				result = this.mode7_mul();
 				return (result >> 8) & 0xFF;
 			case 0x2136: // MPYH
-				result = ((this.io.mode7.a & 0xFFFF) * ((this.io.mode7.b >> 8) & 0xFF));
+				result = this.mode7_mul();
 				return (result >> 16) & 0xFF;
 			case 0x2137: // SLHV?
 				if (snes.cpu.io.pio & 0x80) snes.cpu.latch_ppu_counters();
