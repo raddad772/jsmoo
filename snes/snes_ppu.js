@@ -276,23 +276,25 @@ class PPU_bg {
 		if (this.mosaic_enable) Y -= io.mosaic.size - io.mosaic.counter;
 		let y = !io.mode7.vflip ? Y : 255 - Y;
 
-		let a = (io.mode7.a) & 0xFFFF;
-		let b = (io.mode7.b) & 0xFFFF;
-		let c = (io.mode7.c) & 0xFFFF;
-		let d = (io.mode7.d) & 0xFFFF;
-		let hcenter = io.mode7.x & 0x1FFF;
-		let vcenter = io.mode7.y & 0x1FFF;
-		let hoffset = io.mode7.hoffset & 0x1FFF;
-		let voffset = io.mode7.voffset & 0x1FFF;
+		let a = io.mode7.a;
+		let b = io.mode7.b;
+		let c = io.mode7.c;
+		let d = io.mode7.d;
+		let hcenter = io.mode7.rx;
+		let vcenter = io.mode7.ry;
+		let hoffset = io.mode7.rhoffset;
+		let voffset = io.mode7.rvoffset;
+		let clip = function(n) { return n & 0x2000 ? (n & 0xFC00) : (n & 1023); }
+		let hohc = (hoffset - hcenter);
+		let vovc = (voffset - vcenter)
 
 		let mosaic_counter = 1;
 		let mosaic_palette = 0;
 		let mosaic_priority = 0;
 		let mosaic_color = 0;
 
-		let clip = function(n) { return n & 0x2000 ? (n & 0xFC00) : (n & 1023); }
-		let origin_x = (a * clip(hoffset - hcenter) & ~63) + (b * clip(voffset - vcenter) & ~63) + (b * y & ~63) + (hcenter << 8);
-		let origin_y = (c * clip(hoffset - hcenter) & ~63) + (d * clip(voffset - vcenter) & ~63) + (d * y & ~63) + (vcenter << 8);
+		let origin_x = (a * hohc & ~63) + (b * vovc & ~63) + (b * y & ~63) + (hcenter << 8);
+		let origin_y = (c * hohc & ~63) + (d * vovc & ~63) + (d * y & ~63) + (vcenter << 8);
 
 		this.window.render_layer(this.window.above_enable, this.window_above, io);
 		this.window.render_layer(this.window.below_enable, this.window_below, io);
@@ -587,9 +589,13 @@ class SNES_slow_1st_PPU {
 				c: 0,
 				d: 0,
 				x: 0,
+				rx: 0,
 				y: 0,
+				ry: 0,
 				hoffset: 0,
-				voffset: 0
+				rhoffset: 0,
+				voffset: 0,
+				rvoffset: 0
 			},
 			obj: {
 				window: new PPU_window_layer(),
@@ -702,7 +708,7 @@ class SNES_slow_1st_PPU {
 
 	mode7_mul() {
 		return mksigned16(this.io.mode7.a) * mksigned8(this.io.mode7.b >> 8);
-		//return ((this.io.mode7.a & 0xFFFF) * ((this.io.mode7.b >> 8) & 0xFF));
+		//return ((this.io.mode7.a & 0xFFFF) * ((this.io.mode7.b >>> 8) & 0xFF));
 	}
 	reg_read(addr, val, have_effect= true) {
 		//if ((addr - 0x3F) & 0x3F) { return this.mem_map.read_apu(addr, val); }
@@ -1056,10 +1062,18 @@ class SNES_slow_1st_PPU {
 			case 0x210D: // BG1HOFS
 				this.io.bg1.hoffset = (val << 8) | (this.latch.ppu1.bgofs & 0xF8) | (this.latch.ppu2.bgofs & 7);
 				this.latch.ppu1.bgofs = this.latch.ppu2.bgofs = val;
+
+				this.io.mode7.hoffset = (val << 8) | (this.latch.mode7);
+				this.latch.mode7 = val;
+				this.io.mode7.rhoffset = mksigned13(this.io.mode7.hoffset);
 				return;
 			case 0x210E: // BG1VOFS
 				this.io.bg1.voffset = (val << 8) | (this.latch.ppu1.bgofs);
 				this.latch.ppu1.bgofs = val;
+
+				this.io.mode7.voffset = (val << 8) | (this.latch.mode7);
+				this.latch.mode7 = val;
+				this.io.mode7.rvoffset = mksigned13(this.io.mode7.voffset);
 				return;
 			case 0x210F: // BG2HOFS
 				this.io.bg2.hoffset = (val << 8) | (this.latch.ppu1.bgofs & 0xF8) | (this.latch.ppu2.bgofs & 7);
@@ -1117,27 +1131,29 @@ class SNES_slow_1st_PPU {
 				this.io.mode7.repeat = (val >>> 6) & 3;
 				return;
 			case 0x211B: // M7A
-				this.io.mode7.a = (val << 8) | this.latch.mode7;
+				this.io.mode7.a = mksigned16((val << 8) | this.latch.mode7);
 				this.latch.mode7 = val;
 				return;
 			case 0x211C: // M7B
-				this.io.mode7.b = (val << 8) | this.latch.mode7;
+				this.io.mode7.b = mksigned16((val << 8) | this.latch.mode7);
 				this.latch.mode7 = val;
 				return;
 			case 0x211D: // M7C
-				this.io.mode7.c = (val << 8) | this.latch.mode7;
+				this.io.mode7.c = mksigned16((val << 8) | this.latch.mode7);
 				this.latch.mode7 = val;
 				return;
 			case 0x211E: // M7D
-				this.io.mode7.d = (val << 8) | this.latch.mode7;
+				this.io.mode7.d = mksigned16((val << 8) | this.latch.mode7);
 				this.latch.mode7 = val;
 				return;
 			case 0x211F: // M7E
 				this.io.mode7.x = (val << 8) | this.latch.mode7;
+				this.io.mode7.rx = mksigned13(this.io.mode7.x);
 				this.latch.mode7 = val;
 				return;
 			case 0x2120: // M7F
 				this.io.mode7.y = (val << 8) | this.latch.mode7;
+				this.io.mode7.ry = mksigned13(this.io.mode7.y);
 				this.latch.mode7 = val;
 				return;
 			case 0x2121: // Color RAM address

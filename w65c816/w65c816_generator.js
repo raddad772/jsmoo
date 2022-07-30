@@ -532,6 +532,10 @@ function mksigned8(what) {
      return what >= 0x80 ? -(0x100 - what) : what;
 }
 
+function mksigned13(what) {
+    return what >= 0x1000 ? -(0x2000 - what) : what;
+}
+
 function mksigned16(what) {
      return what >= 0x8000 ? -(0x10000 - what) : what;
 }
