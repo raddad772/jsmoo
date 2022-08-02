@@ -179,7 +179,9 @@ class PPU_cache {
         to.control.y = to;*//*
         this.lines[to].control.y = to;
     }*/
+    // Auto-generated function, fastest way to do this I guess
     copy(from, to) {
+        let oldto = to;
         to = this.lines[to];
         from = this.lines[from];
         to.control.y = from.control.y;
@@ -380,7 +382,7 @@ class PPU_cache {
         to.bg_priority = from.bg_priority;
         to.display_brightness = from.display_brightness;
         to.display_disable = from.display_disable;
-        to.control.y = from.control.y;
+        to.control.y = oldto;
     }
 
 }
@@ -393,6 +395,7 @@ function generate_copy_tofrom() {
 
 
     outstr += '    copy(from, to) {\n';
+    addl('let oldto = to;');
     addl('to = this.lines[to];');
     addl('from = this.lines[from];');
     let pstr;
@@ -422,7 +425,7 @@ function generate_copy_tofrom() {
         addl('to.' + propertyName + ' = from.' + propertyName + ';');
     }
 
-    outstr += indent + 'to.control.y = from.control.y;\n';
+    outstr += indent + 'to.control.y = oldto;\n';
     outstr += '    }';
     return outstr;
 }
