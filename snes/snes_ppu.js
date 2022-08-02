@@ -29,12 +29,6 @@ const PPU_tile_mode = Object.freeze({
 
 const PPU_BPPBACK = {0: 'BPP2', 1: 'BPP4', 2: 'BPP8', 3: 'Mode7', 4: 'Inactive'}
 
-const PPU_screen_mode = Object.freeze({
-	above: 0,
-	below: 1
-});
-
-
 class PPU_object_item {
 	constructor() {
 		this.valid = 0;
@@ -56,142 +50,281 @@ class PPU_object_tile {
 	}
 }
 
-class PPU_window_layer {
-	constructor() {
-		this.one_enable = 0;
-		this.one_invert = 0;
-		this.two_enable = 0;
-		this.two_invert = 0;
-		this.mask = 0;
-		this.above_enable = 0;
-		this.below_enable = 0;
-
-		this.above_mask = 0;
-		this.below_mask = 0;
-
-		this.one_left = 0;
-		this.one_right = 0;
-		this.two_left = 0;
-		this.two_right = 0;
-	}
-
-
-	/**
-	 * @param {number} mask
-	 * @param {Uint8Array} output
-	 * @param {*} io
-	 */
-	render_layer_mask(mask, output, io) {
-		let set = 1;
-		let clear = 0;
-		switch(mask) {
-			case 0:
-				output.fill(1);
-				return;
-			case 1:
-				break;
-			case 2:
-				set = 0; clear = 1;
-				break;
-			case 3:
-				output.fill(0);
-				return;
-		}
-
-		if (!this.one_enable && !this.two_enable) {
-			output.fill(clear);
-		}
-
-		if (this.one_enable && !this.two_enable) {
-			if (this.one_invert) {
-				set ^= 1;
-				clear ^= 1;
-			}
-			for (let x = 0; x < 256; x++) {
-				output[x] = x >= io.window.one_left && x <= io.window.one_right ? set : clear;
-			}
+/**
+ * @param {number} mask
+ * @param {Uint8Array} output
+ * @param {*} io
+ */
+function PPUF_window_render_layer_mask(self, mask, output, io) {
+	let set = 1;
+	let clear = 0;
+	switch(mask) {
+		case 0:
+			output.fill(1);
 			return;
-		}
-
-		if (this.two_enable && !this.one_enable) {
-			if (this.two_invert) {
-				set ^= 1;
-				clear ^= 1;
-			}
-			for (let x = 0; x < 256; x++) {
-				output[x] = x >= io.window.two_left && x <= io.window.two_right ? set : clear;
-			}
-			return;
-		}
-
-		for (let x = 0; x < 256; x++) {
-			let one_mask = (x >= io.window.one_left && x <= io.window.one_right) ^ this.one_invert;
-			let two_mask = (x >= io.window.two_left && x <= io.window.two_right) ^ this.two_invert;
-			switch(this.mask) {
-				case 0:
-					output[x] = (one_mask | two_mask) === 1 ? set : clear;
-					break;
-				case 1:
-					output[x] = (one_mask & two_mask) === 1 ? set : clear;
-					break;
-				case 2:
-					output[x] = (one_mask ^ two_mask) === 1 ? set : clear;
-					break;
-				case 3:
-					output[x] = (one_mask ^ two_mask) === 0 ? set : clear;
-					break;
-			}
-		}
-	}
-
-	render_layer(enable, output, io, extended_log=false) {
-		if (!enable || (!this.one_enable && !this.two_enable)) {
-			if (dbg.log_windows) console.log(snes.clock.scanline.ppu_y, dbg.cur_bg, 'FILL 0')
+		case 1:
+			break;
+		case 2:
+			set = 0; clear = 1;
+			break;
+		case 3:
 			output.fill(0);
 			return;
-		}
-		if (dbg.log_windows) console.log(snes.clock.scanline.ppu_y, dbg.cur_bg, io.window.one_left, io.window.one_right, this.one_invert, this.one_enable, this.two_enable)
+	}
 
-		if (this.one_enable && !this.two_enable) {
-			let set = 1 ^ this.one_invert;
-			let clear = +(!set);
-			if (dbg.log_windows && extended_log) console.log('CASE 1 clear set', clear, set);
-			for (let x in output) {
-				output[x] = x >= io.window.one_left && x <= io.window.one_right ? set : clear;
-			}
-			return;
+	if (!self.one_enable && !self.two_enable) {
+		output.fill(clear);
+	}
+
+	if (self.one_enable && !self.two_enable) {
+		if (self.one_invert) {
+			set ^= 1;
+			clear ^= 1;
 		}
-		
-		if (this.two_enable && !this.one_enable) {
-			let set = 1 ^ this.two_invert;
-			let clear = +(!set);
-			if (dbg.log_windows && extended_log) console.log('CASE 2 clear set', clear, set);
-			for (let x in output) {
-				output[x] = x >= io.window.two_left && x <= io.window.two_right ? set : clear;
-			}
-			return;
+		for (let x = 0; x < 256; x++) {
+			output[x] = x >= io.window.one_left && x <= io.window.one_right ? set : clear;
 		}
-		
-		if (dbg.log_windows && extended_log) console.log('CASE 3 left right', io.window.one_left, io.window.one_right);
-		for (let x in output) {
-			let one_mask = +(x >= io.window.one_left && x <= io.window.one_right) ^ this.one_invert;
-			let two_mask = +(x >= io.window.two_left && x <= io.window.two_right) ^ this.two_invert;
-			switch(this.mask) {
-				case 0:
-					output[x] = +((one_mask | two_mask) === 1);
-					break;
-				case 1:
-					output[x] = +((one_mask & two_mask) === 1);
-					break;
-				case 2:
-					output[x] = +((one_mask ^ two_mask) === 1);
-					break;
-				case 3:
-					output[x] = +((one_mask ^ two_mask) === 0);
-					break;
-			}
+		return;
+	}
+
+	if (self.two_enable && !self.one_enable) {
+		if (self.two_invert) {
+			set ^= 1;
+			clear ^= 1;
+		}
+		for (let x = 0; x < 256; x++) {
+			output[x] = x >= io.window.two_left && x <= io.window.two_right ? set : clear;
+		}
+		return;
+	}
+
+	for (let x = 0; x < 256; x++) {
+		let one_mask = (x >= io.window.one_left && x <= io.window.one_right) ^ self.one_invert;
+		let two_mask = (x >= io.window.two_left && x <= io.window.two_right) ^ self.two_invert;
+		switch(self.mask) {
+			case 0:
+				output[x] = (one_mask | two_mask) === 1 ? set : clear;
+				break;
+			case 1:
+				output[x] = (one_mask & two_mask) === 1 ? set : clear;
+				break;
+			case 2:
+				output[x] = (one_mask ^ two_mask) === 1 ? set : clear;
+				break;
+			case 3:
+				output[x] = (one_mask ^ two_mask) === 0 ? set : clear;
+				break;
 		}
 	}
+}
+
+
+function PPUF_window_render_layer(self, enable, output, io, extended_log=false) {
+	if (!enable || (!self.one_enable && !self.two_enable)) {
+		if (dbg.log_windows) console.log(snes.clock.scanline.ppu_y, dbg.cur_bg, 'FILL 0')
+		output.fill(0);
+		return;
+	}
+	if (dbg.log_windows) console.log(snes.clock.scanline.ppu_y, dbg.cur_bg, io.window.one_left, io.window.one_right, self.one_invert, self.one_enable, self.two_enable)
+
+	if (self.one_enable && !self.two_enable) {
+		let set = 1 ^ self.one_invert;
+		let clear = +(!set);
+		if (dbg.log_windows && extended_log) console.log('CASE 1 clear set', clear, set);
+		for (let x in output) {
+			output[x] = x >= io.window.one_left && x <= io.window.one_right ? set : clear;
+		}
+		return;
+	}
+
+	if (self.two_enable && !self.one_enable) {
+		let set = 1 ^ self.two_invert;
+		let clear = +(!set);
+		if (dbg.log_windows && extended_log) console.log('CASE 2 clear set', clear, set);
+		for (let x in output) {
+			output[x] = x >= io.window.two_left && x <= io.window.two_right ? set : clear;
+		}
+		return;
+	}
+
+	if (dbg.log_windows && extended_log) console.log('CASE 3 left right', io.window.one_left, io.window.one_right);
+	for (let x in output) {
+		let one_mask = +(x >= io.window.one_left && x <= io.window.one_right) ^ self.one_invert;
+		let two_mask = +(x >= io.window.two_left && x <= io.window.two_right) ^ self.two_invert;
+		switch(self.mask) {
+			case 0:
+				output[x] = +((one_mask | two_mask) === 1);
+				break;
+			case 1:
+				output[x] = +((one_mask & two_mask) === 1);
+				break;
+			case 2:
+				output[x] = +((one_mask ^ two_mask) === 1);
+				break;
+			case 3:
+				output[x] = +((one_mask ^ two_mask) === 0);
+				break;
+		}
+	}
+}
+
+/**
+ * @param {number} ppu_y
+ * @param {{name_select: number, tile_addr: number, base_size: number, below_enable: number, window: PPU_window_layer, interlace: number, range_over: number, time_over: number, priority: *[], first: number, above_enable: number}} obj
+ * @param force
+ */
+
+function PPUF_render_objects(self, ppu_y, obj, force=false)
+{
+	if (!force && !obj.above_enable && !obj.below_enable) return;
+	PPUF_window_render_layer(obj.window, obj.window.above_enable, self.window_above, self.cache, true);
+	PPUF_window_render_layer(obj.window, obj.window.below_enable, self.window_below, self.cache);
+	if (dbg.log_windows) console.log(obj.window);
+	if (dbg.log_windows) console.log(snes.clock.scanline.ppu_y, self.window_above, self.window_below);
+	let item_count = 0;
+	let tile_count = 0;
+	for (let n = 0; n < PPU_ITEM_LIMIT; n++) {
+		self.items[n].valid = 0;
+	}
+	for (let n = 0; n < PPU_TILE_LIMIT; n++) {
+		self.tiles[n].valid = 0;
+	}
+
+	for (let n = 0; n < 128; n++) {
+		let item = new PPU_object_item();
+		item.valid = 1;
+		item.index = (obj.first + n) & 127;
+		let object = self.objects[item.index];
+
+		item.width = PPU_obj_widths[object.size][obj.base_size];
+		item.height = PPU_obj_heights[object.size][obj.base_size];
+		// If off right edge of screen and not wrapped to left side
+		if ((object.x > 256) && ((object.x + item.width - 1) < 512)) continue;
+		let height = item.height >>> self.cache.interlace;
+		if (
+			((ppu_y >= object.y) && (ppu_y < (object.y + height))) ||
+			(((object.y + height) >= 256) && (ppu_y < ((object.y + height) & 255)))
+		) {
+			if (item_count++ >= PPU_ITEM_LIMIT) break;
+			self.items[item_count - 1] = item;
+		}
+	}
+
+	for (let n = PPU_ITEM_LIMIT - 1; n >= 0; n--) {
+		let item = self.items[n];
+		if (!item.valid) continue;
+
+		let object = self.objects[item.index];
+		let tile_width = item.width >>> 3;
+		let mx = object.x;
+		let y = (ppu_y - object.y) & 0xFF;
+		if (self.cache.interlace) y <<= 1;
+
+		if (object.vflip) {
+			if (item.width === item.height) {
+				y = item.height - 1 - y;
+			} else if (y < item.width) {
+				y = item.width - 1 - y;
+			} else {
+				y = item.width + (item.width - 1) - (y - item.width);
+			}
+		}
+		if (self.cache.interlace) {
+			y = !object.vflip ? y + self.clock.scanline.frame : y - self.clock.scanline.frame;
+		}
+
+		mx &= 511;
+		y &= 255;
+		let tile_addr = obj.tile_addr;
+		if (object.nameselect) tile_addr += 1 + (object.nameselect << 12); // SUS
+		let character_x = object.character & 15;
+		let character_y = (((object.character >>> 4) + (y >>> 3)) & 15) << 4;
+
+		for (let tile_x = 0; tile_x < tile_width; tile_x++) {
+			let object_x = (mx + (tile_x << 3)) & 511;
+			if ((mx !== 256) && (object_x >= 256) && ((object_x + 7) < 512)) continue;
+
+			let tile = new PPU_object_tile();
+			tile.valid = 1;
+			tile.x = object_x;
+			tile.y = y;
+			tile.priority = object.priority;
+			tile.palette = 128 + (object.palette << 4);
+			tile.hflip = object.hflip;
+
+			let mirror_x = !object.hflip ? tile_x : tile_width - 1 - tile_x;
+			let addr = tile_addr + ((character_y + (character_x + mirror_x & 15)) << 4);
+			addr = (addr & 0x7FF0) + (y & 7);
+			tile.data = self.VRAM[addr];
+			tile.data |= self.VRAM[(addr + 8) & 0x7FFF] << 16;
+
+			if (tile_count++ >= PPU_TILE_LIMIT) break;
+			self.tiles[tile_count - 1] = tile;
+		}
+	}
+	//if ((item_count>0 || tile_count>0) && (y < 241)) console.log('ITEM AND TILE COUNT', y, item_count, tile_count);
+
+	self.cache.obj.range_over |= +(item_count > PPU_ITEM_LIMIT);
+	self.cache.obj.time_over |= +(tile_count > PPU_TILE_LIMIT);
+
+	let palette = new Array(256);
+	let priority = new Array(256);
+	for (let n = 0; n < PPU_TILE_LIMIT; n++) {
+		let tile = self.tiles[n];
+		if (!tile.valid) continue;
+
+		let tile_x = tile.x;
+		for (let mx = 0; mx < 8; mx++) {
+			tile_x &= 511;
+			if (tile_x < 256) {
+				let color = 0;
+				let shift = tile.hflip ? mx : 7 - mx;
+				//let datahi = (tile.data & 0xFF00);
+				//let datalo = (tile.data & 0x00FF);
+				//let datamid = (tile.data >> 8) & 0x0FFF;
+				color = (tile.data >>> (shift)) & 1; // SUS?
+				color += (tile.data >>> (shift + 7)) & 2; // 7-10 to 14-17
+				color += (tile.data >>> (shift + 14)) & 4; // 14-17 to 21-24
+				color += (tile.data >>> (shift + 21)) & 8; // 21-28 to 28-31
+				if (color !== 0) {
+					palette[tile_x] = tile.palette + color;
+					priority[tile_x] = obj.priority[tile.priority];
+				}
+			}
+			tile_x++;
+		}
+	}
+
+	if (force & dbg.watch_on) console.log(self.items, self.tiles);
+
+	for (let x = 0; x < 256; x++) {
+		if (!priority[x]) continue;
+		let source = palette[x] < 192 ? PPU_source.OBJ1 : PPU_source.OBJ2;
+		//console.log('SPR!', x, self.clock.scanline.ppu_y, palette[x], self.CRAM[palette[x]]);
+		if (force) {
+			//console.log('SETTING', x);
+			self.output[(ppu_y * 256) + x] = self.CGRAM[palette[x]];
+			//self.above[x].set(source, priority[x], self.CRAM[palette[x]]);
+			//self.below[x].set(source, priority[x], self.CRAM[palette[x]]);
+		} else {
+			if (obj.above_enable && (self.window_above[x] === 0) && priority[x] > self.above[x].priority) self.above[x].set(source, priority[x], self.CGRAM[palette[x]]);
+			if (obj.below_enable && (self.window_below[x] === 0) && priority[x] > self.below[x].priority) self.below[x].set(source, priority[x], self.CGRAM[palette[x]]);
+		}
+	}
+}
+
+function PPUF_get_tile(VRAM, io, bg, hoffset, voffset) {
+	let hires = io.bg_mode === 5 || io.bg_mode === 6;
+	let tile_height = 3 + bg.tile_size;
+	let tile_width = !hires ? tile_height : 4;
+	let screen_x = bg.screen_size & 1 ? 0x400 : 0;
+	let screen_y = bg.screen_size & 2 ? 32 << (5 + (bg.screen_size & 1)) : 0;
+	let tile_x = hoffset >>> tile_width;
+	let tile_y = voffset >>> tile_height;
+	let offset = ((tile_y & 0x1F) << 5) | (tile_x & 0x1F);
+	if (tile_x & 0x20) offset += screen_x;
+	if (tile_y & 0x20) offset += screen_y;
+	return VRAM[(bg.screen_addr + offset) & 0x7FFF];
 }
 
 function PPU_direct_color(palette_index, palette_color) {
@@ -228,276 +361,234 @@ class PPU_pixel {
 	}
 }
 
-class PPU_bg {
-	/**
-	 * @param {number} layer
-	 * @param {SNES_clock} clock
-	 */
-	constructor(layer, clock) {
-		this.layer = layer;
-		this.clock = clock;
+/**
+ * @param {number} y
+ * @param {number} source
+ * @param {*} io
+ * @param {Uint16Array} VRAM
+ * @param {Uint16Array} CGRAM
+ * @param above
+ * @param below
+ * @param verbose
+ */
+function PPUF_render_bg(self, y, source, io, VRAM, CGRAM, above, below, verbose = false) {
+	if (!self.above_enable && !self.below_enable) return;
+	if (self.tile_mode === PPU_tile_mode.Mode7) return PPUF_render_mode7(self, y, source, io, VRAM, CGRAM, above, below);
+	if (self.tile_mode === PPU_tile_mode.Inactive) return;
 
-		this.window = new PPU_window_layer();
+	PPUF_window_render_layer(self.window, self.window.above_enable, self.window_above, io);
+	PPUF_window_render_layer(self.window, self.window.below_enable, self.window_below, io);
 
-		this.above_enable = 0;
-		this.below_enable = 0;
-		this.mosaic_enable = 0;
-		this.tiledata_addr = 0;
-		this.screen_addr = 0;
-		this.screen_size = 0;
-		this.tile_size = 0;
-		this.hoffset = 0;
-		this.voffset = 0;
-		this.tile_mode = 0;
-		this.priority = [0, 0];
+	let hires = +(io.bg_mode === 5 || io.bg_mode === 6);
+	let offset_per_tile_mode = io.bg_mode === 2 || io.bg_mode === 4 || io.bg_mode === 6;
+	let direct_color_mode = io.col.direct_color && source === PPU_source.BG1 && (io.bg_mode === 3 || io.bg_mode === 4);
+	let color_shift = 3 + self.tile_mode;
+	let width = 256 << hires;
+	//console.log('RENDERING PPU y:', y, 'BG MODE', io.bg_mode);
 
-		this.window_above = new Uint8Array(256);
-		this.window_below = new Uint8Array(256);
+	let tile_height = 3 + self.tile_size;
+	let tile_width = !hires ? tile_height : 4;
+	let tile_mask = 0xFFF >>> self.tile_mode;
+	self.tiledata_index = self.tiledata_addr >>> (3 + self.tile_mode);
+
+	self.palette_base = io.bg_mode === 0 ? source << 5 : 0;
+	self.palette_shift = 2 << self.tile_mode;
+
+	let hscroll = self.hoffset;
+	let vscroll = self.voffset;
+	let hmask = (width << self.tile_size << +(!!(self.screen_size & 1))) - 1;
+	let vmask = (width << self.tile_size << +(!!(self.screen_size & 2))) - 1;
+
+	if (hires) {
+		hscroll <<= 1;
+		if (io.interlace) y = y << 1 | +(self.clock.scanline.frame && !self.mosaic_enable);
+	}
+	if (self.mosaic_enable) {
+		y -= (io.mosaic.size - io.mosaic.counter) << +(hires && io.interlace);
 	}
 
-	get_tile(VRAM, io, bg, hoffset, voffset) {
-		let hires = io.bg_mode === 5 || io.bg_mode === 6;
-		let tile_height = 3 + bg.tile_size;
-		let tile_width = !hires ? tile_height : 4;
-		let screen_x = bg.screen_size & 1 ? 0x400 : 0;
-		let screen_y = bg.screen_size & 2 ? 32 << (5 + (bg.screen_size & 1)) : 0;
-		let tile_x = hoffset >>> tile_width;
-		let tile_y = voffset >>> tile_height;
-		let offset = ((tile_y & 0x1F) << 5) | (tile_x & 0x1F);
-		if (tile_x & 0x20) offset += screen_x;
-		if (tile_y & 0x20) offset += screen_y;
-		return VRAM[(bg.screen_addr + offset) & 0x7FFF];
-	}
+	let mosaic_counter = 1;
+	let mosaic_palette = 0;
+	let mosaic_priority = 0;
+	let mosaic_color = 0;
 
-	render_mode7(ppuy, source, io, VRAM, CGRAM, above, below) {
-		//if (!this.mosaic_enable || !io.mosaic.size === 1)
-		if (dbg.watch_on) console.log('M7!');
-		let Y = ppuy;
-		if (this.mosaic_enable) Y -= io.mosaic.size - io.mosaic.counter;
-		let y = !io.mode7.vflip ? Y : 255 - Y;
-
-		let a = io.mode7.a;
-		let b = io.mode7.b;
-		let c = io.mode7.c;
-		let d = io.mode7.d;
-		let hcenter = io.mode7.rx;
-		let vcenter = io.mode7.ry;
-		let hoffset = io.mode7.rhoffset;
-		let voffset = io.mode7.rvoffset;
-		let clip = function(n) { return n & 0x2000 ? (n & 0xFC00) : (n & 1023); }
-		let hohc = (hoffset - hcenter);
-		let vovc = (voffset - vcenter)
-
-		let mosaic_counter = 1;
-		let mosaic_palette = 0;
-		let mosaic_priority = 0;
-		let mosaic_color = 0;
-
-		let origin_x = (a * hohc & ~63) + (b * vovc & ~63) + (b * y & ~63) + (hcenter << 8);
-		let origin_y = (c * hohc & ~63) + (d * vovc & ~63) + (d * y & ~63) + (vcenter << 8);
-
-		this.window.render_layer(this.window.above_enable, this.window_above, io);
-		this.window.render_layer(this.window.below_enable, this.window_below, io);
-
-		for (let X = 0; X < 256; X++) {
-			let x = !io.mode7.hflip ? X : 255 - X;
-			let pixel_x = origin_x + a * x >>> 8;
-			let pixel_y = origin_y + c * x >>> 8;
-			let tile_x = (pixel_x >>> 3) & 127;
-			let tile_y = (pixel_y >>> 3) & 127;
-			let out_of_bounds = +(((pixel_x | pixel_y) & 0xFC00) === 0)
-			let tile_address = tile_y * 128 + tile_x;
-			let palette_address = ((pixel_y & 7) << 3) + (pixel_x & 7);
-			let tile = ((io.mode7.repeat === 3) && out_of_bounds) ? 0 : VRAM[tile_address & 0x7FFF];
-			let palette = ((io.mode7.repeat === 2) && out_of_bounds) ? 0 : VRAM[(tile << 6 | palette_address) & 0x7FFF] >>> 8;
-
-			let priority;
-			if (source === PPU_source.BG1) {
-				priority = this.priority[0];
-			} else if (source === PPU_source.BG2) {
-				priority = this.priority[palette >> 7];
-				palette &= 0x7F;
-			}
-
-			if (--mosaic_counter === 0) {
-				mosaic_counter = this.mosaic_enable ? io.mosaic.size : 1;
-				mosaic_palette = palette;
-				mosaic_priority = priority;
-				if (io.col.direct_color && source === PPU_source.BG1) {
-					mosaic_color = PPU_direct_color(0, palette);
-				} else {
-					//if (dbg.watch_on) console.log('MOSAIC COLOR', mosaic_color);
-					mosaic_color = CGRAM[palette];
-				}
-			}
-			//if (dbg.watch_on) console.log('MOSAIC PALETTE', mosaic_palette);
-			if (!mosaic_palette) {
-				continue;
-			}
-			//if (dbg.watch_on) console.log(this.above_enable, this.window_below[X], mosaic_priority, mosaic_color, mosaic_palette, source);
-
-			if (this.above_enable && !this.window_above[X] && (mosaic_priority > above[X].priority)) above[X].set(source, mosaic_priority, mosaic_color);
-			if (this.below_enable && !this.window_below[X] && (mosaic_priority > below[X].priority)) below[X].set(source, mosaic_priority, mosaic_color);
-		}
-	}
-
-	/**
-	 * @param {number} y
-	 * @param {number} source
-	 * @param {*} io
-	 * @param {Uint16Array} VRAM
-	 * @param {Uint16Array} CGRAM
-	 * @param above
-	 * @param below
-	 * @param verbose
-	 */
-	render(y, source, io, VRAM, CGRAM, above, below, verbose=false) {
-		if (!this.above_enable && !this.below_enable) return;
-		if (this.tile_mode === PPU_tile_mode.Mode7) return this.render_mode7(y, source, io, VRAM, CGRAM, above, below);
-		if (this.tile_mode === PPU_tile_mode.Inactive) return;
-
-		this.window.render_layer(this.window.above_enable, this.window_above, io);
-		this.window.render_layer(this.window.below_enable, this.window_below, io);
-
-		let hires = +(io.bg_mode === 5 || io.bg_mode === 6);
-		let offset_per_tile_mode = io.bg_mode === 2 || io.bg_mode === 4 || io.bg_mode === 6;
-		let direct_color_mode = io.col.direct_color && source === PPU_source.BG1 && (io.bg_mode === 3 || io.bg_mode === 4);
-		let color_shift = 3 + this.tile_mode;
-		let width = 256 << hires;
-		//console.log('RENDERING PPU y:', y, 'BG MODE', io.bg_mode);
-
-		let tile_height = 3 + this.tile_size;
-		let tile_width = !hires ? tile_height : 4;
-		let tile_mask = 0xFFF >>> this.tile_mode;
-		this.tiledata_index = this.tiledata_addr >>> (3 + this.tile_mode);
-
-		this.palette_base = io.bg_mode === 0 ? source << 5 : 0;
-		this.palette_shift = 2 << this.tile_mode;
-
-		let hscroll = this.hoffset;
-		let vscroll = this.voffset;
-		let hmask = (width << this.tile_size << +(!!(this.screen_size & 1))) - 1;
-		let vmask = (width << this.tile_size << +(!!(this.screen_size & 2))) - 1;
-
-		if (hires) {
-			hscroll <<= 1;
-			if (io.interlace) y = y << 1 | +(this.clock.scanline.frame && !this.mosaic_enable);
-		}
-		if (this.mosaic_enable) {
-			y -= (io.mosaic.size - io.mosaic.counter) << +(hires && io.interlace);
-		}
-
-		let mosaic_counter = 1;
-		let mosaic_palette = 0;
-		let mosaic_priority = 0;
-		let mosaic_color = 0;
-
-		let x = 0 - (hscroll & 7);
-		while(x < width) {
-			let hoffset = x + hscroll;
-			let voffset = y + vscroll;
-			if (offset_per_tile_mode) {
-				let valid_bit = 0x2000 << source;
-				let offset_x = x + (hscroll & 7);
-				if (offset_x >= 8) {
-					let hlookup = this.get_tile(VRAM, io, io.bg3, (offset_x - 8) + (io.bg3.hoffset & 0xFFF8), io.bg3.voffset);
-					if (io.bg_mode === 4) {
-						if (hlookup & valid_bit) {
-							if (!(hlookup & 0x8000)) {
-								hoffset = offset_x + (hlookup & 0xFFF8);
-							} else {
-								voffset = y + hlookup;
-							}
-						}
-					} else {
-						let vlookup = this.get_tile(VRAM, io, io.bg3, (offset_x - 8) + (io.bg3.hoffset & 0xFFF8), io.bg3.voffset + 8);
-						if (hlookup & valid_bit) {
+	let x = 0 - (hscroll & 7);
+	while(x < width) {
+		let hoffset = x + hscroll;
+		let voffset = y + vscroll;
+		if (offset_per_tile_mode) {
+			let valid_bit = 0x2000 << source;
+			let offset_x = x + (hscroll & 7);
+			if (offset_x >= 8) {
+				let hlookup = PPUF_get_tile(VRAM, io, io.bg3, (offset_x - 8) + (io.bg3.hoffset & 0xFFF8), io.bg3.voffset);
+				if (io.bg_mode === 4) {
+					if (hlookup & valid_bit) {
+						if (!(hlookup & 0x8000)) {
 							hoffset = offset_x + (hlookup & 0xFFF8);
+						} else {
+							voffset = y + hlookup;
 						}
-						if (vlookup & valid_bit) {
-							voffset = y + vlookup;
-						}
-					}
-				}
-			}
-			hoffset &= hmask;
-			voffset &= vmask;
-
-			let tile_number = this.get_tile(VRAM, io, this, hoffset, voffset);
-
-			let mirror_x = tile_number & 0x4000 ? 7 : 0;
-			let mirror_y = tile_number & 0x8000 ? 7 : 0;
-			let tile_priority = this.priority[((tile_number & 0x2000) >>> 13) & 1];
-			let palette_number = (tile_number >>> 10) & 7;
-			let palette_index = (this.palette_base + (palette_number << this.palette_shift)) & 0xFF;
-
-			if (tile_width === 4 && (((hoffset & 8) >>> 3) ^ +(mirror_x !== 0))) tile_number += 1;
-			if (tile_height === 4 && (((voffset & 8) >>> 3) ^ +(mirror_y !== 0))) tile_number += 16;
-			tile_number = ((tile_number & 0x3FF) + this.tiledata_index) & tile_mask;
-
-			let address = (tile_number << color_shift) + ((voffset & 7) ^ mirror_y) & 0x7FFF;
-
-			// Javascript only has 54 bits for integers. Algorithm wants 64.
-			let datalo = (VRAM[(address + 8) & 0x7FFF] << 16) | (VRAM[address]);
-			let datahi = (VRAM[(address + 24) & 0x7FFF] << 16) | (VRAM[(address + 16) & 0x7FFF]);
-			let datamid = ((datalo >>> 16) & 0xFFFF) | ((datahi << 16) & 0xFFFF0000); // upper 16 bits of data lo or lower 16 bits of data high
-			for (let tile_x = 0; tile_x < 8; tile_x++, x++) {
-				if (x < 0 || x >= width) continue; // x < 0 || x >= width
-				let color;
-				if (--mosaic_counter === 0) {
-					let shift = mirror_x ? tile_x : 7 - tile_x;
-					{
-						color = (datalo >>> shift) & 1;
-						color += (datalo >>> (shift + 7)) & 2; // 0-2 + 7-9
-					}
-					if (this.tile_mode >= PPU_tile_mode.BPP4) {
-						color += (datalo >>> (shift + 14)) & 4; // bits 16-24
-						color += (datalo >>> (shift + 21)) & 8; // bits 24-31
-					}
-					if (this.tile_mode >= PPU_tile_mode.BPP8) {
-						color += (datamid >>> (shift + 12)) & 16;
-						color += (datamid >>> (shift + 19)) & 32;
-						color += (datahi >>> (shift + 10)) & 64;
-						color += (datahi >>> (shift + 17)) & 128;
-					}
-
-					mosaic_counter = this.mosaic_enable ? io.mosaic.size << hires : 1;
-					mosaic_palette = color;
-					mosaic_priority = tile_priority;
-
-					if (direct_color_mode) {
-						mosaic_color = PPU_direct_color(palette_number, mosaic_palette);
-					} else {
-						mosaic_color = CGRAM[palette_index + mosaic_palette];
-					}
-				}
-				if (!mosaic_palette) continue;
-
-				if (!hires) {
-					if (dbg.render_windows) {
-						if (this.above_enable && !this.window_above[x] && mosaic_priority > above[x].priority)
-						//if (this.above_enable && mosaic_priority > above[x].priority)
-							above[x].set(source, mosaic_priority, mosaic_color);
-						if (this.below_enable && !this.window_below[x] && mosaic_priority > below[x].priority)
-						//if (this.below_enable && mosaic_priority > below[x].priority)
-							below[x].set(source, mosaic_priority, mosaic_color);
-					}
-					else {
-						if (this.above_enable && mosaic_priority > above[x].priority)
-							above[x].set(source, mosaic_priority, mosaic_color);
-						if (this.below_enable && mosaic_priority > below[x].priority)
-							below[x].set(source, mosaic_priority, mosaic_color);
 					}
 				} else {
-					let bx = x >>> 1;
-					if (x & 1) {
-						if (this.above_enable && !this.window_above[bx] && mosaic_priority > above[bx].priority) above[bx].set(source, mosaic_priority, mosaic_color);
-					} else {
-						if (self.below_enable && !this.window_below[bx] && mosaic_priority > below[bx].priority) below[bx].set(source, mosaic_priority, mosaic_color);
+					let vlookup = PPUF_get_tile(VRAM, io, io.bg3, (offset_x - 8) + (io.bg3.hoffset & 0xFFF8), io.bg3.voffset + 8);
+					if (hlookup & valid_bit) {
+						hoffset = offset_x + (hlookup & 0xFFF8);
+					}
+					if (vlookup & valid_bit) {
+						voffset = y + vlookup;
 					}
 				}
 			}
 		}
+		hoffset &= hmask;
+		voffset &= vmask;
+
+		let tile_number = PPUF_get_tile(VRAM, io, self, hoffset, voffset);
+
+		let mirror_x = tile_number & 0x4000 ? 7 : 0;
+		let mirror_y = tile_number & 0x8000 ? 7 : 0;
+		let tile_priority = self.priority[((tile_number & 0x2000) >>> 13) & 1];
+		let palette_number = (tile_number >>> 10) & 7;
+		let palette_index = (self.palette_base + (palette_number << self.palette_shift)) & 0xFF;
+
+		if (tile_width === 4 && (((hoffset & 8) >>> 3) ^ +(mirror_x !== 0))) tile_number += 1;
+		if (tile_height === 4 && (((voffset & 8) >>> 3) ^ +(mirror_y !== 0))) tile_number += 16;
+		tile_number = ((tile_number & 0x3FF) + self.tiledata_index) & tile_mask;
+
+		let address = (tile_number << color_shift) + ((voffset & 7) ^ mirror_y) & 0x7FFF;
+
+		// Javascript only has 54 bits for integers. Algorithm wants 64.
+		let datalo = (VRAM[(address + 8) & 0x7FFF] << 16) | (VRAM[address]);
+		let datahi = (VRAM[(address + 24) & 0x7FFF] << 16) | (VRAM[(address + 16) & 0x7FFF]);
+		let datamid = ((datalo >>> 16) & 0xFFFF) | ((datahi << 16) & 0xFFFF0000); // upper 16 bits of data lo or lower 16 bits of data high
+		for (let tile_x = 0; tile_x < 8; tile_x++, x++) {
+			if (x < 0 || x >= width) continue; // x < 0 || x >= width
+			let color;
+			if (--mosaic_counter === 0) {
+				let shift = mirror_x ? tile_x : 7 - tile_x;
+				{
+					color = (datalo >>> shift) & 1;
+					color += (datalo >>> (shift + 7)) & 2; // 0-2 + 7-9
+				}
+				if (self.tile_mode >= PPU_tile_mode.BPP4) {
+					color += (datalo >>> (shift + 14)) & 4; // bits 16-24
+					color += (datalo >>> (shift + 21)) & 8; // bits 24-31
+				}
+				if (self.tile_mode >= PPU_tile_mode.BPP8) {
+					color += (datamid >>> (shift + 12)) & 16;
+					color += (datamid >>> (shift + 19)) & 32;
+					color += (datahi >>> (shift + 10)) & 64;
+					color += (datahi >>> (shift + 17)) & 128;
+				}
+
+				mosaic_counter = self.mosaic_enable ? io.mosaic.size << hires : 1;
+				mosaic_palette = color;
+				mosaic_priority = tile_priority;
+
+				if (direct_color_mode) {
+					mosaic_color = PPU_direct_color(palette_number, mosaic_palette);
+				} else {
+					mosaic_color = CGRAM[palette_index + mosaic_palette];
+				}
+			}
+			if (!mosaic_palette) continue;
+
+			if (!hires) {
+				if (dbg.render_windows) {
+					if (self.above_enable && !self.window_above[x] && mosaic_priority > above[x].priority)
+					//if (tbg.above_enable && mosaic_priority > above[x].priority)
+						above[x].set(source, mosaic_priority, mosaic_color);
+					if (self.below_enable && !self.window_below[x] && mosaic_priority > below[x].priority)
+					//if (tbg.below_enable && mosaic_priority > below[x].priority)
+						below[x].set(source, mosaic_priority, mosaic_color);
+				}
+				else {
+					if (self.above_enable && mosaic_priority > above[x].priority)
+						above[x].set(source, mosaic_priority, mosaic_color);
+					if (self.below_enable && mosaic_priority > below[x].priority)
+						below[x].set(source, mosaic_priority, mosaic_color);
+				}
+			} else {
+				let bx = x >>> 1;
+				if (x & 1) {
+					if (self.above_enable && !self.window_above[bx] && mosaic_priority > above[bx].priority) above[bx].set(source, mosaic_priority, mosaic_color);
+				} else {
+					if (self.below_enable && !self.window_below[bx] && mosaic_priority > below[bx].priority) below[bx].set(source, mosaic_priority, mosaic_color);
+				}
+			}
+		}
+	}
+}
+
+function PPUF_render_mode7(self, ppuy, source, io, VRAM, CGRAM, above, below) {
+	//if (!self.mosaic_enable || !io.mosaic.size === 1)
+	if (dbg.watch_on) console.log('M7!');
+	let Y = ppuy;
+	if (self.mosaic_enable) Y -= io.mosaic.size - io.mosaic.counter;
+	let y = !io.mode7.vflip ? Y : 255 - Y;
+
+	let a = io.mode7.a;
+	let b = io.mode7.b;
+	let c = io.mode7.c;
+	let d = io.mode7.d;
+	let hcenter = io.mode7.rx;
+	let vcenter = io.mode7.ry;
+	let hoffset = io.mode7.rhoffset;
+	let voffset = io.mode7.rvoffset;
+	let clip = function(n) { return n & 0x2000 ? (n & 0xFC00) : (n & 1023); }
+	let hohc = (hoffset - hcenter);
+	let vovc = (voffset - vcenter)
+
+	let mosaic_counter = 1;
+	let mosaic_palette = 0;
+	let mosaic_priority = 0;
+	let mosaic_color = 0;
+
+	let origin_x = (a * hohc & ~63) + (b * vovc & ~63) + (b * y & ~63) + (hcenter << 8);
+	let origin_y = (c * hohc & ~63) + (d * vovc & ~63) + (d * y & ~63) + (vcenter << 8);
+
+	PPUF_window_render_layer(self.window, self.window.above_enable, self.window_above, io);
+	PPUF_window_render_layer(self.window, self.window.below_enable, self.window_below, io);
+
+	for (let X = 0; X < 256; X++) {
+		let x = !io.mode7.hflip ? X : 255 - X;
+		let pixel_x = origin_x + a * x >>> 8;
+		let pixel_y = origin_y + c * x >>> 8;
+		let tile_x = (pixel_x >>> 3) & 127;
+		let tile_y = (pixel_y >>> 3) & 127;
+		let out_of_bounds = +(((pixel_x | pixel_y) & 0xFC00) === 0)
+		let tile_address = tile_y * 128 + tile_x;
+		let palette_address = ((pixel_y & 7) << 3) + (pixel_x & 7);
+		let tile = ((io.mode7.repeat === 3) && out_of_bounds) ? 0 : VRAM[tile_address & 0x7FFF];
+		let palette = ((io.mode7.repeat === 2) && out_of_bounds) ? 0 : VRAM[(tile << 6 | palette_address) & 0x7FFF] >>> 8;
+
+		let priority;
+		if (source === PPU_source.BG1) {
+			priority = self.priority[0];
+		} else if (source === PPU_source.BG2) {
+			priority = self.priority[palette >> 7];
+			palette &= 0x7F;
+		}
+
+		if (--mosaic_counter === 0) {
+			mosaic_counter = self.mosaic_enable ? io.mosaic.size : 1;
+			mosaic_palette = palette;
+			mosaic_priority = priority;
+			if (io.col.direct_color && source === PPU_source.BG1) {
+				mosaic_color = PPU_direct_color(0, palette);
+			} else {
+				//if (dbg.watch_on) console.log('MOSAIC COLOR', mosaic_color);
+				mosaic_color = CGRAM[palette];
+			}
+		}
+		//if (dbg.watch_on) console.log('MOSAIC PALETTE', mosaic_palette);
+		if (!mosaic_palette) {
+			continue;
+		}
+		//if (dbg.watch_on) console.log(self.above_enable, self.window_below[X], mosaic_priority, mosaic_color, mosaic_palette, source);
+
+		if (self.above_enable && !self.window_above[X] && (mosaic_priority > above[X].priority)) above[X].set(source, mosaic_priority, mosaic_color);
+		if (self.below_enable && !self.window_below[X] && (mosaic_priority > below[X].priority)) below[X].set(source, mosaic_priority, mosaic_color);
 	}
 }
 
@@ -564,9 +655,9 @@ class SNES_slow_1st_PPU {
 			ss: 0,
 			vram: 0,
 			oam: 0,
-			cgram: 0,
 
 			oam_addr: 0,
+			cgram: 0,
 			cgram_addr: 0,
 
 			mode7: 0,
@@ -576,56 +667,6 @@ class SNES_slow_1st_PPU {
 		}
 
 		this.io = {
-			mosaic: {
-				size: 1,
-				counter: 0
-			},
-			mode7: {
-				hflip: 0,
-				vflip: 0,
-				repeat: 0,
-				a: 0,
-				b: 0,
-				c: 0,
-				d: 0,
-				x: 0,
-				rx: 0,
-				y: 0,
-				ry: 0,
-				hoffset: 0,
-				rhoffset: 0,
-				voffset: 0,
-				rvoffset: 0
-			},
-			obj: {
-				window: new PPU_window_layer(),
-				name_select: 0,
-				tile_addr: 0,
-				first: 0,
-				interlace: 0,
-				above_enable: 0,
-				below_enable: 0,
-				base_size: 0,
-				range_over: 0,
-				time_over: 0,
-				priority: new Array(4)
-			},
-			col: {
-				window: new PPU_window_layer(),
-				enable: [0, 0, 0, 0, 0, 0, 0],
-				direct_color: 0,
-				blend_mode: 0,
-				halve: 0,
-				math_mode: 0,
-				fixed_color: 0
-			},
-			window: new PPU_window_layer(),
-
-			bg1: new PPU_bg(1, this.clock),
-			bg2: new PPU_bg(2, this.clock),
-			bg3: new PPU_bg(3, this.clock),
-			bg4: new PPU_bg(4, this.clock),
-
 			oam_addr: 0,
 			oam_base_addr: 0,
 			oam_priority: 0,
@@ -635,21 +676,12 @@ class SNES_slow_1st_PPU {
 			vram_increment_mode: 1,
 			vram_addr: 0,
 
-			cram_addr: 0,
-
-			overscan: 0,
-			pseudo_hires: 0,
-			extbg: 0,
-
-			bg_mode: 0,
-			bg_priority: 0,
-
-			display_disable: 0,
-			display_brightness: 0
+			cgram_addr: 0
 		}
 
 		this.VRAM = new Uint16Array(0x8001); // writes to 0x8000 basically ignored
-		this.CRAM = new Uint16Array(0x100);
+		this.CGRAM = new Uint16Array(0x100);
+		this.OAM = new Uint8Array(544);
 		this.bg_line = new Uint8Array(256 * 3);
 		this.sprite_line = new Uint8Array(256 * 3);
 		this.objects = [];
@@ -664,6 +696,9 @@ class SNES_slow_1st_PPU {
 			this.items[i] = new PPU_object_item();
 			this.tiles[i] = new PPU_object_tile();
 		}
+
+		this.cachelines = new PPU_cache();
+		this.cache = this.cachelines.getl();
 	}
 
 	present() {
@@ -707,9 +742,10 @@ class SNES_slow_1st_PPU {
 	}
 
 	mode7_mul() {
-		return mksigned16(this.io.mode7.a) * mksigned8(this.io.mode7.b >> 8);
-		//return ((this.io.mode7.a & 0xFFFF) * ((this.io.mode7.b >>> 8) & 0xFF));
+		return mksigned16(this.cache.mode7.a) * mksigned8(this.cache.mode7.b >> 8);
+		//return ((this.cache.mode7.a & 0xFFFF) * ((this.cache.mode7.b >>> 8) & 0xFF));
 	}
+
 	reg_read(addr, val, have_effect= true) {
 		//if ((addr - 0x3F) & 0x3F) { return this.mem_map.read_apu(addr, val); }
 		if (addr >= 0x2140 && addr < 0x217F) { return this.mem_map.read_apu(addr, val, have_effect); }
@@ -729,8 +765,8 @@ class SNES_slow_1st_PPU {
 				if (snes.cpu.io.pio & 0x80) snes.cpu.latch_ppu_counters();
 				return val;
 			case 0x2138: // OAMDATAREAD
-				let data = this.OAM_read(this.io.oam_addr);
-				this.io.oam_addr = (this.io.oam_addr + 1) & 0x3FF;
+				let data = this.OAM_read(this.cache.oam_addr);
+				this.cache.oam_addr = (this.cache.oam_addr + 1) & 0x3FF;
 				this.set_first_obj();
 				return data;
 			case 0x2139: // VMDATAREADL
@@ -757,7 +793,7 @@ class SNES_slow_1st_PPU {
 				}
 				return this.latch.ppu2.mdr;
 			case 0x213E: // STAT77
-				this.latch.ppu1.mdr = 1 | (this.io.obj.range_over << 6) | (this.io.obj.time_over << 7);
+				this.latch.ppu1.mdr = 1 | (this.cache.obj.range_over << 6) | (this.cache.obj.time_over << 7);
 				return this.latch.ppu1.mdr;
 			case 0x213F:
 				this.latch.hcounter = 0;
@@ -795,7 +831,7 @@ class SNES_slow_1st_PPU {
 	}
 
 	set_first_obj() {
-		this.io.obj.first = this.io.oam_priority ? (this.io.oam_addr >>> 2) & 0x7F : 0;
+		this.cache.obj.first = this.cache.oam_priority ? (this.cache.oam_addr >>> 2) & 0x7F : 0;
 	}
 
 	OAM_read(addr) {
@@ -833,6 +869,7 @@ class SNES_slow_1st_PPU {
 		}
 		let n;
 		//console.log('OAM WRITE', hex2(addr), hex2(val));
+		this.OAM[addr] = val;
 		if (!(addr & 0x200)) {
 			n = addr >>> 2; // object #
 			addr &= 3;
@@ -871,96 +908,96 @@ class SNES_slow_1st_PPU {
 	}
 
 	update_video_mode() {
-		this.clock.scanline.bottom_scanline = this.io.overscan ? 240 : 225;
-		switch(this.io.bg_mode) {
+		this.clock.scanline.bottom_scanline = this.cache.overscan ? 240 : 225;
+		switch(this.cache.bg_mode) {
 			case 0:
-				this.io.bg1.tile_mode = PPU_tile_mode.BPP2;
-				this.io.bg2.tile_mode = PPU_tile_mode.BPP2;
-				this.io.bg3.tile_mode = PPU_tile_mode.BPP2;
-				this.io.bg4.tile_mode = PPU_tile_mode.BPP2;
-				this.io.bg1.priority = [8, 11];
-				this.io.bg2.priority = [7, 10];
-				this.io.bg3.priority = [2, 5];
-				this.io.bg4.priority = [1, 4];
-				this.io.obj.priority = [3, 6, 9, 12];
+				this.cache.bg1.tile_mode = PPU_tile_mode.BPP2;
+				this.cache.bg2.tile_mode = PPU_tile_mode.BPP2;
+				this.cache.bg3.tile_mode = PPU_tile_mode.BPP2;
+				this.cache.bg4.tile_mode = PPU_tile_mode.BPP2;
+				this.cache.bg1.priority = [8, 11];
+				this.cache.bg2.priority = [7, 10];
+				this.cache.bg3.priority = [2, 5];
+				this.cache.bg4.priority = [1, 4];
+				this.cache.obj.priority = [3, 6, 9, 12];
 				break;
 			case 1:
-				this.io.bg1.tile_mode = PPU_tile_mode.BPP4;
-				this.io.bg2.tile_mode = PPU_tile_mode.BPP4;
-				this.io.bg3.tile_mode = PPU_tile_mode.BPP2;
-				this.io.bg4.tile_mode = PPU_tile_mode.Inactive;
-				if (this.io.bg_priority) {
-					this.io.bg1.priority = [5, 8];
-					this.io.bg2.priority = [4, 7];
-					this.io.bg3.priority = [1, 10];
-					this.io.obj.priority = [2, 3, 6, 9];
+				this.cache.bg1.tile_mode = PPU_tile_mode.BPP4;
+				this.cache.bg2.tile_mode = PPU_tile_mode.BPP4;
+				this.cache.bg3.tile_mode = PPU_tile_mode.BPP2;
+				this.cache.bg4.tile_mode = PPU_tile_mode.Inactive;
+				if (this.cache.bg_priority) {
+					this.cache.bg1.priority = [5, 8];
+					this.cache.bg2.priority = [4, 7];
+					this.cache.bg3.priority = [1, 10];
+					this.cache.obj.priority = [2, 3, 6, 9];
 				} else {
-					this.io.bg1.priority = [6, 9];
-					this.io.bg2.priority = [5, 8];
-					this.io.bg3.priority = [1, 3];
-					this.io.obj.priority = [2, 4, 7, 10];
+					this.cache.bg1.priority = [6, 9];
+					this.cache.bg2.priority = [5, 8];
+					this.cache.bg3.priority = [1, 3];
+					this.cache.obj.priority = [2, 4, 7, 10];
 				}
 				break;
 			case 2:
-				this.io.bg1.tile_mode = PPU_tile_mode.BPP4;
-				this.io.bg2.tile_mode = PPU_tile_mode.BPP4;
-				this.io.bg3.tile_mode = PPU_tile_mode.Inactive;
-				this.io.bg4.tile_mode = PPU_tile_mode.Inactive;
-				this.io.bg1.priority = [6, 9];
-				this.io.bg2.priority = [5, 8];
-				this.io.obj.priority = [2, 4, 7, 10];
+				this.cache.bg1.tile_mode = PPU_tile_mode.BPP4;
+				this.cache.bg2.tile_mode = PPU_tile_mode.BPP4;
+				this.cache.bg3.tile_mode = PPU_tile_mode.Inactive;
+				this.cache.bg4.tile_mode = PPU_tile_mode.Inactive;
+				this.cache.bg1.priority = [6, 9];
+				this.cache.bg2.priority = [5, 8];
+				this.cache.obj.priority = [2, 4, 7, 10];
 				break;
 			case 3:
-				this.io.bg1.tile_mode = PPU_tile_mode.BPP8;
-				this.io.bg2.tile_mode = PPU_tile_mode.BPP4;
-				this.io.bg3.tile_mode = PPU_tile_mode.Inactive;
-				this.io.bg4.tile_mode = PPU_tile_mode.Inactive;
-				this.io.bg1.priority = [3, 7];
-				this.io.bg2.priority = [1, 5];
-				this.io.obj.priority = [2, 4, 6, 8];
+				this.cache.bg1.tile_mode = PPU_tile_mode.BPP8;
+				this.cache.bg2.tile_mode = PPU_tile_mode.BPP4;
+				this.cache.bg3.tile_mode = PPU_tile_mode.Inactive;
+				this.cache.bg4.tile_mode = PPU_tile_mode.Inactive;
+				this.cache.bg1.priority = [3, 7];
+				this.cache.bg2.priority = [1, 5];
+				this.cache.obj.priority = [2, 4, 6, 8];
 				break;
 			case 4:
-				this.io.bg1.tile_mode = PPU_tile_mode.BPP8;
-				this.io.bg2.tile_mode = PPU_tile_mode.BPP2;
-				this.io.bg3.tile_mode = PPU_tile_mode.Inactive;
-				this.io.bg4.tile_mode = PPU_tile_mode.Inactive;
-				this.io.bg1.priority = [3, 7];
-				this.io.bg2.priority = [1, 5];
-				this.io.obj.priority = [2, 4, 6, 8];
+				this.cache.bg1.tile_mode = PPU_tile_mode.BPP8;
+				this.cache.bg2.tile_mode = PPU_tile_mode.BPP2;
+				this.cache.bg3.tile_mode = PPU_tile_mode.Inactive;
+				this.cache.bg4.tile_mode = PPU_tile_mode.Inactive;
+				this.cache.bg1.priority = [3, 7];
+				this.cache.bg2.priority = [1, 5];
+				this.cache.obj.priority = [2, 4, 6, 8];
 				break;
 			case 5:
-				this.io.bg1.tile_mode = PPU_tile_mode.BPP4;
-				this.io.bg2.tile_mode = PPU_tile_mode.BPP2;
-				this.io.bg3.tile_mode = PPU_tile_mode.Inactive;
-				this.io.bg4.tile_mode = PPU_tile_mode.Inactive;
-				this.io.bg1.priority = [3, 7];
-				this.io.bg2.priority = [1, 5];
-				this.io.obj.priority = [2, 4, 6, 8];
+				this.cache.bg1.tile_mode = PPU_tile_mode.BPP4;
+				this.cache.bg2.tile_mode = PPU_tile_mode.BPP2;
+				this.cache.bg3.tile_mode = PPU_tile_mode.Inactive;
+				this.cache.bg4.tile_mode = PPU_tile_mode.Inactive;
+				this.cache.bg1.priority = [3, 7];
+				this.cache.bg2.priority = [1, 5];
+				this.cache.obj.priority = [2, 4, 6, 8];
 				break;
 			case 6:
-				this.io.bg1.tile_mode = PPU_tile_mode.BPP4;
-				this.io.bg2.tile_mode = PPU_tile_mode.Inactive;
-				this.io.bg3.tile_mode = PPU_tile_mode.Inactive;
-				this.io.bg4.tile_mode = PPU_tile_mode.Inactive;
-				this.io.bg1.priority = [2, 5];
-				this.io.obj.priority = [1, 3, 4, 6];
+				this.cache.bg1.tile_mode = PPU_tile_mode.BPP4;
+				this.cache.bg2.tile_mode = PPU_tile_mode.Inactive;
+				this.cache.bg3.tile_mode = PPU_tile_mode.Inactive;
+				this.cache.bg4.tile_mode = PPU_tile_mode.Inactive;
+				this.cache.bg1.priority = [2, 5];
+				this.cache.obj.priority = [1, 3, 4, 6];
 				break;
 			case 7:
-				if (!this.io.extbg) {
-					this.io.bg1.tile_mode = PPU_tile_mode.Mode7;
-					this.io.bg2.tile_mode = PPU_tile_mode.Inactive;
-					this.io.bg3.tile_mode = PPU_tile_mode.Inactive;
-					this.io.bg4.tile_mode = PPU_tile_mode.Inactive;
-					this.io.bg1.priority = [2];
-					this.io.obj.priority = [1, 3, 4, 5];
+				if (!this.cache.extbg) {
+					this.cache.bg1.tile_mode = PPU_tile_mode.Mode7;
+					this.cache.bg2.tile_mode = PPU_tile_mode.Inactive;
+					this.cache.bg3.tile_mode = PPU_tile_mode.Inactive;
+					this.cache.bg4.tile_mode = PPU_tile_mode.Inactive;
+					this.cache.bg1.priority = [2];
+					this.cache.obj.priority = [1, 3, 4, 5];
 				} else {
-					this.io.bg1.tile_mode = PPU_tile_mode.Mode7;
-					this.io.bg2.tile_mode = PPU_tile_mode.Mode7;
-					this.io.bg3.tile_mode = PPU_tile_mode.Inactive;
-					this.io.bg4.tile_mode = PPU_tile_mode.Inactive;
-					this.io.bg1.priority = [3];
-					this.io.bg2.priority = [1, 5];
-					this.io.obj.priority = [2, 4, 6, 7];
+					this.cache.bg1.tile_mode = PPU_tile_mode.Mode7;
+					this.cache.bg2.tile_mode = PPU_tile_mode.Mode7;
+					this.cache.bg3.tile_mode = PPU_tile_mode.Inactive;
+					this.cache.bg4.tile_mode = PPU_tile_mode.Inactive;
+					this.cache.bg1.priority = [3];
+					this.cache.bg2.priority = [1, 5];
+					this.cache.obj.priority = [2, 4, 6, 7];
 				}
 				break;
 		}
@@ -978,31 +1015,31 @@ class SNES_slow_1st_PPU {
 		let addre, latchbit;
 		switch(addr) {
 			case 0x2100: // INIDISP
-				this.io.display_brightness = val & 15;
-				this.io.display_disable = (val >>> 7) & 1;
-				this.clock.set_fblank(this.io.display_disable);
+				this.cache.display_brightness = val & 15;
+				this.cache.display_disable = (val >>> 7) & 1;
+				this.clock.set_fblank(this.cache.display_disable);
 				break;
 			case 0x2101: // OBSEL
-				this.io.obj.base_size = (val >>> 5) & 7;
-				this.io.obj.name_select = (val >>> 3) & 3;
-				this.io.obj.tile_addr = (val << 13) & 0x6000;
+				this.cache.obj.base_size = (val >>> 5) & 7;
+				this.cache.obj.name_select = (val >>> 3) & 3;
+				this.cache.obj.tile_addr = (val << 13) & 0x6000;
 				return;
 			case 0x2102: // OAMADDL
-				this.io.oam_base_addr = (this.io.oam_base_addr & 0xFE00) | (val << 1);
+				this.cache.oam_base_addr = (this.cache.oam_base_addr & 0xFE00) | (val << 1);
 
-				this.io.oam_addr = this.io.oam_base_addr;
+				this.cache.oam_addr = this.cache.oam_base_addr;
 				this.set_first_obj();
 				return;
 			case 0x2103: // OAMADDH
-				this.io.oam_base_addr = (val & 1) << 9 | (this.io.oam_base_addr & 0x01FE);
-				this.io.oam_priority = (val >>> 7) & 1;
-				this.io.oam_addr = this.io.oam_base_addr;
+				this.cache.oam_base_addr = (val & 1) << 9 | (this.cache.oam_base_addr & 0x01FE);
+				this.cache.oam_priority = (val >>> 7) & 1;
+				this.cache.oam_addr = this.cache.oam_base_addr;
 				this.set_first_obj();
 				return;
 			case 0x2104: // OAMDATA
-				latchbit = this.io.oam_addr & 1;
-				addre = this.io.oam_addr;
-				this.io.oam_addr = (this.io.oam_addr + 1) & 0x3FF;
+				latchbit = this.cache.oam_addr & 1;
+				addre = this.cache.oam_addr;
+				this.cache.oam_addr = (this.cache.oam_addr + 1) & 0x3FF;
 				if (latchbit === 0) this.latch.oam = val;
 				//console.log('OAM WRITE', hex4(addre))
 				if (addre & 0x200) {
@@ -1015,88 +1052,88 @@ class SNES_slow_1st_PPU {
 				this.set_first_obj();
 				return;
 			case 0x2105: // BGMODE
-				this.io.bg_mode = val & 7;
-				this.io.bg_priority = (val >>> 3) & 1;
-				this.io.bg1.tile_size = (val >>> 4) & 1;
-				this.io.bg2.tile_size = (val >>> 5) & 1;
-				this.io.bg3.tile_size = (val >>> 6) & 1;
-				this.io.bg4.tile_size = (val >>> 7) & 1;
+				this.cache.bg_mode = val & 7;
+				this.cache.bg_priority = (val >>> 3) & 1;
+				this.cache.bg1.tile_size = (val >>> 4) & 1;
+				this.cache.bg2.tile_size = (val >>> 5) & 1;
+				this.cache.bg3.tile_size = (val >>> 6) & 1;
+				this.cache.bg4.tile_size = (val >>> 7) & 1;
 				this.update_video_mode();
 				return;
 			case 0x2106: // MOSAIC
 				// NOT IMPLEMENT
-				latchbit = this.io.bg1.mosaic_enable || this.io.bg2.mosaic_enable || this.io.bg3.mosaic_enable || this.io.bg4.mosaic_enable;
-				this.io.bg1.mosaic_enable = val & 1;
-				this.io.bg2.mosaic_enable = (val >>> 1) & 1;
-				this.io.bg3.mosaic_enable = (val >>> 1) & 1;
-				this.io.bg4.mosaic_enable = (val >>> 1) & 1;
-				this.io.mosaic.size = ((val >>> 4) & 15) + 1;
+				latchbit = this.cache.bg1.mosaic_enable || this.cache.bg2.mosaic_enable || this.cache.bg3.mosaic_enable || this.cache.bg4.mosaic_enable;
+				this.cache.bg1.mosaic_enable = val & 1;
+				this.cache.bg2.mosaic_enable = (val >>> 1) & 1;
+				this.cache.bg3.mosaic_enable = (val >>> 1) & 1;
+				this.cache.bg4.mosaic_enable = (val >>> 1) & 1;
+				this.cache.mosaic.size = ((val >>> 4) & 15) + 1;
 				if (!latchbit && (val & 15)) {
-					this.io.mosaic.counter = this.io.mosaic.size + 1;
+					this.cache.mosaic.counter = this.cache.mosaic.size + 1;
 				}
 				return;
 			case 0x2107: // BG1SC
-				this.io.bg1.screen_size = val & 3;
-				this.io.bg1.screen_addr = (val << 8) & 0x7C00;
+				this.cache.bg1.screen_size = val & 3;
+				this.cache.bg1.screen_addr = (val << 8) & 0x7C00;
 				return;
 			case 0x2108: // BG2SC
-				this.io.bg2.screen_size = val & 3;
-				this.io.bg2.screen_addr = (val << 8) & 0x7C00;
+				this.cache.bg2.screen_size = val & 3;
+				this.cache.bg2.screen_addr = (val << 8) & 0x7C00;
 				return;
 			case 0x2109: // BG3SC
-				this.io.bg3.screen_size = val & 3;
-				this.io.bg3.screen_addr = (val << 8) & 0x7C00;
+				this.cache.bg3.screen_size = val & 3;
+				this.cache.bg3.screen_addr = (val << 8) & 0x7C00;
 				return;
 			case 0x210A: // BG4SC
-				this.io.bg4.screen_size = val & 3;
-				this.io.bg4.screen_addr = (val << 8) & 0x7C00;
+				this.cache.bg4.screen_size = val & 3;
+				this.cache.bg4.screen_addr = (val << 8) & 0x7C00;
 				return;
 			case 0x210B: // BG12NBA
-				this.io.bg1.tiledata_addr = (val << 12) & 0x7000;
-				this.io.bg2.tiledata_addr = (val << 8) & 0x7000;
+				this.cache.bg1.tiledata_addr = (val << 12) & 0x7000;
+				this.cache.bg2.tiledata_addr = (val << 8) & 0x7000;
 				return;
 			case 0x210C: // BG34NBA
-				this.io.bg3.tiledata_addr = (val << 12) & 0x7000;
-				this.io.bg4.tiledata_addr = (val << 8) & 0x7000;
+				this.cache.bg3.tiledata_addr = (val << 12) & 0x7000;
+				this.cache.bg4.tiledata_addr = (val << 8) & 0x7000;
 				return;
 			case 0x210D: // BG1HOFS
-				this.io.bg1.hoffset = (val << 8) | (this.latch.ppu1.bgofs & 0xF8) | (this.latch.ppu2.bgofs & 7);
+				this.cache.bg1.hoffset = (val << 8) | (this.latch.ppu1.bgofs & 0xF8) | (this.latch.ppu2.bgofs & 7);
 				this.latch.ppu1.bgofs = this.latch.ppu2.bgofs = val;
 
-				this.io.mode7.hoffset = (val << 8) | (this.latch.mode7);
+				this.cache.mode7.hoffset = (val << 8) | (this.latch.mode7);
 				this.latch.mode7 = val;
-				this.io.mode7.rhoffset = mksigned13(this.io.mode7.hoffset);
+				this.cache.mode7.rhoffset = mksigned13(this.cache.mode7.hoffset);
 				return;
 			case 0x210E: // BG1VOFS
-				this.io.bg1.voffset = (val << 8) | (this.latch.ppu1.bgofs);
+				this.cache.bg1.voffset = (val << 8) | (this.latch.ppu1.bgofs);
 				this.latch.ppu1.bgofs = val;
 
-				this.io.mode7.voffset = (val << 8) | (this.latch.mode7);
+				this.cache.mode7.voffset = (val << 8) | (this.latch.mode7);
 				this.latch.mode7 = val;
-				this.io.mode7.rvoffset = mksigned13(this.io.mode7.voffset);
+				this.cache.mode7.rvoffset = mksigned13(this.cache.mode7.voffset);
 				return;
 			case 0x210F: // BG2HOFS
-				this.io.bg2.hoffset = (val << 8) | (this.latch.ppu1.bgofs & 0xF8) | (this.latch.ppu2.bgofs & 7);
+				this.cache.bg2.hoffset = (val << 8) | (this.latch.ppu1.bgofs & 0xF8) | (this.latch.ppu2.bgofs & 7);
 				this.latch.ppu1.bgofs = this.latch.ppu2.bgofs = val;
 				return;
 			case 0x2110: // BG2VOFS
-				this.io.bg2.voffset = (val << 8) | (this.latch.ppu1.bgofs);
+				this.cache.bg2.voffset = (val << 8) | (this.latch.ppu1.bgofs);
 				this.latch.ppu1.bgofs = val;
 				return;
 			case 0x2111: // BG3HOFS
-				this.io.bg3.hoffset = (val << 8) | (this.latch.ppu1.bgofs & 0xF8) | (this.latch.ppu2.bgofs & 7);
+				this.cache.bg3.hoffset = (val << 8) | (this.latch.ppu1.bgofs & 0xF8) | (this.latch.ppu2.bgofs & 7);
 				this.latch.ppu1.bgofs = this.latch.ppu2.bgofs = val;
 				return;
 			case 0x2112: // BG3VOFS
-				this.io.bg3.voffset = (val << 8) | (this.latch.ppu1.bgofs);
+				this.cache.bg3.voffset = (val << 8) | (this.latch.ppu1.bgofs);
 				this.latch.ppu1.bgofs = val;
 				return;
 			case 0x2113: // BG4HOFS
-				this.io.bg4.hoffset = (val << 8) | (this.latch.ppu1.bgofs & 0xF8) | (this.latch.ppu2.bgofs & 7);
+				this.cache.bg4.hoffset = (val << 8) | (this.latch.ppu1.bgofs & 0xF8) | (this.latch.ppu2.bgofs & 7);
 				this.latch.ppu1.bgofs = this.latch.ppu2.bgofs = val;
 				return;
 			case 0x2114: // BG4VOFS
-				this.io.bg4.voffset = (val << 8) | (this.latch.ppu1.bgofs);
+				this.cache.bg4.voffset = (val << 8) | (this.latch.ppu1.bgofs);
 				this.latch.ppu1.bgofs = val;
 				return;
 			case 0x2115: // VRAM increment
@@ -1126,165 +1163,165 @@ class SNES_slow_1st_PPU {
 				if (this.io.vram_increment_mode === 1) this.io.vram_addr = (this.io.vram_addr + this.io.vram_increment_step) & 0x7FFF;
 				return;
 			case 0x211A: // M7SEL
-				this.io.mode7.hflip = val & 1;
-				this.io.mode7.vflip = (val >>> 1) & 1;
-				this.io.mode7.repeat = (val >>> 6) & 3;
+				this.cache.mode7.hflip = val & 1;
+				this.cache.mode7.vflip = (val >>> 1) & 1;
+				this.cache.mode7.repeat = (val >>> 6) & 3;
 				return;
 			case 0x211B: // M7A
-				this.io.mode7.a = mksigned16((val << 8) | this.latch.mode7);
+				this.cache.mode7.a = mksigned16((val << 8) | this.latch.mode7);
 				this.latch.mode7 = val;
 				return;
 			case 0x211C: // M7B
-				this.io.mode7.b = mksigned16((val << 8) | this.latch.mode7);
+				this.cache.mode7.b = mksigned16((val << 8) | this.latch.mode7);
 				this.latch.mode7 = val;
 				return;
 			case 0x211D: // M7C
-				this.io.mode7.c = mksigned16((val << 8) | this.latch.mode7);
+				this.cache.mode7.c = mksigned16((val << 8) | this.latch.mode7);
 				this.latch.mode7 = val;
 				return;
 			case 0x211E: // M7D
-				this.io.mode7.d = mksigned16((val << 8) | this.latch.mode7);
+				this.cache.mode7.d = mksigned16((val << 8) | this.latch.mode7);
 				this.latch.mode7 = val;
 				return;
 			case 0x211F: // M7E
-				this.io.mode7.x = (val << 8) | this.latch.mode7;
-				this.io.mode7.rx = mksigned13(this.io.mode7.x);
+				this.cache.mode7.x = (val << 8) | this.latch.mode7;
+				this.cache.mode7.rx = mksigned13(this.cache.mode7.x);
 				this.latch.mode7 = val;
 				return;
 			case 0x2120: // M7F
-				this.io.mode7.y = (val << 8) | this.latch.mode7;
-				this.io.mode7.ry = mksigned13(this.io.mode7.y);
+				this.cache.mode7.y = (val << 8) | this.latch.mode7;
+				this.cache.mode7.ry = mksigned13(this.cache.mode7.y);
 				this.latch.mode7 = val;
 				return;
 			case 0x2121: // Color RAM address
-				this.io.cram_addr = val;
-				this.latch.cram_addr = 0;
+				this.io.cgram_addr = val;
+				this.latch.cgram_addr = 0;
 				return;
 			case 0x2122: // Color RAM data
-				if (this.latch.cram_addr === 0) {
-					this.latch.cram_addr = 1;
-					this.latch.cram = val;
+				if (this.latch.cgram_addr === 0) {
+					this.latch.cgram_addr = 1;
+					this.latch.cgram = val;
 				}
 				else {
-					this.latch.cram_addr = 0;
-					this.CRAM[this.io.cram_addr] = ((val & 0x7F) << 8) | this.latch.cram;
-					//console.log('CRAM WRITE', hex2(this.io.cram_addr), hex2(val));
-					this.io.cram_addr = (this.io.cram_addr + 1) & 0xFF;
+					this.latch.cgram_addr = 0;
+					this.CGRAM[this.io.cgram_addr] = ((val & 0x7F) << 8) | this.latch.cgram;
+					//console.log('CRAM WRITE', hex2(this.io.cgram_addr), hex2(val));
+					this.io.cgram_addr = (this.io.cgram_addr + 1) & 0xFF;
 				}
 				return;
 			case 0x2123: // W12SEL
-				this.io.bg1.window.oneInvert = val  & 1;
-				this.io.bg1.window.oneEnable = (val >>> 1) & 1;
-				this.io.bg1.window.twoInvert = (val >>> 2) & 1;
-				this.io.bg1.window.twoEnable = (val >>> 3) & 1;
-				this.io.bg2.window.oneInvert = (val >>> 4)  & 1;
-				this.io.bg2.window.oneEnable = (val >>> 5) & 1;
-				this.io.bg2.window.twoInvert = (val >>> 6) & 1;
-				this.io.bg2.window.twoEnable = (val >>> 7) & 1;
+				this.cache.bg1.window.one_invert = val  & 1;
+				this.cache.bg1.window.one_enable = (val >>> 1) & 1;
+				this.cache.bg1.window.two_invert = (val >>> 2) & 1;
+				this.cache.bg1.window.two_enable = (val >>> 3) & 1;
+				this.cache.bg2.window.one_invert = (val >>> 4)  & 1;
+				this.cache.bg2.window.one_enable = (val >>> 5) & 1;
+				this.cache.bg2.window.two_invert = (val >>> 6) & 1;
+				this.cache.bg2.window.two_enable = (val >>> 7) & 1;
 				return;
 			case 0x2124: // W34SEL
-				this.io.bg3.window.oneInvert = val  & 1;
-				this.io.bg3.window.oneEnable = (val >>> 1) & 1;
-				this.io.bg3.window.twoInvert = (val >>> 2) & 1;
-				this.io.bg3.window.twoEnable = (val >>> 3) & 1;
-				this.io.bg4.window.oneInvert = (val >>> 4)  & 1;
-				this.io.bg4.window.oneEnable = (val >>> 5) & 1;
-				this.io.bg4.window.twoInvert = (val >>> 6) & 1;
-				this.io.bg4.window.twoEnable = (val >>> 7) & 1;
+				this.cache.bg3.window.one_invert = val  & 1;
+				this.cache.bg3.window.one_enable = (val >>> 1) & 1;
+				this.cache.bg3.window.two_invert = (val >>> 2) & 1;
+				this.cache.bg3.window.two_enable = (val >>> 3) & 1;
+				this.cache.bg4.window.one_invert = (val >>> 4)  & 1;
+				this.cache.bg4.window.one_enable = (val >>> 5) & 1;
+				this.cache.bg4.window.two_invert = (val >>> 6) & 1;
+				this.cache.bg4.window.two_enable = (val >>> 7) & 1;
 				return;
 			case 0x2125: // WOBJSEL
-				this.io.obj.window.one_invert = val & 1;
-				this.io.obj.window.one_enable = (val >>> 1) & 1;
-				this.io.obj.window.two_invert = (val >>> 2) & 1;
-				this.io.obj.window.two_enable = (val >>> 3) & 1;
-				this.io.col.window.one_invert = (val >>> 4) & 1;
-				this.io.col.window.one_enable = (val >>> 5) & 1;
-				this.io.col.window.two_invert = (val >>> 6) & 1;
-				this.io.col.window.two_enable = (val >>> 7) & 1;
+				this.cache.obj.window.one_invert = val & 1;
+				this.cache.obj.window.one_enable = (val >>> 1) & 1;
+				this.cache.obj.window.two_invert = (val >>> 2) & 1;
+				this.cache.obj.window.two_enable = (val >>> 3) & 1;
+				this.cache.col.window.one_invert = (val >>> 4) & 1;
+				this.cache.col.window.one_enable = (val >>> 5) & 1;
+				this.cache.col.window.two_invert = (val >>> 6) & 1;
+				this.cache.col.window.two_enable = (val >>> 7) & 1;
 				return;
 			case 0x2126: // WH0
 				//if (dbg.log_windows) console.log('WINDOW ONE LEFT WRITE', val);
-				//this.io.window.one_left = 0;
-				this.io.window.one_left = val;
+				//this.cache.window.one_left = 0;
+				this.cache.window.one_left = val;
 				return;
 			case 0x2127: // WH1...
 				//if (val === 128) debugger;
 				//if (dbg.log_windows) console.log('WINDOW ONE RIGHT WRITE', val);
-				this.io.window.one_right = val;
-				//this.io.window.one_right = 256;
+				this.cache.window.one_right = val;
+				//this.cache.window.one_right = 256;
 				return;
 			case 0x2128: // WH2
-				this.io.window.two_left = val;
+				this.cache.window.two_left = val;
 				return;
 			case 0x2129: // WH3
-				this.io.window.two_right = val;
+				this.cache.window.two_right = val;
 				return;
 			case 0x212A: // WBGLOG
-				this.io.bg1.window.mask = val & 3;
-				this.io.bg2.window.mask = (val >>> 2) & 3;
-				this.io.bg3.window.mask = (val >>> 4) & 3;
-				this.io.bg4.window.mask = (val >>> 6) & 3;
+				this.cache.bg1.window.mask = val & 3;
+				this.cache.bg2.window.mask = (val >>> 2) & 3;
+				this.cache.bg3.window.mask = (val >>> 4) & 3;
+				this.cache.bg4.window.mask = (val >>> 6) & 3;
 				return;
 			case 0x212B: // WOBJLOG
-				this.io.obj.window.mask = val & 3;
-				this.io.col.window.mask = (val >>> 2) & 3;
+				this.cache.obj.window.mask = val & 3;
+				this.cache.col.window.mask = (val >>> 2) & 3;
 				return;
 			case 0x212C: // TM
-				this.io.bg1.above_enable = val & 1;
-				this.io.bg2.above_enable = (val >>> 1) & 1;
-				this.io.bg3.above_enable = (val >>> 2) & 1;
-				this.io.bg4.above_enable = (val >>> 3) & 1;
-				this.io.obj.above_enable = (val >>> 4) & 1;
+				this.cache.bg1.above_enable = val & 1;
+				this.cache.bg2.above_enable = (val >>> 1) & 1;
+				this.cache.bg3.above_enable = (val >>> 2) & 1;
+				this.cache.bg4.above_enable = (val >>> 3) & 1;
+				this.cache.obj.above_enable = (val >>> 4) & 1;
 				return;
 			case 0x212D: // TS
-				this.io.bg1.below_enable = val & 1;
-				this.io.bg2.below_enable = (val >>> 1) & 1;
-				this.io.bg3.below_enable = (val >>> 2) & 1;
-				this.io.bg4.below_enable = (val >>> 3) & 1;
-				this.io.obj.below_enable = (val >>> 4) & 1;
+				this.cache.bg1.below_enable = val & 1;
+				this.cache.bg2.below_enable = (val >>> 1) & 1;
+				this.cache.bg3.below_enable = (val >>> 2) & 1;
+				this.cache.bg4.below_enable = (val >>> 3) & 1;
+				this.cache.obj.below_enable = (val >>> 4) & 1;
 				return;
 			case 0x212E: // TMW
-				this.io.bg1.window.above_enable = val & 1;
-				this.io.bg2.window.above_enable = (val >>> 1) & 1;
-				this.io.bg3.window.above_enable = (val >>> 2) & 1;
-				this.io.bg4.window.above_enable = (val >>> 3) & 1;
-				this.io.obj.window.above_enable = (val >>> 4) & 1;
+				this.cache.bg1.window.above_enable = val & 1;
+				this.cache.bg2.window.above_enable = (val >>> 1) & 1;
+				this.cache.bg3.window.above_enable = (val >>> 2) & 1;
+				this.cache.bg4.window.above_enable = (val >>> 3) & 1;
+				this.cache.obj.window.above_enable = (val >>> 4) & 1;
 				return;
 			case 0x212F: // TSW
-				this.io.bg1.window.below_enable = val & 1;
-				this.io.bg2.window.below_enable = (val >>> 1) & 1;
-				this.io.bg3.window.below_enable = (val >>> 2) & 1;
-				this.io.bg4.window.below_enable = (val >>> 3) & 1;
-				this.io.obj.window.below_enable = (val >>> 4) & 1;
+				this.cache.bg1.window.below_enable = val & 1;
+				this.cache.bg2.window.below_enable = (val >>> 1) & 1;
+				this.cache.bg3.window.below_enable = (val >>> 2) & 1;
+				this.cache.bg4.window.below_enable = (val >>> 3) & 1;
+				this.cache.obj.window.below_enable = (val >>> 4) & 1;
 				return;
 			case 0x2130: // CGWSEL
-				this.io.col.direct_color = val & 1;
-				this.io.col.blend_mode = (val >>> 1) & 1;
-				this.io.col.window.below_mask = (val >>> 4) & 3;
-				this.io.col.window.above_mask = (val >>> 6) & 3;
+				this.cache.col.direct_color = val & 1;
+				this.cache.col.blend_mode = (val >>> 1) & 1;
+				this.cache.col.window.below_mask = (val >>> 4) & 3;
+				this.cache.col.window.above_mask = (val >>> 6) & 3;
 				return;
 			case 0x2131: // CGADDSUB
-				this.io.col.enable[PPU_source.BG1] = val & 1;
-				this.io.col.enable[PPU_source.BG2] = (val >>> 1) & 1;
-				this.io.col.enable[PPU_source.BG3] = (val >>> 2) & 1;
-				this.io.col.enable[PPU_source.BG4] = (val >>> 3) & 1;
-				this.io.col.enable[PPU_source.OBJ1] = 0;
-				this.io.col.enable[PPU_source.OBJ2] = (val >>> 4) & 1;
-				this.io.col.enable[PPU_source.COL] = (val >>> 5) & 1;
-				this.io.col.halve = (val >>> 6) & 1;
-				this.io.col.math_mode = (val >>> 7) & 1;
+				this.cache.col.enable[PPU_source.BG1] = val & 1;
+				this.cache.col.enable[PPU_source.BG2] = (val >>> 1) & 1;
+				this.cache.col.enable[PPU_source.BG3] = (val >>> 2) & 1;
+				this.cache.col.enable[PPU_source.BG4] = (val >>> 3) & 1;
+				this.cache.col.enable[PPU_source.OBJ1] = 0;
+				this.cache.col.enable[PPU_source.OBJ2] = (val >>> 4) & 1;
+				this.cache.col.enable[PPU_source.COL] = (val >>> 5) & 1;
+				this.cache.col.halve = (val >>> 6) & 1;
+				this.cache.col.math_mode = (val >>> 7) & 1;
 				return;
 			case 0x2132: // COLDATA weirdness
-				if (val & 0x20) this.io.col.fixed_color = (this.io.col.fixed_color & 0x7FE0) | (val & 31);
-				if (val & 0x40) this.io.col.fixed_color = (this.io.col.fixed_color & 0x7C1F) | ((val & 31) << 5);
-				if (val & 0x80) this.io.col.fixed_color = (this.io.col.fixed_color & 0x3FF) | ((val & 31) << 10);
+				if (val & 0x20) this.cache.col.fixed_color = (this.cache.col.fixed_color & 0x7FE0) | (val & 31);
+				if (val & 0x40) this.cache.col.fixed_color = (this.cache.col.fixed_color & 0x7C1F) | ((val & 31) << 5);
+				if (val & 0x80) this.cache.col.fixed_color = (this.cache.col.fixed_color & 0x3FF) | ((val & 31) << 10);
 				return;
 			case 0x2133: // SETINI
-				this.io.interlace = val & 1;
-				this.io.obj.interlace = (val >>> 1) & 1;
-				this.io.overscan = (val >>> 2) & 1;
-				this.io.pseudo_hires = (val >>> 3) & 1;
-				this.io.extbg = (val >>> 6) & 1;
+				this.cache.interlace = val & 1;
+				this.cache.obj.interlace = (val >>> 1) & 1;
+				this.cache.overscan = (val >>> 2) & 1;
+				this.cache.pseudo_hires = (val >>> 3) & 1;
+				this.cache.extbg = (val >>> 6) & 1;
 				this.update_video_mode();
 				return;
 
@@ -1323,7 +1360,7 @@ class SNES_slow_1st_PPU {
 
 		let widths = [8, 16];
 		let heights = [8, 16];
-		switch(this.io.obj.base_size) {
+		switch(this.cache.obj.base_size) {
 			case 0:
 				break;
 			case 1:
@@ -1363,7 +1400,7 @@ class SNES_slow_1st_PPU {
 
 			let obj_width = widths[obj.size];
 			let obj_height = heights[obj.size];
-			//console.log('HEIGHT AND WIDTH:', this.io.obj.base_size, obj.size, obj_height, obj_width);
+			//console.log('HEIGHT AND WIDTH:', this.cache.obj.base_size, obj.size, obj_height, obj_width);
 
 			for (let sy = y_origin; sy < (y_origin + obj_height); sy++) {
 				if ((sy === 0) || ((sy & 255) > this.clock.scanline.bottom_scanline)) continue;
@@ -1387,7 +1424,7 @@ class SNES_slow_1st_PPU {
 					let addr = obj.character + (obj.nameselect ? 0 : 0x100);
 					let addr_lo = ((addr & 0x0F) + tile_x) & 0x0F;
 					let addr_hi = ((addr & 0xF0) + (tile_y << 4)) & 0xF0;
-					addr += addr_lo + addr_hi + this.io.obj.tile_addr;
+					addr += addr_lo + addr_hi + this.cache.obj.tile_addr;
 
 					// Now addr is the address of the character #
 					let tile_in_x = (sprite_x % 8);
@@ -1412,7 +1449,7 @@ class SNES_slow_1st_PPU {
 				}
 			}
 
-			let addr = this.io.obj.name_select << 14;
+			let addr = this.cache.obj.name_select << 14;
 
 		}
 		ctx.putImageData(imgdata, x_origin, y_origin);
@@ -1427,7 +1464,7 @@ class SNES_slow_1st_PPU {
 		// Grab raw buffer
 		let ctx = this.canvas.getContext('2d');
 		let imgdata = ctx.getImageData(x_origin, y_origin, 256, 224);
-		console.log('PPU INFO: BG MODE', this.io.bg_mode);
+		console.log('PPU INFO: BG MODE', this.cache.bg_mode);
 		console.log('size', bg.tile_size);
 		console.log('BPP', PPU_BPPBACK[bg.tile_mode]);
 		console.log('h, v scrolls', bg.hoffset, bg.voffset);
@@ -1435,7 +1472,7 @@ class SNES_slow_1st_PPU {
 		let tiledata_index = bg.tiledata_addr >>> (3 + bg.tile_mode);
 		let color_shift = 3 + bg.tile_mode;
 		let tile_height = 3 + bg.tile_size;
-		let hires = +(this.io.bg_mode === 5 || this.io.bg_mode === 6);
+		let hires = +(this.cache.bg_mode === 5 || this.cache.bg_mode === 6);
 		let tile_width = !hires ? tile_height : 4;
 		/*let tile_map = '';
 		// 33x33 text (with \n at end of each line), cells are 3 wide.
@@ -1456,7 +1493,7 @@ class SNES_slow_1st_PPU {
 				let G = 0;
 				let B = 0;
 
-				let tile_number = bg.get_tile(this.VRAM, this.io, bg, sx, sy)
+				let tile_number = PPUF_get_tile(this.VRAM, this.cache, bg, sx, sy)
 				let mirror_x = tile_number & 0x8000 ? 7 : 0;
 				let mirror_y = tile_number & 0x4000 ? 7 : 0;
 				let tile_palette = (tile_number >>> 10) & 7;
@@ -1477,159 +1514,16 @@ class SNES_slow_1st_PPU {
 		}
 		ctx.putImageData(imgdata, x_origin, y_origin);
 	}
-	/**
-	 * @param {number} ppu_y
-	 * @param {{name_select: number, tile_addr: number, base_size: number, below_enable: number, window: PPU_window_layer, interlace: number, range_over: number, time_over: number, priority: *[], first: number, above_enable: number}} obj
-	 * @param force
-	 */
-	renderObject(ppu_y, obj, force=false) {
-		if (!force && !obj.above_enable && !obj.below_enable) return;
-		obj.window.render_layer(obj.window.above_enable, this.window_above, this.io, true);
-		obj.window.render_layer(obj.window.below_enable, this.window_below, this.io);
-		if (dbg.log_windows) console.log(obj.window);
-		if (dbg.log_windows) console.log(snes.clock.scanline.ppu_y, this.window_above, this.window_below);
-		let item_count = 0;
-		let tile_count = 0;
-		for (let n=0; n < PPU_ITEM_LIMIT; n++) {
-			this.items[n].valid = 0;
-		}
-		for (let n=0; n < PPU_TILE_LIMIT; n++) {
-			this.tiles[n].valid = 0;
-		}
-
-		for (let n=0; n<128; n++) {
-			let item = new PPU_object_item();
-			item.valid = 1;
-			item.index = (obj.first + n) & 127;
-			let object = this.objects[item.index];
-
-			item.width = PPU_obj_widths[object.size][obj.base_size];
-			item.height = PPU_obj_heights[object.size][obj.base_size];
-			// If off right edge of screen and not wrapped to left side
-			if ((object.x > 256) && ((object.x + item.width - 1) < 512)) continue;
-			let height = item.height >>> this.io.interlace;
-			if (
-				((ppu_y >= object.y) && (ppu_y < (object.y + height))) ||
-				(((object.y + height) >= 256) && (ppu_y < ((object.y + height) & 255)))
-			) {
-				if (item_count++ >= PPU_ITEM_LIMIT) break;
-				this.items[item_count - 1] = item;
-			}
-		}
-
-		for(let n = PPU_ITEM_LIMIT-1; n >= 0; n--) {
-			let item = this.items[n];
-			if (!item.valid) continue;
-
-			let object = this.objects[item.index];
-			let tile_width = item.width >>> 3;
-			let mx = object.x;
-			let y = (ppu_y - object.y) & 0xFF;
-			if (this.io.interlace) y <<= 1;
-
-			if (object.vflip) {
-				if (item.width === item.height) {
-					y = item.height - 1 - y;
-				} else if (y < item.width) {
-					y = item.width - 1 - y;
-				} else {
-					y = item.width + (item.width - 1) - (y - item.width);
-				}
-			}
-			if (this.io.interlace) {
-				y = !object.vflip ? y + this.clock.scanline.frame : y - this.clock.scanline.frame;
-			}
-
-			mx &= 511;
-			y &= 255;
-			let tile_addr = obj.tile_addr;
-			if (object.nameselect) tile_addr += 1 + (object.nameselect << 12); // SUS
-			let character_x = object.character & 15;
-			let character_y = (((object.character >>> 4) + (y >>> 3)) & 15) << 4;
-
-			for (let tile_x = 0; tile_x < tile_width; tile_x++) {
-				let object_x = (mx + (tile_x << 3)) & 511;
-				if ((mx !== 256) && (object_x >= 256) && ((object_x + 7) < 512)) continue;
-
-				let tile = new PPU_object_tile();
-				tile.valid = 1;
-				tile.x = object_x;
-				tile.y = y;
-				tile.priority = object.priority;
-				tile.palette = 128 + (object.palette << 4);
-				tile.hflip = object.hflip;
-
-				let mirror_x = !object.hflip ? tile_x : tile_width - 1 - tile_x;
-				let addr = tile_addr + ((character_y + (character_x + mirror_x & 15)) << 4);
-				addr = (addr & 0x7FF0) + (y & 7);
-				tile.data = this.VRAM[addr];
-				tile.data |= this.VRAM[(addr+8) & 0x7FFF] << 16;
-
-				if (tile_count++ >= PPU_TILE_LIMIT) break;
-				this.tiles[tile_count - 1] = tile;
-			}
-		}
-		//if ((item_count>0 || tile_count>0) && (y < 241)) console.log('ITEM AND TILE COUNT', y, item_count, tile_count);
-
-		this.io.obj.range_over |= +(item_count > PPU_ITEM_LIMIT);
-		this.io.obj.time_over |= +(tile_count > PPU_TILE_LIMIT);
-
-		let palette = new Array(256);
-		let priority = new Array(256);
-		for (let n = 0; n < PPU_TILE_LIMIT; n++) {
-			let tile = this.tiles[n];
-			if (!tile.valid) continue;
-
-			let tile_x = tile.x;
-			for (let mx = 0; mx < 8; mx++) {
-				tile_x &= 511;
-				if (tile_x < 256) {
-					let color = 0;
-					let shift = tile.hflip ? mx : 7 - mx;
-					//let datahi = (tile.data & 0xFF00);
-					//let datalo = (tile.data & 0x00FF);
-					//let datamid = (tile.data >> 8) & 0x0FFF;
-					color = (tile.data >>> (shift)) & 1; // SUS?
-					color += (tile.data >>> (shift + 7)) & 2; // 7-10 to 14-17
-					color += (tile.data >>> (shift + 14)) & 4; // 14-17 to 21-24
-					color += (tile.data >>> (shift + 21)) & 8; // 21-28 to 28-31
-					if (color !== 0) {
-						palette[tile_x] = tile.palette + color;
-						priority[tile_x] = obj.priority[tile.priority];
-					}
-				}
-				tile_x++;
-			}
-		}
-
-		if (force & dbg.watch_on) console.log(this.items, this.tiles);
-
-		for (let x=0; x<256; x++) {
-			if (!priority[x]) continue;
-			let source = palette[x] < 192 ? PPU_source.OBJ1 : PPU_source.OBJ2;
-			//console.log('SPR!', x, this.clock.scanline.ppu_y, palette[x], this.CRAM[palette[x]]);
-			if (force) {
-				//console.log('SETTING', x);
-				this.output[(ppu_y * 256) + x] = this.CRAM[palette[x]];
-				//this.above[x].set(source, priority[x], this.CRAM[palette[x]]);
-				//this.below[x].set(source, priority[x], this.CRAM[palette[x]]);
-			}
-			else {
-				if (obj.above_enable && (this.window_above[x] === 0) && priority[x] > this.above[x].priority) this.above[x].set(source, priority[x], this.CRAM[palette[x]]);
-				if (obj.below_enable && (this.window_below[x] === 0) && priority[x] > this.below[x].priority) this.below[x].set(source, priority[x], this.CRAM[palette[x]]);
-			}
-		}
-	}
 
 	render_scanline(force=false) {
 		// render background lines
 		let width = 256;
 		let y = this.clock.scanline.ppu_y;
-		let mosaic_enable = this.io.bg1.mosaic_enable || this.io.bg2.mosaic_enable || this.io.bg3.mosaic_enable || this.io.bg4.mosaic_enable;
+		let mosaic_enable = this.cache.bg1.mosaic_enable || this.cache.bg2.mosaic_enable || this.cache.bg3.mosaic_enable || this.cache.bg4.mosaic_enable;
 		if (y === 1)
-			this.io.mosaic.counter = mosaic_enable ? this.io.mosaic.size + 1 : 0;
-		if (this.io.mosaic.counter && --this.io.mosaic.counter)
-			this.io.mosaic.counter = mosaic_enable ? this.io.mosaic.size : 0;
+			this.cache.mosaic.counter = mosaic_enable ? this.cache.mosaic.size + 1 : 0;
+		if (this.cache.mosaic.counter && --this.cache.mosaic.counter)
+			this.cache.mosaic.counter = mosaic_enable ? this.cache.mosaic.size : 0;
 		let output = y * 256;
 		//console.log('ENABLED?', y, !this.clock.scanline.fblank);
 
@@ -1641,34 +1535,34 @@ class SNES_slow_1st_PPU {
 			return;
 		}
 
-		let hires = this.io.pseudo_hires || this.io.bg_mode === 5 || this.io.bg_mode === 6;
-		let above_color = this.CRAM[0];
-		let below_color = hires ? this.CRAM[0] : this.io.col.fixed_color;
+		let hires = this.cache.pseudo_hires || this.cache.bg_mode === 5 || this.cache.bg_mode === 6;
+		let above_color = this.CGRAM[0];
+		let below_color = hires ? this.CGRAM[0] : this.cache.col.fixed_color;
 		for (let x = 0; x < 256; x++) {
 			this.above[x].set(PPU_source.COL, 0, above_color);
 			this.below[x].set(PPU_source.COL, 0, below_color);
 		}
 
 		dbg.cur_bg = 1;
-		if (dbg.bg1_on) this.io.bg1.render(this.clock.scanline.ppu_y, PPU_source.BG1, this.io, this.VRAM, this.CRAM, this.above, this.below);
+		if (dbg.bg1_on) PPUF_render_bg(this.cache.bg1, this.clock.scanline.ppu_y, PPU_source.BG1, this.cache, this.VRAM, this.CGRAM, this.above, this.below);
 		dbg.cur_bg = 2;
-		if (this.io.extbg === 0) if (dbg.bg2_on) this.io.bg2.render(this.clock.scanline.ppu_y, PPU_source.BG2, this.io, this.VRAM, this.CRAM, this.above, this.below);
+		if (this.cache.extbg === 0) if (dbg.bg2_on) PPUF_render_bg(this.cache.bg2, this.clock.scanline.ppu_y, PPU_source.BG2, this.cache, this.VRAM, this.CGRAM, this.above, this.below);
 		dbg.cur_bg = 3;
-		if (dbg.bg3_on) this.io.bg3.render(this.clock.scanline.ppu_y, PPU_source.BG3, this.io, this.VRAM, this.CRAM, this.above, this.below, true);
+		if (dbg.bg3_on) PPUF_render_bg(this.cache.bg3, this.clock.scanline.ppu_y, PPU_source.BG3, this.cache, this.VRAM, this.CGRAM, this.above, this.below, true);
 		dbg.cur_bg = 4;
-		if (dbg.bg4_on) this.io.bg4.render(this.clock.scanline.ppu_y, PPU_source.BG4, this.io, this.VRAM, this.CRAM, this.above, this.below);
+		if (dbg.bg4_on) PPUF_render_bg(this.cache.bg4, this.clock.scanline.ppu_y, PPU_source.BG4, this.cache, this.VRAM, this.CGRAM, this.above, this.below);
 		dbg.cur_bg = 5;
-		if (dbg.obj_on) this.renderObject(this.clock.scanline.ppu_y, this.io.obj, false);
+		if (dbg.obj_on) PPUF_render_objects(this, this.clock.scanline.ppu_y, this.cache.obj, false);
 		// renderObjects here
 		dbg.cur_bg = 2;
-		if (this.io.extbg === 1) if (dbg.bg2_on) this.io.bg2.render(this.clock.scanline.ppu_y, PPU_source.BG2, this.io, this.VRAM, this.CRAM, this.above, this.below);
+		if (this.cache.extbg === 1) if (dbg.bg2_on) PPUF_render_bg(this.cache.bg2, this.clock.scanline.ppu_y, PPU_source.BG2, this.cache, this.VRAM, this.CGRAM, this.above, this.below);
 		// render background color windows here
 		if (dbg.render_windows) {
-			this.io.col.window.render_layer_mask(this.io.col.window.above_mask, this.window_above, this.io);
-			this.io.col.window.render_layer_mask(this.io.col.window.below_mask, this.window_below, this.io);
+			PPUF_window_render_layer_mask(this.cache.col.window, this.cache.col.window.above_mask, this.window_above, this.cache);
+			PPUF_window_render_layer_mask(this.cache.col.window, this.cache.col.window.below_mask, this.window_below, this.cache);
 		}
 
-		let luma = this.light_table[this.io.display_brightness];
+		let luma = this.light_table[this.cache.display_brightness];
 		let cur = 0;
 		let prev = 0;
 
@@ -1688,7 +1582,7 @@ class SNES_slow_1st_PPU {
 	}
 
 	blend(x, y, halve) {
-		if (!this.io.col.math_mode) { // add
+		if (!this.cache.col.math_mode) { // add
 			if (!halve) {
 				let sum = x + y;
 				let carry = (sum - ((x ^ y) & 0x421)) & 0x8420;
@@ -1708,12 +1602,12 @@ class SNES_slow_1st_PPU {
 	}
 
 	pixel(x, above, below, logit=false) {
-		//return this.blend(above.color, below.color, this.io.col.halve);
+		//return this.blend(above.color, below.color, this.cache.col.halve);
 		if (!dbg.render_windows) {
-			if (!this.io.col.blend_mode) {
-				return this.blend(above.color, this.io.col.fixed_color, this.io.col.halve && this.window_above[x]);
+			if (!this.cache.col.blend_mode) {
+				return this.blend(above.color, this.cache.col.fixed_color, this.cache.col.halve && this.window_above[x]);
 			}
-			return this.blend(above.color, below.color, this.io.col.halve && this.window_above[x] && below.source !== PPU_source.COL);
+			return this.blend(above.color, below.color, this.cache.col.halve && this.window_above[x] && below.source !== PPU_source.COL);
 		}
 
 		if (!this.window_above[x]) {
@@ -1724,16 +1618,16 @@ class SNES_slow_1st_PPU {
 			if (logit) console.log('RETURN ABOVE COLOR');
 			return above.color;
 		}
-		if (!this.io.col.enable[above.source]) {
+		if (!this.cache.col.enable[above.source]) {
 			if (logit) console.log('RETURN ABOVE COLOR');
 			return above.color;
 		}
-		if (!this.io.col.blend_mode) {
+		if (!this.cache.col.blend_mode) {
 			if (logit) console.log('BLEND IT1');
-			return this.blend(above.color, this.io.col.fixed_color, this.io.col.halve && this.window_above[x]);
+			return this.blend(above.color, this.cache.col.fixed_color, this.cache.col.halve && this.window_above[x]);
 		}
 		if (logit) console.log('BLEND IT2');
-		return this.blend(above.color, below.color, this.io.col.halve && this.window_above[x] && below.source !== PPU_source.COL);
+		return this.blend(above.color, below.color, this.cache.col.halve && this.window_above[x] && below.source !== PPU_source.COL);
 	}
 
 	catch_up() {
