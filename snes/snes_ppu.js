@@ -174,11 +174,12 @@ function PPUF_window_render_layer(self, enable, output, io, extended_log=false) 
  * @param force
  */
 
-function PPUF_render_objects(self, ppu_y, obj, force=false)
+function PPUF_render_objects(self, cache, ppu_y, force=false)
 {
+	let obj = cache.obj;
 	if (!force && !obj.above_enable && !obj.below_enable) return;
-	PPUF_window_render_layer(obj.window, obj.window.above_enable, self.window_above, self.cache, true);
-	PPUF_window_render_layer(obj.window, obj.window.below_enable, self.window_below, self.cache);
+	PPUF_window_render_layer(obj.window, obj.window.above_enable, self.window_above, cache, true);
+	PPUF_window_render_layer(obj.window, obj.window.below_enable, self.window_below, cache);
 	if (dbg.log_windows) console.log(obj.window);
 	if (dbg.log_windows) console.log(snes.clock.scanline.ppu_y, self.window_above, self.window_below);
 	let item_count = 0;
@@ -200,7 +201,7 @@ function PPUF_render_objects(self, ppu_y, obj, force=false)
 		item.height = PPU_obj_heights[object.size][obj.base_size];
 		// If off right edge of screen and not wrapped to left side
 		if ((object.x > 256) && ((object.x + item.width - 1) < 512)) continue;
-		let height = item.height >>> self.cache.interlace;
+		let height = item.height >>> cache.interlace;
 		if (
 			((ppu_y >= object.y) && (ppu_y < (object.y + height))) ||
 			(((object.y + height) >= 256) && (ppu_y < ((object.y + height) & 255)))
@@ -218,7 +219,7 @@ function PPUF_render_objects(self, ppu_y, obj, force=false)
 		let tile_width = item.width >>> 3;
 		let mx = object.x;
 		let y = (ppu_y - object.y) & 0xFF;
-		if (self.cache.interlace) y <<= 1;
+		if (cache.interlace) y <<= 1;
 
 		if (object.vflip) {
 			if (item.width === item.height) {
@@ -229,8 +230,8 @@ function PPUF_render_objects(self, ppu_y, obj, force=false)
 				y = item.width + (item.width - 1) - (y - item.width);
 			}
 		}
-		if (self.cache.interlace) {
-			y = !object.vflip ? y + self.clock.scanline.frame : y - self.clock.scanline.frame;
+		if (cache.interlace) {
+			y = !object.vflip ? y + cache.control.field : y - cache.control.field;
 		}
 
 		mx &= 511;
@@ -264,8 +265,8 @@ function PPUF_render_objects(self, ppu_y, obj, force=false)
 	}
 	//if ((item_count>0 || tile_count>0) && (y < 241)) console.log('ITEM AND TILE COUNT', y, item_count, tile_count);
 
-	self.cache.obj.range_over |= +(item_count > PPU_ITEM_LIMIT);
-	self.cache.obj.time_over |= +(tile_count > PPU_TILE_LIMIT);
+	cache.obj.range_over |= +(item_count > PPU_ITEM_LIMIT);
+	cache.obj.time_over |= +(tile_count > PPU_TILE_LIMIT);
 
 	let palette = new Array(256);
 	let priority = new Array(256);
@@ -376,6 +377,8 @@ function PPUF_render_bg(self, y, source, io, VRAM, CGRAM, above, below, verbose 
 	if (self.tile_mode === PPU_tile_mode.Mode7) return PPUF_render_mode7(self, y, source, io, VRAM, CGRAM, above, below);
 	if (self.tile_mode === PPU_tile_mode.Inactive) return;
 
+	//if (dbg.watch_on) console.log(self);
+
 	PPUF_window_render_layer(self.window, self.window.above_enable, self.window_above, io);
 	PPUF_window_render_layer(self.window, self.window.below_enable, self.window_below, io);
 
@@ -401,7 +404,7 @@ function PPUF_render_bg(self, y, source, io, VRAM, CGRAM, above, below, verbose 
 
 	if (hires) {
 		hscroll <<= 1;
-		if (io.interlace) y = y << 1 | +(self.clock.scanline.frame && !self.mosaic_enable);
+		if (io.interlace) y = y << 1 | +(cache.control.field && !self.mosaic_enable);
 	}
 	if (self.mosaic_enable) {
 		y -= (io.mosaic.size - io.mosaic.counter) << +(hires && io.interlace);
@@ -522,7 +525,7 @@ function PPUF_render_bg(self, y, source, io, VRAM, CGRAM, above, below, verbose 
 
 function PPUF_render_mode7(self, ppuy, source, io, VRAM, CGRAM, above, below) {
 	//if (!self.mosaic_enable || !io.mosaic.size === 1)
-	if (dbg.watch_on) console.log('M7!');
+	//if (dbg.watch_on) console.log('M7!');
 	let Y = ppuy;
 	if (self.mosaic_enable) Y -= io.mosaic.size - io.mosaic.counter;
 	let y = !io.mode7.vflip ? Y : 255 - Y;
@@ -1515,54 +1518,50 @@ class SNES_slow_1st_PPU {
 		ctx.putImageData(imgdata, x_origin, y_origin);
 	}
 
-	render_scanline(force=false) {
+	render_scanline(y, force=false) {
 		// render background lines
 		let width = 256;
-		let y = this.clock.scanline.ppu_y;
-		let mosaic_enable = this.cache.bg1.mosaic_enable || this.cache.bg2.mosaic_enable || this.cache.bg3.mosaic_enable || this.cache.bg4.mosaic_enable;
-		if (y === 1)
-			this.cache.mosaic.counter = mosaic_enable ? this.cache.mosaic.size + 1 : 0;
-		if (this.cache.mosaic.counter && --this.cache.mosaic.counter)
-			this.cache.mosaic.counter = mosaic_enable ? this.cache.mosaic.size : 0;
+		//let y = this.clock.scanline.ppu_y;
+		let cache = this.cachelines.lines[y];
 		let output = y * 256;
 		//console.log('ENABLED?', y, !this.clock.scanline.fblank);
 
-		if (this.clock.scanline.fblank) {
+		if (cache.display_disable) {
 			//this.output.fill(0);
 			for (let x = 0; x < 256; x++) {
-				this.output[x+y] = 0;
+				this.output[output+x] = 0;
 			}
 			return;
 		}
 
-		let hires = this.cache.pseudo_hires || this.cache.bg_mode === 5 || this.cache.bg_mode === 6;
+		let hires = cache.pseudo_hires || cache.bg_mode === 5 || cache.bg_mode === 6;
 		let above_color = this.CGRAM[0];
-		let below_color = hires ? this.CGRAM[0] : this.cache.col.fixed_color;
+		let below_color = hires ? this.CGRAM[0] : cache.col.fixed_color;
 		for (let x = 0; x < 256; x++) {
 			this.above[x].set(PPU_source.COL, 0, above_color);
 			this.below[x].set(PPU_source.COL, 0, below_color);
 		}
 
 		dbg.cur_bg = 1;
-		if (dbg.bg1_on) PPUF_render_bg(this.cache.bg1, this.clock.scanline.ppu_y, PPU_source.BG1, this.cache, this.VRAM, this.CGRAM, this.above, this.below);
+		if (dbg.bg1_on) PPUF_render_bg(cache.bg1, y, PPU_source.BG1, cache, this.VRAM, this.CGRAM, this.above, this.below);
 		dbg.cur_bg = 2;
-		if (this.cache.extbg === 0) if (dbg.bg2_on) PPUF_render_bg(this.cache.bg2, this.clock.scanline.ppu_y, PPU_source.BG2, this.cache, this.VRAM, this.CGRAM, this.above, this.below);
+		if (cache.extbg === 0) if (dbg.bg2_on) PPUF_render_bg(cache.bg2, y, PPU_source.BG2, cache, this.VRAM, this.CGRAM, this.above, this.below);
 		dbg.cur_bg = 3;
-		if (dbg.bg3_on) PPUF_render_bg(this.cache.bg3, this.clock.scanline.ppu_y, PPU_source.BG3, this.cache, this.VRAM, this.CGRAM, this.above, this.below, true);
+		if (dbg.bg3_on) PPUF_render_bg(cache.bg3, y, PPU_source.BG3, cache, this.VRAM, this.CGRAM, this.above, this.below, true);
 		dbg.cur_bg = 4;
-		if (dbg.bg4_on) PPUF_render_bg(this.cache.bg4, this.clock.scanline.ppu_y, PPU_source.BG4, this.cache, this.VRAM, this.CGRAM, this.above, this.below);
+		if (dbg.bg4_on) PPUF_render_bg(cache.bg4, y, PPU_source.BG4, cache, this.VRAM, this.CGRAM, this.above, this.below);
 		dbg.cur_bg = 5;
-		if (dbg.obj_on) PPUF_render_objects(this, this.clock.scanline.ppu_y, this.cache.obj, false);
+		if (dbg.obj_on) PPUF_render_objects(this, cache, y, false);
 		// renderObjects here
 		dbg.cur_bg = 2;
-		if (this.cache.extbg === 1) if (dbg.bg2_on) PPUF_render_bg(this.cache.bg2, this.clock.scanline.ppu_y, PPU_source.BG2, this.cache, this.VRAM, this.CGRAM, this.above, this.below);
+		if (cache.extbg === 1) if (dbg.bg2_on) PPUF_render_bg(cache.bg2, y, PPU_source.BG2, cache, this.VRAM, this.CGRAM, this.above, this.below);
 		// render background color windows here
 		if (dbg.render_windows) {
-			PPUF_window_render_layer_mask(this.cache.col.window, this.cache.col.window.above_mask, this.window_above, this.cache);
-			PPUF_window_render_layer_mask(this.cache.col.window, this.cache.col.window.below_mask, this.window_below, this.cache);
+			PPUF_window_render_layer_mask(cache.col.window, cache.col.window.above_mask, this.window_above, cache);
+			PPUF_window_render_layer_mask(cache.col.window, cache.col.window.below_mask, this.window_below, cache);
 		}
 
-		let luma = this.light_table[this.cache.display_brightness];
+		let luma = this.light_table[cache.display_brightness];
 		let cur = 0;
 		let prev = 0;
 

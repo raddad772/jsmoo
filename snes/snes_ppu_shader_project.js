@@ -147,7 +147,7 @@ class PPU_cache {
 
     latch_line() {
         this.current_y++;
-        if (y > 240) {
+        if (this.current_y > 240) {
             // do nothing
         } else {
             this.copy(this.current_y-1, this.current_y);
@@ -165,6 +165,7 @@ class PPU_cache {
         this.OAM = [...OAM];
         this.copy(this.getcur(), 0);
         this.current_y = 0;
+        this.current_l = this.lines[this.current_y];
     }
 
     copy(from, to) {

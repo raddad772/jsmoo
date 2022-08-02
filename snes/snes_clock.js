@@ -179,6 +179,7 @@ class SNES_clock {
 
 	set_fblank(to_what) {
 		this.scanline.fblank = to_what;
+		this.ppu.cache.display_disable = to_what;
 		//this.scanline.fblank = false;
 		//console.log('%c Oh my heavens! ', 'background: #222; color: #bada55');
 		//console.log('%c FBLANK: '+ to_what + ' y' + this.scanline.ppu_y, 'background: #222; color: #bada55');
@@ -219,8 +220,16 @@ class SNES_clock {
 
             this.start_of_scanline = true;
             this.scanline.cycles_since_reset = 0;
+			this.ppu.cachelines.latch_line();
+			this.ppu.cache = this.ppu.cachelines.getl();
 			if (this.scanline.ppu_y < (this.scanline.frame_lines-1)) {
-				this.ppu.render_scanline();
+				let cache = this.ppu.cache;
+				let mosaic_enable = cache.bg1.mosaic_enable || cache.bg2.mosaic_enable || cache.bg3.mosaic_enable || cache.bg4.mosaic_enable;
+				if (this.scanline.ppu_y === 1)
+					cache.mosaic.counter = mosaic_enable ? cache.mosaic.size + 1 : 0;
+				if (cache.mosaic.counter && --cache.mosaic.counter)
+					cache.mosaic.counter = mosaic_enable ? cache.mosaic.size : 0;
+				//this.ppu.render_scanline();
 			}
 			this.scanline.next_scanline();
 			if (this.scanline.vblank_start) {
@@ -228,7 +237,12 @@ class SNES_clock {
 			}
 			this.cycles_since_reset += this.scanline.cycles_since_reset;
             if (this.scanline.frame_since_restart !== this.frame_counter) {
-                this.new_frame();
+                this.ppu.cachelines.latch_frame(this.ppu.VRAM, this.ppu.CGRAM, this.ppu.OAM);
+				this.ppu.cache = this.ppu.cachelines.getl();
+				for (let y = 0; y < this.scanline.bottom_scanline; y++) {
+					this.ppu.render_scanline(y);
+				}
+				this.new_frame();
                 this.frame_counter = this.scanline.frame_since_restart;
             }
         }

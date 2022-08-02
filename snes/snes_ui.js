@@ -171,8 +171,8 @@ function click_bg_dump(which) {
 
 function click_sprite_dump() {
 	snes.ppu.render_sprites_from_memory(0, 520, false);
-	for (let y = 1; y < 240; y++) {
-		PPUF_render_objects(snes.ppu, y, snes.ppu.cache.obj, true);
+	for (let y = 1; y < 224; y++) {
+		PPUF_render_objects(snes.ppu, snes.ppu.cachelines.lines[y], y, true);
 	}
 	snes.ppu.present();
 }
