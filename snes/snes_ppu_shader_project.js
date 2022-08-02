@@ -35,8 +35,6 @@ function PPU_cache_lines() {
         let bgfunc = function(layer) {
             return {
                 layer: layer,
-                window_above: new Uint8Array(256),
-                window_below: new Uint8Array(256),
                 window: windowfunc(),
                 above_enable: 0,
                 below_enable: 0,
@@ -168,12 +166,267 @@ class PPU_cache {
         this.current_l = this.lines[this.current_y];
     }
 
-    copy(from, to) {
+/*    copy(from, to) {
         this.lines[to] = structuredClone(this.lines[from]);
+        /*to = this.lines[to];
+        from = this.lines[from];
+        to.control.field = from.control.field;
+        to.control.num_lines = from.control.num_lines;
+        to.mosaic.size = from.mosaic.size;
+        to.mosaic.counter = from.mosaic.counter;
+        to.mode7.hflip = from.mode7.hflip;
+
+        to.control.y = to;*//*
         this.lines[to].control.y = to;
+    }*/
+    copy(from, to) {
+        to = this.lines[to];
+        from = this.lines[from];
+        to.control.y = from.control.y;
+        to.control.field = from.control.field;
+        to.control.num_lines = from.control.num_lines;
+        to.mosaic.size = from.mosaic.size;
+        to.mosaic.counter = from.mosaic.counter;
+        to.mode7.hflip = from.mode7.hflip;
+        to.mode7.vflip = from.mode7.vflip;
+        to.mode7.repeat = from.mode7.repeat;
+        to.mode7.a = from.mode7.a;
+        to.mode7.b = from.mode7.b;
+        to.mode7.c = from.mode7.c;
+        to.mode7.d = from.mode7.d;
+        to.mode7.x = from.mode7.x;
+        to.mode7.y = from.mode7.y;
+        to.mode7.hoffset = from.mode7.hoffset;
+        to.mode7.voffset = from.mode7.voffset;
+        to.mode7.rx = from.mode7.rx;
+        to.mode7.ry = from.mode7.ry;
+        to.mode7.rhoffset = from.mode7.rhoffset;
+        to.mode7.rvoffset = from.mode7.rvoffset;
+        to.obj.window.one_enable = from.obj.window.one_enable;
+        to.obj.window.one_invert = from.obj.window.one_invert;
+        to.obj.window.two_enable = from.obj.window.two_enable;
+        to.obj.window.two_invert = from.obj.window.two_invert;
+        to.obj.window.mask = from.obj.window.mask;
+        to.obj.window.above_enable = from.obj.window.above_enable;
+        to.obj.window.below_enable = from.obj.window.below_enable;
+        to.obj.window.above_mask = from.obj.window.above_mask;
+        to.obj.window.below_mask = from.obj.window.below_mask;
+        to.obj.window.one_left = from.obj.window.one_left;
+        to.obj.window.one_right = from.obj.window.one_right;
+        to.obj.window.two_left = from.obj.window.two_left;
+        to.obj.window.two_right = from.obj.window.two_right;
+        to.obj.name_select = from.obj.name_select;
+        to.obj.tile_addr = from.obj.tile_addr;
+        to.obj.first = from.obj.first;
+        to.obj.interlace = from.obj.interlace;
+        to.obj.above_enable = from.obj.above_enable;
+        to.obj.below_enable = from.obj.below_enable;
+        to.obj.base_size = from.obj.base_size;
+        to.obj.range_over = from.obj.range_over;
+        to.obj.time_over = from.obj.time_over;
+        to.obj.priority[0] = from.obj.priority[0];
+        to.obj.priority[1] = from.obj.priority[1];
+        to.obj.priority[2] = from.obj.priority[2];
+        to.obj.priority[3] = from.obj.priority[3];
+        to.col.window.one_enable = from.col.window.one_enable;
+        to.col.window.one_invert = from.col.window.one_invert;
+        to.col.window.two_enable = from.col.window.two_enable;
+        to.col.window.two_invert = from.col.window.two_invert;
+        to.col.window.mask = from.col.window.mask;
+        to.col.window.above_enable = from.col.window.above_enable;
+        to.col.window.below_enable = from.col.window.below_enable;
+        to.col.window.above_mask = from.col.window.above_mask;
+        to.col.window.below_mask = from.col.window.below_mask;
+        to.col.window.one_left = from.col.window.one_left;
+        to.col.window.one_right = from.col.window.one_right;
+        to.col.window.two_left = from.col.window.two_left;
+        to.col.window.two_right = from.col.window.two_right;
+        to.col.enable[0] = from.col.enable[0];
+        to.col.enable[1] = from.col.enable[1];
+        to.col.enable[2] = from.col.enable[2];
+        to.col.enable[3] = from.col.enable[3];
+        to.col.enable[4] = from.col.enable[4];
+        to.col.enable[5] = from.col.enable[5];
+        to.col.enable[6] = from.col.enable[6];
+        to.col.direct_color = from.col.direct_color;
+        to.col.blend_mode = from.col.blend_mode;
+        to.col.halve = from.col.halve;
+        to.col.math_mode = from.col.math_mode;
+        to.col.fixed_color = from.col.fixed_color;
+        to.bg1.layer = from.bg1.layer;
+        to.bg1.window.one_enable = from.bg1.window.one_enable;
+        to.bg1.window.one_invert = from.bg1.window.one_invert;
+        to.bg1.window.two_enable = from.bg1.window.two_enable;
+        to.bg1.window.two_invert = from.bg1.window.two_invert;
+        to.bg1.window.mask = from.bg1.window.mask;
+        to.bg1.window.above_enable = from.bg1.window.above_enable;
+        to.bg1.window.below_enable = from.bg1.window.below_enable;
+        to.bg1.window.above_mask = from.bg1.window.above_mask;
+        to.bg1.window.below_mask = from.bg1.window.below_mask;
+        to.bg1.window.one_left = from.bg1.window.one_left;
+        to.bg1.window.one_right = from.bg1.window.one_right;
+        to.bg1.window.two_left = from.bg1.window.two_left;
+        to.bg1.window.two_right = from.bg1.window.two_right;
+        to.bg1.above_enable = from.bg1.above_enable;
+        to.bg1.below_enable = from.bg1.below_enable;
+        to.bg1.mosaic_enable = from.bg1.mosaic_enable;
+        to.bg1.tiledata_addr = from.bg1.tiledata_addr;
+        to.bg1.screen_addr = from.bg1.screen_addr;
+        to.bg1.screen_size = from.bg1.screen_size;
+        to.bg1.tile_size = from.bg1.tile_size;
+        to.bg1.hoffset = from.bg1.hoffset;
+        to.bg1.voffset = from.bg1.voffset;
+        to.bg1.tile_mode = from.bg1.tile_mode;
+        to.bg1.priority[0] = from.bg1.priority[0];
+        to.bg1.priority[1] = from.bg1.priority[1];
+        to.bg2.layer = from.bg2.layer;
+        to.bg2.window.one_enable = from.bg2.window.one_enable;
+        to.bg2.window.one_invert = from.bg2.window.one_invert;
+        to.bg2.window.two_enable = from.bg2.window.two_enable;
+        to.bg2.window.two_invert = from.bg2.window.two_invert;
+        to.bg2.window.mask = from.bg2.window.mask;
+        to.bg2.window.above_enable = from.bg2.window.above_enable;
+        to.bg2.window.below_enable = from.bg2.window.below_enable;
+        to.bg2.window.above_mask = from.bg2.window.above_mask;
+        to.bg2.window.below_mask = from.bg2.window.below_mask;
+        to.bg2.window.one_left = from.bg2.window.one_left;
+        to.bg2.window.one_right = from.bg2.window.one_right;
+        to.bg2.window.two_left = from.bg2.window.two_left;
+        to.bg2.window.two_right = from.bg2.window.two_right;
+        to.bg2.above_enable = from.bg2.above_enable;
+        to.bg2.below_enable = from.bg2.below_enable;
+        to.bg2.mosaic_enable = from.bg2.mosaic_enable;
+        to.bg2.tiledata_addr = from.bg2.tiledata_addr;
+        to.bg2.screen_addr = from.bg2.screen_addr;
+        to.bg2.screen_size = from.bg2.screen_size;
+        to.bg2.tile_size = from.bg2.tile_size;
+        to.bg2.hoffset = from.bg2.hoffset;
+        to.bg2.voffset = from.bg2.voffset;
+        to.bg2.tile_mode = from.bg2.tile_mode;
+        to.bg2.priority[0] = from.bg2.priority[0];
+        to.bg2.priority[1] = from.bg2.priority[1];
+        to.bg3.layer = from.bg3.layer;
+        to.bg3.window.one_enable = from.bg3.window.one_enable;
+        to.bg3.window.one_invert = from.bg3.window.one_invert;
+        to.bg3.window.two_enable = from.bg3.window.two_enable;
+        to.bg3.window.two_invert = from.bg3.window.two_invert;
+        to.bg3.window.mask = from.bg3.window.mask;
+        to.bg3.window.above_enable = from.bg3.window.above_enable;
+        to.bg3.window.below_enable = from.bg3.window.below_enable;
+        to.bg3.window.above_mask = from.bg3.window.above_mask;
+        to.bg3.window.below_mask = from.bg3.window.below_mask;
+        to.bg3.window.one_left = from.bg3.window.one_left;
+        to.bg3.window.one_right = from.bg3.window.one_right;
+        to.bg3.window.two_left = from.bg3.window.two_left;
+        to.bg3.window.two_right = from.bg3.window.two_right;
+        to.bg3.above_enable = from.bg3.above_enable;
+        to.bg3.below_enable = from.bg3.below_enable;
+        to.bg3.mosaic_enable = from.bg3.mosaic_enable;
+        to.bg3.tiledata_addr = from.bg3.tiledata_addr;
+        to.bg3.screen_addr = from.bg3.screen_addr;
+        to.bg3.screen_size = from.bg3.screen_size;
+        to.bg3.tile_size = from.bg3.tile_size;
+        to.bg3.hoffset = from.bg3.hoffset;
+        to.bg3.voffset = from.bg3.voffset;
+        to.bg3.tile_mode = from.bg3.tile_mode;
+        to.bg3.priority[0] = from.bg3.priority[0];
+        to.bg3.priority[1] = from.bg3.priority[1];
+        to.bg4.layer = from.bg4.layer;
+        to.bg4.window.one_enable = from.bg4.window.one_enable;
+        to.bg4.window.one_invert = from.bg4.window.one_invert;
+        to.bg4.window.two_enable = from.bg4.window.two_enable;
+        to.bg4.window.two_invert = from.bg4.window.two_invert;
+        to.bg4.window.mask = from.bg4.window.mask;
+        to.bg4.window.above_enable = from.bg4.window.above_enable;
+        to.bg4.window.below_enable = from.bg4.window.below_enable;
+        to.bg4.window.above_mask = from.bg4.window.above_mask;
+        to.bg4.window.below_mask = from.bg4.window.below_mask;
+        to.bg4.window.one_left = from.bg4.window.one_left;
+        to.bg4.window.one_right = from.bg4.window.one_right;
+        to.bg4.window.two_left = from.bg4.window.two_left;
+        to.bg4.window.two_right = from.bg4.window.two_right;
+        to.bg4.above_enable = from.bg4.above_enable;
+        to.bg4.below_enable = from.bg4.below_enable;
+        to.bg4.mosaic_enable = from.bg4.mosaic_enable;
+        to.bg4.tiledata_addr = from.bg4.tiledata_addr;
+        to.bg4.screen_addr = from.bg4.screen_addr;
+        to.bg4.screen_size = from.bg4.screen_size;
+        to.bg4.tile_size = from.bg4.tile_size;
+        to.bg4.hoffset = from.bg4.hoffset;
+        to.bg4.voffset = from.bg4.voffset;
+        to.bg4.tile_mode = from.bg4.tile_mode;
+        to.bg4.priority[0] = from.bg4.priority[0];
+        to.bg4.priority[1] = from.bg4.priority[1];
+        to.window.one_enable = from.window.one_enable;
+        to.window.one_invert = from.window.one_invert;
+        to.window.two_enable = from.window.two_enable;
+        to.window.two_invert = from.window.two_invert;
+        to.window.mask = from.window.mask;
+        to.window.above_enable = from.window.above_enable;
+        to.window.below_enable = from.window.below_enable;
+        to.window.above_mask = from.window.above_mask;
+        to.window.below_mask = from.window.below_mask;
+        to.window.one_left = from.window.one_left;
+        to.window.one_right = from.window.one_right;
+        to.window.two_left = from.window.two_left;
+        to.window.two_right = from.window.two_right;
+        to.oam_addr = from.oam_addr;
+        to.oam_base_addr = from.oam_base_addr;
+        to.oam_priority = from.oam_priority;
+        to.overscan = from.overscan;
+        to.pseudo_hires = from.pseudo_hires;
+        to.extbg = from.extbg;
+        to.bg_mode = from.bg_mode;
+        to.bg_priority = from.bg_priority;
+        to.display_brightness = from.display_brightness;
+        to.display_disable = from.display_disable;
+        to.control.y = from.control.y;
     }
 
 }
+
+function generate_copy_tofrom() {
+    let indent = '        ';
+    let outstr = '';
+
+    let addl = function(what) { outstr += indent + what + '\n'};
+
+
+    outstr += '    copy(from, to) {\n';
+    addl('to = this.lines[to];');
+    addl('from = this.lines[from];');
+    let pstr;
+    let whatsoever = PPU_cache_lines()[0];
+    for (let propertyName in whatsoever) {
+        if (typeof whatsoever[propertyName] === 'object') {
+            for (let pname2 in whatsoever[propertyName]) {
+                if (typeof whatsoever[propertyName][pname2] === 'object') {
+                    for (let pname3 in whatsoever[propertyName][pname2]) {
+                        //console.log('!', pname3);
+                        if ('0123456789'.indexOf(pname3) !== -1)
+                            pstr = propertyName + '.' + pname2 + '[' + pname3 + ']';
+                        else
+                            pstr = propertyName + '.' + pname2 + '.' + pname3;
+                        addl('to.' + pstr + ' = from.' + pstr + ';');
+                    }
+                    continue;
+                }
+                if ('0123456789'.indexOf(pname2) !== -1)
+                    pstr = propertyName + '[' + pname2 + ']';
+                else
+                    pstr = propertyName + '.' + pname2;
+                addl('to.' + pstr + ' = from.' + pstr + ';');
+            }
+            continue;
+        }
+        addl('to.' + propertyName + ' = from.' + propertyName + ';');
+    }
+
+    outstr += indent + 'to.control.y = from.control.y;\n';
+    outstr += '    }';
+    return outstr;
+}
+//console.log(generate_copy_tofrom());
 
 function get_pixel(screen_y, screen_x, VRAM, CGRAM, OAM, io_cache) {
 

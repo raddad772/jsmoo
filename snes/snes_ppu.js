@@ -29,6 +29,9 @@ const PPU_tile_mode = Object.freeze({
 
 const PPU_BPPBACK = {0: 'BPP2', 1: 'BPP4', 2: 'BPP8', 3: 'Mode7', 4: 'Inactive'}
 
+let PPUF_window_above = new Uint8Array(256);
+let PPUF_window_below = new Uint8Array(256);
+
 class PPU_object_item {
 	constructor() {
 		this.valid = 0;
@@ -178,10 +181,10 @@ function PPUF_render_objects(self, cache, ppu_y, force=false)
 {
 	let obj = cache.obj;
 	if (!force && !obj.above_enable && !obj.below_enable) return;
-	PPUF_window_render_layer(obj.window, obj.window.above_enable, self.window_above, cache, true);
-	PPUF_window_render_layer(obj.window, obj.window.below_enable, self.window_below, cache);
+	PPUF_window_render_layer(obj.window, obj.window.above_enable, PPUF_window_above, cache, true);
+	PPUF_window_render_layer(obj.window, obj.window.below_enable, PPUF_window_below, cache);
 	if (dbg.log_windows) console.log(obj.window);
-	if (dbg.log_windows) console.log(snes.clock.scanline.ppu_y, self.window_above, self.window_below);
+	if (dbg.log_windows) console.log(snes.clock.scanline.ppu_y, PPUF_window_above, PPUF_window_below);
 	let item_count = 0;
 	let tile_count = 0;
 	for (let n = 0; n < PPU_ITEM_LIMIT; n++) {
@@ -308,8 +311,8 @@ function PPUF_render_objects(self, cache, ppu_y, force=false)
 			//self.above[x].set(source, priority[x], self.CRAM[palette[x]]);
 			//self.below[x].set(source, priority[x], self.CRAM[palette[x]]);
 		} else {
-			if (obj.above_enable && (self.window_above[x] === 0) && priority[x] > self.above[x].priority) self.above[x].set(source, priority[x], self.CGRAM[palette[x]]);
-			if (obj.below_enable && (self.window_below[x] === 0) && priority[x] > self.below[x].priority) self.below[x].set(source, priority[x], self.CGRAM[palette[x]]);
+			if (obj.above_enable && (PPUF_window_above[x] === 0) && priority[x] > self.above[x].priority) self.above[x].set(source, priority[x], self.CGRAM[palette[x]]);
+			if (obj.below_enable && (PPUF_window_below[x] === 0) && priority[x] > self.below[x].priority) self.below[x].set(source, priority[x], self.CGRAM[palette[x]]);
 		}
 	}
 }
@@ -379,8 +382,8 @@ function PPUF_render_bg(self, y, source, io, VRAM, CGRAM, above, below, verbose 
 
 	//if (dbg.watch_on) console.log(self);
 
-	PPUF_window_render_layer(self.window, self.window.above_enable, self.window_above, io);
-	PPUF_window_render_layer(self.window, self.window.below_enable, self.window_below, io);
+	PPUF_window_render_layer(self.window, self.window.above_enable, PPUF_window_above, io);
+	PPUF_window_render_layer(self.window, self.window.below_enable, PPUF_window_below, io);
 
 	let hires = +(io.bg_mode === 5 || io.bg_mode === 6);
 	let offset_per_tile_mode = io.bg_mode === 2 || io.bg_mode === 4 || io.bg_mode === 6;
@@ -498,10 +501,10 @@ function PPUF_render_bg(self, y, source, io, VRAM, CGRAM, above, below, verbose 
 
 			if (!hires) {
 				if (dbg.render_windows) {
-					if (self.above_enable && !self.window_above[x] && mosaic_priority > above[x].priority)
+					if (self.above_enable && !PPUF_window_above[x] && mosaic_priority > above[x].priority)
 					//if (tbg.above_enable && mosaic_priority > above[x].priority)
 						above[x].set(source, mosaic_priority, mosaic_color);
-					if (self.below_enable && !self.window_below[x] && mosaic_priority > below[x].priority)
+					if (self.below_enable && !PPUF_window_below[x] && mosaic_priority > below[x].priority)
 					//if (tbg.below_enable && mosaic_priority > below[x].priority)
 						below[x].set(source, mosaic_priority, mosaic_color);
 				}
@@ -514,9 +517,9 @@ function PPUF_render_bg(self, y, source, io, VRAM, CGRAM, above, below, verbose 
 			} else {
 				let bx = x >>> 1;
 				if (x & 1) {
-					if (self.above_enable && !self.window_above[bx] && mosaic_priority > above[bx].priority) above[bx].set(source, mosaic_priority, mosaic_color);
+					if (self.above_enable && !PPUF_window_above[bx] && mosaic_priority > above[bx].priority) above[bx].set(source, mosaic_priority, mosaic_color);
 				} else {
-					if (self.below_enable && !self.window_below[bx] && mosaic_priority > below[bx].priority) below[bx].set(source, mosaic_priority, mosaic_color);
+					if (self.below_enable && !PPUF_window_below[bx] && mosaic_priority > below[bx].priority) below[bx].set(source, mosaic_priority, mosaic_color);
 				}
 			}
 		}
@@ -550,8 +553,8 @@ function PPUF_render_mode7(self, ppuy, source, io, VRAM, CGRAM, above, below) {
 	let origin_x = (a * hohc & ~63) + (b * vovc & ~63) + (b * y & ~63) + (hcenter << 8);
 	let origin_y = (c * hohc & ~63) + (d * vovc & ~63) + (d * y & ~63) + (vcenter << 8);
 
-	PPUF_window_render_layer(self.window, self.window.above_enable, self.window_above, io);
-	PPUF_window_render_layer(self.window, self.window.below_enable, self.window_below, io);
+	PPUF_window_render_layer(self.window, self.window.above_enable, PPUF_window_above, io);
+	PPUF_window_render_layer(self.window, self.window.below_enable, PPUF_window_below, io);
 
 	for (let X = 0; X < 256; X++) {
 		let x = !io.mode7.hflip ? X : 255 - X;
@@ -588,10 +591,10 @@ function PPUF_render_mode7(self, ppuy, source, io, VRAM, CGRAM, above, below) {
 		if (!mosaic_palette) {
 			continue;
 		}
-		//if (dbg.watch_on) console.log(self.above_enable, self.window_below[X], mosaic_priority, mosaic_color, mosaic_palette, source);
+		//if (dbg.watch_on) console.log(self.above_enable, PPUF_window_below[X], mosaic_priority, mosaic_color, mosaic_palette, source);
 
-		if (self.above_enable && !self.window_above[X] && (mosaic_priority > above[X].priority)) above[X].set(source, mosaic_priority, mosaic_color);
-		if (self.below_enable && !self.window_below[X] && (mosaic_priority > below[X].priority)) below[X].set(source, mosaic_priority, mosaic_color);
+		if (self.above_enable && !PPUF_window_above[X] && (mosaic_priority > above[X].priority)) above[X].set(source, mosaic_priority, mosaic_color);
+		if (self.below_enable && !PPUF_window_below[X] && (mosaic_priority > below[X].priority)) below[X].set(source, mosaic_priority, mosaic_color);
 	}
 }
 
