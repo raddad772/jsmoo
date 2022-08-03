@@ -258,7 +258,7 @@ class PPU_multithreaded_cache {
             let start_time = new Date();
             while(this.data.atomic_int32[0] === 1) {
                 let cur_time = new Date();
-                if ((cur_time - start_time) > 3000) {
+                if ((cur_time - start_time) > 6000) {
                     console.log('BUSY LOOP STALL!')
                     dbg.break();
                     return;
