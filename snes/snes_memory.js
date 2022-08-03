@@ -95,7 +95,7 @@ class snes_memmap {
 		let mkind = this.readmap[b].kind;
 		let outaddr = this.readmap[b].offset + (addr & 0xFFF);
 		//console.log('IN ADDRESS', hex0x6(addr), 'CALC ADDRESS', hex0x6(outaddr));
-		//if (addr === 16379267) debugger;
+		//if (addr === 16379267) Mdebugger;
 		if (addr === 0x800000) debugger;
 		switch(mkind) {
 			case MAP_TI.OPEN_BUS:

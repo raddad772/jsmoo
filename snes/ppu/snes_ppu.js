@@ -3,85 +3,9 @@
 
 // First go at a PPU
 // R/W code should be fine, but drawing...we'll see.
-const PPU_NUM_WORKERS = 8;
-const PPU_USE_WORKERS = false;
-const PPU_ITEM_LIMIT = 32;
-const PPU_TILE_LIMIT = 34;
-const PPU_obj_widths = [[8, 8, 8, 16, 16, 32, 16, 16], [16, 32, 64, 32, 64, 64, 32, 32]];
-const PPU_obj_heights = [[8, 8, 8, 16, 16, 32, 32, 32], [16, 32, 64, 32, 64, 64, 64, 32]];
-
-const PPU_source = Object.freeze({
-	BG1: 0,
-	BG2: 1,
-	BG3: 2,
-	BG4: 3,
-	OBJ1: 4,
-	OBJ2: 5,
-	COL: 6
-});
-
-const PPU_tile_mode = Object.freeze({
-	BPP2: 0,
-	BPP4: 1,
-	BPP8: 2,
-	Mode7: 3,
-	Inactive: 4
-});
-
-const PPU_BPPBACK = {0: 'BPP2', 1: 'BPP4', 2: 'BPP8', 3: 'Mode7', 4: 'Inactive'}
-
-let PPUF_window_above = new Uint8Array(256);
-let PPUF_window_below = new Uint8Array(256);
-
-class PPU_object_item {
-	constructor() {
-		this.valid = 0;
-		this.index = 0;
-		this.width = 0;
-		this.height = 0;
-	}
-}
-
-class PPU_object_tile {
-	constructor() {
-		this.valid = 0;
-		this.x = 0;
-		this.y = 0;
-		this.priority = 0;
-		this.palette = 0;
-		this.hflip = 0;
-		this.data = 0;
-	}
-}
-
-
-class PPU_object {
-	constructor() {
-		this.x = 0;
-		this.y = 0;
-		this.character = 0;
-		this.nameselect = 0;
-		this.vflip = 0;
-		this.hflip = 0;
-		this.priority = 0;
-		this.palette = 0;
-		this.size = 0;
-	}
-}
-
-class PPU_pixel {
-	constructor() {
-		this.source = 0;
-		this.priority = 0;
-		this.color = 0;
-	}
-
-	set(source, priority, color) {
-		this.source = source;
-		this.priority = priority;
-		this.color = color;
-	}
-}
+const PPU_NUM_WORKERS = 2;
+const PPU_USE_WORKERS = true;
+const PPU_USE_BLOBWORKERS = true;
 
 class SNES_slow_1st_PPU {
 	/**
@@ -127,14 +51,24 @@ class SNES_slow_1st_PPU {
 			this.above[i] = new PPU_pixel();
 			this.below[i] = new PPU_pixel();
 		}
+
+		this.atomic_share = new SharedArrayBuffer(40);
+		this.atomic_int32 = new Int32Array(this.atomic_share);
+		this.atomic_int32[0] = 0;
 		this.workers = new Array(PPU_NUM_WORKERS);
+		this.workers_heard_from = 0;
 		if (PPU_USE_WORKERS) {
 			for (let i = 0; i < PPU_NUM_WORKERS; i++) {
 				//this.workers[i] = new Worker('snes_ppu_worker.js');
-				this.workers[i] = new Worker(URL.createObjectURL(new Blob(["("+PPU_worker_function.toString()+")()"], {type: 'text/javascript'})));
+				if (PPU_USE_BLOBWORKERS) {
+					this.workers[i] = new Worker(URL.createObjectURL(new Blob(["(" + PPU_worker_function.toString() + ")()"], {type: 'text/javascript'})));
+				} else {
+					this.workers[i] = new Worker('snes_ppu_worker.js');
+				}
+
 				let wrk = this.workers[i];
 				//const myWorker = new Worker("worker.js");
-				this.workers[i].onmessage = this.worker_message.bind(this);
+				this.workers[i].onmessage = this.on_worker_message.bind(this);
 			}
 		}
 
@@ -188,7 +122,7 @@ class SNES_slow_1st_PPU {
 		this.sprite_line = new Uint8Array(256 * 3);
 		this.objects = [];
 		for (let i = 0; i < 128; i++) {
-			this.objects.push(new PPU_object);
+			this.objects.push(new PPU_object());
 		}
 
 		this.ppu_inc = [1, 32, 128, 128];
@@ -207,9 +141,25 @@ class SNES_slow_1st_PPU {
 		this.workers_completed = new Array(PPU_NUM_WORKERS);
 	}
 
-	worker_message(e) {
+	on_worker_message(e) {
 		let msg = e.data;
-		console.log('Message received from worker', msg.worker_num);
+		console.log('Got worker ' + msg.worker_num + ' message, ' + (this.workers_heard_from+1) + ' replies');
+		for (let y = msg.y_start; y < msg.y_end; y++) {
+			let my_oy = (y)*256;
+			let worker_oy = (y-msg.y_start)*256;
+			for (let x = 0; x < 256; x++) {
+				this.output[my_oy+x] = msg.output_data[worker_oy+x];
+			}
+		}
+		console.log('Finished worker response', msg.worker_num);
+		this.workers_heard_from++;
+
+		if (this.workers_heard_from === PPU_NUM_WORKERS) {
+			console.log('YAY NEW FRAME COMPLETE!');
+			this.last_frame_rendered++;
+			this.atomic_int32[0] = 0;
+			this.present();
+		}
 	}
 
 	present() {
@@ -1033,15 +983,19 @@ class SNES_slow_1st_PPU {
 				this.render_scanline(y);
 			}
 		} else {
-			while (!this.frame_completed) {
-				console.log('WAIT');
+			if (this.atomic_int32[0] === 1) {
+				console.log('ENTER BUSY LOOP');
+				while(this.atomic_int32[0] === 1) {}
 			}
+			this.atomic_int32[0] = 1;
 			this.frame_completed = false;
 
-			let scanlines_per_worker = this.clock.scanline.bottom_scanline / PPU_NUM_WORKERS;
+			let sln = this.clock.scanline.bottom_scanline === 225 ? 224 : this.clock.scanline.bottom_scanline;
+			let scanlines_per_worker = Math.floor(sln / PPU_NUM_WORKERS);
 			let y = 0;
+			this.workers_heard_from = 0;
 			for(let w = 0; w < PPU_NUM_WORKERS; w++) {
-				this.workers[w].postMessage({worker_num: w, VRAM: this.cache.VRAM, CGRAM: this.cache.CGRAM, Obj: this.objects, y_start: y, y_end: y+scanlines_per_worker, cachelines: this.cachelines})
+				this.workers[w].postMessage({worker_num: w, y_start: y, y_end: y+scanlines_per_worker, cachelines: this.cachelines, light_table: this.light_table});
 				this.workers_completed[w] = false;
 				y += scanlines_per_worker;
 			}

@@ -1,5 +1,82 @@
 "use strict";
 
+class PPU_pixel {
+	constructor() {
+		this.source = 0;
+		this.priority = 0;
+		this.color = 0;
+	}
+
+	set(source, priority, color) {
+		this.source = source;
+		this.priority = priority;
+		this.color = color;
+	}
+}
+
+const PPU_ITEM_LIMIT = 32;
+const PPU_TILE_LIMIT = 34;
+const PPU_obj_widths = [[8, 8, 8, 16, 16, 32, 16, 16], [16, 32, 64, 32, 64, 64, 32, 32]];
+const PPU_obj_heights = [[8, 8, 8, 16, 16, 32, 32, 32], [16, 32, 64, 32, 64, 64, 64, 32]];
+
+const PPU_source = Object.freeze({
+	BG1: 0,
+	BG2: 1,
+	BG3: 2,
+	BG4: 3,
+	OBJ1: 4,
+	OBJ2: 5,
+	COL: 6
+});
+
+const PPU_tile_mode = Object.freeze({
+	BPP2: 0,
+	BPP4: 1,
+	BPP8: 2,
+	Mode7: 3,
+	Inactive: 4
+});
+
+const PPU_BPPBACK = {0: 'BPP2', 1: 'BPP4', 2: 'BPP8', 3: 'Mode7', 4: 'Inactive'}
+
+let PPUF_window_above = new Uint8Array(256);
+let PPUF_window_below = new Uint8Array(256);
+
+class PPU_object_item {
+	constructor() {
+		this.valid = 0;
+		this.index = 0;
+		this.width = 0;
+		this.height = 0;
+	}
+}
+
+class PPU_object_tile {
+	constructor() {
+		this.valid = 0;
+		this.x = 0;
+		this.y = 0;
+		this.priority = 0;
+		this.palette = 0;
+		this.hflip = 0;
+		this.data = 0;
+	}
+}
+
+class PPU_object {
+	constructor() {
+		this.x = 0;
+		this.y = 0;
+		this.character = 0;
+		this.nameselect = 0;
+		this.vflip = 0;
+		this.hflip = 0;
+		this.priority = 0;
+		this.palette = 0;
+		this.size = 0;
+	}
+}
+
 function PPUF_blend(x, y, halve, math_mode) {
 	if (!math_mode) { // add
 		if (!halve) {
