@@ -233,14 +233,12 @@ class SNES_clock {
 			}
 			this.scanline.next_scanline();
 			if (this.scanline.vblank_start) {
+				this.ppu.render_frame();
 				this.ppu_display_due = true;
-				for (let y = 0; y < this.scanline.bottom_scanline; y++) {
-					this.ppu.render_scanline(y);
-				}
 			}
 			this.cycles_since_reset += this.scanline.cycles_since_reset;
             if (this.scanline.frame_since_restart !== this.frame_counter) {
-                this.ppu.cachelines.latch_frame(this.ppu.VRAM, this.ppu.CGRAM, this.ppu.OAM);
+                this.ppu.cachelines.latch_frame(this.ppu.VRAM, this.ppu.CGRAM, this.ppu.OAM, this.ppu.objects);
 				this.ppu.cache = this.ppu.cachelines.getl();
 				this.new_frame();
                 this.frame_counter = this.scanline.frame_since_restart;

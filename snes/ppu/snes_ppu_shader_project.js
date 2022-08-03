@@ -133,6 +133,18 @@ class PPU_cache {
         this.VRAM = new Uint16Array(0x8000);
         this.CGRAM = new Uint16Array(0x100);
         this.OAM = new Uint8Array(544);
+        this.objects = [];
+        for (let i = 0; i < 128; i++) {
+			this.objects.push(new PPU_object());
+		}
+
+
+		this.items = [];
+		this.tiles = [];
+		for (let i = 0; i < 128; i++) {
+			this.items[i] = new PPU_object_item();
+			this.tiles[i] = new PPU_object_tile();
+		}
 
         this.current_l = this.lines[0];
         this.current_y = 0;
@@ -157,10 +169,11 @@ class PPU_cache {
         return this.current_y <= 240 ? this.current_y : 240;
     }
 
-    latch_frame(VRAM, CGRAM, OAM) {
+    latch_frame(VRAM, CGRAM, OAM, objects) {
         this.VRAM = [...VRAM];
         this.CGRAM = [...CGRAM];
         this.OAM = [...OAM];
+        this.objects = [...objects];
         this.copy(this.getcur(), 0);
         this.current_y = 0;
         this.current_l = this.lines[this.current_y];
