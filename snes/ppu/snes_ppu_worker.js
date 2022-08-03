@@ -63,6 +63,13 @@ class PPU_object_tile {
 	}
 }
 
+let PPUF_items = [];
+let PPUF_tiles = [];
+for (let i = 0; i < 128; i++) {
+	PPUF_items[i] = new PPU_object_item();
+	PPUF_tiles[i] = new PPU_object_tile();
+}
+
 class PPU_object {
 	constructor() {
 		this.x = 0;
@@ -101,13 +108,6 @@ function PPUF_blend(x, y, halve, math_mode) {
 
 function PPUF_pixel(x, cache, above, below, window_above, window_below) {
 	//return this.blend(above.color, below.color, this.cache.col.halve);
-	/*if (!dbg.render_windows) {
-		if (!cache.col.blend_mode) {
-			return PPUF_blend(above.color, cache.col.fixed_color, cache.col.halve && window_above[x], cache.col.math_mode);
-		}
-		return PPUF_blend(above.color, below.color, cache.col.halve && window_above[x] && below.source !== PPU_source.COL, cache.col.math_mode);
-	}*/
-
 	if (!window_above[x]) {
 		above.color = 0;
 	}
@@ -148,33 +148,20 @@ function PPUF_render_scanline(y, cachelines, above, below, light_table, output_a
 		below[x].set(PPU_source.COL, 0, below_color);
 	}
 
-	//dbg.cur_bg = 1;
-	//if (dbg.bg1_on)
 	PPUF_render_bg(cache.bg1, y, PPU_source.BG1, cache, cachelines.VRAM, cachelines.CGRAM, above, below);
-	//dbg.cur_bg = 2;
-	if (cache.extbg === 0)// if (dbg.bg2_on)
+	if (cache.extbg === 0)
 	PPUF_render_bg(cache.bg2, y, PPU_source.BG2, cache, cachelines.VRAM, cachelines.CGRAM, above, below);
-	//dbg.cur_bg = 3;
-	//if (dbg.bg3_on)
 	PPUF_render_bg(cache.bg3, y, PPU_source.BG3, cache, cachelines.VRAM, cachelines.CGRAM, above, below, true);
-	//dbg.cur_bg = 4;
-	//if (dbg.bg4_on)
 	PPUF_render_bg(cache.bg4, y, PPU_source.BG4, cache, cachelines.VRAM, cachelines.CGRAM, above, below);
-	//dbg.cur_bg = 5;
-	//if (dbg.obj_on)
 
 	// SPRITES!
 	PPUF_render_objects(cachelines, cache, y, above, below);
 
 	// renderObjects here
-	//dbg.cur_bg = 2;
-	if (cache.extbg === 1)// if (dbg.bg2_on)
+	if (cache.extbg === 1)
 		PPUF_render_bg(cache.bg2, y, PPU_source.BG2, cache, cachelines.VRAM, cachelines.CGRAM, above, below);
-	// render background color windows here
-	//if (dbg.render_windows) {
 		PPUF_window_render_layer_mask(cache.col.window, cache.col.window.above_mask, PPUF_window_above, cache);
 		PPUF_window_render_layer_mask(cache.col.window, cache.col.window.below_mask, PPUF_window_below, cache);
-	//}
 
 	let luma = light_table[cache.display_brightness];
 	let cur = 0;
@@ -267,16 +254,13 @@ function PPUF_window_render_layer_mask(window, mask, output, io) {
 
 function PPUF_window_render_layer(window, enable, output, io, extended_log=false) {
 	if (!enable || (!window.one_enable && !window.two_enable)) {
-		if (dbg.log_windows) console.log(snes.clock.scanline.ppu_y, dbg.cur_bg, 'FILL 0')
 		output.fill(0);
 		return;
 	}
-	if (dbg.log_windows) console.log(snes.clock.scanline.ppu_y, dbg.cur_bg, io.window.one_left, io.window.one_right, window.one_invert, window.one_enable, window.two_enable)
 
 	if (window.one_enable && !window.two_enable) {
 		let set = 1 ^ window.one_invert;
 		let clear = +(!set);
-		if (dbg.log_windows && extended_log) console.log('CASE 1 clear set', clear, set);
 		for (let x in output) {
 			output[x] = x >= io.window.one_left && x <= io.window.one_right ? set : clear;
 		}
@@ -286,14 +270,12 @@ function PPUF_window_render_layer(window, enable, output, io, extended_log=false
 	if (window.two_enable && !window.one_enable) {
 		let set = 1 ^ window.two_invert;
 		let clear = +(!set);
-		if (dbg.log_windows && extended_log) console.log('CASE 2 clear set', clear, set);
 		for (let x in output) {
 			output[x] = x >= io.window.two_left && x <= io.window.two_right ? set : clear;
 		}
 		return;
 	}
 
-	if (dbg.log_windows && extended_log) console.log('CASE 3 left right', io.window.one_left, io.window.one_right);
 	for (let x in output) {
 		let one_mask = +(x >= io.window.one_left && x <= io.window.one_right) ^ window.one_invert;
 		let two_mask = +(x >= io.window.two_left && x <= io.window.two_right) ^ window.two_invert;
@@ -328,15 +310,13 @@ function PPUF_render_objects(self, cache, ppu_y, above, below)
 	if (!obj.above_enable && !obj.below_enable) return;
 	PPUF_window_render_layer(obj.window, obj.window.above_enable, PPUF_window_above, cache);
 	PPUF_window_render_layer(obj.window, obj.window.below_enable, PPUF_window_below, cache);
-	//if (dbg.log_windows) console.log(obj.window);
-	//if (dbg.log_windows) console.log(snes.clock.scanline.ppu_y, PPUF_window_above, PPUF_window_below);
 	let item_count = 0;
 	let tile_count = 0;
 	for (let n = 0; n < PPU_ITEM_LIMIT; n++) {
-		self.items[n].valid = 0;
+		PPUF_items[n].valid = 0;
 	}
 	for (let n = 0; n < PPU_TILE_LIMIT; n++) {
-		self.tiles[n].valid = 0;
+		PPUF_tiles[n].valid = 0;
 	}
 
 	for (let n = 0; n < 128; n++) {
@@ -355,12 +335,12 @@ function PPUF_render_objects(self, cache, ppu_y, above, below)
 			(((object.y + height) >= 256) && (ppu_y < ((object.y + height) & 255)))
 		) {
 			if (item_count++ >= PPU_ITEM_LIMIT) break;
-			self.items[item_count - 1] = item;
+			PPUF_items[item_count - 1] = item;
 		}
 	}
 
 	for (let n = PPU_ITEM_LIMIT - 1; n >= 0; n--) {
-		let item = self.items[n];
+		let item = PPUF_items[n];
 		if (!item.valid) continue;
 
 		let object = self.objects[item.index];
@@ -408,7 +388,7 @@ function PPUF_render_objects(self, cache, ppu_y, above, below)
 			tile.data |= self.VRAM[(addr + 8) & 0x7FFF] << 16;
 
 			if (tile_count++ >= PPU_TILE_LIMIT) break;
-			self.tiles[tile_count - 1] = tile;
+			PPUF_tiles[tile_count - 1] = tile;
 		}
 	}
 	//if ((item_count>0 || tile_count>0) && (y < 241)) console.log('ITEM AND TILE COUNT', y, item_count, tile_count);
@@ -419,7 +399,7 @@ function PPUF_render_objects(self, cache, ppu_y, above, below)
 	let palette = new Array(256);
 	let priority = new Array(256);
 	for (let n = 0; n < PPU_TILE_LIMIT; n++) {
-		let tile = self.tiles[n];
+		let tile = PPUF_tiles[n];
 		if (!tile.valid) continue;
 
 		let tile_x = tile.x;
@@ -443,8 +423,6 @@ function PPUF_render_objects(self, cache, ppu_y, above, below)
 			tile_x++;
 		}
 	}
-
-	//if (force & dbg.watch_on) console.log(self.items, self.tiles);
 
 	for (let x = 0; x < 256; x++) {
 		if (!priority[x]) continue;
@@ -496,8 +474,6 @@ function PPUF_render_bg(bg, y, source, io, VRAM, CGRAM, above, below, verbose = 
 	if (!bg.above_enable && !bg.below_enable) return;
 	if (bg.tile_mode === PPU_tile_mode.Mode7) return PPUF_render_mode7(bg, y, source, io, VRAM, CGRAM, above, below);
 	if (bg.tile_mode === PPU_tile_mode.Inactive) return;
-
-	//if (dbg.watch_on) console.log(bg);
 
 	PPUF_window_render_layer(bg.window, bg.window.above_enable, PPUF_window_above, io);
 	PPUF_window_render_layer(bg.window, bg.window.below_enable, PPUF_window_below, io);
@@ -635,7 +611,6 @@ function PPUF_render_bg(bg, y, source, io, VRAM, CGRAM, above, below, verbose = 
 
 function PPUF_render_mode7(self, ppuy, source, io, VRAM, CGRAM, above, below) {
 	//if (!self.mosaic_enable || !io.mosaic.size === 1)
-	//if (dbg.watch_on) console.log('M7!');
 	let Y = ppuy;
 	if (self.mosaic_enable) Y -= io.mosaic.size - io.mosaic.counter;
 	let y = !io.mode7.vflip ? Y : 255 - Y;
@@ -690,15 +665,12 @@ function PPUF_render_mode7(self, ppuy, source, io, VRAM, CGRAM, above, below) {
 			if (io.col.direct_color && source === PPU_source.BG1) {
 				mosaic_color = PPU_direct_color(0, palette);
 			} else {
-				//if (dbg.watch_on) console.log('MOSAIC COLOR', mosaic_color);
 				mosaic_color = CGRAM[palette];
 			}
 		}
-		//if (dbg.watch_on) console.log('MOSAIC PALETTE', mosaic_palette);
 		if (!mosaic_palette) {
 			continue;
 		}
-		//if (dbg.watch_on) console.log(self.above_enable, PPUF_window_below[X], mosaic_priority, mosaic_color, mosaic_palette, source);
 
 		if (self.above_enable && !PPUF_window_above[X] && (mosaic_priority > above[X].priority)) above[X].set(source, mosaic_priority, mosaic_color);
 		if (self.below_enable && !PPUF_window_below[X] && (mosaic_priority > below[X].priority)) below[X].set(source, mosaic_priority, mosaic_color);
@@ -714,17 +686,25 @@ function PPUF_render_mode7(self, ppuy, source, io, VRAM, CGRAM, above, below) {
     }
 
     onmessage = function (e) {
-        console.log('Worker ' + e.data.worker_num + ': Message received from main script');
-        let msg = e.data;
+        //console.log('Worker ' + e.data.worker_num + ': Message received from main script');
+		let msg = e.data;
         let y_start = msg.y_start;
         let y_end = msg.y_end;
-        let reply_output = new Uint16Array(256*((y_end-y_start)+1));
-        /*for (let y = y_start; y < y_end; y++) {
-            PPUF_render_scanline(y, msg.cachelines, PPUW_above, PPUW_below, msg.light_table, reply_output, (y-y_start)*256);
-        }*/
-		console.log('Worker ' + msg.worker_num + ' : replying with my own  message');
-        const reply = {worker_num: msg.worker_num, y_start: msg.y_start, y_end: msg.y_end, output_data: reply_output}
-        postMessage(reply);
+        //console.log(msg.y_start, msg.y_end)
+        for (let y = y_start; y < y_end; y++) {
+            if (y > msg.bottom_line) {
+				break;
+			}
+			PPUF_render_scanline(y, msg.cache, PPUW_above, PPUW_below, msg.cache.light_table, msg.cache.output, y*256);
+        }
+		msg.cache.atomic_int32[2]++;
+		if (msg.cache.atomic_int32[2] >= msg.num_of_workers) {
+			// Send message to present()
+			postMessage({kind: 'present'});
+			// Release lock
+			msg.cache.atomic_int32[0] = 0;
+			//msg.cache.atomic_int32[2] = 0;
+		}
     }
 }
 

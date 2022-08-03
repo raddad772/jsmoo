@@ -173,7 +173,7 @@ class SNES_clock {
     new_frame() {
         // I forget why I even put this logic in here...delay maybe? 1/0 on that register???
 		//console.log('NEW FRAME', this.frames_since_restart+1);
-		this.ppu.present();
+		//this.ppu.present();
 		this.frames_since_restart++;
     }
 

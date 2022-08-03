@@ -127,17 +127,44 @@ function PPU_cache_lines() {
     return lines;
 }
 
-class PPU_cache {
-    constructor() {
-        this.lines = PPU_cache_lines();
-        this.VRAM = new Uint16Array(0x8000);
-        this.CGRAM = new Uint16Array(0x100);
-        this.OAM = new Uint8Array(544);
-        this.objects = [];
+class PPU_multithreaded_cache {
+    constructor(ppu_present_func) {
+        this.ppu_present_func = ppu_present_func;
+
+
+        // Actual data that gets sent to threads
+        this.data = {
+            lines: PPU_cache_lines(),
+            VRAM_buffer: new SharedArrayBuffer(0x8000 * 2),
+            CGRAM_buffer: new SharedArrayBuffer(0x100 * 2),
+            OAM_buffer: new SharedArrayBuffer(544),
+            output_buffer: new SharedArrayBuffer(512 * 512 * 2),
+            atomic_share: new SharedArrayBuffer(40),
+            objects: [],
+            atomic_int32: null,
+            VRAM: null,
+            CGRAM: null,
+            OAM: null,
+            output: null,
+            light_table: [],
+            light_table_buffers: []
+        }
+
+        this.data.VRAM = new Uint16Array(this.data.VRAM_buffer);
+        this.data.CGRAM = new Uint16Array(this.data.CGRAM_buffer);
+        this.data.OAM = new Uint8Array(this.data.OAM_buffer);
+        this.data.output = new Uint16Array(this.data.output_buffer);
+		this.data.atomic_int32 = new Int32Array(this.data.atomic_share);
+		// #0 is lock. 1 = frame being drawn, 0 = frame done.
+		// #2 is workers finished. starts at 0, goes up to 8.
+		this.data.atomic_int32[0] = 0;
+
         for (let i = 0; i < 128; i++) {
-			this.objects.push(new PPU_object());
+			this.data.objects.push(new PPU_object());
 		}
 
+        this.current_worker_number = 0;
+        this.lines_per_worker = 240 / PPU_NUM_WORKERS;
 
 		this.items = [];
 		this.tiles = [];
@@ -146,10 +173,53 @@ class PPU_cache {
 			this.tiles[i] = new PPU_object_tile();
 		}
 
-        this.current_l = this.lines[0];
+        this.current_l = this.data.lines[0];
         this.current_y = 0;
+        this.current_w = 0;
+        this.last_y = 0;
+
+        this.workers = new Array(PPU_NUM_WORKERS);
+		if (PPU_USE_WORKERS) {
+			for (let w = 0; w < PPU_NUM_WORKERS; w++) {
+				//this.workers[w] = new Worker('snes_ppu_worker.js');
+				if (PPU_USE_BLOBWORKERS) {
+					this.workers[w] = new Worker(URL.createObjectURL(new Blob(["(" + PPU_worker_function.toString() + ")()"], {type: 'text/javascript'})));
+				} else {
+					this.workers[w] = new Worker('snes_ppu_worker.js');
+				}
+				//const myWorker = new Worker("worker.js");
+				this.workers[w].onmessage = this.on_worker_message.bind(this);
+			}
+		}
+
+		for (let l = 0; l < 16; l++) {
+            this.data.light_table_buffers[l] = new SharedArrayBuffer(65536);
+			this.data.light_table[l] = new Uint16Array(this.data.light_table_buffers[l]);
+			for (let r = 0; r < 32; r++) {
+				for (let g = 0; g < 32; g++) {
+					for (let b = 0; b < 32; b++) {
+						let luma = l / 15.0;
+						let ar = Math.floor(luma * r + 0.5);
+						let ag = Math.floor(luma * g + 0.5);
+						let ab = Math.floor(luma * b + 0.5)
+						this.data.light_table[l][(r << 10) | (g << 5) | b] = ((ab << 10) | (ag << 5) | (ar));
+					}
+				}
+			}
+		}
+
+
     }
 
+	on_worker_message(e) {
+		let msg = e.data;
+		if (msg.kind === 'present') {
+			this.ppu_present_func(this.data.output);
+		}
+        else {
+            console.log('UNKNOWN MESSAGE!?');
+        }
+	}
 
     getl() {
         return this.current_l;
@@ -157,11 +227,30 @@ class PPU_cache {
 
     latch_line() {
         this.current_y++;
-        if (this.current_y > 240) {
+        if (this.current_y > 241) {
             // do nothing
         } else {
-            this.copy(this.current_y-1, this.current_y);
-            this.current_l = this.lines[this.current_y];
+            if (this.current_y < 241) {
+                this.copy(this.current_y - 1, this.current_y);
+                this.current_l = this.data.lines[this.current_y];
+            }
+            if (PPU_USE_WORKERS) {
+                this.ppu_worker_dispatch();
+            }
+        }
+    }
+
+    ppu_worker_dispatch() {
+        if (this.current_y > (this.last_y + this.lines_per_worker)) {
+            this.workers[this.current_worker_number].postMessage({
+                worker_num: this.current_worker_number,
+                bottom_line: snes.clock.scanline.bottom_scanline,
+                y_start: this.last_y,
+                y_end: this.last_y+this.lines_per_worker,
+                cache: this.data,
+                num_of_workers: PPU_NUM_WORKERS});
+            this.last_y += this.lines_per_worker;
+            this.current_worker_number++;
         }
     }
 
@@ -170,33 +259,29 @@ class PPU_cache {
     }
 
     latch_frame(VRAM, CGRAM, OAM, objects) {
-        this.VRAM = [...VRAM];
-        this.CGRAM = [...CGRAM];
-        this.OAM = [...OAM];
-        this.objects = [...objects];
+        if (this.data.atomic_int32[0] === 1) {
+            console.log('ENTER BUSY LOOP');
+            while(this.data.atomic_int32[0] === 1) {}
+        }
+        this.data.atomic_int32[0] = 1; // Frame lock. This will go to 0 when last frame finishes rendering.
+        this.data.atomic_int32[2] = 0; // Worker responses
+
+        this.data.VRAM = [...VRAM];
+        this.data.CGRAM = [...CGRAM];
+        this.data.OAM = [...OAM];
+        this.data.objects = [...objects];
         this.copy(this.getcur(), 0);
         this.current_y = 0;
-        this.current_l = this.lines[this.current_y];
+        this.current_l = this.data.lines[this.current_y];
+        this.current_worker_number = 0;
+        this.last_y = 0;
     }
 
-/*    copy(from, to) {
-        this.lines[to] = structuredClone(this.lines[from]);
-        /*to = this.lines[to];
-        from = this.lines[from];
-        to.control.field = from.control.field;
-        to.control.num_lines = from.control.num_lines;
-        to.mosaic.size = from.mosaic.size;
-        to.mosaic.counter = from.mosaic.counter;
-        to.mode7.hflip = from.mode7.hflip;
-
-        to.control.y = to;*//*
-        this.lines[to].control.y = to;
-    }*/
     // Auto-generated function, fastest way to do this I guess
     copy(from, to) {
         let oldto = to;
-        to = this.lines[to];
-        from = this.lines[from];
+        to = this.data.lines[to];
+        from = this.data.lines[from];
         to.control.y = from.control.y;
         to.control.field = from.control.field;
         to.control.num_lines = from.control.num_lines;
@@ -409,8 +494,8 @@ function generate_copy_tofrom() {
 
     outstr += '    copy(from, to) {\n';
     addl('let oldto = to;');
-    addl('to = this.lines[to];');
-    addl('from = this.lines[from];');
+    addl('to = this.data.lines[to];');
+    addl('from = this.data.lines[from];');
     let pstr;
     let whatsoever = PPU_cache_lines()[0];
     for (let propertyName in whatsoever) {
