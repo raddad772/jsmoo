@@ -267,6 +267,8 @@ class js_animator {
 		}
 		let elapsed = 0;
 		if (this.last_timestamp) elapsed = timestamp - this.last_timestamp;
+		animations_called++;
+		//console.log(elapsed);
 		this.last_timestamp = timestamp;
 		this.callback(elapsed);
 
@@ -294,9 +296,12 @@ function click_play() {
 	snes.jsanimator.play();
 }
 
+let animations_called = 0;
 function do_fps() {
 	let fps = snes.clock.frames_since_restart - fps_old_frames;
 	fps_old_frames = snes.clock.frames_since_restart;
+	//let fps = animations_called - fps_old_frames;
+	//fps_old_frames = animations_called;
 	ui_el.fps.value = fps;
 }
 

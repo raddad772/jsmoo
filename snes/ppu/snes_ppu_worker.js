@@ -21,6 +21,124 @@ const PPU_TILE_LIMIT = 34;
 const PPU_obj_widths = [[8, 8, 8, 16, 16, 32, 16, 16], [16, 32, 64, 32, 64, 64, 32, 32]];
 const PPU_obj_heights = [[8, 8, 8, 16, 16, 32, 32, 32], [16, 32, 64, 32, 64, 64, 64, 32]];
 
+function PPU_cache_lines() {
+    let linefunc = function(y) {
+        let windowfunc = function() {
+            return {
+                one_enable: 0,
+                one_invert: 0,
+                two_enable: 0,
+                two_invert: 0,
+                mask: 0,
+                above_enable: 0,
+                below_enable: 0,
+
+                above_mask: 0,
+                below_mask: 0,
+
+                one_left: 0,
+                one_right: 0,
+                two_left: 0,
+                two_right: 0
+            };
+        };
+        let bgfunc = function(layer) {
+            return {
+                layer: layer,
+                window: windowfunc(),
+                above_enable: 0,
+                below_enable: 0,
+                mosaic_enable: 0,
+                tiledata_addr: 0,
+                screen_addr: 0,
+                screen_size: 0,
+                tile_size: 0,
+                hoffset: 0,
+                voffset: 0,
+                tile_mode: 0,
+                priority: [0, 0]
+            };
+        };
+        return {
+            control: {
+                y: 0,
+                field: 0,
+                num_lines: 0
+            },
+            mosaic: {
+                size: 1,
+                counter: 0
+            },
+            mode7: {
+                hflip: 0,
+                vflip: 0,
+                repeat: 0,
+                a: 0,
+                b: 0,
+                c: 0,
+                d: 0,
+                x: 0,
+                y: 0,
+                hoffset: 0,
+                voffset: 0,
+                rx: 0,
+                ry: 0,
+                rhoffset: 0,
+                rvoffset: 0
+            },
+            obj: {
+                window: windowfunc(),
+                name_select: 0,
+                tile_addr: 0,
+                first: 0,
+                interlace: 0,
+                above_enable: 0,
+                below_enable: 0,
+                base_size: 0,
+                range_over: 0,
+                time_over: 0,
+                priority: [0, 0, 0, 0]
+            },
+            col: {
+                window: windowfunc(),
+                enable: [0, 0, 0, 0, 0, 0, 0],
+                direct_color: 0,
+                blend_mode: 0,
+                halve: 0,
+                math_mode: 0,
+                fixed_color: 0
+            },
+
+            bg1: bgfunc(1),
+            bg2: bgfunc(2),
+            bg3: bgfunc(3),
+            bg4: bgfunc(4),
+            window: windowfunc(),
+            oam_addr: 0,
+            oam_base_addr: 0,
+            oam_priority: 0,
+
+            overscan: 0,
+            pseudo_hires: 0,
+            extbg: 0,
+
+            bg_mode: 0,
+            bg_priority: 0,
+            display_brightness: 0,
+            display_disable: 0,
+        }
+    }
+
+    let lines = new Array(240);
+
+    for (let y = 0; y <= 240; y++) {
+        lines[y] = linefunc(y);
+    }
+    return lines;
+}
+
+let PPUW_lines = PPU_cache_lines();
+
 const PPU_source = Object.freeze({
 	BG1: 0,
 	BG2: 1,
@@ -41,6 +159,23 @@ const PPU_tile_mode = Object.freeze({
 
 let PPUF_window_above = new Uint8Array(256);
 let PPUF_window_below = new Uint8Array(256);
+let PPUW_light_table = [];
+
+for (let l = 0; l < 16; l++) {
+	PPUW_light_table[l] = new Uint16Array(32768);
+	for (let r = 0; r < 32; r++) {
+		for (let g = 0; g < 32; g++) {
+			for (let b = 0; b < 32; b++) {
+				let luma = l / 15.0;
+				let ar = Math.floor(luma * r + 0.5);
+				let ag = Math.floor(luma * g + 0.5);
+				let ab = Math.floor(luma * b + 0.5)
+				PPUW_light_table[l][(r << 10) | (g << 5) | b] = ((ab << 10) | (ag << 5) | (ar));
+			}
+		}
+	}
+}
+
 
 class PPU_object_item {
 	constructor() {
@@ -124,11 +259,11 @@ function PPUF_pixel(x, cache, above, below, window_above, window_below) {
 }
 
 
-function PPUF_render_scanline(y, cachelines, above, below, light_table, output_array, output) {
+function PPUF_render_scanline(y, datacache, cache, above, below, output_array, VRAM, CGRAM, output) {
 	// render background lines
 	let width = 256;
 	//let y = this.clock.scanline.ppu_y;
-	let cache = cachelines.lines[y];
+	//let cache = cachelines[y];
 	//let output = y * 256;
 	//console.log('ENABLED?', y, !this.clock.scanline.fblank);
 
@@ -141,29 +276,29 @@ function PPUF_render_scanline(y, cachelines, above, below, light_table, output_a
 	}
 
 	let hires = cache.pseudo_hires || cache.bg_mode === 5 || cache.bg_mode === 6;
-	let above_color = cachelines.CGRAM[0];
-	let below_color = hires ? cachelines.CGRAM[0] : cache.col.fixed_color;
+	let above_color = CGRAM[0];
+	let below_color = hires ? CGRAM[0] : cache.col.fixed_color;
 	for (let x = 0; x < 256; x++) {
 		above[x].set(PPU_source.COL, 0, above_color);
 		below[x].set(PPU_source.COL, 0, below_color);
 	}
 
-	PPUF_render_bg(cache.bg1, y, PPU_source.BG1, cache, cachelines.VRAM, cachelines.CGRAM, above, below);
+	PPUF_render_bg(cache.bg1, y, PPU_source.BG1, cache, VRAM, CGRAM, above, below);
 	if (cache.extbg === 0)
-	PPUF_render_bg(cache.bg2, y, PPU_source.BG2, cache, cachelines.VRAM, cachelines.CGRAM, above, below);
-	PPUF_render_bg(cache.bg3, y, PPU_source.BG3, cache, cachelines.VRAM, cachelines.CGRAM, above, below, true);
-	PPUF_render_bg(cache.bg4, y, PPU_source.BG4, cache, cachelines.VRAM, cachelines.CGRAM, above, below);
+	PPUF_render_bg(cache.bg2, y, PPU_source.BG2, cache, VRAM, CGRAM, above, below);
+	PPUF_render_bg(cache.bg3, y, PPU_source.BG3, cache, VRAM, CGRAM, above, below, true);
+	PPUF_render_bg(cache.bg4, y, PPU_source.BG4, cache, VRAM, CGRAM, above, below);
 
 	// SPRITES!
-	PPUF_render_objects(cachelines, cache, y, above, below);
+	PPUF_render_objects(datacache, cache, y, above, below, VRAM, CGRAM);
 
 	// renderObjects here
 	if (cache.extbg === 1)
-		PPUF_render_bg(cache.bg2, y, PPU_source.BG2, cache, cachelines.VRAM, cachelines.CGRAM, above, below);
+		PPUF_render_bg(cache.bg2, y, PPU_source.BG2, cache, VRAM, CGRAM, above, below);
 		PPUF_window_render_layer_mask(cache.col.window, cache.col.window.above_mask, PPUF_window_above, cache);
 		PPUF_window_render_layer_mask(cache.col.window, cache.col.window.below_mask, PPUF_window_below, cache);
 
-	let luma = light_table[cache.display_brightness];
+	let luma = PPUW_light_table[cache.display_brightness];
 	let cur = 0;
 	let prev = 0;
 
@@ -304,7 +439,7 @@ function PPUF_window_render_layer(window, enable, output, io, extended_log=false
  * @param below
  */
 
-function PPUF_render_objects(self, cache, ppu_y, above, below)
+function PPUF_render_objects(self, cache, ppu_y, above, below, VRAM, CGRAM)
 {
 	let obj = cache.obj;
 	if (!obj.above_enable && !obj.below_enable) return;
@@ -384,8 +519,8 @@ function PPUF_render_objects(self, cache, ppu_y, above, below)
 			let mirror_x = !object.hflip ? tile_x : tile_width - 1 - tile_x;
 			let addr = tile_addr + ((character_y + (character_x + mirror_x & 15)) << 4);
 			addr = (addr & 0x7FF0) + (y & 7);
-			tile.data = self.VRAM[addr];
-			tile.data |= self.VRAM[(addr + 8) & 0x7FFF] << 16;
+			tile.data = VRAM[addr];
+			tile.data |= VRAM[(addr + 8) & 0x7FFF] << 16;
 
 			if (tile_count++ >= PPU_TILE_LIMIT) break;
 			PPUF_tiles[tile_count - 1] = tile;
@@ -434,8 +569,8 @@ function PPUF_render_objects(self, cache, ppu_y, above, below)
 			//self.above[x].set(source, priority[x], self.CRAM[palette[x]]);
 			//self.below[x].set(source, priority[x], self.CRAM[palette[x]]);
 		} else {*/
-			if (obj.above_enable && (PPUF_window_above[x] === 0) && priority[x] > above[x].priority) above[x].set(source, priority[x], self.CGRAM[palette[x]]);
-			if (obj.below_enable && (PPUF_window_below[x] === 0) && priority[x] > below[x].priority) below[x].set(source, priority[x], self.CGRAM[palette[x]]);
+			if (obj.above_enable && (PPUF_window_above[x] === 0) && priority[x] > above[x].priority) above[x].set(source, priority[x], CGRAM[palette[x]]);
+			if (obj.below_enable && (PPUF_window_below[x] === 0) && priority[x] > below[x].priority) below[x].set(source, priority[x], CGRAM[palette[x]]);
 		//}
 	}
 }
@@ -685,21 +820,236 @@ function PPUF_render_mode7(self, ppuy, source, io, VRAM, CGRAM, above, below) {
         PPUW_below[i] = new PPU_pixel();
     }
 
+	// Auto-generated function to deal with StructuredCopy overhead madness
+	function deserialize_cache_lines(y_start, y_end, buffer, output) {
+		for (let y = 0; y < (y_end - y_start); y++) {
+			output[y].control.y = buffer[((y + y_start) * 256) + 0];
+			output[y].control.field = buffer[((y + y_start) * 256) + 1];
+			output[y].control.num_lines = buffer[((y + y_start) * 256) + 2];
+			output[y].mosaic.size = buffer[((y + y_start) * 256) + 3];
+			output[y].mosaic.counter = buffer[((y + y_start) * 256) + 4];
+			output[y].mode7.hflip = buffer[((y + y_start) * 256) + 5];
+			output[y].mode7.vflip = buffer[((y + y_start) * 256) + 6];
+			output[y].mode7.repeat = buffer[((y + y_start) * 256) + 7];
+			output[y].mode7.a = buffer[((y + y_start) * 256) + 8];
+			output[y].mode7.b = buffer[((y + y_start) * 256) + 9];
+			output[y].mode7.c = buffer[((y + y_start) * 256) + 10];
+			output[y].mode7.d = buffer[((y + y_start) * 256) + 11];
+			output[y].mode7.x = buffer[((y + y_start) * 256) + 12];
+			output[y].mode7.y = buffer[((y + y_start) * 256) + 13];
+			output[y].mode7.hoffset = buffer[((y + y_start) * 256) + 14];
+			output[y].mode7.voffset = buffer[((y + y_start) * 256) + 15];
+			output[y].mode7.rx = buffer[((y + y_start) * 256) + 16];
+			output[y].mode7.ry = buffer[((y + y_start) * 256) + 17];
+			output[y].mode7.rhoffset = buffer[((y + y_start) * 256) + 18];
+			output[y].mode7.rvoffset = buffer[((y + y_start) * 256) + 19];
+			output[y].obj.window.one_enable = buffer[((y + y_start) * 256) + 20];
+			output[y].obj.window.one_invert = buffer[((y + y_start) * 256) + 21];
+			output[y].obj.window.two_enable = buffer[((y + y_start) * 256) + 22];
+			output[y].obj.window.two_invert = buffer[((y + y_start) * 256) + 23];
+			output[y].obj.window.mask = buffer[((y + y_start) * 256) + 24];
+			output[y].obj.window.above_enable = buffer[((y + y_start) * 256) + 25];
+			output[y].obj.window.below_enable = buffer[((y + y_start) * 256) + 26];
+			output[y].obj.window.above_mask = buffer[((y + y_start) * 256) + 27];
+			output[y].obj.window.below_mask = buffer[((y + y_start) * 256) + 28];
+			output[y].obj.window.one_left = buffer[((y + y_start) * 256) + 29];
+			output[y].obj.window.one_right = buffer[((y + y_start) * 256) + 30];
+			output[y].obj.window.two_left = buffer[((y + y_start) * 256) + 31];
+			output[y].obj.window.two_right = buffer[((y + y_start) * 256) + 32];
+			output[y].obj.name_select = buffer[((y + y_start) * 256) + 33];
+			output[y].obj.tile_addr = buffer[((y + y_start) * 256) + 34];
+			output[y].obj.first = buffer[((y + y_start) * 256) + 35];
+			output[y].obj.interlace = buffer[((y + y_start) * 256) + 36];
+			output[y].obj.above_enable = buffer[((y + y_start) * 256) + 37];
+			output[y].obj.below_enable = buffer[((y + y_start) * 256) + 38];
+			output[y].obj.base_size = buffer[((y + y_start) * 256) + 39];
+			output[y].obj.range_over = buffer[((y + y_start) * 256) + 40];
+			output[y].obj.time_over = buffer[((y + y_start) * 256) + 41];
+			output[y].obj.priority[0] = buffer[((y + y_start) * 256) + 42];
+			output[y].obj.priority[1] = buffer[((y + y_start) * 256) + 43];
+			output[y].obj.priority[2] = buffer[((y + y_start) * 256) + 44];
+			output[y].obj.priority[3] = buffer[((y + y_start) * 256) + 45];
+			output[y].col.window.one_enable = buffer[((y + y_start) * 256) + 46];
+			output[y].col.window.one_invert = buffer[((y + y_start) * 256) + 47];
+			output[y].col.window.two_enable = buffer[((y + y_start) * 256) + 48];
+			output[y].col.window.two_invert = buffer[((y + y_start) * 256) + 49];
+			output[y].col.window.mask = buffer[((y + y_start) * 256) + 50];
+			output[y].col.window.above_enable = buffer[((y + y_start) * 256) + 51];
+			output[y].col.window.below_enable = buffer[((y + y_start) * 256) + 52];
+			output[y].col.window.above_mask = buffer[((y + y_start) * 256) + 53];
+			output[y].col.window.below_mask = buffer[((y + y_start) * 256) + 54];
+			output[y].col.window.one_left = buffer[((y + y_start) * 256) + 55];
+			output[y].col.window.one_right = buffer[((y + y_start) * 256) + 56];
+			output[y].col.window.two_left = buffer[((y + y_start) * 256) + 57];
+			output[y].col.window.two_right = buffer[((y + y_start) * 256) + 58];
+			output[y].col.enable[0] = buffer[((y + y_start) * 256) + 59];
+			output[y].col.enable[1] = buffer[((y + y_start) * 256) + 60];
+			output[y].col.enable[2] = buffer[((y + y_start) * 256) + 61];
+			output[y].col.enable[3] = buffer[((y + y_start) * 256) + 62];
+			output[y].col.enable[4] = buffer[((y + y_start) * 256) + 63];
+			output[y].col.enable[5] = buffer[((y + y_start) * 256) + 64];
+			output[y].col.enable[6] = buffer[((y + y_start) * 256) + 65];
+			output[y].col.direct_color = buffer[((y + y_start) * 256) + 66];
+			output[y].col.blend_mode = buffer[((y + y_start) * 256) + 67];
+			output[y].col.halve = buffer[((y + y_start) * 256) + 68];
+			output[y].col.math_mode = buffer[((y + y_start) * 256) + 69];
+			output[y].col.fixed_color = buffer[((y + y_start) * 256) + 70];
+			output[y].bg1.layer = buffer[((y + y_start) * 256) + 71];
+			output[y].bg1.window.one_enable = buffer[((y + y_start) * 256) + 72];
+			output[y].bg1.window.one_invert = buffer[((y + y_start) * 256) + 73];
+			output[y].bg1.window.two_enable = buffer[((y + y_start) * 256) + 74];
+			output[y].bg1.window.two_invert = buffer[((y + y_start) * 256) + 75];
+			output[y].bg1.window.mask = buffer[((y + y_start) * 256) + 76];
+			output[y].bg1.window.above_enable = buffer[((y + y_start) * 256) + 77];
+			output[y].bg1.window.below_enable = buffer[((y + y_start) * 256) + 78];
+			output[y].bg1.window.above_mask = buffer[((y + y_start) * 256) + 79];
+			output[y].bg1.window.below_mask = buffer[((y + y_start) * 256) + 80];
+			output[y].bg1.window.one_left = buffer[((y + y_start) * 256) + 81];
+			output[y].bg1.window.one_right = buffer[((y + y_start) * 256) + 82];
+			output[y].bg1.window.two_left = buffer[((y + y_start) * 256) + 83];
+			output[y].bg1.window.two_right = buffer[((y + y_start) * 256) + 84];
+			output[y].bg1.above_enable = buffer[((y + y_start) * 256) + 85];
+			output[y].bg1.below_enable = buffer[((y + y_start) * 256) + 86];
+			output[y].bg1.mosaic_enable = buffer[((y + y_start) * 256) + 87];
+			output[y].bg1.tiledata_addr = buffer[((y + y_start) * 256) + 88];
+			output[y].bg1.screen_addr = buffer[((y + y_start) * 256) + 89];
+			output[y].bg1.screen_size = buffer[((y + y_start) * 256) + 90];
+			output[y].bg1.tile_size = buffer[((y + y_start) * 256) + 91];
+			output[y].bg1.hoffset = buffer[((y + y_start) * 256) + 92];
+			output[y].bg1.voffset = buffer[((y + y_start) * 256) + 93];
+			output[y].bg1.tile_mode = buffer[((y + y_start) * 256) + 94];
+			output[y].bg1.priority[0] = buffer[((y + y_start) * 256) + 95];
+			output[y].bg1.priority[1] = buffer[((y + y_start) * 256) + 96];
+			output[y].bg2.layer = buffer[((y + y_start) * 256) + 97];
+			output[y].bg2.window.one_enable = buffer[((y + y_start) * 256) + 98];
+			output[y].bg2.window.one_invert = buffer[((y + y_start) * 256) + 99];
+			output[y].bg2.window.two_enable = buffer[((y + y_start) * 256) + 100];
+			output[y].bg2.window.two_invert = buffer[((y + y_start) * 256) + 101];
+			output[y].bg2.window.mask = buffer[((y + y_start) * 256) + 102];
+			output[y].bg2.window.above_enable = buffer[((y + y_start) * 256) + 103];
+			output[y].bg2.window.below_enable = buffer[((y + y_start) * 256) + 104];
+			output[y].bg2.window.above_mask = buffer[((y + y_start) * 256) + 105];
+			output[y].bg2.window.below_mask = buffer[((y + y_start) * 256) + 106];
+			output[y].bg2.window.one_left = buffer[((y + y_start) * 256) + 107];
+			output[y].bg2.window.one_right = buffer[((y + y_start) * 256) + 108];
+			output[y].bg2.window.two_left = buffer[((y + y_start) * 256) + 109];
+			output[y].bg2.window.two_right = buffer[((y + y_start) * 256) + 110];
+			output[y].bg2.above_enable = buffer[((y + y_start) * 256) + 111];
+			output[y].bg2.below_enable = buffer[((y + y_start) * 256) + 112];
+			output[y].bg2.mosaic_enable = buffer[((y + y_start) * 256) + 113];
+			output[y].bg2.tiledata_addr = buffer[((y + y_start) * 256) + 114];
+			output[y].bg2.screen_addr = buffer[((y + y_start) * 256) + 115];
+			output[y].bg2.screen_size = buffer[((y + y_start) * 256) + 116];
+			output[y].bg2.tile_size = buffer[((y + y_start) * 256) + 117];
+			output[y].bg2.hoffset = buffer[((y + y_start) * 256) + 118];
+			output[y].bg2.voffset = buffer[((y + y_start) * 256) + 119];
+			output[y].bg2.tile_mode = buffer[((y + y_start) * 256) + 120];
+			output[y].bg2.priority[0] = buffer[((y + y_start) * 256) + 121];
+			output[y].bg2.priority[1] = buffer[((y + y_start) * 256) + 122];
+			output[y].bg3.layer = buffer[((y + y_start) * 256) + 123];
+			output[y].bg3.window.one_enable = buffer[((y + y_start) * 256) + 124];
+			output[y].bg3.window.one_invert = buffer[((y + y_start) * 256) + 125];
+			output[y].bg3.window.two_enable = buffer[((y + y_start) * 256) + 126];
+			output[y].bg3.window.two_invert = buffer[((y + y_start) * 256) + 127];
+			output[y].bg3.window.mask = buffer[((y + y_start) * 256) + 128];
+			output[y].bg3.window.above_enable = buffer[((y + y_start) * 256) + 129];
+			output[y].bg3.window.below_enable = buffer[((y + y_start) * 256) + 130];
+			output[y].bg3.window.above_mask = buffer[((y + y_start) * 256) + 131];
+			output[y].bg3.window.below_mask = buffer[((y + y_start) * 256) + 132];
+			output[y].bg3.window.one_left = buffer[((y + y_start) * 256) + 133];
+			output[y].bg3.window.one_right = buffer[((y + y_start) * 256) + 134];
+			output[y].bg3.window.two_left = buffer[((y + y_start) * 256) + 135];
+			output[y].bg3.window.two_right = buffer[((y + y_start) * 256) + 136];
+			output[y].bg3.above_enable = buffer[((y + y_start) * 256) + 137];
+			output[y].bg3.below_enable = buffer[((y + y_start) * 256) + 138];
+			output[y].bg3.mosaic_enable = buffer[((y + y_start) * 256) + 139];
+			output[y].bg3.tiledata_addr = buffer[((y + y_start) * 256) + 140];
+			output[y].bg3.screen_addr = buffer[((y + y_start) * 256) + 141];
+			output[y].bg3.screen_size = buffer[((y + y_start) * 256) + 142];
+			output[y].bg3.tile_size = buffer[((y + y_start) * 256) + 143];
+			output[y].bg3.hoffset = buffer[((y + y_start) * 256) + 144];
+			output[y].bg3.voffset = buffer[((y + y_start) * 256) + 145];
+			output[y].bg3.tile_mode = buffer[((y + y_start) * 256) + 146];
+			output[y].bg3.priority[0] = buffer[((y + y_start) * 256) + 147];
+			output[y].bg3.priority[1] = buffer[((y + y_start) * 256) + 148];
+			output[y].bg4.layer = buffer[((y + y_start) * 256) + 149];
+			output[y].bg4.window.one_enable = buffer[((y + y_start) * 256) + 150];
+			output[y].bg4.window.one_invert = buffer[((y + y_start) * 256) + 151];
+			output[y].bg4.window.two_enable = buffer[((y + y_start) * 256) + 152];
+			output[y].bg4.window.two_invert = buffer[((y + y_start) * 256) + 153];
+			output[y].bg4.window.mask = buffer[((y + y_start) * 256) + 154];
+			output[y].bg4.window.above_enable = buffer[((y + y_start) * 256) + 155];
+			output[y].bg4.window.below_enable = buffer[((y + y_start) * 256) + 156];
+			output[y].bg4.window.above_mask = buffer[((y + y_start) * 256) + 157];
+			output[y].bg4.window.below_mask = buffer[((y + y_start) * 256) + 158];
+			output[y].bg4.window.one_left = buffer[((y + y_start) * 256) + 159];
+			output[y].bg4.window.one_right = buffer[((y + y_start) * 256) + 160];
+			output[y].bg4.window.two_left = buffer[((y + y_start) * 256) + 161];
+			output[y].bg4.window.two_right = buffer[((y + y_start) * 256) + 162];
+			output[y].bg4.above_enable = buffer[((y + y_start) * 256) + 163];
+			output[y].bg4.below_enable = buffer[((y + y_start) * 256) + 164];
+			output[y].bg4.mosaic_enable = buffer[((y + y_start) * 256) + 165];
+			output[y].bg4.tiledata_addr = buffer[((y + y_start) * 256) + 166];
+			output[y].bg4.screen_addr = buffer[((y + y_start) * 256) + 167];
+			output[y].bg4.screen_size = buffer[((y + y_start) * 256) + 168];
+			output[y].bg4.tile_size = buffer[((y + y_start) * 256) + 169];
+			output[y].bg4.hoffset = buffer[((y + y_start) * 256) + 170];
+			output[y].bg4.voffset = buffer[((y + y_start) * 256) + 171];
+			output[y].bg4.tile_mode = buffer[((y + y_start) * 256) + 172];
+			output[y].bg4.priority[0] = buffer[((y + y_start) * 256) + 173];
+			output[y].bg4.priority[1] = buffer[((y + y_start) * 256) + 174];
+			output[y].window.one_enable = buffer[((y + y_start) * 256) + 175];
+			output[y].window.one_invert = buffer[((y + y_start) * 256) + 176];
+			output[y].window.two_enable = buffer[((y + y_start) * 256) + 177];
+			output[y].window.two_invert = buffer[((y + y_start) * 256) + 178];
+			output[y].window.mask = buffer[((y + y_start) * 256) + 179];
+			output[y].window.above_enable = buffer[((y + y_start) * 256) + 180];
+			output[y].window.below_enable = buffer[((y + y_start) * 256) + 181];
+			output[y].window.above_mask = buffer[((y + y_start) * 256) + 182];
+			output[y].window.below_mask = buffer[((y + y_start) * 256) + 183];
+			output[y].window.one_left = buffer[((y + y_start) * 256) + 184];
+			output[y].window.one_right = buffer[((y + y_start) * 256) + 185];
+			output[y].window.two_left = buffer[((y + y_start) * 256) + 186];
+			output[y].window.two_right = buffer[((y + y_start) * 256) + 187];
+			output[y].oam_addr = buffer[((y + y_start) * 256) + 188];
+			output[y].oam_base_addr = buffer[((y + y_start) * 256) + 189];
+			output[y].oam_priority = buffer[((y + y_start) * 256) + 190];
+			output[y].overscan = buffer[((y + y_start) * 256) + 191];
+			output[y].pseudo_hires = buffer[((y + y_start) * 256) + 192];
+			output[y].extbg = buffer[((y + y_start) * 256) + 193];
+			output[y].bg_mode = buffer[((y + y_start) * 256) + 194];
+			output[y].bg_priority = buffer[((y + y_start) * 256) + 195];
+			output[y].display_brightness = buffer[((y + y_start) * 256) + 196];
+			output[y].display_disable = buffer[((y + y_start) * 256) + 197];
+		}
+	}
+
+
     onmessage = function (e) {
         //console.log('Worker ' + e.data.worker_num + ': Message received from main script');
 		let msg = e.data;
         let y_start = msg.y_start;
         let y_end = msg.y_end;
         //console.log(msg.y_start, msg.y_end)
-        for (let y = y_start; y < y_end; y++) {
+		let VRAM = new Uint16Array(msg.cache.VRAM_buffer);
+		let CGRAM = new Uint16Array(msg.cache.CGRAM_buffer);
+		let output = new Uint16Array(msg.cache.output_buffer);
+		deserialize_cache_lines(y_start, y_end, new Int32Array(msg.cache.lines_sabuffer), PPUW_lines);
+		//console.log(CGRAM);
+		//console.log('VRAM', VRAM);
+
+		for (let y = y_start; y < y_end; y++) {
             if (y > msg.bottom_line) {
 				break;
 			}
-			PPUF_render_scanline(y, msg.cache, PPUW_above, PPUW_below, msg.cache.light_table, msg.cache.output, y*256);
+			let cline = PPUW_lines[y-y_start];
+			PPUF_render_scanline(y, msg.cache, cline, PPUW_above, PPUW_below, output, VRAM, CGRAM, y*256);
         }
+
 		msg.cache.atomic_int32[2]++;
 		if (msg.cache.atomic_int32[2] >= msg.num_of_workers) {
 			// Send message to present()
+			//console.log('PRESENT!');
 			postMessage({kind: 'present'});
 			// Release lock
 			msg.cache.atomic_int32[0] = 0;

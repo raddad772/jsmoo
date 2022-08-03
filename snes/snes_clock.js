@@ -239,6 +239,7 @@ class SNES_clock {
 			this.cycles_since_reset += this.scanline.cycles_since_reset;
             if (this.scanline.frame_since_restart !== this.frame_counter) {
                 this.ppu.cachelines.latch_frame(this.ppu.VRAM, this.ppu.CGRAM, this.ppu.OAM, this.ppu.objects);
+				if (dbg.do_break) return;
 				this.ppu.cache = this.ppu.cachelines.getl();
 				this.new_frame();
                 this.frame_counter = this.scanline.frame_since_restart;
