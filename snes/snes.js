@@ -187,6 +187,7 @@ class SNES {
 	}
 	
 	load_ROM_from_RAM(ROM) {
+		console.log('Loading ROM...', ROM);
 		this.cart.load_cart_from_RAM(new Uint8Array(ROM));
 		//this.mem = new snes_mem(this.cart);
 		this.mem_map.cart_inserted(this.cart);
@@ -346,7 +347,7 @@ function init_gl() {
 	return true;
 }
 
-function main3(ROM) {
+/*function main3(ROM) {
 	snes = new SNES();
 	dbg.add_cpu(D_RESOURCE_TYPES.R5A22, snes.cpu);
 	dbg.add_cpu(D_RESOURCE_TYPES.SPC700, snes.apu)
@@ -360,44 +361,16 @@ function main3(ROM) {
 	}
 
 	dbg.init_done();
-}
+}*/
 
-function main2() {
+/*function main2() {
 	load_ROM('test', main3);
 }
 
 function main_old() {
 	initDb(main2);
-}
+}*/
 
-async function main() {
-	let ROM_to_get;
-	//ROM_to_get = 'roms/snes-test-roms/PeterLemon/SNES-CPUTest-CPU/ADC/CPUADC.sfc';
-	let jsa = new js_animator(60, function(yo){});
-
-	//ROM_to_get = 'roms/snes-test-roms/PeterLemon/SNES-CPUTest-CPU/BIT/CPUBIT.sfc';
-	//ROM_to_get = 'roms/blargg/controller_strobebehavior.smc';
-	ROM_to_get = 'roms/commercial/smw.smc';
-	//ROM_to_get = 'roms/commercial/zelda.smc';
-	//ROM_to_get = 'roms/commercial/fzero.sfc';
-	let rtg = await getBinary(local_server_url + ROM_to_get);
-	console.log('GOT IT!', rtg);
-	snes = new SNES(jsa);
-	dbg.add_cpu(D_RESOURCE_TYPES.R5A22, snes.cpu);
-	dbg.add_cpu(D_RESOURCE_TYPES.SPC700, snes.apu)
-	if (rtg === null || typeof(rtg) === 'undefined') {
-		alert('No ROM! Upload then refresh please');
-		return;
-	}
-	snes.load_ROM_from_RAM(rtg);
-	if (!init_gl()) {
-		return;
-	}
-
-	dbg.init_done();
-}
-
-after_js = main;
 
 //after_js = test_65c816;
 //after_js = test_pt_65c816;

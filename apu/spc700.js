@@ -230,7 +230,10 @@ class spc700 {
         this.cycles += howmany;
         while (this.cycles > 0) {
             if (this.STP || this.WAI) {
-                console.log('STOPPED OR WAID' + this.trace_cycles);
+                //console.log('STOPPED OR WAID' + this.clock.cycles_since_reset, this.STP, this.WAI);;
+                dbg.break();
+                return;
+                //debugger;
                 this.clock.apu_deficit -= (this.cycles * 20);
                 this.clock.apu_has += (this.cycles * 20);
                 if (this.trace_on) this.trace_cycles += this.cycles;

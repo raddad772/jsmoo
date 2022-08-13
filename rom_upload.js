@@ -24,12 +24,13 @@ function initDb(func) {
     }
 }
 
-function uploadFile(fileId) {
+const bfs = new basic_fs();
+async function uploadFile(fileId) {
     let fileIn = document.getElementById('fileUpload');
     if (fileIn.files && fileIn.files[0]) {
+        let file_name = fileIn.files[0].name;
         var reader = new FileReader();
-        reader.onload = function (e) {
-            //console.log(e.target.result);
+        reader.onload = async function (e) {
 
             let bits = e.target.result;
             let ob = {
@@ -39,8 +40,9 @@ function uploadFile(fileId) {
                 data: bits
             };
 
-            main3(bits);
-			let trans = db.transaction(['files'], 'readwrite');
+            await bfs.write_file(basic_fs_join('/snes/roms/', file_name), e.target.result);
+            await reload_roms();
+            /*let trans = db.transaction(['files'], 'readwrite');
             let addReq = trans.objectStore('files').put(ob);
 
             addReq.onerror = function(e) {
@@ -51,7 +53,7 @@ function uploadFile(fileId) {
             trans.oncomplete = function(e) {
 				//main3(e.result)
                 console.log('data stored');
-            }
+            }*/
         };
         reader.readAsBinaryString(fileIn.files[0])
     }

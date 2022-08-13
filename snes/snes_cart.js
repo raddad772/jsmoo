@@ -41,9 +41,18 @@ class snes_cart {
 		this.header.flash_RAM_size = (2 ** this.ROM[this.header.header_offset + 0xD8]) * 1024;
 		this.header.sram_sizebit = this.ROM[this.header.header_offset + 0xD8];
 		this.header.rom_sizebit = this.ROM[this.header.header_offset + 0xD7];
-		//tconsole.addl(null, 'SRAM size ' + this.header.flash_RAM_size.toString());
 		this.header.internal_name = new TextDecoder().decode(this.ROM.slice(this.header.header_offset + 0xC0, this.header.header_offset + 0xD4));
-		//tconsole.addl(null, 'Internal name "' + this.header.internal_name +'"');
+		tconsole.addl(null, 'Internal name "' + this.header.internal_name +'"');
+		console.log(this.header.sram_sizebit, this.header.flash_RAM_size)
+		this.SRAM = new Uint8Array(this.header.flash_RAM_size);
+	}
+
+	read_ver2_header() {
+		this.header.sram_sizebit = this.ROM[this.header.header_offset + 0xD8];
+		this.header.flash_RMA_size = (2 ** this.header.sram_sizebit) * 1024;
+		this.header.rom_sizebit = this.ROM[this.header.header_offset + 0xD7];
+		this.header.internal_name = new TextDecoder().decode(this.ROM.slice(this.header.header_offset + 0xC0, this.header.header_offset + 0xD3))
+		tconsole.addl(null, 'Internal name "' + this.header.internal_name +'"');
 		this.SRAM = new Uint8Array(this.header.flash_RAM_size);
 	}
 	

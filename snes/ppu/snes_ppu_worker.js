@@ -262,10 +262,10 @@ function PPUF_pixel(x, cache, above, below, window_above, window_below) {
 function PPUF_render_scanline(y, datacache, cache, above, below, output_array, VRAM, CGRAM, output) {
 	// render background lines
 	let width = 256;
-	//let y = this.clock.scanline.ppu_y;
+	//let y = this.clock.ppu_y;
 	//let cache = cachelines[y];
 	//let output = y * 256;
-	//console.log('ENABLED?', y, !this.clock.scanline.fblank);
+	//console.log('ENABLED?', y, !this.clock.fblank);
 
     //debugger;
     if (cache.display_disable) {
@@ -562,7 +562,7 @@ function PPUF_render_objects(self, cache, ppu_y, above, below, VRAM, CGRAM)
 	for (let x = 0; x < 256; x++) {
 		if (!priority[x]) continue;
 		let source = palette[x] < 192 ? PPU_source.OBJ1 : PPU_source.OBJ2;
-		//console.log('SPR!', x, self.clock.scanline.ppu_y, palette[x], self.CRAM[palette[x]]);
+		//console.log('SPR!', x, self.clock.ppu_y, palette[x], self.CRAM[palette[x]]);
 		/*if (force) {
 			//console.log('SETTING', x);
 			//output[output + x] = self.CGRAM[palette[x]];

@@ -1,5 +1,80 @@
 "use strict";
 
+/***************
+ * To do - general
+ *   Simple filesystem abstraction from HTML5 filesystem
+ *   Host on an actual website
+ *   UI improvements
+ *      ROM upload
+ *      ROM select
+ *      System select
+ *   Sound output
+ *   WebGL output, ideally from SharedArrays
+ *   Hook up more than one virtual system, chooseable somehow
+ *   <60FPS RequestAnimationFrame timing detection and perhaps
+ *     just rolling with it?
+ *   >60FPS RequestAnimationFrame support
+ * To do - SNES
+ *   Depedendent on filessytem emulation -
+ *      SRAM
+ *      Save/load save states
+ *        Means implementing a serialize for every element
+ *        Base64 encode RAM, VRAM, etc.?
+ *   Fix mode 7
+ *   Fix vertical mosaic
+ *   Move main code to a web worker
+ *   Refactor and reorganize
+ *       Better naming
+ *       Better file conventions
+ *   Refactor timing code away from frames and toward scanlines
+ *       "Run til frame end," "Run til VBLANK," "run for X master
+ *         cycles," "run for X scanlines" are the types of
+ *         granularities we want
+ *   SPC700 bus-state emulation
+ *   DSP emulation
+ *   Sound output
+ *   Fast-forward, somehow
+ *   Game compataibility
+ *   ROM mapping types
+ *      Starting with HiRom
+ *   Expansion chips
+ *      Super FX
+ *      DSP-1 LLE with ROMs for 1a, 1b and 2
+ *      SA-1
+ *   65816 emulation
+ *
+ * To do - Commodore64
+ *   6510? emulation
+ *   Graphics emulation
+ *   I/O emulation
+ *
+ * To do - NES
+ *   5022/6502 emulation
+ *   PPU
+ *   Sound
+ *   Input
+ *   Mapper chips
+ *
+ * Atari 2600
+ *   6502
+ *   TIA
+ *
+ * Genesis
+ *   68000
+ *   Z80
+ *   VDP
+ *
+ * Gameboy/color
+ *   SM80
+ *   PPU
+ *
+ * GBA
+ *   ARM7TDMI
+ *   PPU
+ *
+ */
+
+
 /**
  * @param {Number} val
  */

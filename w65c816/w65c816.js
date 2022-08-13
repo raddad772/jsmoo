@@ -246,7 +246,7 @@ class w65c816 {
 		else
 			this.NMI_count++;
 		if (this.NMI_count > 1) {
-			//console.log('NMI pending,', this.pins.NMI, this.NMI_old, this.clock.scanline.ppu_y);
+			//console.log('NMI pending,', this.pins.NMI, this.NMI_old, this.clock.ppu_y);
 			this.NMI_old = this.pins.NMI;
 			this.NMI_ack = false;
 			this.NMI_count = 0;
@@ -262,7 +262,7 @@ class w65c816 {
 				this.NMI_ack = true;
 				this.regs.NMI_pending = false;
 				this.regs.IR = OP_NMI;
-				//console.log('NMI EXEC!', this.clock.scanline.ppu_y);
+				//console.log('NMI EXEC!', this.clock.ppu_y);
 			}
 			// Do IRQ check
 			else if (this.regs.IRQ_pending && !this.IRQ_ack && !this.regs.old_I) {

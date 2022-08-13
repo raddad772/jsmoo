@@ -253,19 +253,22 @@ class PPU_multithreaded_cache {
     }
 
     wait_for_frame_done() {
-        if (this.data.atomic_int32[0] === 1) {
-            //console.log('ENTER BUSY LOOP');
-            let start_time = new Date();
-            while(this.data.atomic_int32[0] === 1) {
-                let cur_time = new Date();
-                if ((cur_time - start_time) > 6000) {
-                    console.log('BUSY LOOP STALL!')
-                    dbg.break();
-                    return;
+        if (PPU_USE_WORKERS) {
+            if (this.data.atomic_int32[0] === 1) {
+                //console.log('ENTER BUSY LOOP');
+                let start_time = new Date();
+                while (this.data.atomic_int32[0] === 1) {
+                    let cur_time = new Date();
+                    if ((cur_time - start_time) > 6000) {
+                        console.log('BUSY LOOP STALL!')
+                        dbg.break();
+                        return;
+                    }
                 }
             }
         }
     }
+
 
     copy_data(VRAM, CGRAM, OAM, objects) {
         copy_shared_buf(this.VRAM, VRAM);
@@ -779,7 +782,7 @@ function generate_serialize_deserialize() {
     console.log(outdes);
 }
 
-generate_serialize_deserialize();
+//generate_serialize_deserialize();
 
 function generate_copy_tofrom() {
     let indent = '        ';

@@ -1,28 +1,19 @@
 "use strict";
 
 let after_js = function() {console.log('NO AFTER JS THING');};
-window.onload = init_js;
 
-const INITIAL_STEPS = {
-	master: 0,
-	scanlines: 216,
-	frames: 15,
-	seconds: 1
-}
+const SNES_STR = 'snes';
+const NES_STR = 'nes';
+const COMMODORE64_STR = 'c64';
+const SMS_STR = 'sms';
+const GENESIS_STR = 'megadrive';
+const GB_STR = 'gb';
 
 const DEFAULT_STEPS = {
 	master: 12,
 	scanlines: 1,
 	frames: 0,
 	seconds: 0,
-}
-
-function generate_js() {
-	save_js('w65c816_generated_opcodes.js', '"use strict";\n\nconst decoded_opcodes = Object.freeze(\n' + decode_opcodes() + ');');
-}
-
-function generate_js_SPC() {
-    save_js('spc700_generated_opcodes.js', '"use strict";\n\nconst SPC_decoded_opcodes = Object.freeze(\n' + SPC_decode_opcodes() + ');');
 }
 
 // Things should have 'checkbox' in their name if they are a checkbox
@@ -53,84 +44,139 @@ let ui_el = {
 	play_button: ['playbutton', null],
 	pause_button: ['pausebutton', null],
 	frames_til_pause: ['framestilpause', 0],
-	fps: ['fps', 0]
+	fps: ['fps', 0],
+	system_select: ['systemselect', null],
+	rom_select: ['romselect', null],
 }
 
+
+
+// UI load steps
+// 1. init all document elements
+// 2. load previous system, ROM data from config
+// 3. Pre-load previous system adn ROm
+// 4. Set state as not-emulating, indicate to UI that we are ready to emulate
+
+
+function snes_rom_path(rom_name) {
+	return basic_fs_join('/snes/roms/', rom_name);
+}
+
+
+//window.onload = test_pathstuff
+window.onload = init_js;
+
+class global_player_t {
+	constructor() {
+		this.system_kind = 'snes';
+		this.state = 'paused';
+		this.power = false;
+		this.romfile = null;
+		this.system = null;
+		this.jsa = null;
+		this.ready = false;
+	}
+
+	set_system() {
+		if (!this.jsa)
+			this.jsa = new js_animator(60, function(){});
+		if (this.system !== null) {
+			this.system.killall();
+			this.system = null;
+		}
+		switch(this.system_kind) {
+			case 'snes':
+				this.system = new SNES(this.jsa);
+				snes = this.system;
+				break;
+			default:
+				alert('system not found');
+				return;
+		}
+		this.ready = true;
+	}
+
+	power_down() {
+		click_pause();
+	}
+
+	load_rom(what) {
+		this.system.load_ROM_from_RAM(what);
+	}
+}
+
+const global_player = new global_player_t();
+
+
+
+function generate_js() {
+	save_js('w65c816_generated_opcodes.js', '"use strict";\n\nconst decoded_opcodes = Object.freeze(\n' + decode_opcodes() + ');');
+}
+
+function generate_js_SPC() {
+    save_js('spc700_generated_opcodes.js', '"use strict";\n\nconst SPC_decoded_opcodes = Object.freeze(\n' + SPC_decode_opcodes() + ');');
+}
 
 function get_mc_steps() {
 }
 
-function init_js() {
-	for (let k in ui_el) {
-		let v = ui_el[k];
-		let dom_id = v[0];
-		let default_value = v[1];
-		ui_el[k] = document.getElementById(dom_id);
-		if (default_value !== null) {
-			if (k.indexOf('checkbox') !== -1) {
-				ui_el[k].checked = default_value;
-			} else {
-				ui_el[k].value = default_value;
-			}
+var filesys;
+
+async function init_fs() {
+	after_js();
+
+}
+
+async function load_sel_rom() {
+	load_selected_rom();
+}
+
+async function load_selected_rom() {
+	if (!global_player.ready) {
+		console.log('NOT READY!');
+		return;
+	}
+	global_player.power_down();
+	if (ui_el.rom_select.value === '') {
+		//alert('No ROM selected');
+		return;
+	}
+	let f = await bfs.read_file(ui_el.rom_select.value);
+	if (!f) {
+		alert('File not found');
+		return null;
+	}
+	function str2ab(str) {
+		let buf = new ArrayBuffer(str.length); // 2 bytes for each char
+		let bufView = new Uint8Array(buf);
+		for (let i = 0, strLen = str.length; i < strLen; i++) {
+			bufView[i] = str.charCodeAt(i);
+		}
+		return buf;
+	}
+	f = str2ab(f);
+	global_player.load_rom(f);
+}
+
+async function reload_roms(where) {
+	let fs = new basic_fs();
+	let allfiles = await fs._get_files();
+	let outfiles = [];
+	for (let i in allfiles) {
+		if (allfiles[i].indexOf('/snes/roms/') !== -1) {
+			outfiles.push(allfiles[i]);
 		}
 	}
+	let outstr = '';
+	for (let i in outfiles) {
+		outstr += "<option value='" + outfiles[i] + "'>" + basic_fs_split(outfiles[i]) + "</option>";
+	}
+	ui_el.rom_select.innerHTML = outstr;
+	load_selected_rom();
+}
 
-	/*ui_el.tracing_checkbox.addEventListener('change', (event) => {
-		if (event.currentTarget.checked) click_enable_tracing();
-		else click_disable_tracing();
-	});*/
-	ui_el.log_hdma_checkbox.addEventListener('change', (event) => {
-		dbg.log_HDMA = !!event.currentTarget.checked;
-	});
-
-	ui_el.watching_checkbox.addEventListener('change', (event) => {
-		dbg.watch_on = !!event.currentTarget.checked;
-	});
-
-	ui_el.brknmirq_checkbox.addEventListener('change', (event) => {
-		dbg.brk_on_NMIRQ = !!event.currentTarget.checked;
-	});
-
-
-	ui_el.tracing_5a22_checkbox.addEventListener('change', (event) => {
-		if (event.currentTarget.checked) dbg.enable_tracing_for(D_RESOURCE_TYPES.R5A22);
-		else dbg.disable_tracing_for(D_RESOURCE_TYPES.R5A22);
-	});
-
-	ui_el.tracing_spc700_checkbox.addEventListener('change', (event) => {
-		if (event.currentTarget.checked) dbg.enable_tracing_for(D_RESOURCE_TYPES.SPC700);
-		else dbg.disable_tracing_for(D_RESOURCE_TYPES.SPC700);
-	});
-
-	ui_el.bg1on_checkbox.addEventListener('change', (event) => {
-		dbg.bg1_on = !!event.currentTarget.checked;
-	})
-
-	ui_el.bg2on_checkbox.addEventListener('change', (event) => {
-		dbg.bg2_on = !!event.currentTarget.checked;
-	})
-
-	ui_el.bg3on_checkbox.addEventListener('change', (event) => {
-		dbg.bg3_on = !!event.currentTarget.checked;
-	})
-
-	ui_el.bg4on_checkbox.addEventListener('change', (event) => {
-		dbg.bg4_on = !!event.currentTarget.checked;
-	})
-
-	ui_el.objon_checkbox.addEventListener('change', (event) => {
-		dbg.obj_on = !!event.currentTarget.checked;
-	})
-
-	ui_el.log_windows_checkbox.addEventListener('change', (event) => {
-		dbg.log_windows = !!event.currentTarget.checked;
-	})
-
-	ui_el.render_windows_checkbox.addEventListener('change', (event) => {
-		dbg.render_windows = !!event.currentTarget.checked;
-	})
-
-	after_js();
+async function system_selected(where) {
+	reload_roms(where);
 }
 
 function click_enable_tracing() {
@@ -184,7 +230,7 @@ function click_render_scr() {
 		snes.ppu.render_scanline(true)
 	}
 	snes.clock.scanline.ppu_y = old_scanline;
-	snes.ppu.present();
+	//snes.ppu.present();
 }
 
 let dc = 0;
@@ -381,3 +427,110 @@ window.addEventListener('keydown', function(ev) {
 window.addEventListener('keyup', function(ev) {
 	keyboard_input.keyup(ev.key, ev);
 });
+
+
+async function main() {
+	//let ROM_to_get;
+	//ROM_to_get = 'roms/snes-test-roms/PeterLemon/SNES-CPUTest-CPU/ADC/CPUADC.sfc';
+
+	//ROM_to_get = 'roms/snes-test-roms/PeterLemon/SNES-CPUTest-CPU/BIT/CPUBIT.sfc';
+	//ROM_to_get = 'roms/blargg/controller_strobebehavior.smc';
+	//ROM_to_get = 'roms/commercial/smw.smc';
+	//ROM_to_get = 'roms/commercial/metroid.sfc';
+	//ROM_to_get = 'roms/commercial/zelda.smc';
+	//ROM_to_get = 'roms/commercial/fzero.sfc';
+	//ROM_to_get = 'roms/commercial/snestest.sfc';
+
+	//let rtg = await getBinary(local_server_url + ROM_to_get);
+	//snes = new SNES(jsa);
+	global_player.set_system();
+	dbg.add_cpu(D_RESOURCE_TYPES.R5A22, snes.cpu);
+	dbg.add_cpu(D_RESOURCE_TYPES.SPC700, snes.apu)
+	if (!init_gl()) {
+		return;
+	}
+	await load_selected_rom();
+
+	dbg.init_done();
+}
+
+after_js = main;
+
+function init_js() {
+	for (let k in ui_el) {
+		let v = ui_el[k];
+		let dom_id = v[0];
+		let default_value = v[1];
+		ui_el[k] = document.getElementById(dom_id);
+		if (default_value !== null) {
+			if (k.indexOf('checkbox') !== -1) {
+				ui_el[k].checked = default_value;
+			} else {
+				ui_el[k].value = default_value;
+			}
+		}
+	}
+
+	/*ui_el.tracing_checkbox.addEventListener('change', (event) => {
+		if (event.currentTarget.checked) click_enable_tracing();
+		else click_disable_tracing();
+	});*/
+	ui_el.log_hdma_checkbox.addEventListener('change', (event) => {
+		dbg.log_HDMA = !!event.currentTarget.checked;
+	});
+
+	ui_el.watching_checkbox.addEventListener('change', (event) => {
+		dbg.watch_on = !!event.currentTarget.checked;
+	});
+
+	ui_el.brknmirq_checkbox.addEventListener('change', (event) => {
+		dbg.brk_on_NMIRQ = !!event.currentTarget.checked;
+	});
+
+
+	ui_el.tracing_5a22_checkbox.addEventListener('change', (event) => {
+		if (event.currentTarget.checked) dbg.enable_tracing_for(D_RESOURCE_TYPES.R5A22);
+		else dbg.disable_tracing_for(D_RESOURCE_TYPES.R5A22);
+	});
+
+	ui_el.tracing_spc700_checkbox.addEventListener('change', (event) => {
+		if (event.currentTarget.checked) dbg.enable_tracing_for(D_RESOURCE_TYPES.SPC700);
+		else dbg.disable_tracing_for(D_RESOURCE_TYPES.SPC700);
+	});
+
+	ui_el.bg1on_checkbox.addEventListener('change', (event) => {
+		dbg.bg1_on = !!event.currentTarget.checked;
+	})
+
+	ui_el.bg2on_checkbox.addEventListener('change', (event) => {
+		dbg.bg2_on = !!event.currentTarget.checked;
+	})
+
+	ui_el.bg3on_checkbox.addEventListener('change', (event) => {
+		dbg.bg3_on = !!event.currentTarget.checked;
+	})
+
+	ui_el.bg4on_checkbox.addEventListener('change', (event) => {
+		dbg.bg4_on = !!event.currentTarget.checked;
+	})
+
+	ui_el.objon_checkbox.addEventListener('change', (event) => {
+		dbg.obj_on = !!event.currentTarget.checked;
+	})
+
+	ui_el.log_windows_checkbox.addEventListener('change', (event) => {
+		dbg.log_windows = !!event.currentTarget.checked;
+	})
+
+	ui_el.render_windows_checkbox.addEventListener('change', (event) => {
+		dbg.render_windows = !!event.currentTarget.checked;
+	})
+
+	ui_el.system_select.addEventListener('change', (event) => {
+		console.log(event);
+	})
+
+	system_selected('snes');
+
+	init_fs();
+}
