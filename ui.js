@@ -64,7 +64,7 @@ function snes_rom_path(rom_name) {
 
 
 //window.onload = test_pathstuff
-window.onload = init_js;
+window.onload = init_ui;
 
 class global_player_t {
 	constructor() {
@@ -131,6 +131,30 @@ async function load_sel_rom() {
 	load_selected_rom();
 }
 
+let default_system_options = {
+	'last_rom': ''
+}
+
+// TODO: make it work for other-than SNES
+async function get_ui_system_options() {
+	let r = await bfs.read_file('/config/snes.json');
+	console.log('R!', r);
+	if (r === null)
+		return structuredClone(default_system_options);
+	return r;
+}
+
+// TODO: make ti work for other-than SNES
+async function set_ui_system_options(g) {
+	await bfs.write_file('/config/snes.json', g);
+}
+
+async function set_last_rom(whichone) {
+	let g = await get_ui_system_options();
+	g.last_rom = whichone;
+	await set_ui_system_options(g);
+}
+
 async function load_selected_rom() {
 	if (!global_player.ready) {
 		console.log('NOT READY!');
@@ -146,6 +170,7 @@ async function load_selected_rom() {
 		alert('File not found');
 		return null;
 	}
+	await set_last_rom(ui_el.rom_select.value);
 	function str2ab(str) {
 		let buf = new ArrayBuffer(str.length); // 2 bytes for each char
 		let bufView = new Uint8Array(buf);
@@ -172,6 +197,12 @@ async function reload_roms(where) {
 		outstr += "<option value='" + outfiles[i] + "'>" + basic_fs_split(outfiles[i]) + "</option>";
 	}
 	ui_el.rom_select.innerHTML = outstr;
+	let r = await get_ui_system_options();
+	console.log('R2!', r);
+	if (r.last_rom !== null && typeof r !== 'undefined') {
+		console.log('LAST ROM YO!', r.last_rom, r);
+		ui_el.rom_select.value = r.last_rom; //basic_fs_split(r.last_rom);
+	}
 	load_selected_rom();
 }
 
@@ -456,7 +487,7 @@ async function main() {
 
 after_js = main;
 
-function init_js() {
+function init_ui() {
 	for (let k in ui_el) {
 		let v = ui_el[k];
 		let dom_id = v[0];
