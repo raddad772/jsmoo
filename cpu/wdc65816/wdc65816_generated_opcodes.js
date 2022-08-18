@@ -1,10 +1,10 @@
 "use strict";
 
-const decoded_opcodes = Object.freeze(
+const wdc65816_decoded_opcodes = Object.freeze(
 {
     // E0 M0 X0
     0: {
-        0x00: new opcode_functions(opcode_matrix[0x00],
+        0x00: new WDC_opcode_functions(WDC_opcode_matrix[0x00],
             function(regs, pins) { // BRK s
                 switch(regs.TCU) {
                         // BRK s E=0 M=0 X=0
@@ -61,7 +61,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x01: new opcode_functions(opcode_matrix[0x01],
+        0x01: new WDC_opcode_functions(WDC_opcode_matrix[0x01],
             function(regs, pins) { // ORA (d,x)
                 switch(regs.TCU) {
                         // ORA (d,x) E=0 M=0 X=0
@@ -112,7 +112,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x02: new opcode_functions(opcode_matrix[0x02],
+        0x02: new WDC_opcode_functions(WDC_opcode_matrix[0x02],
             function(regs, pins) { // COP s
                 switch(regs.TCU) {
                         // COP s E=0 M=0 X=0
@@ -169,7 +169,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x03: new opcode_functions(opcode_matrix[0x03],
+        0x03: new WDC_opcode_functions(WDC_opcode_matrix[0x03],
             function(regs, pins) { // ORA d,s
                 switch(regs.TCU) {
                         // ORA d,s E=0 M=0 X=0
@@ -204,7 +204,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x04: new opcode_functions(opcode_matrix[0x04],
+        0x04: new WDC_opcode_functions(WDC_opcode_matrix[0x04],
             function(regs, pins) { // TSB d
                 switch(regs.TCU) {
                         // TSB d E=0 M=0 X=0
@@ -256,7 +256,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x05: new opcode_functions(opcode_matrix[0x05],
+        0x05: new WDC_opcode_functions(WDC_opcode_matrix[0x05],
             function(regs, pins) { // ORA d
                 switch(regs.TCU) {
                         // ORA d E=0 M=0 X=0
@@ -297,7 +297,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x06: new opcode_functions(opcode_matrix[0x06],
+        0x06: new WDC_opcode_functions(WDC_opcode_matrix[0x06],
             function(regs, pins) { // ASL d
                 switch(regs.TCU) {
                         // ASL d E=0 M=0 X=0
@@ -351,7 +351,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x07: new opcode_functions(opcode_matrix[0x07],
+        0x07: new WDC_opcode_functions(WDC_opcode_matrix[0x07],
             function(regs, pins) { // ORA [d]
                 switch(regs.TCU) {
                         // ORA [d] E=0 M=0 X=0
@@ -405,7 +405,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x08: new opcode_functions(opcode_matrix[0x08],
+        0x08: new WDC_opcode_functions(WDC_opcode_matrix[0x08],
             function(regs, pins) { // PHP s
                 switch(regs.TCU) {
                         // PHP s E=0 M=0 X=0
@@ -433,7 +433,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x09: new opcode_functions(opcode_matrix[0x09],
+        0x09: new WDC_opcode_functions(WDC_opcode_matrix[0x09],
             function(regs, pins) { // ORA #
                 switch(regs.TCU) {
                         // ORA # E=0 M=0 X=0
@@ -461,7 +461,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x0A: new opcode_functions(opcode_matrix[0x0A],
+        0x0A: new WDC_opcode_functions(WDC_opcode_matrix[0x0A],
             function(regs, pins) { // ASL A
                 switch(regs.TCU) {
                         // ASL A E=0 M=0 X=0
@@ -487,7 +487,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x0B: new opcode_functions(opcode_matrix[0x0B],
+        0x0B: new WDC_opcode_functions(WDC_opcode_matrix[0x0B],
             function(regs, pins) { // PHD s
                 switch(regs.TCU) {
                         // PHD s E=0 M=0 X=0
@@ -519,7 +519,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x0C: new opcode_functions(opcode_matrix[0x0C],
+        0x0C: new WDC_opcode_functions(WDC_opcode_matrix[0x0C],
             function(regs, pins) { // TSB a
                 switch(regs.TCU) {
                         // TSB a E=0 M=0 X=0
@@ -567,7 +567,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x0D: new opcode_functions(opcode_matrix[0x0D],
+        0x0D: new WDC_opcode_functions(WDC_opcode_matrix[0x0D],
             function(regs, pins) { // ORA a
                 switch(regs.TCU) {
                         // ORA a E=0 M=0 X=0
@@ -602,7 +602,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x0E: new opcode_functions(opcode_matrix[0x0E],
+        0x0E: new WDC_opcode_functions(WDC_opcode_matrix[0x0E],
             function(regs, pins) { // ASL a
                 switch(regs.TCU) {
                         // ASL a E=0 M=0 X=0
@@ -652,7 +652,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x0F: new opcode_functions(opcode_matrix[0x0F],
+        0x0F: new WDC_opcode_functions(WDC_opcode_matrix[0x0F],
             function(regs, pins) { // ORA al
                 switch(regs.TCU) {
                         // ORA al E=0 M=0 X=0
@@ -692,7 +692,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x10: new opcode_functions(opcode_matrix[0x10],
+        0x10: new WDC_opcode_functions(WDC_opcode_matrix[0x10],
             function(regs, pins) { // BPL r
                 switch(regs.TCU) {
                         // BPL r E=0 M=0 X=0
@@ -723,7 +723,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x11: new opcode_functions(opcode_matrix[0x11],
+        0x11: new WDC_opcode_functions(WDC_opcode_matrix[0x11],
             function(regs, pins) { // ORA (d),y
                 switch(regs.TCU) {
                         // ORA (d),y E=0 M=0 X=0
@@ -783,7 +783,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x12: new opcode_functions(opcode_matrix[0x12],
+        0x12: new WDC_opcode_functions(WDC_opcode_matrix[0x12],
             function(regs, pins) { // ORA (d)
                 switch(regs.TCU) {
                         // ORA (d) E=0 M=0 X=0
@@ -831,7 +831,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x13: new opcode_functions(opcode_matrix[0x13],
+        0x13: new WDC_opcode_functions(WDC_opcode_matrix[0x13],
             function(regs, pins) { // ORA (d,s),y
                 switch(regs.TCU) {
                         // ORA (d,s),y E=0 M=0 X=0
@@ -880,7 +880,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x14: new opcode_functions(opcode_matrix[0x14],
+        0x14: new WDC_opcode_functions(WDC_opcode_matrix[0x14],
             function(regs, pins) { // TRB d
                 switch(regs.TCU) {
                         // TRB d E=0 M=0 X=0
@@ -932,7 +932,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x15: new opcode_functions(opcode_matrix[0x15],
+        0x15: new WDC_opcode_functions(WDC_opcode_matrix[0x15],
             function(regs, pins) { // ORA d,x
                 switch(regs.TCU) {
                         // ORA d,x E=0 M=0 X=0
@@ -975,7 +975,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x16: new opcode_functions(opcode_matrix[0x16],
+        0x16: new WDC_opcode_functions(WDC_opcode_matrix[0x16],
             function(regs, pins) { // ASL d,x
                 switch(regs.TCU) {
                         // ASL d,x E=0 M=0 X=0
@@ -1031,7 +1031,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x17: new opcode_functions(opcode_matrix[0x17],
+        0x17: new WDC_opcode_functions(WDC_opcode_matrix[0x17],
             function(regs, pins) { // ORA [d],y
                 switch(regs.TCU) {
                         // ORA [d],y E=0 M=0 X=0
@@ -1085,7 +1085,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x18: new opcode_functions(opcode_matrix[0x18],
+        0x18: new WDC_opcode_functions(WDC_opcode_matrix[0x18],
             function(regs, pins) { // CLC i
                 switch(regs.TCU) {
                         // CLC i E=0 M=0 X=0
@@ -1106,7 +1106,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x19: new opcode_functions(opcode_matrix[0x19],
+        0x19: new WDC_opcode_functions(WDC_opcode_matrix[0x19],
             function(regs, pins) { // ORA a,y
                 switch(regs.TCU) {
                         // ORA a,y E=0 M=0 X=0
@@ -1153,7 +1153,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x1A: new opcode_functions(opcode_matrix[0x1A],
+        0x1A: new WDC_opcode_functions(WDC_opcode_matrix[0x1A],
             function(regs, pins) { // INC A
                 switch(regs.TCU) {
                         // INC A E=0 M=0 X=0
@@ -1178,7 +1178,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x1B: new opcode_functions(opcode_matrix[0x1B],
+        0x1B: new WDC_opcode_functions(WDC_opcode_matrix[0x1B],
             function(regs, pins) { // TCS i
                 switch(regs.TCU) {
                         // TCS i E=0 M=0 X=0
@@ -1199,7 +1199,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x1C: new opcode_functions(opcode_matrix[0x1C],
+        0x1C: new WDC_opcode_functions(WDC_opcode_matrix[0x1C],
             function(regs, pins) { // TRB a
                 switch(regs.TCU) {
                         // TRB a E=0 M=0 X=0
@@ -1247,7 +1247,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x1D: new opcode_functions(opcode_matrix[0x1D],
+        0x1D: new WDC_opcode_functions(WDC_opcode_matrix[0x1D],
             function(regs, pins) { // ORA a,x
                 switch(regs.TCU) {
                         // ORA a,x E=0 M=0 X=0
@@ -1294,7 +1294,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x1E: new opcode_functions(opcode_matrix[0x1E],
+        0x1E: new WDC_opcode_functions(WDC_opcode_matrix[0x1E],
             function(regs, pins) { // ASL a,x
                 switch(regs.TCU) {
                         // ASL a,x E=0 M=0 X=0
@@ -1350,7 +1350,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x1F: new opcode_functions(opcode_matrix[0x1F],
+        0x1F: new WDC_opcode_functions(WDC_opcode_matrix[0x1F],
             function(regs, pins) { // ORA al,x
                 switch(regs.TCU) {
                         // ORA al,x E=0 M=0 X=0
@@ -1391,7 +1391,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x20: new opcode_functions(opcode_matrix[0x20],
+        0x20: new WDC_opcode_functions(WDC_opcode_matrix[0x20],
             function(regs, pins) { // JSR a
                 switch(regs.TCU) {
                         // JSR a E=0 M=0 X=0
@@ -1433,7 +1433,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x21: new opcode_functions(opcode_matrix[0x21],
+        0x21: new WDC_opcode_functions(WDC_opcode_matrix[0x21],
             function(regs, pins) { // AND (d,x)
                 switch(regs.TCU) {
                         // AND (d,x) E=0 M=0 X=0
@@ -1484,7 +1484,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x22: new opcode_functions(opcode_matrix[0x22],
+        0x22: new WDC_opcode_functions(WDC_opcode_matrix[0x22],
             function(regs, pins) { // JSL al
                 switch(regs.TCU) {
                         // JSL al E=0 M=0 X=0
@@ -1539,7 +1539,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x23: new opcode_functions(opcode_matrix[0x23],
+        0x23: new WDC_opcode_functions(WDC_opcode_matrix[0x23],
             function(regs, pins) { // AND d,s
                 switch(regs.TCU) {
                         // AND d,s E=0 M=0 X=0
@@ -1574,7 +1574,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x24: new opcode_functions(opcode_matrix[0x24],
+        0x24: new WDC_opcode_functions(WDC_opcode_matrix[0x24],
             function(regs, pins) { // BIT d
                 switch(regs.TCU) {
                         // BIT d E=0 M=0 X=0
@@ -1615,7 +1615,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x25: new opcode_functions(opcode_matrix[0x25],
+        0x25: new WDC_opcode_functions(WDC_opcode_matrix[0x25],
             function(regs, pins) { // AND d
                 switch(regs.TCU) {
                         // AND d E=0 M=0 X=0
@@ -1656,7 +1656,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x26: new opcode_functions(opcode_matrix[0x26],
+        0x26: new WDC_opcode_functions(WDC_opcode_matrix[0x26],
             function(regs, pins) { // ROL d
                 switch(regs.TCU) {
                         // ROL d E=0 M=0 X=0
@@ -1711,7 +1711,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x27: new opcode_functions(opcode_matrix[0x27],
+        0x27: new WDC_opcode_functions(WDC_opcode_matrix[0x27],
             function(regs, pins) { // AND [d]
                 switch(regs.TCU) {
                         // AND [d] E=0 M=0 X=0
@@ -1765,7 +1765,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x28: new opcode_functions(opcode_matrix[0x28],
+        0x28: new WDC_opcode_functions(WDC_opcode_matrix[0x28],
             function(regs, pins) { // PLP s
                 switch(regs.TCU) {
                         // PLP s E=0 M=0 X=0
@@ -1798,7 +1798,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x29: new opcode_functions(opcode_matrix[0x29],
+        0x29: new WDC_opcode_functions(WDC_opcode_matrix[0x29],
             function(regs, pins) { // AND #
                 switch(regs.TCU) {
                         // AND # E=0 M=0 X=0
@@ -1826,7 +1826,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x2A: new opcode_functions(opcode_matrix[0x2A],
+        0x2A: new WDC_opcode_functions(WDC_opcode_matrix[0x2A],
             function(regs, pins) { // ROL A
                 switch(regs.TCU) {
                         // ROL A E=0 M=0 X=0
@@ -1853,7 +1853,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x2B: new opcode_functions(opcode_matrix[0x2B],
+        0x2B: new WDC_opcode_functions(WDC_opcode_matrix[0x2B],
             function(regs, pins) { // PLD s
                 switch(regs.TCU) {
                         // PLD s E=0 M=0 X=0
@@ -1888,7 +1888,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x2C: new opcode_functions(opcode_matrix[0x2C],
+        0x2C: new WDC_opcode_functions(WDC_opcode_matrix[0x2C],
             function(regs, pins) { // BIT a
                 switch(regs.TCU) {
                         // BIT a E=0 M=0 X=0
@@ -1923,7 +1923,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x2D: new opcode_functions(opcode_matrix[0x2D],
+        0x2D: new WDC_opcode_functions(WDC_opcode_matrix[0x2D],
             function(regs, pins) { // AND a
                 switch(regs.TCU) {
                         // AND a E=0 M=0 X=0
@@ -1958,7 +1958,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x2E: new opcode_functions(opcode_matrix[0x2E],
+        0x2E: new WDC_opcode_functions(WDC_opcode_matrix[0x2E],
             function(regs, pins) { // ROL a
                 switch(regs.TCU) {
                         // ROL a E=0 M=0 X=0
@@ -2009,7 +2009,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x2F: new opcode_functions(opcode_matrix[0x2F],
+        0x2F: new WDC_opcode_functions(WDC_opcode_matrix[0x2F],
             function(regs, pins) { // AND al
                 switch(regs.TCU) {
                         // AND al E=0 M=0 X=0
@@ -2049,7 +2049,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x30: new opcode_functions(opcode_matrix[0x30],
+        0x30: new WDC_opcode_functions(WDC_opcode_matrix[0x30],
             function(regs, pins) { // BMI r
                 switch(regs.TCU) {
                         // BMI r E=0 M=0 X=0
@@ -2080,7 +2080,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x31: new opcode_functions(opcode_matrix[0x31],
+        0x31: new WDC_opcode_functions(WDC_opcode_matrix[0x31],
             function(regs, pins) { // AND (d),y
                 switch(regs.TCU) {
                         // AND (d),y E=0 M=0 X=0
@@ -2140,7 +2140,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x32: new opcode_functions(opcode_matrix[0x32],
+        0x32: new WDC_opcode_functions(WDC_opcode_matrix[0x32],
             function(regs, pins) { // AND (d)
                 switch(regs.TCU) {
                         // AND (d) E=0 M=0 X=0
@@ -2188,7 +2188,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x33: new opcode_functions(opcode_matrix[0x33],
+        0x33: new WDC_opcode_functions(WDC_opcode_matrix[0x33],
             function(regs, pins) { // AND (d,s),y
                 switch(regs.TCU) {
                         // AND (d,s),y E=0 M=0 X=0
@@ -2237,7 +2237,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x34: new opcode_functions(opcode_matrix[0x34],
+        0x34: new WDC_opcode_functions(WDC_opcode_matrix[0x34],
             function(regs, pins) { // BIT d,x
                 switch(regs.TCU) {
                         // BIT d,x E=0 M=0 X=0
@@ -2280,7 +2280,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x35: new opcode_functions(opcode_matrix[0x35],
+        0x35: new WDC_opcode_functions(WDC_opcode_matrix[0x35],
             function(regs, pins) { // AND d,x
                 switch(regs.TCU) {
                         // AND d,x E=0 M=0 X=0
@@ -2323,7 +2323,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x36: new opcode_functions(opcode_matrix[0x36],
+        0x36: new WDC_opcode_functions(WDC_opcode_matrix[0x36],
             function(regs, pins) { // ROL d,x
                 switch(regs.TCU) {
                         // ROL d,x E=0 M=0 X=0
@@ -2380,7 +2380,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x37: new opcode_functions(opcode_matrix[0x37],
+        0x37: new WDC_opcode_functions(WDC_opcode_matrix[0x37],
             function(regs, pins) { // AND [d],y
                 switch(regs.TCU) {
                         // AND [d],y E=0 M=0 X=0
@@ -2434,7 +2434,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x38: new opcode_functions(opcode_matrix[0x38],
+        0x38: new WDC_opcode_functions(WDC_opcode_matrix[0x38],
             function(regs, pins) { // SEC i
                 switch(regs.TCU) {
                         // SEC i E=0 M=0 X=0
@@ -2455,7 +2455,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x39: new opcode_functions(opcode_matrix[0x39],
+        0x39: new WDC_opcode_functions(WDC_opcode_matrix[0x39],
             function(regs, pins) { // AND a,y
                 switch(regs.TCU) {
                         // AND a,y E=0 M=0 X=0
@@ -2502,7 +2502,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x3A: new opcode_functions(opcode_matrix[0x3A],
+        0x3A: new WDC_opcode_functions(WDC_opcode_matrix[0x3A],
             function(regs, pins) { // DEC A
                 switch(regs.TCU) {
                         // DEC A E=0 M=0 X=0
@@ -2527,7 +2527,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x3B: new opcode_functions(opcode_matrix[0x3B],
+        0x3B: new WDC_opcode_functions(WDC_opcode_matrix[0x3B],
             function(regs, pins) { // TSC i
                 switch(regs.TCU) {
                         // TSC i E=0 M=0 X=0
@@ -2550,7 +2550,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x3C: new opcode_functions(opcode_matrix[0x3C],
+        0x3C: new WDC_opcode_functions(WDC_opcode_matrix[0x3C],
             function(regs, pins) { // BIT a,x
                 switch(regs.TCU) {
                         // BIT a,x E=0 M=0 X=0
@@ -2597,7 +2597,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x3D: new opcode_functions(opcode_matrix[0x3D],
+        0x3D: new WDC_opcode_functions(WDC_opcode_matrix[0x3D],
             function(regs, pins) { // AND a,x
                 switch(regs.TCU) {
                         // AND a,x E=0 M=0 X=0
@@ -2644,7 +2644,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x3E: new opcode_functions(opcode_matrix[0x3E],
+        0x3E: new WDC_opcode_functions(WDC_opcode_matrix[0x3E],
             function(regs, pins) { // ROL a,x
                 switch(regs.TCU) {
                         // ROL a,x E=0 M=0 X=0
@@ -2701,7 +2701,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x3F: new opcode_functions(opcode_matrix[0x3F],
+        0x3F: new WDC_opcode_functions(WDC_opcode_matrix[0x3F],
             function(regs, pins) { // AND al,x
                 switch(regs.TCU) {
                         // AND al,x E=0 M=0 X=0
@@ -2742,7 +2742,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x40: new opcode_functions(opcode_matrix[0x40],
+        0x40: new WDC_opcode_functions(WDC_opcode_matrix[0x40],
             function(regs, pins) { // RTI s
                 switch(regs.TCU) {
                         // RTI s E=0 M=0 X=0
@@ -2792,7 +2792,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x41: new opcode_functions(opcode_matrix[0x41],
+        0x41: new WDC_opcode_functions(WDC_opcode_matrix[0x41],
             function(regs, pins) { // EOR (d,x)
                 switch(regs.TCU) {
                         // EOR (d,x) E=0 M=0 X=0
@@ -2843,7 +2843,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x42: new opcode_functions(opcode_matrix[0x42],
+        0x42: new WDC_opcode_functions(WDC_opcode_matrix[0x42],
             function(regs, pins) { // WDM i
                 switch(regs.TCU) {
                         // WDM i E=0 M=0 X=0
@@ -2864,7 +2864,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x43: new opcode_functions(opcode_matrix[0x43],
+        0x43: new WDC_opcode_functions(WDC_opcode_matrix[0x43],
             function(regs, pins) { // EOR d,s
                 switch(regs.TCU) {
                         // EOR d,s E=0 M=0 X=0
@@ -2899,7 +2899,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x44: new opcode_functions(opcode_matrix[0x44],
+        0x44: new WDC_opcode_functions(WDC_opcode_matrix[0x44],
             function(regs, pins) { // MVP xyc
                 switch(regs.TCU) {
                         // MVP xyc E=0 M=0 X=0
@@ -2939,7 +2939,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x45: new opcode_functions(opcode_matrix[0x45],
+        0x45: new WDC_opcode_functions(WDC_opcode_matrix[0x45],
             function(regs, pins) { // EOR d
                 switch(regs.TCU) {
                         // EOR d E=0 M=0 X=0
@@ -2980,7 +2980,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x46: new opcode_functions(opcode_matrix[0x46],
+        0x46: new WDC_opcode_functions(WDC_opcode_matrix[0x46],
             function(regs, pins) { // LSR d
                 switch(regs.TCU) {
                         // LSR d E=0 M=0 X=0
@@ -3034,7 +3034,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x47: new opcode_functions(opcode_matrix[0x47],
+        0x47: new WDC_opcode_functions(WDC_opcode_matrix[0x47],
             function(regs, pins) { // EOR [d]
                 switch(regs.TCU) {
                         // EOR [d] E=0 M=0 X=0
@@ -3088,7 +3088,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x48: new opcode_functions(opcode_matrix[0x48],
+        0x48: new WDC_opcode_functions(WDC_opcode_matrix[0x48],
             function(regs, pins) { // PHA s
                 switch(regs.TCU) {
                         // PHA s E=0 M=0 X=0
@@ -3122,7 +3122,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, true, false),
-        0x49: new opcode_functions(opcode_matrix[0x49],
+        0x49: new WDC_opcode_functions(WDC_opcode_matrix[0x49],
             function(regs, pins) { // EOR #
                 switch(regs.TCU) {
                         // EOR # E=0 M=0 X=0
@@ -3150,7 +3150,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x4A: new opcode_functions(opcode_matrix[0x4A],
+        0x4A: new WDC_opcode_functions(WDC_opcode_matrix[0x4A],
             function(regs, pins) { // LSR A
                 switch(regs.TCU) {
                         // LSR A E=0 M=0 X=0
@@ -3176,7 +3176,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x4B: new opcode_functions(opcode_matrix[0x4B],
+        0x4B: new WDC_opcode_functions(WDC_opcode_matrix[0x4B],
             function(regs, pins) { // PHK s
                 switch(regs.TCU) {
                         // PHK s E=0 M=0 X=0
@@ -3204,7 +3204,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x4C: new opcode_functions(opcode_matrix[0x4C],
+        0x4C: new WDC_opcode_functions(WDC_opcode_matrix[0x4C],
             function(regs, pins) { // JMP a
                 switch(regs.TCU) {
                         // JMP a E=0 M=0 X=0
@@ -3227,7 +3227,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x4D: new opcode_functions(opcode_matrix[0x4D],
+        0x4D: new WDC_opcode_functions(WDC_opcode_matrix[0x4D],
             function(regs, pins) { // EOR a
                 switch(regs.TCU) {
                         // EOR a E=0 M=0 X=0
@@ -3262,7 +3262,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x4E: new opcode_functions(opcode_matrix[0x4E],
+        0x4E: new WDC_opcode_functions(WDC_opcode_matrix[0x4E],
             function(regs, pins) { // LSR a
                 switch(regs.TCU) {
                         // LSR a E=0 M=0 X=0
@@ -3312,7 +3312,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x4F: new opcode_functions(opcode_matrix[0x4F],
+        0x4F: new WDC_opcode_functions(WDC_opcode_matrix[0x4F],
             function(regs, pins) { // EOR al
                 switch(regs.TCU) {
                         // EOR al E=0 M=0 X=0
@@ -3352,7 +3352,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x50: new opcode_functions(opcode_matrix[0x50],
+        0x50: new WDC_opcode_functions(WDC_opcode_matrix[0x50],
             function(regs, pins) { // BVC r
                 switch(regs.TCU) {
                         // BVC r E=0 M=0 X=0
@@ -3383,7 +3383,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x51: new opcode_functions(opcode_matrix[0x51],
+        0x51: new WDC_opcode_functions(WDC_opcode_matrix[0x51],
             function(regs, pins) { // EOR (d),y
                 switch(regs.TCU) {
                         // EOR (d),y E=0 M=0 X=0
@@ -3443,7 +3443,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x52: new opcode_functions(opcode_matrix[0x52],
+        0x52: new WDC_opcode_functions(WDC_opcode_matrix[0x52],
             function(regs, pins) { // EOR (d)
                 switch(regs.TCU) {
                         // EOR (d) E=0 M=0 X=0
@@ -3491,7 +3491,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x53: new opcode_functions(opcode_matrix[0x53],
+        0x53: new WDC_opcode_functions(WDC_opcode_matrix[0x53],
             function(regs, pins) { // EOR (d,s),y
                 switch(regs.TCU) {
                         // EOR (d,s),y E=0 M=0 X=0
@@ -3540,7 +3540,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x54: new opcode_functions(opcode_matrix[0x54],
+        0x54: new WDC_opcode_functions(WDC_opcode_matrix[0x54],
             function(regs, pins) { // MVN xyc
                 switch(regs.TCU) {
                         // MVN xyc E=0 M=0 X=0
@@ -3580,7 +3580,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x55: new opcode_functions(opcode_matrix[0x55],
+        0x55: new WDC_opcode_functions(WDC_opcode_matrix[0x55],
             function(regs, pins) { // EOR d,x
                 switch(regs.TCU) {
                         // EOR d,x E=0 M=0 X=0
@@ -3623,7 +3623,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x56: new opcode_functions(opcode_matrix[0x56],
+        0x56: new WDC_opcode_functions(WDC_opcode_matrix[0x56],
             function(regs, pins) { // LSR d,x
                 switch(regs.TCU) {
                         // LSR d,x E=0 M=0 X=0
@@ -3679,7 +3679,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x57: new opcode_functions(opcode_matrix[0x57],
+        0x57: new WDC_opcode_functions(WDC_opcode_matrix[0x57],
             function(regs, pins) { // EOR [d],y
                 switch(regs.TCU) {
                         // EOR [d],y E=0 M=0 X=0
@@ -3733,7 +3733,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x58: new opcode_functions(opcode_matrix[0x58],
+        0x58: new WDC_opcode_functions(WDC_opcode_matrix[0x58],
             function(regs, pins) { // CLI i
                 switch(regs.TCU) {
                         // CLI i E=0 M=0 X=0
@@ -3754,7 +3754,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x59: new opcode_functions(opcode_matrix[0x59],
+        0x59: new WDC_opcode_functions(WDC_opcode_matrix[0x59],
             function(regs, pins) { // EOR a,y
                 switch(regs.TCU) {
                         // EOR a,y E=0 M=0 X=0
@@ -3801,7 +3801,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x5A: new opcode_functions(opcode_matrix[0x5A],
+        0x5A: new WDC_opcode_functions(WDC_opcode_matrix[0x5A],
             function(regs, pins) { // PHY s
                 switch(regs.TCU) {
                         // PHY s E=0 M=0 X=0
@@ -3835,7 +3835,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, true),
-        0x5B: new opcode_functions(opcode_matrix[0x5B],
+        0x5B: new WDC_opcode_functions(WDC_opcode_matrix[0x5B],
             function(regs, pins) { // TCD i
                 switch(regs.TCU) {
                         // TCD i E=0 M=0 X=0
@@ -3858,7 +3858,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x5C: new opcode_functions(opcode_matrix[0x5C],
+        0x5C: new WDC_opcode_functions(WDC_opcode_matrix[0x5C],
             function(regs, pins) { // JMP al
                 switch(regs.TCU) {
                         // JMP al E=0 M=0 X=0
@@ -3885,7 +3885,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x5D: new opcode_functions(opcode_matrix[0x5D],
+        0x5D: new WDC_opcode_functions(WDC_opcode_matrix[0x5D],
             function(regs, pins) { // EOR a,x
                 switch(regs.TCU) {
                         // EOR a,x E=0 M=0 X=0
@@ -3932,7 +3932,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x5E: new opcode_functions(opcode_matrix[0x5E],
+        0x5E: new WDC_opcode_functions(WDC_opcode_matrix[0x5E],
             function(regs, pins) { // LSR a,x
                 switch(regs.TCU) {
                         // LSR a,x E=0 M=0 X=0
@@ -3988,7 +3988,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x5F: new opcode_functions(opcode_matrix[0x5F],
+        0x5F: new WDC_opcode_functions(WDC_opcode_matrix[0x5F],
             function(regs, pins) { // EOR al,x
                 switch(regs.TCU) {
                         // EOR al,x E=0 M=0 X=0
@@ -4029,7 +4029,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x60: new opcode_functions(opcode_matrix[0x60],
+        0x60: new WDC_opcode_functions(WDC_opcode_matrix[0x60],
             function(regs, pins) { // RTS s
                 switch(regs.TCU) {
                         // RTS s E=0 M=0 X=0
@@ -4065,7 +4065,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x61: new opcode_functions(opcode_matrix[0x61],
+        0x61: new WDC_opcode_functions(WDC_opcode_matrix[0x61],
             function(regs, pins) { // ADC (d,x)
                 switch(regs.TCU) {
                         // ADC (d,x) E=0 M=0 X=0
@@ -4133,7 +4133,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x62: new opcode_functions(opcode_matrix[0x62],
+        0x62: new WDC_opcode_functions(WDC_opcode_matrix[0x62],
             function(regs, pins) { // PER s
                 switch(regs.TCU) {
                         // PER s E=0 M=0 X=0
@@ -4171,7 +4171,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x63: new opcode_functions(opcode_matrix[0x63],
+        0x63: new WDC_opcode_functions(WDC_opcode_matrix[0x63],
             function(regs, pins) { // ADC d,s
                 switch(regs.TCU) {
                         // ADC d,s E=0 M=0 X=0
@@ -4223,7 +4223,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x64: new opcode_functions(opcode_matrix[0x64],
+        0x64: new WDC_opcode_functions(WDC_opcode_matrix[0x64],
             function(regs, pins) { // STZ d
                 switch(regs.TCU) {
                         // STZ d E=0 M=0 X=0
@@ -4263,7 +4263,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x65: new opcode_functions(opcode_matrix[0x65],
+        0x65: new WDC_opcode_functions(WDC_opcode_matrix[0x65],
             function(regs, pins) { // ADC d
                 switch(regs.TCU) {
                         // ADC d E=0 M=0 X=0
@@ -4321,7 +4321,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x66: new opcode_functions(opcode_matrix[0x66],
+        0x66: new WDC_opcode_functions(WDC_opcode_matrix[0x66],
             function(regs, pins) { // ROR d
                 switch(regs.TCU) {
                         // ROR d E=0 M=0 X=0
@@ -4376,7 +4376,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x67: new opcode_functions(opcode_matrix[0x67],
+        0x67: new WDC_opcode_functions(WDC_opcode_matrix[0x67],
             function(regs, pins) { // ADC [d]
                 switch(regs.TCU) {
                         // ADC [d] E=0 M=0 X=0
@@ -4447,7 +4447,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x68: new opcode_functions(opcode_matrix[0x68],
+        0x68: new WDC_opcode_functions(WDC_opcode_matrix[0x68],
             function(regs, pins) { // PLA s
                 switch(regs.TCU) {
                         // PLA s E=0 M=0 X=0
@@ -4484,7 +4484,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, true, false),
-        0x69: new opcode_functions(opcode_matrix[0x69],
+        0x69: new WDC_opcode_functions(WDC_opcode_matrix[0x69],
             function(regs, pins) { // ADC #
                 switch(regs.TCU) {
                         // ADC # E=0 M=0 X=0
@@ -4529,7 +4529,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x6A: new opcode_functions(opcode_matrix[0x6A],
+        0x6A: new WDC_opcode_functions(WDC_opcode_matrix[0x6A],
             function(regs, pins) { // ROR A
                 switch(regs.TCU) {
                         // ROR A E=0 M=0 X=0
@@ -4556,7 +4556,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x6B: new opcode_functions(opcode_matrix[0x6B],
+        0x6B: new WDC_opcode_functions(WDC_opcode_matrix[0x6B],
             function(regs, pins) { // RTL s
                 switch(regs.TCU) {
                         // RTL s E=0 M=0 X=0
@@ -4594,7 +4594,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x6C: new opcode_functions(opcode_matrix[0x6C],
+        0x6C: new WDC_opcode_functions(WDC_opcode_matrix[0x6C],
             function(regs, pins) { // JMP (a)
                 switch(regs.TCU) {
                         // JMP (a) E=0 M=0 X=0
@@ -4624,7 +4624,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x6D: new opcode_functions(opcode_matrix[0x6D],
+        0x6D: new WDC_opcode_functions(WDC_opcode_matrix[0x6D],
             function(regs, pins) { // ADC a
                 switch(regs.TCU) {
                         // ADC a E=0 M=0 X=0
@@ -4676,7 +4676,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x6E: new opcode_functions(opcode_matrix[0x6E],
+        0x6E: new WDC_opcode_functions(WDC_opcode_matrix[0x6E],
             function(regs, pins) { // ROR a
                 switch(regs.TCU) {
                         // ROR a E=0 M=0 X=0
@@ -4727,7 +4727,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x6F: new opcode_functions(opcode_matrix[0x6F],
+        0x6F: new WDC_opcode_functions(WDC_opcode_matrix[0x6F],
             function(regs, pins) { // ADC al
                 switch(regs.TCU) {
                         // ADC al E=0 M=0 X=0
@@ -4784,7 +4784,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x70: new opcode_functions(opcode_matrix[0x70],
+        0x70: new WDC_opcode_functions(WDC_opcode_matrix[0x70],
             function(regs, pins) { // BVS r
                 switch(regs.TCU) {
                         // BVS r E=0 M=0 X=0
@@ -4815,7 +4815,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x71: new opcode_functions(opcode_matrix[0x71],
+        0x71: new WDC_opcode_functions(WDC_opcode_matrix[0x71],
             function(regs, pins) { // ADC (d),y
                 switch(regs.TCU) {
                         // ADC (d),y E=0 M=0 X=0
@@ -4892,7 +4892,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x72: new opcode_functions(opcode_matrix[0x72],
+        0x72: new WDC_opcode_functions(WDC_opcode_matrix[0x72],
             function(regs, pins) { // ADC (d)
                 switch(regs.TCU) {
                         // ADC (d) E=0 M=0 X=0
@@ -4957,7 +4957,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x73: new opcode_functions(opcode_matrix[0x73],
+        0x73: new WDC_opcode_functions(WDC_opcode_matrix[0x73],
             function(regs, pins) { // ADC (d,s),y
                 switch(regs.TCU) {
                         // ADC (d,s),y E=0 M=0 X=0
@@ -5023,7 +5023,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x74: new opcode_functions(opcode_matrix[0x74],
+        0x74: new WDC_opcode_functions(WDC_opcode_matrix[0x74],
             function(regs, pins) { // STZ d,x
                 switch(regs.TCU) {
                         // STZ d,x E=0 M=0 X=0
@@ -5065,7 +5065,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x75: new opcode_functions(opcode_matrix[0x75],
+        0x75: new WDC_opcode_functions(WDC_opcode_matrix[0x75],
             function(regs, pins) { // ADC d,x
                 switch(regs.TCU) {
                         // ADC d,x E=0 M=0 X=0
@@ -5125,7 +5125,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x76: new opcode_functions(opcode_matrix[0x76],
+        0x76: new WDC_opcode_functions(WDC_opcode_matrix[0x76],
             function(regs, pins) { // ROR d,x
                 switch(regs.TCU) {
                         // ROR d,x E=0 M=0 X=0
@@ -5182,7 +5182,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x77: new opcode_functions(opcode_matrix[0x77],
+        0x77: new WDC_opcode_functions(WDC_opcode_matrix[0x77],
             function(regs, pins) { // ADC [d],y
                 switch(regs.TCU) {
                         // ADC [d],y E=0 M=0 X=0
@@ -5253,7 +5253,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x78: new opcode_functions(opcode_matrix[0x78],
+        0x78: new WDC_opcode_functions(WDC_opcode_matrix[0x78],
             function(regs, pins) { // SEI i
                 switch(regs.TCU) {
                         // SEI i E=0 M=0 X=0
@@ -5274,7 +5274,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x79: new opcode_functions(opcode_matrix[0x79],
+        0x79: new WDC_opcode_functions(WDC_opcode_matrix[0x79],
             function(regs, pins) { // ADC a,y
                 switch(regs.TCU) {
                         // ADC a,y E=0 M=0 X=0
@@ -5338,7 +5338,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x7A: new opcode_functions(opcode_matrix[0x7A],
+        0x7A: new WDC_opcode_functions(WDC_opcode_matrix[0x7A],
             function(regs, pins) { // PLY s
                 switch(regs.TCU) {
                         // PLY s E=0 M=0 X=0
@@ -5375,7 +5375,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, true),
-        0x7B: new opcode_functions(opcode_matrix[0x7B],
+        0x7B: new WDC_opcode_functions(WDC_opcode_matrix[0x7B],
             function(regs, pins) { // TDC i
                 switch(regs.TCU) {
                         // TDC i E=0 M=0 X=0
@@ -5398,7 +5398,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x7C: new opcode_functions(opcode_matrix[0x7C],
+        0x7C: new WDC_opcode_functions(WDC_opcode_matrix[0x7C],
             function(regs, pins) { // JMP (a,x)
                 switch(regs.TCU) {
                         // JMP (a,x) E=0 M=0 X=0
@@ -5434,7 +5434,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x7D: new opcode_functions(opcode_matrix[0x7D],
+        0x7D: new WDC_opcode_functions(WDC_opcode_matrix[0x7D],
             function(regs, pins) { // ADC a,x
                 switch(regs.TCU) {
                         // ADC a,x E=0 M=0 X=0
@@ -5498,7 +5498,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x7E: new opcode_functions(opcode_matrix[0x7E],
+        0x7E: new WDC_opcode_functions(WDC_opcode_matrix[0x7E],
             function(regs, pins) { // ROR a,x
                 switch(regs.TCU) {
                         // ROR a,x E=0 M=0 X=0
@@ -5555,7 +5555,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x7F: new opcode_functions(opcode_matrix[0x7F],
+        0x7F: new WDC_opcode_functions(WDC_opcode_matrix[0x7F],
             function(regs, pins) { // ADC al,x
                 switch(regs.TCU) {
                         // ADC al,x E=0 M=0 X=0
@@ -5613,7 +5613,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x80: new opcode_functions(opcode_matrix[0x80],
+        0x80: new WDC_opcode_functions(WDC_opcode_matrix[0x80],
             function(regs, pins) { // BRA r
                 switch(regs.TCU) {
                         // BRA r E=0 M=0 X=0
@@ -5644,7 +5644,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x81: new opcode_functions(opcode_matrix[0x81],
+        0x81: new WDC_opcode_functions(WDC_opcode_matrix[0x81],
             function(regs, pins) { // STA (d,x)
                 switch(regs.TCU) {
                         // STA (d,x) E=0 M=0 X=0
@@ -5696,7 +5696,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x82: new opcode_functions(opcode_matrix[0x82],
+        0x82: new WDC_opcode_functions(WDC_opcode_matrix[0x82],
             function(regs, pins) { // BRL rl
                 switch(regs.TCU) {
                         // BRL rl E=0 M=0 X=0
@@ -5724,7 +5724,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x83: new opcode_functions(opcode_matrix[0x83],
+        0x83: new WDC_opcode_functions(WDC_opcode_matrix[0x83],
             function(regs, pins) { // STA d,s
                 switch(regs.TCU) {
                         // STA d,s E=0 M=0 X=0
@@ -5759,7 +5759,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x84: new opcode_functions(opcode_matrix[0x84],
+        0x84: new WDC_opcode_functions(WDC_opcode_matrix[0x84],
             function(regs, pins) { // STY d
                 switch(regs.TCU) {
                         // STY d E=0 M=0 X=0
@@ -5799,7 +5799,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x85: new opcode_functions(opcode_matrix[0x85],
+        0x85: new WDC_opcode_functions(WDC_opcode_matrix[0x85],
             function(regs, pins) { // STA d
                 switch(regs.TCU) {
                         // STA d E=0 M=0 X=0
@@ -5840,7 +5840,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x86: new opcode_functions(opcode_matrix[0x86],
+        0x86: new WDC_opcode_functions(WDC_opcode_matrix[0x86],
             function(regs, pins) { // STX d
                 switch(regs.TCU) {
                         // STX d E=0 M=0 X=0
@@ -5880,7 +5880,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x87: new opcode_functions(opcode_matrix[0x87],
+        0x87: new WDC_opcode_functions(WDC_opcode_matrix[0x87],
             function(regs, pins) { // STA [d]
                 switch(regs.TCU) {
                         // STA [d] E=0 M=0 X=0
@@ -5935,7 +5935,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x88: new opcode_functions(opcode_matrix[0x88],
+        0x88: new WDC_opcode_functions(WDC_opcode_matrix[0x88],
             function(regs, pins) { // DEY i
                 switch(regs.TCU) {
                         // DEY i E=0 M=0 X=0
@@ -5958,7 +5958,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x89: new opcode_functions(opcode_matrix[0x89],
+        0x89: new WDC_opcode_functions(WDC_opcode_matrix[0x89],
             function(regs, pins) { // BIT #
                 switch(regs.TCU) {
                         // BIT # E=0 M=0 X=0
@@ -5984,7 +5984,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x8A: new opcode_functions(opcode_matrix[0x8A],
+        0x8A: new WDC_opcode_functions(WDC_opcode_matrix[0x8A],
             function(regs, pins) { // TXA i
                 switch(regs.TCU) {
                         // TXA i E=0 M=0 X=0
@@ -6007,7 +6007,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x8B: new opcode_functions(opcode_matrix[0x8B],
+        0x8B: new WDC_opcode_functions(WDC_opcode_matrix[0x8B],
             function(regs, pins) { // PHB s
                 switch(regs.TCU) {
                         // PHB s E=0 M=0 X=0
@@ -6035,7 +6035,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x8C: new opcode_functions(opcode_matrix[0x8C],
+        0x8C: new WDC_opcode_functions(WDC_opcode_matrix[0x8C],
             function(regs, pins) { // STY a
                 switch(regs.TCU) {
                         // STY a E=0 M=0 X=0
@@ -6070,7 +6070,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x8D: new opcode_functions(opcode_matrix[0x8D],
+        0x8D: new WDC_opcode_functions(WDC_opcode_matrix[0x8D],
             function(regs, pins) { // STA a
                 switch(regs.TCU) {
                         // STA a E=0 M=0 X=0
@@ -6106,7 +6106,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x8E: new opcode_functions(opcode_matrix[0x8E],
+        0x8E: new WDC_opcode_functions(WDC_opcode_matrix[0x8E],
             function(regs, pins) { // STX a
                 switch(regs.TCU) {
                         // STX a E=0 M=0 X=0
@@ -6141,7 +6141,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x8F: new opcode_functions(opcode_matrix[0x8F],
+        0x8F: new WDC_opcode_functions(WDC_opcode_matrix[0x8F],
             function(regs, pins) { // STA al
                 switch(regs.TCU) {
                         // STA al E=0 M=0 X=0
@@ -6182,7 +6182,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x90: new opcode_functions(opcode_matrix[0x90],
+        0x90: new WDC_opcode_functions(WDC_opcode_matrix[0x90],
             function(regs, pins) { // BCC r
                 switch(regs.TCU) {
                         // BCC r E=0 M=0 X=0
@@ -6213,7 +6213,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x91: new opcode_functions(opcode_matrix[0x91],
+        0x91: new WDC_opcode_functions(WDC_opcode_matrix[0x91],
             function(regs, pins) { // STA (d),y
                 switch(regs.TCU) {
                         // STA (d),y E=0 M=0 X=0
@@ -6273,7 +6273,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x92: new opcode_functions(opcode_matrix[0x92],
+        0x92: new WDC_opcode_functions(WDC_opcode_matrix[0x92],
             function(regs, pins) { // STA (d)
                 switch(regs.TCU) {
                         // STA (d) E=0 M=0 X=0
@@ -6322,7 +6322,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x93: new opcode_functions(opcode_matrix[0x93],
+        0x93: new WDC_opcode_functions(WDC_opcode_matrix[0x93],
             function(regs, pins) { // STA (d,s),y
                 switch(regs.TCU) {
                         // STA (d,s),y E=0 M=0 X=0
@@ -6371,7 +6371,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x94: new opcode_functions(opcode_matrix[0x94],
+        0x94: new WDC_opcode_functions(WDC_opcode_matrix[0x94],
             function(regs, pins) { // STY d,x
                 switch(regs.TCU) {
                         // STY d,x E=0 M=0 X=0
@@ -6413,7 +6413,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x95: new opcode_functions(opcode_matrix[0x95],
+        0x95: new WDC_opcode_functions(WDC_opcode_matrix[0x95],
             function(regs, pins) { // STA d,x
                 switch(regs.TCU) {
                         // STA d,x E=0 M=0 X=0
@@ -6456,7 +6456,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x96: new opcode_functions(opcode_matrix[0x96],
+        0x96: new WDC_opcode_functions(WDC_opcode_matrix[0x96],
             function(regs, pins) { // STX d,y
                 switch(regs.TCU) {
                         // STX d,y E=0 M=0 X=0
@@ -6498,7 +6498,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x97: new opcode_functions(opcode_matrix[0x97],
+        0x97: new WDC_opcode_functions(WDC_opcode_matrix[0x97],
             function(regs, pins) { // STA [d],y
                 switch(regs.TCU) {
                         // STA [d],y E=0 M=0 X=0
@@ -6553,7 +6553,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x98: new opcode_functions(opcode_matrix[0x98],
+        0x98: new WDC_opcode_functions(WDC_opcode_matrix[0x98],
             function(regs, pins) { // TYA i
                 switch(regs.TCU) {
                         // TYA i E=0 M=0 X=0
@@ -6576,7 +6576,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x99: new opcode_functions(opcode_matrix[0x99],
+        0x99: new WDC_opcode_functions(WDC_opcode_matrix[0x99],
             function(regs, pins) { // STA a,y
                 switch(regs.TCU) {
                         // STA a,y E=0 M=0 X=0
@@ -6623,7 +6623,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x9A: new opcode_functions(opcode_matrix[0x9A],
+        0x9A: new WDC_opcode_functions(WDC_opcode_matrix[0x9A],
             function(regs, pins) { // TXS i
                 switch(regs.TCU) {
                         // TXS i E=0 M=0 X=0
@@ -6644,7 +6644,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x9B: new opcode_functions(opcode_matrix[0x9B],
+        0x9B: new WDC_opcode_functions(WDC_opcode_matrix[0x9B],
             function(regs, pins) { // TXY i
                 switch(regs.TCU) {
                         // TXY i E=0 M=0 X=0
@@ -6667,7 +6667,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x9C: new opcode_functions(opcode_matrix[0x9C],
+        0x9C: new WDC_opcode_functions(WDC_opcode_matrix[0x9C],
             function(regs, pins) { // STZ a
                 switch(regs.TCU) {
                         // STZ a E=0 M=0 X=0
@@ -6702,7 +6702,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x9D: new opcode_functions(opcode_matrix[0x9D],
+        0x9D: new WDC_opcode_functions(WDC_opcode_matrix[0x9D],
             function(regs, pins) { // STA a,x
                 switch(regs.TCU) {
                         // STA a,x E=0 M=0 X=0
@@ -6749,7 +6749,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x9E: new opcode_functions(opcode_matrix[0x9E],
+        0x9E: new WDC_opcode_functions(WDC_opcode_matrix[0x9E],
             function(regs, pins) { // STZ a,x
                 switch(regs.TCU) {
                         // STZ a,x E=0 M=0 X=0
@@ -6795,7 +6795,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x9F: new opcode_functions(opcode_matrix[0x9F],
+        0x9F: new WDC_opcode_functions(WDC_opcode_matrix[0x9F],
             function(regs, pins) { // STA al,x
                 switch(regs.TCU) {
                         // STA al,x E=0 M=0 X=0
@@ -6837,7 +6837,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xA0: new opcode_functions(opcode_matrix[0xA0],
+        0xA0: new WDC_opcode_functions(WDC_opcode_matrix[0xA0],
             function(regs, pins) { // LDY #
                 switch(regs.TCU) {
                         // LDY # E=0 M=0 X=0
@@ -6865,7 +6865,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xA1: new opcode_functions(opcode_matrix[0xA1],
+        0xA1: new WDC_opcode_functions(WDC_opcode_matrix[0xA1],
             function(regs, pins) { // LDA (d,x)
                 switch(regs.TCU) {
                         // LDA (d,x) E=0 M=0 X=0
@@ -6916,7 +6916,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xA2: new opcode_functions(opcode_matrix[0xA2],
+        0xA2: new WDC_opcode_functions(WDC_opcode_matrix[0xA2],
             function(regs, pins) { // LDX #
                 switch(regs.TCU) {
                         // LDX # E=0 M=0 X=0
@@ -6944,7 +6944,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xA3: new opcode_functions(opcode_matrix[0xA3],
+        0xA3: new WDC_opcode_functions(WDC_opcode_matrix[0xA3],
             function(regs, pins) { // LDA d,s
                 switch(regs.TCU) {
                         // LDA d,s E=0 M=0 X=0
@@ -6979,7 +6979,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xA4: new opcode_functions(opcode_matrix[0xA4],
+        0xA4: new WDC_opcode_functions(WDC_opcode_matrix[0xA4],
             function(regs, pins) { // LDY d
                 switch(regs.TCU) {
                         // LDY d E=0 M=0 X=0
@@ -7020,7 +7020,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xA5: new opcode_functions(opcode_matrix[0xA5],
+        0xA5: new WDC_opcode_functions(WDC_opcode_matrix[0xA5],
             function(regs, pins) { // LDA d
                 switch(regs.TCU) {
                         // LDA d E=0 M=0 X=0
@@ -7061,7 +7061,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xA6: new opcode_functions(opcode_matrix[0xA6],
+        0xA6: new WDC_opcode_functions(WDC_opcode_matrix[0xA6],
             function(regs, pins) { // LDX d
                 switch(regs.TCU) {
                         // LDX d E=0 M=0 X=0
@@ -7102,7 +7102,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xA7: new opcode_functions(opcode_matrix[0xA7],
+        0xA7: new WDC_opcode_functions(WDC_opcode_matrix[0xA7],
             function(regs, pins) { // LDA [d]
                 switch(regs.TCU) {
                         // LDA [d] E=0 M=0 X=0
@@ -7156,7 +7156,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xA8: new opcode_functions(opcode_matrix[0xA8],
+        0xA8: new WDC_opcode_functions(WDC_opcode_matrix[0xA8],
             function(regs, pins) { // TAY i
                 switch(regs.TCU) {
                         // TAY i E=0 M=0 X=0
@@ -7179,7 +7179,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xA9: new opcode_functions(opcode_matrix[0xA9],
+        0xA9: new WDC_opcode_functions(WDC_opcode_matrix[0xA9],
             function(regs, pins) { // LDA #
                 switch(regs.TCU) {
                         // LDA # E=0 M=0 X=0
@@ -7207,7 +7207,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xAA: new opcode_functions(opcode_matrix[0xAA],
+        0xAA: new WDC_opcode_functions(WDC_opcode_matrix[0xAA],
             function(regs, pins) { // TAX i
                 switch(regs.TCU) {
                         // TAX i E=0 M=0 X=0
@@ -7230,7 +7230,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xAB: new opcode_functions(opcode_matrix[0xAB],
+        0xAB: new WDC_opcode_functions(WDC_opcode_matrix[0xAB],
             function(regs, pins) { // PLB s
                 switch(regs.TCU) {
                         // PLB s E=0 M=0 X=0
@@ -7261,7 +7261,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xAC: new opcode_functions(opcode_matrix[0xAC],
+        0xAC: new WDC_opcode_functions(WDC_opcode_matrix[0xAC],
             function(regs, pins) { // LDY a
                 switch(regs.TCU) {
                         // LDY a E=0 M=0 X=0
@@ -7296,7 +7296,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xAD: new opcode_functions(opcode_matrix[0xAD],
+        0xAD: new WDC_opcode_functions(WDC_opcode_matrix[0xAD],
             function(regs, pins) { // LDA a
                 switch(regs.TCU) {
                         // LDA a E=0 M=0 X=0
@@ -7331,7 +7331,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xAE: new opcode_functions(opcode_matrix[0xAE],
+        0xAE: new WDC_opcode_functions(WDC_opcode_matrix[0xAE],
             function(regs, pins) { // LDX a
                 switch(regs.TCU) {
                         // LDX a E=0 M=0 X=0
@@ -7366,7 +7366,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xAF: new opcode_functions(opcode_matrix[0xAF],
+        0xAF: new WDC_opcode_functions(WDC_opcode_matrix[0xAF],
             function(regs, pins) { // LDA al
                 switch(regs.TCU) {
                         // LDA al E=0 M=0 X=0
@@ -7406,7 +7406,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB0: new opcode_functions(opcode_matrix[0xB0],
+        0xB0: new WDC_opcode_functions(WDC_opcode_matrix[0xB0],
             function(regs, pins) { // BCS r
                 switch(regs.TCU) {
                         // BCS r E=0 M=0 X=0
@@ -7437,7 +7437,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xB1: new opcode_functions(opcode_matrix[0xB1],
+        0xB1: new WDC_opcode_functions(WDC_opcode_matrix[0xB1],
             function(regs, pins) { // LDA (d),y
                 switch(regs.TCU) {
                         // LDA (d),y E=0 M=0 X=0
@@ -7497,7 +7497,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB2: new opcode_functions(opcode_matrix[0xB2],
+        0xB2: new WDC_opcode_functions(WDC_opcode_matrix[0xB2],
             function(regs, pins) { // LDA (d)
                 switch(regs.TCU) {
                         // LDA (d) E=0 M=0 X=0
@@ -7545,7 +7545,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB3: new opcode_functions(opcode_matrix[0xB3],
+        0xB3: new WDC_opcode_functions(WDC_opcode_matrix[0xB3],
             function(regs, pins) { // LDA (d,s),y
                 switch(regs.TCU) {
                         // LDA (d,s),y E=0 M=0 X=0
@@ -7594,7 +7594,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB4: new opcode_functions(opcode_matrix[0xB4],
+        0xB4: new WDC_opcode_functions(WDC_opcode_matrix[0xB4],
             function(regs, pins) { // LDY d,x
                 switch(regs.TCU) {
                         // LDY d,x E=0 M=0 X=0
@@ -7637,7 +7637,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xB5: new opcode_functions(opcode_matrix[0xB5],
+        0xB5: new WDC_opcode_functions(WDC_opcode_matrix[0xB5],
             function(regs, pins) { // LDA d,x
                 switch(regs.TCU) {
                         // LDA d,x E=0 M=0 X=0
@@ -7680,7 +7680,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB6: new opcode_functions(opcode_matrix[0xB6],
+        0xB6: new WDC_opcode_functions(WDC_opcode_matrix[0xB6],
             function(regs, pins) { // LDX d,y
                 switch(regs.TCU) {
                         // LDX d,y E=0 M=0 X=0
@@ -7723,7 +7723,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xB7: new opcode_functions(opcode_matrix[0xB7],
+        0xB7: new WDC_opcode_functions(WDC_opcode_matrix[0xB7],
             function(regs, pins) { // LDA [d],y
                 switch(regs.TCU) {
                         // LDA [d],y E=0 M=0 X=0
@@ -7777,7 +7777,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB8: new opcode_functions(opcode_matrix[0xB8],
+        0xB8: new WDC_opcode_functions(WDC_opcode_matrix[0xB8],
             function(regs, pins) { // CLV i
                 switch(regs.TCU) {
                         // CLV i E=0 M=0 X=0
@@ -7798,7 +7798,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xB9: new opcode_functions(opcode_matrix[0xB9],
+        0xB9: new WDC_opcode_functions(WDC_opcode_matrix[0xB9],
             function(regs, pins) { // LDA a,y
                 switch(regs.TCU) {
                         // LDA a,y E=0 M=0 X=0
@@ -7845,7 +7845,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xBA: new opcode_functions(opcode_matrix[0xBA],
+        0xBA: new WDC_opcode_functions(WDC_opcode_matrix[0xBA],
             function(regs, pins) { // TSX i
                 switch(regs.TCU) {
                         // TSX i E=0 M=0 X=0
@@ -7868,7 +7868,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xBB: new opcode_functions(opcode_matrix[0xBB],
+        0xBB: new WDC_opcode_functions(WDC_opcode_matrix[0xBB],
             function(regs, pins) { // TYX i
                 switch(regs.TCU) {
                         // TYX i E=0 M=0 X=0
@@ -7891,7 +7891,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xBC: new opcode_functions(opcode_matrix[0xBC],
+        0xBC: new WDC_opcode_functions(WDC_opcode_matrix[0xBC],
             function(regs, pins) { // LDY a,x
                 switch(regs.TCU) {
                         // LDY a,x E=0 M=0 X=0
@@ -7938,7 +7938,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xBD: new opcode_functions(opcode_matrix[0xBD],
+        0xBD: new WDC_opcode_functions(WDC_opcode_matrix[0xBD],
             function(regs, pins) { // LDA a,x
                 switch(regs.TCU) {
                         // LDA a,x E=0 M=0 X=0
@@ -7985,7 +7985,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xBE: new opcode_functions(opcode_matrix[0xBE],
+        0xBE: new WDC_opcode_functions(WDC_opcode_matrix[0xBE],
             function(regs, pins) { // LDX a,y
                 switch(regs.TCU) {
                         // LDX a,y E=0 M=0 X=0
@@ -8032,7 +8032,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xBF: new opcode_functions(opcode_matrix[0xBF],
+        0xBF: new WDC_opcode_functions(WDC_opcode_matrix[0xBF],
             function(regs, pins) { // LDA al,x
                 switch(regs.TCU) {
                         // LDA al,x E=0 M=0 X=0
@@ -8073,7 +8073,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC0: new opcode_functions(opcode_matrix[0xC0],
+        0xC0: new WDC_opcode_functions(WDC_opcode_matrix[0xC0],
             function(regs, pins) { // CPY #
                 switch(regs.TCU) {
                         // CPY # E=0 M=0 X=0
@@ -8102,7 +8102,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xC1: new opcode_functions(opcode_matrix[0xC1],
+        0xC1: new WDC_opcode_functions(WDC_opcode_matrix[0xC1],
             function(regs, pins) { // CMP (d,x)
                 switch(regs.TCU) {
                         // CMP (d,x) E=0 M=0 X=0
@@ -8154,7 +8154,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC2: new opcode_functions(opcode_matrix[0xC2],
+        0xC2: new WDC_opcode_functions(WDC_opcode_matrix[0xC2],
             function(regs, pins) { // REP #
                 switch(regs.TCU) {
                         // REP # E=0 M=0 X=0
@@ -8179,7 +8179,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xC3: new opcode_functions(opcode_matrix[0xC3],
+        0xC3: new WDC_opcode_functions(WDC_opcode_matrix[0xC3],
             function(regs, pins) { // CMP d,s
                 switch(regs.TCU) {
                         // CMP d,s E=0 M=0 X=0
@@ -8215,7 +8215,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC4: new opcode_functions(opcode_matrix[0xC4],
+        0xC4: new WDC_opcode_functions(WDC_opcode_matrix[0xC4],
             function(regs, pins) { // CPY d
                 switch(regs.TCU) {
                         // CPY d E=0 M=0 X=0
@@ -8257,7 +8257,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xC5: new opcode_functions(opcode_matrix[0xC5],
+        0xC5: new WDC_opcode_functions(WDC_opcode_matrix[0xC5],
             function(regs, pins) { // CMP d
                 switch(regs.TCU) {
                         // CMP d E=0 M=0 X=0
@@ -8299,7 +8299,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC6: new opcode_functions(opcode_matrix[0xC6],
+        0xC6: new WDC_opcode_functions(WDC_opcode_matrix[0xC6],
             function(regs, pins) { // DEC d
                 switch(regs.TCU) {
                         // DEC d E=0 M=0 X=0
@@ -8352,7 +8352,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC7: new opcode_functions(opcode_matrix[0xC7],
+        0xC7: new WDC_opcode_functions(WDC_opcode_matrix[0xC7],
             function(regs, pins) { // CMP [d]
                 switch(regs.TCU) {
                         // CMP [d] E=0 M=0 X=0
@@ -8407,7 +8407,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC8: new opcode_functions(opcode_matrix[0xC8],
+        0xC8: new WDC_opcode_functions(WDC_opcode_matrix[0xC8],
             function(regs, pins) { // INY i
                 switch(regs.TCU) {
                         // INY i E=0 M=0 X=0
@@ -8430,7 +8430,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xC9: new opcode_functions(opcode_matrix[0xC9],
+        0xC9: new WDC_opcode_functions(WDC_opcode_matrix[0xC9],
             function(regs, pins) { // CMP #
                 switch(regs.TCU) {
                         // CMP # E=0 M=0 X=0
@@ -8459,7 +8459,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xCA: new opcode_functions(opcode_matrix[0xCA],
+        0xCA: new WDC_opcode_functions(WDC_opcode_matrix[0xCA],
             function(regs, pins) { // DEX i
                 switch(regs.TCU) {
                         // DEX i E=0 M=0 X=0
@@ -8482,7 +8482,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xCB: new opcode_functions(opcode_matrix[0xCB],
+        0xCB: new WDC_opcode_functions(WDC_opcode_matrix[0xCB],
             function(regs, pins) { // WAI i
                 switch(regs.TCU) {
                         // WAI i E=0 M=0 X=0
@@ -8504,7 +8504,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xCC: new opcode_functions(opcode_matrix[0xCC],
+        0xCC: new WDC_opcode_functions(WDC_opcode_matrix[0xCC],
             function(regs, pins) { // CPY a
                 switch(regs.TCU) {
                         // CPY a E=0 M=0 X=0
@@ -8540,7 +8540,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xCD: new opcode_functions(opcode_matrix[0xCD],
+        0xCD: new WDC_opcode_functions(WDC_opcode_matrix[0xCD],
             function(regs, pins) { // CMP a
                 switch(regs.TCU) {
                         // CMP a E=0 M=0 X=0
@@ -8576,7 +8576,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xCE: new opcode_functions(opcode_matrix[0xCE],
+        0xCE: new WDC_opcode_functions(WDC_opcode_matrix[0xCE],
             function(regs, pins) { // DEC a
                 switch(regs.TCU) {
                         // DEC a E=0 M=0 X=0
@@ -8625,7 +8625,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xCF: new opcode_functions(opcode_matrix[0xCF],
+        0xCF: new WDC_opcode_functions(WDC_opcode_matrix[0xCF],
             function(regs, pins) { // CMP al
                 switch(regs.TCU) {
                         // CMP al E=0 M=0 X=0
@@ -8666,7 +8666,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD0: new opcode_functions(opcode_matrix[0xD0],
+        0xD0: new WDC_opcode_functions(WDC_opcode_matrix[0xD0],
             function(regs, pins) { // BNE r
                 switch(regs.TCU) {
                         // BNE r E=0 M=0 X=0
@@ -8697,7 +8697,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xD1: new opcode_functions(opcode_matrix[0xD1],
+        0xD1: new WDC_opcode_functions(WDC_opcode_matrix[0xD1],
             function(regs, pins) { // CMP (d),y
                 switch(regs.TCU) {
                         // CMP (d),y E=0 M=0 X=0
@@ -8758,7 +8758,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD2: new opcode_functions(opcode_matrix[0xD2],
+        0xD2: new WDC_opcode_functions(WDC_opcode_matrix[0xD2],
             function(regs, pins) { // CMP (d)
                 switch(regs.TCU) {
                         // CMP (d) E=0 M=0 X=0
@@ -8807,7 +8807,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD3: new opcode_functions(opcode_matrix[0xD3],
+        0xD3: new WDC_opcode_functions(WDC_opcode_matrix[0xD3],
             function(regs, pins) { // CMP (d,s),y
                 switch(regs.TCU) {
                         // CMP (d,s),y E=0 M=0 X=0
@@ -8857,7 +8857,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD4: new opcode_functions(opcode_matrix[0xD4],
+        0xD4: new WDC_opcode_functions(WDC_opcode_matrix[0xD4],
             function(regs, pins) { // PEI s
                 switch(regs.TCU) {
                         // PEI s E=0 M=0 X=0
@@ -8903,7 +8903,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0xD5: new opcode_functions(opcode_matrix[0xD5],
+        0xD5: new WDC_opcode_functions(WDC_opcode_matrix[0xD5],
             function(regs, pins) { // CMP d,x
                 switch(regs.TCU) {
                         // CMP d,x E=0 M=0 X=0
@@ -8947,7 +8947,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD6: new opcode_functions(opcode_matrix[0xD6],
+        0xD6: new WDC_opcode_functions(WDC_opcode_matrix[0xD6],
             function(regs, pins) { // DEC d,x
                 switch(regs.TCU) {
                         // DEC d,x E=0 M=0 X=0
@@ -9002,7 +9002,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD7: new opcode_functions(opcode_matrix[0xD7],
+        0xD7: new WDC_opcode_functions(WDC_opcode_matrix[0xD7],
             function(regs, pins) { // CMP [d],y
                 switch(regs.TCU) {
                         // CMP [d],y E=0 M=0 X=0
@@ -9057,7 +9057,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD8: new opcode_functions(opcode_matrix[0xD8],
+        0xD8: new WDC_opcode_functions(WDC_opcode_matrix[0xD8],
             function(regs, pins) { // CLD i
                 switch(regs.TCU) {
                         // CLD i E=0 M=0 X=0
@@ -9078,7 +9078,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xD9: new opcode_functions(opcode_matrix[0xD9],
+        0xD9: new WDC_opcode_functions(WDC_opcode_matrix[0xD9],
             function(regs, pins) { // CMP a,y
                 switch(regs.TCU) {
                         // CMP a,y E=0 M=0 X=0
@@ -9126,7 +9126,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xDA: new opcode_functions(opcode_matrix[0xDA],
+        0xDA: new WDC_opcode_functions(WDC_opcode_matrix[0xDA],
             function(regs, pins) { // PHX s
                 switch(regs.TCU) {
                         // PHX s E=0 M=0 X=0
@@ -9160,7 +9160,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, true),
-        0xDB: new opcode_functions(opcode_matrix[0xDB],
+        0xDB: new WDC_opcode_functions(WDC_opcode_matrix[0xDB],
             function(regs, pins) { // STP i
                 switch(regs.TCU) {
                         // STP i E=0 M=0 X=0
@@ -9178,7 +9178,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xDC: new opcode_functions(opcode_matrix[0xDC],
+        0xDC: new WDC_opcode_functions(WDC_opcode_matrix[0xDC],
             function(regs, pins) { // JML (a)
                 switch(regs.TCU) {
                         // JML (a) E=0 M=0 X=0
@@ -9212,7 +9212,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xDD: new opcode_functions(opcode_matrix[0xDD],
+        0xDD: new WDC_opcode_functions(WDC_opcode_matrix[0xDD],
             function(regs, pins) { // CMP a,x
                 switch(regs.TCU) {
                         // CMP a,x E=0 M=0 X=0
@@ -9260,7 +9260,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xDE: new opcode_functions(opcode_matrix[0xDE],
+        0xDE: new WDC_opcode_functions(WDC_opcode_matrix[0xDE],
             function(regs, pins) { // DEC a,x
                 switch(regs.TCU) {
                         // DEC a,x E=0 M=0 X=0
@@ -9315,7 +9315,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xDF: new opcode_functions(opcode_matrix[0xDF],
+        0xDF: new WDC_opcode_functions(WDC_opcode_matrix[0xDF],
             function(regs, pins) { // CMP al,x
                 switch(regs.TCU) {
                         // CMP al,x E=0 M=0 X=0
@@ -9357,7 +9357,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE0: new opcode_functions(opcode_matrix[0xE0],
+        0xE0: new WDC_opcode_functions(WDC_opcode_matrix[0xE0],
             function(regs, pins) { // CPX #
                 switch(regs.TCU) {
                         // CPX # E=0 M=0 X=0
@@ -9386,7 +9386,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xE1: new opcode_functions(opcode_matrix[0xE1],
+        0xE1: new WDC_opcode_functions(WDC_opcode_matrix[0xE1],
             function(regs, pins) { // SBC (d,x)
                 switch(regs.TCU) {
                         // SBC (d,x) E=0 M=0 X=0
@@ -9455,7 +9455,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE2: new opcode_functions(opcode_matrix[0xE2],
+        0xE2: new WDC_opcode_functions(WDC_opcode_matrix[0xE2],
             function(regs, pins) { // SEP #
                 switch(regs.TCU) {
                         // SEP # E=0 M=0 X=0
@@ -9481,7 +9481,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xE3: new opcode_functions(opcode_matrix[0xE3],
+        0xE3: new WDC_opcode_functions(WDC_opcode_matrix[0xE3],
             function(regs, pins) { // SBC d,s
                 switch(regs.TCU) {
                         // SBC d,s E=0 M=0 X=0
@@ -9534,7 +9534,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE4: new opcode_functions(opcode_matrix[0xE4],
+        0xE4: new WDC_opcode_functions(WDC_opcode_matrix[0xE4],
             function(regs, pins) { // CPX d
                 switch(regs.TCU) {
                         // CPX d E=0 M=0 X=0
@@ -9576,7 +9576,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xE5: new opcode_functions(opcode_matrix[0xE5],
+        0xE5: new WDC_opcode_functions(WDC_opcode_matrix[0xE5],
             function(regs, pins) { // SBC d
                 switch(regs.TCU) {
                         // SBC d E=0 M=0 X=0
@@ -9635,7 +9635,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE6: new opcode_functions(opcode_matrix[0xE6],
+        0xE6: new WDC_opcode_functions(WDC_opcode_matrix[0xE6],
             function(regs, pins) { // INC d
                 switch(regs.TCU) {
                         // INC d E=0 M=0 X=0
@@ -9688,7 +9688,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE7: new opcode_functions(opcode_matrix[0xE7],
+        0xE7: new WDC_opcode_functions(WDC_opcode_matrix[0xE7],
             function(regs, pins) { // SBC [d]
                 switch(regs.TCU) {
                         // SBC [d] E=0 M=0 X=0
@@ -9760,7 +9760,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE8: new opcode_functions(opcode_matrix[0xE8],
+        0xE8: new WDC_opcode_functions(WDC_opcode_matrix[0xE8],
             function(regs, pins) { // INX i
                 switch(regs.TCU) {
                         // INX i E=0 M=0 X=0
@@ -9783,7 +9783,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xE9: new opcode_functions(opcode_matrix[0xE9],
+        0xE9: new WDC_opcode_functions(WDC_opcode_matrix[0xE9],
             function(regs, pins) { // SBC #
                 switch(regs.TCU) {
                         // SBC # E=0 M=0 X=0
@@ -9829,7 +9829,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xEA: new opcode_functions(opcode_matrix[0xEA],
+        0xEA: new WDC_opcode_functions(WDC_opcode_matrix[0xEA],
             function(regs, pins) { // NOP i
                 switch(regs.TCU) {
                         // NOP i E=0 M=0 X=0
@@ -9849,7 +9849,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xEB: new opcode_functions(opcode_matrix[0xEB],
+        0xEB: new WDC_opcode_functions(WDC_opcode_matrix[0xEB],
             function(regs, pins) { // XBA i
                 switch(regs.TCU) {
                         // XBA i E=0 M=0 X=0
@@ -9874,7 +9874,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xEC: new opcode_functions(opcode_matrix[0xEC],
+        0xEC: new WDC_opcode_functions(WDC_opcode_matrix[0xEC],
             function(regs, pins) { // CPX a
                 switch(regs.TCU) {
                         // CPX a E=0 M=0 X=0
@@ -9910,7 +9910,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xED: new opcode_functions(opcode_matrix[0xED],
+        0xED: new WDC_opcode_functions(WDC_opcode_matrix[0xED],
             function(regs, pins) { // SBC a
                 switch(regs.TCU) {
                         // SBC a E=0 M=0 X=0
@@ -9963,7 +9963,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xEE: new opcode_functions(opcode_matrix[0xEE],
+        0xEE: new WDC_opcode_functions(WDC_opcode_matrix[0xEE],
             function(regs, pins) { // INC a
                 switch(regs.TCU) {
                         // INC a E=0 M=0 X=0
@@ -10012,7 +10012,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xEF: new opcode_functions(opcode_matrix[0xEF],
+        0xEF: new WDC_opcode_functions(WDC_opcode_matrix[0xEF],
             function(regs, pins) { // SBC al
                 switch(regs.TCU) {
                         // SBC al E=0 M=0 X=0
@@ -10070,7 +10070,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF0: new opcode_functions(opcode_matrix[0xF0],
+        0xF0: new WDC_opcode_functions(WDC_opcode_matrix[0xF0],
             function(regs, pins) { // BEQ r
                 switch(regs.TCU) {
                         // BEQ r E=0 M=0 X=0
@@ -10101,7 +10101,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xF1: new opcode_functions(opcode_matrix[0xF1],
+        0xF1: new WDC_opcode_functions(WDC_opcode_matrix[0xF1],
             function(regs, pins) { // SBC (d),y
                 switch(regs.TCU) {
                         // SBC (d),y E=0 M=0 X=0
@@ -10179,7 +10179,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF2: new opcode_functions(opcode_matrix[0xF2],
+        0xF2: new WDC_opcode_functions(WDC_opcode_matrix[0xF2],
             function(regs, pins) { // SBC (d)
                 switch(regs.TCU) {
                         // SBC (d) E=0 M=0 X=0
@@ -10245,7 +10245,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF3: new opcode_functions(opcode_matrix[0xF3],
+        0xF3: new WDC_opcode_functions(WDC_opcode_matrix[0xF3],
             function(regs, pins) { // SBC (d,s),y
                 switch(regs.TCU) {
                         // SBC (d,s),y E=0 M=0 X=0
@@ -10312,7 +10312,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF4: new opcode_functions(opcode_matrix[0xF4],
+        0xF4: new WDC_opcode_functions(WDC_opcode_matrix[0xF4],
             function(regs, pins) { // PEA s
                 switch(regs.TCU) {
                         // PEA s E=0 M=0 X=0
@@ -10345,7 +10345,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0xF5: new opcode_functions(opcode_matrix[0xF5],
+        0xF5: new WDC_opcode_functions(WDC_opcode_matrix[0xF5],
             function(regs, pins) { // SBC d,x
                 switch(regs.TCU) {
                         // SBC d,x E=0 M=0 X=0
@@ -10406,7 +10406,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF6: new opcode_functions(opcode_matrix[0xF6],
+        0xF6: new WDC_opcode_functions(WDC_opcode_matrix[0xF6],
             function(regs, pins) { // INC d,x
                 switch(regs.TCU) {
                         // INC d,x E=0 M=0 X=0
@@ -10461,7 +10461,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF7: new opcode_functions(opcode_matrix[0xF7],
+        0xF7: new WDC_opcode_functions(WDC_opcode_matrix[0xF7],
             function(regs, pins) { // SBC [d],y
                 switch(regs.TCU) {
                         // SBC [d],y E=0 M=0 X=0
@@ -10533,7 +10533,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF8: new opcode_functions(opcode_matrix[0xF8],
+        0xF8: new WDC_opcode_functions(WDC_opcode_matrix[0xF8],
             function(regs, pins) { // SED i
                 switch(regs.TCU) {
                         // SED i E=0 M=0 X=0
@@ -10554,7 +10554,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xF9: new opcode_functions(opcode_matrix[0xF9],
+        0xF9: new WDC_opcode_functions(WDC_opcode_matrix[0xF9],
             function(regs, pins) { // SBC a,y
                 switch(regs.TCU) {
                         // SBC a,y E=0 M=0 X=0
@@ -10619,7 +10619,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xFA: new opcode_functions(opcode_matrix[0xFA],
+        0xFA: new WDC_opcode_functions(WDC_opcode_matrix[0xFA],
             function(regs, pins) { // PLX s
                 switch(regs.TCU) {
                         // PLX s E=0 M=0 X=0
@@ -10656,7 +10656,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, true),
-        0xFB: new opcode_functions(opcode_matrix[0xFB],
+        0xFB: new WDC_opcode_functions(WDC_opcode_matrix[0xFB],
             function(regs, pins) { // XCE i
                 switch(regs.TCU) {
                         // XCE i E=0 M=0 X=0
@@ -10683,7 +10683,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xFC: new opcode_functions(opcode_matrix[0xFC],
+        0xFC: new WDC_opcode_functions(WDC_opcode_matrix[0xFC],
             function(regs, pins) { // JSR (a,x)
                 switch(regs.TCU) {
                         // JSR (a,x) E=0 M=0 X=0
@@ -10732,7 +10732,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0xFD: new opcode_functions(opcode_matrix[0xFD],
+        0xFD: new WDC_opcode_functions(WDC_opcode_matrix[0xFD],
             function(regs, pins) { // SBC a,x
                 switch(regs.TCU) {
                         // SBC a,x E=0 M=0 X=0
@@ -10797,7 +10797,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xFE: new opcode_functions(opcode_matrix[0xFE],
+        0xFE: new WDC_opcode_functions(WDC_opcode_matrix[0xFE],
             function(regs, pins) { // INC a,x
                 switch(regs.TCU) {
                         // INC a,x E=0 M=0 X=0
@@ -10852,7 +10852,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xFF: new opcode_functions(opcode_matrix[0xFF],
+        0xFF: new WDC_opcode_functions(WDC_opcode_matrix[0xFF],
             function(regs, pins) { // SBC al,x
                 switch(regs.TCU) {
                         // SBC al,x E=0 M=0 X=0
@@ -10911,7 +10911,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x100: new opcode_functions(opcode_matrix[0x100],
+        0x100: new WDC_opcode_functions(WDC_opcode_matrix[0x100],
             function(regs, pins) { // S_RESET s
                 switch(regs.TCU) {
                         // S_RESET s E=0 M=0 X=0
@@ -10964,7 +10964,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x101: new opcode_functions(opcode_matrix[0x101],
+        0x101: new WDC_opcode_functions(WDC_opcode_matrix[0x101],
             function(regs, pins) { // S_ABORT s
                 switch(regs.TCU) {
                         // S_ABORT s E=0 M=0 X=0
@@ -11013,7 +11013,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x102: new opcode_functions(opcode_matrix[0x102],
+        0x102: new WDC_opcode_functions(WDC_opcode_matrix[0x102],
             function(regs, pins) { // S_IRQ s
                 switch(regs.TCU) {
                         // S_IRQ s E=0 M=0 X=0
@@ -11064,7 +11064,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x103: new opcode_functions(opcode_matrix[0x103],
+        0x103: new WDC_opcode_functions(WDC_opcode_matrix[0x103],
             function(regs, pins) { // S_NMI s
                 switch(regs.TCU) {
                         // S_NMI s E=0 M=0 X=0
@@ -11118,7 +11118,7 @@ const decoded_opcodes = Object.freeze(
 },
     // E0 M0 X1
     4: {
-        0x00: new opcode_functions(opcode_matrix[0x00],
+        0x00: new WDC_opcode_functions(WDC_opcode_matrix[0x00],
             function(regs, pins) { // BRK s
                 switch(regs.TCU) {
                         // BRK s E=0 M=0 X=1
@@ -11175,7 +11175,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x01: new opcode_functions(opcode_matrix[0x01],
+        0x01: new WDC_opcode_functions(WDC_opcode_matrix[0x01],
             function(regs, pins) { // ORA (d,x)
                 switch(regs.TCU) {
                         // ORA (d,x) E=0 M=0 X=1
@@ -11226,7 +11226,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x02: new opcode_functions(opcode_matrix[0x02],
+        0x02: new WDC_opcode_functions(WDC_opcode_matrix[0x02],
             function(regs, pins) { // COP s
                 switch(regs.TCU) {
                         // COP s E=0 M=0 X=1
@@ -11283,7 +11283,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x03: new opcode_functions(opcode_matrix[0x03],
+        0x03: new WDC_opcode_functions(WDC_opcode_matrix[0x03],
             function(regs, pins) { // ORA d,s
                 switch(regs.TCU) {
                         // ORA d,s E=0 M=0 X=1
@@ -11318,7 +11318,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x04: new opcode_functions(opcode_matrix[0x04],
+        0x04: new WDC_opcode_functions(WDC_opcode_matrix[0x04],
             function(regs, pins) { // TSB d
                 switch(regs.TCU) {
                         // TSB d E=0 M=0 X=1
@@ -11370,7 +11370,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x05: new opcode_functions(opcode_matrix[0x05],
+        0x05: new WDC_opcode_functions(WDC_opcode_matrix[0x05],
             function(regs, pins) { // ORA d
                 switch(regs.TCU) {
                         // ORA d E=0 M=0 X=1
@@ -11411,7 +11411,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x06: new opcode_functions(opcode_matrix[0x06],
+        0x06: new WDC_opcode_functions(WDC_opcode_matrix[0x06],
             function(regs, pins) { // ASL d
                 switch(regs.TCU) {
                         // ASL d E=0 M=0 X=1
@@ -11465,7 +11465,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x07: new opcode_functions(opcode_matrix[0x07],
+        0x07: new WDC_opcode_functions(WDC_opcode_matrix[0x07],
             function(regs, pins) { // ORA [d]
                 switch(regs.TCU) {
                         // ORA [d] E=0 M=0 X=1
@@ -11519,7 +11519,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x08: new opcode_functions(opcode_matrix[0x08],
+        0x08: new WDC_opcode_functions(WDC_opcode_matrix[0x08],
             function(regs, pins) { // PHP s
                 switch(regs.TCU) {
                         // PHP s E=0 M=0 X=1
@@ -11547,7 +11547,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x09: new opcode_functions(opcode_matrix[0x09],
+        0x09: new WDC_opcode_functions(WDC_opcode_matrix[0x09],
             function(regs, pins) { // ORA #
                 switch(regs.TCU) {
                         // ORA # E=0 M=0 X=1
@@ -11575,7 +11575,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x0A: new opcode_functions(opcode_matrix[0x0A],
+        0x0A: new WDC_opcode_functions(WDC_opcode_matrix[0x0A],
             function(regs, pins) { // ASL A
                 switch(regs.TCU) {
                         // ASL A E=0 M=0 X=1
@@ -11601,7 +11601,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x0B: new opcode_functions(opcode_matrix[0x0B],
+        0x0B: new WDC_opcode_functions(WDC_opcode_matrix[0x0B],
             function(regs, pins) { // PHD s
                 switch(regs.TCU) {
                         // PHD s E=0 M=0 X=1
@@ -11633,7 +11633,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x0C: new opcode_functions(opcode_matrix[0x0C],
+        0x0C: new WDC_opcode_functions(WDC_opcode_matrix[0x0C],
             function(regs, pins) { // TSB a
                 switch(regs.TCU) {
                         // TSB a E=0 M=0 X=1
@@ -11681,7 +11681,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x0D: new opcode_functions(opcode_matrix[0x0D],
+        0x0D: new WDC_opcode_functions(WDC_opcode_matrix[0x0D],
             function(regs, pins) { // ORA a
                 switch(regs.TCU) {
                         // ORA a E=0 M=0 X=1
@@ -11716,7 +11716,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x0E: new opcode_functions(opcode_matrix[0x0E],
+        0x0E: new WDC_opcode_functions(WDC_opcode_matrix[0x0E],
             function(regs, pins) { // ASL a
                 switch(regs.TCU) {
                         // ASL a E=0 M=0 X=1
@@ -11766,7 +11766,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x0F: new opcode_functions(opcode_matrix[0x0F],
+        0x0F: new WDC_opcode_functions(WDC_opcode_matrix[0x0F],
             function(regs, pins) { // ORA al
                 switch(regs.TCU) {
                         // ORA al E=0 M=0 X=1
@@ -11806,7 +11806,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x10: new opcode_functions(opcode_matrix[0x10],
+        0x10: new WDC_opcode_functions(WDC_opcode_matrix[0x10],
             function(regs, pins) { // BPL r
                 switch(regs.TCU) {
                         // BPL r E=0 M=0 X=1
@@ -11837,7 +11837,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x11: new opcode_functions(opcode_matrix[0x11],
+        0x11: new WDC_opcode_functions(WDC_opcode_matrix[0x11],
             function(regs, pins) { // ORA (d),y
                 switch(regs.TCU) {
                         // ORA (d),y E=0 M=0 X=1
@@ -11898,7 +11898,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x12: new opcode_functions(opcode_matrix[0x12],
+        0x12: new WDC_opcode_functions(WDC_opcode_matrix[0x12],
             function(regs, pins) { // ORA (d)
                 switch(regs.TCU) {
                         // ORA (d) E=0 M=0 X=1
@@ -11946,7 +11946,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x13: new opcode_functions(opcode_matrix[0x13],
+        0x13: new WDC_opcode_functions(WDC_opcode_matrix[0x13],
             function(regs, pins) { // ORA (d,s),y
                 switch(regs.TCU) {
                         // ORA (d,s),y E=0 M=0 X=1
@@ -11995,7 +11995,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x14: new opcode_functions(opcode_matrix[0x14],
+        0x14: new WDC_opcode_functions(WDC_opcode_matrix[0x14],
             function(regs, pins) { // TRB d
                 switch(regs.TCU) {
                         // TRB d E=0 M=0 X=1
@@ -12047,7 +12047,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x15: new opcode_functions(opcode_matrix[0x15],
+        0x15: new WDC_opcode_functions(WDC_opcode_matrix[0x15],
             function(regs, pins) { // ORA d,x
                 switch(regs.TCU) {
                         // ORA d,x E=0 M=0 X=1
@@ -12090,7 +12090,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x16: new opcode_functions(opcode_matrix[0x16],
+        0x16: new WDC_opcode_functions(WDC_opcode_matrix[0x16],
             function(regs, pins) { // ASL d,x
                 switch(regs.TCU) {
                         // ASL d,x E=0 M=0 X=1
@@ -12146,7 +12146,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x17: new opcode_functions(opcode_matrix[0x17],
+        0x17: new WDC_opcode_functions(WDC_opcode_matrix[0x17],
             function(regs, pins) { // ORA [d],y
                 switch(regs.TCU) {
                         // ORA [d],y E=0 M=0 X=1
@@ -12200,7 +12200,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x18: new opcode_functions(opcode_matrix[0x18],
+        0x18: new WDC_opcode_functions(WDC_opcode_matrix[0x18],
             function(regs, pins) { // CLC i
                 switch(regs.TCU) {
                         // CLC i E=0 M=0 X=1
@@ -12221,7 +12221,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x19: new opcode_functions(opcode_matrix[0x19],
+        0x19: new WDC_opcode_functions(WDC_opcode_matrix[0x19],
             function(regs, pins) { // ORA a,y
                 switch(regs.TCU) {
                         // ORA a,y E=0 M=0 X=1
@@ -12270,7 +12270,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x1A: new opcode_functions(opcode_matrix[0x1A],
+        0x1A: new WDC_opcode_functions(WDC_opcode_matrix[0x1A],
             function(regs, pins) { // INC A
                 switch(regs.TCU) {
                         // INC A E=0 M=0 X=1
@@ -12295,7 +12295,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x1B: new opcode_functions(opcode_matrix[0x1B],
+        0x1B: new WDC_opcode_functions(WDC_opcode_matrix[0x1B],
             function(regs, pins) { // TCS i
                 switch(regs.TCU) {
                         // TCS i E=0 M=0 X=1
@@ -12316,7 +12316,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x1C: new opcode_functions(opcode_matrix[0x1C],
+        0x1C: new WDC_opcode_functions(WDC_opcode_matrix[0x1C],
             function(regs, pins) { // TRB a
                 switch(regs.TCU) {
                         // TRB a E=0 M=0 X=1
@@ -12364,7 +12364,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x1D: new opcode_functions(opcode_matrix[0x1D],
+        0x1D: new WDC_opcode_functions(WDC_opcode_matrix[0x1D],
             function(regs, pins) { // ORA a,x
                 switch(regs.TCU) {
                         // ORA a,x E=0 M=0 X=1
@@ -12413,7 +12413,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x1E: new opcode_functions(opcode_matrix[0x1E],
+        0x1E: new WDC_opcode_functions(WDC_opcode_matrix[0x1E],
             function(regs, pins) { // ASL a,x
                 switch(regs.TCU) {
                         // ASL a,x E=0 M=0 X=1
@@ -12469,7 +12469,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x1F: new opcode_functions(opcode_matrix[0x1F],
+        0x1F: new WDC_opcode_functions(WDC_opcode_matrix[0x1F],
             function(regs, pins) { // ORA al,x
                 switch(regs.TCU) {
                         // ORA al,x E=0 M=0 X=1
@@ -12510,7 +12510,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x20: new opcode_functions(opcode_matrix[0x20],
+        0x20: new WDC_opcode_functions(WDC_opcode_matrix[0x20],
             function(regs, pins) { // JSR a
                 switch(regs.TCU) {
                         // JSR a E=0 M=0 X=1
@@ -12552,7 +12552,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x21: new opcode_functions(opcode_matrix[0x21],
+        0x21: new WDC_opcode_functions(WDC_opcode_matrix[0x21],
             function(regs, pins) { // AND (d,x)
                 switch(regs.TCU) {
                         // AND (d,x) E=0 M=0 X=1
@@ -12603,7 +12603,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x22: new opcode_functions(opcode_matrix[0x22],
+        0x22: new WDC_opcode_functions(WDC_opcode_matrix[0x22],
             function(regs, pins) { // JSL al
                 switch(regs.TCU) {
                         // JSL al E=0 M=0 X=1
@@ -12658,7 +12658,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x23: new opcode_functions(opcode_matrix[0x23],
+        0x23: new WDC_opcode_functions(WDC_opcode_matrix[0x23],
             function(regs, pins) { // AND d,s
                 switch(regs.TCU) {
                         // AND d,s E=0 M=0 X=1
@@ -12693,7 +12693,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x24: new opcode_functions(opcode_matrix[0x24],
+        0x24: new WDC_opcode_functions(WDC_opcode_matrix[0x24],
             function(regs, pins) { // BIT d
                 switch(regs.TCU) {
                         // BIT d E=0 M=0 X=1
@@ -12734,7 +12734,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x25: new opcode_functions(opcode_matrix[0x25],
+        0x25: new WDC_opcode_functions(WDC_opcode_matrix[0x25],
             function(regs, pins) { // AND d
                 switch(regs.TCU) {
                         // AND d E=0 M=0 X=1
@@ -12775,7 +12775,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x26: new opcode_functions(opcode_matrix[0x26],
+        0x26: new WDC_opcode_functions(WDC_opcode_matrix[0x26],
             function(regs, pins) { // ROL d
                 switch(regs.TCU) {
                         // ROL d E=0 M=0 X=1
@@ -12830,7 +12830,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x27: new opcode_functions(opcode_matrix[0x27],
+        0x27: new WDC_opcode_functions(WDC_opcode_matrix[0x27],
             function(regs, pins) { // AND [d]
                 switch(regs.TCU) {
                         // AND [d] E=0 M=0 X=1
@@ -12884,7 +12884,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x28: new opcode_functions(opcode_matrix[0x28],
+        0x28: new WDC_opcode_functions(WDC_opcode_matrix[0x28],
             function(regs, pins) { // PLP s
                 switch(regs.TCU) {
                         // PLP s E=0 M=0 X=1
@@ -12917,7 +12917,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x29: new opcode_functions(opcode_matrix[0x29],
+        0x29: new WDC_opcode_functions(WDC_opcode_matrix[0x29],
             function(regs, pins) { // AND #
                 switch(regs.TCU) {
                         // AND # E=0 M=0 X=1
@@ -12945,7 +12945,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x2A: new opcode_functions(opcode_matrix[0x2A],
+        0x2A: new WDC_opcode_functions(WDC_opcode_matrix[0x2A],
             function(regs, pins) { // ROL A
                 switch(regs.TCU) {
                         // ROL A E=0 M=0 X=1
@@ -12972,7 +12972,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x2B: new opcode_functions(opcode_matrix[0x2B],
+        0x2B: new WDC_opcode_functions(WDC_opcode_matrix[0x2B],
             function(regs, pins) { // PLD s
                 switch(regs.TCU) {
                         // PLD s E=0 M=0 X=1
@@ -13007,7 +13007,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x2C: new opcode_functions(opcode_matrix[0x2C],
+        0x2C: new WDC_opcode_functions(WDC_opcode_matrix[0x2C],
             function(regs, pins) { // BIT a
                 switch(regs.TCU) {
                         // BIT a E=0 M=0 X=1
@@ -13042,7 +13042,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x2D: new opcode_functions(opcode_matrix[0x2D],
+        0x2D: new WDC_opcode_functions(WDC_opcode_matrix[0x2D],
             function(regs, pins) { // AND a
                 switch(regs.TCU) {
                         // AND a E=0 M=0 X=1
@@ -13077,7 +13077,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x2E: new opcode_functions(opcode_matrix[0x2E],
+        0x2E: new WDC_opcode_functions(WDC_opcode_matrix[0x2E],
             function(regs, pins) { // ROL a
                 switch(regs.TCU) {
                         // ROL a E=0 M=0 X=1
@@ -13128,7 +13128,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x2F: new opcode_functions(opcode_matrix[0x2F],
+        0x2F: new WDC_opcode_functions(WDC_opcode_matrix[0x2F],
             function(regs, pins) { // AND al
                 switch(regs.TCU) {
                         // AND al E=0 M=0 X=1
@@ -13168,7 +13168,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x30: new opcode_functions(opcode_matrix[0x30],
+        0x30: new WDC_opcode_functions(WDC_opcode_matrix[0x30],
             function(regs, pins) { // BMI r
                 switch(regs.TCU) {
                         // BMI r E=0 M=0 X=1
@@ -13199,7 +13199,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x31: new opcode_functions(opcode_matrix[0x31],
+        0x31: new WDC_opcode_functions(WDC_opcode_matrix[0x31],
             function(regs, pins) { // AND (d),y
                 switch(regs.TCU) {
                         // AND (d),y E=0 M=0 X=1
@@ -13260,7 +13260,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x32: new opcode_functions(opcode_matrix[0x32],
+        0x32: new WDC_opcode_functions(WDC_opcode_matrix[0x32],
             function(regs, pins) { // AND (d)
                 switch(regs.TCU) {
                         // AND (d) E=0 M=0 X=1
@@ -13308,7 +13308,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x33: new opcode_functions(opcode_matrix[0x33],
+        0x33: new WDC_opcode_functions(WDC_opcode_matrix[0x33],
             function(regs, pins) { // AND (d,s),y
                 switch(regs.TCU) {
                         // AND (d,s),y E=0 M=0 X=1
@@ -13357,7 +13357,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x34: new opcode_functions(opcode_matrix[0x34],
+        0x34: new WDC_opcode_functions(WDC_opcode_matrix[0x34],
             function(regs, pins) { // BIT d,x
                 switch(regs.TCU) {
                         // BIT d,x E=0 M=0 X=1
@@ -13400,7 +13400,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x35: new opcode_functions(opcode_matrix[0x35],
+        0x35: new WDC_opcode_functions(WDC_opcode_matrix[0x35],
             function(regs, pins) { // AND d,x
                 switch(regs.TCU) {
                         // AND d,x E=0 M=0 X=1
@@ -13443,7 +13443,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x36: new opcode_functions(opcode_matrix[0x36],
+        0x36: new WDC_opcode_functions(WDC_opcode_matrix[0x36],
             function(regs, pins) { // ROL d,x
                 switch(regs.TCU) {
                         // ROL d,x E=0 M=0 X=1
@@ -13500,7 +13500,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x37: new opcode_functions(opcode_matrix[0x37],
+        0x37: new WDC_opcode_functions(WDC_opcode_matrix[0x37],
             function(regs, pins) { // AND [d],y
                 switch(regs.TCU) {
                         // AND [d],y E=0 M=0 X=1
@@ -13554,7 +13554,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x38: new opcode_functions(opcode_matrix[0x38],
+        0x38: new WDC_opcode_functions(WDC_opcode_matrix[0x38],
             function(regs, pins) { // SEC i
                 switch(regs.TCU) {
                         // SEC i E=0 M=0 X=1
@@ -13575,7 +13575,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x39: new opcode_functions(opcode_matrix[0x39],
+        0x39: new WDC_opcode_functions(WDC_opcode_matrix[0x39],
             function(regs, pins) { // AND a,y
                 switch(regs.TCU) {
                         // AND a,y E=0 M=0 X=1
@@ -13624,7 +13624,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x3A: new opcode_functions(opcode_matrix[0x3A],
+        0x3A: new WDC_opcode_functions(WDC_opcode_matrix[0x3A],
             function(regs, pins) { // DEC A
                 switch(regs.TCU) {
                         // DEC A E=0 M=0 X=1
@@ -13649,7 +13649,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x3B: new opcode_functions(opcode_matrix[0x3B],
+        0x3B: new WDC_opcode_functions(WDC_opcode_matrix[0x3B],
             function(regs, pins) { // TSC i
                 switch(regs.TCU) {
                         // TSC i E=0 M=0 X=1
@@ -13672,7 +13672,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x3C: new opcode_functions(opcode_matrix[0x3C],
+        0x3C: new WDC_opcode_functions(WDC_opcode_matrix[0x3C],
             function(regs, pins) { // BIT a,x
                 switch(regs.TCU) {
                         // BIT a,x E=0 M=0 X=1
@@ -13721,7 +13721,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x3D: new opcode_functions(opcode_matrix[0x3D],
+        0x3D: new WDC_opcode_functions(WDC_opcode_matrix[0x3D],
             function(regs, pins) { // AND a,x
                 switch(regs.TCU) {
                         // AND a,x E=0 M=0 X=1
@@ -13770,7 +13770,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x3E: new opcode_functions(opcode_matrix[0x3E],
+        0x3E: new WDC_opcode_functions(WDC_opcode_matrix[0x3E],
             function(regs, pins) { // ROL a,x
                 switch(regs.TCU) {
                         // ROL a,x E=0 M=0 X=1
@@ -13827,7 +13827,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x3F: new opcode_functions(opcode_matrix[0x3F],
+        0x3F: new WDC_opcode_functions(WDC_opcode_matrix[0x3F],
             function(regs, pins) { // AND al,x
                 switch(regs.TCU) {
                         // AND al,x E=0 M=0 X=1
@@ -13868,7 +13868,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x40: new opcode_functions(opcode_matrix[0x40],
+        0x40: new WDC_opcode_functions(WDC_opcode_matrix[0x40],
             function(regs, pins) { // RTI s
                 switch(regs.TCU) {
                         // RTI s E=0 M=0 X=1
@@ -13918,7 +13918,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x41: new opcode_functions(opcode_matrix[0x41],
+        0x41: new WDC_opcode_functions(WDC_opcode_matrix[0x41],
             function(regs, pins) { // EOR (d,x)
                 switch(regs.TCU) {
                         // EOR (d,x) E=0 M=0 X=1
@@ -13969,7 +13969,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x42: new opcode_functions(opcode_matrix[0x42],
+        0x42: new WDC_opcode_functions(WDC_opcode_matrix[0x42],
             function(regs, pins) { // WDM i
                 switch(regs.TCU) {
                         // WDM i E=0 M=0 X=1
@@ -13990,7 +13990,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x43: new opcode_functions(opcode_matrix[0x43],
+        0x43: new WDC_opcode_functions(WDC_opcode_matrix[0x43],
             function(regs, pins) { // EOR d,s
                 switch(regs.TCU) {
                         // EOR d,s E=0 M=0 X=1
@@ -14025,7 +14025,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x44: new opcode_functions(opcode_matrix[0x44],
+        0x44: new WDC_opcode_functions(WDC_opcode_matrix[0x44],
             function(regs, pins) { // MVP xyc
                 switch(regs.TCU) {
                         // MVP xyc E=0 M=0 X=1
@@ -14065,7 +14065,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x45: new opcode_functions(opcode_matrix[0x45],
+        0x45: new WDC_opcode_functions(WDC_opcode_matrix[0x45],
             function(regs, pins) { // EOR d
                 switch(regs.TCU) {
                         // EOR d E=0 M=0 X=1
@@ -14106,7 +14106,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x46: new opcode_functions(opcode_matrix[0x46],
+        0x46: new WDC_opcode_functions(WDC_opcode_matrix[0x46],
             function(regs, pins) { // LSR d
                 switch(regs.TCU) {
                         // LSR d E=0 M=0 X=1
@@ -14160,7 +14160,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x47: new opcode_functions(opcode_matrix[0x47],
+        0x47: new WDC_opcode_functions(WDC_opcode_matrix[0x47],
             function(regs, pins) { // EOR [d]
                 switch(regs.TCU) {
                         // EOR [d] E=0 M=0 X=1
@@ -14214,7 +14214,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x48: new opcode_functions(opcode_matrix[0x48],
+        0x48: new WDC_opcode_functions(WDC_opcode_matrix[0x48],
             function(regs, pins) { // PHA s
                 switch(regs.TCU) {
                         // PHA s E=0 M=0 X=1
@@ -14248,7 +14248,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, true, false),
-        0x49: new opcode_functions(opcode_matrix[0x49],
+        0x49: new WDC_opcode_functions(WDC_opcode_matrix[0x49],
             function(regs, pins) { // EOR #
                 switch(regs.TCU) {
                         // EOR # E=0 M=0 X=1
@@ -14276,7 +14276,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x4A: new opcode_functions(opcode_matrix[0x4A],
+        0x4A: new WDC_opcode_functions(WDC_opcode_matrix[0x4A],
             function(regs, pins) { // LSR A
                 switch(regs.TCU) {
                         // LSR A E=0 M=0 X=1
@@ -14302,7 +14302,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x4B: new opcode_functions(opcode_matrix[0x4B],
+        0x4B: new WDC_opcode_functions(WDC_opcode_matrix[0x4B],
             function(regs, pins) { // PHK s
                 switch(regs.TCU) {
                         // PHK s E=0 M=0 X=1
@@ -14330,7 +14330,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x4C: new opcode_functions(opcode_matrix[0x4C],
+        0x4C: new WDC_opcode_functions(WDC_opcode_matrix[0x4C],
             function(regs, pins) { // JMP a
                 switch(regs.TCU) {
                         // JMP a E=0 M=0 X=1
@@ -14353,7 +14353,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x4D: new opcode_functions(opcode_matrix[0x4D],
+        0x4D: new WDC_opcode_functions(WDC_opcode_matrix[0x4D],
             function(regs, pins) { // EOR a
                 switch(regs.TCU) {
                         // EOR a E=0 M=0 X=1
@@ -14388,7 +14388,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x4E: new opcode_functions(opcode_matrix[0x4E],
+        0x4E: new WDC_opcode_functions(WDC_opcode_matrix[0x4E],
             function(regs, pins) { // LSR a
                 switch(regs.TCU) {
                         // LSR a E=0 M=0 X=1
@@ -14438,7 +14438,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x4F: new opcode_functions(opcode_matrix[0x4F],
+        0x4F: new WDC_opcode_functions(WDC_opcode_matrix[0x4F],
             function(regs, pins) { // EOR al
                 switch(regs.TCU) {
                         // EOR al E=0 M=0 X=1
@@ -14478,7 +14478,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x50: new opcode_functions(opcode_matrix[0x50],
+        0x50: new WDC_opcode_functions(WDC_opcode_matrix[0x50],
             function(regs, pins) { // BVC r
                 switch(regs.TCU) {
                         // BVC r E=0 M=0 X=1
@@ -14509,7 +14509,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x51: new opcode_functions(opcode_matrix[0x51],
+        0x51: new WDC_opcode_functions(WDC_opcode_matrix[0x51],
             function(regs, pins) { // EOR (d),y
                 switch(regs.TCU) {
                         // EOR (d),y E=0 M=0 X=1
@@ -14570,7 +14570,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x52: new opcode_functions(opcode_matrix[0x52],
+        0x52: new WDC_opcode_functions(WDC_opcode_matrix[0x52],
             function(regs, pins) { // EOR (d)
                 switch(regs.TCU) {
                         // EOR (d) E=0 M=0 X=1
@@ -14618,7 +14618,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x53: new opcode_functions(opcode_matrix[0x53],
+        0x53: new WDC_opcode_functions(WDC_opcode_matrix[0x53],
             function(regs, pins) { // EOR (d,s),y
                 switch(regs.TCU) {
                         // EOR (d,s),y E=0 M=0 X=1
@@ -14667,7 +14667,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x54: new opcode_functions(opcode_matrix[0x54],
+        0x54: new WDC_opcode_functions(WDC_opcode_matrix[0x54],
             function(regs, pins) { // MVN xyc
                 switch(regs.TCU) {
                         // MVN xyc E=0 M=0 X=1
@@ -14707,7 +14707,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x55: new opcode_functions(opcode_matrix[0x55],
+        0x55: new WDC_opcode_functions(WDC_opcode_matrix[0x55],
             function(regs, pins) { // EOR d,x
                 switch(regs.TCU) {
                         // EOR d,x E=0 M=0 X=1
@@ -14750,7 +14750,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x56: new opcode_functions(opcode_matrix[0x56],
+        0x56: new WDC_opcode_functions(WDC_opcode_matrix[0x56],
             function(regs, pins) { // LSR d,x
                 switch(regs.TCU) {
                         // LSR d,x E=0 M=0 X=1
@@ -14806,7 +14806,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x57: new opcode_functions(opcode_matrix[0x57],
+        0x57: new WDC_opcode_functions(WDC_opcode_matrix[0x57],
             function(regs, pins) { // EOR [d],y
                 switch(regs.TCU) {
                         // EOR [d],y E=0 M=0 X=1
@@ -14860,7 +14860,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x58: new opcode_functions(opcode_matrix[0x58],
+        0x58: new WDC_opcode_functions(WDC_opcode_matrix[0x58],
             function(regs, pins) { // CLI i
                 switch(regs.TCU) {
                         // CLI i E=0 M=0 X=1
@@ -14881,7 +14881,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x59: new opcode_functions(opcode_matrix[0x59],
+        0x59: new WDC_opcode_functions(WDC_opcode_matrix[0x59],
             function(regs, pins) { // EOR a,y
                 switch(regs.TCU) {
                         // EOR a,y E=0 M=0 X=1
@@ -14930,7 +14930,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x5A: new opcode_functions(opcode_matrix[0x5A],
+        0x5A: new WDC_opcode_functions(WDC_opcode_matrix[0x5A],
             function(regs, pins) { // PHY s
                 switch(regs.TCU) {
                         // PHY s E=0 M=0 X=1
@@ -14958,7 +14958,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, true),
-        0x5B: new opcode_functions(opcode_matrix[0x5B],
+        0x5B: new WDC_opcode_functions(WDC_opcode_matrix[0x5B],
             function(regs, pins) { // TCD i
                 switch(regs.TCU) {
                         // TCD i E=0 M=0 X=1
@@ -14981,7 +14981,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x5C: new opcode_functions(opcode_matrix[0x5C],
+        0x5C: new WDC_opcode_functions(WDC_opcode_matrix[0x5C],
             function(regs, pins) { // JMP al
                 switch(regs.TCU) {
                         // JMP al E=0 M=0 X=1
@@ -15008,7 +15008,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x5D: new opcode_functions(opcode_matrix[0x5D],
+        0x5D: new WDC_opcode_functions(WDC_opcode_matrix[0x5D],
             function(regs, pins) { // EOR a,x
                 switch(regs.TCU) {
                         // EOR a,x E=0 M=0 X=1
@@ -15057,7 +15057,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x5E: new opcode_functions(opcode_matrix[0x5E],
+        0x5E: new WDC_opcode_functions(WDC_opcode_matrix[0x5E],
             function(regs, pins) { // LSR a,x
                 switch(regs.TCU) {
                         // LSR a,x E=0 M=0 X=1
@@ -15113,7 +15113,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x5F: new opcode_functions(opcode_matrix[0x5F],
+        0x5F: new WDC_opcode_functions(WDC_opcode_matrix[0x5F],
             function(regs, pins) { // EOR al,x
                 switch(regs.TCU) {
                         // EOR al,x E=0 M=0 X=1
@@ -15154,7 +15154,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x60: new opcode_functions(opcode_matrix[0x60],
+        0x60: new WDC_opcode_functions(WDC_opcode_matrix[0x60],
             function(regs, pins) { // RTS s
                 switch(regs.TCU) {
                         // RTS s E=0 M=0 X=1
@@ -15190,7 +15190,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x61: new opcode_functions(opcode_matrix[0x61],
+        0x61: new WDC_opcode_functions(WDC_opcode_matrix[0x61],
             function(regs, pins) { // ADC (d,x)
                 switch(regs.TCU) {
                         // ADC (d,x) E=0 M=0 X=1
@@ -15258,7 +15258,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x62: new opcode_functions(opcode_matrix[0x62],
+        0x62: new WDC_opcode_functions(WDC_opcode_matrix[0x62],
             function(regs, pins) { // PER s
                 switch(regs.TCU) {
                         // PER s E=0 M=0 X=1
@@ -15296,7 +15296,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x63: new opcode_functions(opcode_matrix[0x63],
+        0x63: new WDC_opcode_functions(WDC_opcode_matrix[0x63],
             function(regs, pins) { // ADC d,s
                 switch(regs.TCU) {
                         // ADC d,s E=0 M=0 X=1
@@ -15348,7 +15348,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x64: new opcode_functions(opcode_matrix[0x64],
+        0x64: new WDC_opcode_functions(WDC_opcode_matrix[0x64],
             function(regs, pins) { // STZ d
                 switch(regs.TCU) {
                         // STZ d E=0 M=0 X=1
@@ -15388,7 +15388,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x65: new opcode_functions(opcode_matrix[0x65],
+        0x65: new WDC_opcode_functions(WDC_opcode_matrix[0x65],
             function(regs, pins) { // ADC d
                 switch(regs.TCU) {
                         // ADC d E=0 M=0 X=1
@@ -15446,7 +15446,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x66: new opcode_functions(opcode_matrix[0x66],
+        0x66: new WDC_opcode_functions(WDC_opcode_matrix[0x66],
             function(regs, pins) { // ROR d
                 switch(regs.TCU) {
                         // ROR d E=0 M=0 X=1
@@ -15501,7 +15501,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x67: new opcode_functions(opcode_matrix[0x67],
+        0x67: new WDC_opcode_functions(WDC_opcode_matrix[0x67],
             function(regs, pins) { // ADC [d]
                 switch(regs.TCU) {
                         // ADC [d] E=0 M=0 X=1
@@ -15572,7 +15572,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x68: new opcode_functions(opcode_matrix[0x68],
+        0x68: new WDC_opcode_functions(WDC_opcode_matrix[0x68],
             function(regs, pins) { // PLA s
                 switch(regs.TCU) {
                         // PLA s E=0 M=0 X=1
@@ -15609,7 +15609,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, true, false),
-        0x69: new opcode_functions(opcode_matrix[0x69],
+        0x69: new WDC_opcode_functions(WDC_opcode_matrix[0x69],
             function(regs, pins) { // ADC #
                 switch(regs.TCU) {
                         // ADC # E=0 M=0 X=1
@@ -15654,7 +15654,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x6A: new opcode_functions(opcode_matrix[0x6A],
+        0x6A: new WDC_opcode_functions(WDC_opcode_matrix[0x6A],
             function(regs, pins) { // ROR A
                 switch(regs.TCU) {
                         // ROR A E=0 M=0 X=1
@@ -15681,7 +15681,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x6B: new opcode_functions(opcode_matrix[0x6B],
+        0x6B: new WDC_opcode_functions(WDC_opcode_matrix[0x6B],
             function(regs, pins) { // RTL s
                 switch(regs.TCU) {
                         // RTL s E=0 M=0 X=1
@@ -15719,7 +15719,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x6C: new opcode_functions(opcode_matrix[0x6C],
+        0x6C: new WDC_opcode_functions(WDC_opcode_matrix[0x6C],
             function(regs, pins) { // JMP (a)
                 switch(regs.TCU) {
                         // JMP (a) E=0 M=0 X=1
@@ -15749,7 +15749,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x6D: new opcode_functions(opcode_matrix[0x6D],
+        0x6D: new WDC_opcode_functions(WDC_opcode_matrix[0x6D],
             function(regs, pins) { // ADC a
                 switch(regs.TCU) {
                         // ADC a E=0 M=0 X=1
@@ -15801,7 +15801,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x6E: new opcode_functions(opcode_matrix[0x6E],
+        0x6E: new WDC_opcode_functions(WDC_opcode_matrix[0x6E],
             function(regs, pins) { // ROR a
                 switch(regs.TCU) {
                         // ROR a E=0 M=0 X=1
@@ -15852,7 +15852,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x6F: new opcode_functions(opcode_matrix[0x6F],
+        0x6F: new WDC_opcode_functions(WDC_opcode_matrix[0x6F],
             function(regs, pins) { // ADC al
                 switch(regs.TCU) {
                         // ADC al E=0 M=0 X=1
@@ -15909,7 +15909,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x70: new opcode_functions(opcode_matrix[0x70],
+        0x70: new WDC_opcode_functions(WDC_opcode_matrix[0x70],
             function(regs, pins) { // BVS r
                 switch(regs.TCU) {
                         // BVS r E=0 M=0 X=1
@@ -15940,7 +15940,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x71: new opcode_functions(opcode_matrix[0x71],
+        0x71: new WDC_opcode_functions(WDC_opcode_matrix[0x71],
             function(regs, pins) { // ADC (d),y
                 switch(regs.TCU) {
                         // ADC (d),y E=0 M=0 X=1
@@ -16018,7 +16018,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x72: new opcode_functions(opcode_matrix[0x72],
+        0x72: new WDC_opcode_functions(WDC_opcode_matrix[0x72],
             function(regs, pins) { // ADC (d)
                 switch(regs.TCU) {
                         // ADC (d) E=0 M=0 X=1
@@ -16083,7 +16083,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x73: new opcode_functions(opcode_matrix[0x73],
+        0x73: new WDC_opcode_functions(WDC_opcode_matrix[0x73],
             function(regs, pins) { // ADC (d,s),y
                 switch(regs.TCU) {
                         // ADC (d,s),y E=0 M=0 X=1
@@ -16149,7 +16149,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x74: new opcode_functions(opcode_matrix[0x74],
+        0x74: new WDC_opcode_functions(WDC_opcode_matrix[0x74],
             function(regs, pins) { // STZ d,x
                 switch(regs.TCU) {
                         // STZ d,x E=0 M=0 X=1
@@ -16191,7 +16191,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x75: new opcode_functions(opcode_matrix[0x75],
+        0x75: new WDC_opcode_functions(WDC_opcode_matrix[0x75],
             function(regs, pins) { // ADC d,x
                 switch(regs.TCU) {
                         // ADC d,x E=0 M=0 X=1
@@ -16251,7 +16251,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x76: new opcode_functions(opcode_matrix[0x76],
+        0x76: new WDC_opcode_functions(WDC_opcode_matrix[0x76],
             function(regs, pins) { // ROR d,x
                 switch(regs.TCU) {
                         // ROR d,x E=0 M=0 X=1
@@ -16308,7 +16308,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x77: new opcode_functions(opcode_matrix[0x77],
+        0x77: new WDC_opcode_functions(WDC_opcode_matrix[0x77],
             function(regs, pins) { // ADC [d],y
                 switch(regs.TCU) {
                         // ADC [d],y E=0 M=0 X=1
@@ -16379,7 +16379,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x78: new opcode_functions(opcode_matrix[0x78],
+        0x78: new WDC_opcode_functions(WDC_opcode_matrix[0x78],
             function(regs, pins) { // SEI i
                 switch(regs.TCU) {
                         // SEI i E=0 M=0 X=1
@@ -16400,7 +16400,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x79: new opcode_functions(opcode_matrix[0x79],
+        0x79: new WDC_opcode_functions(WDC_opcode_matrix[0x79],
             function(regs, pins) { // ADC a,y
                 switch(regs.TCU) {
                         // ADC a,y E=0 M=0 X=1
@@ -16466,7 +16466,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x7A: new opcode_functions(opcode_matrix[0x7A],
+        0x7A: new WDC_opcode_functions(WDC_opcode_matrix[0x7A],
             function(regs, pins) { // PLY s
                 switch(regs.TCU) {
                         // PLY s E=0 M=0 X=1
@@ -16497,7 +16497,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, true),
-        0x7B: new opcode_functions(opcode_matrix[0x7B],
+        0x7B: new WDC_opcode_functions(WDC_opcode_matrix[0x7B],
             function(regs, pins) { // TDC i
                 switch(regs.TCU) {
                         // TDC i E=0 M=0 X=1
@@ -16520,7 +16520,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x7C: new opcode_functions(opcode_matrix[0x7C],
+        0x7C: new WDC_opcode_functions(WDC_opcode_matrix[0x7C],
             function(regs, pins) { // JMP (a,x)
                 switch(regs.TCU) {
                         // JMP (a,x) E=0 M=0 X=1
@@ -16556,7 +16556,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x7D: new opcode_functions(opcode_matrix[0x7D],
+        0x7D: new WDC_opcode_functions(WDC_opcode_matrix[0x7D],
             function(regs, pins) { // ADC a,x
                 switch(regs.TCU) {
                         // ADC a,x E=0 M=0 X=1
@@ -16622,7 +16622,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x7E: new opcode_functions(opcode_matrix[0x7E],
+        0x7E: new WDC_opcode_functions(WDC_opcode_matrix[0x7E],
             function(regs, pins) { // ROR a,x
                 switch(regs.TCU) {
                         // ROR a,x E=0 M=0 X=1
@@ -16679,7 +16679,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x7F: new opcode_functions(opcode_matrix[0x7F],
+        0x7F: new WDC_opcode_functions(WDC_opcode_matrix[0x7F],
             function(regs, pins) { // ADC al,x
                 switch(regs.TCU) {
                         // ADC al,x E=0 M=0 X=1
@@ -16737,7 +16737,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x80: new opcode_functions(opcode_matrix[0x80],
+        0x80: new WDC_opcode_functions(WDC_opcode_matrix[0x80],
             function(regs, pins) { // BRA r
                 switch(regs.TCU) {
                         // BRA r E=0 M=0 X=1
@@ -16768,7 +16768,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x81: new opcode_functions(opcode_matrix[0x81],
+        0x81: new WDC_opcode_functions(WDC_opcode_matrix[0x81],
             function(regs, pins) { // STA (d,x)
                 switch(regs.TCU) {
                         // STA (d,x) E=0 M=0 X=1
@@ -16820,7 +16820,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x82: new opcode_functions(opcode_matrix[0x82],
+        0x82: new WDC_opcode_functions(WDC_opcode_matrix[0x82],
             function(regs, pins) { // BRL rl
                 switch(regs.TCU) {
                         // BRL rl E=0 M=0 X=1
@@ -16848,7 +16848,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x83: new opcode_functions(opcode_matrix[0x83],
+        0x83: new WDC_opcode_functions(WDC_opcode_matrix[0x83],
             function(regs, pins) { // STA d,s
                 switch(regs.TCU) {
                         // STA d,s E=0 M=0 X=1
@@ -16883,7 +16883,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x84: new opcode_functions(opcode_matrix[0x84],
+        0x84: new WDC_opcode_functions(WDC_opcode_matrix[0x84],
             function(regs, pins) { // STY d
                 switch(regs.TCU) {
                         // STY d E=0 M=0 X=1
@@ -16919,7 +16919,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x85: new opcode_functions(opcode_matrix[0x85],
+        0x85: new WDC_opcode_functions(WDC_opcode_matrix[0x85],
             function(regs, pins) { // STA d
                 switch(regs.TCU) {
                         // STA d E=0 M=0 X=1
@@ -16960,7 +16960,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x86: new opcode_functions(opcode_matrix[0x86],
+        0x86: new WDC_opcode_functions(WDC_opcode_matrix[0x86],
             function(regs, pins) { // STX d
                 switch(regs.TCU) {
                         // STX d E=0 M=0 X=1
@@ -16996,7 +16996,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x87: new opcode_functions(opcode_matrix[0x87],
+        0x87: new WDC_opcode_functions(WDC_opcode_matrix[0x87],
             function(regs, pins) { // STA [d]
                 switch(regs.TCU) {
                         // STA [d] E=0 M=0 X=1
@@ -17051,7 +17051,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x88: new opcode_functions(opcode_matrix[0x88],
+        0x88: new WDC_opcode_functions(WDC_opcode_matrix[0x88],
             function(regs, pins) { // DEY i
                 switch(regs.TCU) {
                         // DEY i E=0 M=0 X=1
@@ -17074,7 +17074,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x89: new opcode_functions(opcode_matrix[0x89],
+        0x89: new WDC_opcode_functions(WDC_opcode_matrix[0x89],
             function(regs, pins) { // BIT #
                 switch(regs.TCU) {
                         // BIT # E=0 M=0 X=1
@@ -17100,7 +17100,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x8A: new opcode_functions(opcode_matrix[0x8A],
+        0x8A: new WDC_opcode_functions(WDC_opcode_matrix[0x8A],
             function(regs, pins) { // TXA i
                 switch(regs.TCU) {
                         // TXA i E=0 M=0 X=1
@@ -17123,7 +17123,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x8B: new opcode_functions(opcode_matrix[0x8B],
+        0x8B: new WDC_opcode_functions(WDC_opcode_matrix[0x8B],
             function(regs, pins) { // PHB s
                 switch(regs.TCU) {
                         // PHB s E=0 M=0 X=1
@@ -17151,7 +17151,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x8C: new opcode_functions(opcode_matrix[0x8C],
+        0x8C: new WDC_opcode_functions(WDC_opcode_matrix[0x8C],
             function(regs, pins) { // STY a
                 switch(regs.TCU) {
                         // STY a E=0 M=0 X=1
@@ -17182,7 +17182,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x8D: new opcode_functions(opcode_matrix[0x8D],
+        0x8D: new WDC_opcode_functions(WDC_opcode_matrix[0x8D],
             function(regs, pins) { // STA a
                 switch(regs.TCU) {
                         // STA a E=0 M=0 X=1
@@ -17218,7 +17218,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x8E: new opcode_functions(opcode_matrix[0x8E],
+        0x8E: new WDC_opcode_functions(WDC_opcode_matrix[0x8E],
             function(regs, pins) { // STX a
                 switch(regs.TCU) {
                         // STX a E=0 M=0 X=1
@@ -17249,7 +17249,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x8F: new opcode_functions(opcode_matrix[0x8F],
+        0x8F: new WDC_opcode_functions(WDC_opcode_matrix[0x8F],
             function(regs, pins) { // STA al
                 switch(regs.TCU) {
                         // STA al E=0 M=0 X=1
@@ -17290,7 +17290,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x90: new opcode_functions(opcode_matrix[0x90],
+        0x90: new WDC_opcode_functions(WDC_opcode_matrix[0x90],
             function(regs, pins) { // BCC r
                 switch(regs.TCU) {
                         // BCC r E=0 M=0 X=1
@@ -17321,7 +17321,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x91: new opcode_functions(opcode_matrix[0x91],
+        0x91: new WDC_opcode_functions(WDC_opcode_matrix[0x91],
             function(regs, pins) { // STA (d),y
                 switch(regs.TCU) {
                         // STA (d),y E=0 M=0 X=1
@@ -17381,7 +17381,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x92: new opcode_functions(opcode_matrix[0x92],
+        0x92: new WDC_opcode_functions(WDC_opcode_matrix[0x92],
             function(regs, pins) { // STA (d)
                 switch(regs.TCU) {
                         // STA (d) E=0 M=0 X=1
@@ -17430,7 +17430,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x93: new opcode_functions(opcode_matrix[0x93],
+        0x93: new WDC_opcode_functions(WDC_opcode_matrix[0x93],
             function(regs, pins) { // STA (d,s),y
                 switch(regs.TCU) {
                         // STA (d,s),y E=0 M=0 X=1
@@ -17479,7 +17479,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x94: new opcode_functions(opcode_matrix[0x94],
+        0x94: new WDC_opcode_functions(WDC_opcode_matrix[0x94],
             function(regs, pins) { // STY d,x
                 switch(regs.TCU) {
                         // STY d,x E=0 M=0 X=1
@@ -17517,7 +17517,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x95: new opcode_functions(opcode_matrix[0x95],
+        0x95: new WDC_opcode_functions(WDC_opcode_matrix[0x95],
             function(regs, pins) { // STA d,x
                 switch(regs.TCU) {
                         // STA d,x E=0 M=0 X=1
@@ -17560,7 +17560,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x96: new opcode_functions(opcode_matrix[0x96],
+        0x96: new WDC_opcode_functions(WDC_opcode_matrix[0x96],
             function(regs, pins) { // STX d,y
                 switch(regs.TCU) {
                         // STX d,y E=0 M=0 X=1
@@ -17598,7 +17598,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x97: new opcode_functions(opcode_matrix[0x97],
+        0x97: new WDC_opcode_functions(WDC_opcode_matrix[0x97],
             function(regs, pins) { // STA [d],y
                 switch(regs.TCU) {
                         // STA [d],y E=0 M=0 X=1
@@ -17653,7 +17653,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x98: new opcode_functions(opcode_matrix[0x98],
+        0x98: new WDC_opcode_functions(WDC_opcode_matrix[0x98],
             function(regs, pins) { // TYA i
                 switch(regs.TCU) {
                         // TYA i E=0 M=0 X=1
@@ -17676,7 +17676,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x99: new opcode_functions(opcode_matrix[0x99],
+        0x99: new WDC_opcode_functions(WDC_opcode_matrix[0x99],
             function(regs, pins) { // STA a,y
                 switch(regs.TCU) {
                         // STA a,y E=0 M=0 X=1
@@ -17723,7 +17723,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x9A: new opcode_functions(opcode_matrix[0x9A],
+        0x9A: new WDC_opcode_functions(WDC_opcode_matrix[0x9A],
             function(regs, pins) { // TXS i
                 switch(regs.TCU) {
                         // TXS i E=0 M=0 X=1
@@ -17744,7 +17744,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x9B: new opcode_functions(opcode_matrix[0x9B],
+        0x9B: new WDC_opcode_functions(WDC_opcode_matrix[0x9B],
             function(regs, pins) { // TXY i
                 switch(regs.TCU) {
                         // TXY i E=0 M=0 X=1
@@ -17767,7 +17767,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x9C: new opcode_functions(opcode_matrix[0x9C],
+        0x9C: new WDC_opcode_functions(WDC_opcode_matrix[0x9C],
             function(regs, pins) { // STZ a
                 switch(regs.TCU) {
                         // STZ a E=0 M=0 X=1
@@ -17802,7 +17802,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x9D: new opcode_functions(opcode_matrix[0x9D],
+        0x9D: new WDC_opcode_functions(WDC_opcode_matrix[0x9D],
             function(regs, pins) { // STA a,x
                 switch(regs.TCU) {
                         // STA a,x E=0 M=0 X=1
@@ -17849,7 +17849,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x9E: new opcode_functions(opcode_matrix[0x9E],
+        0x9E: new WDC_opcode_functions(WDC_opcode_matrix[0x9E],
             function(regs, pins) { // STZ a,x
                 switch(regs.TCU) {
                         // STZ a,x E=0 M=0 X=1
@@ -17895,7 +17895,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x9F: new opcode_functions(opcode_matrix[0x9F],
+        0x9F: new WDC_opcode_functions(WDC_opcode_matrix[0x9F],
             function(regs, pins) { // STA al,x
                 switch(regs.TCU) {
                         // STA al,x E=0 M=0 X=1
@@ -17937,7 +17937,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xA0: new opcode_functions(opcode_matrix[0xA0],
+        0xA0: new WDC_opcode_functions(WDC_opcode_matrix[0xA0],
             function(regs, pins) { // LDY #
                 switch(regs.TCU) {
                         // LDY # E=0 M=0 X=1
@@ -17960,7 +17960,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xA1: new opcode_functions(opcode_matrix[0xA1],
+        0xA1: new WDC_opcode_functions(WDC_opcode_matrix[0xA1],
             function(regs, pins) { // LDA (d,x)
                 switch(regs.TCU) {
                         // LDA (d,x) E=0 M=0 X=1
@@ -18011,7 +18011,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xA2: new opcode_functions(opcode_matrix[0xA2],
+        0xA2: new WDC_opcode_functions(WDC_opcode_matrix[0xA2],
             function(regs, pins) { // LDX #
                 switch(regs.TCU) {
                         // LDX # E=0 M=0 X=1
@@ -18034,7 +18034,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xA3: new opcode_functions(opcode_matrix[0xA3],
+        0xA3: new WDC_opcode_functions(WDC_opcode_matrix[0xA3],
             function(regs, pins) { // LDA d,s
                 switch(regs.TCU) {
                         // LDA d,s E=0 M=0 X=1
@@ -18069,7 +18069,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xA4: new opcode_functions(opcode_matrix[0xA4],
+        0xA4: new WDC_opcode_functions(WDC_opcode_matrix[0xA4],
             function(regs, pins) { // LDY d
                 switch(regs.TCU) {
                         // LDY d E=0 M=0 X=1
@@ -18106,7 +18106,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xA5: new opcode_functions(opcode_matrix[0xA5],
+        0xA5: new WDC_opcode_functions(WDC_opcode_matrix[0xA5],
             function(regs, pins) { // LDA d
                 switch(regs.TCU) {
                         // LDA d E=0 M=0 X=1
@@ -18147,7 +18147,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xA6: new opcode_functions(opcode_matrix[0xA6],
+        0xA6: new WDC_opcode_functions(WDC_opcode_matrix[0xA6],
             function(regs, pins) { // LDX d
                 switch(regs.TCU) {
                         // LDX d E=0 M=0 X=1
@@ -18184,7 +18184,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xA7: new opcode_functions(opcode_matrix[0xA7],
+        0xA7: new WDC_opcode_functions(WDC_opcode_matrix[0xA7],
             function(regs, pins) { // LDA [d]
                 switch(regs.TCU) {
                         // LDA [d] E=0 M=0 X=1
@@ -18238,7 +18238,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xA8: new opcode_functions(opcode_matrix[0xA8],
+        0xA8: new WDC_opcode_functions(WDC_opcode_matrix[0xA8],
             function(regs, pins) { // TAY i
                 switch(regs.TCU) {
                         // TAY i E=0 M=0 X=1
@@ -18261,7 +18261,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xA9: new opcode_functions(opcode_matrix[0xA9],
+        0xA9: new WDC_opcode_functions(WDC_opcode_matrix[0xA9],
             function(regs, pins) { // LDA #
                 switch(regs.TCU) {
                         // LDA # E=0 M=0 X=1
@@ -18289,7 +18289,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xAA: new opcode_functions(opcode_matrix[0xAA],
+        0xAA: new WDC_opcode_functions(WDC_opcode_matrix[0xAA],
             function(regs, pins) { // TAX i
                 switch(regs.TCU) {
                         // TAX i E=0 M=0 X=1
@@ -18312,7 +18312,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xAB: new opcode_functions(opcode_matrix[0xAB],
+        0xAB: new WDC_opcode_functions(WDC_opcode_matrix[0xAB],
             function(regs, pins) { // PLB s
                 switch(regs.TCU) {
                         // PLB s E=0 M=0 X=1
@@ -18343,7 +18343,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xAC: new opcode_functions(opcode_matrix[0xAC],
+        0xAC: new WDC_opcode_functions(WDC_opcode_matrix[0xAC],
             function(regs, pins) { // LDY a
                 switch(regs.TCU) {
                         // LDY a E=0 M=0 X=1
@@ -18374,7 +18374,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xAD: new opcode_functions(opcode_matrix[0xAD],
+        0xAD: new WDC_opcode_functions(WDC_opcode_matrix[0xAD],
             function(regs, pins) { // LDA a
                 switch(regs.TCU) {
                         // LDA a E=0 M=0 X=1
@@ -18409,7 +18409,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xAE: new opcode_functions(opcode_matrix[0xAE],
+        0xAE: new WDC_opcode_functions(WDC_opcode_matrix[0xAE],
             function(regs, pins) { // LDX a
                 switch(regs.TCU) {
                         // LDX a E=0 M=0 X=1
@@ -18440,7 +18440,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xAF: new opcode_functions(opcode_matrix[0xAF],
+        0xAF: new WDC_opcode_functions(WDC_opcode_matrix[0xAF],
             function(regs, pins) { // LDA al
                 switch(regs.TCU) {
                         // LDA al E=0 M=0 X=1
@@ -18480,7 +18480,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB0: new opcode_functions(opcode_matrix[0xB0],
+        0xB0: new WDC_opcode_functions(WDC_opcode_matrix[0xB0],
             function(regs, pins) { // BCS r
                 switch(regs.TCU) {
                         // BCS r E=0 M=0 X=1
@@ -18511,7 +18511,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xB1: new opcode_functions(opcode_matrix[0xB1],
+        0xB1: new WDC_opcode_functions(WDC_opcode_matrix[0xB1],
             function(regs, pins) { // LDA (d),y
                 switch(regs.TCU) {
                         // LDA (d),y E=0 M=0 X=1
@@ -18572,7 +18572,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB2: new opcode_functions(opcode_matrix[0xB2],
+        0xB2: new WDC_opcode_functions(WDC_opcode_matrix[0xB2],
             function(regs, pins) { // LDA (d)
                 switch(regs.TCU) {
                         // LDA (d) E=0 M=0 X=1
@@ -18620,7 +18620,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB3: new opcode_functions(opcode_matrix[0xB3],
+        0xB3: new WDC_opcode_functions(WDC_opcode_matrix[0xB3],
             function(regs, pins) { // LDA (d,s),y
                 switch(regs.TCU) {
                         // LDA (d,s),y E=0 M=0 X=1
@@ -18669,7 +18669,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB4: new opcode_functions(opcode_matrix[0xB4],
+        0xB4: new WDC_opcode_functions(WDC_opcode_matrix[0xB4],
             function(regs, pins) { // LDY d,x
                 switch(regs.TCU) {
                         // LDY d,x E=0 M=0 X=1
@@ -18708,7 +18708,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xB5: new opcode_functions(opcode_matrix[0xB5],
+        0xB5: new WDC_opcode_functions(WDC_opcode_matrix[0xB5],
             function(regs, pins) { // LDA d,x
                 switch(regs.TCU) {
                         // LDA d,x E=0 M=0 X=1
@@ -18751,7 +18751,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB6: new opcode_functions(opcode_matrix[0xB6],
+        0xB6: new WDC_opcode_functions(WDC_opcode_matrix[0xB6],
             function(regs, pins) { // LDX d,y
                 switch(regs.TCU) {
                         // LDX d,y E=0 M=0 X=1
@@ -18790,7 +18790,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xB7: new opcode_functions(opcode_matrix[0xB7],
+        0xB7: new WDC_opcode_functions(WDC_opcode_matrix[0xB7],
             function(regs, pins) { // LDA [d],y
                 switch(regs.TCU) {
                         // LDA [d],y E=0 M=0 X=1
@@ -18844,7 +18844,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB8: new opcode_functions(opcode_matrix[0xB8],
+        0xB8: new WDC_opcode_functions(WDC_opcode_matrix[0xB8],
             function(regs, pins) { // CLV i
                 switch(regs.TCU) {
                         // CLV i E=0 M=0 X=1
@@ -18865,7 +18865,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xB9: new opcode_functions(opcode_matrix[0xB9],
+        0xB9: new WDC_opcode_functions(WDC_opcode_matrix[0xB9],
             function(regs, pins) { // LDA a,y
                 switch(regs.TCU) {
                         // LDA a,y E=0 M=0 X=1
@@ -18914,7 +18914,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xBA: new opcode_functions(opcode_matrix[0xBA],
+        0xBA: new WDC_opcode_functions(WDC_opcode_matrix[0xBA],
             function(regs, pins) { // TSX i
                 switch(regs.TCU) {
                         // TSX i E=0 M=0 X=1
@@ -18937,7 +18937,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xBB: new opcode_functions(opcode_matrix[0xBB],
+        0xBB: new WDC_opcode_functions(WDC_opcode_matrix[0xBB],
             function(regs, pins) { // TYX i
                 switch(regs.TCU) {
                         // TYX i E=0 M=0 X=1
@@ -18960,7 +18960,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xBC: new opcode_functions(opcode_matrix[0xBC],
+        0xBC: new WDC_opcode_functions(WDC_opcode_matrix[0xBC],
             function(regs, pins) { // LDY a,x
                 switch(regs.TCU) {
                         // LDY a,x E=0 M=0 X=1
@@ -19005,7 +19005,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xBD: new opcode_functions(opcode_matrix[0xBD],
+        0xBD: new WDC_opcode_functions(WDC_opcode_matrix[0xBD],
             function(regs, pins) { // LDA a,x
                 switch(regs.TCU) {
                         // LDA a,x E=0 M=0 X=1
@@ -19054,7 +19054,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xBE: new opcode_functions(opcode_matrix[0xBE],
+        0xBE: new WDC_opcode_functions(WDC_opcode_matrix[0xBE],
             function(regs, pins) { // LDX a,y
                 switch(regs.TCU) {
                         // LDX a,y E=0 M=0 X=1
@@ -19099,7 +19099,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xBF: new opcode_functions(opcode_matrix[0xBF],
+        0xBF: new WDC_opcode_functions(WDC_opcode_matrix[0xBF],
             function(regs, pins) { // LDA al,x
                 switch(regs.TCU) {
                         // LDA al,x E=0 M=0 X=1
@@ -19140,7 +19140,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC0: new opcode_functions(opcode_matrix[0xC0],
+        0xC0: new WDC_opcode_functions(WDC_opcode_matrix[0xC0],
             function(regs, pins) { // CPY #
                 switch(regs.TCU) {
                         // CPY # E=0 M=0 X=1
@@ -19164,7 +19164,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xC1: new opcode_functions(opcode_matrix[0xC1],
+        0xC1: new WDC_opcode_functions(WDC_opcode_matrix[0xC1],
             function(regs, pins) { // CMP (d,x)
                 switch(regs.TCU) {
                         // CMP (d,x) E=0 M=0 X=1
@@ -19216,7 +19216,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC2: new opcode_functions(opcode_matrix[0xC2],
+        0xC2: new WDC_opcode_functions(WDC_opcode_matrix[0xC2],
             function(regs, pins) { // REP #
                 switch(regs.TCU) {
                         // REP # E=0 M=0 X=1
@@ -19241,7 +19241,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xC3: new opcode_functions(opcode_matrix[0xC3],
+        0xC3: new WDC_opcode_functions(WDC_opcode_matrix[0xC3],
             function(regs, pins) { // CMP d,s
                 switch(regs.TCU) {
                         // CMP d,s E=0 M=0 X=1
@@ -19277,7 +19277,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC4: new opcode_functions(opcode_matrix[0xC4],
+        0xC4: new WDC_opcode_functions(WDC_opcode_matrix[0xC4],
             function(regs, pins) { // CPY d
                 switch(regs.TCU) {
                         // CPY d E=0 M=0 X=1
@@ -19315,7 +19315,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xC5: new opcode_functions(opcode_matrix[0xC5],
+        0xC5: new WDC_opcode_functions(WDC_opcode_matrix[0xC5],
             function(regs, pins) { // CMP d
                 switch(regs.TCU) {
                         // CMP d E=0 M=0 X=1
@@ -19357,7 +19357,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC6: new opcode_functions(opcode_matrix[0xC6],
+        0xC6: new WDC_opcode_functions(WDC_opcode_matrix[0xC6],
             function(regs, pins) { // DEC d
                 switch(regs.TCU) {
                         // DEC d E=0 M=0 X=1
@@ -19410,7 +19410,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC7: new opcode_functions(opcode_matrix[0xC7],
+        0xC7: new WDC_opcode_functions(WDC_opcode_matrix[0xC7],
             function(regs, pins) { // CMP [d]
                 switch(regs.TCU) {
                         // CMP [d] E=0 M=0 X=1
@@ -19465,7 +19465,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC8: new opcode_functions(opcode_matrix[0xC8],
+        0xC8: new WDC_opcode_functions(WDC_opcode_matrix[0xC8],
             function(regs, pins) { // INY i
                 switch(regs.TCU) {
                         // INY i E=0 M=0 X=1
@@ -19488,7 +19488,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xC9: new opcode_functions(opcode_matrix[0xC9],
+        0xC9: new WDC_opcode_functions(WDC_opcode_matrix[0xC9],
             function(regs, pins) { // CMP #
                 switch(regs.TCU) {
                         // CMP # E=0 M=0 X=1
@@ -19517,7 +19517,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xCA: new opcode_functions(opcode_matrix[0xCA],
+        0xCA: new WDC_opcode_functions(WDC_opcode_matrix[0xCA],
             function(regs, pins) { // DEX i
                 switch(regs.TCU) {
                         // DEX i E=0 M=0 X=1
@@ -19540,7 +19540,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xCB: new opcode_functions(opcode_matrix[0xCB],
+        0xCB: new WDC_opcode_functions(WDC_opcode_matrix[0xCB],
             function(regs, pins) { // WAI i
                 switch(regs.TCU) {
                         // WAI i E=0 M=0 X=1
@@ -19562,7 +19562,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xCC: new opcode_functions(opcode_matrix[0xCC],
+        0xCC: new WDC_opcode_functions(WDC_opcode_matrix[0xCC],
             function(regs, pins) { // CPY a
                 switch(regs.TCU) {
                         // CPY a E=0 M=0 X=1
@@ -19594,7 +19594,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xCD: new opcode_functions(opcode_matrix[0xCD],
+        0xCD: new WDC_opcode_functions(WDC_opcode_matrix[0xCD],
             function(regs, pins) { // CMP a
                 switch(regs.TCU) {
                         // CMP a E=0 M=0 X=1
@@ -19630,7 +19630,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xCE: new opcode_functions(opcode_matrix[0xCE],
+        0xCE: new WDC_opcode_functions(WDC_opcode_matrix[0xCE],
             function(regs, pins) { // DEC a
                 switch(regs.TCU) {
                         // DEC a E=0 M=0 X=1
@@ -19679,7 +19679,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xCF: new opcode_functions(opcode_matrix[0xCF],
+        0xCF: new WDC_opcode_functions(WDC_opcode_matrix[0xCF],
             function(regs, pins) { // CMP al
                 switch(regs.TCU) {
                         // CMP al E=0 M=0 X=1
@@ -19720,7 +19720,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD0: new opcode_functions(opcode_matrix[0xD0],
+        0xD0: new WDC_opcode_functions(WDC_opcode_matrix[0xD0],
             function(regs, pins) { // BNE r
                 switch(regs.TCU) {
                         // BNE r E=0 M=0 X=1
@@ -19751,7 +19751,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xD1: new opcode_functions(opcode_matrix[0xD1],
+        0xD1: new WDC_opcode_functions(WDC_opcode_matrix[0xD1],
             function(regs, pins) { // CMP (d),y
                 switch(regs.TCU) {
                         // CMP (d),y E=0 M=0 X=1
@@ -19813,7 +19813,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD2: new opcode_functions(opcode_matrix[0xD2],
+        0xD2: new WDC_opcode_functions(WDC_opcode_matrix[0xD2],
             function(regs, pins) { // CMP (d)
                 switch(regs.TCU) {
                         // CMP (d) E=0 M=0 X=1
@@ -19862,7 +19862,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD3: new opcode_functions(opcode_matrix[0xD3],
+        0xD3: new WDC_opcode_functions(WDC_opcode_matrix[0xD3],
             function(regs, pins) { // CMP (d,s),y
                 switch(regs.TCU) {
                         // CMP (d,s),y E=0 M=0 X=1
@@ -19912,7 +19912,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD4: new opcode_functions(opcode_matrix[0xD4],
+        0xD4: new WDC_opcode_functions(WDC_opcode_matrix[0xD4],
             function(regs, pins) { // PEI s
                 switch(regs.TCU) {
                         // PEI s E=0 M=0 X=1
@@ -19958,7 +19958,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0xD5: new opcode_functions(opcode_matrix[0xD5],
+        0xD5: new WDC_opcode_functions(WDC_opcode_matrix[0xD5],
             function(regs, pins) { // CMP d,x
                 switch(regs.TCU) {
                         // CMP d,x E=0 M=0 X=1
@@ -20002,7 +20002,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD6: new opcode_functions(opcode_matrix[0xD6],
+        0xD6: new WDC_opcode_functions(WDC_opcode_matrix[0xD6],
             function(regs, pins) { // DEC d,x
                 switch(regs.TCU) {
                         // DEC d,x E=0 M=0 X=1
@@ -20057,7 +20057,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD7: new opcode_functions(opcode_matrix[0xD7],
+        0xD7: new WDC_opcode_functions(WDC_opcode_matrix[0xD7],
             function(regs, pins) { // CMP [d],y
                 switch(regs.TCU) {
                         // CMP [d],y E=0 M=0 X=1
@@ -20112,7 +20112,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD8: new opcode_functions(opcode_matrix[0xD8],
+        0xD8: new WDC_opcode_functions(WDC_opcode_matrix[0xD8],
             function(regs, pins) { // CLD i
                 switch(regs.TCU) {
                         // CLD i E=0 M=0 X=1
@@ -20133,7 +20133,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xD9: new opcode_functions(opcode_matrix[0xD9],
+        0xD9: new WDC_opcode_functions(WDC_opcode_matrix[0xD9],
             function(regs, pins) { // CMP a,y
                 switch(regs.TCU) {
                         // CMP a,y E=0 M=0 X=1
@@ -20183,7 +20183,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xDA: new opcode_functions(opcode_matrix[0xDA],
+        0xDA: new WDC_opcode_functions(WDC_opcode_matrix[0xDA],
             function(regs, pins) { // PHX s
                 switch(regs.TCU) {
                         // PHX s E=0 M=0 X=1
@@ -20211,7 +20211,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, true),
-        0xDB: new opcode_functions(opcode_matrix[0xDB],
+        0xDB: new WDC_opcode_functions(WDC_opcode_matrix[0xDB],
             function(regs, pins) { // STP i
                 switch(regs.TCU) {
                         // STP i E=0 M=0 X=1
@@ -20229,7 +20229,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xDC: new opcode_functions(opcode_matrix[0xDC],
+        0xDC: new WDC_opcode_functions(WDC_opcode_matrix[0xDC],
             function(regs, pins) { // JML (a)
                 switch(regs.TCU) {
                         // JML (a) E=0 M=0 X=1
@@ -20263,7 +20263,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xDD: new opcode_functions(opcode_matrix[0xDD],
+        0xDD: new WDC_opcode_functions(WDC_opcode_matrix[0xDD],
             function(regs, pins) { // CMP a,x
                 switch(regs.TCU) {
                         // CMP a,x E=0 M=0 X=1
@@ -20313,7 +20313,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xDE: new opcode_functions(opcode_matrix[0xDE],
+        0xDE: new WDC_opcode_functions(WDC_opcode_matrix[0xDE],
             function(regs, pins) { // DEC a,x
                 switch(regs.TCU) {
                         // DEC a,x E=0 M=0 X=1
@@ -20368,7 +20368,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xDF: new opcode_functions(opcode_matrix[0xDF],
+        0xDF: new WDC_opcode_functions(WDC_opcode_matrix[0xDF],
             function(regs, pins) { // CMP al,x
                 switch(regs.TCU) {
                         // CMP al,x E=0 M=0 X=1
@@ -20410,7 +20410,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE0: new opcode_functions(opcode_matrix[0xE0],
+        0xE0: new WDC_opcode_functions(WDC_opcode_matrix[0xE0],
             function(regs, pins) { // CPX #
                 switch(regs.TCU) {
                         // CPX # E=0 M=0 X=1
@@ -20434,7 +20434,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xE1: new opcode_functions(opcode_matrix[0xE1],
+        0xE1: new WDC_opcode_functions(WDC_opcode_matrix[0xE1],
             function(regs, pins) { // SBC (d,x)
                 switch(regs.TCU) {
                         // SBC (d,x) E=0 M=0 X=1
@@ -20503,7 +20503,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE2: new opcode_functions(opcode_matrix[0xE2],
+        0xE2: new WDC_opcode_functions(WDC_opcode_matrix[0xE2],
             function(regs, pins) { // SEP #
                 switch(regs.TCU) {
                         // SEP # E=0 M=0 X=1
@@ -20529,7 +20529,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xE3: new opcode_functions(opcode_matrix[0xE3],
+        0xE3: new WDC_opcode_functions(WDC_opcode_matrix[0xE3],
             function(regs, pins) { // SBC d,s
                 switch(regs.TCU) {
                         // SBC d,s E=0 M=0 X=1
@@ -20582,7 +20582,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE4: new opcode_functions(opcode_matrix[0xE4],
+        0xE4: new WDC_opcode_functions(WDC_opcode_matrix[0xE4],
             function(regs, pins) { // CPX d
                 switch(regs.TCU) {
                         // CPX d E=0 M=0 X=1
@@ -20620,7 +20620,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xE5: new opcode_functions(opcode_matrix[0xE5],
+        0xE5: new WDC_opcode_functions(WDC_opcode_matrix[0xE5],
             function(regs, pins) { // SBC d
                 switch(regs.TCU) {
                         // SBC d E=0 M=0 X=1
@@ -20679,7 +20679,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE6: new opcode_functions(opcode_matrix[0xE6],
+        0xE6: new WDC_opcode_functions(WDC_opcode_matrix[0xE6],
             function(regs, pins) { // INC d
                 switch(regs.TCU) {
                         // INC d E=0 M=0 X=1
@@ -20732,7 +20732,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE7: new opcode_functions(opcode_matrix[0xE7],
+        0xE7: new WDC_opcode_functions(WDC_opcode_matrix[0xE7],
             function(regs, pins) { // SBC [d]
                 switch(regs.TCU) {
                         // SBC [d] E=0 M=0 X=1
@@ -20804,7 +20804,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE8: new opcode_functions(opcode_matrix[0xE8],
+        0xE8: new WDC_opcode_functions(WDC_opcode_matrix[0xE8],
             function(regs, pins) { // INX i
                 switch(regs.TCU) {
                         // INX i E=0 M=0 X=1
@@ -20827,7 +20827,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xE9: new opcode_functions(opcode_matrix[0xE9],
+        0xE9: new WDC_opcode_functions(WDC_opcode_matrix[0xE9],
             function(regs, pins) { // SBC #
                 switch(regs.TCU) {
                         // SBC # E=0 M=0 X=1
@@ -20873,7 +20873,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xEA: new opcode_functions(opcode_matrix[0xEA],
+        0xEA: new WDC_opcode_functions(WDC_opcode_matrix[0xEA],
             function(regs, pins) { // NOP i
                 switch(regs.TCU) {
                         // NOP i E=0 M=0 X=1
@@ -20893,7 +20893,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xEB: new opcode_functions(opcode_matrix[0xEB],
+        0xEB: new WDC_opcode_functions(WDC_opcode_matrix[0xEB],
             function(regs, pins) { // XBA i
                 switch(regs.TCU) {
                         // XBA i E=0 M=0 X=1
@@ -20918,7 +20918,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xEC: new opcode_functions(opcode_matrix[0xEC],
+        0xEC: new WDC_opcode_functions(WDC_opcode_matrix[0xEC],
             function(regs, pins) { // CPX a
                 switch(regs.TCU) {
                         // CPX a E=0 M=0 X=1
@@ -20950,7 +20950,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xED: new opcode_functions(opcode_matrix[0xED],
+        0xED: new WDC_opcode_functions(WDC_opcode_matrix[0xED],
             function(regs, pins) { // SBC a
                 switch(regs.TCU) {
                         // SBC a E=0 M=0 X=1
@@ -21003,7 +21003,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xEE: new opcode_functions(opcode_matrix[0xEE],
+        0xEE: new WDC_opcode_functions(WDC_opcode_matrix[0xEE],
             function(regs, pins) { // INC a
                 switch(regs.TCU) {
                         // INC a E=0 M=0 X=1
@@ -21052,7 +21052,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xEF: new opcode_functions(opcode_matrix[0xEF],
+        0xEF: new WDC_opcode_functions(WDC_opcode_matrix[0xEF],
             function(regs, pins) { // SBC al
                 switch(regs.TCU) {
                         // SBC al E=0 M=0 X=1
@@ -21110,7 +21110,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF0: new opcode_functions(opcode_matrix[0xF0],
+        0xF0: new WDC_opcode_functions(WDC_opcode_matrix[0xF0],
             function(regs, pins) { // BEQ r
                 switch(regs.TCU) {
                         // BEQ r E=0 M=0 X=1
@@ -21141,7 +21141,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xF1: new opcode_functions(opcode_matrix[0xF1],
+        0xF1: new WDC_opcode_functions(WDC_opcode_matrix[0xF1],
             function(regs, pins) { // SBC (d),y
                 switch(regs.TCU) {
                         // SBC (d),y E=0 M=0 X=1
@@ -21220,7 +21220,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF2: new opcode_functions(opcode_matrix[0xF2],
+        0xF2: new WDC_opcode_functions(WDC_opcode_matrix[0xF2],
             function(regs, pins) { // SBC (d)
                 switch(regs.TCU) {
                         // SBC (d) E=0 M=0 X=1
@@ -21286,7 +21286,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF3: new opcode_functions(opcode_matrix[0xF3],
+        0xF3: new WDC_opcode_functions(WDC_opcode_matrix[0xF3],
             function(regs, pins) { // SBC (d,s),y
                 switch(regs.TCU) {
                         // SBC (d,s),y E=0 M=0 X=1
@@ -21353,7 +21353,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF4: new opcode_functions(opcode_matrix[0xF4],
+        0xF4: new WDC_opcode_functions(WDC_opcode_matrix[0xF4],
             function(regs, pins) { // PEA s
                 switch(regs.TCU) {
                         // PEA s E=0 M=0 X=1
@@ -21386,7 +21386,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0xF5: new opcode_functions(opcode_matrix[0xF5],
+        0xF5: new WDC_opcode_functions(WDC_opcode_matrix[0xF5],
             function(regs, pins) { // SBC d,x
                 switch(regs.TCU) {
                         // SBC d,x E=0 M=0 X=1
@@ -21447,7 +21447,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF6: new opcode_functions(opcode_matrix[0xF6],
+        0xF6: new WDC_opcode_functions(WDC_opcode_matrix[0xF6],
             function(regs, pins) { // INC d,x
                 switch(regs.TCU) {
                         // INC d,x E=0 M=0 X=1
@@ -21502,7 +21502,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF7: new opcode_functions(opcode_matrix[0xF7],
+        0xF7: new WDC_opcode_functions(WDC_opcode_matrix[0xF7],
             function(regs, pins) { // SBC [d],y
                 switch(regs.TCU) {
                         // SBC [d],y E=0 M=0 X=1
@@ -21574,7 +21574,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF8: new opcode_functions(opcode_matrix[0xF8],
+        0xF8: new WDC_opcode_functions(WDC_opcode_matrix[0xF8],
             function(regs, pins) { // SED i
                 switch(regs.TCU) {
                         // SED i E=0 M=0 X=1
@@ -21595,7 +21595,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xF9: new opcode_functions(opcode_matrix[0xF9],
+        0xF9: new WDC_opcode_functions(WDC_opcode_matrix[0xF9],
             function(regs, pins) { // SBC a,y
                 switch(regs.TCU) {
                         // SBC a,y E=0 M=0 X=1
@@ -21662,7 +21662,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xFA: new opcode_functions(opcode_matrix[0xFA],
+        0xFA: new WDC_opcode_functions(WDC_opcode_matrix[0xFA],
             function(regs, pins) { // PLX s
                 switch(regs.TCU) {
                         // PLX s E=0 M=0 X=1
@@ -21693,7 +21693,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, true),
-        0xFB: new opcode_functions(opcode_matrix[0xFB],
+        0xFB: new WDC_opcode_functions(WDC_opcode_matrix[0xFB],
             function(regs, pins) { // XCE i
                 switch(regs.TCU) {
                         // XCE i E=0 M=0 X=1
@@ -21720,7 +21720,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xFC: new opcode_functions(opcode_matrix[0xFC],
+        0xFC: new WDC_opcode_functions(WDC_opcode_matrix[0xFC],
             function(regs, pins) { // JSR (a,x)
                 switch(regs.TCU) {
                         // JSR (a,x) E=0 M=0 X=1
@@ -21769,7 +21769,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0xFD: new opcode_functions(opcode_matrix[0xFD],
+        0xFD: new WDC_opcode_functions(WDC_opcode_matrix[0xFD],
             function(regs, pins) { // SBC a,x
                 switch(regs.TCU) {
                         // SBC a,x E=0 M=0 X=1
@@ -21836,7 +21836,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xFE: new opcode_functions(opcode_matrix[0xFE],
+        0xFE: new WDC_opcode_functions(WDC_opcode_matrix[0xFE],
             function(regs, pins) { // INC a,x
                 switch(regs.TCU) {
                         // INC a,x E=0 M=0 X=1
@@ -21891,7 +21891,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xFF: new opcode_functions(opcode_matrix[0xFF],
+        0xFF: new WDC_opcode_functions(WDC_opcode_matrix[0xFF],
             function(regs, pins) { // SBC al,x
                 switch(regs.TCU) {
                         // SBC al,x E=0 M=0 X=1
@@ -21950,7 +21950,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x100: new opcode_functions(opcode_matrix[0x100],
+        0x100: new WDC_opcode_functions(WDC_opcode_matrix[0x100],
             function(regs, pins) { // S_RESET s
                 switch(regs.TCU) {
                         // S_RESET s E=0 M=0 X=1
@@ -22003,7 +22003,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x101: new opcode_functions(opcode_matrix[0x101],
+        0x101: new WDC_opcode_functions(WDC_opcode_matrix[0x101],
             function(regs, pins) { // S_ABORT s
                 switch(regs.TCU) {
                         // S_ABORT s E=0 M=0 X=1
@@ -22052,7 +22052,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x102: new opcode_functions(opcode_matrix[0x102],
+        0x102: new WDC_opcode_functions(WDC_opcode_matrix[0x102],
             function(regs, pins) { // S_IRQ s
                 switch(regs.TCU) {
                         // S_IRQ s E=0 M=0 X=1
@@ -22103,7 +22103,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x103: new opcode_functions(opcode_matrix[0x103],
+        0x103: new WDC_opcode_functions(WDC_opcode_matrix[0x103],
             function(regs, pins) { // S_NMI s
                 switch(regs.TCU) {
                         // S_NMI s E=0 M=0 X=1
@@ -22157,7 +22157,7 @@ const decoded_opcodes = Object.freeze(
 },
     // E0 M1 X0
     2: {
-        0x00: new opcode_functions(opcode_matrix[0x00],
+        0x00: new WDC_opcode_functions(WDC_opcode_matrix[0x00],
             function(regs, pins) { // BRK s
                 switch(regs.TCU) {
                         // BRK s E=0 M=1 X=0
@@ -22214,7 +22214,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x01: new opcode_functions(opcode_matrix[0x01],
+        0x01: new WDC_opcode_functions(WDC_opcode_matrix[0x01],
             function(regs, pins) { // ORA (d,x)
                 switch(regs.TCU) {
                         // ORA (d,x) E=0 M=1 X=0
@@ -22262,7 +22262,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x02: new opcode_functions(opcode_matrix[0x02],
+        0x02: new WDC_opcode_functions(WDC_opcode_matrix[0x02],
             function(regs, pins) { // COP s
                 switch(regs.TCU) {
                         // COP s E=0 M=1 X=0
@@ -22319,7 +22319,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x03: new opcode_functions(opcode_matrix[0x03],
+        0x03: new WDC_opcode_functions(WDC_opcode_matrix[0x03],
             function(regs, pins) { // ORA d,s
                 switch(regs.TCU) {
                         // ORA d,s E=0 M=1 X=0
@@ -22351,7 +22351,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x04: new opcode_functions(opcode_matrix[0x04],
+        0x04: new WDC_opcode_functions(WDC_opcode_matrix[0x04],
             function(regs, pins) { // TSB d
                 switch(regs.TCU) {
                         // TSB d E=0 M=1 X=0
@@ -22395,7 +22395,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x05: new opcode_functions(opcode_matrix[0x05],
+        0x05: new WDC_opcode_functions(WDC_opcode_matrix[0x05],
             function(regs, pins) { // ORA d
                 switch(regs.TCU) {
                         // ORA d E=0 M=1 X=0
@@ -22433,7 +22433,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x06: new opcode_functions(opcode_matrix[0x06],
+        0x06: new WDC_opcode_functions(WDC_opcode_matrix[0x06],
             function(regs, pins) { // ASL d
                 switch(regs.TCU) {
                         // ASL d E=0 M=1 X=0
@@ -22479,7 +22479,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x07: new opcode_functions(opcode_matrix[0x07],
+        0x07: new WDC_opcode_functions(WDC_opcode_matrix[0x07],
             function(regs, pins) { // ORA [d]
                 switch(regs.TCU) {
                         // ORA [d] E=0 M=1 X=0
@@ -22530,7 +22530,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x08: new opcode_functions(opcode_matrix[0x08],
+        0x08: new WDC_opcode_functions(WDC_opcode_matrix[0x08],
             function(regs, pins) { // PHP s
                 switch(regs.TCU) {
                         // PHP s E=0 M=1 X=0
@@ -22558,7 +22558,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x09: new opcode_functions(opcode_matrix[0x09],
+        0x09: new WDC_opcode_functions(WDC_opcode_matrix[0x09],
             function(regs, pins) { // ORA #
                 switch(regs.TCU) {
                         // ORA # E=0 M=1 X=0
@@ -22582,7 +22582,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x0A: new opcode_functions(opcode_matrix[0x0A],
+        0x0A: new WDC_opcode_functions(WDC_opcode_matrix[0x0A],
             function(regs, pins) { // ASL A
                 switch(regs.TCU) {
                         // ASL A E=0 M=1 X=0
@@ -22608,7 +22608,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x0B: new opcode_functions(opcode_matrix[0x0B],
+        0x0B: new WDC_opcode_functions(WDC_opcode_matrix[0x0B],
             function(regs, pins) { // PHD s
                 switch(regs.TCU) {
                         // PHD s E=0 M=1 X=0
@@ -22640,7 +22640,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x0C: new opcode_functions(opcode_matrix[0x0C],
+        0x0C: new WDC_opcode_functions(WDC_opcode_matrix[0x0C],
             function(regs, pins) { // TSB a
                 switch(regs.TCU) {
                         // TSB a E=0 M=1 X=0
@@ -22680,7 +22680,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x0D: new opcode_functions(opcode_matrix[0x0D],
+        0x0D: new WDC_opcode_functions(WDC_opcode_matrix[0x0D],
             function(regs, pins) { // ORA a
                 switch(regs.TCU) {
                         // ORA a E=0 M=1 X=0
@@ -22712,7 +22712,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x0E: new opcode_functions(opcode_matrix[0x0E],
+        0x0E: new WDC_opcode_functions(WDC_opcode_matrix[0x0E],
             function(regs, pins) { // ASL a
                 switch(regs.TCU) {
                         // ASL a E=0 M=1 X=0
@@ -22754,7 +22754,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x0F: new opcode_functions(opcode_matrix[0x0F],
+        0x0F: new WDC_opcode_functions(WDC_opcode_matrix[0x0F],
             function(regs, pins) { // ORA al
                 switch(regs.TCU) {
                         // ORA al E=0 M=1 X=0
@@ -22791,7 +22791,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x10: new opcode_functions(opcode_matrix[0x10],
+        0x10: new WDC_opcode_functions(WDC_opcode_matrix[0x10],
             function(regs, pins) { // BPL r
                 switch(regs.TCU) {
                         // BPL r E=0 M=1 X=0
@@ -22822,7 +22822,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x11: new opcode_functions(opcode_matrix[0x11],
+        0x11: new WDC_opcode_functions(WDC_opcode_matrix[0x11],
             function(regs, pins) { // ORA (d),y
                 switch(regs.TCU) {
                         // ORA (d),y E=0 M=1 X=0
@@ -22879,7 +22879,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x12: new opcode_functions(opcode_matrix[0x12],
+        0x12: new WDC_opcode_functions(WDC_opcode_matrix[0x12],
             function(regs, pins) { // ORA (d)
                 switch(regs.TCU) {
                         // ORA (d) E=0 M=1 X=0
@@ -22924,7 +22924,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x13: new opcode_functions(opcode_matrix[0x13],
+        0x13: new WDC_opcode_functions(WDC_opcode_matrix[0x13],
             function(regs, pins) { // ORA (d,s),y
                 switch(regs.TCU) {
                         // ORA (d,s),y E=0 M=1 X=0
@@ -22970,7 +22970,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x14: new opcode_functions(opcode_matrix[0x14],
+        0x14: new WDC_opcode_functions(WDC_opcode_matrix[0x14],
             function(regs, pins) { // TRB d
                 switch(regs.TCU) {
                         // TRB d E=0 M=1 X=0
@@ -23014,7 +23014,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x15: new opcode_functions(opcode_matrix[0x15],
+        0x15: new WDC_opcode_functions(WDC_opcode_matrix[0x15],
             function(regs, pins) { // ORA d,x
                 switch(regs.TCU) {
                         // ORA d,x E=0 M=1 X=0
@@ -23054,7 +23054,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x16: new opcode_functions(opcode_matrix[0x16],
+        0x16: new WDC_opcode_functions(WDC_opcode_matrix[0x16],
             function(regs, pins) { // ASL d,x
                 switch(regs.TCU) {
                         // ASL d,x E=0 M=1 X=0
@@ -23102,7 +23102,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x17: new opcode_functions(opcode_matrix[0x17],
+        0x17: new WDC_opcode_functions(WDC_opcode_matrix[0x17],
             function(regs, pins) { // ORA [d],y
                 switch(regs.TCU) {
                         // ORA [d],y E=0 M=1 X=0
@@ -23153,7 +23153,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x18: new opcode_functions(opcode_matrix[0x18],
+        0x18: new WDC_opcode_functions(WDC_opcode_matrix[0x18],
             function(regs, pins) { // CLC i
                 switch(regs.TCU) {
                         // CLC i E=0 M=1 X=0
@@ -23174,7 +23174,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x19: new opcode_functions(opcode_matrix[0x19],
+        0x19: new WDC_opcode_functions(WDC_opcode_matrix[0x19],
             function(regs, pins) { // ORA a,y
                 switch(regs.TCU) {
                         // ORA a,y E=0 M=1 X=0
@@ -23218,7 +23218,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x1A: new opcode_functions(opcode_matrix[0x1A],
+        0x1A: new WDC_opcode_functions(WDC_opcode_matrix[0x1A],
             function(regs, pins) { // INC A
                 switch(regs.TCU) {
                         // INC A E=0 M=1 X=0
@@ -23243,7 +23243,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x1B: new opcode_functions(opcode_matrix[0x1B],
+        0x1B: new WDC_opcode_functions(WDC_opcode_matrix[0x1B],
             function(regs, pins) { // TCS i
                 switch(regs.TCU) {
                         // TCS i E=0 M=1 X=0
@@ -23264,7 +23264,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x1C: new opcode_functions(opcode_matrix[0x1C],
+        0x1C: new WDC_opcode_functions(WDC_opcode_matrix[0x1C],
             function(regs, pins) { // TRB a
                 switch(regs.TCU) {
                         // TRB a E=0 M=1 X=0
@@ -23304,7 +23304,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x1D: new opcode_functions(opcode_matrix[0x1D],
+        0x1D: new WDC_opcode_functions(WDC_opcode_matrix[0x1D],
             function(regs, pins) { // ORA a,x
                 switch(regs.TCU) {
                         // ORA a,x E=0 M=1 X=0
@@ -23348,7 +23348,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x1E: new opcode_functions(opcode_matrix[0x1E],
+        0x1E: new WDC_opcode_functions(WDC_opcode_matrix[0x1E],
             function(regs, pins) { // ASL a,x
                 switch(regs.TCU) {
                         // ASL a,x E=0 M=1 X=0
@@ -23396,7 +23396,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x1F: new opcode_functions(opcode_matrix[0x1F],
+        0x1F: new WDC_opcode_functions(WDC_opcode_matrix[0x1F],
             function(regs, pins) { // ORA al,x
                 switch(regs.TCU) {
                         // ORA al,x E=0 M=1 X=0
@@ -23434,7 +23434,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x20: new opcode_functions(opcode_matrix[0x20],
+        0x20: new WDC_opcode_functions(WDC_opcode_matrix[0x20],
             function(regs, pins) { // JSR a
                 switch(regs.TCU) {
                         // JSR a E=0 M=1 X=0
@@ -23476,7 +23476,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x21: new opcode_functions(opcode_matrix[0x21],
+        0x21: new WDC_opcode_functions(WDC_opcode_matrix[0x21],
             function(regs, pins) { // AND (d,x)
                 switch(regs.TCU) {
                         // AND (d,x) E=0 M=1 X=0
@@ -23524,7 +23524,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x22: new opcode_functions(opcode_matrix[0x22],
+        0x22: new WDC_opcode_functions(WDC_opcode_matrix[0x22],
             function(regs, pins) { // JSL al
                 switch(regs.TCU) {
                         // JSL al E=0 M=1 X=0
@@ -23579,7 +23579,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x23: new opcode_functions(opcode_matrix[0x23],
+        0x23: new WDC_opcode_functions(WDC_opcode_matrix[0x23],
             function(regs, pins) { // AND d,s
                 switch(regs.TCU) {
                         // AND d,s E=0 M=1 X=0
@@ -23611,7 +23611,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x24: new opcode_functions(opcode_matrix[0x24],
+        0x24: new WDC_opcode_functions(WDC_opcode_matrix[0x24],
             function(regs, pins) { // BIT d
                 switch(regs.TCU) {
                         // BIT d E=0 M=1 X=0
@@ -23648,7 +23648,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x25: new opcode_functions(opcode_matrix[0x25],
+        0x25: new WDC_opcode_functions(WDC_opcode_matrix[0x25],
             function(regs, pins) { // AND d
                 switch(regs.TCU) {
                         // AND d E=0 M=1 X=0
@@ -23686,7 +23686,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x26: new opcode_functions(opcode_matrix[0x26],
+        0x26: new WDC_opcode_functions(WDC_opcode_matrix[0x26],
             function(regs, pins) { // ROL d
                 switch(regs.TCU) {
                         // ROL d E=0 M=1 X=0
@@ -23733,7 +23733,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x27: new opcode_functions(opcode_matrix[0x27],
+        0x27: new WDC_opcode_functions(WDC_opcode_matrix[0x27],
             function(regs, pins) { // AND [d]
                 switch(regs.TCU) {
                         // AND [d] E=0 M=1 X=0
@@ -23784,7 +23784,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x28: new opcode_functions(opcode_matrix[0x28],
+        0x28: new WDC_opcode_functions(WDC_opcode_matrix[0x28],
             function(regs, pins) { // PLP s
                 switch(regs.TCU) {
                         // PLP s E=0 M=1 X=0
@@ -23817,7 +23817,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x29: new opcode_functions(opcode_matrix[0x29],
+        0x29: new WDC_opcode_functions(WDC_opcode_matrix[0x29],
             function(regs, pins) { // AND #
                 switch(regs.TCU) {
                         // AND # E=0 M=1 X=0
@@ -23841,7 +23841,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x2A: new opcode_functions(opcode_matrix[0x2A],
+        0x2A: new WDC_opcode_functions(WDC_opcode_matrix[0x2A],
             function(regs, pins) { // ROL A
                 switch(regs.TCU) {
                         // ROL A E=0 M=1 X=0
@@ -23868,7 +23868,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x2B: new opcode_functions(opcode_matrix[0x2B],
+        0x2B: new WDC_opcode_functions(WDC_opcode_matrix[0x2B],
             function(regs, pins) { // PLD s
                 switch(regs.TCU) {
                         // PLD s E=0 M=1 X=0
@@ -23903,7 +23903,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x2C: new opcode_functions(opcode_matrix[0x2C],
+        0x2C: new WDC_opcode_functions(WDC_opcode_matrix[0x2C],
             function(regs, pins) { // BIT a
                 switch(regs.TCU) {
                         // BIT a E=0 M=1 X=0
@@ -23934,7 +23934,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x2D: new opcode_functions(opcode_matrix[0x2D],
+        0x2D: new WDC_opcode_functions(WDC_opcode_matrix[0x2D],
             function(regs, pins) { // AND a
                 switch(regs.TCU) {
                         // AND a E=0 M=1 X=0
@@ -23966,7 +23966,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x2E: new opcode_functions(opcode_matrix[0x2E],
+        0x2E: new WDC_opcode_functions(WDC_opcode_matrix[0x2E],
             function(regs, pins) { // ROL a
                 switch(regs.TCU) {
                         // ROL a E=0 M=1 X=0
@@ -24009,7 +24009,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x2F: new opcode_functions(opcode_matrix[0x2F],
+        0x2F: new WDC_opcode_functions(WDC_opcode_matrix[0x2F],
             function(regs, pins) { // AND al
                 switch(regs.TCU) {
                         // AND al E=0 M=1 X=0
@@ -24046,7 +24046,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x30: new opcode_functions(opcode_matrix[0x30],
+        0x30: new WDC_opcode_functions(WDC_opcode_matrix[0x30],
             function(regs, pins) { // BMI r
                 switch(regs.TCU) {
                         // BMI r E=0 M=1 X=0
@@ -24077,7 +24077,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x31: new opcode_functions(opcode_matrix[0x31],
+        0x31: new WDC_opcode_functions(WDC_opcode_matrix[0x31],
             function(regs, pins) { // AND (d),y
                 switch(regs.TCU) {
                         // AND (d),y E=0 M=1 X=0
@@ -24134,7 +24134,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x32: new opcode_functions(opcode_matrix[0x32],
+        0x32: new WDC_opcode_functions(WDC_opcode_matrix[0x32],
             function(regs, pins) { // AND (d)
                 switch(regs.TCU) {
                         // AND (d) E=0 M=1 X=0
@@ -24179,7 +24179,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x33: new opcode_functions(opcode_matrix[0x33],
+        0x33: new WDC_opcode_functions(WDC_opcode_matrix[0x33],
             function(regs, pins) { // AND (d,s),y
                 switch(regs.TCU) {
                         // AND (d,s),y E=0 M=1 X=0
@@ -24225,7 +24225,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x34: new opcode_functions(opcode_matrix[0x34],
+        0x34: new WDC_opcode_functions(WDC_opcode_matrix[0x34],
             function(regs, pins) { // BIT d,x
                 switch(regs.TCU) {
                         // BIT d,x E=0 M=1 X=0
@@ -24264,7 +24264,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x35: new opcode_functions(opcode_matrix[0x35],
+        0x35: new WDC_opcode_functions(WDC_opcode_matrix[0x35],
             function(regs, pins) { // AND d,x
                 switch(regs.TCU) {
                         // AND d,x E=0 M=1 X=0
@@ -24304,7 +24304,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x36: new opcode_functions(opcode_matrix[0x36],
+        0x36: new WDC_opcode_functions(WDC_opcode_matrix[0x36],
             function(regs, pins) { // ROL d,x
                 switch(regs.TCU) {
                         // ROL d,x E=0 M=1 X=0
@@ -24353,7 +24353,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x37: new opcode_functions(opcode_matrix[0x37],
+        0x37: new WDC_opcode_functions(WDC_opcode_matrix[0x37],
             function(regs, pins) { // AND [d],y
                 switch(regs.TCU) {
                         // AND [d],y E=0 M=1 X=0
@@ -24404,7 +24404,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x38: new opcode_functions(opcode_matrix[0x38],
+        0x38: new WDC_opcode_functions(WDC_opcode_matrix[0x38],
             function(regs, pins) { // SEC i
                 switch(regs.TCU) {
                         // SEC i E=0 M=1 X=0
@@ -24425,7 +24425,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x39: new opcode_functions(opcode_matrix[0x39],
+        0x39: new WDC_opcode_functions(WDC_opcode_matrix[0x39],
             function(regs, pins) { // AND a,y
                 switch(regs.TCU) {
                         // AND a,y E=0 M=1 X=0
@@ -24469,7 +24469,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x3A: new opcode_functions(opcode_matrix[0x3A],
+        0x3A: new WDC_opcode_functions(WDC_opcode_matrix[0x3A],
             function(regs, pins) { // DEC A
                 switch(regs.TCU) {
                         // DEC A E=0 M=1 X=0
@@ -24494,7 +24494,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x3B: new opcode_functions(opcode_matrix[0x3B],
+        0x3B: new WDC_opcode_functions(WDC_opcode_matrix[0x3B],
             function(regs, pins) { // TSC i
                 switch(regs.TCU) {
                         // TSC i E=0 M=1 X=0
@@ -24517,7 +24517,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x3C: new opcode_functions(opcode_matrix[0x3C],
+        0x3C: new WDC_opcode_functions(WDC_opcode_matrix[0x3C],
             function(regs, pins) { // BIT a,x
                 switch(regs.TCU) {
                         // BIT a,x E=0 M=1 X=0
@@ -24560,7 +24560,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x3D: new opcode_functions(opcode_matrix[0x3D],
+        0x3D: new WDC_opcode_functions(WDC_opcode_matrix[0x3D],
             function(regs, pins) { // AND a,x
                 switch(regs.TCU) {
                         // AND a,x E=0 M=1 X=0
@@ -24604,7 +24604,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x3E: new opcode_functions(opcode_matrix[0x3E],
+        0x3E: new WDC_opcode_functions(WDC_opcode_matrix[0x3E],
             function(regs, pins) { // ROL a,x
                 switch(regs.TCU) {
                         // ROL a,x E=0 M=1 X=0
@@ -24653,7 +24653,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x3F: new opcode_functions(opcode_matrix[0x3F],
+        0x3F: new WDC_opcode_functions(WDC_opcode_matrix[0x3F],
             function(regs, pins) { // AND al,x
                 switch(regs.TCU) {
                         // AND al,x E=0 M=1 X=0
@@ -24691,7 +24691,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x40: new opcode_functions(opcode_matrix[0x40],
+        0x40: new WDC_opcode_functions(WDC_opcode_matrix[0x40],
             function(regs, pins) { // RTI s
                 switch(regs.TCU) {
                         // RTI s E=0 M=1 X=0
@@ -24741,7 +24741,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x41: new opcode_functions(opcode_matrix[0x41],
+        0x41: new WDC_opcode_functions(WDC_opcode_matrix[0x41],
             function(regs, pins) { // EOR (d,x)
                 switch(regs.TCU) {
                         // EOR (d,x) E=0 M=1 X=0
@@ -24789,7 +24789,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x42: new opcode_functions(opcode_matrix[0x42],
+        0x42: new WDC_opcode_functions(WDC_opcode_matrix[0x42],
             function(regs, pins) { // WDM i
                 switch(regs.TCU) {
                         // WDM i E=0 M=1 X=0
@@ -24810,7 +24810,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x43: new opcode_functions(opcode_matrix[0x43],
+        0x43: new WDC_opcode_functions(WDC_opcode_matrix[0x43],
             function(regs, pins) { // EOR d,s
                 switch(regs.TCU) {
                         // EOR d,s E=0 M=1 X=0
@@ -24842,7 +24842,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x44: new opcode_functions(opcode_matrix[0x44],
+        0x44: new WDC_opcode_functions(WDC_opcode_matrix[0x44],
             function(regs, pins) { // MVP xyc
                 switch(regs.TCU) {
                         // MVP xyc E=0 M=1 X=0
@@ -24882,7 +24882,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x45: new opcode_functions(opcode_matrix[0x45],
+        0x45: new WDC_opcode_functions(WDC_opcode_matrix[0x45],
             function(regs, pins) { // EOR d
                 switch(regs.TCU) {
                         // EOR d E=0 M=1 X=0
@@ -24920,7 +24920,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x46: new opcode_functions(opcode_matrix[0x46],
+        0x46: new WDC_opcode_functions(WDC_opcode_matrix[0x46],
             function(regs, pins) { // LSR d
                 switch(regs.TCU) {
                         // LSR d E=0 M=1 X=0
@@ -24966,7 +24966,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x47: new opcode_functions(opcode_matrix[0x47],
+        0x47: new WDC_opcode_functions(WDC_opcode_matrix[0x47],
             function(regs, pins) { // EOR [d]
                 switch(regs.TCU) {
                         // EOR [d] E=0 M=1 X=0
@@ -25017,7 +25017,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x48: new opcode_functions(opcode_matrix[0x48],
+        0x48: new WDC_opcode_functions(WDC_opcode_matrix[0x48],
             function(regs, pins) { // PHA s
                 switch(regs.TCU) {
                         // PHA s E=0 M=1 X=0
@@ -25045,7 +25045,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, true, false),
-        0x49: new opcode_functions(opcode_matrix[0x49],
+        0x49: new WDC_opcode_functions(WDC_opcode_matrix[0x49],
             function(regs, pins) { // EOR #
                 switch(regs.TCU) {
                         // EOR # E=0 M=1 X=0
@@ -25069,7 +25069,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x4A: new opcode_functions(opcode_matrix[0x4A],
+        0x4A: new WDC_opcode_functions(WDC_opcode_matrix[0x4A],
             function(regs, pins) { // LSR A
                 switch(regs.TCU) {
                         // LSR A E=0 M=1 X=0
@@ -25095,7 +25095,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x4B: new opcode_functions(opcode_matrix[0x4B],
+        0x4B: new WDC_opcode_functions(WDC_opcode_matrix[0x4B],
             function(regs, pins) { // PHK s
                 switch(regs.TCU) {
                         // PHK s E=0 M=1 X=0
@@ -25123,7 +25123,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x4C: new opcode_functions(opcode_matrix[0x4C],
+        0x4C: new WDC_opcode_functions(WDC_opcode_matrix[0x4C],
             function(regs, pins) { // JMP a
                 switch(regs.TCU) {
                         // JMP a E=0 M=1 X=0
@@ -25146,7 +25146,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x4D: new opcode_functions(opcode_matrix[0x4D],
+        0x4D: new WDC_opcode_functions(WDC_opcode_matrix[0x4D],
             function(regs, pins) { // EOR a
                 switch(regs.TCU) {
                         // EOR a E=0 M=1 X=0
@@ -25178,7 +25178,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x4E: new opcode_functions(opcode_matrix[0x4E],
+        0x4E: new WDC_opcode_functions(WDC_opcode_matrix[0x4E],
             function(regs, pins) { // LSR a
                 switch(regs.TCU) {
                         // LSR a E=0 M=1 X=0
@@ -25220,7 +25220,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x4F: new opcode_functions(opcode_matrix[0x4F],
+        0x4F: new WDC_opcode_functions(WDC_opcode_matrix[0x4F],
             function(regs, pins) { // EOR al
                 switch(regs.TCU) {
                         // EOR al E=0 M=1 X=0
@@ -25257,7 +25257,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x50: new opcode_functions(opcode_matrix[0x50],
+        0x50: new WDC_opcode_functions(WDC_opcode_matrix[0x50],
             function(regs, pins) { // BVC r
                 switch(regs.TCU) {
                         // BVC r E=0 M=1 X=0
@@ -25288,7 +25288,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x51: new opcode_functions(opcode_matrix[0x51],
+        0x51: new WDC_opcode_functions(WDC_opcode_matrix[0x51],
             function(regs, pins) { // EOR (d),y
                 switch(regs.TCU) {
                         // EOR (d),y E=0 M=1 X=0
@@ -25345,7 +25345,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x52: new opcode_functions(opcode_matrix[0x52],
+        0x52: new WDC_opcode_functions(WDC_opcode_matrix[0x52],
             function(regs, pins) { // EOR (d)
                 switch(regs.TCU) {
                         // EOR (d) E=0 M=1 X=0
@@ -25390,7 +25390,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x53: new opcode_functions(opcode_matrix[0x53],
+        0x53: new WDC_opcode_functions(WDC_opcode_matrix[0x53],
             function(regs, pins) { // EOR (d,s),y
                 switch(regs.TCU) {
                         // EOR (d,s),y E=0 M=1 X=0
@@ -25436,7 +25436,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x54: new opcode_functions(opcode_matrix[0x54],
+        0x54: new WDC_opcode_functions(WDC_opcode_matrix[0x54],
             function(regs, pins) { // MVN xyc
                 switch(regs.TCU) {
                         // MVN xyc E=0 M=1 X=0
@@ -25476,7 +25476,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x55: new opcode_functions(opcode_matrix[0x55],
+        0x55: new WDC_opcode_functions(WDC_opcode_matrix[0x55],
             function(regs, pins) { // EOR d,x
                 switch(regs.TCU) {
                         // EOR d,x E=0 M=1 X=0
@@ -25516,7 +25516,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x56: new opcode_functions(opcode_matrix[0x56],
+        0x56: new WDC_opcode_functions(WDC_opcode_matrix[0x56],
             function(regs, pins) { // LSR d,x
                 switch(regs.TCU) {
                         // LSR d,x E=0 M=1 X=0
@@ -25564,7 +25564,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x57: new opcode_functions(opcode_matrix[0x57],
+        0x57: new WDC_opcode_functions(WDC_opcode_matrix[0x57],
             function(regs, pins) { // EOR [d],y
                 switch(regs.TCU) {
                         // EOR [d],y E=0 M=1 X=0
@@ -25615,7 +25615,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x58: new opcode_functions(opcode_matrix[0x58],
+        0x58: new WDC_opcode_functions(WDC_opcode_matrix[0x58],
             function(regs, pins) { // CLI i
                 switch(regs.TCU) {
                         // CLI i E=0 M=1 X=0
@@ -25636,7 +25636,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x59: new opcode_functions(opcode_matrix[0x59],
+        0x59: new WDC_opcode_functions(WDC_opcode_matrix[0x59],
             function(regs, pins) { // EOR a,y
                 switch(regs.TCU) {
                         // EOR a,y E=0 M=1 X=0
@@ -25680,7 +25680,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x5A: new opcode_functions(opcode_matrix[0x5A],
+        0x5A: new WDC_opcode_functions(WDC_opcode_matrix[0x5A],
             function(regs, pins) { // PHY s
                 switch(regs.TCU) {
                         // PHY s E=0 M=1 X=0
@@ -25714,7 +25714,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, true),
-        0x5B: new opcode_functions(opcode_matrix[0x5B],
+        0x5B: new WDC_opcode_functions(WDC_opcode_matrix[0x5B],
             function(regs, pins) { // TCD i
                 switch(regs.TCU) {
                         // TCD i E=0 M=1 X=0
@@ -25737,7 +25737,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x5C: new opcode_functions(opcode_matrix[0x5C],
+        0x5C: new WDC_opcode_functions(WDC_opcode_matrix[0x5C],
             function(regs, pins) { // JMP al
                 switch(regs.TCU) {
                         // JMP al E=0 M=1 X=0
@@ -25764,7 +25764,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x5D: new opcode_functions(opcode_matrix[0x5D],
+        0x5D: new WDC_opcode_functions(WDC_opcode_matrix[0x5D],
             function(regs, pins) { // EOR a,x
                 switch(regs.TCU) {
                         // EOR a,x E=0 M=1 X=0
@@ -25808,7 +25808,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x5E: new opcode_functions(opcode_matrix[0x5E],
+        0x5E: new WDC_opcode_functions(WDC_opcode_matrix[0x5E],
             function(regs, pins) { // LSR a,x
                 switch(regs.TCU) {
                         // LSR a,x E=0 M=1 X=0
@@ -25856,7 +25856,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x5F: new opcode_functions(opcode_matrix[0x5F],
+        0x5F: new WDC_opcode_functions(WDC_opcode_matrix[0x5F],
             function(regs, pins) { // EOR al,x
                 switch(regs.TCU) {
                         // EOR al,x E=0 M=1 X=0
@@ -25894,7 +25894,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x60: new opcode_functions(opcode_matrix[0x60],
+        0x60: new WDC_opcode_functions(WDC_opcode_matrix[0x60],
             function(regs, pins) { // RTS s
                 switch(regs.TCU) {
                         // RTS s E=0 M=1 X=0
@@ -25930,7 +25930,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x61: new opcode_functions(opcode_matrix[0x61],
+        0x61: new WDC_opcode_functions(WDC_opcode_matrix[0x61],
             function(regs, pins) { // ADC (d,x)
                 switch(regs.TCU) {
                         // ADC (d,x) E=0 M=1 X=0
@@ -25989,7 +25989,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x62: new opcode_functions(opcode_matrix[0x62],
+        0x62: new WDC_opcode_functions(WDC_opcode_matrix[0x62],
             function(regs, pins) { // PER s
                 switch(regs.TCU) {
                         // PER s E=0 M=1 X=0
@@ -26027,7 +26027,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x63: new opcode_functions(opcode_matrix[0x63],
+        0x63: new WDC_opcode_functions(WDC_opcode_matrix[0x63],
             function(regs, pins) { // ADC d,s
                 switch(regs.TCU) {
                         // ADC d,s E=0 M=1 X=0
@@ -26070,7 +26070,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x64: new opcode_functions(opcode_matrix[0x64],
+        0x64: new WDC_opcode_functions(WDC_opcode_matrix[0x64],
             function(regs, pins) { // STZ d
                 switch(regs.TCU) {
                         // STZ d E=0 M=1 X=0
@@ -26106,7 +26106,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x65: new opcode_functions(opcode_matrix[0x65],
+        0x65: new WDC_opcode_functions(WDC_opcode_matrix[0x65],
             function(regs, pins) { // ADC d
                 switch(regs.TCU) {
                         // ADC d E=0 M=1 X=0
@@ -26155,7 +26155,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x66: new opcode_functions(opcode_matrix[0x66],
+        0x66: new WDC_opcode_functions(WDC_opcode_matrix[0x66],
             function(regs, pins) { // ROR d
                 switch(regs.TCU) {
                         // ROR d E=0 M=1 X=0
@@ -26202,7 +26202,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x67: new opcode_functions(opcode_matrix[0x67],
+        0x67: new WDC_opcode_functions(WDC_opcode_matrix[0x67],
             function(regs, pins) { // ADC [d]
                 switch(regs.TCU) {
                         // ADC [d] E=0 M=1 X=0
@@ -26264,7 +26264,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x68: new opcode_functions(opcode_matrix[0x68],
+        0x68: new WDC_opcode_functions(WDC_opcode_matrix[0x68],
             function(regs, pins) { // PLA s
                 switch(regs.TCU) {
                         // PLA s E=0 M=1 X=0
@@ -26295,7 +26295,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, true, false),
-        0x69: new opcode_functions(opcode_matrix[0x69],
+        0x69: new WDC_opcode_functions(WDC_opcode_matrix[0x69],
             function(regs, pins) { // ADC #
                 switch(regs.TCU) {
                         // ADC # E=0 M=1 X=0
@@ -26330,7 +26330,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x6A: new opcode_functions(opcode_matrix[0x6A],
+        0x6A: new WDC_opcode_functions(WDC_opcode_matrix[0x6A],
             function(regs, pins) { // ROR A
                 switch(regs.TCU) {
                         // ROR A E=0 M=1 X=0
@@ -26357,7 +26357,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x6B: new opcode_functions(opcode_matrix[0x6B],
+        0x6B: new WDC_opcode_functions(WDC_opcode_matrix[0x6B],
             function(regs, pins) { // RTL s
                 switch(regs.TCU) {
                         // RTL s E=0 M=1 X=0
@@ -26395,7 +26395,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x6C: new opcode_functions(opcode_matrix[0x6C],
+        0x6C: new WDC_opcode_functions(WDC_opcode_matrix[0x6C],
             function(regs, pins) { // JMP (a)
                 switch(regs.TCU) {
                         // JMP (a) E=0 M=1 X=0
@@ -26425,7 +26425,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x6D: new opcode_functions(opcode_matrix[0x6D],
+        0x6D: new WDC_opcode_functions(WDC_opcode_matrix[0x6D],
             function(regs, pins) { // ADC a
                 switch(regs.TCU) {
                         // ADC a E=0 M=1 X=0
@@ -26468,7 +26468,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x6E: new opcode_functions(opcode_matrix[0x6E],
+        0x6E: new WDC_opcode_functions(WDC_opcode_matrix[0x6E],
             function(regs, pins) { // ROR a
                 switch(regs.TCU) {
                         // ROR a E=0 M=1 X=0
@@ -26511,7 +26511,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x6F: new opcode_functions(opcode_matrix[0x6F],
+        0x6F: new WDC_opcode_functions(WDC_opcode_matrix[0x6F],
             function(regs, pins) { // ADC al
                 switch(regs.TCU) {
                         // ADC al E=0 M=1 X=0
@@ -26559,7 +26559,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x70: new opcode_functions(opcode_matrix[0x70],
+        0x70: new WDC_opcode_functions(WDC_opcode_matrix[0x70],
             function(regs, pins) { // BVS r
                 switch(regs.TCU) {
                         // BVS r E=0 M=1 X=0
@@ -26590,7 +26590,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x71: new opcode_functions(opcode_matrix[0x71],
+        0x71: new WDC_opcode_functions(WDC_opcode_matrix[0x71],
             function(regs, pins) { // ADC (d),y
                 switch(regs.TCU) {
                         // ADC (d),y E=0 M=1 X=0
@@ -26658,7 +26658,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x72: new opcode_functions(opcode_matrix[0x72],
+        0x72: new WDC_opcode_functions(WDC_opcode_matrix[0x72],
             function(regs, pins) { // ADC (d)
                 switch(regs.TCU) {
                         // ADC (d) E=0 M=1 X=0
@@ -26714,7 +26714,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x73: new opcode_functions(opcode_matrix[0x73],
+        0x73: new WDC_opcode_functions(WDC_opcode_matrix[0x73],
             function(regs, pins) { // ADC (d,s),y
                 switch(regs.TCU) {
                         // ADC (d,s),y E=0 M=1 X=0
@@ -26771,7 +26771,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x74: new opcode_functions(opcode_matrix[0x74],
+        0x74: new WDC_opcode_functions(WDC_opcode_matrix[0x74],
             function(regs, pins) { // STZ d,x
                 switch(regs.TCU) {
                         // STZ d,x E=0 M=1 X=0
@@ -26809,7 +26809,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x75: new opcode_functions(opcode_matrix[0x75],
+        0x75: new WDC_opcode_functions(WDC_opcode_matrix[0x75],
             function(regs, pins) { // ADC d,x
                 switch(regs.TCU) {
                         // ADC d,x E=0 M=1 X=0
@@ -26860,7 +26860,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x76: new opcode_functions(opcode_matrix[0x76],
+        0x76: new WDC_opcode_functions(WDC_opcode_matrix[0x76],
             function(regs, pins) { // ROR d,x
                 switch(regs.TCU) {
                         // ROR d,x E=0 M=1 X=0
@@ -26909,7 +26909,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x77: new opcode_functions(opcode_matrix[0x77],
+        0x77: new WDC_opcode_functions(WDC_opcode_matrix[0x77],
             function(regs, pins) { // ADC [d],y
                 switch(regs.TCU) {
                         // ADC [d],y E=0 M=1 X=0
@@ -26971,7 +26971,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x78: new opcode_functions(opcode_matrix[0x78],
+        0x78: new WDC_opcode_functions(WDC_opcode_matrix[0x78],
             function(regs, pins) { // SEI i
                 switch(regs.TCU) {
                         // SEI i E=0 M=1 X=0
@@ -26992,7 +26992,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x79: new opcode_functions(opcode_matrix[0x79],
+        0x79: new WDC_opcode_functions(WDC_opcode_matrix[0x79],
             function(regs, pins) { // ADC a,y
                 switch(regs.TCU) {
                         // ADC a,y E=0 M=1 X=0
@@ -27047,7 +27047,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x7A: new opcode_functions(opcode_matrix[0x7A],
+        0x7A: new WDC_opcode_functions(WDC_opcode_matrix[0x7A],
             function(regs, pins) { // PLY s
                 switch(regs.TCU) {
                         // PLY s E=0 M=1 X=0
@@ -27084,7 +27084,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, true),
-        0x7B: new opcode_functions(opcode_matrix[0x7B],
+        0x7B: new WDC_opcode_functions(WDC_opcode_matrix[0x7B],
             function(regs, pins) { // TDC i
                 switch(regs.TCU) {
                         // TDC i E=0 M=1 X=0
@@ -27107,7 +27107,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x7C: new opcode_functions(opcode_matrix[0x7C],
+        0x7C: new WDC_opcode_functions(WDC_opcode_matrix[0x7C],
             function(regs, pins) { // JMP (a,x)
                 switch(regs.TCU) {
                         // JMP (a,x) E=0 M=1 X=0
@@ -27143,7 +27143,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x7D: new opcode_functions(opcode_matrix[0x7D],
+        0x7D: new WDC_opcode_functions(WDC_opcode_matrix[0x7D],
             function(regs, pins) { // ADC a,x
                 switch(regs.TCU) {
                         // ADC a,x E=0 M=1 X=0
@@ -27198,7 +27198,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x7E: new opcode_functions(opcode_matrix[0x7E],
+        0x7E: new WDC_opcode_functions(WDC_opcode_matrix[0x7E],
             function(regs, pins) { // ROR a,x
                 switch(regs.TCU) {
                         // ROR a,x E=0 M=1 X=0
@@ -27247,7 +27247,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x7F: new opcode_functions(opcode_matrix[0x7F],
+        0x7F: new WDC_opcode_functions(WDC_opcode_matrix[0x7F],
             function(regs, pins) { // ADC al,x
                 switch(regs.TCU) {
                         // ADC al,x E=0 M=1 X=0
@@ -27296,7 +27296,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x80: new opcode_functions(opcode_matrix[0x80],
+        0x80: new WDC_opcode_functions(WDC_opcode_matrix[0x80],
             function(regs, pins) { // BRA r
                 switch(regs.TCU) {
                         // BRA r E=0 M=1 X=0
@@ -27327,7 +27327,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x81: new opcode_functions(opcode_matrix[0x81],
+        0x81: new WDC_opcode_functions(WDC_opcode_matrix[0x81],
             function(regs, pins) { // STA (d,x)
                 switch(regs.TCU) {
                         // STA (d,x) E=0 M=1 X=0
@@ -27375,7 +27375,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x82: new opcode_functions(opcode_matrix[0x82],
+        0x82: new WDC_opcode_functions(WDC_opcode_matrix[0x82],
             function(regs, pins) { // BRL rl
                 switch(regs.TCU) {
                         // BRL rl E=0 M=1 X=0
@@ -27403,7 +27403,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x83: new opcode_functions(opcode_matrix[0x83],
+        0x83: new WDC_opcode_functions(WDC_opcode_matrix[0x83],
             function(regs, pins) { // STA d,s
                 switch(regs.TCU) {
                         // STA d,s E=0 M=1 X=0
@@ -27434,7 +27434,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x84: new opcode_functions(opcode_matrix[0x84],
+        0x84: new WDC_opcode_functions(WDC_opcode_matrix[0x84],
             function(regs, pins) { // STY d
                 switch(regs.TCU) {
                         // STY d E=0 M=1 X=0
@@ -27474,7 +27474,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x85: new opcode_functions(opcode_matrix[0x85],
+        0x85: new WDC_opcode_functions(WDC_opcode_matrix[0x85],
             function(regs, pins) { // STA d
                 switch(regs.TCU) {
                         // STA d E=0 M=1 X=0
@@ -27511,7 +27511,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x86: new opcode_functions(opcode_matrix[0x86],
+        0x86: new WDC_opcode_functions(WDC_opcode_matrix[0x86],
             function(regs, pins) { // STX d
                 switch(regs.TCU) {
                         // STX d E=0 M=1 X=0
@@ -27551,7 +27551,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x87: new opcode_functions(opcode_matrix[0x87],
+        0x87: new WDC_opcode_functions(WDC_opcode_matrix[0x87],
             function(regs, pins) { // STA [d]
                 switch(regs.TCU) {
                         // STA [d] E=0 M=1 X=0
@@ -27602,7 +27602,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x88: new opcode_functions(opcode_matrix[0x88],
+        0x88: new WDC_opcode_functions(WDC_opcode_matrix[0x88],
             function(regs, pins) { // DEY i
                 switch(regs.TCU) {
                         // DEY i E=0 M=1 X=0
@@ -27625,7 +27625,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x89: new opcode_functions(opcode_matrix[0x89],
+        0x89: new WDC_opcode_functions(WDC_opcode_matrix[0x89],
             function(regs, pins) { // BIT #
                 switch(regs.TCU) {
                         // BIT # E=0 M=1 X=0
@@ -27646,7 +27646,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x8A: new opcode_functions(opcode_matrix[0x8A],
+        0x8A: new WDC_opcode_functions(WDC_opcode_matrix[0x8A],
             function(regs, pins) { // TXA i
                 switch(regs.TCU) {
                         // TXA i E=0 M=1 X=0
@@ -27669,7 +27669,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x8B: new opcode_functions(opcode_matrix[0x8B],
+        0x8B: new WDC_opcode_functions(WDC_opcode_matrix[0x8B],
             function(regs, pins) { // PHB s
                 switch(regs.TCU) {
                         // PHB s E=0 M=1 X=0
@@ -27697,7 +27697,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x8C: new opcode_functions(opcode_matrix[0x8C],
+        0x8C: new WDC_opcode_functions(WDC_opcode_matrix[0x8C],
             function(regs, pins) { // STY a
                 switch(regs.TCU) {
                         // STY a E=0 M=1 X=0
@@ -27732,7 +27732,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x8D: new opcode_functions(opcode_matrix[0x8D],
+        0x8D: new WDC_opcode_functions(WDC_opcode_matrix[0x8D],
             function(regs, pins) { // STA a
                 switch(regs.TCU) {
                         // STA a E=0 M=1 X=0
@@ -27764,7 +27764,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x8E: new opcode_functions(opcode_matrix[0x8E],
+        0x8E: new WDC_opcode_functions(WDC_opcode_matrix[0x8E],
             function(regs, pins) { // STX a
                 switch(regs.TCU) {
                         // STX a E=0 M=1 X=0
@@ -27799,7 +27799,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x8F: new opcode_functions(opcode_matrix[0x8F],
+        0x8F: new WDC_opcode_functions(WDC_opcode_matrix[0x8F],
             function(regs, pins) { // STA al
                 switch(regs.TCU) {
                         // STA al E=0 M=1 X=0
@@ -27836,7 +27836,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x90: new opcode_functions(opcode_matrix[0x90],
+        0x90: new WDC_opcode_functions(WDC_opcode_matrix[0x90],
             function(regs, pins) { // BCC r
                 switch(regs.TCU) {
                         // BCC r E=0 M=1 X=0
@@ -27867,7 +27867,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x91: new opcode_functions(opcode_matrix[0x91],
+        0x91: new WDC_opcode_functions(WDC_opcode_matrix[0x91],
             function(regs, pins) { // STA (d),y
                 switch(regs.TCU) {
                         // STA (d),y E=0 M=1 X=0
@@ -27923,7 +27923,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x92: new opcode_functions(opcode_matrix[0x92],
+        0x92: new WDC_opcode_functions(WDC_opcode_matrix[0x92],
             function(regs, pins) { // STA (d)
                 switch(regs.TCU) {
                         // STA (d) E=0 M=1 X=0
@@ -27968,7 +27968,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x93: new opcode_functions(opcode_matrix[0x93],
+        0x93: new WDC_opcode_functions(WDC_opcode_matrix[0x93],
             function(regs, pins) { // STA (d,s),y
                 switch(regs.TCU) {
                         // STA (d,s),y E=0 M=1 X=0
@@ -28013,7 +28013,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x94: new opcode_functions(opcode_matrix[0x94],
+        0x94: new WDC_opcode_functions(WDC_opcode_matrix[0x94],
             function(regs, pins) { // STY d,x
                 switch(regs.TCU) {
                         // STY d,x E=0 M=1 X=0
@@ -28055,7 +28055,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x95: new opcode_functions(opcode_matrix[0x95],
+        0x95: new WDC_opcode_functions(WDC_opcode_matrix[0x95],
             function(regs, pins) { // STA d,x
                 switch(regs.TCU) {
                         // STA d,x E=0 M=1 X=0
@@ -28094,7 +28094,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x96: new opcode_functions(opcode_matrix[0x96],
+        0x96: new WDC_opcode_functions(WDC_opcode_matrix[0x96],
             function(regs, pins) { // STX d,y
                 switch(regs.TCU) {
                         // STX d,y E=0 M=1 X=0
@@ -28136,7 +28136,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x97: new opcode_functions(opcode_matrix[0x97],
+        0x97: new WDC_opcode_functions(WDC_opcode_matrix[0x97],
             function(regs, pins) { // STA [d],y
                 switch(regs.TCU) {
                         // STA [d],y E=0 M=1 X=0
@@ -28187,7 +28187,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x98: new opcode_functions(opcode_matrix[0x98],
+        0x98: new WDC_opcode_functions(WDC_opcode_matrix[0x98],
             function(regs, pins) { // TYA i
                 switch(regs.TCU) {
                         // TYA i E=0 M=1 X=0
@@ -28210,7 +28210,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x99: new opcode_functions(opcode_matrix[0x99],
+        0x99: new WDC_opcode_functions(WDC_opcode_matrix[0x99],
             function(regs, pins) { // STA a,y
                 switch(regs.TCU) {
                         // STA a,y E=0 M=1 X=0
@@ -28253,7 +28253,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x9A: new opcode_functions(opcode_matrix[0x9A],
+        0x9A: new WDC_opcode_functions(WDC_opcode_matrix[0x9A],
             function(regs, pins) { // TXS i
                 switch(regs.TCU) {
                         // TXS i E=0 M=1 X=0
@@ -28274,7 +28274,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x9B: new opcode_functions(opcode_matrix[0x9B],
+        0x9B: new WDC_opcode_functions(WDC_opcode_matrix[0x9B],
             function(regs, pins) { // TXY i
                 switch(regs.TCU) {
                         // TXY i E=0 M=1 X=0
@@ -28297,7 +28297,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x9C: new opcode_functions(opcode_matrix[0x9C],
+        0x9C: new WDC_opcode_functions(WDC_opcode_matrix[0x9C],
             function(regs, pins) { // STZ a
                 switch(regs.TCU) {
                         // STZ a E=0 M=1 X=0
@@ -28328,7 +28328,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x9D: new opcode_functions(opcode_matrix[0x9D],
+        0x9D: new WDC_opcode_functions(WDC_opcode_matrix[0x9D],
             function(regs, pins) { // STA a,x
                 switch(regs.TCU) {
                         // STA a,x E=0 M=1 X=0
@@ -28371,7 +28371,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x9E: new opcode_functions(opcode_matrix[0x9E],
+        0x9E: new WDC_opcode_functions(WDC_opcode_matrix[0x9E],
             function(regs, pins) { // STZ a,x
                 switch(regs.TCU) {
                         // STZ a,x E=0 M=1 X=0
@@ -28413,7 +28413,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x9F: new opcode_functions(opcode_matrix[0x9F],
+        0x9F: new WDC_opcode_functions(WDC_opcode_matrix[0x9F],
             function(regs, pins) { // STA al,x
                 switch(regs.TCU) {
                         // STA al,x E=0 M=1 X=0
@@ -28451,7 +28451,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xA0: new opcode_functions(opcode_matrix[0xA0],
+        0xA0: new WDC_opcode_functions(WDC_opcode_matrix[0xA0],
             function(regs, pins) { // LDY #
                 switch(regs.TCU) {
                         // LDY # E=0 M=1 X=0
@@ -28479,7 +28479,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xA1: new opcode_functions(opcode_matrix[0xA1],
+        0xA1: new WDC_opcode_functions(WDC_opcode_matrix[0xA1],
             function(regs, pins) { // LDA (d,x)
                 switch(regs.TCU) {
                         // LDA (d,x) E=0 M=1 X=0
@@ -28526,7 +28526,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xA2: new opcode_functions(opcode_matrix[0xA2],
+        0xA2: new WDC_opcode_functions(WDC_opcode_matrix[0xA2],
             function(regs, pins) { // LDX #
                 switch(regs.TCU) {
                         // LDX # E=0 M=1 X=0
@@ -28554,7 +28554,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xA3: new opcode_functions(opcode_matrix[0xA3],
+        0xA3: new WDC_opcode_functions(WDC_opcode_matrix[0xA3],
             function(regs, pins) { // LDA d,s
                 switch(regs.TCU) {
                         // LDA d,s E=0 M=1 X=0
@@ -28585,7 +28585,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xA4: new opcode_functions(opcode_matrix[0xA4],
+        0xA4: new WDC_opcode_functions(WDC_opcode_matrix[0xA4],
             function(regs, pins) { // LDY d
                 switch(regs.TCU) {
                         // LDY d E=0 M=1 X=0
@@ -28626,7 +28626,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xA5: new opcode_functions(opcode_matrix[0xA5],
+        0xA5: new WDC_opcode_functions(WDC_opcode_matrix[0xA5],
             function(regs, pins) { // LDA d
                 switch(regs.TCU) {
                         // LDA d E=0 M=1 X=0
@@ -28663,7 +28663,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xA6: new opcode_functions(opcode_matrix[0xA6],
+        0xA6: new WDC_opcode_functions(WDC_opcode_matrix[0xA6],
             function(regs, pins) { // LDX d
                 switch(regs.TCU) {
                         // LDX d E=0 M=1 X=0
@@ -28704,7 +28704,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xA7: new opcode_functions(opcode_matrix[0xA7],
+        0xA7: new WDC_opcode_functions(WDC_opcode_matrix[0xA7],
             function(regs, pins) { // LDA [d]
                 switch(regs.TCU) {
                         // LDA [d] E=0 M=1 X=0
@@ -28754,7 +28754,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xA8: new opcode_functions(opcode_matrix[0xA8],
+        0xA8: new WDC_opcode_functions(WDC_opcode_matrix[0xA8],
             function(regs, pins) { // TAY i
                 switch(regs.TCU) {
                         // TAY i E=0 M=1 X=0
@@ -28777,7 +28777,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xA9: new opcode_functions(opcode_matrix[0xA9],
+        0xA9: new WDC_opcode_functions(WDC_opcode_matrix[0xA9],
             function(regs, pins) { // LDA #
                 switch(regs.TCU) {
                         // LDA # E=0 M=1 X=0
@@ -28800,7 +28800,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xAA: new opcode_functions(opcode_matrix[0xAA],
+        0xAA: new WDC_opcode_functions(WDC_opcode_matrix[0xAA],
             function(regs, pins) { // TAX i
                 switch(regs.TCU) {
                         // TAX i E=0 M=1 X=0
@@ -28823,7 +28823,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xAB: new opcode_functions(opcode_matrix[0xAB],
+        0xAB: new WDC_opcode_functions(WDC_opcode_matrix[0xAB],
             function(regs, pins) { // PLB s
                 switch(regs.TCU) {
                         // PLB s E=0 M=1 X=0
@@ -28854,7 +28854,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xAC: new opcode_functions(opcode_matrix[0xAC],
+        0xAC: new WDC_opcode_functions(WDC_opcode_matrix[0xAC],
             function(regs, pins) { // LDY a
                 switch(regs.TCU) {
                         // LDY a E=0 M=1 X=0
@@ -28889,7 +28889,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xAD: new opcode_functions(opcode_matrix[0xAD],
+        0xAD: new WDC_opcode_functions(WDC_opcode_matrix[0xAD],
             function(regs, pins) { // LDA a
                 switch(regs.TCU) {
                         // LDA a E=0 M=1 X=0
@@ -28920,7 +28920,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xAE: new opcode_functions(opcode_matrix[0xAE],
+        0xAE: new WDC_opcode_functions(WDC_opcode_matrix[0xAE],
             function(regs, pins) { // LDX a
                 switch(regs.TCU) {
                         // LDX a E=0 M=1 X=0
@@ -28955,7 +28955,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xAF: new opcode_functions(opcode_matrix[0xAF],
+        0xAF: new WDC_opcode_functions(WDC_opcode_matrix[0xAF],
             function(regs, pins) { // LDA al
                 switch(regs.TCU) {
                         // LDA al E=0 M=1 X=0
@@ -28991,7 +28991,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB0: new opcode_functions(opcode_matrix[0xB0],
+        0xB0: new WDC_opcode_functions(WDC_opcode_matrix[0xB0],
             function(regs, pins) { // BCS r
                 switch(regs.TCU) {
                         // BCS r E=0 M=1 X=0
@@ -29022,7 +29022,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xB1: new opcode_functions(opcode_matrix[0xB1],
+        0xB1: new WDC_opcode_functions(WDC_opcode_matrix[0xB1],
             function(regs, pins) { // LDA (d),y
                 switch(regs.TCU) {
                         // LDA (d),y E=0 M=1 X=0
@@ -29078,7 +29078,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB2: new opcode_functions(opcode_matrix[0xB2],
+        0xB2: new WDC_opcode_functions(WDC_opcode_matrix[0xB2],
             function(regs, pins) { // LDA (d)
                 switch(regs.TCU) {
                         // LDA (d) E=0 M=1 X=0
@@ -29122,7 +29122,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB3: new opcode_functions(opcode_matrix[0xB3],
+        0xB3: new WDC_opcode_functions(WDC_opcode_matrix[0xB3],
             function(regs, pins) { // LDA (d,s),y
                 switch(regs.TCU) {
                         // LDA (d,s),y E=0 M=1 X=0
@@ -29167,7 +29167,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB4: new opcode_functions(opcode_matrix[0xB4],
+        0xB4: new WDC_opcode_functions(WDC_opcode_matrix[0xB4],
             function(regs, pins) { // LDY d,x
                 switch(regs.TCU) {
                         // LDY d,x E=0 M=1 X=0
@@ -29210,7 +29210,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xB5: new opcode_functions(opcode_matrix[0xB5],
+        0xB5: new WDC_opcode_functions(WDC_opcode_matrix[0xB5],
             function(regs, pins) { // LDA d,x
                 switch(regs.TCU) {
                         // LDA d,x E=0 M=1 X=0
@@ -29249,7 +29249,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB6: new opcode_functions(opcode_matrix[0xB6],
+        0xB6: new WDC_opcode_functions(WDC_opcode_matrix[0xB6],
             function(regs, pins) { // LDX d,y
                 switch(regs.TCU) {
                         // LDX d,y E=0 M=1 X=0
@@ -29292,7 +29292,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xB7: new opcode_functions(opcode_matrix[0xB7],
+        0xB7: new WDC_opcode_functions(WDC_opcode_matrix[0xB7],
             function(regs, pins) { // LDA [d],y
                 switch(regs.TCU) {
                         // LDA [d],y E=0 M=1 X=0
@@ -29342,7 +29342,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB8: new opcode_functions(opcode_matrix[0xB8],
+        0xB8: new WDC_opcode_functions(WDC_opcode_matrix[0xB8],
             function(regs, pins) { // CLV i
                 switch(regs.TCU) {
                         // CLV i E=0 M=1 X=0
@@ -29363,7 +29363,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xB9: new opcode_functions(opcode_matrix[0xB9],
+        0xB9: new WDC_opcode_functions(WDC_opcode_matrix[0xB9],
             function(regs, pins) { // LDA a,y
                 switch(regs.TCU) {
                         // LDA a,y E=0 M=1 X=0
@@ -29406,7 +29406,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xBA: new opcode_functions(opcode_matrix[0xBA],
+        0xBA: new WDC_opcode_functions(WDC_opcode_matrix[0xBA],
             function(regs, pins) { // TSX i
                 switch(regs.TCU) {
                         // TSX i E=0 M=1 X=0
@@ -29429,7 +29429,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xBB: new opcode_functions(opcode_matrix[0xBB],
+        0xBB: new WDC_opcode_functions(WDC_opcode_matrix[0xBB],
             function(regs, pins) { // TYX i
                 switch(regs.TCU) {
                         // TYX i E=0 M=1 X=0
@@ -29452,7 +29452,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xBC: new opcode_functions(opcode_matrix[0xBC],
+        0xBC: new WDC_opcode_functions(WDC_opcode_matrix[0xBC],
             function(regs, pins) { // LDY a,x
                 switch(regs.TCU) {
                         // LDY a,x E=0 M=1 X=0
@@ -29499,7 +29499,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xBD: new opcode_functions(opcode_matrix[0xBD],
+        0xBD: new WDC_opcode_functions(WDC_opcode_matrix[0xBD],
             function(regs, pins) { // LDA a,x
                 switch(regs.TCU) {
                         // LDA a,x E=0 M=1 X=0
@@ -29542,7 +29542,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xBE: new opcode_functions(opcode_matrix[0xBE],
+        0xBE: new WDC_opcode_functions(WDC_opcode_matrix[0xBE],
             function(regs, pins) { // LDX a,y
                 switch(regs.TCU) {
                         // LDX a,y E=0 M=1 X=0
@@ -29589,7 +29589,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xBF: new opcode_functions(opcode_matrix[0xBF],
+        0xBF: new WDC_opcode_functions(WDC_opcode_matrix[0xBF],
             function(regs, pins) { // LDA al,x
                 switch(regs.TCU) {
                         // LDA al,x E=0 M=1 X=0
@@ -29626,7 +29626,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC0: new opcode_functions(opcode_matrix[0xC0],
+        0xC0: new WDC_opcode_functions(WDC_opcode_matrix[0xC0],
             function(regs, pins) { // CPY #
                 switch(regs.TCU) {
                         // CPY # E=0 M=1 X=0
@@ -29655,7 +29655,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xC1: new opcode_functions(opcode_matrix[0xC1],
+        0xC1: new WDC_opcode_functions(WDC_opcode_matrix[0xC1],
             function(regs, pins) { // CMP (d,x)
                 switch(regs.TCU) {
                         // CMP (d,x) E=0 M=1 X=0
@@ -29703,7 +29703,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC2: new opcode_functions(opcode_matrix[0xC2],
+        0xC2: new WDC_opcode_functions(WDC_opcode_matrix[0xC2],
             function(regs, pins) { // REP #
                 switch(regs.TCU) {
                         // REP # E=0 M=1 X=0
@@ -29728,7 +29728,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xC3: new opcode_functions(opcode_matrix[0xC3],
+        0xC3: new WDC_opcode_functions(WDC_opcode_matrix[0xC3],
             function(regs, pins) { // CMP d,s
                 switch(regs.TCU) {
                         // CMP d,s E=0 M=1 X=0
@@ -29760,7 +29760,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC4: new opcode_functions(opcode_matrix[0xC4],
+        0xC4: new WDC_opcode_functions(WDC_opcode_matrix[0xC4],
             function(regs, pins) { // CPY d
                 switch(regs.TCU) {
                         // CPY d E=0 M=1 X=0
@@ -29802,7 +29802,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xC5: new opcode_functions(opcode_matrix[0xC5],
+        0xC5: new WDC_opcode_functions(WDC_opcode_matrix[0xC5],
             function(regs, pins) { // CMP d
                 switch(regs.TCU) {
                         // CMP d E=0 M=1 X=0
@@ -29840,7 +29840,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC6: new opcode_functions(opcode_matrix[0xC6],
+        0xC6: new WDC_opcode_functions(WDC_opcode_matrix[0xC6],
             function(regs, pins) { // DEC d
                 switch(regs.TCU) {
                         // DEC d E=0 M=1 X=0
@@ -29885,7 +29885,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC7: new opcode_functions(opcode_matrix[0xC7],
+        0xC7: new WDC_opcode_functions(WDC_opcode_matrix[0xC7],
             function(regs, pins) { // CMP [d]
                 switch(regs.TCU) {
                         // CMP [d] E=0 M=1 X=0
@@ -29936,7 +29936,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC8: new opcode_functions(opcode_matrix[0xC8],
+        0xC8: new WDC_opcode_functions(WDC_opcode_matrix[0xC8],
             function(regs, pins) { // INY i
                 switch(regs.TCU) {
                         // INY i E=0 M=1 X=0
@@ -29959,7 +29959,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xC9: new opcode_functions(opcode_matrix[0xC9],
+        0xC9: new WDC_opcode_functions(WDC_opcode_matrix[0xC9],
             function(regs, pins) { // CMP #
                 switch(regs.TCU) {
                         // CMP # E=0 M=1 X=0
@@ -29983,7 +29983,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xCA: new opcode_functions(opcode_matrix[0xCA],
+        0xCA: new WDC_opcode_functions(WDC_opcode_matrix[0xCA],
             function(regs, pins) { // DEX i
                 switch(regs.TCU) {
                         // DEX i E=0 M=1 X=0
@@ -30006,7 +30006,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xCB: new opcode_functions(opcode_matrix[0xCB],
+        0xCB: new WDC_opcode_functions(WDC_opcode_matrix[0xCB],
             function(regs, pins) { // WAI i
                 switch(regs.TCU) {
                         // WAI i E=0 M=1 X=0
@@ -30028,7 +30028,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xCC: new opcode_functions(opcode_matrix[0xCC],
+        0xCC: new WDC_opcode_functions(WDC_opcode_matrix[0xCC],
             function(regs, pins) { // CPY a
                 switch(regs.TCU) {
                         // CPY a E=0 M=1 X=0
@@ -30064,7 +30064,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xCD: new opcode_functions(opcode_matrix[0xCD],
+        0xCD: new WDC_opcode_functions(WDC_opcode_matrix[0xCD],
             function(regs, pins) { // CMP a
                 switch(regs.TCU) {
                         // CMP a E=0 M=1 X=0
@@ -30096,7 +30096,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xCE: new opcode_functions(opcode_matrix[0xCE],
+        0xCE: new WDC_opcode_functions(WDC_opcode_matrix[0xCE],
             function(regs, pins) { // DEC a
                 switch(regs.TCU) {
                         // DEC a E=0 M=1 X=0
@@ -30137,7 +30137,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xCF: new opcode_functions(opcode_matrix[0xCF],
+        0xCF: new WDC_opcode_functions(WDC_opcode_matrix[0xCF],
             function(regs, pins) { // CMP al
                 switch(regs.TCU) {
                         // CMP al E=0 M=1 X=0
@@ -30174,7 +30174,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD0: new opcode_functions(opcode_matrix[0xD0],
+        0xD0: new WDC_opcode_functions(WDC_opcode_matrix[0xD0],
             function(regs, pins) { // BNE r
                 switch(regs.TCU) {
                         // BNE r E=0 M=1 X=0
@@ -30205,7 +30205,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xD1: new opcode_functions(opcode_matrix[0xD1],
+        0xD1: new WDC_opcode_functions(WDC_opcode_matrix[0xD1],
             function(regs, pins) { // CMP (d),y
                 switch(regs.TCU) {
                         // CMP (d),y E=0 M=1 X=0
@@ -30262,7 +30262,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD2: new opcode_functions(opcode_matrix[0xD2],
+        0xD2: new WDC_opcode_functions(WDC_opcode_matrix[0xD2],
             function(regs, pins) { // CMP (d)
                 switch(regs.TCU) {
                         // CMP (d) E=0 M=1 X=0
@@ -30307,7 +30307,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD3: new opcode_functions(opcode_matrix[0xD3],
+        0xD3: new WDC_opcode_functions(WDC_opcode_matrix[0xD3],
             function(regs, pins) { // CMP (d,s),y
                 switch(regs.TCU) {
                         // CMP (d,s),y E=0 M=1 X=0
@@ -30353,7 +30353,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD4: new opcode_functions(opcode_matrix[0xD4],
+        0xD4: new WDC_opcode_functions(WDC_opcode_matrix[0xD4],
             function(regs, pins) { // PEI s
                 switch(regs.TCU) {
                         // PEI s E=0 M=1 X=0
@@ -30399,7 +30399,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0xD5: new opcode_functions(opcode_matrix[0xD5],
+        0xD5: new WDC_opcode_functions(WDC_opcode_matrix[0xD5],
             function(regs, pins) { // CMP d,x
                 switch(regs.TCU) {
                         // CMP d,x E=0 M=1 X=0
@@ -30439,7 +30439,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD6: new opcode_functions(opcode_matrix[0xD6],
+        0xD6: new WDC_opcode_functions(WDC_opcode_matrix[0xD6],
             function(regs, pins) { // DEC d,x
                 switch(regs.TCU) {
                         // DEC d,x E=0 M=1 X=0
@@ -30486,7 +30486,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD7: new opcode_functions(opcode_matrix[0xD7],
+        0xD7: new WDC_opcode_functions(WDC_opcode_matrix[0xD7],
             function(regs, pins) { // CMP [d],y
                 switch(regs.TCU) {
                         // CMP [d],y E=0 M=1 X=0
@@ -30537,7 +30537,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD8: new opcode_functions(opcode_matrix[0xD8],
+        0xD8: new WDC_opcode_functions(WDC_opcode_matrix[0xD8],
             function(regs, pins) { // CLD i
                 switch(regs.TCU) {
                         // CLD i E=0 M=1 X=0
@@ -30558,7 +30558,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xD9: new opcode_functions(opcode_matrix[0xD9],
+        0xD9: new WDC_opcode_functions(WDC_opcode_matrix[0xD9],
             function(regs, pins) { // CMP a,y
                 switch(regs.TCU) {
                         // CMP a,y E=0 M=1 X=0
@@ -30602,7 +30602,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xDA: new opcode_functions(opcode_matrix[0xDA],
+        0xDA: new WDC_opcode_functions(WDC_opcode_matrix[0xDA],
             function(regs, pins) { // PHX s
                 switch(regs.TCU) {
                         // PHX s E=0 M=1 X=0
@@ -30636,7 +30636,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, true),
-        0xDB: new opcode_functions(opcode_matrix[0xDB],
+        0xDB: new WDC_opcode_functions(WDC_opcode_matrix[0xDB],
             function(regs, pins) { // STP i
                 switch(regs.TCU) {
                         // STP i E=0 M=1 X=0
@@ -30654,7 +30654,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xDC: new opcode_functions(opcode_matrix[0xDC],
+        0xDC: new WDC_opcode_functions(WDC_opcode_matrix[0xDC],
             function(regs, pins) { // JML (a)
                 switch(regs.TCU) {
                         // JML (a) E=0 M=1 X=0
@@ -30688,7 +30688,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xDD: new opcode_functions(opcode_matrix[0xDD],
+        0xDD: new WDC_opcode_functions(WDC_opcode_matrix[0xDD],
             function(regs, pins) { // CMP a,x
                 switch(regs.TCU) {
                         // CMP a,x E=0 M=1 X=0
@@ -30732,7 +30732,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xDE: new opcode_functions(opcode_matrix[0xDE],
+        0xDE: new WDC_opcode_functions(WDC_opcode_matrix[0xDE],
             function(regs, pins) { // DEC a,x
                 switch(regs.TCU) {
                         // DEC a,x E=0 M=1 X=0
@@ -30779,7 +30779,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xDF: new opcode_functions(opcode_matrix[0xDF],
+        0xDF: new WDC_opcode_functions(WDC_opcode_matrix[0xDF],
             function(regs, pins) { // CMP al,x
                 switch(regs.TCU) {
                         // CMP al,x E=0 M=1 X=0
@@ -30817,7 +30817,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE0: new opcode_functions(opcode_matrix[0xE0],
+        0xE0: new WDC_opcode_functions(WDC_opcode_matrix[0xE0],
             function(regs, pins) { // CPX #
                 switch(regs.TCU) {
                         // CPX # E=0 M=1 X=0
@@ -30846,7 +30846,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xE1: new opcode_functions(opcode_matrix[0xE1],
+        0xE1: new WDC_opcode_functions(WDC_opcode_matrix[0xE1],
             function(regs, pins) { // SBC (d,x)
                 switch(regs.TCU) {
                         // SBC (d,x) E=0 M=1 X=0
@@ -30905,7 +30905,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE2: new opcode_functions(opcode_matrix[0xE2],
+        0xE2: new WDC_opcode_functions(WDC_opcode_matrix[0xE2],
             function(regs, pins) { // SEP #
                 switch(regs.TCU) {
                         // SEP # E=0 M=1 X=0
@@ -30931,7 +30931,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xE3: new opcode_functions(opcode_matrix[0xE3],
+        0xE3: new WDC_opcode_functions(WDC_opcode_matrix[0xE3],
             function(regs, pins) { // SBC d,s
                 switch(regs.TCU) {
                         // SBC d,s E=0 M=1 X=0
@@ -30974,7 +30974,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE4: new opcode_functions(opcode_matrix[0xE4],
+        0xE4: new WDC_opcode_functions(WDC_opcode_matrix[0xE4],
             function(regs, pins) { // CPX d
                 switch(regs.TCU) {
                         // CPX d E=0 M=1 X=0
@@ -31016,7 +31016,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xE5: new opcode_functions(opcode_matrix[0xE5],
+        0xE5: new WDC_opcode_functions(WDC_opcode_matrix[0xE5],
             function(regs, pins) { // SBC d
                 switch(regs.TCU) {
                         // SBC d E=0 M=1 X=0
@@ -31065,7 +31065,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE6: new opcode_functions(opcode_matrix[0xE6],
+        0xE6: new WDC_opcode_functions(WDC_opcode_matrix[0xE6],
             function(regs, pins) { // INC d
                 switch(regs.TCU) {
                         // INC d E=0 M=1 X=0
@@ -31110,7 +31110,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE7: new opcode_functions(opcode_matrix[0xE7],
+        0xE7: new WDC_opcode_functions(WDC_opcode_matrix[0xE7],
             function(regs, pins) { // SBC [d]
                 switch(regs.TCU) {
                         // SBC [d] E=0 M=1 X=0
@@ -31172,7 +31172,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE8: new opcode_functions(opcode_matrix[0xE8],
+        0xE8: new WDC_opcode_functions(WDC_opcode_matrix[0xE8],
             function(regs, pins) { // INX i
                 switch(regs.TCU) {
                         // INX i E=0 M=1 X=0
@@ -31195,7 +31195,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xE9: new opcode_functions(opcode_matrix[0xE9],
+        0xE9: new WDC_opcode_functions(WDC_opcode_matrix[0xE9],
             function(regs, pins) { // SBC #
                 switch(regs.TCU) {
                         // SBC # E=0 M=1 X=0
@@ -31230,7 +31230,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xEA: new opcode_functions(opcode_matrix[0xEA],
+        0xEA: new WDC_opcode_functions(WDC_opcode_matrix[0xEA],
             function(regs, pins) { // NOP i
                 switch(regs.TCU) {
                         // NOP i E=0 M=1 X=0
@@ -31250,7 +31250,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xEB: new opcode_functions(opcode_matrix[0xEB],
+        0xEB: new WDC_opcode_functions(WDC_opcode_matrix[0xEB],
             function(regs, pins) { // XBA i
                 switch(regs.TCU) {
                         // XBA i E=0 M=1 X=0
@@ -31275,7 +31275,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xEC: new opcode_functions(opcode_matrix[0xEC],
+        0xEC: new WDC_opcode_functions(WDC_opcode_matrix[0xEC],
             function(regs, pins) { // CPX a
                 switch(regs.TCU) {
                         // CPX a E=0 M=1 X=0
@@ -31311,7 +31311,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xED: new opcode_functions(opcode_matrix[0xED],
+        0xED: new WDC_opcode_functions(WDC_opcode_matrix[0xED],
             function(regs, pins) { // SBC a
                 switch(regs.TCU) {
                         // SBC a E=0 M=1 X=0
@@ -31354,7 +31354,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xEE: new opcode_functions(opcode_matrix[0xEE],
+        0xEE: new WDC_opcode_functions(WDC_opcode_matrix[0xEE],
             function(regs, pins) { // INC a
                 switch(regs.TCU) {
                         // INC a E=0 M=1 X=0
@@ -31395,7 +31395,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xEF: new opcode_functions(opcode_matrix[0xEF],
+        0xEF: new WDC_opcode_functions(WDC_opcode_matrix[0xEF],
             function(regs, pins) { // SBC al
                 switch(regs.TCU) {
                         // SBC al E=0 M=1 X=0
@@ -31443,7 +31443,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF0: new opcode_functions(opcode_matrix[0xF0],
+        0xF0: new WDC_opcode_functions(WDC_opcode_matrix[0xF0],
             function(regs, pins) { // BEQ r
                 switch(regs.TCU) {
                         // BEQ r E=0 M=1 X=0
@@ -31474,7 +31474,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xF1: new opcode_functions(opcode_matrix[0xF1],
+        0xF1: new WDC_opcode_functions(WDC_opcode_matrix[0xF1],
             function(regs, pins) { // SBC (d),y
                 switch(regs.TCU) {
                         // SBC (d),y E=0 M=1 X=0
@@ -31542,7 +31542,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF2: new opcode_functions(opcode_matrix[0xF2],
+        0xF2: new WDC_opcode_functions(WDC_opcode_matrix[0xF2],
             function(regs, pins) { // SBC (d)
                 switch(regs.TCU) {
                         // SBC (d) E=0 M=1 X=0
@@ -31598,7 +31598,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF3: new opcode_functions(opcode_matrix[0xF3],
+        0xF3: new WDC_opcode_functions(WDC_opcode_matrix[0xF3],
             function(regs, pins) { // SBC (d,s),y
                 switch(regs.TCU) {
                         // SBC (d,s),y E=0 M=1 X=0
@@ -31655,7 +31655,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF4: new opcode_functions(opcode_matrix[0xF4],
+        0xF4: new WDC_opcode_functions(WDC_opcode_matrix[0xF4],
             function(regs, pins) { // PEA s
                 switch(regs.TCU) {
                         // PEA s E=0 M=1 X=0
@@ -31688,7 +31688,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0xF5: new opcode_functions(opcode_matrix[0xF5],
+        0xF5: new WDC_opcode_functions(WDC_opcode_matrix[0xF5],
             function(regs, pins) { // SBC d,x
                 switch(regs.TCU) {
                         // SBC d,x E=0 M=1 X=0
@@ -31739,7 +31739,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF6: new opcode_functions(opcode_matrix[0xF6],
+        0xF6: new WDC_opcode_functions(WDC_opcode_matrix[0xF6],
             function(regs, pins) { // INC d,x
                 switch(regs.TCU) {
                         // INC d,x E=0 M=1 X=0
@@ -31786,7 +31786,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF7: new opcode_functions(opcode_matrix[0xF7],
+        0xF7: new WDC_opcode_functions(WDC_opcode_matrix[0xF7],
             function(regs, pins) { // SBC [d],y
                 switch(regs.TCU) {
                         // SBC [d],y E=0 M=1 X=0
@@ -31848,7 +31848,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF8: new opcode_functions(opcode_matrix[0xF8],
+        0xF8: new WDC_opcode_functions(WDC_opcode_matrix[0xF8],
             function(regs, pins) { // SED i
                 switch(regs.TCU) {
                         // SED i E=0 M=1 X=0
@@ -31869,7 +31869,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xF9: new opcode_functions(opcode_matrix[0xF9],
+        0xF9: new WDC_opcode_functions(WDC_opcode_matrix[0xF9],
             function(regs, pins) { // SBC a,y
                 switch(regs.TCU) {
                         // SBC a,y E=0 M=1 X=0
@@ -31924,7 +31924,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xFA: new opcode_functions(opcode_matrix[0xFA],
+        0xFA: new WDC_opcode_functions(WDC_opcode_matrix[0xFA],
             function(regs, pins) { // PLX s
                 switch(regs.TCU) {
                         // PLX s E=0 M=1 X=0
@@ -31961,7 +31961,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, true),
-        0xFB: new opcode_functions(opcode_matrix[0xFB],
+        0xFB: new WDC_opcode_functions(WDC_opcode_matrix[0xFB],
             function(regs, pins) { // XCE i
                 switch(regs.TCU) {
                         // XCE i E=0 M=1 X=0
@@ -31988,7 +31988,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xFC: new opcode_functions(opcode_matrix[0xFC],
+        0xFC: new WDC_opcode_functions(WDC_opcode_matrix[0xFC],
             function(regs, pins) { // JSR (a,x)
                 switch(regs.TCU) {
                         // JSR (a,x) E=0 M=1 X=0
@@ -32037,7 +32037,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0xFD: new opcode_functions(opcode_matrix[0xFD],
+        0xFD: new WDC_opcode_functions(WDC_opcode_matrix[0xFD],
             function(regs, pins) { // SBC a,x
                 switch(regs.TCU) {
                         // SBC a,x E=0 M=1 X=0
@@ -32092,7 +32092,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xFE: new opcode_functions(opcode_matrix[0xFE],
+        0xFE: new WDC_opcode_functions(WDC_opcode_matrix[0xFE],
             function(regs, pins) { // INC a,x
                 switch(regs.TCU) {
                         // INC a,x E=0 M=1 X=0
@@ -32139,7 +32139,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xFF: new opcode_functions(opcode_matrix[0xFF],
+        0xFF: new WDC_opcode_functions(WDC_opcode_matrix[0xFF],
             function(regs, pins) { // SBC al,x
                 switch(regs.TCU) {
                         // SBC al,x E=0 M=1 X=0
@@ -32188,7 +32188,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x100: new opcode_functions(opcode_matrix[0x100],
+        0x100: new WDC_opcode_functions(WDC_opcode_matrix[0x100],
             function(regs, pins) { // S_RESET s
                 switch(regs.TCU) {
                         // S_RESET s E=0 M=1 X=0
@@ -32241,7 +32241,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x101: new opcode_functions(opcode_matrix[0x101],
+        0x101: new WDC_opcode_functions(WDC_opcode_matrix[0x101],
             function(regs, pins) { // S_ABORT s
                 switch(regs.TCU) {
                         // S_ABORT s E=0 M=1 X=0
@@ -32290,7 +32290,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x102: new opcode_functions(opcode_matrix[0x102],
+        0x102: new WDC_opcode_functions(WDC_opcode_matrix[0x102],
             function(regs, pins) { // S_IRQ s
                 switch(regs.TCU) {
                         // S_IRQ s E=0 M=1 X=0
@@ -32341,7 +32341,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x103: new opcode_functions(opcode_matrix[0x103],
+        0x103: new WDC_opcode_functions(WDC_opcode_matrix[0x103],
             function(regs, pins) { // S_NMI s
                 switch(regs.TCU) {
                         // S_NMI s E=0 M=1 X=0
@@ -32395,7 +32395,7 @@ const decoded_opcodes = Object.freeze(
 },
     // E0 M1 X1
     6: {
-        0x00: new opcode_functions(opcode_matrix[0x00],
+        0x00: new WDC_opcode_functions(WDC_opcode_matrix[0x00],
             function(regs, pins) { // BRK s
                 switch(regs.TCU) {
                         // BRK s E=0 M=1 X=1
@@ -32452,7 +32452,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x01: new opcode_functions(opcode_matrix[0x01],
+        0x01: new WDC_opcode_functions(WDC_opcode_matrix[0x01],
             function(regs, pins) { // ORA (d,x)
                 switch(regs.TCU) {
                         // ORA (d,x) E=0 M=1 X=1
@@ -32500,7 +32500,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x02: new opcode_functions(opcode_matrix[0x02],
+        0x02: new WDC_opcode_functions(WDC_opcode_matrix[0x02],
             function(regs, pins) { // COP s
                 switch(regs.TCU) {
                         // COP s E=0 M=1 X=1
@@ -32557,7 +32557,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x03: new opcode_functions(opcode_matrix[0x03],
+        0x03: new WDC_opcode_functions(WDC_opcode_matrix[0x03],
             function(regs, pins) { // ORA d,s
                 switch(regs.TCU) {
                         // ORA d,s E=0 M=1 X=1
@@ -32589,7 +32589,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x04: new opcode_functions(opcode_matrix[0x04],
+        0x04: new WDC_opcode_functions(WDC_opcode_matrix[0x04],
             function(regs, pins) { // TSB d
                 switch(regs.TCU) {
                         // TSB d E=0 M=1 X=1
@@ -32633,7 +32633,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x05: new opcode_functions(opcode_matrix[0x05],
+        0x05: new WDC_opcode_functions(WDC_opcode_matrix[0x05],
             function(regs, pins) { // ORA d
                 switch(regs.TCU) {
                         // ORA d E=0 M=1 X=1
@@ -32671,7 +32671,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x06: new opcode_functions(opcode_matrix[0x06],
+        0x06: new WDC_opcode_functions(WDC_opcode_matrix[0x06],
             function(regs, pins) { // ASL d
                 switch(regs.TCU) {
                         // ASL d E=0 M=1 X=1
@@ -32717,7 +32717,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x07: new opcode_functions(opcode_matrix[0x07],
+        0x07: new WDC_opcode_functions(WDC_opcode_matrix[0x07],
             function(regs, pins) { // ORA [d]
                 switch(regs.TCU) {
                         // ORA [d] E=0 M=1 X=1
@@ -32768,7 +32768,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x08: new opcode_functions(opcode_matrix[0x08],
+        0x08: new WDC_opcode_functions(WDC_opcode_matrix[0x08],
             function(regs, pins) { // PHP s
                 switch(regs.TCU) {
                         // PHP s E=0 M=1 X=1
@@ -32796,7 +32796,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x09: new opcode_functions(opcode_matrix[0x09],
+        0x09: new WDC_opcode_functions(WDC_opcode_matrix[0x09],
             function(regs, pins) { // ORA #
                 switch(regs.TCU) {
                         // ORA # E=0 M=1 X=1
@@ -32820,7 +32820,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x0A: new opcode_functions(opcode_matrix[0x0A],
+        0x0A: new WDC_opcode_functions(WDC_opcode_matrix[0x0A],
             function(regs, pins) { // ASL A
                 switch(regs.TCU) {
                         // ASL A E=0 M=1 X=1
@@ -32846,7 +32846,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x0B: new opcode_functions(opcode_matrix[0x0B],
+        0x0B: new WDC_opcode_functions(WDC_opcode_matrix[0x0B],
             function(regs, pins) { // PHD s
                 switch(regs.TCU) {
                         // PHD s E=0 M=1 X=1
@@ -32878,7 +32878,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x0C: new opcode_functions(opcode_matrix[0x0C],
+        0x0C: new WDC_opcode_functions(WDC_opcode_matrix[0x0C],
             function(regs, pins) { // TSB a
                 switch(regs.TCU) {
                         // TSB a E=0 M=1 X=1
@@ -32918,7 +32918,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x0D: new opcode_functions(opcode_matrix[0x0D],
+        0x0D: new WDC_opcode_functions(WDC_opcode_matrix[0x0D],
             function(regs, pins) { // ORA a
                 switch(regs.TCU) {
                         // ORA a E=0 M=1 X=1
@@ -32950,7 +32950,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x0E: new opcode_functions(opcode_matrix[0x0E],
+        0x0E: new WDC_opcode_functions(WDC_opcode_matrix[0x0E],
             function(regs, pins) { // ASL a
                 switch(regs.TCU) {
                         // ASL a E=0 M=1 X=1
@@ -32992,7 +32992,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x0F: new opcode_functions(opcode_matrix[0x0F],
+        0x0F: new WDC_opcode_functions(WDC_opcode_matrix[0x0F],
             function(regs, pins) { // ORA al
                 switch(regs.TCU) {
                         // ORA al E=0 M=1 X=1
@@ -33029,7 +33029,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x10: new opcode_functions(opcode_matrix[0x10],
+        0x10: new WDC_opcode_functions(WDC_opcode_matrix[0x10],
             function(regs, pins) { // BPL r
                 switch(regs.TCU) {
                         // BPL r E=0 M=1 X=1
@@ -33060,7 +33060,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x11: new opcode_functions(opcode_matrix[0x11],
+        0x11: new WDC_opcode_functions(WDC_opcode_matrix[0x11],
             function(regs, pins) { // ORA (d),y
                 switch(regs.TCU) {
                         // ORA (d),y E=0 M=1 X=1
@@ -33118,7 +33118,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x12: new opcode_functions(opcode_matrix[0x12],
+        0x12: new WDC_opcode_functions(WDC_opcode_matrix[0x12],
             function(regs, pins) { // ORA (d)
                 switch(regs.TCU) {
                         // ORA (d) E=0 M=1 X=1
@@ -33163,7 +33163,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x13: new opcode_functions(opcode_matrix[0x13],
+        0x13: new WDC_opcode_functions(WDC_opcode_matrix[0x13],
             function(regs, pins) { // ORA (d,s),y
                 switch(regs.TCU) {
                         // ORA (d,s),y E=0 M=1 X=1
@@ -33209,7 +33209,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x14: new opcode_functions(opcode_matrix[0x14],
+        0x14: new WDC_opcode_functions(WDC_opcode_matrix[0x14],
             function(regs, pins) { // TRB d
                 switch(regs.TCU) {
                         // TRB d E=0 M=1 X=1
@@ -33253,7 +33253,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x15: new opcode_functions(opcode_matrix[0x15],
+        0x15: new WDC_opcode_functions(WDC_opcode_matrix[0x15],
             function(regs, pins) { // ORA d,x
                 switch(regs.TCU) {
                         // ORA d,x E=0 M=1 X=1
@@ -33293,7 +33293,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x16: new opcode_functions(opcode_matrix[0x16],
+        0x16: new WDC_opcode_functions(WDC_opcode_matrix[0x16],
             function(regs, pins) { // ASL d,x
                 switch(regs.TCU) {
                         // ASL d,x E=0 M=1 X=1
@@ -33341,7 +33341,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x17: new opcode_functions(opcode_matrix[0x17],
+        0x17: new WDC_opcode_functions(WDC_opcode_matrix[0x17],
             function(regs, pins) { // ORA [d],y
                 switch(regs.TCU) {
                         // ORA [d],y E=0 M=1 X=1
@@ -33392,7 +33392,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x18: new opcode_functions(opcode_matrix[0x18],
+        0x18: new WDC_opcode_functions(WDC_opcode_matrix[0x18],
             function(regs, pins) { // CLC i
                 switch(regs.TCU) {
                         // CLC i E=0 M=1 X=1
@@ -33413,7 +33413,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x19: new opcode_functions(opcode_matrix[0x19],
+        0x19: new WDC_opcode_functions(WDC_opcode_matrix[0x19],
             function(regs, pins) { // ORA a,y
                 switch(regs.TCU) {
                         // ORA a,y E=0 M=1 X=1
@@ -33459,7 +33459,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x1A: new opcode_functions(opcode_matrix[0x1A],
+        0x1A: new WDC_opcode_functions(WDC_opcode_matrix[0x1A],
             function(regs, pins) { // INC A
                 switch(regs.TCU) {
                         // INC A E=0 M=1 X=1
@@ -33484,7 +33484,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x1B: new opcode_functions(opcode_matrix[0x1B],
+        0x1B: new WDC_opcode_functions(WDC_opcode_matrix[0x1B],
             function(regs, pins) { // TCS i
                 switch(regs.TCU) {
                         // TCS i E=0 M=1 X=1
@@ -33505,7 +33505,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x1C: new opcode_functions(opcode_matrix[0x1C],
+        0x1C: new WDC_opcode_functions(WDC_opcode_matrix[0x1C],
             function(regs, pins) { // TRB a
                 switch(regs.TCU) {
                         // TRB a E=0 M=1 X=1
@@ -33545,7 +33545,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x1D: new opcode_functions(opcode_matrix[0x1D],
+        0x1D: new WDC_opcode_functions(WDC_opcode_matrix[0x1D],
             function(regs, pins) { // ORA a,x
                 switch(regs.TCU) {
                         // ORA a,x E=0 M=1 X=1
@@ -33591,7 +33591,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x1E: new opcode_functions(opcode_matrix[0x1E],
+        0x1E: new WDC_opcode_functions(WDC_opcode_matrix[0x1E],
             function(regs, pins) { // ASL a,x
                 switch(regs.TCU) {
                         // ASL a,x E=0 M=1 X=1
@@ -33639,7 +33639,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x1F: new opcode_functions(opcode_matrix[0x1F],
+        0x1F: new WDC_opcode_functions(WDC_opcode_matrix[0x1F],
             function(regs, pins) { // ORA al,x
                 switch(regs.TCU) {
                         // ORA al,x E=0 M=1 X=1
@@ -33677,7 +33677,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x20: new opcode_functions(opcode_matrix[0x20],
+        0x20: new WDC_opcode_functions(WDC_opcode_matrix[0x20],
             function(regs, pins) { // JSR a
                 switch(regs.TCU) {
                         // JSR a E=0 M=1 X=1
@@ -33719,7 +33719,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x21: new opcode_functions(opcode_matrix[0x21],
+        0x21: new WDC_opcode_functions(WDC_opcode_matrix[0x21],
             function(regs, pins) { // AND (d,x)
                 switch(regs.TCU) {
                         // AND (d,x) E=0 M=1 X=1
@@ -33767,7 +33767,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x22: new opcode_functions(opcode_matrix[0x22],
+        0x22: new WDC_opcode_functions(WDC_opcode_matrix[0x22],
             function(regs, pins) { // JSL al
                 switch(regs.TCU) {
                         // JSL al E=0 M=1 X=1
@@ -33822,7 +33822,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x23: new opcode_functions(opcode_matrix[0x23],
+        0x23: new WDC_opcode_functions(WDC_opcode_matrix[0x23],
             function(regs, pins) { // AND d,s
                 switch(regs.TCU) {
                         // AND d,s E=0 M=1 X=1
@@ -33854,7 +33854,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x24: new opcode_functions(opcode_matrix[0x24],
+        0x24: new WDC_opcode_functions(WDC_opcode_matrix[0x24],
             function(regs, pins) { // BIT d
                 switch(regs.TCU) {
                         // BIT d E=0 M=1 X=1
@@ -33891,7 +33891,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x25: new opcode_functions(opcode_matrix[0x25],
+        0x25: new WDC_opcode_functions(WDC_opcode_matrix[0x25],
             function(regs, pins) { // AND d
                 switch(regs.TCU) {
                         // AND d E=0 M=1 X=1
@@ -33929,7 +33929,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x26: new opcode_functions(opcode_matrix[0x26],
+        0x26: new WDC_opcode_functions(WDC_opcode_matrix[0x26],
             function(regs, pins) { // ROL d
                 switch(regs.TCU) {
                         // ROL d E=0 M=1 X=1
@@ -33976,7 +33976,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x27: new opcode_functions(opcode_matrix[0x27],
+        0x27: new WDC_opcode_functions(WDC_opcode_matrix[0x27],
             function(regs, pins) { // AND [d]
                 switch(regs.TCU) {
                         // AND [d] E=0 M=1 X=1
@@ -34027,7 +34027,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x28: new opcode_functions(opcode_matrix[0x28],
+        0x28: new WDC_opcode_functions(WDC_opcode_matrix[0x28],
             function(regs, pins) { // PLP s
                 switch(regs.TCU) {
                         // PLP s E=0 M=1 X=1
@@ -34060,7 +34060,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x29: new opcode_functions(opcode_matrix[0x29],
+        0x29: new WDC_opcode_functions(WDC_opcode_matrix[0x29],
             function(regs, pins) { // AND #
                 switch(regs.TCU) {
                         // AND # E=0 M=1 X=1
@@ -34084,7 +34084,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x2A: new opcode_functions(opcode_matrix[0x2A],
+        0x2A: new WDC_opcode_functions(WDC_opcode_matrix[0x2A],
             function(regs, pins) { // ROL A
                 switch(regs.TCU) {
                         // ROL A E=0 M=1 X=1
@@ -34111,7 +34111,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x2B: new opcode_functions(opcode_matrix[0x2B],
+        0x2B: new WDC_opcode_functions(WDC_opcode_matrix[0x2B],
             function(regs, pins) { // PLD s
                 switch(regs.TCU) {
                         // PLD s E=0 M=1 X=1
@@ -34146,7 +34146,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x2C: new opcode_functions(opcode_matrix[0x2C],
+        0x2C: new WDC_opcode_functions(WDC_opcode_matrix[0x2C],
             function(regs, pins) { // BIT a
                 switch(regs.TCU) {
                         // BIT a E=0 M=1 X=1
@@ -34177,7 +34177,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x2D: new opcode_functions(opcode_matrix[0x2D],
+        0x2D: new WDC_opcode_functions(WDC_opcode_matrix[0x2D],
             function(regs, pins) { // AND a
                 switch(regs.TCU) {
                         // AND a E=0 M=1 X=1
@@ -34209,7 +34209,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x2E: new opcode_functions(opcode_matrix[0x2E],
+        0x2E: new WDC_opcode_functions(WDC_opcode_matrix[0x2E],
             function(regs, pins) { // ROL a
                 switch(regs.TCU) {
                         // ROL a E=0 M=1 X=1
@@ -34252,7 +34252,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x2F: new opcode_functions(opcode_matrix[0x2F],
+        0x2F: new WDC_opcode_functions(WDC_opcode_matrix[0x2F],
             function(regs, pins) { // AND al
                 switch(regs.TCU) {
                         // AND al E=0 M=1 X=1
@@ -34289,7 +34289,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x30: new opcode_functions(opcode_matrix[0x30],
+        0x30: new WDC_opcode_functions(WDC_opcode_matrix[0x30],
             function(regs, pins) { // BMI r
                 switch(regs.TCU) {
                         // BMI r E=0 M=1 X=1
@@ -34320,7 +34320,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x31: new opcode_functions(opcode_matrix[0x31],
+        0x31: new WDC_opcode_functions(WDC_opcode_matrix[0x31],
             function(regs, pins) { // AND (d),y
                 switch(regs.TCU) {
                         // AND (d),y E=0 M=1 X=1
@@ -34378,7 +34378,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x32: new opcode_functions(opcode_matrix[0x32],
+        0x32: new WDC_opcode_functions(WDC_opcode_matrix[0x32],
             function(regs, pins) { // AND (d)
                 switch(regs.TCU) {
                         // AND (d) E=0 M=1 X=1
@@ -34423,7 +34423,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x33: new opcode_functions(opcode_matrix[0x33],
+        0x33: new WDC_opcode_functions(WDC_opcode_matrix[0x33],
             function(regs, pins) { // AND (d,s),y
                 switch(regs.TCU) {
                         // AND (d,s),y E=0 M=1 X=1
@@ -34469,7 +34469,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x34: new opcode_functions(opcode_matrix[0x34],
+        0x34: new WDC_opcode_functions(WDC_opcode_matrix[0x34],
             function(regs, pins) { // BIT d,x
                 switch(regs.TCU) {
                         // BIT d,x E=0 M=1 X=1
@@ -34508,7 +34508,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x35: new opcode_functions(opcode_matrix[0x35],
+        0x35: new WDC_opcode_functions(WDC_opcode_matrix[0x35],
             function(regs, pins) { // AND d,x
                 switch(regs.TCU) {
                         // AND d,x E=0 M=1 X=1
@@ -34548,7 +34548,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x36: new opcode_functions(opcode_matrix[0x36],
+        0x36: new WDC_opcode_functions(WDC_opcode_matrix[0x36],
             function(regs, pins) { // ROL d,x
                 switch(regs.TCU) {
                         // ROL d,x E=0 M=1 X=1
@@ -34597,7 +34597,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x37: new opcode_functions(opcode_matrix[0x37],
+        0x37: new WDC_opcode_functions(WDC_opcode_matrix[0x37],
             function(regs, pins) { // AND [d],y
                 switch(regs.TCU) {
                         // AND [d],y E=0 M=1 X=1
@@ -34648,7 +34648,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x38: new opcode_functions(opcode_matrix[0x38],
+        0x38: new WDC_opcode_functions(WDC_opcode_matrix[0x38],
             function(regs, pins) { // SEC i
                 switch(regs.TCU) {
                         // SEC i E=0 M=1 X=1
@@ -34669,7 +34669,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x39: new opcode_functions(opcode_matrix[0x39],
+        0x39: new WDC_opcode_functions(WDC_opcode_matrix[0x39],
             function(regs, pins) { // AND a,y
                 switch(regs.TCU) {
                         // AND a,y E=0 M=1 X=1
@@ -34715,7 +34715,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x3A: new opcode_functions(opcode_matrix[0x3A],
+        0x3A: new WDC_opcode_functions(WDC_opcode_matrix[0x3A],
             function(regs, pins) { // DEC A
                 switch(regs.TCU) {
                         // DEC A E=0 M=1 X=1
@@ -34740,7 +34740,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x3B: new opcode_functions(opcode_matrix[0x3B],
+        0x3B: new WDC_opcode_functions(WDC_opcode_matrix[0x3B],
             function(regs, pins) { // TSC i
                 switch(regs.TCU) {
                         // TSC i E=0 M=1 X=1
@@ -34763,7 +34763,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x3C: new opcode_functions(opcode_matrix[0x3C],
+        0x3C: new WDC_opcode_functions(WDC_opcode_matrix[0x3C],
             function(regs, pins) { // BIT a,x
                 switch(regs.TCU) {
                         // BIT a,x E=0 M=1 X=1
@@ -34808,7 +34808,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x3D: new opcode_functions(opcode_matrix[0x3D],
+        0x3D: new WDC_opcode_functions(WDC_opcode_matrix[0x3D],
             function(regs, pins) { // AND a,x
                 switch(regs.TCU) {
                         // AND a,x E=0 M=1 X=1
@@ -34854,7 +34854,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x3E: new opcode_functions(opcode_matrix[0x3E],
+        0x3E: new WDC_opcode_functions(WDC_opcode_matrix[0x3E],
             function(regs, pins) { // ROL a,x
                 switch(regs.TCU) {
                         // ROL a,x E=0 M=1 X=1
@@ -34903,7 +34903,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x3F: new opcode_functions(opcode_matrix[0x3F],
+        0x3F: new WDC_opcode_functions(WDC_opcode_matrix[0x3F],
             function(regs, pins) { // AND al,x
                 switch(regs.TCU) {
                         // AND al,x E=0 M=1 X=1
@@ -34941,7 +34941,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x40: new opcode_functions(opcode_matrix[0x40],
+        0x40: new WDC_opcode_functions(WDC_opcode_matrix[0x40],
             function(regs, pins) { // RTI s
                 switch(regs.TCU) {
                         // RTI s E=0 M=1 X=1
@@ -34991,7 +34991,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x41: new opcode_functions(opcode_matrix[0x41],
+        0x41: new WDC_opcode_functions(WDC_opcode_matrix[0x41],
             function(regs, pins) { // EOR (d,x)
                 switch(regs.TCU) {
                         // EOR (d,x) E=0 M=1 X=1
@@ -35039,7 +35039,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x42: new opcode_functions(opcode_matrix[0x42],
+        0x42: new WDC_opcode_functions(WDC_opcode_matrix[0x42],
             function(regs, pins) { // WDM i
                 switch(regs.TCU) {
                         // WDM i E=0 M=1 X=1
@@ -35060,7 +35060,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x43: new opcode_functions(opcode_matrix[0x43],
+        0x43: new WDC_opcode_functions(WDC_opcode_matrix[0x43],
             function(regs, pins) { // EOR d,s
                 switch(regs.TCU) {
                         // EOR d,s E=0 M=1 X=1
@@ -35092,7 +35092,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x44: new opcode_functions(opcode_matrix[0x44],
+        0x44: new WDC_opcode_functions(WDC_opcode_matrix[0x44],
             function(regs, pins) { // MVP xyc
                 switch(regs.TCU) {
                         // MVP xyc E=0 M=1 X=1
@@ -35132,7 +35132,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x45: new opcode_functions(opcode_matrix[0x45],
+        0x45: new WDC_opcode_functions(WDC_opcode_matrix[0x45],
             function(regs, pins) { // EOR d
                 switch(regs.TCU) {
                         // EOR d E=0 M=1 X=1
@@ -35170,7 +35170,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x46: new opcode_functions(opcode_matrix[0x46],
+        0x46: new WDC_opcode_functions(WDC_opcode_matrix[0x46],
             function(regs, pins) { // LSR d
                 switch(regs.TCU) {
                         // LSR d E=0 M=1 X=1
@@ -35216,7 +35216,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x47: new opcode_functions(opcode_matrix[0x47],
+        0x47: new WDC_opcode_functions(WDC_opcode_matrix[0x47],
             function(regs, pins) { // EOR [d]
                 switch(regs.TCU) {
                         // EOR [d] E=0 M=1 X=1
@@ -35267,7 +35267,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x48: new opcode_functions(opcode_matrix[0x48],
+        0x48: new WDC_opcode_functions(WDC_opcode_matrix[0x48],
             function(regs, pins) { // PHA s
                 switch(regs.TCU) {
                         // PHA s E=0 M=1 X=1
@@ -35295,7 +35295,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, true, false),
-        0x49: new opcode_functions(opcode_matrix[0x49],
+        0x49: new WDC_opcode_functions(WDC_opcode_matrix[0x49],
             function(regs, pins) { // EOR #
                 switch(regs.TCU) {
                         // EOR # E=0 M=1 X=1
@@ -35319,7 +35319,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x4A: new opcode_functions(opcode_matrix[0x4A],
+        0x4A: new WDC_opcode_functions(WDC_opcode_matrix[0x4A],
             function(regs, pins) { // LSR A
                 switch(regs.TCU) {
                         // LSR A E=0 M=1 X=1
@@ -35345,7 +35345,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x4B: new opcode_functions(opcode_matrix[0x4B],
+        0x4B: new WDC_opcode_functions(WDC_opcode_matrix[0x4B],
             function(regs, pins) { // PHK s
                 switch(regs.TCU) {
                         // PHK s E=0 M=1 X=1
@@ -35373,7 +35373,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x4C: new opcode_functions(opcode_matrix[0x4C],
+        0x4C: new WDC_opcode_functions(WDC_opcode_matrix[0x4C],
             function(regs, pins) { // JMP a
                 switch(regs.TCU) {
                         // JMP a E=0 M=1 X=1
@@ -35396,7 +35396,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x4D: new opcode_functions(opcode_matrix[0x4D],
+        0x4D: new WDC_opcode_functions(WDC_opcode_matrix[0x4D],
             function(regs, pins) { // EOR a
                 switch(regs.TCU) {
                         // EOR a E=0 M=1 X=1
@@ -35428,7 +35428,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x4E: new opcode_functions(opcode_matrix[0x4E],
+        0x4E: new WDC_opcode_functions(WDC_opcode_matrix[0x4E],
             function(regs, pins) { // LSR a
                 switch(regs.TCU) {
                         // LSR a E=0 M=1 X=1
@@ -35470,7 +35470,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x4F: new opcode_functions(opcode_matrix[0x4F],
+        0x4F: new WDC_opcode_functions(WDC_opcode_matrix[0x4F],
             function(regs, pins) { // EOR al
                 switch(regs.TCU) {
                         // EOR al E=0 M=1 X=1
@@ -35507,7 +35507,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x50: new opcode_functions(opcode_matrix[0x50],
+        0x50: new WDC_opcode_functions(WDC_opcode_matrix[0x50],
             function(regs, pins) { // BVC r
                 switch(regs.TCU) {
                         // BVC r E=0 M=1 X=1
@@ -35538,7 +35538,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x51: new opcode_functions(opcode_matrix[0x51],
+        0x51: new WDC_opcode_functions(WDC_opcode_matrix[0x51],
             function(regs, pins) { // EOR (d),y
                 switch(regs.TCU) {
                         // EOR (d),y E=0 M=1 X=1
@@ -35596,7 +35596,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x52: new opcode_functions(opcode_matrix[0x52],
+        0x52: new WDC_opcode_functions(WDC_opcode_matrix[0x52],
             function(regs, pins) { // EOR (d)
                 switch(regs.TCU) {
                         // EOR (d) E=0 M=1 X=1
@@ -35641,7 +35641,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x53: new opcode_functions(opcode_matrix[0x53],
+        0x53: new WDC_opcode_functions(WDC_opcode_matrix[0x53],
             function(regs, pins) { // EOR (d,s),y
                 switch(regs.TCU) {
                         // EOR (d,s),y E=0 M=1 X=1
@@ -35687,7 +35687,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x54: new opcode_functions(opcode_matrix[0x54],
+        0x54: new WDC_opcode_functions(WDC_opcode_matrix[0x54],
             function(regs, pins) { // MVN xyc
                 switch(regs.TCU) {
                         // MVN xyc E=0 M=1 X=1
@@ -35727,7 +35727,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x55: new opcode_functions(opcode_matrix[0x55],
+        0x55: new WDC_opcode_functions(WDC_opcode_matrix[0x55],
             function(regs, pins) { // EOR d,x
                 switch(regs.TCU) {
                         // EOR d,x E=0 M=1 X=1
@@ -35767,7 +35767,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x56: new opcode_functions(opcode_matrix[0x56],
+        0x56: new WDC_opcode_functions(WDC_opcode_matrix[0x56],
             function(regs, pins) { // LSR d,x
                 switch(regs.TCU) {
                         // LSR d,x E=0 M=1 X=1
@@ -35815,7 +35815,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x57: new opcode_functions(opcode_matrix[0x57],
+        0x57: new WDC_opcode_functions(WDC_opcode_matrix[0x57],
             function(regs, pins) { // EOR [d],y
                 switch(regs.TCU) {
                         // EOR [d],y E=0 M=1 X=1
@@ -35866,7 +35866,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x58: new opcode_functions(opcode_matrix[0x58],
+        0x58: new WDC_opcode_functions(WDC_opcode_matrix[0x58],
             function(regs, pins) { // CLI i
                 switch(regs.TCU) {
                         // CLI i E=0 M=1 X=1
@@ -35887,7 +35887,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x59: new opcode_functions(opcode_matrix[0x59],
+        0x59: new WDC_opcode_functions(WDC_opcode_matrix[0x59],
             function(regs, pins) { // EOR a,y
                 switch(regs.TCU) {
                         // EOR a,y E=0 M=1 X=1
@@ -35933,7 +35933,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x5A: new opcode_functions(opcode_matrix[0x5A],
+        0x5A: new WDC_opcode_functions(WDC_opcode_matrix[0x5A],
             function(regs, pins) { // PHY s
                 switch(regs.TCU) {
                         // PHY s E=0 M=1 X=1
@@ -35961,7 +35961,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, true),
-        0x5B: new opcode_functions(opcode_matrix[0x5B],
+        0x5B: new WDC_opcode_functions(WDC_opcode_matrix[0x5B],
             function(regs, pins) { // TCD i
                 switch(regs.TCU) {
                         // TCD i E=0 M=1 X=1
@@ -35984,7 +35984,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x5C: new opcode_functions(opcode_matrix[0x5C],
+        0x5C: new WDC_opcode_functions(WDC_opcode_matrix[0x5C],
             function(regs, pins) { // JMP al
                 switch(regs.TCU) {
                         // JMP al E=0 M=1 X=1
@@ -36011,7 +36011,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x5D: new opcode_functions(opcode_matrix[0x5D],
+        0x5D: new WDC_opcode_functions(WDC_opcode_matrix[0x5D],
             function(regs, pins) { // EOR a,x
                 switch(regs.TCU) {
                         // EOR a,x E=0 M=1 X=1
@@ -36057,7 +36057,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x5E: new opcode_functions(opcode_matrix[0x5E],
+        0x5E: new WDC_opcode_functions(WDC_opcode_matrix[0x5E],
             function(regs, pins) { // LSR a,x
                 switch(regs.TCU) {
                         // LSR a,x E=0 M=1 X=1
@@ -36105,7 +36105,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x5F: new opcode_functions(opcode_matrix[0x5F],
+        0x5F: new WDC_opcode_functions(WDC_opcode_matrix[0x5F],
             function(regs, pins) { // EOR al,x
                 switch(regs.TCU) {
                         // EOR al,x E=0 M=1 X=1
@@ -36143,7 +36143,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x60: new opcode_functions(opcode_matrix[0x60],
+        0x60: new WDC_opcode_functions(WDC_opcode_matrix[0x60],
             function(regs, pins) { // RTS s
                 switch(regs.TCU) {
                         // RTS s E=0 M=1 X=1
@@ -36179,7 +36179,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x61: new opcode_functions(opcode_matrix[0x61],
+        0x61: new WDC_opcode_functions(WDC_opcode_matrix[0x61],
             function(regs, pins) { // ADC (d,x)
                 switch(regs.TCU) {
                         // ADC (d,x) E=0 M=1 X=1
@@ -36238,7 +36238,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x62: new opcode_functions(opcode_matrix[0x62],
+        0x62: new WDC_opcode_functions(WDC_opcode_matrix[0x62],
             function(regs, pins) { // PER s
                 switch(regs.TCU) {
                         // PER s E=0 M=1 X=1
@@ -36276,7 +36276,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x63: new opcode_functions(opcode_matrix[0x63],
+        0x63: new WDC_opcode_functions(WDC_opcode_matrix[0x63],
             function(regs, pins) { // ADC d,s
                 switch(regs.TCU) {
                         // ADC d,s E=0 M=1 X=1
@@ -36319,7 +36319,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x64: new opcode_functions(opcode_matrix[0x64],
+        0x64: new WDC_opcode_functions(WDC_opcode_matrix[0x64],
             function(regs, pins) { // STZ d
                 switch(regs.TCU) {
                         // STZ d E=0 M=1 X=1
@@ -36355,7 +36355,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x65: new opcode_functions(opcode_matrix[0x65],
+        0x65: new WDC_opcode_functions(WDC_opcode_matrix[0x65],
             function(regs, pins) { // ADC d
                 switch(regs.TCU) {
                         // ADC d E=0 M=1 X=1
@@ -36404,7 +36404,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x66: new opcode_functions(opcode_matrix[0x66],
+        0x66: new WDC_opcode_functions(WDC_opcode_matrix[0x66],
             function(regs, pins) { // ROR d
                 switch(regs.TCU) {
                         // ROR d E=0 M=1 X=1
@@ -36451,7 +36451,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x67: new opcode_functions(opcode_matrix[0x67],
+        0x67: new WDC_opcode_functions(WDC_opcode_matrix[0x67],
             function(regs, pins) { // ADC [d]
                 switch(regs.TCU) {
                         // ADC [d] E=0 M=1 X=1
@@ -36513,7 +36513,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x68: new opcode_functions(opcode_matrix[0x68],
+        0x68: new WDC_opcode_functions(WDC_opcode_matrix[0x68],
             function(regs, pins) { // PLA s
                 switch(regs.TCU) {
                         // PLA s E=0 M=1 X=1
@@ -36544,7 +36544,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, true, false),
-        0x69: new opcode_functions(opcode_matrix[0x69],
+        0x69: new WDC_opcode_functions(WDC_opcode_matrix[0x69],
             function(regs, pins) { // ADC #
                 switch(regs.TCU) {
                         // ADC # E=0 M=1 X=1
@@ -36579,7 +36579,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x6A: new opcode_functions(opcode_matrix[0x6A],
+        0x6A: new WDC_opcode_functions(WDC_opcode_matrix[0x6A],
             function(regs, pins) { // ROR A
                 switch(regs.TCU) {
                         // ROR A E=0 M=1 X=1
@@ -36606,7 +36606,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x6B: new opcode_functions(opcode_matrix[0x6B],
+        0x6B: new WDC_opcode_functions(WDC_opcode_matrix[0x6B],
             function(regs, pins) { // RTL s
                 switch(regs.TCU) {
                         // RTL s E=0 M=1 X=1
@@ -36644,7 +36644,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x6C: new opcode_functions(opcode_matrix[0x6C],
+        0x6C: new WDC_opcode_functions(WDC_opcode_matrix[0x6C],
             function(regs, pins) { // JMP (a)
                 switch(regs.TCU) {
                         // JMP (a) E=0 M=1 X=1
@@ -36674,7 +36674,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x6D: new opcode_functions(opcode_matrix[0x6D],
+        0x6D: new WDC_opcode_functions(WDC_opcode_matrix[0x6D],
             function(regs, pins) { // ADC a
                 switch(regs.TCU) {
                         // ADC a E=0 M=1 X=1
@@ -36717,7 +36717,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x6E: new opcode_functions(opcode_matrix[0x6E],
+        0x6E: new WDC_opcode_functions(WDC_opcode_matrix[0x6E],
             function(regs, pins) { // ROR a
                 switch(regs.TCU) {
                         // ROR a E=0 M=1 X=1
@@ -36760,7 +36760,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x6F: new opcode_functions(opcode_matrix[0x6F],
+        0x6F: new WDC_opcode_functions(WDC_opcode_matrix[0x6F],
             function(regs, pins) { // ADC al
                 switch(regs.TCU) {
                         // ADC al E=0 M=1 X=1
@@ -36808,7 +36808,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x70: new opcode_functions(opcode_matrix[0x70],
+        0x70: new WDC_opcode_functions(WDC_opcode_matrix[0x70],
             function(regs, pins) { // BVS r
                 switch(regs.TCU) {
                         // BVS r E=0 M=1 X=1
@@ -36839,7 +36839,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x71: new opcode_functions(opcode_matrix[0x71],
+        0x71: new WDC_opcode_functions(WDC_opcode_matrix[0x71],
             function(regs, pins) { // ADC (d),y
                 switch(regs.TCU) {
                         // ADC (d),y E=0 M=1 X=1
@@ -36908,7 +36908,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x72: new opcode_functions(opcode_matrix[0x72],
+        0x72: new WDC_opcode_functions(WDC_opcode_matrix[0x72],
             function(regs, pins) { // ADC (d)
                 switch(regs.TCU) {
                         // ADC (d) E=0 M=1 X=1
@@ -36964,7 +36964,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x73: new opcode_functions(opcode_matrix[0x73],
+        0x73: new WDC_opcode_functions(WDC_opcode_matrix[0x73],
             function(regs, pins) { // ADC (d,s),y
                 switch(regs.TCU) {
                         // ADC (d,s),y E=0 M=1 X=1
@@ -37021,7 +37021,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x74: new opcode_functions(opcode_matrix[0x74],
+        0x74: new WDC_opcode_functions(WDC_opcode_matrix[0x74],
             function(regs, pins) { // STZ d,x
                 switch(regs.TCU) {
                         // STZ d,x E=0 M=1 X=1
@@ -37059,7 +37059,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x75: new opcode_functions(opcode_matrix[0x75],
+        0x75: new WDC_opcode_functions(WDC_opcode_matrix[0x75],
             function(regs, pins) { // ADC d,x
                 switch(regs.TCU) {
                         // ADC d,x E=0 M=1 X=1
@@ -37110,7 +37110,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x76: new opcode_functions(opcode_matrix[0x76],
+        0x76: new WDC_opcode_functions(WDC_opcode_matrix[0x76],
             function(regs, pins) { // ROR d,x
                 switch(regs.TCU) {
                         // ROR d,x E=0 M=1 X=1
@@ -37159,7 +37159,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x77: new opcode_functions(opcode_matrix[0x77],
+        0x77: new WDC_opcode_functions(WDC_opcode_matrix[0x77],
             function(regs, pins) { // ADC [d],y
                 switch(regs.TCU) {
                         // ADC [d],y E=0 M=1 X=1
@@ -37221,7 +37221,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x78: new opcode_functions(opcode_matrix[0x78],
+        0x78: new WDC_opcode_functions(WDC_opcode_matrix[0x78],
             function(regs, pins) { // SEI i
                 switch(regs.TCU) {
                         // SEI i E=0 M=1 X=1
@@ -37242,7 +37242,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x79: new opcode_functions(opcode_matrix[0x79],
+        0x79: new WDC_opcode_functions(WDC_opcode_matrix[0x79],
             function(regs, pins) { // ADC a,y
                 switch(regs.TCU) {
                         // ADC a,y E=0 M=1 X=1
@@ -37299,7 +37299,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x7A: new opcode_functions(opcode_matrix[0x7A],
+        0x7A: new WDC_opcode_functions(WDC_opcode_matrix[0x7A],
             function(regs, pins) { // PLY s
                 switch(regs.TCU) {
                         // PLY s E=0 M=1 X=1
@@ -37330,7 +37330,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, true),
-        0x7B: new opcode_functions(opcode_matrix[0x7B],
+        0x7B: new WDC_opcode_functions(WDC_opcode_matrix[0x7B],
             function(regs, pins) { // TDC i
                 switch(regs.TCU) {
                         // TDC i E=0 M=1 X=1
@@ -37353,7 +37353,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x7C: new opcode_functions(opcode_matrix[0x7C],
+        0x7C: new WDC_opcode_functions(WDC_opcode_matrix[0x7C],
             function(regs, pins) { // JMP (a,x)
                 switch(regs.TCU) {
                         // JMP (a,x) E=0 M=1 X=1
@@ -37389,7 +37389,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x7D: new opcode_functions(opcode_matrix[0x7D],
+        0x7D: new WDC_opcode_functions(WDC_opcode_matrix[0x7D],
             function(regs, pins) { // ADC a,x
                 switch(regs.TCU) {
                         // ADC a,x E=0 M=1 X=1
@@ -37446,7 +37446,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x7E: new opcode_functions(opcode_matrix[0x7E],
+        0x7E: new WDC_opcode_functions(WDC_opcode_matrix[0x7E],
             function(regs, pins) { // ROR a,x
                 switch(regs.TCU) {
                         // ROR a,x E=0 M=1 X=1
@@ -37495,7 +37495,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x7F: new opcode_functions(opcode_matrix[0x7F],
+        0x7F: new WDC_opcode_functions(WDC_opcode_matrix[0x7F],
             function(regs, pins) { // ADC al,x
                 switch(regs.TCU) {
                         // ADC al,x E=0 M=1 X=1
@@ -37544,7 +37544,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x80: new opcode_functions(opcode_matrix[0x80],
+        0x80: new WDC_opcode_functions(WDC_opcode_matrix[0x80],
             function(regs, pins) { // BRA r
                 switch(regs.TCU) {
                         // BRA r E=0 M=1 X=1
@@ -37575,7 +37575,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x81: new opcode_functions(opcode_matrix[0x81],
+        0x81: new WDC_opcode_functions(WDC_opcode_matrix[0x81],
             function(regs, pins) { // STA (d,x)
                 switch(regs.TCU) {
                         // STA (d,x) E=0 M=1 X=1
@@ -37623,7 +37623,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x82: new opcode_functions(opcode_matrix[0x82],
+        0x82: new WDC_opcode_functions(WDC_opcode_matrix[0x82],
             function(regs, pins) { // BRL rl
                 switch(regs.TCU) {
                         // BRL rl E=0 M=1 X=1
@@ -37651,7 +37651,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x83: new opcode_functions(opcode_matrix[0x83],
+        0x83: new WDC_opcode_functions(WDC_opcode_matrix[0x83],
             function(regs, pins) { // STA d,s
                 switch(regs.TCU) {
                         // STA d,s E=0 M=1 X=1
@@ -37682,7 +37682,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x84: new opcode_functions(opcode_matrix[0x84],
+        0x84: new WDC_opcode_functions(WDC_opcode_matrix[0x84],
             function(regs, pins) { // STY d
                 switch(regs.TCU) {
                         // STY d E=0 M=1 X=1
@@ -37718,7 +37718,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x85: new opcode_functions(opcode_matrix[0x85],
+        0x85: new WDC_opcode_functions(WDC_opcode_matrix[0x85],
             function(regs, pins) { // STA d
                 switch(regs.TCU) {
                         // STA d E=0 M=1 X=1
@@ -37755,7 +37755,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x86: new opcode_functions(opcode_matrix[0x86],
+        0x86: new WDC_opcode_functions(WDC_opcode_matrix[0x86],
             function(regs, pins) { // STX d
                 switch(regs.TCU) {
                         // STX d E=0 M=1 X=1
@@ -37791,7 +37791,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x87: new opcode_functions(opcode_matrix[0x87],
+        0x87: new WDC_opcode_functions(WDC_opcode_matrix[0x87],
             function(regs, pins) { // STA [d]
                 switch(regs.TCU) {
                         // STA [d] E=0 M=1 X=1
@@ -37842,7 +37842,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x88: new opcode_functions(opcode_matrix[0x88],
+        0x88: new WDC_opcode_functions(WDC_opcode_matrix[0x88],
             function(regs, pins) { // DEY i
                 switch(regs.TCU) {
                         // DEY i E=0 M=1 X=1
@@ -37865,7 +37865,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x89: new opcode_functions(opcode_matrix[0x89],
+        0x89: new WDC_opcode_functions(WDC_opcode_matrix[0x89],
             function(regs, pins) { // BIT #
                 switch(regs.TCU) {
                         // BIT # E=0 M=1 X=1
@@ -37886,7 +37886,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x8A: new opcode_functions(opcode_matrix[0x8A],
+        0x8A: new WDC_opcode_functions(WDC_opcode_matrix[0x8A],
             function(regs, pins) { // TXA i
                 switch(regs.TCU) {
                         // TXA i E=0 M=1 X=1
@@ -37909,7 +37909,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x8B: new opcode_functions(opcode_matrix[0x8B],
+        0x8B: new WDC_opcode_functions(WDC_opcode_matrix[0x8B],
             function(regs, pins) { // PHB s
                 switch(regs.TCU) {
                         // PHB s E=0 M=1 X=1
@@ -37937,7 +37937,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x8C: new opcode_functions(opcode_matrix[0x8C],
+        0x8C: new WDC_opcode_functions(WDC_opcode_matrix[0x8C],
             function(regs, pins) { // STY a
                 switch(regs.TCU) {
                         // STY a E=0 M=1 X=1
@@ -37968,7 +37968,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x8D: new opcode_functions(opcode_matrix[0x8D],
+        0x8D: new WDC_opcode_functions(WDC_opcode_matrix[0x8D],
             function(regs, pins) { // STA a
                 switch(regs.TCU) {
                         // STA a E=0 M=1 X=1
@@ -38000,7 +38000,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x8E: new opcode_functions(opcode_matrix[0x8E],
+        0x8E: new WDC_opcode_functions(WDC_opcode_matrix[0x8E],
             function(regs, pins) { // STX a
                 switch(regs.TCU) {
                         // STX a E=0 M=1 X=1
@@ -38031,7 +38031,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x8F: new opcode_functions(opcode_matrix[0x8F],
+        0x8F: new WDC_opcode_functions(WDC_opcode_matrix[0x8F],
             function(regs, pins) { // STA al
                 switch(regs.TCU) {
                         // STA al E=0 M=1 X=1
@@ -38068,7 +38068,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x90: new opcode_functions(opcode_matrix[0x90],
+        0x90: new WDC_opcode_functions(WDC_opcode_matrix[0x90],
             function(regs, pins) { // BCC r
                 switch(regs.TCU) {
                         // BCC r E=0 M=1 X=1
@@ -38099,7 +38099,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x91: new opcode_functions(opcode_matrix[0x91],
+        0x91: new WDC_opcode_functions(WDC_opcode_matrix[0x91],
             function(regs, pins) { // STA (d),y
                 switch(regs.TCU) {
                         // STA (d),y E=0 M=1 X=1
@@ -38155,7 +38155,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x92: new opcode_functions(opcode_matrix[0x92],
+        0x92: new WDC_opcode_functions(WDC_opcode_matrix[0x92],
             function(regs, pins) { // STA (d)
                 switch(regs.TCU) {
                         // STA (d) E=0 M=1 X=1
@@ -38200,7 +38200,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x93: new opcode_functions(opcode_matrix[0x93],
+        0x93: new WDC_opcode_functions(WDC_opcode_matrix[0x93],
             function(regs, pins) { // STA (d,s),y
                 switch(regs.TCU) {
                         // STA (d,s),y E=0 M=1 X=1
@@ -38245,7 +38245,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x94: new opcode_functions(opcode_matrix[0x94],
+        0x94: new WDC_opcode_functions(WDC_opcode_matrix[0x94],
             function(regs, pins) { // STY d,x
                 switch(regs.TCU) {
                         // STY d,x E=0 M=1 X=1
@@ -38283,7 +38283,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x95: new opcode_functions(opcode_matrix[0x95],
+        0x95: new WDC_opcode_functions(WDC_opcode_matrix[0x95],
             function(regs, pins) { // STA d,x
                 switch(regs.TCU) {
                         // STA d,x E=0 M=1 X=1
@@ -38322,7 +38322,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x96: new opcode_functions(opcode_matrix[0x96],
+        0x96: new WDC_opcode_functions(WDC_opcode_matrix[0x96],
             function(regs, pins) { // STX d,y
                 switch(regs.TCU) {
                         // STX d,y E=0 M=1 X=1
@@ -38360,7 +38360,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x97: new opcode_functions(opcode_matrix[0x97],
+        0x97: new WDC_opcode_functions(WDC_opcode_matrix[0x97],
             function(regs, pins) { // STA [d],y
                 switch(regs.TCU) {
                         // STA [d],y E=0 M=1 X=1
@@ -38411,7 +38411,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x98: new opcode_functions(opcode_matrix[0x98],
+        0x98: new WDC_opcode_functions(WDC_opcode_matrix[0x98],
             function(regs, pins) { // TYA i
                 switch(regs.TCU) {
                         // TYA i E=0 M=1 X=1
@@ -38434,7 +38434,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x99: new opcode_functions(opcode_matrix[0x99],
+        0x99: new WDC_opcode_functions(WDC_opcode_matrix[0x99],
             function(regs, pins) { // STA a,y
                 switch(regs.TCU) {
                         // STA a,y E=0 M=1 X=1
@@ -38477,7 +38477,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x9A: new opcode_functions(opcode_matrix[0x9A],
+        0x9A: new WDC_opcode_functions(WDC_opcode_matrix[0x9A],
             function(regs, pins) { // TXS i
                 switch(regs.TCU) {
                         // TXS i E=0 M=1 X=1
@@ -38498,7 +38498,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x9B: new opcode_functions(opcode_matrix[0x9B],
+        0x9B: new WDC_opcode_functions(WDC_opcode_matrix[0x9B],
             function(regs, pins) { // TXY i
                 switch(regs.TCU) {
                         // TXY i E=0 M=1 X=1
@@ -38521,7 +38521,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x9C: new opcode_functions(opcode_matrix[0x9C],
+        0x9C: new WDC_opcode_functions(WDC_opcode_matrix[0x9C],
             function(regs, pins) { // STZ a
                 switch(regs.TCU) {
                         // STZ a E=0 M=1 X=1
@@ -38552,7 +38552,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x9D: new opcode_functions(opcode_matrix[0x9D],
+        0x9D: new WDC_opcode_functions(WDC_opcode_matrix[0x9D],
             function(regs, pins) { // STA a,x
                 switch(regs.TCU) {
                         // STA a,x E=0 M=1 X=1
@@ -38595,7 +38595,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x9E: new opcode_functions(opcode_matrix[0x9E],
+        0x9E: new WDC_opcode_functions(WDC_opcode_matrix[0x9E],
             function(regs, pins) { // STZ a,x
                 switch(regs.TCU) {
                         // STZ a,x E=0 M=1 X=1
@@ -38637,7 +38637,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x9F: new opcode_functions(opcode_matrix[0x9F],
+        0x9F: new WDC_opcode_functions(WDC_opcode_matrix[0x9F],
             function(regs, pins) { // STA al,x
                 switch(regs.TCU) {
                         // STA al,x E=0 M=1 X=1
@@ -38675,7 +38675,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xA0: new opcode_functions(opcode_matrix[0xA0],
+        0xA0: new WDC_opcode_functions(WDC_opcode_matrix[0xA0],
             function(regs, pins) { // LDY #
                 switch(regs.TCU) {
                         // LDY # E=0 M=1 X=1
@@ -38698,7 +38698,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xA1: new opcode_functions(opcode_matrix[0xA1],
+        0xA1: new WDC_opcode_functions(WDC_opcode_matrix[0xA1],
             function(regs, pins) { // LDA (d,x)
                 switch(regs.TCU) {
                         // LDA (d,x) E=0 M=1 X=1
@@ -38745,7 +38745,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xA2: new opcode_functions(opcode_matrix[0xA2],
+        0xA2: new WDC_opcode_functions(WDC_opcode_matrix[0xA2],
             function(regs, pins) { // LDX #
                 switch(regs.TCU) {
                         // LDX # E=0 M=1 X=1
@@ -38768,7 +38768,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xA3: new opcode_functions(opcode_matrix[0xA3],
+        0xA3: new WDC_opcode_functions(WDC_opcode_matrix[0xA3],
             function(regs, pins) { // LDA d,s
                 switch(regs.TCU) {
                         // LDA d,s E=0 M=1 X=1
@@ -38799,7 +38799,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xA4: new opcode_functions(opcode_matrix[0xA4],
+        0xA4: new WDC_opcode_functions(WDC_opcode_matrix[0xA4],
             function(regs, pins) { // LDY d
                 switch(regs.TCU) {
                         // LDY d E=0 M=1 X=1
@@ -38836,7 +38836,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xA5: new opcode_functions(opcode_matrix[0xA5],
+        0xA5: new WDC_opcode_functions(WDC_opcode_matrix[0xA5],
             function(regs, pins) { // LDA d
                 switch(regs.TCU) {
                         // LDA d E=0 M=1 X=1
@@ -38873,7 +38873,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xA6: new opcode_functions(opcode_matrix[0xA6],
+        0xA6: new WDC_opcode_functions(WDC_opcode_matrix[0xA6],
             function(regs, pins) { // LDX d
                 switch(regs.TCU) {
                         // LDX d E=0 M=1 X=1
@@ -38910,7 +38910,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xA7: new opcode_functions(opcode_matrix[0xA7],
+        0xA7: new WDC_opcode_functions(WDC_opcode_matrix[0xA7],
             function(regs, pins) { // LDA [d]
                 switch(regs.TCU) {
                         // LDA [d] E=0 M=1 X=1
@@ -38960,7 +38960,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xA8: new opcode_functions(opcode_matrix[0xA8],
+        0xA8: new WDC_opcode_functions(WDC_opcode_matrix[0xA8],
             function(regs, pins) { // TAY i
                 switch(regs.TCU) {
                         // TAY i E=0 M=1 X=1
@@ -38983,7 +38983,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xA9: new opcode_functions(opcode_matrix[0xA9],
+        0xA9: new WDC_opcode_functions(WDC_opcode_matrix[0xA9],
             function(regs, pins) { // LDA #
                 switch(regs.TCU) {
                         // LDA # E=0 M=1 X=1
@@ -39006,7 +39006,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xAA: new opcode_functions(opcode_matrix[0xAA],
+        0xAA: new WDC_opcode_functions(WDC_opcode_matrix[0xAA],
             function(regs, pins) { // TAX i
                 switch(regs.TCU) {
                         // TAX i E=0 M=1 X=1
@@ -39029,7 +39029,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xAB: new opcode_functions(opcode_matrix[0xAB],
+        0xAB: new WDC_opcode_functions(WDC_opcode_matrix[0xAB],
             function(regs, pins) { // PLB s
                 switch(regs.TCU) {
                         // PLB s E=0 M=1 X=1
@@ -39060,7 +39060,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xAC: new opcode_functions(opcode_matrix[0xAC],
+        0xAC: new WDC_opcode_functions(WDC_opcode_matrix[0xAC],
             function(regs, pins) { // LDY a
                 switch(regs.TCU) {
                         // LDY a E=0 M=1 X=1
@@ -39091,7 +39091,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xAD: new opcode_functions(opcode_matrix[0xAD],
+        0xAD: new WDC_opcode_functions(WDC_opcode_matrix[0xAD],
             function(regs, pins) { // LDA a
                 switch(regs.TCU) {
                         // LDA a E=0 M=1 X=1
@@ -39122,7 +39122,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xAE: new opcode_functions(opcode_matrix[0xAE],
+        0xAE: new WDC_opcode_functions(WDC_opcode_matrix[0xAE],
             function(regs, pins) { // LDX a
                 switch(regs.TCU) {
                         // LDX a E=0 M=1 X=1
@@ -39153,7 +39153,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xAF: new opcode_functions(opcode_matrix[0xAF],
+        0xAF: new WDC_opcode_functions(WDC_opcode_matrix[0xAF],
             function(regs, pins) { // LDA al
                 switch(regs.TCU) {
                         // LDA al E=0 M=1 X=1
@@ -39189,7 +39189,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB0: new opcode_functions(opcode_matrix[0xB0],
+        0xB0: new WDC_opcode_functions(WDC_opcode_matrix[0xB0],
             function(regs, pins) { // BCS r
                 switch(regs.TCU) {
                         // BCS r E=0 M=1 X=1
@@ -39220,7 +39220,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xB1: new opcode_functions(opcode_matrix[0xB1],
+        0xB1: new WDC_opcode_functions(WDC_opcode_matrix[0xB1],
             function(regs, pins) { // LDA (d),y
                 switch(regs.TCU) {
                         // LDA (d),y E=0 M=1 X=1
@@ -39277,7 +39277,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB2: new opcode_functions(opcode_matrix[0xB2],
+        0xB2: new WDC_opcode_functions(WDC_opcode_matrix[0xB2],
             function(regs, pins) { // LDA (d)
                 switch(regs.TCU) {
                         // LDA (d) E=0 M=1 X=1
@@ -39321,7 +39321,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB3: new opcode_functions(opcode_matrix[0xB3],
+        0xB3: new WDC_opcode_functions(WDC_opcode_matrix[0xB3],
             function(regs, pins) { // LDA (d,s),y
                 switch(regs.TCU) {
                         // LDA (d,s),y E=0 M=1 X=1
@@ -39366,7 +39366,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB4: new opcode_functions(opcode_matrix[0xB4],
+        0xB4: new WDC_opcode_functions(WDC_opcode_matrix[0xB4],
             function(regs, pins) { // LDY d,x
                 switch(regs.TCU) {
                         // LDY d,x E=0 M=1 X=1
@@ -39405,7 +39405,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xB5: new opcode_functions(opcode_matrix[0xB5],
+        0xB5: new WDC_opcode_functions(WDC_opcode_matrix[0xB5],
             function(regs, pins) { // LDA d,x
                 switch(regs.TCU) {
                         // LDA d,x E=0 M=1 X=1
@@ -39444,7 +39444,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB6: new opcode_functions(opcode_matrix[0xB6],
+        0xB6: new WDC_opcode_functions(WDC_opcode_matrix[0xB6],
             function(regs, pins) { // LDX d,y
                 switch(regs.TCU) {
                         // LDX d,y E=0 M=1 X=1
@@ -39483,7 +39483,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xB7: new opcode_functions(opcode_matrix[0xB7],
+        0xB7: new WDC_opcode_functions(WDC_opcode_matrix[0xB7],
             function(regs, pins) { // LDA [d],y
                 switch(regs.TCU) {
                         // LDA [d],y E=0 M=1 X=1
@@ -39533,7 +39533,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB8: new opcode_functions(opcode_matrix[0xB8],
+        0xB8: new WDC_opcode_functions(WDC_opcode_matrix[0xB8],
             function(regs, pins) { // CLV i
                 switch(regs.TCU) {
                         // CLV i E=0 M=1 X=1
@@ -39554,7 +39554,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xB9: new opcode_functions(opcode_matrix[0xB9],
+        0xB9: new WDC_opcode_functions(WDC_opcode_matrix[0xB9],
             function(regs, pins) { // LDA a,y
                 switch(regs.TCU) {
                         // LDA a,y E=0 M=1 X=1
@@ -39599,7 +39599,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xBA: new opcode_functions(opcode_matrix[0xBA],
+        0xBA: new WDC_opcode_functions(WDC_opcode_matrix[0xBA],
             function(regs, pins) { // TSX i
                 switch(regs.TCU) {
                         // TSX i E=0 M=1 X=1
@@ -39622,7 +39622,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xBB: new opcode_functions(opcode_matrix[0xBB],
+        0xBB: new WDC_opcode_functions(WDC_opcode_matrix[0xBB],
             function(regs, pins) { // TYX i
                 switch(regs.TCU) {
                         // TYX i E=0 M=1 X=1
@@ -39645,7 +39645,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xBC: new opcode_functions(opcode_matrix[0xBC],
+        0xBC: new WDC_opcode_functions(WDC_opcode_matrix[0xBC],
             function(regs, pins) { // LDY a,x
                 switch(regs.TCU) {
                         // LDY a,x E=0 M=1 X=1
@@ -39690,7 +39690,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xBD: new opcode_functions(opcode_matrix[0xBD],
+        0xBD: new WDC_opcode_functions(WDC_opcode_matrix[0xBD],
             function(regs, pins) { // LDA a,x
                 switch(regs.TCU) {
                         // LDA a,x E=0 M=1 X=1
@@ -39735,7 +39735,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xBE: new opcode_functions(opcode_matrix[0xBE],
+        0xBE: new WDC_opcode_functions(WDC_opcode_matrix[0xBE],
             function(regs, pins) { // LDX a,y
                 switch(regs.TCU) {
                         // LDX a,y E=0 M=1 X=1
@@ -39780,7 +39780,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xBF: new opcode_functions(opcode_matrix[0xBF],
+        0xBF: new WDC_opcode_functions(WDC_opcode_matrix[0xBF],
             function(regs, pins) { // LDA al,x
                 switch(regs.TCU) {
                         // LDA al,x E=0 M=1 X=1
@@ -39817,7 +39817,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC0: new opcode_functions(opcode_matrix[0xC0],
+        0xC0: new WDC_opcode_functions(WDC_opcode_matrix[0xC0],
             function(regs, pins) { // CPY #
                 switch(regs.TCU) {
                         // CPY # E=0 M=1 X=1
@@ -39841,7 +39841,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xC1: new opcode_functions(opcode_matrix[0xC1],
+        0xC1: new WDC_opcode_functions(WDC_opcode_matrix[0xC1],
             function(regs, pins) { // CMP (d,x)
                 switch(regs.TCU) {
                         // CMP (d,x) E=0 M=1 X=1
@@ -39889,7 +39889,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC2: new opcode_functions(opcode_matrix[0xC2],
+        0xC2: new WDC_opcode_functions(WDC_opcode_matrix[0xC2],
             function(regs, pins) { // REP #
                 switch(regs.TCU) {
                         // REP # E=0 M=1 X=1
@@ -39914,7 +39914,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xC3: new opcode_functions(opcode_matrix[0xC3],
+        0xC3: new WDC_opcode_functions(WDC_opcode_matrix[0xC3],
             function(regs, pins) { // CMP d,s
                 switch(regs.TCU) {
                         // CMP d,s E=0 M=1 X=1
@@ -39946,7 +39946,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC4: new opcode_functions(opcode_matrix[0xC4],
+        0xC4: new WDC_opcode_functions(WDC_opcode_matrix[0xC4],
             function(regs, pins) { // CPY d
                 switch(regs.TCU) {
                         // CPY d E=0 M=1 X=1
@@ -39984,7 +39984,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xC5: new opcode_functions(opcode_matrix[0xC5],
+        0xC5: new WDC_opcode_functions(WDC_opcode_matrix[0xC5],
             function(regs, pins) { // CMP d
                 switch(regs.TCU) {
                         // CMP d E=0 M=1 X=1
@@ -40022,7 +40022,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC6: new opcode_functions(opcode_matrix[0xC6],
+        0xC6: new WDC_opcode_functions(WDC_opcode_matrix[0xC6],
             function(regs, pins) { // DEC d
                 switch(regs.TCU) {
                         // DEC d E=0 M=1 X=1
@@ -40067,7 +40067,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC7: new opcode_functions(opcode_matrix[0xC7],
+        0xC7: new WDC_opcode_functions(WDC_opcode_matrix[0xC7],
             function(regs, pins) { // CMP [d]
                 switch(regs.TCU) {
                         // CMP [d] E=0 M=1 X=1
@@ -40118,7 +40118,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC8: new opcode_functions(opcode_matrix[0xC8],
+        0xC8: new WDC_opcode_functions(WDC_opcode_matrix[0xC8],
             function(regs, pins) { // INY i
                 switch(regs.TCU) {
                         // INY i E=0 M=1 X=1
@@ -40141,7 +40141,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xC9: new opcode_functions(opcode_matrix[0xC9],
+        0xC9: new WDC_opcode_functions(WDC_opcode_matrix[0xC9],
             function(regs, pins) { // CMP #
                 switch(regs.TCU) {
                         // CMP # E=0 M=1 X=1
@@ -40165,7 +40165,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xCA: new opcode_functions(opcode_matrix[0xCA],
+        0xCA: new WDC_opcode_functions(WDC_opcode_matrix[0xCA],
             function(regs, pins) { // DEX i
                 switch(regs.TCU) {
                         // DEX i E=0 M=1 X=1
@@ -40188,7 +40188,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xCB: new opcode_functions(opcode_matrix[0xCB],
+        0xCB: new WDC_opcode_functions(WDC_opcode_matrix[0xCB],
             function(regs, pins) { // WAI i
                 switch(regs.TCU) {
                         // WAI i E=0 M=1 X=1
@@ -40210,7 +40210,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xCC: new opcode_functions(opcode_matrix[0xCC],
+        0xCC: new WDC_opcode_functions(WDC_opcode_matrix[0xCC],
             function(regs, pins) { // CPY a
                 switch(regs.TCU) {
                         // CPY a E=0 M=1 X=1
@@ -40242,7 +40242,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xCD: new opcode_functions(opcode_matrix[0xCD],
+        0xCD: new WDC_opcode_functions(WDC_opcode_matrix[0xCD],
             function(regs, pins) { // CMP a
                 switch(regs.TCU) {
                         // CMP a E=0 M=1 X=1
@@ -40274,7 +40274,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xCE: new opcode_functions(opcode_matrix[0xCE],
+        0xCE: new WDC_opcode_functions(WDC_opcode_matrix[0xCE],
             function(regs, pins) { // DEC a
                 switch(regs.TCU) {
                         // DEC a E=0 M=1 X=1
@@ -40315,7 +40315,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xCF: new opcode_functions(opcode_matrix[0xCF],
+        0xCF: new WDC_opcode_functions(WDC_opcode_matrix[0xCF],
             function(regs, pins) { // CMP al
                 switch(regs.TCU) {
                         // CMP al E=0 M=1 X=1
@@ -40352,7 +40352,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD0: new opcode_functions(opcode_matrix[0xD0],
+        0xD0: new WDC_opcode_functions(WDC_opcode_matrix[0xD0],
             function(regs, pins) { // BNE r
                 switch(regs.TCU) {
                         // BNE r E=0 M=1 X=1
@@ -40383,7 +40383,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xD1: new opcode_functions(opcode_matrix[0xD1],
+        0xD1: new WDC_opcode_functions(WDC_opcode_matrix[0xD1],
             function(regs, pins) { // CMP (d),y
                 switch(regs.TCU) {
                         // CMP (d),y E=0 M=1 X=1
@@ -40441,7 +40441,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD2: new opcode_functions(opcode_matrix[0xD2],
+        0xD2: new WDC_opcode_functions(WDC_opcode_matrix[0xD2],
             function(regs, pins) { // CMP (d)
                 switch(regs.TCU) {
                         // CMP (d) E=0 M=1 X=1
@@ -40486,7 +40486,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD3: new opcode_functions(opcode_matrix[0xD3],
+        0xD3: new WDC_opcode_functions(WDC_opcode_matrix[0xD3],
             function(regs, pins) { // CMP (d,s),y
                 switch(regs.TCU) {
                         // CMP (d,s),y E=0 M=1 X=1
@@ -40532,7 +40532,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD4: new opcode_functions(opcode_matrix[0xD4],
+        0xD4: new WDC_opcode_functions(WDC_opcode_matrix[0xD4],
             function(regs, pins) { // PEI s
                 switch(regs.TCU) {
                         // PEI s E=0 M=1 X=1
@@ -40578,7 +40578,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0xD5: new opcode_functions(opcode_matrix[0xD5],
+        0xD5: new WDC_opcode_functions(WDC_opcode_matrix[0xD5],
             function(regs, pins) { // CMP d,x
                 switch(regs.TCU) {
                         // CMP d,x E=0 M=1 X=1
@@ -40618,7 +40618,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD6: new opcode_functions(opcode_matrix[0xD6],
+        0xD6: new WDC_opcode_functions(WDC_opcode_matrix[0xD6],
             function(regs, pins) { // DEC d,x
                 switch(regs.TCU) {
                         // DEC d,x E=0 M=1 X=1
@@ -40665,7 +40665,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD7: new opcode_functions(opcode_matrix[0xD7],
+        0xD7: new WDC_opcode_functions(WDC_opcode_matrix[0xD7],
             function(regs, pins) { // CMP [d],y
                 switch(regs.TCU) {
                         // CMP [d],y E=0 M=1 X=1
@@ -40716,7 +40716,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD8: new opcode_functions(opcode_matrix[0xD8],
+        0xD8: new WDC_opcode_functions(WDC_opcode_matrix[0xD8],
             function(regs, pins) { // CLD i
                 switch(regs.TCU) {
                         // CLD i E=0 M=1 X=1
@@ -40737,7 +40737,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xD9: new opcode_functions(opcode_matrix[0xD9],
+        0xD9: new WDC_opcode_functions(WDC_opcode_matrix[0xD9],
             function(regs, pins) { // CMP a,y
                 switch(regs.TCU) {
                         // CMP a,y E=0 M=1 X=1
@@ -40783,7 +40783,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xDA: new opcode_functions(opcode_matrix[0xDA],
+        0xDA: new WDC_opcode_functions(WDC_opcode_matrix[0xDA],
             function(regs, pins) { // PHX s
                 switch(regs.TCU) {
                         // PHX s E=0 M=1 X=1
@@ -40811,7 +40811,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, true),
-        0xDB: new opcode_functions(opcode_matrix[0xDB],
+        0xDB: new WDC_opcode_functions(WDC_opcode_matrix[0xDB],
             function(regs, pins) { // STP i
                 switch(regs.TCU) {
                         // STP i E=0 M=1 X=1
@@ -40829,7 +40829,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xDC: new opcode_functions(opcode_matrix[0xDC],
+        0xDC: new WDC_opcode_functions(WDC_opcode_matrix[0xDC],
             function(regs, pins) { // JML (a)
                 switch(regs.TCU) {
                         // JML (a) E=0 M=1 X=1
@@ -40863,7 +40863,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xDD: new opcode_functions(opcode_matrix[0xDD],
+        0xDD: new WDC_opcode_functions(WDC_opcode_matrix[0xDD],
             function(regs, pins) { // CMP a,x
                 switch(regs.TCU) {
                         // CMP a,x E=0 M=1 X=1
@@ -40909,7 +40909,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xDE: new opcode_functions(opcode_matrix[0xDE],
+        0xDE: new WDC_opcode_functions(WDC_opcode_matrix[0xDE],
             function(regs, pins) { // DEC a,x
                 switch(regs.TCU) {
                         // DEC a,x E=0 M=1 X=1
@@ -40956,7 +40956,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xDF: new opcode_functions(opcode_matrix[0xDF],
+        0xDF: new WDC_opcode_functions(WDC_opcode_matrix[0xDF],
             function(regs, pins) { // CMP al,x
                 switch(regs.TCU) {
                         // CMP al,x E=0 M=1 X=1
@@ -40994,7 +40994,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE0: new opcode_functions(opcode_matrix[0xE0],
+        0xE0: new WDC_opcode_functions(WDC_opcode_matrix[0xE0],
             function(regs, pins) { // CPX #
                 switch(regs.TCU) {
                         // CPX # E=0 M=1 X=1
@@ -41018,7 +41018,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xE1: new opcode_functions(opcode_matrix[0xE1],
+        0xE1: new WDC_opcode_functions(WDC_opcode_matrix[0xE1],
             function(regs, pins) { // SBC (d,x)
                 switch(regs.TCU) {
                         // SBC (d,x) E=0 M=1 X=1
@@ -41077,7 +41077,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE2: new opcode_functions(opcode_matrix[0xE2],
+        0xE2: new WDC_opcode_functions(WDC_opcode_matrix[0xE2],
             function(regs, pins) { // SEP #
                 switch(regs.TCU) {
                         // SEP # E=0 M=1 X=1
@@ -41103,7 +41103,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xE3: new opcode_functions(opcode_matrix[0xE3],
+        0xE3: new WDC_opcode_functions(WDC_opcode_matrix[0xE3],
             function(regs, pins) { // SBC d,s
                 switch(regs.TCU) {
                         // SBC d,s E=0 M=1 X=1
@@ -41146,7 +41146,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE4: new opcode_functions(opcode_matrix[0xE4],
+        0xE4: new WDC_opcode_functions(WDC_opcode_matrix[0xE4],
             function(regs, pins) { // CPX d
                 switch(regs.TCU) {
                         // CPX d E=0 M=1 X=1
@@ -41184,7 +41184,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xE5: new opcode_functions(opcode_matrix[0xE5],
+        0xE5: new WDC_opcode_functions(WDC_opcode_matrix[0xE5],
             function(regs, pins) { // SBC d
                 switch(regs.TCU) {
                         // SBC d E=0 M=1 X=1
@@ -41233,7 +41233,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE6: new opcode_functions(opcode_matrix[0xE6],
+        0xE6: new WDC_opcode_functions(WDC_opcode_matrix[0xE6],
             function(regs, pins) { // INC d
                 switch(regs.TCU) {
                         // INC d E=0 M=1 X=1
@@ -41278,7 +41278,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE7: new opcode_functions(opcode_matrix[0xE7],
+        0xE7: new WDC_opcode_functions(WDC_opcode_matrix[0xE7],
             function(regs, pins) { // SBC [d]
                 switch(regs.TCU) {
                         // SBC [d] E=0 M=1 X=1
@@ -41340,7 +41340,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE8: new opcode_functions(opcode_matrix[0xE8],
+        0xE8: new WDC_opcode_functions(WDC_opcode_matrix[0xE8],
             function(regs, pins) { // INX i
                 switch(regs.TCU) {
                         // INX i E=0 M=1 X=1
@@ -41363,7 +41363,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xE9: new opcode_functions(opcode_matrix[0xE9],
+        0xE9: new WDC_opcode_functions(WDC_opcode_matrix[0xE9],
             function(regs, pins) { // SBC #
                 switch(regs.TCU) {
                         // SBC # E=0 M=1 X=1
@@ -41398,7 +41398,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xEA: new opcode_functions(opcode_matrix[0xEA],
+        0xEA: new WDC_opcode_functions(WDC_opcode_matrix[0xEA],
             function(regs, pins) { // NOP i
                 switch(regs.TCU) {
                         // NOP i E=0 M=1 X=1
@@ -41418,7 +41418,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xEB: new opcode_functions(opcode_matrix[0xEB],
+        0xEB: new WDC_opcode_functions(WDC_opcode_matrix[0xEB],
             function(regs, pins) { // XBA i
                 switch(regs.TCU) {
                         // XBA i E=0 M=1 X=1
@@ -41443,7 +41443,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xEC: new opcode_functions(opcode_matrix[0xEC],
+        0xEC: new WDC_opcode_functions(WDC_opcode_matrix[0xEC],
             function(regs, pins) { // CPX a
                 switch(regs.TCU) {
                         // CPX a E=0 M=1 X=1
@@ -41475,7 +41475,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xED: new opcode_functions(opcode_matrix[0xED],
+        0xED: new WDC_opcode_functions(WDC_opcode_matrix[0xED],
             function(regs, pins) { // SBC a
                 switch(regs.TCU) {
                         // SBC a E=0 M=1 X=1
@@ -41518,7 +41518,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xEE: new opcode_functions(opcode_matrix[0xEE],
+        0xEE: new WDC_opcode_functions(WDC_opcode_matrix[0xEE],
             function(regs, pins) { // INC a
                 switch(regs.TCU) {
                         // INC a E=0 M=1 X=1
@@ -41559,7 +41559,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xEF: new opcode_functions(opcode_matrix[0xEF],
+        0xEF: new WDC_opcode_functions(WDC_opcode_matrix[0xEF],
             function(regs, pins) { // SBC al
                 switch(regs.TCU) {
                         // SBC al E=0 M=1 X=1
@@ -41607,7 +41607,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF0: new opcode_functions(opcode_matrix[0xF0],
+        0xF0: new WDC_opcode_functions(WDC_opcode_matrix[0xF0],
             function(regs, pins) { // BEQ r
                 switch(regs.TCU) {
                         // BEQ r E=0 M=1 X=1
@@ -41638,7 +41638,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xF1: new opcode_functions(opcode_matrix[0xF1],
+        0xF1: new WDC_opcode_functions(WDC_opcode_matrix[0xF1],
             function(regs, pins) { // SBC (d),y
                 switch(regs.TCU) {
                         // SBC (d),y E=0 M=1 X=1
@@ -41707,7 +41707,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF2: new opcode_functions(opcode_matrix[0xF2],
+        0xF2: new WDC_opcode_functions(WDC_opcode_matrix[0xF2],
             function(regs, pins) { // SBC (d)
                 switch(regs.TCU) {
                         // SBC (d) E=0 M=1 X=1
@@ -41763,7 +41763,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF3: new opcode_functions(opcode_matrix[0xF3],
+        0xF3: new WDC_opcode_functions(WDC_opcode_matrix[0xF3],
             function(regs, pins) { // SBC (d,s),y
                 switch(regs.TCU) {
                         // SBC (d,s),y E=0 M=1 X=1
@@ -41820,7 +41820,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF4: new opcode_functions(opcode_matrix[0xF4],
+        0xF4: new WDC_opcode_functions(WDC_opcode_matrix[0xF4],
             function(regs, pins) { // PEA s
                 switch(regs.TCU) {
                         // PEA s E=0 M=1 X=1
@@ -41853,7 +41853,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0xF5: new opcode_functions(opcode_matrix[0xF5],
+        0xF5: new WDC_opcode_functions(WDC_opcode_matrix[0xF5],
             function(regs, pins) { // SBC d,x
                 switch(regs.TCU) {
                         // SBC d,x E=0 M=1 X=1
@@ -41904,7 +41904,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF6: new opcode_functions(opcode_matrix[0xF6],
+        0xF6: new WDC_opcode_functions(WDC_opcode_matrix[0xF6],
             function(regs, pins) { // INC d,x
                 switch(regs.TCU) {
                         // INC d,x E=0 M=1 X=1
@@ -41951,7 +41951,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF7: new opcode_functions(opcode_matrix[0xF7],
+        0xF7: new WDC_opcode_functions(WDC_opcode_matrix[0xF7],
             function(regs, pins) { // SBC [d],y
                 switch(regs.TCU) {
                         // SBC [d],y E=0 M=1 X=1
@@ -42013,7 +42013,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF8: new opcode_functions(opcode_matrix[0xF8],
+        0xF8: new WDC_opcode_functions(WDC_opcode_matrix[0xF8],
             function(regs, pins) { // SED i
                 switch(regs.TCU) {
                         // SED i E=0 M=1 X=1
@@ -42034,7 +42034,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xF9: new opcode_functions(opcode_matrix[0xF9],
+        0xF9: new WDC_opcode_functions(WDC_opcode_matrix[0xF9],
             function(regs, pins) { // SBC a,y
                 switch(regs.TCU) {
                         // SBC a,y E=0 M=1 X=1
@@ -42091,7 +42091,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xFA: new opcode_functions(opcode_matrix[0xFA],
+        0xFA: new WDC_opcode_functions(WDC_opcode_matrix[0xFA],
             function(regs, pins) { // PLX s
                 switch(regs.TCU) {
                         // PLX s E=0 M=1 X=1
@@ -42122,7 +42122,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, true),
-        0xFB: new opcode_functions(opcode_matrix[0xFB],
+        0xFB: new WDC_opcode_functions(WDC_opcode_matrix[0xFB],
             function(regs, pins) { // XCE i
                 switch(regs.TCU) {
                         // XCE i E=0 M=1 X=1
@@ -42149,7 +42149,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xFC: new opcode_functions(opcode_matrix[0xFC],
+        0xFC: new WDC_opcode_functions(WDC_opcode_matrix[0xFC],
             function(regs, pins) { // JSR (a,x)
                 switch(regs.TCU) {
                         // JSR (a,x) E=0 M=1 X=1
@@ -42198,7 +42198,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0xFD: new opcode_functions(opcode_matrix[0xFD],
+        0xFD: new WDC_opcode_functions(WDC_opcode_matrix[0xFD],
             function(regs, pins) { // SBC a,x
                 switch(regs.TCU) {
                         // SBC a,x E=0 M=1 X=1
@@ -42255,7 +42255,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xFE: new opcode_functions(opcode_matrix[0xFE],
+        0xFE: new WDC_opcode_functions(WDC_opcode_matrix[0xFE],
             function(regs, pins) { // INC a,x
                 switch(regs.TCU) {
                         // INC a,x E=0 M=1 X=1
@@ -42302,7 +42302,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xFF: new opcode_functions(opcode_matrix[0xFF],
+        0xFF: new WDC_opcode_functions(WDC_opcode_matrix[0xFF],
             function(regs, pins) { // SBC al,x
                 switch(regs.TCU) {
                         // SBC al,x E=0 M=1 X=1
@@ -42351,7 +42351,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x100: new opcode_functions(opcode_matrix[0x100],
+        0x100: new WDC_opcode_functions(WDC_opcode_matrix[0x100],
             function(regs, pins) { // S_RESET s
                 switch(regs.TCU) {
                         // S_RESET s E=0 M=1 X=1
@@ -42404,7 +42404,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x101: new opcode_functions(opcode_matrix[0x101],
+        0x101: new WDC_opcode_functions(WDC_opcode_matrix[0x101],
             function(regs, pins) { // S_ABORT s
                 switch(regs.TCU) {
                         // S_ABORT s E=0 M=1 X=1
@@ -42453,7 +42453,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x102: new opcode_functions(opcode_matrix[0x102],
+        0x102: new WDC_opcode_functions(WDC_opcode_matrix[0x102],
             function(regs, pins) { // S_IRQ s
                 switch(regs.TCU) {
                         // S_IRQ s E=0 M=1 X=1
@@ -42504,7 +42504,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x103: new opcode_functions(opcode_matrix[0x103],
+        0x103: new WDC_opcode_functions(WDC_opcode_matrix[0x103],
             function(regs, pins) { // S_NMI s
                 switch(regs.TCU) {
                         // S_NMI s E=0 M=1 X=1
@@ -42558,7 +42558,7 @@ const decoded_opcodes = Object.freeze(
 },
     // E1 M1 X1
     7: {
-        0x00: new opcode_functions(opcode_matrix[0x00],
+        0x00: new WDC_opcode_functions(WDC_opcode_matrix[0x00],
             function(regs, pins) { // BRK s
                 switch(regs.TCU) {
                         // BRK s E=1 M=1 X=1
@@ -42609,7 +42609,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x01: new opcode_functions(opcode_matrix[0x01],
+        0x01: new WDC_opcode_functions(WDC_opcode_matrix[0x01],
             function(regs, pins) { // ORA (d,x)
                 switch(regs.TCU) {
                         // ORA (d,x) E=1 M=1 X=1
@@ -42657,7 +42657,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x02: new opcode_functions(opcode_matrix[0x02],
+        0x02: new WDC_opcode_functions(WDC_opcode_matrix[0x02],
             function(regs, pins) { // COP s
                 switch(regs.TCU) {
                         // COP s E=1 M=1 X=1
@@ -42708,7 +42708,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x03: new opcode_functions(opcode_matrix[0x03],
+        0x03: new WDC_opcode_functions(WDC_opcode_matrix[0x03],
             function(regs, pins) { // ORA d,s
                 switch(regs.TCU) {
                         // ORA d,s E=1 M=1 X=1
@@ -42740,7 +42740,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x04: new opcode_functions(opcode_matrix[0x04],
+        0x04: new WDC_opcode_functions(WDC_opcode_matrix[0x04],
             function(regs, pins) { // TSB d
                 switch(regs.TCU) {
                         // TSB d E=1 M=1 X=1
@@ -42784,7 +42784,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x05: new opcode_functions(opcode_matrix[0x05],
+        0x05: new WDC_opcode_functions(WDC_opcode_matrix[0x05],
             function(regs, pins) { // ORA d
                 switch(regs.TCU) {
                         // ORA d E=1 M=1 X=1
@@ -42822,7 +42822,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x06: new opcode_functions(opcode_matrix[0x06],
+        0x06: new WDC_opcode_functions(WDC_opcode_matrix[0x06],
             function(regs, pins) { // ASL d
                 switch(regs.TCU) {
                         // ASL d E=1 M=1 X=1
@@ -42868,7 +42868,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x07: new opcode_functions(opcode_matrix[0x07],
+        0x07: new WDC_opcode_functions(WDC_opcode_matrix[0x07],
             function(regs, pins) { // ORA [d]
                 switch(regs.TCU) {
                         // ORA [d] E=1 M=1 X=1
@@ -42919,7 +42919,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x08: new opcode_functions(opcode_matrix[0x08],
+        0x08: new WDC_opcode_functions(WDC_opcode_matrix[0x08],
             function(regs, pins) { // PHP s
                 switch(regs.TCU) {
                         // PHP s E=1 M=1 X=1
@@ -42947,7 +42947,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x09: new opcode_functions(opcode_matrix[0x09],
+        0x09: new WDC_opcode_functions(WDC_opcode_matrix[0x09],
             function(regs, pins) { // ORA #
                 switch(regs.TCU) {
                         // ORA # E=1 M=1 X=1
@@ -42971,7 +42971,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x0A: new opcode_functions(opcode_matrix[0x0A],
+        0x0A: new WDC_opcode_functions(WDC_opcode_matrix[0x0A],
             function(regs, pins) { // ASL A
                 switch(regs.TCU) {
                         // ASL A E=1 M=1 X=1
@@ -42997,7 +42997,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x0B: new opcode_functions(opcode_matrix[0x0B],
+        0x0B: new WDC_opcode_functions(WDC_opcode_matrix[0x0B],
             function(regs, pins) { // PHD s
                 switch(regs.TCU) {
                         // PHD s E=1 M=1 X=1
@@ -43030,7 +43030,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x0C: new opcode_functions(opcode_matrix[0x0C],
+        0x0C: new WDC_opcode_functions(WDC_opcode_matrix[0x0C],
             function(regs, pins) { // TSB a
                 switch(regs.TCU) {
                         // TSB a E=1 M=1 X=1
@@ -43070,7 +43070,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x0D: new opcode_functions(opcode_matrix[0x0D],
+        0x0D: new WDC_opcode_functions(WDC_opcode_matrix[0x0D],
             function(regs, pins) { // ORA a
                 switch(regs.TCU) {
                         // ORA a E=1 M=1 X=1
@@ -43102,7 +43102,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x0E: new opcode_functions(opcode_matrix[0x0E],
+        0x0E: new WDC_opcode_functions(WDC_opcode_matrix[0x0E],
             function(regs, pins) { // ASL a
                 switch(regs.TCU) {
                         // ASL a E=1 M=1 X=1
@@ -43144,7 +43144,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x0F: new opcode_functions(opcode_matrix[0x0F],
+        0x0F: new WDC_opcode_functions(WDC_opcode_matrix[0x0F],
             function(regs, pins) { // ORA al
                 switch(regs.TCU) {
                         // ORA al E=1 M=1 X=1
@@ -43181,7 +43181,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x10: new opcode_functions(opcode_matrix[0x10],
+        0x10: new WDC_opcode_functions(WDC_opcode_matrix[0x10],
             function(regs, pins) { // BPL r
                 switch(regs.TCU) {
                         // BPL r E=1 M=1 X=1
@@ -43211,7 +43211,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x11: new opcode_functions(opcode_matrix[0x11],
+        0x11: new WDC_opcode_functions(WDC_opcode_matrix[0x11],
             function(regs, pins) { // ORA (d),y
                 switch(regs.TCU) {
                         // ORA (d),y E=1 M=1 X=1
@@ -43269,7 +43269,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x12: new opcode_functions(opcode_matrix[0x12],
+        0x12: new WDC_opcode_functions(WDC_opcode_matrix[0x12],
             function(regs, pins) { // ORA (d)
                 switch(regs.TCU) {
                         // ORA (d) E=1 M=1 X=1
@@ -43314,7 +43314,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x13: new opcode_functions(opcode_matrix[0x13],
+        0x13: new WDC_opcode_functions(WDC_opcode_matrix[0x13],
             function(regs, pins) { // ORA (d,s),y
                 switch(regs.TCU) {
                         // ORA (d,s),y E=1 M=1 X=1
@@ -43360,7 +43360,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x14: new opcode_functions(opcode_matrix[0x14],
+        0x14: new WDC_opcode_functions(WDC_opcode_matrix[0x14],
             function(regs, pins) { // TRB d
                 switch(regs.TCU) {
                         // TRB d E=1 M=1 X=1
@@ -43404,7 +43404,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x15: new opcode_functions(opcode_matrix[0x15],
+        0x15: new WDC_opcode_functions(WDC_opcode_matrix[0x15],
             function(regs, pins) { // ORA d,x
                 switch(regs.TCU) {
                         // ORA d,x E=1 M=1 X=1
@@ -43444,7 +43444,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x16: new opcode_functions(opcode_matrix[0x16],
+        0x16: new WDC_opcode_functions(WDC_opcode_matrix[0x16],
             function(regs, pins) { // ASL d,x
                 switch(regs.TCU) {
                         // ASL d,x E=1 M=1 X=1
@@ -43492,7 +43492,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x17: new opcode_functions(opcode_matrix[0x17],
+        0x17: new WDC_opcode_functions(WDC_opcode_matrix[0x17],
             function(regs, pins) { // ORA [d],y
                 switch(regs.TCU) {
                         // ORA [d],y E=1 M=1 X=1
@@ -43543,7 +43543,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x18: new opcode_functions(opcode_matrix[0x18],
+        0x18: new WDC_opcode_functions(WDC_opcode_matrix[0x18],
             function(regs, pins) { // CLC i
                 switch(regs.TCU) {
                         // CLC i E=1 M=1 X=1
@@ -43564,7 +43564,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x19: new opcode_functions(opcode_matrix[0x19],
+        0x19: new WDC_opcode_functions(WDC_opcode_matrix[0x19],
             function(regs, pins) { // ORA a,y
                 switch(regs.TCU) {
                         // ORA a,y E=1 M=1 X=1
@@ -43610,7 +43610,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x1A: new opcode_functions(opcode_matrix[0x1A],
+        0x1A: new WDC_opcode_functions(WDC_opcode_matrix[0x1A],
             function(regs, pins) { // INC A
                 switch(regs.TCU) {
                         // INC A E=1 M=1 X=1
@@ -43635,7 +43635,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x1B: new opcode_functions(opcode_matrix[0x1B],
+        0x1B: new WDC_opcode_functions(WDC_opcode_matrix[0x1B],
             function(regs, pins) { // TCS i
                 switch(regs.TCU) {
                         // TCS i E=1 M=1 X=1
@@ -43657,7 +43657,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x1C: new opcode_functions(opcode_matrix[0x1C],
+        0x1C: new WDC_opcode_functions(WDC_opcode_matrix[0x1C],
             function(regs, pins) { // TRB a
                 switch(regs.TCU) {
                         // TRB a E=1 M=1 X=1
@@ -43697,7 +43697,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x1D: new opcode_functions(opcode_matrix[0x1D],
+        0x1D: new WDC_opcode_functions(WDC_opcode_matrix[0x1D],
             function(regs, pins) { // ORA a,x
                 switch(regs.TCU) {
                         // ORA a,x E=1 M=1 X=1
@@ -43743,7 +43743,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x1E: new opcode_functions(opcode_matrix[0x1E],
+        0x1E: new WDC_opcode_functions(WDC_opcode_matrix[0x1E],
             function(regs, pins) { // ASL a,x
                 switch(regs.TCU) {
                         // ASL a,x E=1 M=1 X=1
@@ -43791,7 +43791,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x1F: new opcode_functions(opcode_matrix[0x1F],
+        0x1F: new WDC_opcode_functions(WDC_opcode_matrix[0x1F],
             function(regs, pins) { // ORA al,x
                 switch(regs.TCU) {
                         // ORA al,x E=1 M=1 X=1
@@ -43829,7 +43829,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x20: new opcode_functions(opcode_matrix[0x20],
+        0x20: new WDC_opcode_functions(WDC_opcode_matrix[0x20],
             function(regs, pins) { // JSR a
                 switch(regs.TCU) {
                         // JSR a E=1 M=1 X=1
@@ -43871,7 +43871,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x21: new opcode_functions(opcode_matrix[0x21],
+        0x21: new WDC_opcode_functions(WDC_opcode_matrix[0x21],
             function(regs, pins) { // AND (d,x)
                 switch(regs.TCU) {
                         // AND (d,x) E=1 M=1 X=1
@@ -43919,7 +43919,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x22: new opcode_functions(opcode_matrix[0x22],
+        0x22: new WDC_opcode_functions(WDC_opcode_matrix[0x22],
             function(regs, pins) { // JSL al
                 switch(regs.TCU) {
                         // JSL al E=1 M=1 X=1
@@ -43974,7 +43974,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x23: new opcode_functions(opcode_matrix[0x23],
+        0x23: new WDC_opcode_functions(WDC_opcode_matrix[0x23],
             function(regs, pins) { // AND d,s
                 switch(regs.TCU) {
                         // AND d,s E=1 M=1 X=1
@@ -44006,7 +44006,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x24: new opcode_functions(opcode_matrix[0x24],
+        0x24: new WDC_opcode_functions(WDC_opcode_matrix[0x24],
             function(regs, pins) { // BIT d
                 switch(regs.TCU) {
                         // BIT d E=1 M=1 X=1
@@ -44043,7 +44043,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x25: new opcode_functions(opcode_matrix[0x25],
+        0x25: new WDC_opcode_functions(WDC_opcode_matrix[0x25],
             function(regs, pins) { // AND d
                 switch(regs.TCU) {
                         // AND d E=1 M=1 X=1
@@ -44081,7 +44081,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x26: new opcode_functions(opcode_matrix[0x26],
+        0x26: new WDC_opcode_functions(WDC_opcode_matrix[0x26],
             function(regs, pins) { // ROL d
                 switch(regs.TCU) {
                         // ROL d E=1 M=1 X=1
@@ -44128,7 +44128,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x27: new opcode_functions(opcode_matrix[0x27],
+        0x27: new WDC_opcode_functions(WDC_opcode_matrix[0x27],
             function(regs, pins) { // AND [d]
                 switch(regs.TCU) {
                         // AND [d] E=1 M=1 X=1
@@ -44179,7 +44179,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x28: new opcode_functions(opcode_matrix[0x28],
+        0x28: new WDC_opcode_functions(WDC_opcode_matrix[0x28],
             function(regs, pins) { // PLP s
                 switch(regs.TCU) {
                         // PLP s E=1 M=1 X=1
@@ -44212,7 +44212,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x29: new opcode_functions(opcode_matrix[0x29],
+        0x29: new WDC_opcode_functions(WDC_opcode_matrix[0x29],
             function(regs, pins) { // AND #
                 switch(regs.TCU) {
                         // AND # E=1 M=1 X=1
@@ -44236,7 +44236,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x2A: new opcode_functions(opcode_matrix[0x2A],
+        0x2A: new WDC_opcode_functions(WDC_opcode_matrix[0x2A],
             function(regs, pins) { // ROL A
                 switch(regs.TCU) {
                         // ROL A E=1 M=1 X=1
@@ -44263,7 +44263,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x2B: new opcode_functions(opcode_matrix[0x2B],
+        0x2B: new WDC_opcode_functions(WDC_opcode_matrix[0x2B],
             function(regs, pins) { // PLD s
                 switch(regs.TCU) {
                         // PLD s E=1 M=1 X=1
@@ -44299,7 +44299,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x2C: new opcode_functions(opcode_matrix[0x2C],
+        0x2C: new WDC_opcode_functions(WDC_opcode_matrix[0x2C],
             function(regs, pins) { // BIT a
                 switch(regs.TCU) {
                         // BIT a E=1 M=1 X=1
@@ -44330,7 +44330,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x2D: new opcode_functions(opcode_matrix[0x2D],
+        0x2D: new WDC_opcode_functions(WDC_opcode_matrix[0x2D],
             function(regs, pins) { // AND a
                 switch(regs.TCU) {
                         // AND a E=1 M=1 X=1
@@ -44362,7 +44362,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x2E: new opcode_functions(opcode_matrix[0x2E],
+        0x2E: new WDC_opcode_functions(WDC_opcode_matrix[0x2E],
             function(regs, pins) { // ROL a
                 switch(regs.TCU) {
                         // ROL a E=1 M=1 X=1
@@ -44405,7 +44405,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x2F: new opcode_functions(opcode_matrix[0x2F],
+        0x2F: new WDC_opcode_functions(WDC_opcode_matrix[0x2F],
             function(regs, pins) { // AND al
                 switch(regs.TCU) {
                         // AND al E=1 M=1 X=1
@@ -44442,7 +44442,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x30: new opcode_functions(opcode_matrix[0x30],
+        0x30: new WDC_opcode_functions(WDC_opcode_matrix[0x30],
             function(regs, pins) { // BMI r
                 switch(regs.TCU) {
                         // BMI r E=1 M=1 X=1
@@ -44472,7 +44472,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x31: new opcode_functions(opcode_matrix[0x31],
+        0x31: new WDC_opcode_functions(WDC_opcode_matrix[0x31],
             function(regs, pins) { // AND (d),y
                 switch(regs.TCU) {
                         // AND (d),y E=1 M=1 X=1
@@ -44530,7 +44530,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x32: new opcode_functions(opcode_matrix[0x32],
+        0x32: new WDC_opcode_functions(WDC_opcode_matrix[0x32],
             function(regs, pins) { // AND (d)
                 switch(regs.TCU) {
                         // AND (d) E=1 M=1 X=1
@@ -44575,7 +44575,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x33: new opcode_functions(opcode_matrix[0x33],
+        0x33: new WDC_opcode_functions(WDC_opcode_matrix[0x33],
             function(regs, pins) { // AND (d,s),y
                 switch(regs.TCU) {
                         // AND (d,s),y E=1 M=1 X=1
@@ -44621,7 +44621,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x34: new opcode_functions(opcode_matrix[0x34],
+        0x34: new WDC_opcode_functions(WDC_opcode_matrix[0x34],
             function(regs, pins) { // BIT d,x
                 switch(regs.TCU) {
                         // BIT d,x E=1 M=1 X=1
@@ -44660,7 +44660,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x35: new opcode_functions(opcode_matrix[0x35],
+        0x35: new WDC_opcode_functions(WDC_opcode_matrix[0x35],
             function(regs, pins) { // AND d,x
                 switch(regs.TCU) {
                         // AND d,x E=1 M=1 X=1
@@ -44700,7 +44700,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x36: new opcode_functions(opcode_matrix[0x36],
+        0x36: new WDC_opcode_functions(WDC_opcode_matrix[0x36],
             function(regs, pins) { // ROL d,x
                 switch(regs.TCU) {
                         // ROL d,x E=1 M=1 X=1
@@ -44749,7 +44749,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x37: new opcode_functions(opcode_matrix[0x37],
+        0x37: new WDC_opcode_functions(WDC_opcode_matrix[0x37],
             function(regs, pins) { // AND [d],y
                 switch(regs.TCU) {
                         // AND [d],y E=1 M=1 X=1
@@ -44800,7 +44800,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x38: new opcode_functions(opcode_matrix[0x38],
+        0x38: new WDC_opcode_functions(WDC_opcode_matrix[0x38],
             function(regs, pins) { // SEC i
                 switch(regs.TCU) {
                         // SEC i E=1 M=1 X=1
@@ -44821,7 +44821,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x39: new opcode_functions(opcode_matrix[0x39],
+        0x39: new WDC_opcode_functions(WDC_opcode_matrix[0x39],
             function(regs, pins) { // AND a,y
                 switch(regs.TCU) {
                         // AND a,y E=1 M=1 X=1
@@ -44867,7 +44867,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x3A: new opcode_functions(opcode_matrix[0x3A],
+        0x3A: new WDC_opcode_functions(WDC_opcode_matrix[0x3A],
             function(regs, pins) { // DEC A
                 switch(regs.TCU) {
                         // DEC A E=1 M=1 X=1
@@ -44892,7 +44892,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x3B: new opcode_functions(opcode_matrix[0x3B],
+        0x3B: new WDC_opcode_functions(WDC_opcode_matrix[0x3B],
             function(regs, pins) { // TSC i
                 switch(regs.TCU) {
                         // TSC i E=1 M=1 X=1
@@ -44915,7 +44915,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x3C: new opcode_functions(opcode_matrix[0x3C],
+        0x3C: new WDC_opcode_functions(WDC_opcode_matrix[0x3C],
             function(regs, pins) { // BIT a,x
                 switch(regs.TCU) {
                         // BIT a,x E=1 M=1 X=1
@@ -44960,7 +44960,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x3D: new opcode_functions(opcode_matrix[0x3D],
+        0x3D: new WDC_opcode_functions(WDC_opcode_matrix[0x3D],
             function(regs, pins) { // AND a,x
                 switch(regs.TCU) {
                         // AND a,x E=1 M=1 X=1
@@ -45006,7 +45006,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x3E: new opcode_functions(opcode_matrix[0x3E],
+        0x3E: new WDC_opcode_functions(WDC_opcode_matrix[0x3E],
             function(regs, pins) { // ROL a,x
                 switch(regs.TCU) {
                         // ROL a,x E=1 M=1 X=1
@@ -45055,7 +45055,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x3F: new opcode_functions(opcode_matrix[0x3F],
+        0x3F: new WDC_opcode_functions(WDC_opcode_matrix[0x3F],
             function(regs, pins) { // AND al,x
                 switch(regs.TCU) {
                         // AND al,x E=1 M=1 X=1
@@ -45093,7 +45093,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x40: new opcode_functions(opcode_matrix[0x40],
+        0x40: new WDC_opcode_functions(WDC_opcode_matrix[0x40],
             function(regs, pins) { // RTI s
                 switch(regs.TCU) {
                         // RTI s E=1 M=1 X=1
@@ -45136,7 +45136,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x41: new opcode_functions(opcode_matrix[0x41],
+        0x41: new WDC_opcode_functions(WDC_opcode_matrix[0x41],
             function(regs, pins) { // EOR (d,x)
                 switch(regs.TCU) {
                         // EOR (d,x) E=1 M=1 X=1
@@ -45184,7 +45184,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x42: new opcode_functions(opcode_matrix[0x42],
+        0x42: new WDC_opcode_functions(WDC_opcode_matrix[0x42],
             function(regs, pins) { // WDM i
                 switch(regs.TCU) {
                         // WDM i E=1 M=1 X=1
@@ -45205,7 +45205,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x43: new opcode_functions(opcode_matrix[0x43],
+        0x43: new WDC_opcode_functions(WDC_opcode_matrix[0x43],
             function(regs, pins) { // EOR d,s
                 switch(regs.TCU) {
                         // EOR d,s E=1 M=1 X=1
@@ -45237,7 +45237,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x44: new opcode_functions(opcode_matrix[0x44],
+        0x44: new WDC_opcode_functions(WDC_opcode_matrix[0x44],
             function(regs, pins) { // MVP xyc
                 switch(regs.TCU) {
                         // MVP xyc E=1 M=1 X=1
@@ -45277,7 +45277,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x45: new opcode_functions(opcode_matrix[0x45],
+        0x45: new WDC_opcode_functions(WDC_opcode_matrix[0x45],
             function(regs, pins) { // EOR d
                 switch(regs.TCU) {
                         // EOR d E=1 M=1 X=1
@@ -45315,7 +45315,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x46: new opcode_functions(opcode_matrix[0x46],
+        0x46: new WDC_opcode_functions(WDC_opcode_matrix[0x46],
             function(regs, pins) { // LSR d
                 switch(regs.TCU) {
                         // LSR d E=1 M=1 X=1
@@ -45361,7 +45361,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x47: new opcode_functions(opcode_matrix[0x47],
+        0x47: new WDC_opcode_functions(WDC_opcode_matrix[0x47],
             function(regs, pins) { // EOR [d]
                 switch(regs.TCU) {
                         // EOR [d] E=1 M=1 X=1
@@ -45412,7 +45412,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x48: new opcode_functions(opcode_matrix[0x48],
+        0x48: new WDC_opcode_functions(WDC_opcode_matrix[0x48],
             function(regs, pins) { // PHA s
                 switch(regs.TCU) {
                         // PHA s E=1 M=1 X=1
@@ -45440,7 +45440,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, true, false),
-        0x49: new opcode_functions(opcode_matrix[0x49],
+        0x49: new WDC_opcode_functions(WDC_opcode_matrix[0x49],
             function(regs, pins) { // EOR #
                 switch(regs.TCU) {
                         // EOR # E=1 M=1 X=1
@@ -45464,7 +45464,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x4A: new opcode_functions(opcode_matrix[0x4A],
+        0x4A: new WDC_opcode_functions(WDC_opcode_matrix[0x4A],
             function(regs, pins) { // LSR A
                 switch(regs.TCU) {
                         // LSR A E=1 M=1 X=1
@@ -45490,7 +45490,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x4B: new opcode_functions(opcode_matrix[0x4B],
+        0x4B: new WDC_opcode_functions(WDC_opcode_matrix[0x4B],
             function(regs, pins) { // PHK s
                 switch(regs.TCU) {
                         // PHK s E=1 M=1 X=1
@@ -45518,7 +45518,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x4C: new opcode_functions(opcode_matrix[0x4C],
+        0x4C: new WDC_opcode_functions(WDC_opcode_matrix[0x4C],
             function(regs, pins) { // JMP a
                 switch(regs.TCU) {
                         // JMP a E=1 M=1 X=1
@@ -45541,7 +45541,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x4D: new opcode_functions(opcode_matrix[0x4D],
+        0x4D: new WDC_opcode_functions(WDC_opcode_matrix[0x4D],
             function(regs, pins) { // EOR a
                 switch(regs.TCU) {
                         // EOR a E=1 M=1 X=1
@@ -45573,7 +45573,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x4E: new opcode_functions(opcode_matrix[0x4E],
+        0x4E: new WDC_opcode_functions(WDC_opcode_matrix[0x4E],
             function(regs, pins) { // LSR a
                 switch(regs.TCU) {
                         // LSR a E=1 M=1 X=1
@@ -45615,7 +45615,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x4F: new opcode_functions(opcode_matrix[0x4F],
+        0x4F: new WDC_opcode_functions(WDC_opcode_matrix[0x4F],
             function(regs, pins) { // EOR al
                 switch(regs.TCU) {
                         // EOR al E=1 M=1 X=1
@@ -45652,7 +45652,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x50: new opcode_functions(opcode_matrix[0x50],
+        0x50: new WDC_opcode_functions(WDC_opcode_matrix[0x50],
             function(regs, pins) { // BVC r
                 switch(regs.TCU) {
                         // BVC r E=1 M=1 X=1
@@ -45682,7 +45682,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x51: new opcode_functions(opcode_matrix[0x51],
+        0x51: new WDC_opcode_functions(WDC_opcode_matrix[0x51],
             function(regs, pins) { // EOR (d),y
                 switch(regs.TCU) {
                         // EOR (d),y E=1 M=1 X=1
@@ -45740,7 +45740,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x52: new opcode_functions(opcode_matrix[0x52],
+        0x52: new WDC_opcode_functions(WDC_opcode_matrix[0x52],
             function(regs, pins) { // EOR (d)
                 switch(regs.TCU) {
                         // EOR (d) E=1 M=1 X=1
@@ -45785,7 +45785,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x53: new opcode_functions(opcode_matrix[0x53],
+        0x53: new WDC_opcode_functions(WDC_opcode_matrix[0x53],
             function(regs, pins) { // EOR (d,s),y
                 switch(regs.TCU) {
                         // EOR (d,s),y E=1 M=1 X=1
@@ -45831,7 +45831,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x54: new opcode_functions(opcode_matrix[0x54],
+        0x54: new WDC_opcode_functions(WDC_opcode_matrix[0x54],
             function(regs, pins) { // MVN xyc
                 switch(regs.TCU) {
                         // MVN xyc E=1 M=1 X=1
@@ -45871,7 +45871,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x55: new opcode_functions(opcode_matrix[0x55],
+        0x55: new WDC_opcode_functions(WDC_opcode_matrix[0x55],
             function(regs, pins) { // EOR d,x
                 switch(regs.TCU) {
                         // EOR d,x E=1 M=1 X=1
@@ -45911,7 +45911,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x56: new opcode_functions(opcode_matrix[0x56],
+        0x56: new WDC_opcode_functions(WDC_opcode_matrix[0x56],
             function(regs, pins) { // LSR d,x
                 switch(regs.TCU) {
                         // LSR d,x E=1 M=1 X=1
@@ -45959,7 +45959,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x57: new opcode_functions(opcode_matrix[0x57],
+        0x57: new WDC_opcode_functions(WDC_opcode_matrix[0x57],
             function(regs, pins) { // EOR [d],y
                 switch(regs.TCU) {
                         // EOR [d],y E=1 M=1 X=1
@@ -46010,7 +46010,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x58: new opcode_functions(opcode_matrix[0x58],
+        0x58: new WDC_opcode_functions(WDC_opcode_matrix[0x58],
             function(regs, pins) { // CLI i
                 switch(regs.TCU) {
                         // CLI i E=1 M=1 X=1
@@ -46031,7 +46031,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x59: new opcode_functions(opcode_matrix[0x59],
+        0x59: new WDC_opcode_functions(WDC_opcode_matrix[0x59],
             function(regs, pins) { // EOR a,y
                 switch(regs.TCU) {
                         // EOR a,y E=1 M=1 X=1
@@ -46077,7 +46077,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x5A: new opcode_functions(opcode_matrix[0x5A],
+        0x5A: new WDC_opcode_functions(WDC_opcode_matrix[0x5A],
             function(regs, pins) { // PHY s
                 switch(regs.TCU) {
                         // PHY s E=1 M=1 X=1
@@ -46105,7 +46105,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, true),
-        0x5B: new opcode_functions(opcode_matrix[0x5B],
+        0x5B: new WDC_opcode_functions(WDC_opcode_matrix[0x5B],
             function(regs, pins) { // TCD i
                 switch(regs.TCU) {
                         // TCD i E=1 M=1 X=1
@@ -46128,7 +46128,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x5C: new opcode_functions(opcode_matrix[0x5C],
+        0x5C: new WDC_opcode_functions(WDC_opcode_matrix[0x5C],
             function(regs, pins) { // JMP al
                 switch(regs.TCU) {
                         // JMP al E=1 M=1 X=1
@@ -46155,7 +46155,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x5D: new opcode_functions(opcode_matrix[0x5D],
+        0x5D: new WDC_opcode_functions(WDC_opcode_matrix[0x5D],
             function(regs, pins) { // EOR a,x
                 switch(regs.TCU) {
                         // EOR a,x E=1 M=1 X=1
@@ -46201,7 +46201,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x5E: new opcode_functions(opcode_matrix[0x5E],
+        0x5E: new WDC_opcode_functions(WDC_opcode_matrix[0x5E],
             function(regs, pins) { // LSR a,x
                 switch(regs.TCU) {
                         // LSR a,x E=1 M=1 X=1
@@ -46249,7 +46249,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x5F: new opcode_functions(opcode_matrix[0x5F],
+        0x5F: new WDC_opcode_functions(WDC_opcode_matrix[0x5F],
             function(regs, pins) { // EOR al,x
                 switch(regs.TCU) {
                         // EOR al,x E=1 M=1 X=1
@@ -46287,7 +46287,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x60: new opcode_functions(opcode_matrix[0x60],
+        0x60: new WDC_opcode_functions(WDC_opcode_matrix[0x60],
             function(regs, pins) { // RTS s
                 switch(regs.TCU) {
                         // RTS s E=1 M=1 X=1
@@ -46323,7 +46323,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x61: new opcode_functions(opcode_matrix[0x61],
+        0x61: new WDC_opcode_functions(WDC_opcode_matrix[0x61],
             function(regs, pins) { // ADC (d,x)
                 switch(regs.TCU) {
                         // ADC (d,x) E=1 M=1 X=1
@@ -46382,7 +46382,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x62: new opcode_functions(opcode_matrix[0x62],
+        0x62: new WDC_opcode_functions(WDC_opcode_matrix[0x62],
             function(regs, pins) { // PER s
                 switch(regs.TCU) {
                         // PER s E=1 M=1 X=1
@@ -46421,7 +46421,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x63: new opcode_functions(opcode_matrix[0x63],
+        0x63: new WDC_opcode_functions(WDC_opcode_matrix[0x63],
             function(regs, pins) { // ADC d,s
                 switch(regs.TCU) {
                         // ADC d,s E=1 M=1 X=1
@@ -46464,7 +46464,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x64: new opcode_functions(opcode_matrix[0x64],
+        0x64: new WDC_opcode_functions(WDC_opcode_matrix[0x64],
             function(regs, pins) { // STZ d
                 switch(regs.TCU) {
                         // STZ d E=1 M=1 X=1
@@ -46500,7 +46500,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x65: new opcode_functions(opcode_matrix[0x65],
+        0x65: new WDC_opcode_functions(WDC_opcode_matrix[0x65],
             function(regs, pins) { // ADC d
                 switch(regs.TCU) {
                         // ADC d E=1 M=1 X=1
@@ -46549,7 +46549,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x66: new opcode_functions(opcode_matrix[0x66],
+        0x66: new WDC_opcode_functions(WDC_opcode_matrix[0x66],
             function(regs, pins) { // ROR d
                 switch(regs.TCU) {
                         // ROR d E=1 M=1 X=1
@@ -46596,7 +46596,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x67: new opcode_functions(opcode_matrix[0x67],
+        0x67: new WDC_opcode_functions(WDC_opcode_matrix[0x67],
             function(regs, pins) { // ADC [d]
                 switch(regs.TCU) {
                         // ADC [d] E=1 M=1 X=1
@@ -46658,7 +46658,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x68: new opcode_functions(opcode_matrix[0x68],
+        0x68: new WDC_opcode_functions(WDC_opcode_matrix[0x68],
             function(regs, pins) { // PLA s
                 switch(regs.TCU) {
                         // PLA s E=1 M=1 X=1
@@ -46689,7 +46689,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, true, false),
-        0x69: new opcode_functions(opcode_matrix[0x69],
+        0x69: new WDC_opcode_functions(WDC_opcode_matrix[0x69],
             function(regs, pins) { // ADC #
                 switch(regs.TCU) {
                         // ADC # E=1 M=1 X=1
@@ -46724,7 +46724,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x6A: new opcode_functions(opcode_matrix[0x6A],
+        0x6A: new WDC_opcode_functions(WDC_opcode_matrix[0x6A],
             function(regs, pins) { // ROR A
                 switch(regs.TCU) {
                         // ROR A E=1 M=1 X=1
@@ -46751,7 +46751,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x6B: new opcode_functions(opcode_matrix[0x6B],
+        0x6B: new WDC_opcode_functions(WDC_opcode_matrix[0x6B],
             function(regs, pins) { // RTL s
                 switch(regs.TCU) {
                         // RTL s E=1 M=1 X=1
@@ -46790,7 +46790,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0x6C: new opcode_functions(opcode_matrix[0x6C],
+        0x6C: new WDC_opcode_functions(WDC_opcode_matrix[0x6C],
             function(regs, pins) { // JMP (a)
                 switch(regs.TCU) {
                         // JMP (a) E=1 M=1 X=1
@@ -46820,7 +46820,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x6D: new opcode_functions(opcode_matrix[0x6D],
+        0x6D: new WDC_opcode_functions(WDC_opcode_matrix[0x6D],
             function(regs, pins) { // ADC a
                 switch(regs.TCU) {
                         // ADC a E=1 M=1 X=1
@@ -46863,7 +46863,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x6E: new opcode_functions(opcode_matrix[0x6E],
+        0x6E: new WDC_opcode_functions(WDC_opcode_matrix[0x6E],
             function(regs, pins) { // ROR a
                 switch(regs.TCU) {
                         // ROR a E=1 M=1 X=1
@@ -46906,7 +46906,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x6F: new opcode_functions(opcode_matrix[0x6F],
+        0x6F: new WDC_opcode_functions(WDC_opcode_matrix[0x6F],
             function(regs, pins) { // ADC al
                 switch(regs.TCU) {
                         // ADC al E=1 M=1 X=1
@@ -46954,7 +46954,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x70: new opcode_functions(opcode_matrix[0x70],
+        0x70: new WDC_opcode_functions(WDC_opcode_matrix[0x70],
             function(regs, pins) { // BVS r
                 switch(regs.TCU) {
                         // BVS r E=1 M=1 X=1
@@ -46984,7 +46984,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x71: new opcode_functions(opcode_matrix[0x71],
+        0x71: new WDC_opcode_functions(WDC_opcode_matrix[0x71],
             function(regs, pins) { // ADC (d),y
                 switch(regs.TCU) {
                         // ADC (d),y E=1 M=1 X=1
@@ -47053,7 +47053,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x72: new opcode_functions(opcode_matrix[0x72],
+        0x72: new WDC_opcode_functions(WDC_opcode_matrix[0x72],
             function(regs, pins) { // ADC (d)
                 switch(regs.TCU) {
                         // ADC (d) E=1 M=1 X=1
@@ -47109,7 +47109,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x73: new opcode_functions(opcode_matrix[0x73],
+        0x73: new WDC_opcode_functions(WDC_opcode_matrix[0x73],
             function(regs, pins) { // ADC (d,s),y
                 switch(regs.TCU) {
                         // ADC (d,s),y E=1 M=1 X=1
@@ -47166,7 +47166,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x74: new opcode_functions(opcode_matrix[0x74],
+        0x74: new WDC_opcode_functions(WDC_opcode_matrix[0x74],
             function(regs, pins) { // STZ d,x
                 switch(regs.TCU) {
                         // STZ d,x E=1 M=1 X=1
@@ -47204,7 +47204,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x75: new opcode_functions(opcode_matrix[0x75],
+        0x75: new WDC_opcode_functions(WDC_opcode_matrix[0x75],
             function(regs, pins) { // ADC d,x
                 switch(regs.TCU) {
                         // ADC d,x E=1 M=1 X=1
@@ -47255,7 +47255,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x76: new opcode_functions(opcode_matrix[0x76],
+        0x76: new WDC_opcode_functions(WDC_opcode_matrix[0x76],
             function(regs, pins) { // ROR d,x
                 switch(regs.TCU) {
                         // ROR d,x E=1 M=1 X=1
@@ -47304,7 +47304,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x77: new opcode_functions(opcode_matrix[0x77],
+        0x77: new WDC_opcode_functions(WDC_opcode_matrix[0x77],
             function(regs, pins) { // ADC [d],y
                 switch(regs.TCU) {
                         // ADC [d],y E=1 M=1 X=1
@@ -47366,7 +47366,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x78: new opcode_functions(opcode_matrix[0x78],
+        0x78: new WDC_opcode_functions(WDC_opcode_matrix[0x78],
             function(regs, pins) { // SEI i
                 switch(regs.TCU) {
                         // SEI i E=1 M=1 X=1
@@ -47387,7 +47387,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x79: new opcode_functions(opcode_matrix[0x79],
+        0x79: new WDC_opcode_functions(WDC_opcode_matrix[0x79],
             function(regs, pins) { // ADC a,y
                 switch(regs.TCU) {
                         // ADC a,y E=1 M=1 X=1
@@ -47444,7 +47444,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x7A: new opcode_functions(opcode_matrix[0x7A],
+        0x7A: new WDC_opcode_functions(WDC_opcode_matrix[0x7A],
             function(regs, pins) { // PLY s
                 switch(regs.TCU) {
                         // PLY s E=1 M=1 X=1
@@ -47475,7 +47475,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, true),
-        0x7B: new opcode_functions(opcode_matrix[0x7B],
+        0x7B: new WDC_opcode_functions(WDC_opcode_matrix[0x7B],
             function(regs, pins) { // TDC i
                 switch(regs.TCU) {
                         // TDC i E=1 M=1 X=1
@@ -47498,7 +47498,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x7C: new opcode_functions(opcode_matrix[0x7C],
+        0x7C: new WDC_opcode_functions(WDC_opcode_matrix[0x7C],
             function(regs, pins) { // JMP (a,x)
                 switch(regs.TCU) {
                         // JMP (a,x) E=1 M=1 X=1
@@ -47534,7 +47534,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x7D: new opcode_functions(opcode_matrix[0x7D],
+        0x7D: new WDC_opcode_functions(WDC_opcode_matrix[0x7D],
             function(regs, pins) { // ADC a,x
                 switch(regs.TCU) {
                         // ADC a,x E=1 M=1 X=1
@@ -47591,7 +47591,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x7E: new opcode_functions(opcode_matrix[0x7E],
+        0x7E: new WDC_opcode_functions(WDC_opcode_matrix[0x7E],
             function(regs, pins) { // ROR a,x
                 switch(regs.TCU) {
                         // ROR a,x E=1 M=1 X=1
@@ -47640,7 +47640,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x7F: new opcode_functions(opcode_matrix[0x7F],
+        0x7F: new WDC_opcode_functions(WDC_opcode_matrix[0x7F],
             function(regs, pins) { // ADC al,x
                 switch(regs.TCU) {
                         // ADC al,x E=1 M=1 X=1
@@ -47689,7 +47689,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x80: new opcode_functions(opcode_matrix[0x80],
+        0x80: new WDC_opcode_functions(WDC_opcode_matrix[0x80],
             function(regs, pins) { // BRA r
                 switch(regs.TCU) {
                         // BRA r E=1 M=1 X=1
@@ -47719,7 +47719,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x81: new opcode_functions(opcode_matrix[0x81],
+        0x81: new WDC_opcode_functions(WDC_opcode_matrix[0x81],
             function(regs, pins) { // STA (d,x)
                 switch(regs.TCU) {
                         // STA (d,x) E=1 M=1 X=1
@@ -47767,7 +47767,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x82: new opcode_functions(opcode_matrix[0x82],
+        0x82: new WDC_opcode_functions(WDC_opcode_matrix[0x82],
             function(regs, pins) { // BRL rl
                 switch(regs.TCU) {
                         // BRL rl E=1 M=1 X=1
@@ -47795,7 +47795,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x83: new opcode_functions(opcode_matrix[0x83],
+        0x83: new WDC_opcode_functions(WDC_opcode_matrix[0x83],
             function(regs, pins) { // STA d,s
                 switch(regs.TCU) {
                         // STA d,s E=1 M=1 X=1
@@ -47826,7 +47826,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x84: new opcode_functions(opcode_matrix[0x84],
+        0x84: new WDC_opcode_functions(WDC_opcode_matrix[0x84],
             function(regs, pins) { // STY d
                 switch(regs.TCU) {
                         // STY d E=1 M=1 X=1
@@ -47862,7 +47862,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x85: new opcode_functions(opcode_matrix[0x85],
+        0x85: new WDC_opcode_functions(WDC_opcode_matrix[0x85],
             function(regs, pins) { // STA d
                 switch(regs.TCU) {
                         // STA d E=1 M=1 X=1
@@ -47899,7 +47899,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x86: new opcode_functions(opcode_matrix[0x86],
+        0x86: new WDC_opcode_functions(WDC_opcode_matrix[0x86],
             function(regs, pins) { // STX d
                 switch(regs.TCU) {
                         // STX d E=1 M=1 X=1
@@ -47935,7 +47935,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x87: new opcode_functions(opcode_matrix[0x87],
+        0x87: new WDC_opcode_functions(WDC_opcode_matrix[0x87],
             function(regs, pins) { // STA [d]
                 switch(regs.TCU) {
                         // STA [d] E=1 M=1 X=1
@@ -47986,7 +47986,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x88: new opcode_functions(opcode_matrix[0x88],
+        0x88: new WDC_opcode_functions(WDC_opcode_matrix[0x88],
             function(regs, pins) { // DEY i
                 switch(regs.TCU) {
                         // DEY i E=1 M=1 X=1
@@ -48009,7 +48009,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x89: new opcode_functions(opcode_matrix[0x89],
+        0x89: new WDC_opcode_functions(WDC_opcode_matrix[0x89],
             function(regs, pins) { // BIT #
                 switch(regs.TCU) {
                         // BIT # E=1 M=1 X=1
@@ -48030,7 +48030,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x8A: new opcode_functions(opcode_matrix[0x8A],
+        0x8A: new WDC_opcode_functions(WDC_opcode_matrix[0x8A],
             function(regs, pins) { // TXA i
                 switch(regs.TCU) {
                         // TXA i E=1 M=1 X=1
@@ -48053,7 +48053,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x8B: new opcode_functions(opcode_matrix[0x8B],
+        0x8B: new WDC_opcode_functions(WDC_opcode_matrix[0x8B],
             function(regs, pins) { // PHB s
                 switch(regs.TCU) {
                         // PHB s E=1 M=1 X=1
@@ -48081,7 +48081,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x8C: new opcode_functions(opcode_matrix[0x8C],
+        0x8C: new WDC_opcode_functions(WDC_opcode_matrix[0x8C],
             function(regs, pins) { // STY a
                 switch(regs.TCU) {
                         // STY a E=1 M=1 X=1
@@ -48112,7 +48112,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x8D: new opcode_functions(opcode_matrix[0x8D],
+        0x8D: new WDC_opcode_functions(WDC_opcode_matrix[0x8D],
             function(regs, pins) { // STA a
                 switch(regs.TCU) {
                         // STA a E=1 M=1 X=1
@@ -48144,7 +48144,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x8E: new opcode_functions(opcode_matrix[0x8E],
+        0x8E: new WDC_opcode_functions(WDC_opcode_matrix[0x8E],
             function(regs, pins) { // STX a
                 switch(regs.TCU) {
                         // STX a E=1 M=1 X=1
@@ -48175,7 +48175,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x8F: new opcode_functions(opcode_matrix[0x8F],
+        0x8F: new WDC_opcode_functions(WDC_opcode_matrix[0x8F],
             function(regs, pins) { // STA al
                 switch(regs.TCU) {
                         // STA al E=1 M=1 X=1
@@ -48212,7 +48212,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x90: new opcode_functions(opcode_matrix[0x90],
+        0x90: new WDC_opcode_functions(WDC_opcode_matrix[0x90],
             function(regs, pins) { // BCC r
                 switch(regs.TCU) {
                         // BCC r E=1 M=1 X=1
@@ -48242,7 +48242,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x91: new opcode_functions(opcode_matrix[0x91],
+        0x91: new WDC_opcode_functions(WDC_opcode_matrix[0x91],
             function(regs, pins) { // STA (d),y
                 switch(regs.TCU) {
                         // STA (d),y E=1 M=1 X=1
@@ -48298,7 +48298,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x92: new opcode_functions(opcode_matrix[0x92],
+        0x92: new WDC_opcode_functions(WDC_opcode_matrix[0x92],
             function(regs, pins) { // STA (d)
                 switch(regs.TCU) {
                         // STA (d) E=1 M=1 X=1
@@ -48343,7 +48343,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x93: new opcode_functions(opcode_matrix[0x93],
+        0x93: new WDC_opcode_functions(WDC_opcode_matrix[0x93],
             function(regs, pins) { // STA (d,s),y
                 switch(regs.TCU) {
                         // STA (d,s),y E=1 M=1 X=1
@@ -48388,7 +48388,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x94: new opcode_functions(opcode_matrix[0x94],
+        0x94: new WDC_opcode_functions(WDC_opcode_matrix[0x94],
             function(regs, pins) { // STY d,x
                 switch(regs.TCU) {
                         // STY d,x E=1 M=1 X=1
@@ -48426,7 +48426,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x95: new opcode_functions(opcode_matrix[0x95],
+        0x95: new WDC_opcode_functions(WDC_opcode_matrix[0x95],
             function(regs, pins) { // STA d,x
                 switch(regs.TCU) {
                         // STA d,x E=1 M=1 X=1
@@ -48465,7 +48465,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x96: new opcode_functions(opcode_matrix[0x96],
+        0x96: new WDC_opcode_functions(WDC_opcode_matrix[0x96],
             function(regs, pins) { // STX d,y
                 switch(regs.TCU) {
                         // STX d,y E=1 M=1 X=1
@@ -48503,7 +48503,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0x97: new opcode_functions(opcode_matrix[0x97],
+        0x97: new WDC_opcode_functions(WDC_opcode_matrix[0x97],
             function(regs, pins) { // STA [d],y
                 switch(regs.TCU) {
                         // STA [d],y E=1 M=1 X=1
@@ -48554,7 +48554,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x98: new opcode_functions(opcode_matrix[0x98],
+        0x98: new WDC_opcode_functions(WDC_opcode_matrix[0x98],
             function(regs, pins) { // TYA i
                 switch(regs.TCU) {
                         // TYA i E=1 M=1 X=1
@@ -48577,7 +48577,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x99: new opcode_functions(opcode_matrix[0x99],
+        0x99: new WDC_opcode_functions(WDC_opcode_matrix[0x99],
             function(regs, pins) { // STA a,y
                 switch(regs.TCU) {
                         // STA a,y E=1 M=1 X=1
@@ -48620,7 +48620,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x9A: new opcode_functions(opcode_matrix[0x9A],
+        0x9A: new WDC_opcode_functions(WDC_opcode_matrix[0x9A],
             function(regs, pins) { // TXS i
                 switch(regs.TCU) {
                         // TXS i E=1 M=1 X=1
@@ -48641,7 +48641,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x9B: new opcode_functions(opcode_matrix[0x9B],
+        0x9B: new WDC_opcode_functions(WDC_opcode_matrix[0x9B],
             function(regs, pins) { // TXY i
                 switch(regs.TCU) {
                         // TXY i E=1 M=1 X=1
@@ -48664,7 +48664,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x9C: new opcode_functions(opcode_matrix[0x9C],
+        0x9C: new WDC_opcode_functions(WDC_opcode_matrix[0x9C],
             function(regs, pins) { // STZ a
                 switch(regs.TCU) {
                         // STZ a E=1 M=1 X=1
@@ -48695,7 +48695,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x9D: new opcode_functions(opcode_matrix[0x9D],
+        0x9D: new WDC_opcode_functions(WDC_opcode_matrix[0x9D],
             function(regs, pins) { // STA a,x
                 switch(regs.TCU) {
                         // STA a,x E=1 M=1 X=1
@@ -48738,7 +48738,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x9E: new opcode_functions(opcode_matrix[0x9E],
+        0x9E: new WDC_opcode_functions(WDC_opcode_matrix[0x9E],
             function(regs, pins) { // STZ a,x
                 switch(regs.TCU) {
                         // STZ a,x E=1 M=1 X=1
@@ -48780,7 +48780,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x9F: new opcode_functions(opcode_matrix[0x9F],
+        0x9F: new WDC_opcode_functions(WDC_opcode_matrix[0x9F],
             function(regs, pins) { // STA al,x
                 switch(regs.TCU) {
                         // STA al,x E=1 M=1 X=1
@@ -48818,7 +48818,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xA0: new opcode_functions(opcode_matrix[0xA0],
+        0xA0: new WDC_opcode_functions(WDC_opcode_matrix[0xA0],
             function(regs, pins) { // LDY #
                 switch(regs.TCU) {
                         // LDY # E=1 M=1 X=1
@@ -48841,7 +48841,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xA1: new opcode_functions(opcode_matrix[0xA1],
+        0xA1: new WDC_opcode_functions(WDC_opcode_matrix[0xA1],
             function(regs, pins) { // LDA (d,x)
                 switch(regs.TCU) {
                         // LDA (d,x) E=1 M=1 X=1
@@ -48888,7 +48888,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xA2: new opcode_functions(opcode_matrix[0xA2],
+        0xA2: new WDC_opcode_functions(WDC_opcode_matrix[0xA2],
             function(regs, pins) { // LDX #
                 switch(regs.TCU) {
                         // LDX # E=1 M=1 X=1
@@ -48911,7 +48911,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xA3: new opcode_functions(opcode_matrix[0xA3],
+        0xA3: new WDC_opcode_functions(WDC_opcode_matrix[0xA3],
             function(regs, pins) { // LDA d,s
                 switch(regs.TCU) {
                         // LDA d,s E=1 M=1 X=1
@@ -48942,7 +48942,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xA4: new opcode_functions(opcode_matrix[0xA4],
+        0xA4: new WDC_opcode_functions(WDC_opcode_matrix[0xA4],
             function(regs, pins) { // LDY d
                 switch(regs.TCU) {
                         // LDY d E=1 M=1 X=1
@@ -48979,7 +48979,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xA5: new opcode_functions(opcode_matrix[0xA5],
+        0xA5: new WDC_opcode_functions(WDC_opcode_matrix[0xA5],
             function(regs, pins) { // LDA d
                 switch(regs.TCU) {
                         // LDA d E=1 M=1 X=1
@@ -49016,7 +49016,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xA6: new opcode_functions(opcode_matrix[0xA6],
+        0xA6: new WDC_opcode_functions(WDC_opcode_matrix[0xA6],
             function(regs, pins) { // LDX d
                 switch(regs.TCU) {
                         // LDX d E=1 M=1 X=1
@@ -49053,7 +49053,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xA7: new opcode_functions(opcode_matrix[0xA7],
+        0xA7: new WDC_opcode_functions(WDC_opcode_matrix[0xA7],
             function(regs, pins) { // LDA [d]
                 switch(regs.TCU) {
                         // LDA [d] E=1 M=1 X=1
@@ -49103,7 +49103,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xA8: new opcode_functions(opcode_matrix[0xA8],
+        0xA8: new WDC_opcode_functions(WDC_opcode_matrix[0xA8],
             function(regs, pins) { // TAY i
                 switch(regs.TCU) {
                         // TAY i E=1 M=1 X=1
@@ -49126,7 +49126,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xA9: new opcode_functions(opcode_matrix[0xA9],
+        0xA9: new WDC_opcode_functions(WDC_opcode_matrix[0xA9],
             function(regs, pins) { // LDA #
                 switch(regs.TCU) {
                         // LDA # E=1 M=1 X=1
@@ -49149,7 +49149,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xAA: new opcode_functions(opcode_matrix[0xAA],
+        0xAA: new WDC_opcode_functions(WDC_opcode_matrix[0xAA],
             function(regs, pins) { // TAX i
                 switch(regs.TCU) {
                         // TAX i E=1 M=1 X=1
@@ -49172,7 +49172,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xAB: new opcode_functions(opcode_matrix[0xAB],
+        0xAB: new WDC_opcode_functions(WDC_opcode_matrix[0xAB],
             function(regs, pins) { // PLB s
                 switch(regs.TCU) {
                         // PLB s E=1 M=1 X=1
@@ -49203,7 +49203,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xAC: new opcode_functions(opcode_matrix[0xAC],
+        0xAC: new WDC_opcode_functions(WDC_opcode_matrix[0xAC],
             function(regs, pins) { // LDY a
                 switch(regs.TCU) {
                         // LDY a E=1 M=1 X=1
@@ -49234,7 +49234,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xAD: new opcode_functions(opcode_matrix[0xAD],
+        0xAD: new WDC_opcode_functions(WDC_opcode_matrix[0xAD],
             function(regs, pins) { // LDA a
                 switch(regs.TCU) {
                         // LDA a E=1 M=1 X=1
@@ -49265,7 +49265,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xAE: new opcode_functions(opcode_matrix[0xAE],
+        0xAE: new WDC_opcode_functions(WDC_opcode_matrix[0xAE],
             function(regs, pins) { // LDX a
                 switch(regs.TCU) {
                         // LDX a E=1 M=1 X=1
@@ -49296,7 +49296,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xAF: new opcode_functions(opcode_matrix[0xAF],
+        0xAF: new WDC_opcode_functions(WDC_opcode_matrix[0xAF],
             function(regs, pins) { // LDA al
                 switch(regs.TCU) {
                         // LDA al E=1 M=1 X=1
@@ -49332,7 +49332,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB0: new opcode_functions(opcode_matrix[0xB0],
+        0xB0: new WDC_opcode_functions(WDC_opcode_matrix[0xB0],
             function(regs, pins) { // BCS r
                 switch(regs.TCU) {
                         // BCS r E=1 M=1 X=1
@@ -49362,7 +49362,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xB1: new opcode_functions(opcode_matrix[0xB1],
+        0xB1: new WDC_opcode_functions(WDC_opcode_matrix[0xB1],
             function(regs, pins) { // LDA (d),y
                 switch(regs.TCU) {
                         // LDA (d),y E=1 M=1 X=1
@@ -49419,7 +49419,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB2: new opcode_functions(opcode_matrix[0xB2],
+        0xB2: new WDC_opcode_functions(WDC_opcode_matrix[0xB2],
             function(regs, pins) { // LDA (d)
                 switch(regs.TCU) {
                         // LDA (d) E=1 M=1 X=1
@@ -49463,7 +49463,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB3: new opcode_functions(opcode_matrix[0xB3],
+        0xB3: new WDC_opcode_functions(WDC_opcode_matrix[0xB3],
             function(regs, pins) { // LDA (d,s),y
                 switch(regs.TCU) {
                         // LDA (d,s),y E=1 M=1 X=1
@@ -49508,7 +49508,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB4: new opcode_functions(opcode_matrix[0xB4],
+        0xB4: new WDC_opcode_functions(WDC_opcode_matrix[0xB4],
             function(regs, pins) { // LDY d,x
                 switch(regs.TCU) {
                         // LDY d,x E=1 M=1 X=1
@@ -49547,7 +49547,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xB5: new opcode_functions(opcode_matrix[0xB5],
+        0xB5: new WDC_opcode_functions(WDC_opcode_matrix[0xB5],
             function(regs, pins) { // LDA d,x
                 switch(regs.TCU) {
                         // LDA d,x E=1 M=1 X=1
@@ -49586,7 +49586,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB6: new opcode_functions(opcode_matrix[0xB6],
+        0xB6: new WDC_opcode_functions(WDC_opcode_matrix[0xB6],
             function(regs, pins) { // LDX d,y
                 switch(regs.TCU) {
                         // LDX d,y E=1 M=1 X=1
@@ -49625,7 +49625,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xB7: new opcode_functions(opcode_matrix[0xB7],
+        0xB7: new WDC_opcode_functions(WDC_opcode_matrix[0xB7],
             function(regs, pins) { // LDA [d],y
                 switch(regs.TCU) {
                         // LDA [d],y E=1 M=1 X=1
@@ -49675,7 +49675,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xB8: new opcode_functions(opcode_matrix[0xB8],
+        0xB8: new WDC_opcode_functions(WDC_opcode_matrix[0xB8],
             function(regs, pins) { // CLV i
                 switch(regs.TCU) {
                         // CLV i E=1 M=1 X=1
@@ -49696,7 +49696,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xB9: new opcode_functions(opcode_matrix[0xB9],
+        0xB9: new WDC_opcode_functions(WDC_opcode_matrix[0xB9],
             function(regs, pins) { // LDA a,y
                 switch(regs.TCU) {
                         // LDA a,y E=1 M=1 X=1
@@ -49741,7 +49741,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xBA: new opcode_functions(opcode_matrix[0xBA],
+        0xBA: new WDC_opcode_functions(WDC_opcode_matrix[0xBA],
             function(regs, pins) { // TSX i
                 switch(regs.TCU) {
                         // TSX i E=1 M=1 X=1
@@ -49764,7 +49764,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xBB: new opcode_functions(opcode_matrix[0xBB],
+        0xBB: new WDC_opcode_functions(WDC_opcode_matrix[0xBB],
             function(regs, pins) { // TYX i
                 switch(regs.TCU) {
                         // TYX i E=1 M=1 X=1
@@ -49787,7 +49787,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xBC: new opcode_functions(opcode_matrix[0xBC],
+        0xBC: new WDC_opcode_functions(WDC_opcode_matrix[0xBC],
             function(regs, pins) { // LDY a,x
                 switch(regs.TCU) {
                         // LDY a,x E=1 M=1 X=1
@@ -49832,7 +49832,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xBD: new opcode_functions(opcode_matrix[0xBD],
+        0xBD: new WDC_opcode_functions(WDC_opcode_matrix[0xBD],
             function(regs, pins) { // LDA a,x
                 switch(regs.TCU) {
                         // LDA a,x E=1 M=1 X=1
@@ -49877,7 +49877,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xBE: new opcode_functions(opcode_matrix[0xBE],
+        0xBE: new WDC_opcode_functions(WDC_opcode_matrix[0xBE],
             function(regs, pins) { // LDX a,y
                 switch(regs.TCU) {
                         // LDX a,y E=1 M=1 X=1
@@ -49922,7 +49922,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xBF: new opcode_functions(opcode_matrix[0xBF],
+        0xBF: new WDC_opcode_functions(WDC_opcode_matrix[0xBF],
             function(regs, pins) { // LDA al,x
                 switch(regs.TCU) {
                         // LDA al,x E=1 M=1 X=1
@@ -49959,7 +49959,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC0: new opcode_functions(opcode_matrix[0xC0],
+        0xC0: new WDC_opcode_functions(WDC_opcode_matrix[0xC0],
             function(regs, pins) { // CPY #
                 switch(regs.TCU) {
                         // CPY # E=1 M=1 X=1
@@ -49983,7 +49983,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xC1: new opcode_functions(opcode_matrix[0xC1],
+        0xC1: new WDC_opcode_functions(WDC_opcode_matrix[0xC1],
             function(regs, pins) { // CMP (d,x)
                 switch(regs.TCU) {
                         // CMP (d,x) E=1 M=1 X=1
@@ -50031,7 +50031,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC2: new opcode_functions(opcode_matrix[0xC2],
+        0xC2: new WDC_opcode_functions(WDC_opcode_matrix[0xC2],
             function(regs, pins) { // REP #
                 switch(regs.TCU) {
                         // REP # E=1 M=1 X=1
@@ -50056,7 +50056,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xC3: new opcode_functions(opcode_matrix[0xC3],
+        0xC3: new WDC_opcode_functions(WDC_opcode_matrix[0xC3],
             function(regs, pins) { // CMP d,s
                 switch(regs.TCU) {
                         // CMP d,s E=1 M=1 X=1
@@ -50088,7 +50088,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC4: new opcode_functions(opcode_matrix[0xC4],
+        0xC4: new WDC_opcode_functions(WDC_opcode_matrix[0xC4],
             function(regs, pins) { // CPY d
                 switch(regs.TCU) {
                         // CPY d E=1 M=1 X=1
@@ -50126,7 +50126,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xC5: new opcode_functions(opcode_matrix[0xC5],
+        0xC5: new WDC_opcode_functions(WDC_opcode_matrix[0xC5],
             function(regs, pins) { // CMP d
                 switch(regs.TCU) {
                         // CMP d E=1 M=1 X=1
@@ -50164,7 +50164,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC6: new opcode_functions(opcode_matrix[0xC6],
+        0xC6: new WDC_opcode_functions(WDC_opcode_matrix[0xC6],
             function(regs, pins) { // DEC d
                 switch(regs.TCU) {
                         // DEC d E=1 M=1 X=1
@@ -50209,7 +50209,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC7: new opcode_functions(opcode_matrix[0xC7],
+        0xC7: new WDC_opcode_functions(WDC_opcode_matrix[0xC7],
             function(regs, pins) { // CMP [d]
                 switch(regs.TCU) {
                         // CMP [d] E=1 M=1 X=1
@@ -50260,7 +50260,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xC8: new opcode_functions(opcode_matrix[0xC8],
+        0xC8: new WDC_opcode_functions(WDC_opcode_matrix[0xC8],
             function(regs, pins) { // INY i
                 switch(regs.TCU) {
                         // INY i E=1 M=1 X=1
@@ -50283,7 +50283,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xC9: new opcode_functions(opcode_matrix[0xC9],
+        0xC9: new WDC_opcode_functions(WDC_opcode_matrix[0xC9],
             function(regs, pins) { // CMP #
                 switch(regs.TCU) {
                         // CMP # E=1 M=1 X=1
@@ -50307,7 +50307,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xCA: new opcode_functions(opcode_matrix[0xCA],
+        0xCA: new WDC_opcode_functions(WDC_opcode_matrix[0xCA],
             function(regs, pins) { // DEX i
                 switch(regs.TCU) {
                         // DEX i E=1 M=1 X=1
@@ -50330,7 +50330,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xCB: new opcode_functions(opcode_matrix[0xCB],
+        0xCB: new WDC_opcode_functions(WDC_opcode_matrix[0xCB],
             function(regs, pins) { // WAI i
                 switch(regs.TCU) {
                         // WAI i E=1 M=1 X=1
@@ -50352,7 +50352,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xCC: new opcode_functions(opcode_matrix[0xCC],
+        0xCC: new WDC_opcode_functions(WDC_opcode_matrix[0xCC],
             function(regs, pins) { // CPY a
                 switch(regs.TCU) {
                         // CPY a E=1 M=1 X=1
@@ -50384,7 +50384,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xCD: new opcode_functions(opcode_matrix[0xCD],
+        0xCD: new WDC_opcode_functions(WDC_opcode_matrix[0xCD],
             function(regs, pins) { // CMP a
                 switch(regs.TCU) {
                         // CMP a E=1 M=1 X=1
@@ -50416,7 +50416,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xCE: new opcode_functions(opcode_matrix[0xCE],
+        0xCE: new WDC_opcode_functions(WDC_opcode_matrix[0xCE],
             function(regs, pins) { // DEC a
                 switch(regs.TCU) {
                         // DEC a E=1 M=1 X=1
@@ -50457,7 +50457,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xCF: new opcode_functions(opcode_matrix[0xCF],
+        0xCF: new WDC_opcode_functions(WDC_opcode_matrix[0xCF],
             function(regs, pins) { // CMP al
                 switch(regs.TCU) {
                         // CMP al E=1 M=1 X=1
@@ -50494,7 +50494,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD0: new opcode_functions(opcode_matrix[0xD0],
+        0xD0: new WDC_opcode_functions(WDC_opcode_matrix[0xD0],
             function(regs, pins) { // BNE r
                 switch(regs.TCU) {
                         // BNE r E=1 M=1 X=1
@@ -50524,7 +50524,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xD1: new opcode_functions(opcode_matrix[0xD1],
+        0xD1: new WDC_opcode_functions(WDC_opcode_matrix[0xD1],
             function(regs, pins) { // CMP (d),y
                 switch(regs.TCU) {
                         // CMP (d),y E=1 M=1 X=1
@@ -50582,7 +50582,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD2: new opcode_functions(opcode_matrix[0xD2],
+        0xD2: new WDC_opcode_functions(WDC_opcode_matrix[0xD2],
             function(regs, pins) { // CMP (d)
                 switch(regs.TCU) {
                         // CMP (d) E=1 M=1 X=1
@@ -50627,7 +50627,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD3: new opcode_functions(opcode_matrix[0xD3],
+        0xD3: new WDC_opcode_functions(WDC_opcode_matrix[0xD3],
             function(regs, pins) { // CMP (d,s),y
                 switch(regs.TCU) {
                         // CMP (d,s),y E=1 M=1 X=1
@@ -50673,7 +50673,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD4: new opcode_functions(opcode_matrix[0xD4],
+        0xD4: new WDC_opcode_functions(WDC_opcode_matrix[0xD4],
             function(regs, pins) { // PEI s
                 switch(regs.TCU) {
                         // PEI s E=1 M=1 X=1
@@ -50720,7 +50720,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0xD5: new opcode_functions(opcode_matrix[0xD5],
+        0xD5: new WDC_opcode_functions(WDC_opcode_matrix[0xD5],
             function(regs, pins) { // CMP d,x
                 switch(regs.TCU) {
                         // CMP d,x E=1 M=1 X=1
@@ -50760,7 +50760,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD6: new opcode_functions(opcode_matrix[0xD6],
+        0xD6: new WDC_opcode_functions(WDC_opcode_matrix[0xD6],
             function(regs, pins) { // DEC d,x
                 switch(regs.TCU) {
                         // DEC d,x E=1 M=1 X=1
@@ -50807,7 +50807,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD7: new opcode_functions(opcode_matrix[0xD7],
+        0xD7: new WDC_opcode_functions(WDC_opcode_matrix[0xD7],
             function(regs, pins) { // CMP [d],y
                 switch(regs.TCU) {
                         // CMP [d],y E=1 M=1 X=1
@@ -50858,7 +50858,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xD8: new opcode_functions(opcode_matrix[0xD8],
+        0xD8: new WDC_opcode_functions(WDC_opcode_matrix[0xD8],
             function(regs, pins) { // CLD i
                 switch(regs.TCU) {
                         // CLD i E=1 M=1 X=1
@@ -50879,7 +50879,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xD9: new opcode_functions(opcode_matrix[0xD9],
+        0xD9: new WDC_opcode_functions(WDC_opcode_matrix[0xD9],
             function(regs, pins) { // CMP a,y
                 switch(regs.TCU) {
                         // CMP a,y E=1 M=1 X=1
@@ -50925,7 +50925,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xDA: new opcode_functions(opcode_matrix[0xDA],
+        0xDA: new WDC_opcode_functions(WDC_opcode_matrix[0xDA],
             function(regs, pins) { // PHX s
                 switch(regs.TCU) {
                         // PHX s E=1 M=1 X=1
@@ -50953,7 +50953,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, true),
-        0xDB: new opcode_functions(opcode_matrix[0xDB],
+        0xDB: new WDC_opcode_functions(WDC_opcode_matrix[0xDB],
             function(regs, pins) { // STP i
                 switch(regs.TCU) {
                         // STP i E=1 M=1 X=1
@@ -50971,7 +50971,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xDC: new opcode_functions(opcode_matrix[0xDC],
+        0xDC: new WDC_opcode_functions(WDC_opcode_matrix[0xDC],
             function(regs, pins) { // JML (a)
                 switch(regs.TCU) {
                         // JML (a) E=1 M=1 X=1
@@ -51005,7 +51005,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xDD: new opcode_functions(opcode_matrix[0xDD],
+        0xDD: new WDC_opcode_functions(WDC_opcode_matrix[0xDD],
             function(regs, pins) { // CMP a,x
                 switch(regs.TCU) {
                         // CMP a,x E=1 M=1 X=1
@@ -51051,7 +51051,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xDE: new opcode_functions(opcode_matrix[0xDE],
+        0xDE: new WDC_opcode_functions(WDC_opcode_matrix[0xDE],
             function(regs, pins) { // DEC a,x
                 switch(regs.TCU) {
                         // DEC a,x E=1 M=1 X=1
@@ -51098,7 +51098,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xDF: new opcode_functions(opcode_matrix[0xDF],
+        0xDF: new WDC_opcode_functions(WDC_opcode_matrix[0xDF],
             function(regs, pins) { // CMP al,x
                 switch(regs.TCU) {
                         // CMP al,x E=1 M=1 X=1
@@ -51136,7 +51136,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE0: new opcode_functions(opcode_matrix[0xE0],
+        0xE0: new WDC_opcode_functions(WDC_opcode_matrix[0xE0],
             function(regs, pins) { // CPX #
                 switch(regs.TCU) {
                         // CPX # E=1 M=1 X=1
@@ -51160,7 +51160,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xE1: new opcode_functions(opcode_matrix[0xE1],
+        0xE1: new WDC_opcode_functions(WDC_opcode_matrix[0xE1],
             function(regs, pins) { // SBC (d,x)
                 switch(regs.TCU) {
                         // SBC (d,x) E=1 M=1 X=1
@@ -51219,7 +51219,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE2: new opcode_functions(opcode_matrix[0xE2],
+        0xE2: new WDC_opcode_functions(WDC_opcode_matrix[0xE2],
             function(regs, pins) { // SEP #
                 switch(regs.TCU) {
                         // SEP # E=1 M=1 X=1
@@ -51244,7 +51244,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xE3: new opcode_functions(opcode_matrix[0xE3],
+        0xE3: new WDC_opcode_functions(WDC_opcode_matrix[0xE3],
             function(regs, pins) { // SBC d,s
                 switch(regs.TCU) {
                         // SBC d,s E=1 M=1 X=1
@@ -51287,7 +51287,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE4: new opcode_functions(opcode_matrix[0xE4],
+        0xE4: new WDC_opcode_functions(WDC_opcode_matrix[0xE4],
             function(regs, pins) { // CPX d
                 switch(regs.TCU) {
                         // CPX d E=1 M=1 X=1
@@ -51325,7 +51325,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xE5: new opcode_functions(opcode_matrix[0xE5],
+        0xE5: new WDC_opcode_functions(WDC_opcode_matrix[0xE5],
             function(regs, pins) { // SBC d
                 switch(regs.TCU) {
                         // SBC d E=1 M=1 X=1
@@ -51374,7 +51374,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE6: new opcode_functions(opcode_matrix[0xE6],
+        0xE6: new WDC_opcode_functions(WDC_opcode_matrix[0xE6],
             function(regs, pins) { // INC d
                 switch(regs.TCU) {
                         // INC d E=1 M=1 X=1
@@ -51419,7 +51419,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE7: new opcode_functions(opcode_matrix[0xE7],
+        0xE7: new WDC_opcode_functions(WDC_opcode_matrix[0xE7],
             function(regs, pins) { // SBC [d]
                 switch(regs.TCU) {
                         // SBC [d] E=1 M=1 X=1
@@ -51481,7 +51481,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xE8: new opcode_functions(opcode_matrix[0xE8],
+        0xE8: new WDC_opcode_functions(WDC_opcode_matrix[0xE8],
             function(regs, pins) { // INX i
                 switch(regs.TCU) {
                         // INX i E=1 M=1 X=1
@@ -51504,7 +51504,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xE9: new opcode_functions(opcode_matrix[0xE9],
+        0xE9: new WDC_opcode_functions(WDC_opcode_matrix[0xE9],
             function(regs, pins) { // SBC #
                 switch(regs.TCU) {
                         // SBC # E=1 M=1 X=1
@@ -51539,7 +51539,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xEA: new opcode_functions(opcode_matrix[0xEA],
+        0xEA: new WDC_opcode_functions(WDC_opcode_matrix[0xEA],
             function(regs, pins) { // NOP i
                 switch(regs.TCU) {
                         // NOP i E=1 M=1 X=1
@@ -51559,7 +51559,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xEB: new opcode_functions(opcode_matrix[0xEB],
+        0xEB: new WDC_opcode_functions(WDC_opcode_matrix[0xEB],
             function(regs, pins) { // XBA i
                 switch(regs.TCU) {
                         // XBA i E=1 M=1 X=1
@@ -51584,7 +51584,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xEC: new opcode_functions(opcode_matrix[0xEC],
+        0xEC: new WDC_opcode_functions(WDC_opcode_matrix[0xEC],
             function(regs, pins) { // CPX a
                 switch(regs.TCU) {
                         // CPX a E=1 M=1 X=1
@@ -51616,7 +51616,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, true),
-        0xED: new opcode_functions(opcode_matrix[0xED],
+        0xED: new WDC_opcode_functions(WDC_opcode_matrix[0xED],
             function(regs, pins) { // SBC a
                 switch(regs.TCU) {
                         // SBC a E=1 M=1 X=1
@@ -51659,7 +51659,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xEE: new opcode_functions(opcode_matrix[0xEE],
+        0xEE: new WDC_opcode_functions(WDC_opcode_matrix[0xEE],
             function(regs, pins) { // INC a
                 switch(regs.TCU) {
                         // INC a E=1 M=1 X=1
@@ -51700,7 +51700,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xEF: new opcode_functions(opcode_matrix[0xEF],
+        0xEF: new WDC_opcode_functions(WDC_opcode_matrix[0xEF],
             function(regs, pins) { // SBC al
                 switch(regs.TCU) {
                         // SBC al E=1 M=1 X=1
@@ -51748,7 +51748,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF0: new opcode_functions(opcode_matrix[0xF0],
+        0xF0: new WDC_opcode_functions(WDC_opcode_matrix[0xF0],
             function(regs, pins) { // BEQ r
                 switch(regs.TCU) {
                         // BEQ r E=1 M=1 X=1
@@ -51778,7 +51778,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xF1: new opcode_functions(opcode_matrix[0xF1],
+        0xF1: new WDC_opcode_functions(WDC_opcode_matrix[0xF1],
             function(regs, pins) { // SBC (d),y
                 switch(regs.TCU) {
                         // SBC (d),y E=1 M=1 X=1
@@ -51847,7 +51847,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF2: new opcode_functions(opcode_matrix[0xF2],
+        0xF2: new WDC_opcode_functions(WDC_opcode_matrix[0xF2],
             function(regs, pins) { // SBC (d)
                 switch(regs.TCU) {
                         // SBC (d) E=1 M=1 X=1
@@ -51903,7 +51903,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF3: new opcode_functions(opcode_matrix[0xF3],
+        0xF3: new WDC_opcode_functions(WDC_opcode_matrix[0xF3],
             function(regs, pins) { // SBC (d,s),y
                 switch(regs.TCU) {
                         // SBC (d,s),y E=1 M=1 X=1
@@ -51960,7 +51960,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF4: new opcode_functions(opcode_matrix[0xF4],
+        0xF4: new WDC_opcode_functions(WDC_opcode_matrix[0xF4],
             function(regs, pins) { // PEA s
                 switch(regs.TCU) {
                         // PEA s E=1 M=1 X=1
@@ -51994,7 +51994,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0xF5: new opcode_functions(opcode_matrix[0xF5],
+        0xF5: new WDC_opcode_functions(WDC_opcode_matrix[0xF5],
             function(regs, pins) { // SBC d,x
                 switch(regs.TCU) {
                         // SBC d,x E=1 M=1 X=1
@@ -52045,7 +52045,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF6: new opcode_functions(opcode_matrix[0xF6],
+        0xF6: new WDC_opcode_functions(WDC_opcode_matrix[0xF6],
             function(regs, pins) { // INC d,x
                 switch(regs.TCU) {
                         // INC d,x E=1 M=1 X=1
@@ -52092,7 +52092,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF7: new opcode_functions(opcode_matrix[0xF7],
+        0xF7: new WDC_opcode_functions(WDC_opcode_matrix[0xF7],
             function(regs, pins) { // SBC [d],y
                 switch(regs.TCU) {
                         // SBC [d],y E=1 M=1 X=1
@@ -52154,7 +52154,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xF8: new opcode_functions(opcode_matrix[0xF8],
+        0xF8: new WDC_opcode_functions(WDC_opcode_matrix[0xF8],
             function(regs, pins) { // SED i
                 switch(regs.TCU) {
                         // SED i E=1 M=1 X=1
@@ -52175,7 +52175,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xF9: new opcode_functions(opcode_matrix[0xF9],
+        0xF9: new WDC_opcode_functions(WDC_opcode_matrix[0xF9],
             function(regs, pins) { // SBC a,y
                 switch(regs.TCU) {
                         // SBC a,y E=1 M=1 X=1
@@ -52232,7 +52232,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xFA: new opcode_functions(opcode_matrix[0xFA],
+        0xFA: new WDC_opcode_functions(WDC_opcode_matrix[0xFA],
             function(regs, pins) { // PLX s
                 switch(regs.TCU) {
                         // PLX s E=1 M=1 X=1
@@ -52263,7 +52263,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, true),
-        0xFB: new opcode_functions(opcode_matrix[0xFB],
+        0xFB: new WDC_opcode_functions(WDC_opcode_matrix[0xFB],
             function(regs, pins) { // XCE i
                 switch(regs.TCU) {
                         // XCE i E=1 M=1 X=1
@@ -52290,7 +52290,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0xFC: new opcode_functions(opcode_matrix[0xFC],
+        0xFC: new WDC_opcode_functions(WDC_opcode_matrix[0xFC],
             function(regs, pins) { // JSR (a,x)
                 switch(regs.TCU) {
                         // JSR (a,x) E=1 M=1 X=1
@@ -52339,7 +52339,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, false, false),
-        0xFD: new opcode_functions(opcode_matrix[0xFD],
+        0xFD: new WDC_opcode_functions(WDC_opcode_matrix[0xFD],
             function(regs, pins) { // SBC a,x
                 switch(regs.TCU) {
                         // SBC a,x E=1 M=1 X=1
@@ -52396,7 +52396,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xFE: new opcode_functions(opcode_matrix[0xFE],
+        0xFE: new WDC_opcode_functions(WDC_opcode_matrix[0xFE],
             function(regs, pins) { // INC a,x
                 switch(regs.TCU) {
                         // INC a,x E=1 M=1 X=1
@@ -52443,7 +52443,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0xFF: new opcode_functions(opcode_matrix[0xFF],
+        0xFF: new WDC_opcode_functions(WDC_opcode_matrix[0xFF],
             function(regs, pins) { // SBC al,x
                 switch(regs.TCU) {
                         // SBC al,x E=1 M=1 X=1
@@ -52492,7 +52492,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x100: new opcode_functions(opcode_matrix[0x100],
+        0x100: new WDC_opcode_functions(WDC_opcode_matrix[0x100],
             function(regs, pins) { // S_RESET s
                 switch(regs.TCU) {
                         // S_RESET s E=1 M=1 X=1
@@ -52545,7 +52545,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x101: new opcode_functions(opcode_matrix[0x101],
+        0x101: new WDC_opcode_functions(WDC_opcode_matrix[0x101],
             function(regs, pins) { // S_ABORT s
                 switch(regs.TCU) {
                         // S_ABORT s E=1 M=1 X=1
@@ -52588,7 +52588,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x102: new opcode_functions(opcode_matrix[0x102],
+        0x102: new WDC_opcode_functions(WDC_opcode_matrix[0x102],
             function(regs, pins) { // S_IRQ s
                 switch(regs.TCU) {
                         // S_IRQ s E=1 M=1 X=1
@@ -52633,7 +52633,7 @@ const decoded_opcodes = Object.freeze(
                 }
             },
             false, false, false),
-        0x103: new opcode_functions(opcode_matrix[0x103],
+        0x103: new WDC_opcode_functions(WDC_opcode_matrix[0x103],
             function(regs, pins) { // S_NMI s
                 switch(regs.TCU) {
                         // S_NMI s E=1 M=1 X=1

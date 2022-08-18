@@ -1,5 +1,9 @@
 "use strict";
 
+/*
+Joypad register emulation classes and functions.
+ */
+
 const J1_MAP_KEY_TO_BUTTON = Object.freeze({
     'up': 'up',
     'left': 'left',

@@ -1,5 +1,7 @@
 "use strict";
 
+/* DMA and HDMA emulation logic, based largely off of observations of Higan and Messen-S */
+
 const HDMA_LENGTHS = Object.freeze([1, 2, 2, 4, 4, 4, 2, 4]);
 
 class dmaChannel {

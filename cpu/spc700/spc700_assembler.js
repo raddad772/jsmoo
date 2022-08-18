@@ -11,7 +11,7 @@ class spc700_assembler {
         this.instructions = [];
         this.enable_console = true;
         this.rom_start = 0;
-        this.vectors = { [VEC.RESET]: 0xFFEF }
+        this.vectors = { [WDC_VEC.RESET]: 0xFFEF }
     }
 
     writeinstruction(ins) {
@@ -28,7 +28,7 @@ class spc700_assembler {
     }
 
     interpret_number(instr) {
-        return assembly_interpret_number(instr);
+        return WDC_assembly_interpret_number(instr);
     }
 
     warningmsg(msg) {
@@ -45,7 +45,7 @@ class spc700_assembler {
             return null;
         }
         vec = this.interpret_number(vec[1]);
-        if (vec.kind === VT.invalid) {
+        if (vec.kind === WDC_VT.invalid) {
             this.errormsg('Error parsing vector address ' + vec[1]);
             return null;
         }
@@ -55,7 +55,7 @@ class spc700_assembler {
     set_vector(line) {
         let VW = -1;
         if (line.slice(0, 5) === 'RESET')
-            VW = VEC.RESET;
+            VW = WDC_VEC.RESET;
 
         if (VW === -1) {
             this.errormsg('Did not understand vector: ' + line);
@@ -64,11 +64,11 @@ class spc700_assembler {
         let vec = this.getvecfrom(line);
         if (vec === null)
             return;
-        if (vec.kind === VT.int)
+        if (vec.kind === WDC_VT.int)
             this.vectors[VW].set_to_addr(vec.value);
-        else if (vec.kind === VT.label)
+        else if (vec.kind === WDC_VT.label)
             this.vectors[VW].set_to_label(vec.value);
-        else if (vec.kind === VT.accumulator) {
+        else if (vec.kind === WDC_VT.accumulator) {
             this.errormsg('Did not understand vector: ' + line);
         }
 
@@ -108,15 +108,15 @@ class spc700_assembler {
                         this.errormsg('Duplicate label ' + label);
                         return;
                     }
-                    this.labels[label] = new label_t(label, null, this.lnum);
+                    this.labels[label] = new WDC_label_t(label, null, this.lnum);
                 } else {
                     let addr = this.interpret_number(parts[1]);
-                    if (addr.kind === VT.int) {
-                        this.labels[label] = new label_t(label, addr.value, this.lnum);
-                    } else if (addr.kind === VT.label) {
+                    if (addr.kind === WDC_VT.int) {
+                        this.labels[label] = new WDC_label_t(label, addr.value, this.lnum);
+                    } else if (addr.kind === WDC_VT.label) {
                         this.errormsg('Error parsing line: ' + line);
                         return;
-                    } else if (addr.kidn === VT.accumulator) {
+                    } else if (addr.kidn === WDC_VT.accumulator) {
                         this.errormsg('Cannot have label named A')
                         return;
                     }
@@ -145,7 +145,7 @@ class spc700_assembler {
                     return;
                 }
                 romsize = this.interpret_number(romsize[1]);
-                if (romsize.kind !== VT.int) {
+                if (romsize.kind !== WDC_VT.int) {
                     this.errormsg('Error parsing ROM size: ' + romsize.value);
                     return;
                 }
@@ -185,7 +185,7 @@ class spc700_assembler {
                 }
                 if (parts.length === 2) {
                     let addr = this.interpret_number(parts[1]);
-                    if (addr.kind === VT.int) {
+                    if (addr.kind === WDC_VT.int) {
                         this.addr = addr.value;
                         this.lines_to_addr[this.lnum] = this.addr;
                     } else {
@@ -212,7 +212,7 @@ class spc700_assembler {
             if (this.enable_console) console.log('HEY! Whats up with this? ' + line);
             return;
         }
-        let op = new a_ins_t();
+        let op = new WDC_a_ins_t();
         op.line = this.lnum;
         op.addr = this.addr;
         let mnemonic = line.slice(0, 3);
@@ -235,7 +235,7 @@ class spc700_assembler {
             let to_parse = line.slice(4).split(',');
             for (let i = 0; i < to_parse.length; i++) {
                 let v = this.interpret_number(to_parse[i]);
-                if (v.kind !== VT.int) {
+                if (v.kind !== WDC_VT.int) {
                     this.errormsg('DCB only takes integer operands');
                     return;
                 }
@@ -264,7 +264,7 @@ class spc700_assembler {
 
         // First knock out instructions with one-byte opcodes
         let ams = ins_AM[ins];
-        if ((ams.length === 1) && (ONE_BYTE_ADDRESS_MODES.indexOf(ams[0]) !== -1)) {
+        if ((ams.length === 1) && (WDC_ONE_BYTE_ADDRESS_MODES.indexOf(ams[0]) !== -1)) {
             op.addr_mode = ams[0];
             op.bytecodes[0] = opcode_MN_R[op.ins][0];
             op.needs_resolve = false;
@@ -291,16 +291,16 @@ class spc700_assembler {
             let op2 = operands[1];
             op1 = this.interpret_number(op1);
             op2 = this.interpret_number(op2);
-            if (op1.kind === VT.invalid || (op1.kind === VT.label && op1.value.addr === null)) {
+            if (op1.kind === WDC_VT.invalid || (op1.kind === WDC_VT.label && op1.value.addr === null)) {
                 this.errormsg('Operand 1 cannot be parsed or cannot resolve address of from ' + operands);
                 return;
             }
-            if (op2.kind === VT.invalid || (op2.kind === VT.label && op2.value.addr === null)) {
+            if (op2.kind === WDC_VT.invalid || (op2.kind === WDC_VT.label && op2.value.addr === null)) {
                 this.errormsg('Operand 2 cannot be parsed or cannot resolve address of from ' + operands);
                 return;
             }
-            if (op1.kind === VT.label) op1 = op1.value.addr;
-            if (op2.kind === VT.label) op2 = op2.value.addr;
+            if (op1.kind === WDC_VT.label) op1 = op1.value.addr;
+            if (op2.kind === WDC_VT.label) op2 = op2.value.addr;
             op.bytecodes[1] = op1.value & 0xFF;
             op.bytecodes[2] = op2.value & 0xFF;
 
@@ -340,11 +340,11 @@ class spc700_assembler {
         let poperand = operand;
 
         let with_care = false;
-        if (nummerthing.kind === VT.invalid) {
+        if (nummerthing.kind === WDC_VT.invalid) {
             this.errormsg('Error 1 interpreting operand ' + operand + ' ' + line);
             return;
         }
-        else if (nummerthing.kind === VT.label) {
+        else if (nummerthing.kind === WDC_VT.label) {
             op.label = nummerthing.value;
             if (nummerthing.value.addr === null) {
                 // Assemble this op with care. Assume a 16-bit offset. Less code-dense but easier to make
@@ -365,7 +365,7 @@ class spc700_assembler {
         }
 
         let valid_modes = [];
-        /*if (nummerthing.kind === VT.accumulator) {
+        /*if (nummerthing.kind === WDC_VT.accumulator) {
             valid_modes = [SPC_AM.ACCUM];
         }
         else if (with_care) {
@@ -413,7 +413,7 @@ class spc700_assembler {
 
         //console.log(candidate_ams1)
         // OK we got here. Avengers, assemble!
-        let candidate_encodings = collapse_AMs_to_encodings(candidate_ams1);
+        let candidate_encodings = WDC_collapse_AMs_to_encodings(candidate_ams1);
         //console.log('CANDIDATES!', candidate_encodings);
         if (candidate_encodings.length < 1) {
             if (this.enable_console) console.log(candidate_ams1);
@@ -431,16 +431,16 @@ class spc700_assembler {
         if (candidate_encodings.length > 1) {
             let possible_encodings = [];
             if (operand < 0x100) {
-                possible_encodings.push(OPE.bytes1);
-                possible_encodings.push(OPE.bymode);
+                possible_encodings.push(WDC_OPE.bytes1);
+                possible_encodings.push(WDC_OPE.bymode);
             }
             if (operand < 0x10000) {
-                possible_encodings.push(OPE.bytes2);
-                if (possible_encodings.indexOf(OPE.bymode) === -1)
-                    possible_encodings.push(OPE.bymode);
+                possible_encodings.push(WDC_OPE.bytes2);
+                if (possible_encodings.indexOf(WDC_OPE.bymode) === -1)
+                    possible_encodings.push(WDC_OPE.bymode);
             }
             if (operand < 0x1000000)
-                possible_encodings.push(OPE.bytes3);
+                possible_encodings.push(WDC_OPE.bytes3);
             let ce = candidate_encodings;
             candidate_encodings = [];
             for (let i in possible_encodings) {
@@ -456,16 +456,16 @@ class spc700_assembler {
         }
 
         // Now if we're using Immediate mode, we'll know it.
-        let encoding = OPE.none;
+        let encoding = WDC_OPE.none;
         let amode = -1;
-        if (candidate_encodings.indexOf(OPE.bymode) !== -1) {
+        if (candidate_encodings.indexOf(WDC_OPE.bymode) !== -1) {
             amode = AM.IMM;
             // BAD ASSUMPTION! TODO: fix it
             if (this.E)
-                encoding = OPE.bytes1;
+                encoding = WDC_OPE.bytes1;
             else {
                 // Check if it's A, M, X, or Y
-                encoding = A_OR_M_X.has(ins) ? (this.X ? OPE.bytes1 : OPE.bytes2) : this.M ? OPE.bytes1 : OPE.bytes2;
+                encoding = A_OR_M_X.has(ins) ? (this.X ? WDC_OPE.bytes1 : WDC_OPE.bytes2) : this.M ? WDC_OPE.bytes1 : WDC_OPE.bytes2;
                 /*if ()
                     encoding =
                 else
@@ -480,7 +480,7 @@ class spc700_assembler {
                 ) {
                     if (bytes_needed === 1) {
                         candidate_ams1 = [AM.D];
-                        candidate_encodings = [OPE.bytes1];
+                        candidate_encodings = [WDC_OPE.bytes1];
                     }
                 }
             }
@@ -488,8 +488,8 @@ class spc700_assembler {
             if (candidate_encodings.length > 1) {
                 console.log('ENCODINGS:', candidate_encodings);
                 console.log('CANDIDATE AMS:', candidate_ams1);
-                if (candidate_encodings.indexOf(OPE.bytes2) !== -1) {
-                    encoding = OPE.bytes2;
+                if (candidate_encodings.indexOf(WDC_OPE.bytes2) !== -1) {
+                    encoding = WDC_OPE.bytes2;
                     this.warningmsg('Assuming 16-bit encoding for operand ' + poperand + ' on line ' + line);
                 }
                 else {
@@ -506,7 +506,7 @@ class spc700_assembler {
             candidate_ams2 = [];
             for (let i in candidate_ams1) {
                 let amode = candidate_ams1[i];
-                if (AM_simplifier_by_encoding[amode] === encoding) {
+                if (WDC_AM_simplifier_by_encoding[amode] === encoding) {
                     candidate_ams2.push(amode);
                 }
             }
@@ -540,12 +540,12 @@ class spc700_assembler {
             amode = candidate_ams1[0];
         }
         // Now we have addressing mode and encoding
-        // Determine instruction opcode based on mnemonic and addressing mode using opcode_matrix
+        // Determine instruction opcode based on mnemonic and addressing mode using WDC_opcode_matrix
         op.addr_mode = amode;
         let foundcode = -1;
         ins = parseInt(ins);
         for (let opcode = 0; opcode <= MAX_OPCODE; opcode++) {
-            let omi = opcode_matrix[opcode];
+            let omi = WDC_opcode_matrix[opcode];
             if (omi.ins === ins && omi.addr_mode === amode) {
                 foundcode = opcode;
                 break;
@@ -561,12 +561,12 @@ class spc700_assembler {
 
         switch(op.ins) {
             case OM.REP:
-                encoding = OPE.bytes1;
+                encoding = WDC_OPE.bytes1;
                 //if (operand & 0x10) this.EMX[this.lnum+1].X = 0;
                 //if (operand & 0x20) this.EMX[this.lnum+1].M = 0;
                 break;
             case OM.SEP:
-                encoding = OPE.bytes1;
+                encoding = WDC_OPE.bytes1;
                 //if (operand & 0x10) this.EMX[this.lnum+1].X = 1;
                 //if (operand & 0x20) this.EMX[this.lnum+1].M = 1;
                 break;
@@ -665,29 +665,29 @@ class spc700_assembler {
 
         // Now encode
         switch(encoding) {
-            case OPE.none:
+            case WDC_OPE.none:
                 this.addr += 1;
                 //this.errormsg('NEVER SHOULDA GOT HERE!');
                 break;
-            case OPE.bytes1:
+            case WDC_OPE.bytes1:
                 this.addr += 2;
                 op.bytecodes[1] = operand & 0xFF;
                 break;
-            case OPE.bytes2:
+            case WDC_OPE.bytes2:
                 this.addr += 3;
                 op.bytecodes[1] = operand & 0xFF;
                 op.bytecodes[2] = (operand & 0xFF00) >>> 8;
                 break;
-            case OPE.bytes3:
+            case WDC_OPE.bytes3:
                 this.addr += 4;
                 op.bytecodes[1] = operand & 0xFF;
                 op.bytecodes[2] = (operand & 0xFF00) >>> 8;
                 op.bytecodes[3] = (operand & 0xFF0000) >>> 16;
                 break;
-            case OPE.bymode:
+            case WDC_OPE.bymode:
                 this.errormsg('WHY ISNT THIS CHANGED?');
                 break;
-            case OPE.operands2:
+            case WDC_OPE.operands2:
                 this.errormsg('THIS SHOULDA BEEN DONE ALREADY');
                 break;
             default:

@@ -113,24 +113,24 @@ function get_vector(ins, E) {
     switch(ins) {
         case WDC_OM.BRK:
             if (E)
-                return VEC.BRK_E;
-            return VEC.BRK_N;
+                return WDC_VEC.BRK_E;
+            return WDC_VEC.BRK_N;
         case WDC_OM.COP:
             if (E)
-                return VEC.COP_E;
-            return VEC.COP_N;
+                return WDC_VEC.COP_E;
+            return WDC_VEC.COP_N;
         case WDC_OM.S_IRQ:
             if (E)
-                return VEC.IRQ_E;
-            return VEC.IRQ_N;
+                return WDC_VEC.IRQ_E;
+            return WDC_VEC.IRQ_N;
         case WDC_OM.S_ABORT:
             if (E)
-                return VEC.ABORT_E;
-            return VEC.ABORT_N;
+                return WDC_VEC.ABORT_E;
+            return WDC_VEC.ABORT_N;
         case WDC_OM.S_NMI:
             if (E)
-                return VEC.NMI_E;
-            return VEC.NMI_N;
+                return WDC_VEC.NMI_E;
+            return WDC_VEC.NMI_N;
     }
 }
 
@@ -155,7 +155,7 @@ function check_addressing_matrix() {
         let opcodes = WDC_opcode_AM_R[i];
         for (let j = 0; j < opcodes.length; j++) {
             let opcode = opcodes[j];
-            testourset(opcode, ourset, ourthere, opcodes, opcode_AM_MN[j]);
+            testourset(opcode, ourset, ourthere, opcodes, WDC_opcode_AM_MN[j]);
         }
     }
     for(let i = 0; i < 256; i++) {
@@ -198,15 +198,6 @@ function check_mnemonic_matrix() {
 //check_addressing_matrix();
 //check_mnemonic_matrix();
 
-class opcode_info {
-    constructor(opcode, ins, addr_mode_split, mnemonic) {
-        this.opcode = opcode;
-        this.ins = ins;
-        this.addr_mode = addr_mode_split;
-        this.mnemonic = mnemonic;
-    }
-}
-
 function ins_backwards(ins) {
     ins = parseInt(ins);
     for (let j in WDC_OM) {
@@ -226,7 +217,7 @@ function addr_backwards(addr_mode) {
 }
 
 function generate_opcodes_struct(indent) {
-    let outstr = indent + 'const opcode_matrix = Object.freeze({\n';
+    let outstr = indent + 'const WDC_opcode_matrix = Object.freeze({\n';
     let has_been = false;
     for (let opcode = 0; opcode <= WDC_MAX_OPCODE; opcode++) {
         if (has_been)
@@ -239,7 +230,7 @@ function generate_opcodes_struct(indent) {
             console.log('FAILED CONSTRUCTION could not find opcode ', hex2(opcode), ins, addr_mode, addr_mode_split);
             return '';
         }
-        let thistr = indent + '    0x' + hex2(opcode) + ': new opcode_info(0x' + hex2(opcode) + ', ' + ins_backwards(ins) + ', ' + addr_backwards(addr_mode_split) + ', "' + WDC_OP_MN_str[ins] + ' ' + opcode_AM_MN[addr_mode] + '")'
+        let thistr = indent + '    0x' + hex2(opcode) + ': new WDC_opcode_info(0x' + hex2(opcode) + ', ' + ins_backwards(ins) + ', ' + addr_backwards(addr_mode_split) + ', "' + WDC_OP_MN_str[ins] + ' ' + WDC_opcode_AM_MN[addr_mode] + '")'
         outstr += thistr;
     }
     outstr += '\n' + indent + '});'
@@ -250,297 +241,7 @@ function generate_opcodes_struct(indent) {
 // created by
 //console.log(generate_opcodes_struct(''));
 
-const opcode_matrix = Object.freeze({
-    0x00: new opcode_info(0x00, WDC_OM.BRK, WDC_AM.STACKj, "BRK s"),
-    0x01: new opcode_info(0x01, WDC_OM.ORA, WDC_AM.D_INDEXED_IND, "ORA (d,x)"),
-    0x02: new opcode_info(0x02, WDC_OM.COP, WDC_AM.STACKj, "COP s"),
-    0x03: new opcode_info(0x03, WDC_OM.ORA, WDC_AM.STACK_R, "ORA d,s"),
-    0x04: new opcode_info(0x04, WDC_OM.TSB, WDC_AM.Db, "TSB d"),
-    0x05: new opcode_info(0x05, WDC_OM.ORA, WDC_AM.D, "ORA d"),
-    0x06: new opcode_info(0x06, WDC_OM.ASL, WDC_AM.Db, "ASL d"),
-    0x07: new opcode_info(0x07, WDC_OM.ORA, WDC_AM.D_IND_L, "ORA [d]"),
-    0x08: new opcode_info(0x08, WDC_OM.PHP, WDC_AM.STACKc, "PHP s"),
-    0x09: new opcode_info(0x09, WDC_OM.ORA, WDC_AM.IMM, "ORA #"),
-    0x0A: new opcode_info(0x0A, WDC_OM.ASL, WDC_AM.ACCUM, "ASL A"),
-    0x0B: new opcode_info(0x0B, WDC_OM.PHD, WDC_AM.STACKc, "PHD s"),
-    0x0C: new opcode_info(0x0C, WDC_OM.TSB, WDC_AM.Ad, "TSB a"),
-    0x0D: new opcode_info(0x0D, WDC_OM.ORA, WDC_AM.A, "ORA a"),
-    0x0E: new opcode_info(0x0E, WDC_OM.ASL, WDC_AM.Ad, "ASL a"),
-    0x0F: new opcode_info(0x0F, WDC_OM.ORA, WDC_AM.AL, "ORA al"),
-    0x10: new opcode_info(0x10, WDC_OM.BPL, WDC_AM.PC_R, "BPL r"),
-    0x11: new opcode_info(0x11, WDC_OM.ORA, WDC_AM.D_IND_INDEXED, "ORA (d),y"),
-    0x12: new opcode_info(0x12, WDC_OM.ORA, WDC_AM.D_IND, "ORA (d)"),
-    0x13: new opcode_info(0x13, WDC_OM.ORA, WDC_AM.STACK_R_IND_INDEXED, "ORA (d,s),y"),
-    0x14: new opcode_info(0x14, WDC_OM.TRB, WDC_AM.Db, "TRB d"),
-    0x15: new opcode_info(0x15, WDC_OM.ORA, WDC_AM.D_INDEXED_X, "ORA d,x"),
-    0x16: new opcode_info(0x16, WDC_OM.ASL, WDC_AM.D_INDEXED_Xb, "ASL d,x"),
-    0x17: new opcode_info(0x17, WDC_OM.ORA, WDC_AM.D_IND_L_INDEXED, "ORA [d],y"),
-    0x18: new opcode_info(0x18, WDC_OM.CLC, WDC_AM.I, "CLC i"),
-    0x19: new opcode_info(0x19, WDC_OM.ORA, WDC_AM.A_INDEXED_Y, "ORA a,y"),
-    0x1A: new opcode_info(0x1A, WDC_OM.INC, WDC_AM.ACCUM, "INC A"),
-    0x1B: new opcode_info(0x1B, WDC_OM.TCS, WDC_AM.I, "TCS i"),
-    0x1C: new opcode_info(0x1C, WDC_OM.TRB, WDC_AM.Ad, "TRB a"),
-    0x1D: new opcode_info(0x1D, WDC_OM.ORA, WDC_AM.A_INDEXED_X, "ORA a,x"),
-    0x1E: new opcode_info(0x1E, WDC_OM.ASL, WDC_AM.A_INDEXED_Xb, "ASL a,x"),
-    0x1F: new opcode_info(0x1F, WDC_OM.ORA, WDC_AM.AL_INDEXED_X, "ORA al,x"),
-    0x20: new opcode_info(0x20, WDC_OM.JSR, WDC_AM.Ac, "JSR a"),
-    0x21: new opcode_info(0x21, WDC_OM.AND, WDC_AM.D_INDEXED_IND, "AND (d,x)"),
-    0x22: new opcode_info(0x22, WDC_OM.JSL, WDC_AM.ALc, "JSL al"),
-    0x23: new opcode_info(0x23, WDC_OM.AND, WDC_AM.STACK_R, "AND d,s"),
-    0x24: new opcode_info(0x24, WDC_OM.BIT, WDC_AM.D, "BIT d"),
-    0x25: new opcode_info(0x25, WDC_OM.AND, WDC_AM.D, "AND d"),
-    0x26: new opcode_info(0x26, WDC_OM.ROL, WDC_AM.Db, "ROL d"),
-    0x27: new opcode_info(0x27, WDC_OM.AND, WDC_AM.D_IND_L, "AND [d]"),
-    0x28: new opcode_info(0x28, WDC_OM.PLP, WDC_AM.STACKb, "PLP s"),
-    0x29: new opcode_info(0x29, WDC_OM.AND, WDC_AM.IMM, "AND #"),
-    0x2A: new opcode_info(0x2A, WDC_OM.ROL, WDC_AM.ACCUM, "ROL A"),
-    0x2B: new opcode_info(0x2B, WDC_OM.PLD, WDC_AM.STACKb, "PLD s"),
-    0x2C: new opcode_info(0x2C, WDC_OM.BIT, WDC_AM.A, "BIT a"),
-    0x2D: new opcode_info(0x2D, WDC_OM.AND, WDC_AM.A, "AND a"),
-    0x2E: new opcode_info(0x2E, WDC_OM.ROL, WDC_AM.Ad, "ROL a"),
-    0x2F: new opcode_info(0x2F, WDC_OM.AND, WDC_AM.AL, "AND al"),
-    0x30: new opcode_info(0x30, WDC_OM.BMI, WDC_AM.PC_R, "BMI r"),
-    0x31: new opcode_info(0x31, WDC_OM.AND, WDC_AM.D_IND_INDEXED, "AND (d),y"),
-    0x32: new opcode_info(0x32, WDC_OM.AND, WDC_AM.D_IND, "AND (d)"),
-    0x33: new opcode_info(0x33, WDC_OM.AND, WDC_AM.STACK_R_IND_INDEXED, "AND (d,s),y"),
-    0x34: new opcode_info(0x34, WDC_OM.BIT, WDC_AM.D_INDEXED_X, "BIT d,x"),
-    0x35: new opcode_info(0x35, WDC_OM.AND, WDC_AM.D_INDEXED_X, "AND d,x"),
-    0x36: new opcode_info(0x36, WDC_OM.ROL, WDC_AM.D_INDEXED_Xb, "ROL d,x"),
-    0x37: new opcode_info(0x37, WDC_OM.AND, WDC_AM.D_IND_L_INDEXED, "AND [d],y"),
-    0x38: new opcode_info(0x38, WDC_OM.SEC, WDC_AM.I, "SEC i"),
-    0x39: new opcode_info(0x39, WDC_OM.AND, WDC_AM.A_INDEXED_Y, "AND a,y"),
-    0x3A: new opcode_info(0x3A, WDC_OM.DEC, WDC_AM.ACCUM, "DEC A"),
-    0x3B: new opcode_info(0x3B, WDC_OM.TSC, WDC_AM.I, "TSC i"),
-    0x3C: new opcode_info(0x3C, WDC_OM.BIT, WDC_AM.A_INDEXED_X, "BIT a,x"),
-    0x3D: new opcode_info(0x3D, WDC_OM.AND, WDC_AM.A_INDEXED_X, "AND a,x"),
-    0x3E: new opcode_info(0x3E, WDC_OM.ROL, WDC_AM.A_INDEXED_Xb, "ROL a,x"),
-    0x3F: new opcode_info(0x3F, WDC_OM.AND, WDC_AM.AL_INDEXED_X, "AND al,x"),
-    0x40: new opcode_info(0x40, WDC_OM.RTI, WDC_AM.STACKg, "RTI s"),
-    0x41: new opcode_info(0x41, WDC_OM.EOR, WDC_AM.D_INDEXED_IND, "EOR (d,x)"),
-    0x42: new opcode_info(0x42, WDC_OM.WDM, WDC_AM.I, "WDM i"),
-    0x43: new opcode_info(0x43, WDC_OM.EOR, WDC_AM.STACK_R, "EOR d,s"),
-    0x44: new opcode_info(0x44, WDC_OM.MVP, WDC_AM.XYCb, "MVP xyc"),
-    0x45: new opcode_info(0x45, WDC_OM.EOR, WDC_AM.D, "EOR d"),
-    0x46: new opcode_info(0x46, WDC_OM.LSR, WDC_AM.Db, "LSR d"),
-    0x47: new opcode_info(0x47, WDC_OM.EOR, WDC_AM.D_IND_L, "EOR [d]"),
-    0x48: new opcode_info(0x48, WDC_OM.PHA, WDC_AM.STACKc, "PHA s"),
-    0x49: new opcode_info(0x49, WDC_OM.EOR, WDC_AM.IMM, "EOR #"),
-    0x4A: new opcode_info(0x4A, WDC_OM.LSR, WDC_AM.ACCUM, "LSR A"),
-    0x4B: new opcode_info(0x4B, WDC_OM.PHK, WDC_AM.STACKc, "PHK s"),
-    0x4C: new opcode_info(0x4C, WDC_OM.JMP, WDC_AM.Ab, "JMP a"),
-    0x4D: new opcode_info(0x4D, WDC_OM.EOR, WDC_AM.A, "EOR a"),
-    0x4E: new opcode_info(0x4E, WDC_OM.LSR, WDC_AM.Ad, "LSR a"),
-    0x4F: new opcode_info(0x4F, WDC_OM.EOR, WDC_AM.AL, "EOR al"),
-    0x50: new opcode_info(0x50, WDC_OM.BVC, WDC_AM.PC_R, "BVC r"),
-    0x51: new opcode_info(0x51, WDC_OM.EOR, WDC_AM.D_IND_INDEXED, "EOR (d),y"),
-    0x52: new opcode_info(0x52, WDC_OM.EOR, WDC_AM.D_IND, "EOR (d)"),
-    0x53: new opcode_info(0x53, WDC_OM.EOR, WDC_AM.STACK_R_IND_INDEXED, "EOR (d,s),y"),
-    0x54: new opcode_info(0x54, WDC_OM.MVN, WDC_AM.XYC, "MVN xyc"),
-    0x55: new opcode_info(0x55, WDC_OM.EOR, WDC_AM.D_INDEXED_X, "EOR d,x"),
-    0x56: new opcode_info(0x56, WDC_OM.LSR, WDC_AM.D_INDEXED_Xb, "LSR d,x"),
-    0x57: new opcode_info(0x57, WDC_OM.EOR, WDC_AM.D_IND_L_INDEXED, "EOR [d],y"),
-    0x58: new opcode_info(0x58, WDC_OM.CLI, WDC_AM.Ie, "CLI i"),
-    0x59: new opcode_info(0x59, WDC_OM.EOR, WDC_AM.A_INDEXED_Y, "EOR a,y"),
-    0x5A: new opcode_info(0x5A, WDC_OM.PHY, WDC_AM.STACKc, "PHY s"),
-    0x5B: new opcode_info(0x5B, WDC_OM.TCD, WDC_AM.I, "TCD i"),
-    0x5C: new opcode_info(0x5C, WDC_OM.JMP, WDC_AM.ALb, "JMP al"),
-    0x5D: new opcode_info(0x5D, WDC_OM.EOR, WDC_AM.A_INDEXED_X, "EOR a,x"),
-    0x5E: new opcode_info(0x5E, WDC_OM.LSR, WDC_AM.A_INDEXED_Xb, "LSR a,x"),
-    0x5F: new opcode_info(0x5F, WDC_OM.EOR, WDC_AM.AL_INDEXED_X, "EOR al,x"),
-    0x60: new opcode_info(0x60, WDC_OM.RTS, WDC_AM.STACKh, "RTS s"),
-    0x61: new opcode_info(0x61, WDC_OM.ADC, WDC_AM.D_INDEXED_IND, "ADC (d,x)"),
-    0x62: new opcode_info(0x62, WDC_OM.PER, WDC_AM.STACKf, "PER s"),
-    0x63: new opcode_info(0x63, WDC_OM.ADC, WDC_AM.STACK_R, "ADC d,s"),
-    0x64: new opcode_info(0x64, WDC_OM.STZ, WDC_AM.D, "STZ d"),
-    0x65: new opcode_info(0x65, WDC_OM.ADC, WDC_AM.D, "ADC d"),
-    0x66: new opcode_info(0x66, WDC_OM.ROR, WDC_AM.Db, "ROR d"),
-    0x67: new opcode_info(0x67, WDC_OM.ADC, WDC_AM.D_IND_L, "ADC [d]"),
-    0x68: new opcode_info(0x68, WDC_OM.PLA, WDC_AM.STACKb, "PLA s"),
-    0x69: new opcode_info(0x69, WDC_OM.ADC, WDC_AM.IMM, "ADC #"),
-    0x6A: new opcode_info(0x6A, WDC_OM.ROR, WDC_AM.ACCUM, "ROR A"),
-    0x6B: new opcode_info(0x6B, WDC_OM.RTL, WDC_AM.STACKi, "RTL s"),
-    0x6C: new opcode_info(0x6C, WDC_OM.JMP, WDC_AM.A_INDb, "JMP (a)"),
-    0x6D: new opcode_info(0x6D, WDC_OM.ADC, WDC_AM.A, "ADC a"),
-    0x6E: new opcode_info(0x6E, WDC_OM.ROR, WDC_AM.Ad, "ROR a"),
-    0x6F: new opcode_info(0x6F, WDC_OM.ADC, WDC_AM.AL, "ADC al"),
-    0x70: new opcode_info(0x70, WDC_OM.BVS, WDC_AM.PC_R, "BVS r"),
-    0x71: new opcode_info(0x71, WDC_OM.ADC, WDC_AM.D_IND_INDEXED, "ADC (d),y"),
-    0x72: new opcode_info(0x72, WDC_OM.ADC, WDC_AM.D_IND, "ADC (d)"),
-    0x73: new opcode_info(0x73, WDC_OM.ADC, WDC_AM.STACK_R_IND_INDEXED, "ADC (d,s),y"),
-    0x74: new opcode_info(0x74, WDC_OM.STZ, WDC_AM.D_INDEXED_X, "STZ d,x"),
-    0x75: new opcode_info(0x75, WDC_OM.ADC, WDC_AM.D_INDEXED_X, "ADC d,x"),
-    0x76: new opcode_info(0x76, WDC_OM.ROR, WDC_AM.D_INDEXED_Xb, "ROR d,x"),
-    0x77: new opcode_info(0x77, WDC_OM.ADC, WDC_AM.D_IND_L_INDEXED, "ADC [d],y"),
-    0x78: new opcode_info(0x78, WDC_OM.SEI, WDC_AM.Ie, "SEI i"),
-    0x79: new opcode_info(0x79, WDC_OM.ADC, WDC_AM.A_INDEXED_Y, "ADC a,y"),
-    0x7A: new opcode_info(0x7A, WDC_OM.PLY, WDC_AM.STACKb, "PLY s"),
-    0x7B: new opcode_info(0x7B, WDC_OM.TDC, WDC_AM.I, "TDC i"),
-    0x7C: new opcode_info(0x7C, WDC_OM.JMP, WDC_AM.A_INDEXED_IND, "JMP (a,x)"),
-    0x7D: new opcode_info(0x7D, WDC_OM.ADC, WDC_AM.A_INDEXED_X, "ADC a,x"),
-    0x7E: new opcode_info(0x7E, WDC_OM.ROR, WDC_AM.A_INDEXED_Xb, "ROR a,x"),
-    0x7F: new opcode_info(0x7F, WDC_OM.ADC, WDC_AM.AL_INDEXED_X, "ADC al,x"),
-    0x80: new opcode_info(0x80, WDC_OM.BRA, WDC_AM.PC_R, "BRA r"),
-    0x81: new opcode_info(0x81, WDC_OM.STA, WDC_AM.D_INDEXED_IND, "STA (d,x)"),
-    0x82: new opcode_info(0x82, WDC_OM.BRL, WDC_AM.PC_RL, "BRL rl"),
-    0x83: new opcode_info(0x83, WDC_OM.STA, WDC_AM.STACK_R, "STA d,s"),
-    0x84: new opcode_info(0x84, WDC_OM.STY, WDC_AM.D, "STY d"),
-    0x85: new opcode_info(0x85, WDC_OM.STA, WDC_AM.D, "STA d"),
-    0x86: new opcode_info(0x86, WDC_OM.STX, WDC_AM.D, "STX d"),
-    0x87: new opcode_info(0x87, WDC_OM.STA, WDC_AM.D_IND_L, "STA [d]"),
-    0x88: new opcode_info(0x88, WDC_OM.DEY, WDC_AM.I, "DEY i"),
-    0x89: new opcode_info(0x89, WDC_OM.BIT, WDC_AM.IMM, "BIT #"),
-    0x8A: new opcode_info(0x8A, WDC_OM.TXA, WDC_AM.I, "TXA i"),
-    0x8B: new opcode_info(0x8B, WDC_OM.PHB, WDC_AM.STACKc, "PHB s"),
-    0x8C: new opcode_info(0x8C, WDC_OM.STY, WDC_AM.A, "STY a"),
-    0x8D: new opcode_info(0x8D, WDC_OM.STA, WDC_AM.A, "STA a"),
-    0x8E: new opcode_info(0x8E, WDC_OM.STX, WDC_AM.A, "STX a"),
-    0x8F: new opcode_info(0x8F, WDC_OM.STA, WDC_AM.AL, "STA al"),
-    0x90: new opcode_info(0x90, WDC_OM.BCC, WDC_AM.PC_R, "BCC r"),
-    0x91: new opcode_info(0x91, WDC_OM.STA, WDC_AM.D_IND_INDEXED, "STA (d),y"),
-    0x92: new opcode_info(0x92, WDC_OM.STA, WDC_AM.D_IND, "STA (d)"),
-    0x93: new opcode_info(0x93, WDC_OM.STA, WDC_AM.STACK_R_IND_INDEXED, "STA (d,s),y"),
-    0x94: new opcode_info(0x94, WDC_OM.STY, WDC_AM.D_INDEXED_X, "STY d,x"),
-    0x95: new opcode_info(0x95, WDC_OM.STA, WDC_AM.D_INDEXED_X, "STA d,x"),
-    0x96: new opcode_info(0x96, WDC_OM.STX, WDC_AM.D_INDEXED_Y, "STX d,y"),
-    0x97: new opcode_info(0x97, WDC_OM.STA, WDC_AM.D_IND_L_INDEXED, "STA [d],y"),
-    0x98: new opcode_info(0x98, WDC_OM.TYA, WDC_AM.I, "TYA i"),
-    0x99: new opcode_info(0x99, WDC_OM.STA, WDC_AM.A_INDEXED_Y, "STA a,y"),
-    0x9A: new opcode_info(0x9A, WDC_OM.TXS, WDC_AM.I, "TXS i"),
-    0x9B: new opcode_info(0x9B, WDC_OM.TXY, WDC_AM.I, "TXY i"),
-    0x9C: new opcode_info(0x9C, WDC_OM.STZ, WDC_AM.A, "STZ a"),
-    0x9D: new opcode_info(0x9D, WDC_OM.STA, WDC_AM.A_INDEXED_X, "STA a,x"),
-    0x9E: new opcode_info(0x9E, WDC_OM.STZ, WDC_AM.A_INDEXED_X, "STZ a,x"),
-    0x9F: new opcode_info(0x9F, WDC_OM.STA, WDC_AM.AL_INDEXED_X, "STA al,x"),
-    0xA0: new opcode_info(0xA0, WDC_OM.LDY, WDC_AM.IMM, "LDY #"),
-    0xA1: new opcode_info(0xA1, WDC_OM.LDA, WDC_AM.D_INDEXED_IND, "LDA (d,x)"),
-    0xA2: new opcode_info(0xA2, WDC_OM.LDX, WDC_AM.IMM, "LDX #"),
-    0xA3: new opcode_info(0xA3, WDC_OM.LDA, WDC_AM.STACK_R, "LDA d,s"),
-    0xA4: new opcode_info(0xA4, WDC_OM.LDY, WDC_AM.D, "LDY d"),
-    0xA5: new opcode_info(0xA5, WDC_OM.LDA, WDC_AM.D, "LDA d"),
-    0xA6: new opcode_info(0xA6, WDC_OM.LDX, WDC_AM.D, "LDX d"),
-    0xA7: new opcode_info(0xA7, WDC_OM.LDA, WDC_AM.D_IND_L, "LDA [d]"),
-    0xA8: new opcode_info(0xA8, WDC_OM.TAY, WDC_AM.I, "TAY i"),
-    0xA9: new opcode_info(0xA9, WDC_OM.LDA, WDC_AM.IMM, "LDA #"),
-    0xAA: new opcode_info(0xAA, WDC_OM.TAX, WDC_AM.I, "TAX i"),
-    0xAB: new opcode_info(0xAB, WDC_OM.PLB, WDC_AM.STACKb, "PLB s"),
-    0xAC: new opcode_info(0xAC, WDC_OM.LDY, WDC_AM.A, "LDY a"),
-    0xAD: new opcode_info(0xAD, WDC_OM.LDA, WDC_AM.A, "LDA a"),
-    0xAE: new opcode_info(0xAE, WDC_OM.LDX, WDC_AM.A, "LDX a"),
-    0xAF: new opcode_info(0xAF, WDC_OM.LDA, WDC_AM.AL, "LDA al"),
-    0xB0: new opcode_info(0xB0, WDC_OM.BCS, WDC_AM.PC_R, "BCS r"),
-    0xB1: new opcode_info(0xB1, WDC_OM.LDA, WDC_AM.D_IND_INDEXED, "LDA (d),y"),
-    0xB2: new opcode_info(0xB2, WDC_OM.LDA, WDC_AM.D_IND, "LDA (d)"),
-    0xB3: new opcode_info(0xB3, WDC_OM.LDA, WDC_AM.STACK_R_IND_INDEXED, "LDA (d,s),y"),
-    0xB4: new opcode_info(0xB4, WDC_OM.LDY, WDC_AM.D_INDEXED_X, "LDY d,x"),
-    0xB5: new opcode_info(0xB5, WDC_OM.LDA, WDC_AM.D_INDEXED_X, "LDA d,x"),
-    0xB6: new opcode_info(0xB6, WDC_OM.LDX, WDC_AM.D_INDEXED_Y, "LDX d,y"),
-    0xB7: new opcode_info(0xB7, WDC_OM.LDA, WDC_AM.D_IND_L_INDEXED, "LDA [d],y"),
-    0xB8: new opcode_info(0xB8, WDC_OM.CLV, WDC_AM.I, "CLV i"),
-    0xB9: new opcode_info(0xB9, WDC_OM.LDA, WDC_AM.A_INDEXED_Y, "LDA a,y"),
-    0xBA: new opcode_info(0xBA, WDC_OM.TSX, WDC_AM.I, "TSX i"),
-    0xBB: new opcode_info(0xBB, WDC_OM.TYX, WDC_AM.I, "TYX i"),
-    0xBC: new opcode_info(0xBC, WDC_OM.LDY, WDC_AM.A_INDEXED_X, "LDY a,x"),
-    0xBD: new opcode_info(0xBD, WDC_OM.LDA, WDC_AM.A_INDEXED_X, "LDA a,x"),
-    0xBE: new opcode_info(0xBE, WDC_OM.LDX, WDC_AM.A_INDEXED_Y, "LDX a,y"),
-    0xBF: new opcode_info(0xBF, WDC_OM.LDA, WDC_AM.AL_INDEXED_X, "LDA al,x"),
-    0xC0: new opcode_info(0xC0, WDC_OM.CPY, WDC_AM.IMM, "CPY #"),
-    0xC1: new opcode_info(0xC1, WDC_OM.CMP, WDC_AM.D_INDEXED_IND, "CMP (d,x)"),
-    0xC2: new opcode_info(0xC2, WDC_OM.REP, WDC_AM.IMMb, "REP #"),
-    0xC3: new opcode_info(0xC3, WDC_OM.CMP, WDC_AM.STACK_R, "CMP d,s"),
-    0xC4: new opcode_info(0xC4, WDC_OM.CPY, WDC_AM.D, "CPY d"),
-    0xC5: new opcode_info(0xC5, WDC_OM.CMP, WDC_AM.D, "CMP d"),
-    0xC6: new opcode_info(0xC6, WDC_OM.DEC, WDC_AM.Db, "DEC d"),
-    0xC7: new opcode_info(0xC7, WDC_OM.CMP, WDC_AM.D_IND_L, "CMP [d]"),
-    0xC8: new opcode_info(0xC8, WDC_OM.INY, WDC_AM.I, "INY i"),
-    0xC9: new opcode_info(0xC9, WDC_OM.CMP, WDC_AM.IMM, "CMP #"),
-    0xCA: new opcode_info(0xCA, WDC_OM.DEX, WDC_AM.I, "DEX i"),
-    0xCB: new opcode_info(0xCB, WDC_OM.WAI, WDC_AM.Id, "WAI i"),
-    0xCC: new opcode_info(0xCC, WDC_OM.CPY, WDC_AM.A, "CPY a"),
-    0xCD: new opcode_info(0xCD, WDC_OM.CMP, WDC_AM.A, "CMP a"),
-    0xCE: new opcode_info(0xCE, WDC_OM.DEC, WDC_AM.Ad, "DEC a"),
-    0xCF: new opcode_info(0xCF, WDC_OM.CMP, WDC_AM.AL, "CMP al"),
-    0xD0: new opcode_info(0xD0, WDC_OM.BNE, WDC_AM.PC_R, "BNE r"),
-    0xD1: new opcode_info(0xD1, WDC_OM.CMP, WDC_AM.D_IND_INDEXED, "CMP (d),y"),
-    0xD2: new opcode_info(0xD2, WDC_OM.CMP, WDC_AM.D_IND, "CMP (d)"),
-    0xD3: new opcode_info(0xD3, WDC_OM.CMP, WDC_AM.STACK_R_IND_INDEXED, "CMP (d,s),y"),
-    0xD4: new opcode_info(0xD4, WDC_OM.PEI, WDC_AM.STACKe, "PEI s"),
-    0xD5: new opcode_info(0xD5, WDC_OM.CMP, WDC_AM.D_INDEXED_X, "CMP d,x"),
-    0xD6: new opcode_info(0xD6, WDC_OM.DEC, WDC_AM.D_INDEXED_Xb, "DEC d,x"),
-    0xD7: new opcode_info(0xD7, WDC_OM.CMP, WDC_AM.D_IND_L_INDEXED, "CMP [d],y"),
-    0xD8: new opcode_info(0xD8, WDC_OM.CLD, WDC_AM.I, "CLD i"),
-    0xD9: new opcode_info(0xD9, WDC_OM.CMP, WDC_AM.A_INDEXED_Y, "CMP a,y"),
-    0xDA: new opcode_info(0xDA, WDC_OM.PHX, WDC_AM.STACKc, "PHX s"),
-    0xDB: new opcode_info(0xDB, WDC_OM.STP, WDC_AM.Ic, "STP i"),
-    0xDC: new opcode_info(0xDC, WDC_OM.JML, WDC_AM.A_IND, "JML (a)"),
-    0xDD: new opcode_info(0xDD, WDC_OM.CMP, WDC_AM.A_INDEXED_X, "CMP a,x"),
-    0xDE: new opcode_info(0xDE, WDC_OM.DEC, WDC_AM.A_INDEXED_Xb, "DEC a,x"),
-    0xDF: new opcode_info(0xDF, WDC_OM.CMP, WDC_AM.AL_INDEXED_X, "CMP al,x"),
-    0xE0: new opcode_info(0xE0, WDC_OM.CPX, WDC_AM.IMM, "CPX #"),
-    0xE1: new opcode_info(0xE1, WDC_OM.SBC, WDC_AM.D_INDEXED_IND, "SBC (d,x)"),
-    0xE2: new opcode_info(0xE2, WDC_OM.SEP, WDC_AM.IMMb, "SEP #"),
-    0xE3: new opcode_info(0xE3, WDC_OM.SBC, WDC_AM.STACK_R, "SBC d,s"),
-    0xE4: new opcode_info(0xE4, WDC_OM.CPX, WDC_AM.D, "CPX d"),
-    0xE5: new opcode_info(0xE5, WDC_OM.SBC, WDC_AM.D, "SBC d"),
-    0xE6: new opcode_info(0xE6, WDC_OM.INC, WDC_AM.Db, "INC d"),
-    0xE7: new opcode_info(0xE7, WDC_OM.SBC, WDC_AM.D_IND_L, "SBC [d]"),
-    0xE8: new opcode_info(0xE8, WDC_OM.INX, WDC_AM.I, "INX i"),
-    0xE9: new opcode_info(0xE9, WDC_OM.SBC, WDC_AM.IMM, "SBC #"),
-    0xEA: new opcode_info(0xEA, WDC_OM.NOP, WDC_AM.I, "NOP i"),
-    0xEB: new opcode_info(0xEB, WDC_OM.XBA, WDC_AM.Ib, "XBA i"),
-    0xEC: new opcode_info(0xEC, WDC_OM.CPX, WDC_AM.A, "CPX a"),
-    0xED: new opcode_info(0xED, WDC_OM.SBC, WDC_AM.A, "SBC a"),
-    0xEE: new opcode_info(0xEE, WDC_OM.INC, WDC_AM.Ad, "INC a"),
-    0xEF: new opcode_info(0xEF, WDC_OM.SBC, WDC_AM.AL, "SBC al"),
-    0xF0: new opcode_info(0xF0, WDC_OM.BEQ, WDC_AM.PC_R, "BEQ r"),
-    0xF1: new opcode_info(0xF1, WDC_OM.SBC, WDC_AM.D_IND_INDEXED, "SBC (d),y"),
-    0xF2: new opcode_info(0xF2, WDC_OM.SBC, WDC_AM.D_IND, "SBC (d)"),
-    0xF3: new opcode_info(0xF3, WDC_OM.SBC, WDC_AM.STACK_R_IND_INDEXED, "SBC (d,s),y"),
-    0xF4: new opcode_info(0xF4, WDC_OM.PEA, WDC_AM.STACKd, "PEA s"),
-    0xF5: new opcode_info(0xF5, WDC_OM.SBC, WDC_AM.D_INDEXED_X, "SBC d,x"),
-    0xF6: new opcode_info(0xF6, WDC_OM.INC, WDC_AM.D_INDEXED_Xb, "INC d,x"),
-    0xF7: new opcode_info(0xF7, WDC_OM.SBC, WDC_AM.D_IND_L_INDEXED, "SBC [d],y"),
-    0xF8: new opcode_info(0xF8, WDC_OM.SED, WDC_AM.I, "SED i"),
-    0xF9: new opcode_info(0xF9, WDC_OM.SBC, WDC_AM.A_INDEXED_Y, "SBC a,y"),
-    0xFA: new opcode_info(0xFA, WDC_OM.PLX, WDC_AM.STACKb, "PLX s"),
-    0xFB: new opcode_info(0xFB, WDC_OM.XCE, WDC_AM.I, "XCE i"),
-    0xFC: new opcode_info(0xFC, WDC_OM.JSR, WDC_AM.A_INDEXED_INDb, "JSR (a,x)"),
-    0xFD: new opcode_info(0xFD, WDC_OM.SBC, WDC_AM.A_INDEXED_X, "SBC a,x"),
-    0xFE: new opcode_info(0xFE, WDC_OM.INC, WDC_AM.A_INDEXED_Xb, "INC a,x"),
-    0xFF: new opcode_info(0xFF, WDC_OM.SBC, WDC_AM.AL_INDEXED_X, "SBC al,x"),
-    0x100: new opcode_info(0x100, WDC_OM.S_RESET, WDC_AM.STACK, "S_RESET s"),
-    0x101: new opcode_info(0x101, WDC_OM.S_ABORT, WDC_AM.STACK, "S_ABORT s"),
-    0x102: new opcode_info(0x102, WDC_OM.S_IRQ, WDC_AM.STACK, "S_IRQ s"),
-    0x103: new opcode_info(0x103, WDC_OM.S_NMI, WDC_AM.STACK, "S_NMI s")
-});
-
-class opcode_functions {
-    constructor(opcode_info, exec_func, affected_by_E, affected_by_M, affected_by_X, affected_by_D) {
-        this.opcode = opcode_info.opcode;
-        this.ins = opcode_info.ins;
-        this.addr_mode = opcode_info.addr_mode;
-        this.mnemonic = opcode_info.mnemonic;
-        this.exec_func = exec_func;
-        this.affected_by_E = affected_by_E;
-        this.affected_by_M = affected_by_M;
-        this.affected_by_X = affected_by_X;
-        this.affected_by_D = affected_by_D;
-    }
-}
-
-// For relative addressing
-function mksigned8(what) {
-     return what >= 0x80 ? -(0x100 - what) : what;
-}
-
-function mksigned13(what) {
-    return what >= 0x1000 ? -(0x2000 - what) : what;
-}
-
-function mksigned16(what) {
-     return what >= 0x8000 ? -(0x10000 - what) : what;
-}
-
-class switchgen {
+class WDC_switchgen {
     constructor(indent, what) {
         this.indent1 = indent;
         this.indent2 = '    ' + this.indent1;
@@ -1779,7 +1480,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
     let affected_by_X = false;
     let affected_by_D = false;
     let indent2 = indent + '    ';
-    let ag = new switchgen(indent2,'regs.TCU')
+    let ag = new WDC_switchgen(indent2,'regs.TCU')
     let mem16 = false;
     let RW = 0;
 
@@ -2978,9 +2679,9 @@ function generate_instruction_codes(indent, E, M, X) {
     let aryo;
     let keep_it = false;
     for (let opcode = 0; opcode <= WDC_MAX_OPCODE; opcode++) {
-        let opcode_info = opcode_matrix[opcode];
+        let opcode_info = WDC_opcode_matrix[opcode];
         let opc2 = '0x' + hex2(opcode);
-        let mystr = indent + '    ' + opc2 + ': new opcode_functions(opcode_matrix[' + opc2 + '],\n';
+        let mystr = indent + '    ' + opc2 + ': new WDC_opcode_functions(WDC_opcode_matrix[' + opc2 + '],\n';
         let r = generate_instruction_function(indent + '        ', opcode_info, E, M, X);
         if (r.strout.length === 0) {
             console.log('EMPTY!', opc2);
@@ -3031,7 +2732,7 @@ function generate_EMX_truth_table() {
 //console.log(generate_EMX_truth_table());
 // Lookup is E + M*2 + X*4
 // disabling instruction crunching for now
-/*const EMX_table = Object.freeze({
+/*const WDC_EMX_table = Object.freeze({
     0: 0, // E0 M0 X0
     1: 1, // E1 M0 X0
     2: 2, // E0 M1 X0
@@ -3042,18 +2743,6 @@ function generate_EMX_truth_table() {
     7: 1  // E1 M1 X1
 });*/
 
-const EMX_table = Object.freeze({
-    0: 0, // E0 M0 X0
-    1: 1, // E1 M0 X0
-    2: 2, // E0 M1 X0
-    3: 3, // E1 M1 X0
-    4: 4, // E0 M0 X1
-    5: 5, // E1 M0 X1
-    6: 6, // E0 M1 X1
-    7: 7  // E1 M1 X1
-});
-
-
 function decode_opcodes() {
     // Intended data structure will be accessed like...yo[E + M*2 + X*4 + D*8][opcode]
     let IDT = '    ';
@@ -3062,7 +2751,7 @@ function decode_opcodes() {
     for (let E = 0; E < 2; E++) {
         for (let M = 0; M < 2; M++) {
             for (let X = 0; X < 2; X++) {
-                let flag = EMX_table[E + M*2 + X*4]
+                let flag = WDC_EMX_table[E + M*2 + X*4]
                 // disabling instruction crunching for now
                 // if (already_done.indexOf(flag) !== -1) continue;
                 if (E && (!X || !M))
@@ -3090,33 +2779,9 @@ const decoded_opcodes = Object.freeze(trattodo());*/
 
 //console.log('const decoded_opcodes = Object.freeze(\n' + decode_opcodes() + ');');
 
-function get_decoded_opcode(regs) {
-    let flag = 0;
-    let ret = null;
-    /*if (regs.IR === 0xA9) {
-        console.log('HERE for LDA');
-    }*/
-    if (regs.E) {
-        //ret = decoded_opcodes[EMX_table[7]][regs.IR];
-        ret = decoded_opcodes[EMX_table[7]][regs.IR];
-    }
-    else {
-        let flag = EMX_table[regs.P.M*2 + regs.P.X*4];
-        //console.log("FLAG!", typeof(flag))
-        //if (decoded_opcodes[EMX_table[flag]].hasOwnProperty(regs.IR.toString()))
-        ret = decoded_opcodes[flag][regs.IR];
-        //else
-        //    ret = decoded_opcodes[EMX_table[0]][regs.IR];
-    }
-    if ((ret === null) || (typeof(ret) === 'undefined')) {
-        ret = decoded_opcodes[EMX_table[0]][regs.IR];
-    }
-    return ret;
-}
-
 function generate_ins_AM(indent) {
     let ostr = 'const ins_AM = Object.freeze({\n';
-    for (let ins = 0; ins <= MAX_INS; ins++) {
+    for (let ins = 0; ins <= WDC_MAX_INS; ins++) {
         ostr += indent + '[OM.';
         for (let j in WDC_OM) {
             if (WDC_OM[j] === ins) {
@@ -3127,7 +2792,7 @@ function generate_ins_AM(indent) {
         let first = true;
         // Search through address modes
         for (let opcoden = 0; opcoden <= WDC_MAX_OPCODE; opcoden++) {
-            let opcode = opcode_matrix[opcoden];
+            let opcode = WDC_opcode_matrix[opcoden];
             if (opcode.ins !== ins) continue;
             let addr_mode = opcode.addr_mode;
             if (!first) {

@@ -496,3 +496,8 @@ class spc700 {
     }
 }
 
+function SPC_get_decoded_opcode(regs) {
+    let opcf = SPC_decoded_opcodes[regs.IR];
+    if (typeof opcf === 'undefined') return null;
+    return opcf;
+}

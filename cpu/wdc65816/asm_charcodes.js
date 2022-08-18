@@ -1,3 +1,6 @@
+"use strict";
+// Charcodes for priting to a screen, and a hello world program
+
 const INIT_ASM = `
 ; This section holds configuration data for the assembler
 .config

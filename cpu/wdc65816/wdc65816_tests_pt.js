@@ -363,7 +363,7 @@ async function test_pt_65c816() {
         return testRAM[(bank << 16) | addr];
     }
     let clock = new SNES_clock({rev: 1});
-    let cpu = new w65c816(clock);
+    let cpu = new wdc65816(clock);
     dbg.add_cpu(D_RESOURCE_TYPES.WDC65C816, cpu);
     if (DO_TRACING) {
         dbg.enable_tracing_for(D_RESOURCE_TYPES.WDC65C816);

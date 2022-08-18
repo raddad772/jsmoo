@@ -108,23 +108,8 @@ class global_player_t {
 const global_player = new global_player_t();
 
 
-
-function generate_js() {
-	save_js('w65c816_generated_opcodes.js', '"use strict";\n\nconst decoded_opcodes = Object.freeze(\n' + decode_opcodes() + ');');
-}
-
-function generate_js_SPC() {
-    save_js('spc700_generated_opcodes.js', '"use strict";\n\nconst SPC_decoded_opcodes = Object.freeze(\n' + SPC_decode_opcodes() + ');');
-}
-
-function get_mc_steps() {
-}
-
-var filesys;
-
 async function init_fs() {
 	after_js();
-
 }
 
 async function load_sel_rom() {

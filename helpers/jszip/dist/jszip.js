@@ -11099,7 +11099,7 @@ function send_all_trees(s, lcodes, dcodes, blcodes)
  * - BINARY otherwise.
  * - The following partially-portable control characters form a
  *   "gray list" that is ignored in this detection algorithm:
- *   (7 {BEL}, 8 {BS}, 11 {VT}, 12 {FF}, 26 {SUB}, 27 {ESC}).
+ *   (7 {BEL}, 8 {BS}, 11 {WDC_VT}, 12 {FF}, 26 {SUB}, 27 {ESC}).
  * IN assertion: the fields Freq of dyn_ltree are set.
  */
 function detect_data_type(s) {

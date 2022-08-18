@@ -1,5 +1,5 @@
 "use strict";
-// This file generates test vectors for the 65c816 core.
+// This file generates test vectors for the wdc65816 core.
 // This file depends on the pin-centric method of emulation
 
 const TK = Object.freeze({
@@ -148,13 +148,13 @@ class w65c816_test_case {
         this.ASM = ASMinit;
         this.testfuncs = (typeof(testfuncs) === 'undefined' || testfuncs === null) ? [function(cpu){return true}] : testfuncs;
         if (typeof(cpu) === 'undefined') {
-            this.cpu = new w65c816();
+            this.cpu = new wdc65816();
         }
         else
             this.cpu = cpu;
 
         if (typeof(RAM_ASMinit) === 'string') {
-            let r = new w65c816_assembler();
+            let r = new wdc65816_assembler();
             r.assemble(RAM_ASMinit, true);
             this.RAM = r.output;
         }
@@ -170,7 +170,7 @@ class w65c816_test_case {
 
 function write_test_to_RAM()
 {
-    let a = new w65c816_assembler();
+    let a = new wdc65816_assembler();
     let TO_ASSEMBLE = INIT_ASM;// + TEST_ABS_RW;
 
     a.assemble(TO_ASSEMBLE);
@@ -210,7 +210,7 @@ class tester_65c816 {
         pxctx = canvasel.getContext('2d');
         clr_canvas();
         this.RAM = write_test_to_RAM();
-        this.cpu = new w65c816();
+        this.cpu = new wdc65816();
         this.cpu.reset();
         this.init = false;
         let ctrl = this;

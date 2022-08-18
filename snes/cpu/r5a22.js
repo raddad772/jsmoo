@@ -1,14 +1,19 @@
 "use scrict";
 /*
-Timing Notes
-The 42xxh Ports are clocked by the CPU Clock, meaning that one needs the same amount of "wait" opcodes no matter if the CPU Clock is 3.5MHz or 2.6MHz. When reading the result, the "MOV r,[421xh]" opcode does include 3 cycles (spent on reading the 3-byte opcode), meaning that one needs to insert only 5 cycles for MUL and only 13 for DIV.
-Some special cases: If the the upper "N" bits of 4202h are all zero, then it seems that one may wait "N" cycles less. If memory REFRESH occurs (once and when), then the result seems to be valid within even less wait opcodes.
-The maths operations are started only on WRMPYB/WRDIVB writes (not on WRMPYA/WRDIVL/WRDIVH writes; unlike the PPU maths which start on any M7A/M7B write).
+Ricoh 5A22, i.e., the CPU at the heart of the SNES.
+It includes:
+ * WDC 65816 CPU, which is paused for DMA & WRAM refresh, and whose two-phase clock is stretched to 3/3, 3/5,or 3/9 master cycles depending on memory access
+ * DMA/HDMA controllers which take 8 master cycles per transfer (+overhead on activation),
+ * DRAM refresh circuitry,
+ * IRQ timers,
+ * an 8x8=16 multiplier and 16/8=8,8 dividing ALU
+ * 2 busses, A (24x8-bit normal bus) and B (8x8-bit peripheral bus accessed by read/write of certain memory addresses)
+ */
+
+
+/*
 */
 
-/*so mul and div happen 1 cycle of operation per 1 cycle of CPU which can take variable master cycles ok
-but unlike CPU core they are not interrupted by DRAM refresh
-*/
 /**
  * @param {Number} addr
  * @param {Number} ROMspeed
@@ -17,6 +22,7 @@ but unlike CPU core they are not interrupted by DRAM refresh
  */
 function SNES_mem_timing(addr, ROMspeed) {
 	// Taken from a byuu post on a forum, thanks byuu!
+	// Determine CPU cycle length in master clocks based on address currently in use (speed is 6 if no address being read/written)
 
 	let rspeed = ROMspeed || 8;
 
@@ -38,26 +44,24 @@ RMODES = Object.freeze({
 	CPU: 3,
 });
 
-// So
-// A 5A22 is basically a state machine that can be in 1 of 3 states,
-//  in these priorities:
+/*
+ So...
+  A 5A22 is basically a state machine that can be in 1 of 3 states,
+ in these priorities:
 
-// 1. Do nothing during DRAM refresh for 40 cycles
-// 2. Execute HDMA for up to 8 master clocks
-// 3. Execute DMA (this is completely halted by HDMA) for up to 8 master clocks
-// 4. Execute CPU cycle, IRQ/NMI poll, ALU cycle for up to 12 master clocks
+ 1. Do nothing during DRAM refresh for 40 master clocks
+ 2. Execute HDMA for 8 master clocks per byte
+ 3. Execute DMA (this is completely halted by HDMA) for 8 master clocks per byte
+ 4. Execute CPU cycle, IRQ/NMI poll, ALU cycle for 6-12 master clocks
 
-// Furthermore, we want to be able to step in and out in arbitrary number
-//  of master clock cycles
-// SNES timing is based around a scanline. At the start of a scanline,
-//  things are latched (locked into stone):
-//   1) where HDMA setup will trigger
-//   2) where HDMA will trigger
+  Furthermore, we want to be able to step in and out in arbitrary number
+ of master clock cycles.
+  SNES timing is based around a scanline. At the start of a scanline,
+ things are latched (locked into stone):
+   1) where HDMA setup will trigger
+   2) where HDMA will trigger
 
-// So HDMA and DMA should be their own state machine just like CPU
-
-// In between each block, an "edge" should happen, which re-evaluates
-//  HDMA/DMA/DRAM refresh/etc.
+*/
 
 const R5A22_priorities = Object.freeze({
 	HIGHEST: 0,      // Mostly for internal CPU timers
@@ -94,6 +98,7 @@ class SNES_controllerport {
 	}
 }
 
+// Since this only exists in a SNES, it is not generic, but includes a lot of SNES emulation-specific logic.
 class ricoh5A22 {
 	/**
 	 * @param {*} version
@@ -101,7 +106,7 @@ class ricoh5A22 {
 	 * @param {SNES_clock} clock
 	 */
 	constructor(version, mem_map, clock) {
-		this.cpu = new w65c816(clock);
+		this.cpu = new wdc65816(clock);
 		this.version = version;
 		this.clock = clock;
 		this.clock.cpu_deficit = 0;
@@ -707,7 +712,7 @@ class ricoh5A22 {
 					case R5A22_events.SCANLINE_START:
 						break;
 					case R5A22_events.IRQ:
-						//console.log('IRQ HIT', this.clock.scanline.ppu_y, this.clock.cycles_since_scanline_start, this.io.htime, 'VT', this.io.vtime, this.io.hirq_enable, this.io.virq_enable, ev[0]);
+						//console.log('IRQ HIT', this.clock.scanline.ppu_y, this.clock.cycles_since_scanline_start, this.io.htime, 'WDC_VT', this.io.vtime, this.io.hirq_enable, this.io.virq_enable, ev[0]);
 						if (!this.status.irq_line) {
 							this.status.irq_transition = 1;
 							this.status.irq_line = 1;

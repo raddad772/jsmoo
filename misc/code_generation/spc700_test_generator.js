@@ -1850,7 +1850,7 @@ class SPC_test_generator {
     }
 }
 
-function generate_SPC700_test_test(seed = null) {
+function generate_SPC700_tests(seed = null) {
     if (seed !== null) rand_seed = seed;
     let test_generator = new SPC_test_generator();
     let tests = {};

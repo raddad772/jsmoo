@@ -1655,9 +1655,3 @@ function mainhere() {
     console.log(SPC_decode_opcodes());
     //console.log(SPC_generate_instruction_function('', 0x01));
 }
-
-function SPC_get_decoded_opcode(regs) {
-    let opcf = SPC_decoded_opcodes[regs.IR];
-    if (typeof opcf === 'undefined') return null;
-    return opcf;
-}
