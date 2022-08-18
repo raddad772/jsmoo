@@ -3,7 +3,7 @@
 
 // First go at a PPU
 // R/W code should be fine, but drawing...we'll see.
-const PPU_NUM_WORKERS = 8;
+const PPU_NUM_WORKERS = 4;
 const PPU_USE_WORKERS = true;
 const PPU_USE_BLOBWORKERS = true;
 
