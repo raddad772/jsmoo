@@ -957,7 +957,7 @@ class WDC_switchgen {
         /*this.addcycle(2);
         this.RPDV(0, 0, 0, 0);*/
         this.addcycle(3);
-        if (PINS_SEPERATE_PDV) {
+        if (WDC_PINS_SEPERATE_PDV) {
             this.RPDV(0, 0, 1, 0);
         }
         else {
@@ -975,7 +975,7 @@ class WDC_switchgen {
         this.addr_to_S_then_dec();
 
         this.addcycle(7);
-        if (PINS_SEPERATE_PDV) {
+        if (WDC_PINS_SEPERATE_PDV) {
             this.RPDV(0, 0, 1, 1);
         }
         this.addr_to_ZB('0xFFFC');
@@ -996,7 +996,7 @@ class WDC_switchgen {
 
         this.cleanup();
         this.addl('regs.PC += (pins.D << 8);')
-        if (!PINS_SEPERATE_PDV) {
+        if (!WDC_PINS_SEPERATE_PDV) {
             this.addl('pins.PDV = 1;');
         }
     }
@@ -1434,7 +1434,7 @@ class WDC_switchgen {
     }
 
     RPDV(W, P, D, V) {
-        if (PINS_SEPERATE_PDV) {
+        if (WDC_PINS_SEPERATE_PDV) {
             this.addl('pins.RW = ' + W + "; pins.VPA = " + P + "; pins.VDA = " + D + "; pins.VPB = " + V + ";");
         } else {
             let do_W = W !== this.old_rw;
@@ -1474,7 +1474,7 @@ class generate_instruction_function_return {
     }
 }
 
-function generate_instruction_function(indent, opcode_info, E, M, X) {
+function WDC_generate_instruction_function(indent, opcode_info, E, M, X) {
     let affected_by_E = false;
     let affected_by_M = false;
     let affected_by_X = false;
@@ -1498,7 +1498,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.addcycle('fetch_D0_and_skip_cycle 3');
             ag.addl('if (regs.skipped_cycle) {');
             ag.addl('    regs.TA = pins.D;');
-            if (PINS_SEPERATE_PDV)
+            if (WDC_PINS_SEPERATE_PDV)
                 ag.addl('    pins.VDA = 0; pins.VPA = 0; pins.VPB = 0; pins.RW = 0;');
             else
                 ag.addl('    pins.PDV = 0;');
@@ -2339,7 +2339,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.RPDV(0, 0, 0, 0);
 
             ag.addcycle('2b');
-            if (PINS_SEPERATE_PDV) {
+            if (WDC_PINS_SEPERATE_PDV) {
                 ag.addl('if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.VPA = 0; pins.VDA = 0; }');
             } else {
                 ag.addl('if (regs.skipped_cycle === 1) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } ');
@@ -2347,7 +2347,7 @@ function generate_instruction_function(indent, opcode_info, E, M, X) {
             }
 
             ag.cleanup();
-            if (PINS_SEPERATE_PDV) {
+            if (WDC_PINS_SEPERATE_PDV) {
                 ag.addl('if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.VPA = 0; pins.VDA = 0; }');
             } else {
                 ag.addl('if (regs.skipped_cycle === 2) { regs.TA = pins.D; pins.RW = 0; pins.PDV = 0; } ');
@@ -2682,7 +2682,7 @@ function generate_instruction_codes(indent, E, M, X) {
         let opcode_info = WDC_opcode_matrix[opcode];
         let opc2 = '0x' + hex2(opcode);
         let mystr = indent + '    ' + opc2 + ': new WDC_opcode_functions(WDC_opcode_matrix[' + opc2 + '],\n';
-        let r = generate_instruction_function(indent + '        ', opcode_info, E, M, X);
+        let r = WDC_generate_instruction_function(indent + '        ', opcode_info, E, M, X);
         if (r.strout.length === 0) {
             console.log('EMPTY!', opc2);
         }

@@ -35,3 +35,8 @@ function generate_wdc65816_js() {
 function generate_spc700_js() {
     save_js('spc700_generated_opcodes.js', '"use strict";\n\nconst SPC_decoded_opcodes = Object.freeze(\n' + SPC_decode_opcodes() + ');');
 }
+
+function generate_nes6502_js() {
+    save_js('nesm6502_generated_opcodes.js', generate_nes6502_core());
+}
+
