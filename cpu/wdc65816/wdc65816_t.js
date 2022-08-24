@@ -13,13 +13,13 @@
  */
 
 
-const BOOTUP = WDC_OM.S_RESET;
+const WDC_BOOTUP = WDC_OM.S_RESET;
 
-const OP_RESET = 0x100;
-const OP_NMI = 0x103;
-const OP_IRQ = 0x102;
-const OP_ABORT = 0x101;
-const PINS_SEPERATE_PDV = false;
+const WDC_OP_RESET = 0x100;
+const WDC_OP_NMI = 0x103;
+const WDC_OP_IRQ = 0x102;
+const WDC_OP_ABORT = 0x101;
+const WDC_PINS_SEPERATE_PDV = false;
 
 
 function padl(what, howmuch) {
@@ -28,8 +28,8 @@ function padl(what, howmuch) {
 	}
 	return what;
 }
-let TRACE_CYCLES_BREAK = (1364 * 260 * 60 * 10);
-let TRACE_BROKE = true;
+let WDC_TRACE_CYCLES_BREAK = (1364 * 260 * 60 * 10);
+let WDC_TRACE_BROKE = true;
 
 // Processor status register
 class wdc65816_P {
@@ -162,14 +162,14 @@ class WDC_disassembly_output {
 	}
 }
 
-class wdc65816 {
+class wdc65816_t {
 	constructor(clock) {
 		// The "clock" is only used for formatting traces. You can change or remove this behavior.
 		this.clock = clock;
 		this.regs = new wdc65816_registers();
 		this.pins = new wdc65816_pins();
 		this.PCO = 0; // Old PC, for instruction fetch
-		this.regs.IR = BOOTUP; // Set instruction register to special "BOOTUP"
+		this.regs.IR = WDC_BOOTUP; // Set instruction register to special "WDC_BOOTUP"
 
 		this.regs.STP = false;
 		this.regs.WAI = false;
@@ -222,26 +222,26 @@ class wdc65816 {
 			if (this.regs.NMI_pending && !this.NMI_ack) {
 				this.NMI_ack = true;
 				this.regs.NMI_pending = false;
-				this.regs.IR = OP_NMI;
+				this.regs.IR = WDC_OP_NMI;
 				//console.log('NMI EXEC!', this.clock.ppu_y);
 			}
 			// Do IRQ check
 			else if (this.regs.IRQ_pending && !this.IRQ_ack && !this.regs.old_I) {
 				this.IRQ_ack = true;
 				this.regs.IRQ_pending = false;
-				this.regs.IR = OP_IRQ;
+				this.regs.IR = WDC_OP_IRQ;
 				//console.log('IRQ EXEC!')
 			}
 			this.regs.old_I = this.regs.P.I;
 			this.PCO = this.pins.Addr; // PCO is PC for tracing purposes
 			this.current_instruction = WDC_get_decoded_opcode(this.regs);
-			if ((this.regs.IR === 0) || (dbg.brk_on_NMIRQ && (this.regs.IR === OP_IRQ || this.regs.IR === OP_NMI))) {
+			if ((this.regs.IR === 0) || (dbg.brk_on_NMIRQ && (this.regs.IR === WDC_OP_IRQ || this.regs.IR === WDC_OP_NMI))) {
 				console.log('BREAK at cycle', this.trace_cycles, ' FOR IR ', hex2(this.regs.IR));
 				dbg.break();
 			}
-			if ((this.trace_cycles > TRACE_CYCLES_BREAK) && (!TRACE_BROKE)) {
+			if ((this.trace_cycles > WDC_TRACE_CYCLES_BREAK) && (!WDC_TRACE_BROKE)) {
 				console.log('BREAK at cycle', this.trace_cycles, ' FOR TRACE CYCLE COUNT BREAK');
-				TRACE_BROKE = true;
+				WDC_TRACE_BROKE = true;
 				dbg.break();
 			}
 			if (this.trace_on) {
@@ -494,7 +494,7 @@ class wdc65816 {
 		}
 		else {
 			console.log('SETTING RESET');
-			this.pins.D = OP_RESET;
+			this.pins.D = WDC_OP_RESET;
 		}
 	}
 }

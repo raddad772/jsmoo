@@ -106,7 +106,7 @@ class ricoh5A22 {
 	 * @param {SNES_clock} clock
 	 */
 	constructor(version, mem_map, clock) {
-		this.cpu = new wdc65816(clock);
+		this.cpu = new wdc65816_t(clock);
 		this.version = version;
 		this.clock = clock;
 		this.clock.cpu_deficit = 0;
@@ -474,7 +474,7 @@ class ricoh5A22 {
 	reset() {
 		//this.cpu.pins.RES = 1;
 		this.cpu.pins.TCU = 0;
-		this.cpu.pins.D = OP_RESET;
+		this.cpu.pins.D = WDC_OP_RESET;
 		this.dma.reset();
 	}
 

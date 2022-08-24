@@ -25,7 +25,7 @@ class WDC_opcode_info {
     }
 }
 
-// wdc65816 address modes
+// wdc65816_t address modes
 const WDC_AM = Object.freeze({
 		A: 0,                     // a        absolute
         Ab: 101,                  // a        absolute, JMP  0x4C

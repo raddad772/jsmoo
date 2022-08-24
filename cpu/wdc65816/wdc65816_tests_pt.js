@@ -154,7 +154,7 @@ function test_it_automated(cpu, tests) {
         for (let j in initial.ram) {
             testRAM[faddr(initial.ram[j][0])] = initial.ram[j][1];
         }
-        if (PINS_SEPERATE_PDV) {
+        if (WDC_PINS_SEPERATE_PDV) {
             cpu.pins.VDA = cpu.pins.VPA = 1;
         }
         else {
@@ -205,7 +205,7 @@ function test_it_automated(cpu, tests) {
                 messages.push(cyclei.toString() + ' RW MISMATCH OTHER WAY!');
                 passed = false;
             }
-            if (PINS_SEPERATE_PDV) { // VDA, VPA, and VPB are emulated
+            if (WDC_PINS_SEPERATE_PDV) { // VDA, VPA, and VPB are emulated
                 if (+cpin('d', cycle[2]) !== cpu.pins.VDA) {
                     messages.push(cyclei.toString() + ' VDA MISMATCH!');
                     passed = false;
@@ -363,7 +363,7 @@ async function test_pt_65c816() {
         return testRAM[(bank << 16) | addr];
     }
     let clock = new SNES_clock({rev: 1});
-    let cpu = new wdc65816(clock);
+    let cpu = new wdc65816_t(clock);
     dbg.add_cpu(D_RESOURCE_TYPES.WDC65C816, cpu);
     if (DO_TRACING) {
         dbg.enable_tracing_for(D_RESOURCE_TYPES.WDC65C816);
