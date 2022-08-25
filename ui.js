@@ -123,7 +123,6 @@ let default_system_options = {
 // TODO: make it work for other-than SNES
 async function get_ui_system_options() {
 	let r = await bfs.read_file('/config/snes.json');
-	console.log('R!', r);
 	if (r === null)
 		return structuredClone(default_system_options);
 	return r;
@@ -142,7 +141,6 @@ async function set_last_rom(whichone) {
 
 async function load_selected_rom() {
 	if (!global_player.ready) {
-		console.log('NOT READY!');
 		return;
 	}
 	global_player.power_down();
@@ -183,9 +181,7 @@ async function reload_roms(where) {
 	}
 	ui_el.rom_select.innerHTML = outstr;
 	let r = await get_ui_system_options();
-	console.log('R2!', r);
 	if (r.last_rom !== null && typeof r !== 'undefined') {
-		console.log('LAST ROM YO!', r.last_rom, r);
 		ui_el.rom_select.value = r.last_rom; //basic_fs_split(r.last_rom);
 	}
 	load_selected_rom();
@@ -470,7 +466,7 @@ async function main() {
 	dbg.init_done();
 }
 
-after_js = main;
+//after_js = main;
 
 function init_ui() {
 	for (let k in ui_el) {

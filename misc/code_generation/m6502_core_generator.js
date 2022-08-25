@@ -9,6 +9,8 @@ function str_m6502_ocode_matrix(opc, variant) {
             return 'M6502_undocumented_matrix[' + opc2 + ']';
         case 'cmos':
             return 'M6502_cmos_matrix[' + opc2 + ']';
+        case 'invalid':
+            return 'M6502_invalid_matrix[' + opc2 + ']';
         default:
             console.log('UNKNOWN !? ', opc, variant);
             return 'WHAT';
@@ -37,7 +39,7 @@ function final_m6502_opcode_matrix(variant_list) {
     }
     for (let i = 0; i <= M6502_MAX_OPCODE; i++) {
         if (typeof output_matrix[i] === 'undefined')
-            output_matrix[i] = new M6502_opcode_info(i, M6502_MN.NONE, M6502_AM.NONE, 'INVALID', M6502_VARIANTS.STOCK);
+            output_matrix[i] = M6502_invalid_matrix[i];
     }
     return output_matrix;
 }
@@ -177,6 +179,10 @@ class m6502_switchgen {
         this.addl('pins.Addr = (pins.Addr + 1) & 0xFFFF;');
     }
 
+    addr_inc_ZP() {
+        this.addl('pins.Addr = (pins.Addr + 1) & 0xFF;');
+    }
+
     operand() {
         this.addl('pins.Addr = regs.PC;');
         this.addl('regs.PC = (regs.PC + 1) & 0xFFFF;');
@@ -192,8 +198,9 @@ class m6502_switchgen {
         this.addl('regs.S = (regs.S - 1) & 0xFF;');
     }
 
-    BRK() {
+    BRK(vector='0xFFFE', set_b=true) {
         this.addcycle();
+        this.addl('regs.P.B = ' + (+set_b) + ';');
         this.operand();
 
         this.addcycle();
@@ -208,18 +215,19 @@ class m6502_switchgen {
 
         this.addcycle();
         this.addr_to_S_then_dec();
-        this.addl('pins.D = regs.P.getbyte() | 0x30;');
+        this.addl('pins.D = regs.P.getbyte();');
         this.RW(1);
 
         this.addcycle();
+        this.addl('regs.P.B = 1; // Confirmed via Visual6502 that this bit is actually set always during NMI, IRQ, and BRK');
         this.addl('regs.P.I = 1;');
         this.RW(0);
-        this.addr_to('0xFFFE');
+        this.addr_to(vector);
 
         this.addcycle();
         this.RW(0);
         this.addl('regs.PC = pins.D;');
-        this.addr_to('0xFFFF');
+        this.addr_inc();
 
         this.cleanup();
         this.addl('regs.PC |= (pins.D << 8);');
@@ -256,11 +264,11 @@ class m6502_switchgen {
     }
 
     IRQ() {
-        this.interrupt('0xFFFE');
+        this.BRK('0xFFFE', false);
     }
 
     NMI() {
-        this.interrupt('0xFFFA');
+        this.BRK('0xFFFA', false);
     }
 
     RESET() {
@@ -291,6 +299,7 @@ class m6502_switchgen {
 
     Pull(what) {
         this.addcycle();
+        this.addl('pins.Addr = regs.PC;');
         this.addcycle();
         this.addr_to_S_after_inc();
         this.cleanup();
@@ -301,6 +310,8 @@ class m6502_switchgen {
 
     Push(what) {
         this.addcycle();
+        this.addl('pins.Addr = regs.PC;');
+        this.addcycle();
         this.addr_to_S_then_dec();
         this.addl('pins.D = ' + what);
         this.RW(1);
@@ -308,6 +319,7 @@ class m6502_switchgen {
 
     PullP() {
         this.addcycle();
+        this.addl('pins.Addr = regs.PC;');
         this.addcycle();
         this.addr_to_S_after_inc();
         this.cleanup();
@@ -315,6 +327,8 @@ class m6502_switchgen {
     }
 
     PushP() {
+        this.addcycle();
+        this.addl('pins.Addr = regs.PC;');
         this.addcycle();
         this.addr_to_S_then_dec();
         this.addl('pins.D = regs.P.getbyte() | 0x30;');
@@ -356,22 +370,23 @@ class m6502_switchgen {
         }
     }
 
-    ADC() {
+    ADC(what='regs.TR') {
         this.addl('let o;');
+        this.addl('let i = ' + what + ';');
         if (this.BCD_support) {
             this.addl('if (regs.P.D) {');
-            this.addl('    o = (regs.A & 0x0F) + (regs.TR & 0x0F) + (regs.P.C);');
+            this.addl('    o = (regs.A & 0x0F) + (i & 0x0F) + (regs.P.C);');
             this.addl('    if (o > 0x09) o += 0x06;');
             this.addl('    regs.P.C = +(o > 0x0F);');
-            this.addl('    o = (A & 0xF0) + (regs.TR & 0xF0) + (regs.P.C << 4) + (o & 0x0F);');
+            this.addl('    o = (A & 0xF0) + (i & 0xF0) + (regs.P.C << 4) + (o & 0x0F);');
             this.addl('    if (o > 0x9F) o += 0x60;');
             this.addl('} else {');
-            this.addl('    o = regs.TR + regs.A + regs.P.C;');
-            this.addl('    regs.P.V = ((~(regs.A ^ regs.TR)) & (A ^ o) & 0x80) >>> 7;');
+            this.addl('    o = i + regs.A + regs.P.C;');
+            this.addl('    regs.P.V = ((~(regs.A ^ i)) & (A ^ o) & 0x80) >>> 7;');
             this.addl('}');
         } else {
-            this.addl('o = regs.TR + regs.A + regs.P.C;');
-            this.addl('regs.P.V = ((~(regs.A ^ regs.TR)) & (A ^ o) & 0x80) >>> 7;');
+            this.addl('o = i + regs.A + regs.P.C;');
+            this.addl('regs.P.V = ((~(regs.A ^ i)) & (A ^ o) & 0x80) >>> 7;');
         }
         this.addl('regs.P.C = +(o > 0xFF);');
         this.addl('regs.A = o & 0xFF;');
@@ -379,10 +394,10 @@ class m6502_switchgen {
         this.setn('regs.A');
     }
 
-    AND() {
-        this.addl('regs.A &= regs.TR;');
+    AND(what='regs.TR') {
+        this.addl('regs.A &= ' + what + ';');
         this.setz('regs.A');
-        this.setn('regs.N');
+        this.setn('regs.A');
     }
 
     ASL(what='regs.TR') {
@@ -392,14 +407,14 @@ class m6502_switchgen {
         this.setn(what);
     }
 
-    BIT() {
-        this.setz('regs.A & regs.TR');
-        this.setn('regs.TR');
-        this.addl('this.regs.P.V = (regs.TR & 0x40) >>> 6;');
+    BIT(what='regs.TR') {
+        this.setz('regs.A & ' + what);
+        this.setn(what);
+        this.addl('this.regs.P.V = (' + what + ' & 0x40) >>> 6;');
     }
 
-    CMP(what) { // CPX, CPY too
-        this.addl('let o = ' + what + ' - regs.TR;');
+    CMP(what, from='regs.TR') { // CPX, CPY too
+        this.addl('let o = ' + what + ' - ' + from + ';');
         this.addl('regs.P.C = +(!((o & 0x100) >>> 8));');
         this.setz('o & 0xFF');
         this.setn('o');
@@ -411,10 +426,10 @@ class m6502_switchgen {
         this.setn(what);
     }
 
-    EOR() {
-        this.addl('regs.TR = regs.A ^ regs.TR;');
-        this.setz('regs.TR');
-        this.setn('regs.TR');
+    EOR(what='regs.TR') {
+        this.addl('regs.A ^= ' + what + ';');
+        this.setz('regs.A');
+        this.setn('regs.A');
     }
 
     INC(what='regs.TR') {
@@ -423,8 +438,8 @@ class m6502_switchgen {
         this.setn(what);
     }
 
-    LD(what) {
-        this.addl(what + ' = regs.TR;');
+    LD(what, from='regs.TR') {
+        this.addl(what + ' = ' + from + ';');
         this.setz(what);
         this.setn(what);
     }
@@ -436,10 +451,10 @@ class m6502_switchgen {
         this.addl('regs.P.N = 0;');
     }
 
-    ORA() {
-        this.addl('regs.TR = regs.TR | regs.A;');
-        this.setz('regs.TR');
-        this.setn('regs.TR');
+    ORA(what='regs.TR') {
+        this.addl('regs.A |= ' + what + ';');
+        this.setz('regs.A');
+        this.setn('regs.A');
     }
 
     ROL(what='regs.TR') {
@@ -464,25 +479,25 @@ class m6502_switchgen {
         // If regs.TR is False, skip 2 cycles
         // PageCrossed idle, then reegular idle, so addr is either last operand or
         //  pagedcrossed addr
-        this.addl('if (!regs.TR) { regs.TCU += 2; break; }')
         this.operand();
+        this.addl('if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }')
 
         this.addcycle();
-        this.addl('regs.TA = (regs.PC + pins.D) & 0xFFFF;');
-        this.addl('pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);');
-        this.addl('if ((regs.TA & 0xFF00) === (PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page');
+        this.addl('regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;');
+        this.addl('pins.Addr = regs.PC;');
+        this.addl('if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page');
 
         this.addcycle('extra idle on page cross');
+        this.addl('pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);');
 
         this.cleanup();
         this.addl('regs.PC = regs.TA;');
     }
 
-    SBC() {
-        this.addl('regs.TR = (~regs.TR) & 0xFF;');
+    SBC(what='regs.TR') {
+        this.addl('let i = (~' + what + ') & 0xFF;');
 
         if (!this.BCD_support) {
-            this.addl('let i = (~regs.TR) & 0xFF;');
             this.addl('let o = regs.A + i + regs.P.C;');
             this.addl('regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;');
         } else {
@@ -502,49 +517,49 @@ class m6502_switchgen {
         let ins = opcode_info.ins;
         switch(ins) {
             case M6502_MN.ADC:
-                this.ADC();
+                this.ADC(out_reg);
                 break;
             case M6502_MN.AND:
-                this.AND();
+                this.AND(out_reg);
                 break;
             case M6502_MN.ASL:
                 this.ASL(out_reg);
                 break;
             case M6502_MN.BIT:
-                this.BIT();
+                this.BIT(out_reg);
                 break;
             case M6502_MN.CMP:
-                this.CMP('regs.A');
+                this.CMP('regs.A', out_reg);
                 break;
             case M6502_MN.CPX:
-                this.CMP('regs.X');
+                this.CMP('regs.X', out_reg);
                 break;
             case M6502_MN.CPY:
-                this.CMP('regs.Y');
+                this.CMP('regs.Y', out_reg);
                 break;
             case M6502_MN.DEC:
-                this.DEC();
+                this.DEC(out_reg);
                 break;
             case M6502_MN.EOR:
-                this.EOR();
+                this.EOR(out_reg);
                 break;
             case M6502_MN.INC:
-                this.INC();
+                this.INC(out_reg);
                 break;
             case M6502_MN.LDA:
-                this.LD('regs.A');
+                this.LD('regs.A', out_reg);
                 break;
             case M6502_MN.LDX:
-                this.LD('regs.X');
+                this.LD('regs.X', out_reg);
                 break;
             case M6502_MN.LDY:
-                this.LD('regs.Y');
+                this.LD('regs.Y', out_reg);
                 break;
             case M6502_MN.LSR:
                 this.LSR(out_reg);
                 break;
             case M6502_MN.ORA:
-                this.ORA();
+                this.ORA(out_reg);
                 break;
             case M6502_MN.ROL:
                 this.ROL(out_reg);
@@ -553,7 +568,7 @@ class m6502_switchgen {
                 this.ROR(out_reg);
                 break;
             case M6502_MN.SBC:
-                this.SBC();
+                this.SBC(out_reg);
                 break;
             default:
                 console.log('M6502 unhandled instruction ', ins);
@@ -576,6 +591,7 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
     switch(opcode_info.addr_mode) {
         case M6502_AM.ACCUM:
             ag.addcycle();
+            ag.addl('pins.Addr = regs.PC;');
             ag.add_ins(opcode_info, 'regs.A');
             break;
         case M6502_AM.IMPLIED:
@@ -707,8 +723,7 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
             ag.RW(1);
 
             ag.addcycle();
-            ag.add_ins(opcode_info);
-            ag.addl('pins.D = regs.TR;');
+            ag.add_ins(opcode_info, 'pins.D');
             break;
         case M6502_AM.ZP_Xr: // Like LDA zp, X. 4 cycles
         case M6502_AM.ZP_Yr:
@@ -768,7 +783,7 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
             ag.addl('pins.Addr = regs.TA | (pins.D << 8);')
 
             ag.cleanup();
-            ag.add_ins(opcode_info);
+            ag.add_ins(opcode_info, 'pins.D');
             break;
         case M6502_AM.ABSw: // like STA abs., 4 cycles
             ag.addcycle();
@@ -932,14 +947,14 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
 
             ag.addcycle('spurious read');
             ag.addl('pins.Addr = pins.D;');
-            ag.addl('regs.TA = pins.D + regs.X;');
+            ag.addl('regs.TA = (pins.D + regs.X) & 0xFF;');
 
             ag.addcycle('real read ABS L');
             ag.addl('pins.Addr = regs.TA;');
 
             ag.addcycle('read ABS H');
             ag.addl('regs.TA = pins.D;');
-            ag.addr_inc();
+            ag.addr_inc_ZP();
 
             ag.addcycle('Read from addr');
             ag.addl('pins.Addr = regs.TA | (pins.D << 8);');
@@ -954,14 +969,14 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
 
             ag.addcycle('spurious read');
             ag.addl('pins.Addr = pins.D;');
-            ag.addl('regs.TA = pins.D + regs.X;');
+            ag.addl('regs.TA = (pins.D + regs.X) & 0xFF;');
 
             ag.addcycle('real read ABS L');
             ag.addl('pins.Addr = regs.TA;');
 
             ag.addcycle('read ABS H');
             ag.addl('regs.TA = pins.D;');
-            ag.addr_inc();
+            ag.addr_inc_ZP();
 
             ag.addcycle('Write result to addr');
             ag.addl('pins.Addr = regs.TA | (pins.D << 8);');

@@ -27,7 +27,7 @@ let local_server_url = 'http://[::1]:8000/'
 function PARSEP(w, E) {
     let outstr;
     //if (E === 0) {
-        outstr = 'C' + +(w & 0x01);
+        outstr = 'C' + + (w & 0x01);
         outstr += ' Z' + ((w & 0x02) >>> 1);
         outstr += ' I' + ((w & 0x04) >>> 2);
         outstr += ' D' + ((w & 0x08) >>> 3);
@@ -110,7 +110,7 @@ class test_return {
     }
 }
 
-let DO_TRACING = false;
+let WDC_TEST_DO_TRACING = false;
 let BRK_ON_IO = false;
 
 function faddr(addr) {
@@ -223,7 +223,7 @@ function test_it_automated(cpu, tests) {
             }
 
             last_pc = cpu.regs.PC;
-            //if (DO_TRACING)dconsole.addl(null, 'CALL CYCLE');
+            //if (WDC_TEST_DO_TRACING)dconsole.addl(null, 'CALL CYCLE');
             if (parseInt(cyclei) === (tests[i].cycles.length-1)) {
                 if (cpu.regs.TCU === 0)
                     length_mismatch++;
@@ -237,20 +237,20 @@ function test_it_automated(cpu, tests) {
                     passed = false;
                 }
                 if (cpu.pins.RW) { // Write
-                    if (DO_TRACING) {
+                    if (WDC_TEST_DO_TRACING) {
                         dbg.traces.add(D_RESOURCE_TYPES.WDC65C816, cpu.clock.cpu_has, trace_format_write('WDC', WDC_COLOR, cpu.trace_cycles, (addr & 0xFFFF), cpu.pins.D, (addr >>> 16)));
                     }
                     testRAM[addr] = cpu.pins.D;
                 }
                 else {
                     cpu.pins.D = testRAM[addr];
-                    if (DO_TRACING) {
+                    if (WDC_TEST_DO_TRACING) {
                         dbg.traces.add(D_RESOURCE_TYPES.WDC65C816, cpu.clock.cpu_has, trace_format_read('WDC', WDC_COLOR, cpu.trace_cycles, addr & 0xFFFF, cpu.pins.D, addr >>> 16));
                     }
                 }
             }
             else {
-                if (DO_TRACING) {
+                if (WDC_TEST_DO_TRACING) {
                     dbg.traces.add(D_RESOURCE_TYPES.WDC65C816, cpu.clock.cpu_has, trace_format_IO('WDC', WDC_COLOR, cpu.trace_cycles, addr & 0xFFFF, cpu.pins.D, addr >>> 16));
                 }
             }
@@ -307,7 +307,7 @@ function test_it_automated(cpu, tests) {
     return new test_return(true, ins, messages, addr_io_mismatched, length_mismatch, null);
 }
 
-let io_mismatches = [];
+let WDC_io_mismatches = [];
 
 async function test_pt_65c816_ins(cpu, ins) {
     let opc = hex2(ins).toLowerCase() + '.n';
@@ -320,12 +320,14 @@ async function test_pt_65c816_ins(cpu, ins) {
     if (result.messages.length !== 0) {
         tconsole.addl(null, '------Messages:');
         for (let i in result.messages) {
+            console.log(result.messages[i]);
             tconsole.addl(result.messages[i]);
         }
+        tconsole.draw();
     }
     if (result.addr_io_mismatches !== 0) {
         tconsole.addl(txf('{r}ADDR MISMATCHES ON IO: {/}' + result.addr_io_mismatches))
-        io_mismatches.push(hex0x2(ins));
+        WDC_io_mismatches.push(hex0x2(ins));
     }
     if (result.length_mismatches !== 0) {
         tconsole.addl(txf('{r}POTENTIAL CYCLE LENGTH MISMATCHES: {/}' + result.length_mismatches))
@@ -365,7 +367,7 @@ async function test_pt_65c816() {
     let clock = new SNES_clock({rev: 1});
     let cpu = new wdc65816_t(clock);
     dbg.add_cpu(D_RESOURCE_TYPES.WDC65C816, cpu);
-    if (DO_TRACING) {
+    if (WDC_TEST_DO_TRACING) {
         dbg.enable_tracing_for(D_RESOURCE_TYPES.WDC65C816);
         dbg.enable_tracing();
     }
@@ -378,8 +380,8 @@ async function test_pt_65c816() {
     // 6502 emulation mode
     //skip_tests = [ 0x00, 0x01, 0x02 ];
     skip_tests = [0xCB, 0xDB]; // Infinite-loop instructions
-    if (DO_TRACING) cpu.enable_tracing(read8);
-    //console.log('DO TRACING?', DO_TRACING);
+    if (WDC_TEST_DO_TRACING) cpu.enable_tracing(read8);
+    //console.log('DO TRACING?', WDC_TEST_DO_TRACING);
     for (let i = start_test; i < 256; i++) {
         if (skip_tests.indexOf(i) !== -1) {
             tconsole.addl(txf('Test for ' + hex0x2(i) + ' {b}skipped{/}!'));
@@ -389,5 +391,5 @@ async function test_pt_65c816() {
         if (!result) break;
         tconsole.addl(null, 'Test for ' + hex0x2(i) + ' passed!');
     }
-    if (io_mismatches.length > 0) console.log('IO mismatches occured for', io_mismatches);
+    if (WDC_io_mismatches.length > 0) console.log('IO mismatches occured for', WDC_io_mismatches);
 }

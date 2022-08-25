@@ -14,5 +14,6 @@ class ricoh2A03 {
      */
     constructor(clock) {
         this.cpu = new m6502_t(nesm6502_opcodes_decoded);
+        this.cpu.reset();
     }
 }

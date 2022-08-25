@@ -375,3 +375,4 @@ function main_old() {
 //after_js = test_65c816;
 //after_js = test_pt_65c816;
 //after_js = test_pt_spc700;
+after_js = test_pt_m6502;

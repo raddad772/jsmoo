@@ -233,7 +233,6 @@ class wdc65816_t {
 				//console.log('IRQ EXEC!')
 			}
 			this.regs.old_I = this.regs.P.I;
-			this.PCO = this.pins.Addr; // PCO is PC for tracing purposes
 			this.current_instruction = WDC_get_decoded_opcode(this.regs);
 			if ((this.regs.IR === 0) || (dbg.brk_on_NMIRQ && (this.regs.IR === WDC_OP_IRQ || this.regs.IR === WDC_OP_NMI))) {
 				console.log('BREAK at cycle', this.trace_cycles, ' FOR IR ', hex2(this.regs.IR));

@@ -3,6 +3,7 @@
 let R5A22_DO_TRACING_AT_START = false;
 let WDC_DO_TRACING_AT_START = false;
 let SPC_DO_TRACING_AT_START = false;
+let M6502_DO_TRACING_AT_START = false;
 let TRACE_COLOR = true;
 let SPC_TRACING_START = 20 * 68 * 262 * 9;
                      // 20 master clock cycles = 1 of ours
@@ -17,13 +18,15 @@ let TRACE_READ = '{g}';
 let TRACE_WRITE = '{b}';
 let SPC_COLOR = '{r}';
 let WDC_COLOR = '{b}';
+let MOS_COLOR = '{g}';
 let WDC_TRACE_IO = false;
 let TRACE_INS_PADDING = 20;
 
 const TRACERS = Object.freeze({
     R5A22: 0,
     SPC: 1,
-    WDC: 2
+    WDC: 2,
+    M6502: 3
 });
 
 const TRACE_BG_COLORS = Object.freeze({
@@ -185,7 +188,7 @@ class traces_t {
 
 //let traces = new traces_t();
 
-const D_RESOURCE_TYPES = Object.freeze({R5A22: 0, SPC700: 1, WDC65C816: 2, SNESPPU: 3});
+const D_RESOURCE_TYPES = Object.freeze({R5A22: 0, SPC700: 1, WDC65C816: 2, SNESPPU: 3, M6502: 4});
 
 class breakpoint_t {
     constructor(resource_type, resource) {
@@ -294,6 +297,9 @@ class debugger_t {
         else if (kind === D_RESOURCE_TYPES.SPC700) {
             this.tracing_for[kind] = SPC_DO_TRACING_AT_START;
         }
+        else if (kind === D_RESOURCE_TYPES.M6502) {
+            this.tracing_for[kind] = M6502_DO_TRACING_AT_START;
+        }
         this.cpu_refresh_tracing();
     }
 
@@ -317,8 +323,10 @@ class debugger_t {
         // CASUE BREAK
         this.state = DBG_STATES.PAUSE;
         this.do_break = true;
-        let overflow = snes.clock.cpu_deficit;
-        console.log('BREAK AT PPU Y', snes.clock.scanline.ppu_y);
+        let DOSNES = whodidit === D_RESOURCE_TYPES.R5A22 || whodidit === D_RESOURCE_TYPES.WDC65C816 || whodidit === D_RESOURCE_TYPES.SPC700;
+        let overflow = 0;
+        if (DOSNES) overflow = snes.clock.cpu_deficit;
+        if (DOSNES) console.log('BREAK AT PPU Y', snes.clock.scanline.ppu_y);
         if (whodidit === D_RESOURCE_TYPES.WDC65C816 || whodidit === D_RESOURCE_TYPES.R5A22) {
             snes.clock.cpu_deficit = 0;
             snes.apu.catch_up();
@@ -327,10 +335,10 @@ class debugger_t {
         else if (whodidit === D_RESOURCE_TYPES.SPC700) {
             snes.ppu.catch_up();
         }
-        snes.jsanimator.pause();
+        if (DOSNES) snes.jsanimator.pause();
         //snes.clock.apu_deficit -= overflow;
         //snes.clock.ppu_deficit -= overflow;
-        console.log('AFTER BREAK deficits', snes.clock.cpu_deficit, snes.clock.apu_deficit, snes.clock.ppu_deficit)
+        if (DOSNES) console.log('AFTER BREAK deficits', snes.clock.cpu_deficit, snes.clock.apu_deficit, snes.clock.ppu_deficit)
     }
 
     init_done() {
