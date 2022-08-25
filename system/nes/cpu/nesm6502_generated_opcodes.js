@@ -5,6 +5,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
         function(regs, pins) { //BRK
             switch(regs.TCU) {
                 case 1:
+                    regs.P.B = 1;
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
@@ -22,16 +23,17 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 4:
                     pins.Addr = regs.S | 0x100;
                     regs.S = (regs.S - 1) & 0xFF;
-                    pins.D = regs.P.getbyte() | 0x30;
+                    pins.D = regs.P.getbyte();
                     break;
                 case 5:
+                    regs.P.B = 1; // Confirmed via Visual6502 that this bit is actually set always during NMI, IRQ, and BRK
                     regs.P.I = 1;
                     pins.RW = 0;
                     pins.Addr = (0xFFFE);
                     break;
                 case 6:
                     regs.PC = pins.D;
-                    pins.Addr = (0xFFFF);
+                    pins.Addr = (pins.Addr + 1) & 0xFFFF;
                     break;
                 case 7: // cleanup_custom
                     regs.PC |= (pins.D << 8);
@@ -51,23 +53,23 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 2: // spurious read
                     pins.Addr = pins.D;
-                    regs.TA = pins.D + regs.X;
+                    regs.TA = (pins.D + regs.X) & 0xFF;
                     break;
                 case 3: // real read ABS L
                     pins.Addr = regs.TA;
                     break;
                 case 4: // read ABS H
                     regs.TA = pins.D;
-                    pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                    pins.Addr = (pins.Addr + 1) & 0xFF;
                     break;
                 case 5: // Read from addr
                     pins.Addr = regs.TA | (pins.D << 8);
                     break;
                 case 6: // cleanup_custom
                     regs.TR = pins.D;
-                    regs.TR = regs.TR | regs.A;
-                    regs.P.Z = +((regs.TR) === 0);
-                    regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                    regs.A |= regs.TR;
+                    regs.P.Z = +((regs.A) === 0);
+                    regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -75,14 +77,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x02: new M6502_opcode_functions(M6502_stock_matrix[0x02],
-        function(regs, pins) { //INVALID
+    0x02: new M6502_opcode_functions(M6502_invalid_matrix[0x02],
+        function(regs, pins) { //
     }),
-    0x03: new M6502_opcode_functions(M6502_stock_matrix[0x03],
-        function(regs, pins) { //INVALID
+    0x03: new M6502_opcode_functions(M6502_invalid_matrix[0x03],
+        function(regs, pins) { //
     }),
-    0x04: new M6502_opcode_functions(M6502_stock_matrix[0x04],
-        function(regs, pins) { //INVALID
+    0x04: new M6502_opcode_functions(M6502_invalid_matrix[0x04],
+        function(regs, pins) { //
     }),
     0x05: new M6502_opcode_functions(M6502_stock_matrix[0x05],
         function(regs, pins) { //ORA d
@@ -96,9 +98,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 3: // cleanup_custom
                     regs.TR = pins.D;
-                    regs.TR = regs.TR | regs.A;
-                    regs.P.Z = +((regs.TR) === 0);
-                    regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                    regs.A |= regs.TR;
+                    regs.P.Z = +((regs.A) === 0);
+                    regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -120,11 +122,10 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.RW = 1;
                     break;
                 case 4:
-                    regs.P.C = (regs.TR & 0x80) >>> 7;
-                    regs.TR = (regs.TR << 1) & 0xFF;
-                    regs.P.Z = +((regs.TR) === 0);
-                    regs.P.N = ((regs.TR) & 0x80) >>> 7;
-                    pins.D = regs.TR;
+                    regs.P.C = (pins.D & 0x80) >>> 7;
+                    pins.D = (pins.D << 1) & 0xFF;
+                    regs.P.Z = +((pins.D) === 0);
+                    regs.P.N = ((pins.D) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     break;
                 case 5: // cleanup
@@ -135,20 +136,23 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x07: new M6502_opcode_functions(M6502_stock_matrix[0x07],
-        function(regs, pins) { //INVALID
+    0x07: new M6502_opcode_functions(M6502_invalid_matrix[0x07],
+        function(regs, pins) { //
     }),
     0x08: new M6502_opcode_functions(M6502_stock_matrix[0x08],
         function(regs, pins) { //PHP
             switch(regs.TCU) {
                 case 1:
+                    pins.Addr = regs.PC;
+                    break;
+                case 2:
                     pins.Addr = regs.S | 0x100;
                     regs.S = (regs.S - 1) & 0xFF;
                     pins.D = regs.P.getbyte() | 0x30;
                     pins.RW = 1;
                     // Following is auto-generated code for instruction finish
                     break;
-                case 2: // cleanup
+                case 3: // cleanup
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     pins.RW = 0;
@@ -165,9 +169,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 2: // cleanup_custom
                     regs.TR = pins.D;
-                    regs.TR = regs.TR | regs.A;
-                    regs.P.Z = +((regs.TR) === 0);
-                    regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                    regs.A |= regs.TR;
+                    regs.P.Z = +((regs.A) === 0);
+                    regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -179,6 +183,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
         function(regs, pins) { //ASL A
             switch(regs.TCU) {
                 case 1:
+                    pins.Addr = regs.PC;
                     regs.P.C = (regs.A & 0x80) >>> 7;
                     regs.A = (regs.A << 1) & 0xFF;
                     regs.P.Z = +((regs.A) === 0);
@@ -192,11 +197,11 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x0B: new M6502_opcode_functions(M6502_stock_matrix[0x0B],
-        function(regs, pins) { //INVALID
+    0x0B: new M6502_opcode_functions(M6502_invalid_matrix[0x0B],
+        function(regs, pins) { //
     }),
-    0x0C: new M6502_opcode_functions(M6502_stock_matrix[0x0C],
-        function(regs, pins) { //INVALID
+    0x0C: new M6502_opcode_functions(M6502_invalid_matrix[0x0C],
+        function(regs, pins) { //
     }),
     0x0D: new M6502_opcode_functions(M6502_stock_matrix[0x0D],
         function(regs, pins) { //ORA a
@@ -214,9 +219,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     break;
                 case 4: // cleanup_custom
-                    regs.TR = regs.TR | regs.A;
-                    regs.P.Z = +((regs.TR) === 0);
-                    regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                    regs.A |= pins.D;
+                    regs.P.Z = +((regs.A) === 0);
+                    regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -259,24 +264,25 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x0F: new M6502_opcode_functions(M6502_stock_matrix[0x0F],
-        function(regs, pins) { //INVALID
+    0x0F: new M6502_opcode_functions(M6502_invalid_matrix[0x0F],
+        function(regs, pins) { //
     }),
     0x10: new M6502_opcode_functions(M6502_stock_matrix[0x10],
         function(regs, pins) { //BPL r
             switch(regs.TCU) {
                 case 1:
                     regs.TR = +(regs.P.N === 0);
-                    if (!regs.TR) { regs.TCU += 2; break; }
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
+                    if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
                     break;
                 case 2:
-                    regs.TA = (regs.PC + pins.D) & 0xFFFF;
-                    pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
-                    if ((regs.TA & 0xFF00) === (PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
+                    regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
+                    pins.Addr = regs.PC;
+                    if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                     break;
                 case 3: // extra idle on page cross
+                    pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
                     break;
                 case 4: // cleanup_custom
                     regs.PC = regs.TA;
@@ -313,9 +319,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 6: // cleanup_custom
                     regs.TR = pins.D;
-                    regs.TR = regs.TR | regs.A;
-                    regs.P.Z = +((regs.TR) === 0);
-                    regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                    regs.A |= regs.TR;
+                    regs.P.Z = +((regs.A) === 0);
+                    regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -323,14 +329,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x12: new M6502_opcode_functions(M6502_stock_matrix[0x12],
-        function(regs, pins) { //INVALID
+    0x12: new M6502_opcode_functions(M6502_invalid_matrix[0x12],
+        function(regs, pins) { //
     }),
-    0x13: new M6502_opcode_functions(M6502_stock_matrix[0x13],
-        function(regs, pins) { //INVALID
+    0x13: new M6502_opcode_functions(M6502_invalid_matrix[0x13],
+        function(regs, pins) { //
     }),
-    0x14: new M6502_opcode_functions(M6502_stock_matrix[0x14],
-        function(regs, pins) { //INVALID
+    0x14: new M6502_opcode_functions(M6502_invalid_matrix[0x14],
+        function(regs, pins) { //
     }),
     0x15: new M6502_opcode_functions(M6502_stock_matrix[0x15],
         function(regs, pins) { //ORA d,x
@@ -347,9 +353,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 4: // cleanup_custom
                     regs.TR = pins.D;
-                    regs.TR = regs.TR | regs.A;
-                    regs.P.Z = +((regs.TR) === 0);
-                    regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                    regs.A |= regs.TR;
+                    regs.P.Z = +((regs.A) === 0);
+                    regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -389,8 +395,8 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x17: new M6502_opcode_functions(M6502_stock_matrix[0x17],
-        function(regs, pins) { //INVALID
+    0x17: new M6502_opcode_functions(M6502_invalid_matrix[0x17],
+        function(regs, pins) { //
     }),
     0x18: new M6502_opcode_functions(M6502_stock_matrix[0x18],
         function(regs, pins) { //CLC i
@@ -428,9 +434,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA;
                     break;
                 case 5: // cleanup_custom
-                    regs.TR = regs.TR | regs.A;
-                    regs.P.Z = +((regs.TR) === 0);
-                    regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                    regs.A |= regs.TR;
+                    regs.P.Z = +((regs.A) === 0);
+                    regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -438,14 +444,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x1A: new M6502_opcode_functions(M6502_stock_matrix[0x1A],
-        function(regs, pins) { //INVALID
+    0x1A: new M6502_opcode_functions(M6502_invalid_matrix[0x1A],
+        function(regs, pins) { //
     }),
-    0x1B: new M6502_opcode_functions(M6502_stock_matrix[0x1B],
-        function(regs, pins) { //INVALID
+    0x1B: new M6502_opcode_functions(M6502_invalid_matrix[0x1B],
+        function(regs, pins) { //
     }),
-    0x1C: new M6502_opcode_functions(M6502_stock_matrix[0x1C],
-        function(regs, pins) { //INVALID
+    0x1C: new M6502_opcode_functions(M6502_invalid_matrix[0x1C],
+        function(regs, pins) { //
     }),
     0x1D: new M6502_opcode_functions(M6502_stock_matrix[0x1D],
         function(regs, pins) { //ORA a,x
@@ -469,9 +475,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA;
                     break;
                 case 5: // cleanup_custom
-                    regs.TR = regs.TR | regs.A;
-                    regs.P.Z = +((regs.TR) === 0);
-                    regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                    regs.A |= regs.TR;
+                    regs.P.Z = +((regs.A) === 0);
+                    regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -518,8 +524,8 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x1F: new M6502_opcode_functions(M6502_stock_matrix[0x1F],
-        function(regs, pins) { //INVALID
+    0x1F: new M6502_opcode_functions(M6502_invalid_matrix[0x1F],
+        function(regs, pins) { //
     }),
     0x20: new M6502_opcode_functions(M6502_stock_matrix[0x20],
         function(regs, pins) { //JSR a
@@ -565,14 +571,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 2: // spurious read
                     pins.Addr = pins.D;
-                    regs.TA = pins.D + regs.X;
+                    regs.TA = (pins.D + regs.X) & 0xFF;
                     break;
                 case 3: // real read ABS L
                     pins.Addr = regs.TA;
                     break;
                 case 4: // read ABS H
                     regs.TA = pins.D;
-                    pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                    pins.Addr = (pins.Addr + 1) & 0xFF;
                     break;
                 case 5: // Read from addr
                     pins.Addr = regs.TA | (pins.D << 8);
@@ -581,7 +587,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     regs.TR = pins.D;
                     regs.A &= regs.TR;
                     regs.P.Z = +((regs.A) === 0);
-                    regs.P.N = ((regs.N) & 0x80) >>> 7;
+                    regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -589,11 +595,11 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x22: new M6502_opcode_functions(M6502_stock_matrix[0x22],
-        function(regs, pins) { //INVALID
+    0x22: new M6502_opcode_functions(M6502_invalid_matrix[0x22],
+        function(regs, pins) { //
     }),
-    0x23: new M6502_opcode_functions(M6502_stock_matrix[0x23],
-        function(regs, pins) { //INVALID
+    0x23: new M6502_opcode_functions(M6502_invalid_matrix[0x23],
+        function(regs, pins) { //
     }),
     0x24: new M6502_opcode_functions(M6502_stock_matrix[0x24],
         function(regs, pins) { //BIT d
@@ -631,7 +637,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     regs.TR = pins.D;
                     regs.A &= regs.TR;
                     regs.P.Z = +((regs.A) === 0);
-                    regs.P.N = ((regs.N) & 0x80) >>> 7;
+                    regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -654,11 +660,10 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 4:
                     let c = this.regs.P.C;
-                    regs.P.C = (regs.TR & 0x80) >>> 7;
-                    regs.TR = (regs.TR << 1) | c;
-                    regs.P.Z = +((regs.TR) === 0);
-                    regs.P.N = ((regs.TR) & 0x80) >>> 7;
-                    pins.D = regs.TR;
+                    regs.P.C = (pins.D & 0x80) >>> 7;
+                    pins.D = (pins.D << 1) | c;
+                    regs.P.Z = +((pins.D) === 0);
+                    regs.P.N = ((pins.D) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     break;
                 case 5: // cleanup
@@ -669,13 +674,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x27: new M6502_opcode_functions(M6502_stock_matrix[0x27],
-        function(regs, pins) { //INVALID
+    0x27: new M6502_opcode_functions(M6502_invalid_matrix[0x27],
+        function(regs, pins) { //
     }),
     0x28: new M6502_opcode_functions(M6502_stock_matrix[0x28],
         function(regs, pins) { //PLP
             switch(regs.TCU) {
                 case 1:
+                    pins.Addr = regs.PC;
                     break;
                 case 2:
                     regs.S = (regs.S + 1) & 0xFF;
@@ -701,7 +707,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     regs.TR = pins.D;
                     regs.A &= regs.TR;
                     regs.P.Z = +((regs.A) === 0);
-                    regs.P.N = ((regs.N) & 0x80) >>> 7;
+                    regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -713,6 +719,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
         function(regs, pins) { //ROL A
             switch(regs.TCU) {
                 case 1:
+                    pins.Addr = regs.PC;
                     let c = this.regs.P.C;
                     regs.P.C = (regs.A & 0x80) >>> 7;
                     regs.A = (regs.A << 1) | c;
@@ -727,8 +734,8 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x2B: new M6502_opcode_functions(M6502_stock_matrix[0x2B],
-        function(regs, pins) { //INVALID
+    0x2B: new M6502_opcode_functions(M6502_invalid_matrix[0x2B],
+        function(regs, pins) { //
     }),
     0x2C: new M6502_opcode_functions(M6502_stock_matrix[0x2C],
         function(regs, pins) { //BIT a
@@ -746,9 +753,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     break;
                 case 4: // cleanup_custom
-                    regs.P.Z = +((regs.A & regs.TR) === 0);
-                    regs.P.N = ((regs.TR) & 0x80) >>> 7;
-                    this.regs.P.V = (regs.TR & 0x40) >>> 6;
+                    regs.P.Z = +((regs.A & pins.D) === 0);
+                    regs.P.N = ((pins.D) & 0x80) >>> 7;
+                    this.regs.P.V = (pins.D & 0x40) >>> 6;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -772,9 +779,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     break;
                 case 4: // cleanup_custom
-                    regs.A &= regs.TR;
+                    regs.A &= pins.D;
                     regs.P.Z = +((regs.A) === 0);
-                    regs.P.N = ((regs.N) & 0x80) >>> 7;
+                    regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -818,24 +825,25 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x2F: new M6502_opcode_functions(M6502_stock_matrix[0x2F],
-        function(regs, pins) { //INVALID
+    0x2F: new M6502_opcode_functions(M6502_invalid_matrix[0x2F],
+        function(regs, pins) { //
     }),
     0x30: new M6502_opcode_functions(M6502_stock_matrix[0x30],
         function(regs, pins) { //BMI r
             switch(regs.TCU) {
                 case 1:
                     regs.TR = +(regs.P.N === 1);
-                    if (!regs.TR) { regs.TCU += 2; break; }
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
+                    if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
                     break;
                 case 2:
-                    regs.TA = (regs.PC + pins.D) & 0xFFFF;
-                    pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
-                    if ((regs.TA & 0xFF00) === (PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
+                    regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
+                    pins.Addr = regs.PC;
+                    if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                     break;
                 case 3: // extra idle on page cross
+                    pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
                     break;
                 case 4: // cleanup_custom
                     regs.PC = regs.TA;
@@ -874,7 +882,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     regs.TR = pins.D;
                     regs.A &= regs.TR;
                     regs.P.Z = +((regs.A) === 0);
-                    regs.P.N = ((regs.N) & 0x80) >>> 7;
+                    regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -882,14 +890,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x32: new M6502_opcode_functions(M6502_stock_matrix[0x32],
-        function(regs, pins) { //INVALID
+    0x32: new M6502_opcode_functions(M6502_invalid_matrix[0x32],
+        function(regs, pins) { //
     }),
-    0x33: new M6502_opcode_functions(M6502_stock_matrix[0x33],
-        function(regs, pins) { //INVALID
+    0x33: new M6502_opcode_functions(M6502_invalid_matrix[0x33],
+        function(regs, pins) { //
     }),
-    0x34: new M6502_opcode_functions(M6502_stock_matrix[0x34],
-        function(regs, pins) { //INVALID
+    0x34: new M6502_opcode_functions(M6502_invalid_matrix[0x34],
+        function(regs, pins) { //
     }),
     0x35: new M6502_opcode_functions(M6502_stock_matrix[0x35],
         function(regs, pins) { //AND d,x
@@ -908,7 +916,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     regs.TR = pins.D;
                     regs.A &= regs.TR;
                     regs.P.Z = +((regs.A) === 0);
-                    regs.P.N = ((regs.N) & 0x80) >>> 7;
+                    regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -949,8 +957,8 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x37: new M6502_opcode_functions(M6502_stock_matrix[0x37],
-        function(regs, pins) { //INVALID
+    0x37: new M6502_opcode_functions(M6502_invalid_matrix[0x37],
+        function(regs, pins) { //
     }),
     0x38: new M6502_opcode_functions(M6502_stock_matrix[0x38],
         function(regs, pins) { //SEC
@@ -990,7 +998,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 5: // cleanup_custom
                     regs.A &= regs.TR;
                     regs.P.Z = +((regs.A) === 0);
-                    regs.P.N = ((regs.N) & 0x80) >>> 7;
+                    regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -998,14 +1006,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x3A: new M6502_opcode_functions(M6502_stock_matrix[0x3A],
-        function(regs, pins) { //INVALID
+    0x3A: new M6502_opcode_functions(M6502_invalid_matrix[0x3A],
+        function(regs, pins) { //
     }),
-    0x3B: new M6502_opcode_functions(M6502_stock_matrix[0x3B],
-        function(regs, pins) { //INVALID
+    0x3B: new M6502_opcode_functions(M6502_invalid_matrix[0x3B],
+        function(regs, pins) { //
     }),
-    0x3C: new M6502_opcode_functions(M6502_stock_matrix[0x3C],
-        function(regs, pins) { //INVALID
+    0x3C: new M6502_opcode_functions(M6502_invalid_matrix[0x3C],
+        function(regs, pins) { //
     }),
     0x3D: new M6502_opcode_functions(M6502_stock_matrix[0x3D],
         function(regs, pins) { //AND a,x
@@ -1031,7 +1039,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 5: // cleanup_custom
                     regs.A &= regs.TR;
                     regs.P.Z = +((regs.A) === 0);
-                    regs.P.N = ((regs.N) & 0x80) >>> 7;
+                    regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -1079,8 +1087,8 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x3F: new M6502_opcode_functions(M6502_stock_matrix[0x3F],
-        function(regs, pins) { //INVALID
+    0x3F: new M6502_opcode_functions(M6502_invalid_matrix[0x3F],
+        function(regs, pins) { //
     }),
     0x40: new M6502_opcode_functions(M6502_stock_matrix[0x40],
         function(regs, pins) { //RTI
@@ -1121,23 +1129,23 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 2: // spurious read
                     pins.Addr = pins.D;
-                    regs.TA = pins.D + regs.X;
+                    regs.TA = (pins.D + regs.X) & 0xFF;
                     break;
                 case 3: // real read ABS L
                     pins.Addr = regs.TA;
                     break;
                 case 4: // read ABS H
                     regs.TA = pins.D;
-                    pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                    pins.Addr = (pins.Addr + 1) & 0xFF;
                     break;
                 case 5: // Read from addr
                     pins.Addr = regs.TA | (pins.D << 8);
                     break;
                 case 6: // cleanup_custom
                     regs.TR = pins.D;
-                    regs.TR = regs.A ^ regs.TR;
-                    regs.P.Z = +((regs.TR) === 0);
-                    regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                    regs.A ^= regs.TR;
+                    regs.P.Z = +((regs.A) === 0);
+                    regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -1145,14 +1153,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x42: new M6502_opcode_functions(M6502_stock_matrix[0x42],
-        function(regs, pins) { //INVALID
+    0x42: new M6502_opcode_functions(M6502_invalid_matrix[0x42],
+        function(regs, pins) { //
     }),
-    0x43: new M6502_opcode_functions(M6502_stock_matrix[0x43],
-        function(regs, pins) { //INVALID
+    0x43: new M6502_opcode_functions(M6502_invalid_matrix[0x43],
+        function(regs, pins) { //
     }),
-    0x44: new M6502_opcode_functions(M6502_stock_matrix[0x44],
-        function(regs, pins) { //INVALID
+    0x44: new M6502_opcode_functions(M6502_invalid_matrix[0x44],
+        function(regs, pins) { //
     }),
     0x45: new M6502_opcode_functions(M6502_stock_matrix[0x45],
         function(regs, pins) { //EOR d
@@ -1166,9 +1174,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 3: // cleanup_custom
                     regs.TR = pins.D;
-                    regs.TR = regs.A ^ regs.TR;
-                    regs.P.Z = +((regs.TR) === 0);
-                    regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                    regs.A ^= regs.TR;
+                    regs.P.Z = +((regs.A) === 0);
+                    regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -1190,11 +1198,10 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.RW = 1;
                     break;
                 case 4:
-                    regs.P.C = regs.TR & 1;
-                    regs.TR >>>= 1;
-                    regs.P.Z = +((regs.TR) === 0);
+                    regs.P.C = pins.D & 1;
+                    pins.D >>>= 1;
+                    regs.P.Z = +((pins.D) === 0);
                     regs.P.N = 0;
-                    pins.D = regs.TR;
                     // Following is auto-generated code for instruction finish
                     break;
                 case 5: // cleanup
@@ -1205,20 +1212,23 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x47: new M6502_opcode_functions(M6502_stock_matrix[0x47],
-        function(regs, pins) { //INVALID
+    0x47: new M6502_opcode_functions(M6502_invalid_matrix[0x47],
+        function(regs, pins) { //
     }),
     0x48: new M6502_opcode_functions(M6502_stock_matrix[0x48],
         function(regs, pins) { //PHA
             switch(regs.TCU) {
                 case 1:
+                    pins.Addr = regs.PC;
+                    break;
+                case 2:
                     pins.Addr = regs.S | 0x100;
                     regs.S = (regs.S - 1) & 0xFF;
                     pins.D = regs.A
                     pins.RW = 1;
                     // Following is auto-generated code for instruction finish
                     break;
-                case 2: // cleanup
+                case 3: // cleanup
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     pins.RW = 0;
@@ -1235,9 +1245,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 2: // cleanup_custom
                     regs.TR = pins.D;
-                    regs.TR = regs.A ^ regs.TR;
-                    regs.P.Z = +((regs.TR) === 0);
-                    regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                    regs.A ^= regs.TR;
+                    regs.P.Z = +((regs.A) === 0);
+                    regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -1249,6 +1259,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
         function(regs, pins) { //LSR A
             switch(regs.TCU) {
                 case 1:
+                    pins.Addr = regs.PC;
                     regs.P.C = regs.A & 1;
                     regs.A >>>= 1;
                     regs.P.Z = +((regs.A) === 0);
@@ -1262,8 +1273,8 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x4B: new M6502_opcode_functions(M6502_stock_matrix[0x4B],
-        function(regs, pins) { //INVALID
+    0x4B: new M6502_opcode_functions(M6502_invalid_matrix[0x4B],
+        function(regs, pins) { //
     }),
     0x4C: new M6502_opcode_functions(M6502_stock_matrix[0x4C],
         function(regs, pins) { //JMP a
@@ -1302,9 +1313,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     break;
                 case 4: // cleanup_custom
-                    regs.TR = regs.A ^ regs.TR;
-                    regs.P.Z = +((regs.TR) === 0);
-                    regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                    regs.A ^= pins.D;
+                    regs.P.Z = +((regs.A) === 0);
+                    regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -1347,24 +1358,25 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x4F: new M6502_opcode_functions(M6502_stock_matrix[0x4F],
-        function(regs, pins) { //INVALID
+    0x4F: new M6502_opcode_functions(M6502_invalid_matrix[0x4F],
+        function(regs, pins) { //
     }),
     0x50: new M6502_opcode_functions(M6502_stock_matrix[0x50],
         function(regs, pins) { //BVC r
             switch(regs.TCU) {
                 case 1:
                     regs.TR = +(regs.P.V === 0);
-                    if (!regs.TR) { regs.TCU += 2; break; }
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
+                    if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
                     break;
                 case 2:
-                    regs.TA = (regs.PC + pins.D) & 0xFFFF;
-                    pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
-                    if ((regs.TA & 0xFF00) === (PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
+                    regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
+                    pins.Addr = regs.PC;
+                    if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                     break;
                 case 3: // extra idle on page cross
+                    pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
                     break;
                 case 4: // cleanup_custom
                     regs.PC = regs.TA;
@@ -1401,9 +1413,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 6: // cleanup_custom
                     regs.TR = pins.D;
-                    regs.TR = regs.A ^ regs.TR;
-                    regs.P.Z = +((regs.TR) === 0);
-                    regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                    regs.A ^= regs.TR;
+                    regs.P.Z = +((regs.A) === 0);
+                    regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -1411,14 +1423,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x52: new M6502_opcode_functions(M6502_stock_matrix[0x52],
-        function(regs, pins) { //INVALID
+    0x52: new M6502_opcode_functions(M6502_invalid_matrix[0x52],
+        function(regs, pins) { //
     }),
-    0x53: new M6502_opcode_functions(M6502_stock_matrix[0x53],
-        function(regs, pins) { //INVALID
+    0x53: new M6502_opcode_functions(M6502_invalid_matrix[0x53],
+        function(regs, pins) { //
     }),
-    0x54: new M6502_opcode_functions(M6502_stock_matrix[0x54],
-        function(regs, pins) { //INVALID
+    0x54: new M6502_opcode_functions(M6502_invalid_matrix[0x54],
+        function(regs, pins) { //
     }),
     0x55: new M6502_opcode_functions(M6502_stock_matrix[0x55],
         function(regs, pins) { //EOR d,x
@@ -1435,9 +1447,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 4: // cleanup_custom
                     regs.TR = pins.D;
-                    regs.TR = regs.A ^ regs.TR;
-                    regs.P.Z = +((regs.TR) === 0);
-                    regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                    regs.A ^= regs.TR;
+                    regs.P.Z = +((regs.A) === 0);
+                    regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -1477,8 +1489,8 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x57: new M6502_opcode_functions(M6502_stock_matrix[0x57],
-        function(regs, pins) { //INVALID
+    0x57: new M6502_opcode_functions(M6502_invalid_matrix[0x57],
+        function(regs, pins) { //
     }),
     0x58: new M6502_opcode_functions(M6502_stock_matrix[0x58],
         function(regs, pins) { //CLI
@@ -1516,9 +1528,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA;
                     break;
                 case 5: // cleanup_custom
-                    regs.TR = regs.A ^ regs.TR;
-                    regs.P.Z = +((regs.TR) === 0);
-                    regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                    regs.A ^= regs.TR;
+                    regs.P.Z = +((regs.A) === 0);
+                    regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -1526,14 +1538,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x5A: new M6502_opcode_functions(M6502_stock_matrix[0x5A],
-        function(regs, pins) { //INVALID
+    0x5A: new M6502_opcode_functions(M6502_invalid_matrix[0x5A],
+        function(regs, pins) { //
     }),
-    0x5B: new M6502_opcode_functions(M6502_stock_matrix[0x5B],
-        function(regs, pins) { //INVALID
+    0x5B: new M6502_opcode_functions(M6502_invalid_matrix[0x5B],
+        function(regs, pins) { //
     }),
-    0x5C: new M6502_opcode_functions(M6502_stock_matrix[0x5C],
-        function(regs, pins) { //INVALID
+    0x5C: new M6502_opcode_functions(M6502_invalid_matrix[0x5C],
+        function(regs, pins) { //
     }),
     0x5D: new M6502_opcode_functions(M6502_stock_matrix[0x5D],
         function(regs, pins) { //EOR a,x
@@ -1557,9 +1569,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA;
                     break;
                 case 5: // cleanup_custom
-                    regs.TR = regs.A ^ regs.TR;
-                    regs.P.Z = +((regs.TR) === 0);
-                    regs.P.N = ((regs.TR) & 0x80) >>> 7;
+                    regs.A ^= regs.TR;
+                    regs.P.Z = +((regs.A) === 0);
+                    regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -1606,8 +1618,8 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x5F: new M6502_opcode_functions(M6502_stock_matrix[0x5F],
-        function(regs, pins) { //INVALID
+    0x5F: new M6502_opcode_functions(M6502_invalid_matrix[0x5F],
+        function(regs, pins) { //
     }),
     0x60: new M6502_opcode_functions(M6502_stock_matrix[0x60],
         function(regs, pins) { //RTS
@@ -1644,14 +1656,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 2: // spurious read
                     pins.Addr = pins.D;
-                    regs.TA = pins.D + regs.X;
+                    regs.TA = (pins.D + regs.X) & 0xFF;
                     break;
                 case 3: // real read ABS L
                     pins.Addr = regs.TA;
                     break;
                 case 4: // read ABS H
                     regs.TA = pins.D;
-                    pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                    pins.Addr = (pins.Addr + 1) & 0xFF;
                     break;
                 case 5: // Read from addr
                     pins.Addr = regs.TA | (pins.D << 8);
@@ -1659,8 +1671,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 6: // cleanup_custom
                     regs.TR = pins.D;
                     let o;
-                    o = regs.TR + regs.A + regs.P.C;
-                    regs.P.V = ((~(regs.A ^ regs.TR)) & (A ^ o) & 0x80) >>> 7;
+                    let i = regs.TR;
+                    o = i + regs.A + regs.P.C;
+                    regs.P.V = ((~(regs.A ^ i)) & (A ^ o) & 0x80) >>> 7;
                     regs.P.C = +(o > 0xFF);
                     regs.A = o & 0xFF;
                     regs.P.Z = +((regs.A) === 0);
@@ -1672,14 +1685,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x62: new M6502_opcode_functions(M6502_stock_matrix[0x62],
-        function(regs, pins) { //INVALID
+    0x62: new M6502_opcode_functions(M6502_invalid_matrix[0x62],
+        function(regs, pins) { //
     }),
-    0x63: new M6502_opcode_functions(M6502_stock_matrix[0x63],
-        function(regs, pins) { //INVALID
+    0x63: new M6502_opcode_functions(M6502_invalid_matrix[0x63],
+        function(regs, pins) { //
     }),
-    0x64: new M6502_opcode_functions(M6502_stock_matrix[0x64],
-        function(regs, pins) { //INVALID
+    0x64: new M6502_opcode_functions(M6502_invalid_matrix[0x64],
+        function(regs, pins) { //
     }),
     0x65: new M6502_opcode_functions(M6502_stock_matrix[0x65],
         function(regs, pins) { //ADC d
@@ -1694,8 +1707,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3: // cleanup_custom
                     regs.TR = pins.D;
                     let o;
-                    o = regs.TR + regs.A + regs.P.C;
-                    regs.P.V = ((~(regs.A ^ regs.TR)) & (A ^ o) & 0x80) >>> 7;
+                    let i = regs.TR;
+                    o = i + regs.A + regs.P.C;
+                    regs.P.V = ((~(regs.A ^ i)) & (A ^ o) & 0x80) >>> 7;
                     regs.P.C = +(o > 0xFF);
                     regs.A = o & 0xFF;
                     regs.P.Z = +((regs.A) === 0);
@@ -1722,11 +1736,10 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 4:
                     let c = regs.P.C;
-                    regs.P.C = regs.TR & 1;
-                    regs.TR = (c << 7) | (regs.TR >>> 1);
-                    regs.P.Z = +((regs.TR) === 0);
-                    regs.P.N = ((regs.TR) & 0x80) >>> 7;
-                    pins.D = regs.TR;
+                    regs.P.C = pins.D & 1;
+                    pins.D = (c << 7) | (pins.D >>> 1);
+                    regs.P.Z = +((pins.D) === 0);
+                    regs.P.N = ((pins.D) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     break;
                 case 5: // cleanup
@@ -1737,13 +1750,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x67: new M6502_opcode_functions(M6502_stock_matrix[0x67],
-        function(regs, pins) { //INVALID
+    0x67: new M6502_opcode_functions(M6502_invalid_matrix[0x67],
+        function(regs, pins) { //
     }),
     0x68: new M6502_opcode_functions(M6502_stock_matrix[0x68],
         function(regs, pins) { //PLA
             switch(regs.TCU) {
                 case 1:
+                    pins.Addr = regs.PC;
                     break;
                 case 2:
                     regs.S = (regs.S + 1) & 0xFF;
@@ -1770,8 +1784,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 2: // cleanup_custom
                     regs.TR = pins.D;
                     let o;
-                    o = regs.TR + regs.A + regs.P.C;
-                    regs.P.V = ((~(regs.A ^ regs.TR)) & (A ^ o) & 0x80) >>> 7;
+                    let i = regs.TR;
+                    o = i + regs.A + regs.P.C;
+                    regs.P.V = ((~(regs.A ^ i)) & (A ^ o) & 0x80) >>> 7;
                     regs.P.C = +(o > 0xFF);
                     regs.A = o & 0xFF;
                     regs.P.Z = +((regs.A) === 0);
@@ -1787,6 +1802,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
         function(regs, pins) { //ROR A
             switch(regs.TCU) {
                 case 1:
+                    pins.Addr = regs.PC;
                     let c = regs.P.C;
                     regs.P.C = regs.A & 1;
                     regs.A = (c << 7) | (regs.A >>> 1);
@@ -1801,8 +1817,8 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x6B: new M6502_opcode_functions(M6502_stock_matrix[0x6B],
-        function(regs, pins) { //INVALID
+    0x6B: new M6502_opcode_functions(M6502_invalid_matrix[0x6B],
+        function(regs, pins) { //
     }),
     0x6C: new M6502_opcode_functions(M6502_stock_matrix[0x6C],
         function(regs, pins) { //JMP (d)
@@ -1848,8 +1864,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 4: // cleanup_custom
                     let o;
-                    o = regs.TR + regs.A + regs.P.C;
-                    regs.P.V = ((~(regs.A ^ regs.TR)) & (A ^ o) & 0x80) >>> 7;
+                    let i = pins.D;
+                    o = i + regs.A + regs.P.C;
+                    regs.P.V = ((~(regs.A ^ i)) & (A ^ o) & 0x80) >>> 7;
                     regs.P.C = +(o > 0xFF);
                     regs.A = o & 0xFF;
                     regs.P.Z = +((regs.A) === 0);
@@ -1897,24 +1914,25 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x6F: new M6502_opcode_functions(M6502_stock_matrix[0x6F],
-        function(regs, pins) { //INVALID
+    0x6F: new M6502_opcode_functions(M6502_invalid_matrix[0x6F],
+        function(regs, pins) { //
     }),
     0x70: new M6502_opcode_functions(M6502_stock_matrix[0x70],
         function(regs, pins) { //BVS r
             switch(regs.TCU) {
                 case 1:
                     regs.TR = +(regs.P.V === 1);
-                    if (!regs.TR) { regs.TCU += 2; break; }
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
+                    if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
                     break;
                 case 2:
-                    regs.TA = (regs.PC + pins.D) & 0xFFFF;
-                    pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
-                    if ((regs.TA & 0xFF00) === (PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
+                    regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
+                    pins.Addr = regs.PC;
+                    if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                     break;
                 case 3: // extra idle on page cross
+                    pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
                     break;
                 case 4: // cleanup_custom
                     regs.PC = regs.TA;
@@ -1952,8 +1970,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 6: // cleanup_custom
                     regs.TR = pins.D;
                     let o;
-                    o = regs.TR + regs.A + regs.P.C;
-                    regs.P.V = ((~(regs.A ^ regs.TR)) & (A ^ o) & 0x80) >>> 7;
+                    let i = regs.TR;
+                    o = i + regs.A + regs.P.C;
+                    regs.P.V = ((~(regs.A ^ i)) & (A ^ o) & 0x80) >>> 7;
                     regs.P.C = +(o > 0xFF);
                     regs.A = o & 0xFF;
                     regs.P.Z = +((regs.A) === 0);
@@ -1965,14 +1984,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x72: new M6502_opcode_functions(M6502_stock_matrix[0x72],
-        function(regs, pins) { //INVALID
+    0x72: new M6502_opcode_functions(M6502_invalid_matrix[0x72],
+        function(regs, pins) { //
     }),
-    0x73: new M6502_opcode_functions(M6502_stock_matrix[0x73],
-        function(regs, pins) { //INVALID
+    0x73: new M6502_opcode_functions(M6502_invalid_matrix[0x73],
+        function(regs, pins) { //
     }),
-    0x74: new M6502_opcode_functions(M6502_stock_matrix[0x74],
-        function(regs, pins) { //INVALID
+    0x74: new M6502_opcode_functions(M6502_invalid_matrix[0x74],
+        function(regs, pins) { //
     }),
     0x75: new M6502_opcode_functions(M6502_stock_matrix[0x75],
         function(regs, pins) { //ADC d,x
@@ -1990,8 +2009,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 4: // cleanup_custom
                     regs.TR = pins.D;
                     let o;
-                    o = regs.TR + regs.A + regs.P.C;
-                    regs.P.V = ((~(regs.A ^ regs.TR)) & (A ^ o) & 0x80) >>> 7;
+                    let i = regs.TR;
+                    o = i + regs.A + regs.P.C;
+                    regs.P.V = ((~(regs.A ^ i)) & (A ^ o) & 0x80) >>> 7;
                     regs.P.C = +(o > 0xFF);
                     regs.A = o & 0xFF;
                     regs.P.Z = +((regs.A) === 0);
@@ -2036,8 +2056,8 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x77: new M6502_opcode_functions(M6502_stock_matrix[0x77],
-        function(regs, pins) { //INVALID
+    0x77: new M6502_opcode_functions(M6502_invalid_matrix[0x77],
+        function(regs, pins) { //
     }),
     0x78: new M6502_opcode_functions(M6502_stock_matrix[0x78],
         function(regs, pins) { //SEI
@@ -2076,8 +2096,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 5: // cleanup_custom
                     let o;
-                    o = regs.TR + regs.A + regs.P.C;
-                    regs.P.V = ((~(regs.A ^ regs.TR)) & (A ^ o) & 0x80) >>> 7;
+                    let i = regs.TR;
+                    o = i + regs.A + regs.P.C;
+                    regs.P.V = ((~(regs.A ^ i)) & (A ^ o) & 0x80) >>> 7;
                     regs.P.C = +(o > 0xFF);
                     regs.A = o & 0xFF;
                     regs.P.Z = +((regs.A) === 0);
@@ -2089,14 +2110,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x7A: new M6502_opcode_functions(M6502_stock_matrix[0x7A],
-        function(regs, pins) { //INVALID
+    0x7A: new M6502_opcode_functions(M6502_invalid_matrix[0x7A],
+        function(regs, pins) { //
     }),
-    0x7B: new M6502_opcode_functions(M6502_stock_matrix[0x7B],
-        function(regs, pins) { //INVALID
+    0x7B: new M6502_opcode_functions(M6502_invalid_matrix[0x7B],
+        function(regs, pins) { //
     }),
-    0x7C: new M6502_opcode_functions(M6502_stock_matrix[0x7C],
-        function(regs, pins) { //INVALID
+    0x7C: new M6502_opcode_functions(M6502_invalid_matrix[0x7C],
+        function(regs, pins) { //
     }),
     0x7D: new M6502_opcode_functions(M6502_stock_matrix[0x7D],
         function(regs, pins) { //ADC a,x
@@ -2121,8 +2142,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 5: // cleanup_custom
                     let o;
-                    o = regs.TR + regs.A + regs.P.C;
-                    regs.P.V = ((~(regs.A ^ regs.TR)) & (A ^ o) & 0x80) >>> 7;
+                    let i = regs.TR;
+                    o = i + regs.A + regs.P.C;
+                    regs.P.V = ((~(regs.A ^ i)) & (A ^ o) & 0x80) >>> 7;
                     regs.P.C = +(o > 0xFF);
                     regs.A = o & 0xFF;
                     regs.P.Z = +((regs.A) === 0);
@@ -2174,11 +2196,11 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x7F: new M6502_opcode_functions(M6502_stock_matrix[0x7F],
-        function(regs, pins) { //INVALID
+    0x7F: new M6502_opcode_functions(M6502_invalid_matrix[0x7F],
+        function(regs, pins) { //
     }),
-    0x80: new M6502_opcode_functions(M6502_stock_matrix[0x80],
-        function(regs, pins) { //INVALID
+    0x80: new M6502_opcode_functions(M6502_invalid_matrix[0x80],
+        function(regs, pins) { //
     }),
     0x81: new M6502_opcode_functions(M6502_stock_matrix[0x81],
         function(regs, pins) { //STA (d,x)
@@ -2189,14 +2211,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 2: // spurious read
                     pins.Addr = pins.D;
-                    regs.TA = pins.D + regs.X;
+                    regs.TA = (pins.D + regs.X) & 0xFF;
                     break;
                 case 3: // real read ABS L
                     pins.Addr = regs.TA;
                     break;
                 case 4: // read ABS H
                     regs.TA = pins.D;
-                    pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                    pins.Addr = (pins.Addr + 1) & 0xFF;
                     break;
                 case 5: // Write result to addr
                     pins.Addr = regs.TA | (pins.D << 8);
@@ -2212,11 +2234,11 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x82: new M6502_opcode_functions(M6502_stock_matrix[0x82],
-        function(regs, pins) { //INVALID
+    0x82: new M6502_opcode_functions(M6502_invalid_matrix[0x82],
+        function(regs, pins) { //
     }),
-    0x83: new M6502_opcode_functions(M6502_stock_matrix[0x83],
-        function(regs, pins) { //INVALID
+    0x83: new M6502_opcode_functions(M6502_invalid_matrix[0x83],
+        function(regs, pins) { //
     }),
     0x84: new M6502_opcode_functions(M6502_stock_matrix[0x84],
         function(regs, pins) { //STY d
@@ -2281,14 +2303,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x87: new M6502_opcode_functions(M6502_stock_matrix[0x87],
-        function(regs, pins) { //INVALID
+    0x87: new M6502_opcode_functions(M6502_invalid_matrix[0x87],
+        function(regs, pins) { //
     }),
     0x88: new M6502_opcode_functions(M6502_stock_matrix[0x88],
         function(regs, pins) { //DEY
     }),
-    0x89: new M6502_opcode_functions(M6502_stock_matrix[0x89],
-        function(regs, pins) { //INVALID
+    0x89: new M6502_opcode_functions(M6502_invalid_matrix[0x89],
+        function(regs, pins) { //
     }),
     0x8A: new M6502_opcode_functions(M6502_stock_matrix[0x8A],
         function(regs, pins) { //TXA
@@ -2306,8 +2328,8 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x8B: new M6502_opcode_functions(M6502_stock_matrix[0x8B],
-        function(regs, pins) { //INVALID
+    0x8B: new M6502_opcode_functions(M6502_invalid_matrix[0x8B],
+        function(regs, pins) { //
     }),
     0x8C: new M6502_opcode_functions(M6502_stock_matrix[0x8C],
         function(regs, pins) { //STY a
@@ -2381,24 +2403,25 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x8F: new M6502_opcode_functions(M6502_stock_matrix[0x8F],
-        function(regs, pins) { //INVALID
+    0x8F: new M6502_opcode_functions(M6502_invalid_matrix[0x8F],
+        function(regs, pins) { //
     }),
     0x90: new M6502_opcode_functions(M6502_stock_matrix[0x90],
         function(regs, pins) { //BCC
             switch(regs.TCU) {
                 case 1:
                     regs.TR = +(regs.P.C === 0);
-                    if (!regs.TR) { regs.TCU += 2; break; }
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
+                    if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
                     break;
                 case 2:
-                    regs.TA = (regs.PC + pins.D) & 0xFFFF;
-                    pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
-                    if ((regs.TA & 0xFF00) === (PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
+                    regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
+                    pins.Addr = regs.PC;
+                    if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                     break;
                 case 3: // extra idle on page cross
+                    pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
                     break;
                 case 4: // cleanup_custom
                     regs.PC = regs.TA;
@@ -2442,11 +2465,11 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x92: new M6502_opcode_functions(M6502_stock_matrix[0x92],
-        function(regs, pins) { //INVALID
+    0x92: new M6502_opcode_functions(M6502_invalid_matrix[0x92],
+        function(regs, pins) { //
     }),
-    0x93: new M6502_opcode_functions(M6502_stock_matrix[0x93],
-        function(regs, pins) { //INVALID
+    0x93: new M6502_opcode_functions(M6502_invalid_matrix[0x93],
+        function(regs, pins) { //
     }),
     0x94: new M6502_opcode_functions(M6502_stock_matrix[0x94],
         function(regs, pins) { //STY d,x
@@ -2511,8 +2534,8 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x97: new M6502_opcode_functions(M6502_stock_matrix[0x97],
-        function(regs, pins) { //INVALID
+    0x97: new M6502_opcode_functions(M6502_invalid_matrix[0x97],
+        function(regs, pins) { //
     }),
     0x98: new M6502_opcode_functions(M6502_stock_matrix[0x98],
         function(regs, pins) { //TYA
@@ -2574,11 +2597,11 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x9B: new M6502_opcode_functions(M6502_stock_matrix[0x9B],
-        function(regs, pins) { //INVALID
+    0x9B: new M6502_opcode_functions(M6502_invalid_matrix[0x9B],
+        function(regs, pins) { //
     }),
-    0x9C: new M6502_opcode_functions(M6502_stock_matrix[0x9C],
-        function(regs, pins) { //INVALID
+    0x9C: new M6502_opcode_functions(M6502_invalid_matrix[0x9C],
+        function(regs, pins) { //
     }),
     0x9D: new M6502_opcode_functions(M6502_stock_matrix[0x9D],
         function(regs, pins) { //STA a,x
@@ -2610,11 +2633,11 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0x9E: new M6502_opcode_functions(M6502_stock_matrix[0x9E],
-        function(regs, pins) { //INVALID
+    0x9E: new M6502_opcode_functions(M6502_invalid_matrix[0x9E],
+        function(regs, pins) { //
     }),
-    0x9F: new M6502_opcode_functions(M6502_stock_matrix[0x9F],
-        function(regs, pins) { //INVALID
+    0x9F: new M6502_opcode_functions(M6502_invalid_matrix[0x9F],
+        function(regs, pins) { //
     }),
     0xA0: new M6502_opcode_functions(M6502_stock_matrix[0xA0],
         function(regs, pins) { //LDY #
@@ -2644,14 +2667,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 2: // spurious read
                     pins.Addr = pins.D;
-                    regs.TA = pins.D + regs.X;
+                    regs.TA = (pins.D + regs.X) & 0xFF;
                     break;
                 case 3: // real read ABS L
                     pins.Addr = regs.TA;
                     break;
                 case 4: // read ABS H
                     regs.TA = pins.D;
-                    pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                    pins.Addr = (pins.Addr + 1) & 0xFF;
                     break;
                 case 5: // Read from addr
                     pins.Addr = regs.TA | (pins.D << 8);
@@ -2687,8 +2710,8 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0xA3: new M6502_opcode_functions(M6502_stock_matrix[0xA3],
-        function(regs, pins) { //INVALID
+    0xA3: new M6502_opcode_functions(M6502_invalid_matrix[0xA3],
+        function(regs, pins) { //
     }),
     0xA4: new M6502_opcode_functions(M6502_stock_matrix[0xA4],
         function(regs, pins) { //LDY d
@@ -2756,8 +2779,8 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0xA7: new M6502_opcode_functions(M6502_stock_matrix[0xA7],
-        function(regs, pins) { //INVALID
+    0xA7: new M6502_opcode_functions(M6502_invalid_matrix[0xA7],
+        function(regs, pins) { //
     }),
     0xA8: new M6502_opcode_functions(M6502_stock_matrix[0xA8],
         function(regs, pins) { //TAY
@@ -2810,8 +2833,8 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0xAB: new M6502_opcode_functions(M6502_stock_matrix[0xAB],
-        function(regs, pins) { //INVALID
+    0xAB: new M6502_opcode_functions(M6502_invalid_matrix[0xAB],
+        function(regs, pins) { //
     }),
     0xAC: new M6502_opcode_functions(M6502_stock_matrix[0xAC],
         function(regs, pins) { //LDY a
@@ -2829,7 +2852,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     break;
                 case 4: // cleanup_custom
-                    regs.Y = regs.TR;
+                    regs.Y = pins.D;
                     regs.P.Z = +((regs.Y) === 0);
                     regs.P.N = ((regs.Y) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
@@ -2855,7 +2878,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     break;
                 case 4: // cleanup_custom
-                    regs.A = regs.TR;
+                    regs.A = pins.D;
                     regs.P.Z = +((regs.A) === 0);
                     regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
@@ -2881,7 +2904,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     break;
                 case 4: // cleanup_custom
-                    regs.X = regs.TR;
+                    regs.X = pins.D;
                     regs.P.Z = +((regs.X) === 0);
                     regs.P.N = ((regs.X) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
@@ -2891,24 +2914,25 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0xAF: new M6502_opcode_functions(M6502_stock_matrix[0xAF],
-        function(regs, pins) { //INVALID
+    0xAF: new M6502_opcode_functions(M6502_invalid_matrix[0xAF],
+        function(regs, pins) { //
     }),
     0xB0: new M6502_opcode_functions(M6502_stock_matrix[0xB0],
         function(regs, pins) { //BCS r
             switch(regs.TCU) {
                 case 1:
                     regs.TR = +(regs.P.C === 1);
-                    if (!regs.TR) { regs.TCU += 2; break; }
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
+                    if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
                     break;
                 case 2:
-                    regs.TA = (regs.PC + pins.D) & 0xFFFF;
-                    pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
-                    if ((regs.TA & 0xFF00) === (PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
+                    regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
+                    pins.Addr = regs.PC;
+                    if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                     break;
                 case 3: // extra idle on page cross
+                    pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
                     break;
                 case 4: // cleanup_custom
                     regs.PC = regs.TA;
@@ -2955,11 +2979,11 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0xB2: new M6502_opcode_functions(M6502_stock_matrix[0xB2],
-        function(regs, pins) { //INVALID
+    0xB2: new M6502_opcode_functions(M6502_invalid_matrix[0xB2],
+        function(regs, pins) { //
     }),
-    0xB3: new M6502_opcode_functions(M6502_stock_matrix[0xB3],
-        function(regs, pins) { //INVALID
+    0xB3: new M6502_opcode_functions(M6502_invalid_matrix[0xB3],
+        function(regs, pins) { //
     }),
     0xB4: new M6502_opcode_functions(M6502_stock_matrix[0xB4],
         function(regs, pins) { //LDY d,x
@@ -3036,8 +3060,8 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0xB7: new M6502_opcode_functions(M6502_stock_matrix[0xB7],
-        function(regs, pins) { //INVALID
+    0xB7: new M6502_opcode_functions(M6502_invalid_matrix[0xB7],
+        function(regs, pins) { //
     }),
     0xB8: new M6502_opcode_functions(M6502_stock_matrix[0xB8],
         function(regs, pins) { //CLV
@@ -3101,8 +3125,8 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0xBB: new M6502_opcode_functions(M6502_stock_matrix[0xBB],
-        function(regs, pins) { //INVALID
+    0xBB: new M6502_opcode_functions(M6502_invalid_matrix[0xBB],
+        function(regs, pins) { //
     }),
     0xBC: new M6502_opcode_functions(M6502_stock_matrix[0xBC],
         function(regs, pins) { //LDY a,x
@@ -3200,8 +3224,8 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0xBF: new M6502_opcode_functions(M6502_stock_matrix[0xBF],
-        function(regs, pins) { //INVALID
+    0xBF: new M6502_opcode_functions(M6502_invalid_matrix[0xBF],
+        function(regs, pins) { //
     }),
     0xC0: new M6502_opcode_functions(M6502_stock_matrix[0xC0],
         function(regs, pins) { //CPY #
@@ -3232,14 +3256,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 2: // spurious read
                     pins.Addr = pins.D;
-                    regs.TA = pins.D + regs.X;
+                    regs.TA = (pins.D + regs.X) & 0xFF;
                     break;
                 case 3: // real read ABS L
                     pins.Addr = regs.TA;
                     break;
                 case 4: // read ABS H
                     regs.TA = pins.D;
-                    pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                    pins.Addr = (pins.Addr + 1) & 0xFF;
                     break;
                 case 5: // Read from addr
                     pins.Addr = regs.TA | (pins.D << 8);
@@ -3257,11 +3281,11 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0xC2: new M6502_opcode_functions(M6502_stock_matrix[0xC2],
-        function(regs, pins) { //INVALID
+    0xC2: new M6502_opcode_functions(M6502_invalid_matrix[0xC2],
+        function(regs, pins) { //
     }),
-    0xC3: new M6502_opcode_functions(M6502_stock_matrix[0xC3],
-        function(regs, pins) { //INVALID
+    0xC3: new M6502_opcode_functions(M6502_invalid_matrix[0xC3],
+        function(regs, pins) { //
     }),
     0xC4: new M6502_opcode_functions(M6502_stock_matrix[0xC4],
         function(regs, pins) { //CPY d
@@ -3323,10 +3347,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.RW = 1;
                     break;
                 case 4:
-                    regs.TR = (regs.TR - 1) & 0xFF;
-                    regs.P.Z = +((regs.TR) === 0);
-                    regs.P.N = ((regs.TR) & 0x80) >>> 7;
-                    pins.D = regs.TR;
+                    pins.D = (pins.D - 1) & 0xFF;
+                    regs.P.Z = +((pins.D) === 0);
+                    regs.P.N = ((pins.D) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     break;
                 case 5: // cleanup
@@ -3337,8 +3360,8 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0xC7: new M6502_opcode_functions(M6502_stock_matrix[0xC7],
-        function(regs, pins) { //INVALID
+    0xC7: new M6502_opcode_functions(M6502_invalid_matrix[0xC7],
+        function(regs, pins) { //
     }),
     0xC8: new M6502_opcode_functions(M6502_stock_matrix[0xC8],
         function(regs, pins) { //INY
@@ -3366,8 +3389,8 @@ const nesm6502_opcodes_decoded = Object.freeze({
     0xCA: new M6502_opcode_functions(M6502_stock_matrix[0xCA],
         function(regs, pins) { //DEX
     }),
-    0xCB: new M6502_opcode_functions(M6502_stock_matrix[0xCB],
-        function(regs, pins) { //INVALID
+    0xCB: new M6502_opcode_functions(M6502_invalid_matrix[0xCB],
+        function(regs, pins) { //
     }),
     0xCC: new M6502_opcode_functions(M6502_stock_matrix[0xCC],
         function(regs, pins) { //CPY a
@@ -3385,7 +3408,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     break;
                 case 4: // cleanup_custom
-                    let o = regs.Y - regs.TR;
+                    let o = regs.Y - pins.D;
                     regs.P.C = +(!((o & 0x100) >>> 8));
                     regs.P.Z = +((o & 0xFF) === 0);
                     regs.P.N = ((o) & 0x80) >>> 7;
@@ -3412,7 +3435,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     break;
                 case 4: // cleanup_custom
-                    let o = regs.A - regs.TR;
+                    let o = regs.A - pins.D;
                     regs.P.C = +(!((o & 0x100) >>> 8));
                     regs.P.Z = +((o & 0xFF) === 0);
                     regs.P.N = ((o) & 0x80) >>> 7;
@@ -3457,24 +3480,25 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0xCF: new M6502_opcode_functions(M6502_stock_matrix[0xCF],
-        function(regs, pins) { //INVALID
+    0xCF: new M6502_opcode_functions(M6502_invalid_matrix[0xCF],
+        function(regs, pins) { //
     }),
     0xD0: new M6502_opcode_functions(M6502_stock_matrix[0xD0],
         function(regs, pins) { //BNE r
             switch(regs.TCU) {
                 case 1:
                     regs.TR = +(regs.P.Z === 0);
-                    if (!regs.TR) { regs.TCU += 2; break; }
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
+                    if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
                     break;
                 case 2:
-                    regs.TA = (regs.PC + pins.D) & 0xFFFF;
-                    pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
-                    if ((regs.TA & 0xFF00) === (PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
+                    regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
+                    pins.Addr = regs.PC;
+                    if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                     break;
                 case 3: // extra idle on page cross
+                    pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
                     break;
                 case 4: // cleanup_custom
                     regs.PC = regs.TA;
@@ -3522,14 +3546,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0xD2: new M6502_opcode_functions(M6502_stock_matrix[0xD2],
-        function(regs, pins) { //INVALID
+    0xD2: new M6502_opcode_functions(M6502_invalid_matrix[0xD2],
+        function(regs, pins) { //
     }),
-    0xD3: new M6502_opcode_functions(M6502_stock_matrix[0xD3],
-        function(regs, pins) { //INVALID
+    0xD3: new M6502_opcode_functions(M6502_invalid_matrix[0xD3],
+        function(regs, pins) { //
     }),
-    0xD4: new M6502_opcode_functions(M6502_stock_matrix[0xD4],
-        function(regs, pins) { //INVALID
+    0xD4: new M6502_opcode_functions(M6502_invalid_matrix[0xD4],
+        function(regs, pins) { //
     }),
     0xD5: new M6502_opcode_functions(M6502_stock_matrix[0xD5],
         function(regs, pins) { //CMP d,x
@@ -3588,8 +3612,8 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0xD7: new M6502_opcode_functions(M6502_stock_matrix[0xD7],
-        function(regs, pins) { //INVALID
+    0xD7: new M6502_opcode_functions(M6502_invalid_matrix[0xD7],
+        function(regs, pins) { //
     }),
     0xD8: new M6502_opcode_functions(M6502_stock_matrix[0xD8],
         function(regs, pins) { //CLD
@@ -3638,14 +3662,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0xDA: new M6502_opcode_functions(M6502_stock_matrix[0xDA],
-        function(regs, pins) { //INVALID
+    0xDA: new M6502_opcode_functions(M6502_invalid_matrix[0xDA],
+        function(regs, pins) { //
     }),
-    0xDB: new M6502_opcode_functions(M6502_stock_matrix[0xDB],
-        function(regs, pins) { //INVALID
+    0xDB: new M6502_opcode_functions(M6502_invalid_matrix[0xDB],
+        function(regs, pins) { //
     }),
-    0xDC: new M6502_opcode_functions(M6502_stock_matrix[0xDC],
-        function(regs, pins) { //INVALID
+    0xDC: new M6502_opcode_functions(M6502_invalid_matrix[0xDC],
+        function(regs, pins) { //
     }),
     0xDD: new M6502_opcode_functions(M6502_stock_matrix[0xDD],
         function(regs, pins) { //CMP a,x
@@ -3718,8 +3742,8 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0xDF: new M6502_opcode_functions(M6502_stock_matrix[0xDF],
-        function(regs, pins) { //INVALID
+    0xDF: new M6502_opcode_functions(M6502_invalid_matrix[0xDF],
+        function(regs, pins) { //
     }),
     0xE0: new M6502_opcode_functions(M6502_stock_matrix[0xE0],
         function(regs, pins) { //CPX #
@@ -3750,21 +3774,20 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 2: // spurious read
                     pins.Addr = pins.D;
-                    regs.TA = pins.D + regs.X;
+                    regs.TA = (pins.D + regs.X) & 0xFF;
                     break;
                 case 3: // real read ABS L
                     pins.Addr = regs.TA;
                     break;
                 case 4: // read ABS H
                     regs.TA = pins.D;
-                    pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                    pins.Addr = (pins.Addr + 1) & 0xFF;
                     break;
                 case 5: // Read from addr
                     pins.Addr = regs.TA | (pins.D << 8);
                     break;
                 case 6: // cleanup_custom
                     regs.TR = pins.D;
-                    regs.TR = (~regs.TR) & 0xFF;
                     let i = (~regs.TR) & 0xFF;
                     let o = regs.A + i + regs.P.C;
                     regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
@@ -3779,11 +3802,11 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0xE2: new M6502_opcode_functions(M6502_stock_matrix[0xE2],
-        function(regs, pins) { //INVALID
+    0xE2: new M6502_opcode_functions(M6502_invalid_matrix[0xE2],
+        function(regs, pins) { //
     }),
-    0xE3: new M6502_opcode_functions(M6502_stock_matrix[0xE3],
-        function(regs, pins) { //INVALID
+    0xE3: new M6502_opcode_functions(M6502_invalid_matrix[0xE3],
+        function(regs, pins) { //
     }),
     0xE4: new M6502_opcode_functions(M6502_stock_matrix[0xE4],
         function(regs, pins) { //CPX d
@@ -3820,7 +3843,6 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 3: // cleanup_custom
                     regs.TR = pins.D;
-                    regs.TR = (~regs.TR) & 0xFF;
                     let i = (~regs.TR) & 0xFF;
                     let o = regs.A + i + regs.P.C;
                     regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
@@ -3849,10 +3871,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.RW = 1;
                     break;
                 case 4:
-                    regs.TR = (regs.TR + 1) & 0xFF;
-                    regs.P.Z = +((regs.TR) === 0);
-                    regs.P.N = ((regs.TR) & 0x80) >>> 7;
-                    pins.D = regs.TR;
+                    pins.D = (pins.D + 1) & 0xFF;
+                    regs.P.Z = +((pins.D) === 0);
+                    regs.P.N = ((pins.D) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
                     break;
                 case 5: // cleanup
@@ -3863,8 +3884,8 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0xE7: new M6502_opcode_functions(M6502_stock_matrix[0xE7],
-        function(regs, pins) { //INVALID
+    0xE7: new M6502_opcode_functions(M6502_invalid_matrix[0xE7],
+        function(regs, pins) { //
     }),
     0xE8: new M6502_opcode_functions(M6502_stock_matrix[0xE8],
         function(regs, pins) { //INX
@@ -3878,7 +3899,6 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 2: // cleanup_custom
                     regs.TR = pins.D;
-                    regs.TR = (~regs.TR) & 0xFF;
                     let i = (~regs.TR) & 0xFF;
                     let o = regs.A + i + regs.P.C;
                     regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
@@ -3906,8 +3926,8 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0xEB: new M6502_opcode_functions(M6502_stock_matrix[0xEB],
-        function(regs, pins) { //INVALID
+    0xEB: new M6502_opcode_functions(M6502_invalid_matrix[0xEB],
+        function(regs, pins) { //
     }),
     0xEC: new M6502_opcode_functions(M6502_stock_matrix[0xEC],
         function(regs, pins) { //CPX a
@@ -3925,7 +3945,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     break;
                 case 4: // cleanup_custom
-                    let o = regs.X - regs.TR;
+                    let o = regs.X - pins.D;
                     regs.P.C = +(!((o & 0x100) >>> 8));
                     regs.P.Z = +((o & 0xFF) === 0);
                     regs.P.N = ((o) & 0x80) >>> 7;
@@ -3952,8 +3972,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     break;
                 case 4: // cleanup_custom
-                    regs.TR = (~regs.TR) & 0xFF;
-                    let i = (~regs.TR) & 0xFF;
+                    let i = (~pins.D) & 0xFF;
                     let o = regs.A + i + regs.P.C;
                     regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                     regs.P.C = +(o > 0xFF);
@@ -4001,24 +4020,25 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0xEF: new M6502_opcode_functions(M6502_stock_matrix[0xEF],
-        function(regs, pins) { //INVALID
+    0xEF: new M6502_opcode_functions(M6502_invalid_matrix[0xEF],
+        function(regs, pins) { //
     }),
     0xF0: new M6502_opcode_functions(M6502_stock_matrix[0xF0],
         function(regs, pins) { //BEQ r
             switch(regs.TCU) {
                 case 1:
                     regs.TR = +(regs.P.Z === 1);
-                    if (!regs.TR) { regs.TCU += 2; break; }
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
+                    if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
                     break;
                 case 2:
-                    regs.TA = (regs.PC + pins.D) & 0xFFFF;
-                    pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
-                    if ((regs.TA & 0xFF00) === (PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
+                    regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
+                    pins.Addr = regs.PC;
+                    if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                     break;
                 case 3: // extra idle on page cross
+                    pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
                     break;
                 case 4: // cleanup_custom
                     regs.PC = regs.TA;
@@ -4055,7 +4075,6 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 6: // cleanup_custom
                     regs.TR = pins.D;
-                    regs.TR = (~regs.TR) & 0xFF;
                     let i = (~regs.TR) & 0xFF;
                     let o = regs.A + i + regs.P.C;
                     regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
@@ -4070,14 +4089,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0xF2: new M6502_opcode_functions(M6502_stock_matrix[0xF2],
-        function(regs, pins) { //INVALID
+    0xF2: new M6502_opcode_functions(M6502_invalid_matrix[0xF2],
+        function(regs, pins) { //
     }),
-    0xF3: new M6502_opcode_functions(M6502_stock_matrix[0xF3],
-        function(regs, pins) { //INVALID
+    0xF3: new M6502_opcode_functions(M6502_invalid_matrix[0xF3],
+        function(regs, pins) { //
     }),
-    0xF4: new M6502_opcode_functions(M6502_stock_matrix[0xF4],
-        function(regs, pins) { //INVALID
+    0xF4: new M6502_opcode_functions(M6502_invalid_matrix[0xF4],
+        function(regs, pins) { //
     }),
     0xF5: new M6502_opcode_functions(M6502_stock_matrix[0xF5],
         function(regs, pins) { //SBC d,x
@@ -4094,7 +4113,6 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 4: // cleanup_custom
                     regs.TR = pins.D;
-                    regs.TR = (~regs.TR) & 0xFF;
                     let i = (~regs.TR) & 0xFF;
                     let o = regs.A + i + regs.P.C;
                     regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
@@ -4140,8 +4158,8 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0xF7: new M6502_opcode_functions(M6502_stock_matrix[0xF7],
-        function(regs, pins) { //INVALID
+    0xF7: new M6502_opcode_functions(M6502_invalid_matrix[0xF7],
+        function(regs, pins) { //
     }),
     0xF8: new M6502_opcode_functions(M6502_stock_matrix[0xF8],
         function(regs, pins) { //SED
@@ -4179,7 +4197,6 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA;
                     break;
                 case 5: // cleanup_custom
-                    regs.TR = (~regs.TR) & 0xFF;
                     let i = (~regs.TR) & 0xFF;
                     let o = regs.A + i + regs.P.C;
                     regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
@@ -4194,14 +4211,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0xFA: new M6502_opcode_functions(M6502_stock_matrix[0xFA],
-        function(regs, pins) { //INVALID
+    0xFA: new M6502_opcode_functions(M6502_invalid_matrix[0xFA],
+        function(regs, pins) { //
     }),
-    0xFB: new M6502_opcode_functions(M6502_stock_matrix[0xFB],
-        function(regs, pins) { //INVALID
+    0xFB: new M6502_opcode_functions(M6502_invalid_matrix[0xFB],
+        function(regs, pins) { //
     }),
-    0xFC: new M6502_opcode_functions(M6502_stock_matrix[0xFC],
-        function(regs, pins) { //INVALID
+    0xFC: new M6502_opcode_functions(M6502_invalid_matrix[0xFC],
+        function(regs, pins) { //
     }),
     0xFD: new M6502_opcode_functions(M6502_stock_matrix[0xFD],
         function(regs, pins) { //SBC a,x
@@ -4225,7 +4242,6 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA;
                     break;
                 case 5: // cleanup_custom
-                    regs.TR = (~regs.TR) & 0xFF;
                     let i = (~regs.TR) & 0xFF;
                     let o = regs.A + i + regs.P.C;
                     regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
@@ -4278,8 +4294,8 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
             }
     }),
-    0xFF: new M6502_opcode_functions(M6502_stock_matrix[0xFF],
-        function(regs, pins) { //INVALID
+    0xFF: new M6502_opcode_functions(M6502_invalid_matrix[0xFF],
+        function(regs, pins) { //
     }),
     0x100: new M6502_opcode_functions(M6502_stock_matrix[0x100],
         function(regs, pins) { //RESET
@@ -4320,36 +4336,38 @@ const nesm6502_opcodes_decoded = Object.freeze({
         function(regs, pins) { //NMI
             switch(regs.TCU) {
                 case 1:
+                    regs.P.B = 0;
+                    pins.Addr = regs.PC;
+                    regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
                 case 2:
-                    break;
-                case 3:
-                    pins.RW = 1;
                     pins.Addr = regs.S | 0x100;
                     regs.S = (regs.S - 1) & 0xFF;
-                    pins.D = (regs.PC & 0xFF00) >>> 8;
+                    pins.D = (regs.PC >>> 8) & 0xFF;
+                    pins.RW = 1;
                     break;
-                case 4:
+                case 3:
                     pins.Addr = regs.S | 0x100;
                     regs.S = (regs.S - 1) & 0xFF;
                     pins.D = regs.PC & 0xFF;
                     break;
-                case 5:
+                case 4:
                     pins.Addr = regs.S | 0x100;
                     regs.S = (regs.S - 1) & 0xFF;
-                    pins.D = regs.P.getbyte() | 0x20;
+                    pins.D = regs.P.getbyte();
+                    break;
+                case 5:
+                    regs.P.B = 1; // Confirmed via Visual6502 that this bit is actually set always during NMI, IRQ, and BRK
                     regs.P.I = 1;
+                    pins.RW = 0;
+                    pins.Addr = (0xFFFA);
                     break;
                 case 6:
-                    pins.RW = 0;
-                    pins.Addr = 0xFFFA;
-                    break;
-                case 7:
-                    regs.TA = pins.D
+                    regs.PC = pins.D;
                     pins.Addr = (pins.Addr + 1) & 0xFFFF;
                     break;
-                case 8: // cleanup_custom
-                    regs.PC = regs.TA | (pins.D << 8);
+                case 7: // cleanup_custom
+                    regs.PC |= (pins.D << 8);
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -4361,36 +4379,38 @@ const nesm6502_opcodes_decoded = Object.freeze({
         function(regs, pins) { //IRQ
             switch(regs.TCU) {
                 case 1:
+                    regs.P.B = 0;
+                    pins.Addr = regs.PC;
+                    regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
                 case 2:
-                    break;
-                case 3:
-                    pins.RW = 1;
                     pins.Addr = regs.S | 0x100;
                     regs.S = (regs.S - 1) & 0xFF;
-                    pins.D = (regs.PC & 0xFF00) >>> 8;
+                    pins.D = (regs.PC >>> 8) & 0xFF;
+                    pins.RW = 1;
                     break;
-                case 4:
+                case 3:
                     pins.Addr = regs.S | 0x100;
                     regs.S = (regs.S - 1) & 0xFF;
                     pins.D = regs.PC & 0xFF;
                     break;
-                case 5:
+                case 4:
                     pins.Addr = regs.S | 0x100;
                     regs.S = (regs.S - 1) & 0xFF;
-                    pins.D = regs.P.getbyte() | 0x20;
+                    pins.D = regs.P.getbyte();
+                    break;
+                case 5:
+                    regs.P.B = 1; // Confirmed via Visual6502 that this bit is actually set always during NMI, IRQ, and BRK
                     regs.P.I = 1;
+                    pins.RW = 0;
+                    pins.Addr = (0xFFFE);
                     break;
                 case 6:
-                    pins.RW = 0;
-                    pins.Addr = 0xFFFE;
-                    break;
-                case 7:
-                    regs.TA = pins.D
+                    regs.PC = pins.D;
                     pins.Addr = (pins.Addr + 1) & 0xFFFF;
                     break;
-                case 8: // cleanup_custom
-                    regs.PC = regs.TA | (pins.D << 8);
+                case 7: // cleanup_custom
+                    regs.PC |= (pins.D << 8);
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;

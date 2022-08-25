@@ -151,7 +151,7 @@ async function test_pt_spc700_ins(cpu, ins) {
 async function test_pt_spc700() {
     dconsole.addl(null, 'Workin on tests...')
     let read8 = function(addr) {
-        return testRAM[addr];
+        return M6502testRAM[addr];
     }
     let mm = new SPC_test_mem_map();
     let clk = new SPC_test_clock();
@@ -167,7 +167,7 @@ async function test_pt_spc700() {
     let end_test = 0xFF; // 255
 
     cpu.enable_test_mode();
-    if (DO_TRACING) cpu.enable_tracing();
+    if (WDC_TEST_DO_TRACING) cpu.enable_tracing();
     for (let opcode = start_test; opcode <= end_test; opcode++) {
         if (skip_tests.indexOf(opcode) !== -1) {
             tconsole.addl(null, 'Text for ' + hex2(opcode) + ' skipped!');
