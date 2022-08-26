@@ -182,10 +182,6 @@ class SNES {
 		}
 	}
 
-	load_ROM(file) {
-		this.cart.load_cart(file);
-	}
-	
 	load_ROM_from_RAM(ROM) {
 		console.log('Loading ROM...', ROM);
 		this.cart.load_cart_from_RAM(new Uint8Array(ROM));
