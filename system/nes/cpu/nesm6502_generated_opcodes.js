@@ -111,17 +111,17 @@ const nesm6502_opcodes_decoded = Object.freeze({
     0x06: new M6502_opcode_functions(M6502_stock_matrix[0x06],
         function(regs, pins) { //ASL d
             switch(regs.TCU) {
-                case 1:
+                case 1: // fetch ZP
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
-                case 2:
+                case 2: // capture data
                     pins.Addr = pins.D;
                     break;
-                case 3:
+                case 3: // spurious write
                     pins.RW = 1;
                     break;
-                case 4:
+                case 4: // real write
                     regs.P.C = (pins.D & 0x80) >>> 7;
                     pins.D = (pins.D << 1) & 0xFF;
                     regs.P.Z = +((pins.D) === 0);
@@ -306,20 +306,19 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3: // get ABS H
                     regs.TR = pins.D;
                     regs.TA = pins.D + regs.Y;
-                    pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                    pins.Addr = (pins.Addr + 1) & 0xFF;
                     break;
                 case 4: // idle if crossed
                     regs.TR = (regs.TR + (pins.D << 8)) & 0xFFFF;
                     regs.TA = (regs.TA + (pins.D << 8)) & 0xFFFF;
-                    if (regs.TR & 0xFF00 === regs.TA & 0xFF00) { regs.TCU++; pins.Addr = regs.TA; }
-                    else pins.Addr = (regs.TR & 0xFF00) | (regs.TA & 0xFF);
+                    if ((regs.TR & 0xFF00) === (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    pins.Addr = (regs.TR & 0xFF00) | (regs.TA & 0xFF);
                     break;
                 case 5:
                     pins.Addr = regs.TA;
                     break;
                 case 6: // cleanup_custom
-                    regs.TR = pins.D;
-                    regs.A |= regs.TR;
+                    regs.A |= pins.D;
                     regs.P.Z = +((regs.A) === 0);
                     regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
@@ -346,14 +345,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
                 case 2: // spurious read
+                    regs.TA = (pins.D + regs.X) & 0xFF;
                     pins.Addr = pins.D;
                     break;
                 case 3:
-                    pins.Addr = (pins.D + regs.X) & 0xFFFF;
+                    pins.Addr = regs.TA;
                     break;
                 case 4: // cleanup_custom
-                    regs.TR = pins.D;
-                    regs.A |= regs.TR;
+                    regs.A |= pins.D;
                     regs.P.Z = +((regs.A) === 0);
                     regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
@@ -371,12 +370,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
                 case 2: // spurious read
+                    regs.TA = (pins.D + regs.X) & 0xFF;
                     pins.Addr = pins.D;
                     break;
                 case 3:
-                    pins.Addr = (pins.D + regs.X) & 0xFFFF;
+                    pins.Addr = regs.TA;
                     break;
                 case 4: // spurious write
+                    regs.TR = pins.D;
                     pins.RW = 1;
                     regs.P.C = (regs.TR & 0x80) >>> 7;
                     regs.TR = (regs.TR << 1) & 0xFF;
@@ -402,6 +403,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
         function(regs, pins) { //CLC i
             switch(regs.TCU) {
                 case 1:
+                    pins.Addr = regs.PC;
                     regs.P.C = 0;
                     // Following is auto-generated code for instruction finish
                     break;
@@ -427,14 +429,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3:
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.Y) & 0xFFFF;
-                    if (regs.TA & 0xFF00 === pins.Addr & 0xFF00) { regs.TCU++; regs.skipped_cycle = true; pins.Addr = regs.TA; }
-                    else pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
                     break;
                 case 5: // cleanup_custom
-                    regs.A |= regs.TR;
+                    regs.A |= pins.D;
                     regs.P.Z = +((regs.A) === 0);
                     regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
@@ -468,14 +470,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3:
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.X) & 0xFFFF;
-                    if (regs.TA & 0xFF00 === pins.Addr & 0xFF00) { regs.TCU++; regs.skipped_cycle = true; pins.Addr = regs.TA; }
-                    else pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
                     break;
                 case 5: // cleanup_custom
-                    regs.A |= regs.TR;
+                    regs.A |= pins.D;
                     regs.P.Z = +((regs.A) === 0);
                     regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
@@ -502,7 +504,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = (regs.TA & 0xFF00) | ((regs.TA + regs.X) & 0xFF);
                     break;
                 case 4: // real read
-                    pins.Addr = regs.TA;
+                    pins.Addr = (regs.TA + regs.X) & 0xFFFF;
                     break;
                 case 5:
                     regs.TR = pins.D
@@ -534,30 +536,30 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
-                case 2:
+                case 2: // spurious stack read
                     regs.TA = pins.D;
-                    pins.Addr = regs.PC;
-                    regs.PC = (regs.PC + 1) & 0xFFFF;
-                    break;
-                case 3: // idle cycle
-                    regs.TA |= pins.D << 8;
-                    break;
-                case 4:
-                    regs.PC = (regs.PC - 1) & 0xFFFF;
+                    regs.TR = regs.PC;
                     pins.Addr = regs.S | 0x100;
                     regs.S = (regs.S - 1) & 0xFF;
+                    break;
+                case 3: // stack write PCH
                     pins.RW = 1;
                     pins.D = (regs.PC & 0xFF00) >>> 8;
                     break;
-                case 5:
+                case 4: // stack write PCL
+                    pins.Addr = regs.S | 0x100;
+                    regs.S = (regs.S - 1) & 0xFF;
                     pins.D = regs.PC & 0xFF;
-                    regs.PC = regs.TA;
-                    // Following is auto-generated code for instruction finish
                     break;
-                case 6: // cleanup
+                case 5:
+                    pins.Addr = regs.TR;
+                    pins.RW = 0;
+                    break;
+                case 6: // cleanup_custom
+                    regs.PC = regs.TA | (pins.D << 8);
+                    // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
-                    pins.RW = 0;
                     regs.TCU = 0;
                     break;
             }
@@ -615,7 +617,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     regs.TR = pins.D;
                     regs.P.Z = +((regs.A & regs.TR) === 0);
                     regs.P.N = ((regs.TR) & 0x80) >>> 7;
-                    this.regs.P.V = (regs.TR & 0x40) >>> 6;
+                    regs.P.V = (regs.TR & 0x40) >>> 6;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -648,20 +650,20 @@ const nesm6502_opcodes_decoded = Object.freeze({
     0x26: new M6502_opcode_functions(M6502_stock_matrix[0x26],
         function(regs, pins) { //ROL d
             switch(regs.TCU) {
-                case 1:
+                case 1: // fetch ZP
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
-                case 2:
+                case 2: // capture data
                     pins.Addr = pins.D;
                     break;
-                case 3:
+                case 3: // spurious write
                     pins.RW = 1;
                     break;
-                case 4:
-                    let c = this.regs.P.C;
+                case 4: // real write
+                    let c = regs.P.C;
                     regs.P.C = (pins.D & 0x80) >>> 7;
-                    pins.D = (pins.D << 1) | c;
+                    pins.D = ((pins.D << 1) | c) & 0xFF;
                     regs.P.Z = +((pins.D) === 0);
                     regs.P.N = ((pins.D) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
@@ -683,11 +685,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 1:
                     pins.Addr = regs.PC;
                     break;
-                case 2:
+                case 2: // spurious stack read
+                    pins.Addr = regs.S | 0x100;
                     regs.S = (regs.S + 1) & 0xFF;
+                    break;
+                case 3:
                     pins.Addr = regs.S | 0x100;
                     break;
-                case 3: // cleanup_custom
+                case 4: // cleanup_custom
                     regs.P.setbyte(pins.D);
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
@@ -720,9 +725,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
             switch(regs.TCU) {
                 case 1:
                     pins.Addr = regs.PC;
-                    let c = this.regs.P.C;
+                    let c = regs.P.C;
                     regs.P.C = (regs.A & 0x80) >>> 7;
-                    regs.A = (regs.A << 1) | c;
+                    regs.A = ((regs.A << 1) | c) & 0xFF;
                     regs.P.Z = +((regs.A) === 0);
                     regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
@@ -755,7 +760,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 4: // cleanup_custom
                     regs.P.Z = +((regs.A & pins.D) === 0);
                     regs.P.N = ((pins.D) & 0x80) >>> 7;
-                    this.regs.P.V = (pins.D & 0x40) >>> 6;
+                    regs.P.V = (pins.D & 0x40) >>> 6;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -809,9 +814,9 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.RW = 1;
                     break;
                 case 5:
-                    let c = this.regs.P.C;
+                    let c = regs.P.C;
                     regs.P.C = (regs.TR & 0x80) >>> 7;
-                    regs.TR = (regs.TR << 1) | c;
+                    regs.TR = ((regs.TR << 1) | c) & 0xFF;
                     regs.P.Z = +((regs.TR) === 0);
                     regs.P.N = ((regs.TR) & 0x80) >>> 7;
                     pins.D = regs.TR
@@ -867,20 +872,19 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3: // get ABS H
                     regs.TR = pins.D;
                     regs.TA = pins.D + regs.Y;
-                    pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                    pins.Addr = (pins.Addr + 1) & 0xFF;
                     break;
                 case 4: // idle if crossed
                     regs.TR = (regs.TR + (pins.D << 8)) & 0xFFFF;
                     regs.TA = (regs.TA + (pins.D << 8)) & 0xFFFF;
-                    if (regs.TR & 0xFF00 === regs.TA & 0xFF00) { regs.TCU++; pins.Addr = regs.TA; }
-                    else pins.Addr = (regs.TR & 0xFF00) | (regs.TA & 0xFF);
+                    if ((regs.TR & 0xFF00) === (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    pins.Addr = (regs.TR & 0xFF00) | (regs.TA & 0xFF);
                     break;
                 case 5:
                     pins.Addr = regs.TA;
                     break;
                 case 6: // cleanup_custom
-                    regs.TR = pins.D;
-                    regs.A &= regs.TR;
+                    regs.A &= pins.D;
                     regs.P.Z = +((regs.A) === 0);
                     regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
@@ -907,14 +911,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
                 case 2: // spurious read
+                    regs.TA = (pins.D + regs.X) & 0xFF;
                     pins.Addr = pins.D;
                     break;
                 case 3:
-                    pins.Addr = (pins.D + regs.X) & 0xFFFF;
+                    pins.Addr = regs.TA;
                     break;
                 case 4: // cleanup_custom
-                    regs.TR = pins.D;
-                    regs.A &= regs.TR;
+                    regs.A &= pins.D;
                     regs.P.Z = +((regs.A) === 0);
                     regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
@@ -932,16 +936,18 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
                 case 2: // spurious read
+                    regs.TA = (pins.D + regs.X) & 0xFF;
                     pins.Addr = pins.D;
                     break;
                 case 3:
-                    pins.Addr = (pins.D + regs.X) & 0xFFFF;
+                    pins.Addr = regs.TA;
                     break;
                 case 4: // spurious write
+                    regs.TR = pins.D;
                     pins.RW = 1;
-                    let c = this.regs.P.C;
+                    let c = regs.P.C;
                     regs.P.C = (regs.TR & 0x80) >>> 7;
-                    regs.TR = (regs.TR << 1) | c;
+                    regs.TR = ((regs.TR << 1) | c) & 0xFF;
                     regs.P.Z = +((regs.TR) === 0);
                     regs.P.N = ((regs.TR) & 0x80) >>> 7;
                     break;
@@ -964,6 +970,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
         function(regs, pins) { //SEC
             switch(regs.TCU) {
                 case 1:
+                    pins.Addr = regs.PC;
                     regs.P.C = 1;
                     // Following is auto-generated code for instruction finish
                     break;
@@ -989,14 +996,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3:
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.Y) & 0xFFFF;
-                    if (regs.TA & 0xFF00 === pins.Addr & 0xFF00) { regs.TCU++; regs.skipped_cycle = true; pins.Addr = regs.TA; }
-                    else pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
                     break;
                 case 5: // cleanup_custom
-                    regs.A &= regs.TR;
+                    regs.A &= pins.D;
                     regs.P.Z = +((regs.A) === 0);
                     regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
@@ -1030,14 +1037,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3:
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.X) & 0xFFFF;
-                    if (regs.TA & 0xFF00 === pins.Addr & 0xFF00) { regs.TCU++; regs.skipped_cycle = true; pins.Addr = regs.TA; }
-                    else pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
                     break;
                 case 5: // cleanup_custom
-                    regs.A &= regs.TR;
+                    regs.A &= pins.D;
                     regs.P.Z = +((regs.A) === 0);
                     regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
@@ -1064,16 +1071,16 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = (regs.TA & 0xFF00) | ((regs.TA + regs.X) & 0xFF);
                     break;
                 case 4: // real read
-                    pins.Addr = regs.TA;
+                    pins.Addr = (regs.TA + regs.X) & 0xFFFF;
                     break;
                 case 5:
                     regs.TR = pins.D
                     pins.RW = 1;
                     break;
                 case 6:
-                    let c = this.regs.P.C;
+                    let c = regs.P.C;
                     regs.P.C = (regs.TR & 0x80) >>> 7;
-                    regs.TR = (regs.TR << 1) | c;
+                    regs.TR = ((regs.TR << 1) | c) & 0xFF;
                     regs.P.Z = +((regs.TR) === 0);
                     regs.P.N = ((regs.TR) & 0x80) >>> 7;
                     pins.D = regs.TR;
@@ -1093,27 +1100,30 @@ const nesm6502_opcodes_decoded = Object.freeze({
     0x40: new M6502_opcode_functions(M6502_stock_matrix[0x40],
         function(regs, pins) { //RTI
             switch(regs.TCU) {
-                case 1:
+                case 1: // spurious read
+                    pins.Addr = regs.PC;
+                    regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
-                case 2:
+                case 2: // spurious stack read
+                    pins.Addr = regs.S | 0x100;
+                    break;
+                case 3: // Read P
                     regs.S = (regs.S + 1) & 0xFF;
                     pins.Addr = regs.S | 0x100;
                     break;
-                case 3:
+                case 4: // Read PCL
                     regs.P.setbyte(pins.D);
                     regs.S = (regs.S + 1) & 0xFF;
                     pins.Addr = regs.S | 0x100;
                     break;
-                case 4:
+                case 5: // read PCH
                     regs.PC = pins.D;
                     regs.S = (regs.S + 1) & 0xFF;
                     pins.Addr = regs.S | 0x100;
                     break;
-                case 5:
+                case 6: // cleanup_custom
                     regs.PC |= (pins.D << 8);
                     // Following is auto-generated code for instruction finish
-                    break;
-                case 6: // cleanup
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     regs.TCU = 0;
@@ -1187,17 +1197,17 @@ const nesm6502_opcodes_decoded = Object.freeze({
     0x46: new M6502_opcode_functions(M6502_stock_matrix[0x46],
         function(regs, pins) { //LSR d
             switch(regs.TCU) {
-                case 1:
+                case 1: // fetch ZP
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
-                case 2:
+                case 2: // capture data
                     pins.Addr = pins.D;
                     break;
-                case 3:
+                case 3: // spurious write
                     pins.RW = 1;
                     break;
-                case 4:
+                case 4: // real write
                     regs.P.C = pins.D & 1;
                     pins.D >>>= 1;
                     regs.P.Z = +((pins.D) === 0);
@@ -1400,20 +1410,19 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3: // get ABS H
                     regs.TR = pins.D;
                     regs.TA = pins.D + regs.Y;
-                    pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                    pins.Addr = (pins.Addr + 1) & 0xFF;
                     break;
                 case 4: // idle if crossed
                     regs.TR = (regs.TR + (pins.D << 8)) & 0xFFFF;
                     regs.TA = (regs.TA + (pins.D << 8)) & 0xFFFF;
-                    if (regs.TR & 0xFF00 === regs.TA & 0xFF00) { regs.TCU++; pins.Addr = regs.TA; }
-                    else pins.Addr = (regs.TR & 0xFF00) | (regs.TA & 0xFF);
+                    if ((regs.TR & 0xFF00) === (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    pins.Addr = (regs.TR & 0xFF00) | (regs.TA & 0xFF);
                     break;
                 case 5:
                     pins.Addr = regs.TA;
                     break;
                 case 6: // cleanup_custom
-                    regs.TR = pins.D;
-                    regs.A ^= regs.TR;
+                    regs.A ^= pins.D;
                     regs.P.Z = +((regs.A) === 0);
                     regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
@@ -1440,14 +1449,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
                 case 2: // spurious read
+                    regs.TA = (pins.D + regs.X) & 0xFF;
                     pins.Addr = pins.D;
                     break;
                 case 3:
-                    pins.Addr = (pins.D + regs.X) & 0xFFFF;
+                    pins.Addr = regs.TA;
                     break;
                 case 4: // cleanup_custom
-                    regs.TR = pins.D;
-                    regs.A ^= regs.TR;
+                    regs.A ^= pins.D;
                     regs.P.Z = +((regs.A) === 0);
                     regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
@@ -1465,12 +1474,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
                 case 2: // spurious read
+                    regs.TA = (pins.D + regs.X) & 0xFF;
                     pins.Addr = pins.D;
                     break;
                 case 3:
-                    pins.Addr = (pins.D + regs.X) & 0xFFFF;
+                    pins.Addr = regs.TA;
                     break;
                 case 4: // spurious write
+                    regs.TR = pins.D;
                     pins.RW = 1;
                     regs.P.C = regs.TR & 1;
                     regs.TR >>>= 1;
@@ -1496,6 +1507,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
         function(regs, pins) { //CLI
             switch(regs.TCU) {
                 case 1:
+                    pins.Addr = regs.PC;
                     regs.P.I = 0;
                     // Following is auto-generated code for instruction finish
                     break;
@@ -1521,14 +1533,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3:
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.Y) & 0xFFFF;
-                    if (regs.TA & 0xFF00 === pins.Addr & 0xFF00) { regs.TCU++; regs.skipped_cycle = true; pins.Addr = regs.TA; }
-                    else pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
                     break;
                 case 5: // cleanup_custom
-                    regs.A ^= regs.TR;
+                    regs.A ^= pins.D;
                     regs.P.Z = +((regs.A) === 0);
                     regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
@@ -1562,14 +1574,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3:
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.X) & 0xFFFF;
-                    if (regs.TA & 0xFF00 === pins.Addr & 0xFF00) { regs.TCU++; regs.skipped_cycle = true; pins.Addr = regs.TA; }
-                    else pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
                     break;
                 case 5: // cleanup_custom
-                    regs.A ^= regs.TR;
+                    regs.A ^= pins.D;
                     regs.P.Z = +((regs.A) === 0);
                     regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
@@ -1596,7 +1608,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = (regs.TA & 0xFF00) | ((regs.TA + regs.X) & 0xFF);
                     break;
                 case 4: // real read
-                    pins.Addr = regs.TA;
+                    pins.Addr = (regs.TA + regs.X) & 0xFFFF;
                     break;
                 case 5:
                     regs.TR = pins.D
@@ -1624,23 +1636,29 @@ const nesm6502_opcodes_decoded = Object.freeze({
     0x60: new M6502_opcode_functions(M6502_stock_matrix[0x60],
         function(regs, pins) { //RTS
             switch(regs.TCU) {
-                case 1:
+                case 1: // spurious read
+                    pins.Addr = regs.PC;
+                    regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
-                case 2:
+                case 2: // spurious stack read
+                    pins.Addr = regs.S | 0x100;
+                    break;
+                case 3: // read PCL
                     regs.S = (regs.S + 1) & 0xFF;
                     pins.Addr = regs.S | 0x100;
                     break;
-                case 3:
+                case 4: // read PCH
                     regs.PC = pins.D;
                     regs.S = (regs.S + 1) & 0xFF;
                     pins.Addr = regs.S | 0x100;
                     break;
-                case 4:
+                case 5: // spurious read
                     regs.PC |= (pins.D << 8);
-                    regs.PC = (regs.PC + 1) & 0xFFFF
+                    pins.Addr = regs.PC;
+                    regs.PC = (regs.PC + 1) & 0xFFFF;
                     // Following is auto-generated code for instruction finish
                     break;
-                case 5: // cleanup
+                case 6: // cleanup
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     regs.TCU = 0;
@@ -1673,7 +1691,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     let o;
                     let i = regs.TR;
                     o = i + regs.A + regs.P.C;
-                    regs.P.V = ((~(regs.A ^ i)) & (A ^ o) & 0x80) >>> 7;
+                    regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                     regs.P.C = +(o > 0xFF);
                     regs.A = o & 0xFF;
                     regs.P.Z = +((regs.A) === 0);
@@ -1709,7 +1727,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     let o;
                     let i = regs.TR;
                     o = i + regs.A + regs.P.C;
-                    regs.P.V = ((~(regs.A ^ i)) & (A ^ o) & 0x80) >>> 7;
+                    regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                     regs.P.C = +(o > 0xFF);
                     regs.A = o & 0xFF;
                     regs.P.Z = +((regs.A) === 0);
@@ -1724,17 +1742,17 @@ const nesm6502_opcodes_decoded = Object.freeze({
     0x66: new M6502_opcode_functions(M6502_stock_matrix[0x66],
         function(regs, pins) { //ROR d
             switch(regs.TCU) {
-                case 1:
+                case 1: // fetch ZP
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
-                case 2:
+                case 2: // capture data
                     pins.Addr = pins.D;
                     break;
-                case 3:
+                case 3: // spurious write
                     pins.RW = 1;
                     break;
-                case 4:
+                case 4: // real write
                     let c = regs.P.C;
                     regs.P.C = pins.D & 1;
                     pins.D = (c << 7) | (pins.D >>> 1);
@@ -1756,14 +1774,17 @@ const nesm6502_opcodes_decoded = Object.freeze({
     0x68: new M6502_opcode_functions(M6502_stock_matrix[0x68],
         function(regs, pins) { //PLA
             switch(regs.TCU) {
-                case 1:
+                case 1: // spurious read
                     pins.Addr = regs.PC;
                     break;
-                case 2:
+                case 2: // spurious stack read
+                    pins.Addr = regs.S | 0x100;
+                    break;
+                case 3: // good stack read
                     regs.S = (regs.S + 1) & 0xFF;
                     pins.Addr = regs.S | 0x100;
                     break;
-                case 3: // cleanup_custom
+                case 4: // cleanup_custom
                     regs.A = pins.D;
                     regs.P.Z = +((regs.A) === 0);
                     regs.P.N = ((regs.A) & 0x80) >>> 7;
@@ -1786,7 +1807,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     let o;
                     let i = regs.TR;
                     o = i + regs.A + regs.P.C;
-                    regs.P.V = ((~(regs.A ^ i)) & (A ^ o) & 0x80) >>> 7;
+                    regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                     regs.P.C = +(o > 0xFF);
                     regs.A = o & 0xFF;
                     regs.P.Z = +((regs.A) === 0);
@@ -1823,23 +1844,24 @@ const nesm6502_opcodes_decoded = Object.freeze({
     0x6C: new M6502_opcode_functions(M6502_stock_matrix[0x6C],
         function(regs, pins) { //JMP (d)
             switch(regs.TCU) {
-                case 1:
+                case 1: // read ABSL
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
-                case 2:
-                    regs.TA = pins.D;
+                case 2: // read ABSH
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
+                    regs.TA = pins.D
                     break;
-                case 3:
+                case 3: // read PCL
                     pins.Addr = regs.TA | (pins.D << 8);
                     break;
-                case 4:
-                    regs.TA = (pins.D + 1) & 0xFF;
+                case 4: // read PCH
+                    regs.PC = pins.D;
+                    pins.Addr = (pins.Addr & 0xFF00) | ((pins.Addr + 1) & 0xFF);
                     break;
                 case 5: // cleanup_custom
-                    regs.PC = (pins.D << 8) | regs.TA;
+                    regs.PC |= pins.D << 8;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -1866,7 +1888,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     let o;
                     let i = pins.D;
                     o = i + regs.A + regs.P.C;
-                    regs.P.V = ((~(regs.A ^ i)) & (A ^ o) & 0x80) >>> 7;
+                    regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                     regs.P.C = +(o > 0xFF);
                     regs.A = o & 0xFF;
                     regs.P.Z = +((regs.A) === 0);
@@ -1956,23 +1978,22 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3: // get ABS H
                     regs.TR = pins.D;
                     regs.TA = pins.D + regs.Y;
-                    pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                    pins.Addr = (pins.Addr + 1) & 0xFF;
                     break;
                 case 4: // idle if crossed
                     regs.TR = (regs.TR + (pins.D << 8)) & 0xFFFF;
                     regs.TA = (regs.TA + (pins.D << 8)) & 0xFFFF;
-                    if (regs.TR & 0xFF00 === regs.TA & 0xFF00) { regs.TCU++; pins.Addr = regs.TA; }
-                    else pins.Addr = (regs.TR & 0xFF00) | (regs.TA & 0xFF);
+                    if ((regs.TR & 0xFF00) === (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    pins.Addr = (regs.TR & 0xFF00) | (regs.TA & 0xFF);
                     break;
                 case 5:
                     pins.Addr = regs.TA;
                     break;
                 case 6: // cleanup_custom
-                    regs.TR = pins.D;
                     let o;
-                    let i = regs.TR;
+                    let i = pins.D;
                     o = i + regs.A + regs.P.C;
-                    regs.P.V = ((~(regs.A ^ i)) & (A ^ o) & 0x80) >>> 7;
+                    regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                     regs.P.C = +(o > 0xFF);
                     regs.A = o & 0xFF;
                     regs.P.Z = +((regs.A) === 0);
@@ -2001,17 +2022,17 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
                 case 2: // spurious read
+                    regs.TA = (pins.D + regs.X) & 0xFF;
                     pins.Addr = pins.D;
                     break;
                 case 3:
-                    pins.Addr = (pins.D + regs.X) & 0xFFFF;
+                    pins.Addr = regs.TA;
                     break;
                 case 4: // cleanup_custom
-                    regs.TR = pins.D;
                     let o;
-                    let i = regs.TR;
+                    let i = pins.D;
                     o = i + regs.A + regs.P.C;
-                    regs.P.V = ((~(regs.A ^ i)) & (A ^ o) & 0x80) >>> 7;
+                    regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                     regs.P.C = +(o > 0xFF);
                     regs.A = o & 0xFF;
                     regs.P.Z = +((regs.A) === 0);
@@ -2031,12 +2052,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
                 case 2: // spurious read
+                    regs.TA = (pins.D + regs.X) & 0xFF;
                     pins.Addr = pins.D;
                     break;
                 case 3:
-                    pins.Addr = (pins.D + regs.X) & 0xFFFF;
+                    pins.Addr = regs.TA;
                     break;
                 case 4: // spurious write
+                    regs.TR = pins.D;
                     pins.RW = 1;
                     let c = regs.P.C;
                     regs.P.C = regs.TR & 1;
@@ -2063,6 +2086,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
         function(regs, pins) { //SEI
             switch(regs.TCU) {
                 case 1:
+                    pins.Addr = regs.PC;
                     regs.P.I = 1;
                     // Following is auto-generated code for instruction finish
                     break;
@@ -2088,17 +2112,17 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3:
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.Y) & 0xFFFF;
-                    if (regs.TA & 0xFF00 === pins.Addr & 0xFF00) { regs.TCU++; regs.skipped_cycle = true; pins.Addr = regs.TA; }
-                    else pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
                     break;
                 case 5: // cleanup_custom
                     let o;
-                    let i = regs.TR;
+                    let i = pins.D;
                     o = i + regs.A + regs.P.C;
-                    regs.P.V = ((~(regs.A ^ i)) & (A ^ o) & 0x80) >>> 7;
+                    regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                     regs.P.C = +(o > 0xFF);
                     regs.A = o & 0xFF;
                     regs.P.Z = +((regs.A) === 0);
@@ -2134,17 +2158,17 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3:
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.X) & 0xFFFF;
-                    if (regs.TA & 0xFF00 === pins.Addr & 0xFF00) { regs.TCU++; regs.skipped_cycle = true; pins.Addr = regs.TA; }
-                    else pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
                     break;
                 case 5: // cleanup_custom
                     let o;
-                    let i = regs.TR;
+                    let i = pins.D;
                     o = i + regs.A + regs.P.C;
-                    regs.P.V = ((~(regs.A ^ i)) & (A ^ o) & 0x80) >>> 7;
+                    regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                     regs.P.C = +(o > 0xFF);
                     regs.A = o & 0xFF;
                     regs.P.Z = +((regs.A) === 0);
@@ -2173,7 +2197,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = (regs.TA & 0xFF00) | ((regs.TA + regs.X) & 0xFF);
                     break;
                 case 4: // real read
-                    pins.Addr = regs.TA;
+                    pins.Addr = (regs.TA + regs.X) & 0xFFFF;
                     break;
                 case 5:
                     regs.TR = pins.D
@@ -2308,6 +2332,20 @@ const nesm6502_opcodes_decoded = Object.freeze({
     }),
     0x88: new M6502_opcode_functions(M6502_stock_matrix[0x88],
         function(regs, pins) { //DEY
+            switch(regs.TCU) {
+                case 1:
+                    pins.Addr = regs.PC;
+                    regs.Y = (regs.Y - 1) & 0xFF;
+                    regs.P.Z = +((regs.Y) === 0);
+                    regs.P.N = ((regs.Y) & 0x80) >>> 7;
+                    // Following is auto-generated code for instruction finish
+                    break;
+                case 2: // cleanup
+                    pins.Addr = regs.PC;
+                    regs.PC = (regs.PC + 1) & 0xFFFF;
+                    regs.TCU = 0;
+                    break;
+            }
     }),
     0x89: new M6502_opcode_functions(M6502_invalid_matrix[0x89],
         function(regs, pins) { //
@@ -2316,6 +2354,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
         function(regs, pins) { //TXA
             switch(regs.TCU) {
                 case 1:
+                    pins.Addr = regs.PC;
                     regs.A = regs.X;
                     regs.P.Z = +((regs.A) === 0);
                     regs.P.N = ((regs.A) & 0x80) >>> 7;
@@ -2346,11 +2385,13 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3:
                     pins.Addr = regs.TA | (pins.D << 8);
                     pins.D = regs.Y;
+                    pins.RW = 1;
                     // Following is auto-generated code for instruction finish
                     break;
                 case 4: // cleanup
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
+                    pins.RW = 0;
                     regs.TCU = 0;
                     break;
             }
@@ -2370,11 +2411,13 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3:
                     pins.Addr = regs.TA | (pins.D << 8);
                     pins.D = regs.A;
+                    pins.RW = 1;
                     // Following is auto-generated code for instruction finish
                     break;
                 case 4: // cleanup
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
+                    pins.RW = 0;
                     regs.TCU = 0;
                     break;
             }
@@ -2394,11 +2437,13 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3:
                     pins.Addr = regs.TA | (pins.D << 8);
                     pins.D = regs.X;
+                    pins.RW = 1;
                     // Following is auto-generated code for instruction finish
                     break;
                 case 4: // cleanup
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
+                    pins.RW = 0;
                     regs.TCU = 0;
                     break;
             }
@@ -2443,12 +2488,12 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = pins.D;
                     break;
                 case 3: // get ABS H
-                    regs.TA = pins.D;
+                    regs.TA = pins.D + regs.Y;
                     regs.TR = (pins.D + regs.Y) & 0xFF;
-                    pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                    pins.Addr = (pins.Addr + 1) & 0xFF;
                     break;
                 case 4: // always idle
-                    regs.TA |= pins.D << 8;
+                    regs.TA = (regs.TA + (pins.D << 8)) & 0xFFFF;
                     pins.Addr = (pins.D << 8) | regs.TR;
                     break;
                 case 5: // write data
@@ -2478,13 +2523,16 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
-                case 2:
-                    pins.Addr = (pins.D + regs.X) & 0xFFFF;
+                case 2: // spurious read
+                    pins.Addr = pins.D;
+                    break;
+                case 3: // write data
+                    pins.Addr = (pins.Addr + regs.X) & 0xFF;
                     pins.RW = 1;
                     pins.D = regs.Y;
                     // Following is auto-generated code for instruction finish
                     break;
-                case 3: // cleanup
+                case 4: // cleanup
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     pins.RW = 0;
@@ -2499,13 +2547,16 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
-                case 2:
-                    pins.Addr = (pins.D + regs.X) & 0xFFFF;
+                case 2: // spurious read
+                    pins.Addr = pins.D;
+                    break;
+                case 3: // write data
+                    pins.Addr = (pins.Addr + regs.X) & 0xFF;
                     pins.RW = 1;
                     pins.D = regs.A;
                     // Following is auto-generated code for instruction finish
                     break;
-                case 3: // cleanup
+                case 4: // cleanup
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     pins.RW = 0;
@@ -2514,19 +2565,22 @@ const nesm6502_opcodes_decoded = Object.freeze({
             }
     }),
     0x96: new M6502_opcode_functions(M6502_stock_matrix[0x96],
-        function(regs, pins) { //STZ d,y
+        function(regs, pins) { //STX d,y
             switch(regs.TCU) {
                 case 1:
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
-                case 2:
-                    pins.Addr = (pins.D + regs.Y) & 0xFFFF;
+                case 2: // spurious read
+                    pins.Addr = pins.D;
+                    break;
+                case 3: // write data
+                    pins.Addr = (pins.Addr + regs.Y) & 0xFF;
                     pins.RW = 1;
-                    pins.D = 0;
+                    pins.D = regs.X;
                     // Following is auto-generated code for instruction finish
                     break;
-                case 3: // cleanup
+                case 4: // cleanup
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     pins.RW = 0;
@@ -2541,6 +2595,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
         function(regs, pins) { //TYA
             switch(regs.TCU) {
                 case 1:
+                    pins.Addr = regs.PC;
                     regs.A = regs.Y;
                     regs.P.Z = +((regs.A) === 0);
                     regs.P.N = ((regs.A) & 0x80) >>> 7;
@@ -2556,21 +2611,21 @@ const nesm6502_opcodes_decoded = Object.freeze({
     0x99: new M6502_opcode_functions(M6502_stock_matrix[0x99],
         function(regs, pins) { //STA a,y
             switch(regs.TCU) {
-                case 1:
+                case 1: // get ABSL
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
-                case 2:
+                case 2: // get ABSH
                     regs.TA = pins.D;
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
-                case 3:
+                case 3: // idle incorrect
                     regs.TA |= pins.D << 8;
                     pins.Addr = (regs.TA & 0xFF00) | ((regs.TA + regs.Y) & 0xFF);
                     break;
                 case 4:
-                    pins.Addr = regs.TA;
+                    pins.Addr = (regs.TA + regs.Y) & 0xFFFF;
                     pins.RW = 1;
                     pins.D = regs.A;
                     // Following is auto-generated code for instruction finish
@@ -2587,6 +2642,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
         function(regs, pins) { //TXS
             switch(regs.TCU) {
                 case 1:
+                    pins.Addr = regs.PC;
                     regs.S = regs.X;
                     // Following is auto-generated code for instruction finish
                     break;
@@ -2606,21 +2662,21 @@ const nesm6502_opcodes_decoded = Object.freeze({
     0x9D: new M6502_opcode_functions(M6502_stock_matrix[0x9D],
         function(regs, pins) { //STA a,x
             switch(regs.TCU) {
-                case 1:
+                case 1: // get ABSL
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
-                case 2:
+                case 2: // get ABSH
                     regs.TA = pins.D;
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
-                case 3:
+                case 3: // idle incorrect
                     regs.TA |= pins.D << 8;
                     pins.Addr = (regs.TA & 0xFF00) | ((regs.TA + regs.X) & 0xFF);
                     break;
                 case 4:
-                    pins.Addr = regs.TA;
+                    pins.Addr = (regs.TA + regs.X) & 0xFFFF;
                     pins.RW = 1;
                     pins.D = regs.A;
                     // Following is auto-generated code for instruction finish
@@ -2786,6 +2842,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
         function(regs, pins) { //TAY
             switch(regs.TCU) {
                 case 1:
+                    pins.Addr = regs.PC;
                     regs.Y = regs.A;
                     regs.P.Z = +((regs.Y) === 0);
                     regs.P.N = ((regs.Y) & 0x80) >>> 7;
@@ -2821,6 +2878,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
         function(regs, pins) { //TAX
             switch(regs.TCU) {
                 case 1:
+                    pins.Addr = regs.PC;
                     regs.X = regs.A;
                     regs.P.Z = +((regs.X) === 0);
                     regs.P.N = ((regs.X) & 0x80) >>> 7;
@@ -2956,20 +3014,19 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3: // get ABS H
                     regs.TR = pins.D;
                     regs.TA = pins.D + regs.Y;
-                    pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                    pins.Addr = (pins.Addr + 1) & 0xFF;
                     break;
                 case 4: // idle if crossed
                     regs.TR = (regs.TR + (pins.D << 8)) & 0xFFFF;
                     regs.TA = (regs.TA + (pins.D << 8)) & 0xFFFF;
-                    if (regs.TR & 0xFF00 === regs.TA & 0xFF00) { regs.TCU++; pins.Addr = regs.TA; }
-                    else pins.Addr = (regs.TR & 0xFF00) | (regs.TA & 0xFF);
+                    if ((regs.TR & 0xFF00) === (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    pins.Addr = (regs.TR & 0xFF00) | (regs.TA & 0xFF);
                     break;
                 case 5:
                     pins.Addr = regs.TA;
                     break;
                 case 6: // cleanup_custom
-                    regs.TR = pins.D;
-                    regs.A = regs.TR;
+                    regs.A = pins.D;
                     regs.P.Z = +((regs.A) === 0);
                     regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
@@ -2993,14 +3050,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
                 case 2: // spurious read
+                    regs.TA = (pins.D + regs.X) & 0xFF;
                     pins.Addr = pins.D;
                     break;
                 case 3:
-                    pins.Addr = (pins.D + regs.X) & 0xFFFF;
+                    pins.Addr = regs.TA;
                     break;
                 case 4: // cleanup_custom
-                    regs.TR = pins.D;
-                    regs.Y = regs.TR;
+                    regs.Y = pins.D;
                     regs.P.Z = +((regs.Y) === 0);
                     regs.P.N = ((regs.Y) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
@@ -3018,14 +3075,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
                 case 2: // spurious read
+                    regs.TA = (pins.D + regs.X) & 0xFF;
                     pins.Addr = pins.D;
                     break;
                 case 3:
-                    pins.Addr = (pins.D + regs.X) & 0xFFFF;
+                    pins.Addr = regs.TA;
                     break;
                 case 4: // cleanup_custom
-                    regs.TR = pins.D;
-                    regs.A = regs.TR;
+                    regs.A = pins.D;
                     regs.P.Z = +((regs.A) === 0);
                     regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
@@ -3036,21 +3093,21 @@ const nesm6502_opcodes_decoded = Object.freeze({
             }
     }),
     0xB6: new M6502_opcode_functions(M6502_stock_matrix[0xB6],
-        function(regs, pins) { //LDX d,x
+        function(regs, pins) { //LDX d,y
             switch(regs.TCU) {
                 case 1:
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
                 case 2: // spurious read
+                    regs.TA = (pins.D + regs.Y) & 0xFF;
                     pins.Addr = pins.D;
                     break;
                 case 3:
-                    pins.Addr = (pins.D + regs.X) & 0xFFFF;
+                    pins.Addr = regs.TA;
                     break;
                 case 4: // cleanup_custom
-                    regs.TR = pins.D;
-                    regs.X = regs.TR;
+                    regs.X = pins.D;
                     regs.P.Z = +((regs.X) === 0);
                     regs.P.N = ((regs.X) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
@@ -3067,6 +3124,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
         function(regs, pins) { //CLV
             switch(regs.TCU) {
                 case 1:
+                    pins.Addr = regs.PC;
                     regs.P.V = 0;
                     // Following is auto-generated code for instruction finish
                     break;
@@ -3092,14 +3150,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3:
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.Y) & 0xFFFF;
-                    if (regs.TA & 0xFF00 === pins.Addr & 0xFF00) { regs.TCU++; regs.skipped_cycle = true; pins.Addr = regs.TA; }
-                    else pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
                     break;
                 case 5: // cleanup_custom
-                    regs.A = regs.TR;
+                    regs.A = pins.D;
                     regs.P.Z = +((regs.A) === 0);
                     regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
@@ -3113,6 +3171,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
         function(regs, pins) { //TSX
             switch(regs.TCU) {
                 case 1:
+                    pins.Addr = regs.PC;
                     regs.X = regs.S;
                     regs.P.Z = +((regs.X) === 0);
                     regs.P.N = ((regs.X) & 0x80) >>> 7;
@@ -3143,14 +3202,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3:
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.X) & 0xFFFF;
-                    if (regs.TA & 0xFF00 === pins.Addr & 0xFF00) { regs.TCU++; regs.skipped_cycle = true; pins.Addr = regs.TA; }
-                    else pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
                     break;
                 case 5: // cleanup_custom
-                    regs.Y = regs.TR;
+                    regs.Y = pins.D;
                     regs.P.Z = +((regs.Y) === 0);
                     regs.P.N = ((regs.Y) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
@@ -3175,14 +3234,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3:
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.X) & 0xFFFF;
-                    if (regs.TA & 0xFF00 === pins.Addr & 0xFF00) { regs.TCU++; regs.skipped_cycle = true; pins.Addr = regs.TA; }
-                    else pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
                     break;
                 case 5: // cleanup_custom
-                    regs.A = regs.TR;
+                    regs.A = pins.D;
                     regs.P.Z = +((regs.A) === 0);
                     regs.P.N = ((regs.A) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
@@ -3207,14 +3266,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3:
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.Y) & 0xFFFF;
-                    if (regs.TA & 0xFF00 === pins.Addr & 0xFF00) { regs.TCU++; regs.skipped_cycle = true; pins.Addr = regs.TA; }
-                    else pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
                     break;
                 case 5: // cleanup_custom
-                    regs.X = regs.TR;
+                    regs.X = pins.D;
                     regs.P.Z = +((regs.X) === 0);
                     regs.P.N = ((regs.X) & 0x80) >>> 7;
                     // Following is auto-generated code for instruction finish
@@ -3336,17 +3395,17 @@ const nesm6502_opcodes_decoded = Object.freeze({
     0xC6: new M6502_opcode_functions(M6502_stock_matrix[0xC6],
         function(regs, pins) { //DEC d
             switch(regs.TCU) {
-                case 1:
+                case 1: // fetch ZP
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
-                case 2:
+                case 2: // capture data
                     pins.Addr = pins.D;
                     break;
-                case 3:
+                case 3: // spurious write
                     pins.RW = 1;
                     break;
-                case 4:
+                case 4: // real write
                     pins.D = (pins.D - 1) & 0xFF;
                     regs.P.Z = +((pins.D) === 0);
                     regs.P.N = ((pins.D) & 0x80) >>> 7;
@@ -3365,6 +3424,20 @@ const nesm6502_opcodes_decoded = Object.freeze({
     }),
     0xC8: new M6502_opcode_functions(M6502_stock_matrix[0xC8],
         function(regs, pins) { //INY
+            switch(regs.TCU) {
+                case 1:
+                    pins.Addr = regs.PC;
+                    regs.Y = (regs.Y + 1) & 0xFF;
+                    regs.P.Z = +((regs.Y) === 0);
+                    regs.P.N = ((regs.Y) & 0x80) >>> 7;
+                    // Following is auto-generated code for instruction finish
+                    break;
+                case 2: // cleanup
+                    pins.Addr = regs.PC;
+                    regs.PC = (regs.PC + 1) & 0xFFFF;
+                    regs.TCU = 0;
+                    break;
+            }
     }),
     0xC9: new M6502_opcode_functions(M6502_stock_matrix[0xC9],
         function(regs, pins) { //CMP #
@@ -3388,6 +3461,20 @@ const nesm6502_opcodes_decoded = Object.freeze({
     }),
     0xCA: new M6502_opcode_functions(M6502_stock_matrix[0xCA],
         function(regs, pins) { //DEX
+            switch(regs.TCU) {
+                case 1:
+                    pins.Addr = regs.PC;
+                    regs.X = (regs.X - 1) & 0xFF;
+                    regs.P.Z = +((regs.X) === 0);
+                    regs.P.N = ((regs.X) & 0x80) >>> 7;
+                    // Following is auto-generated code for instruction finish
+                    break;
+                case 2: // cleanup
+                    pins.Addr = regs.PC;
+                    regs.PC = (regs.PC + 1) & 0xFFFF;
+                    regs.TCU = 0;
+                    break;
+            }
     }),
     0xCB: new M6502_opcode_functions(M6502_invalid_matrix[0xCB],
         function(regs, pins) { //
@@ -3522,20 +3609,19 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3: // get ABS H
                     regs.TR = pins.D;
                     regs.TA = pins.D + regs.Y;
-                    pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                    pins.Addr = (pins.Addr + 1) & 0xFF;
                     break;
                 case 4: // idle if crossed
                     regs.TR = (regs.TR + (pins.D << 8)) & 0xFFFF;
                     regs.TA = (regs.TA + (pins.D << 8)) & 0xFFFF;
-                    if (regs.TR & 0xFF00 === regs.TA & 0xFF00) { regs.TCU++; pins.Addr = regs.TA; }
-                    else pins.Addr = (regs.TR & 0xFF00) | (regs.TA & 0xFF);
+                    if ((regs.TR & 0xFF00) === (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    pins.Addr = (regs.TR & 0xFF00) | (regs.TA & 0xFF);
                     break;
                 case 5:
                     pins.Addr = regs.TA;
                     break;
                 case 6: // cleanup_custom
-                    regs.TR = pins.D;
-                    let o = regs.A - regs.TR;
+                    let o = regs.A - pins.D;
                     regs.P.C = +(!((o & 0x100) >>> 8));
                     regs.P.Z = +((o & 0xFF) === 0);
                     regs.P.N = ((o) & 0x80) >>> 7;
@@ -3563,14 +3649,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
                 case 2: // spurious read
+                    regs.TA = (pins.D + regs.X) & 0xFF;
                     pins.Addr = pins.D;
                     break;
                 case 3:
-                    pins.Addr = (pins.D + regs.X) & 0xFFFF;
+                    pins.Addr = regs.TA;
                     break;
                 case 4: // cleanup_custom
-                    regs.TR = pins.D;
-                    let o = regs.A - regs.TR;
+                    let o = regs.A - pins.D;
                     regs.P.C = +(!((o & 0x100) >>> 8));
                     regs.P.Z = +((o & 0xFF) === 0);
                     regs.P.N = ((o) & 0x80) >>> 7;
@@ -3589,12 +3675,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
                 case 2: // spurious read
+                    regs.TA = (pins.D + regs.X) & 0xFF;
                     pins.Addr = pins.D;
                     break;
                 case 3:
-                    pins.Addr = (pins.D + regs.X) & 0xFFFF;
+                    pins.Addr = regs.TA;
                     break;
                 case 4: // spurious write
+                    regs.TR = pins.D;
                     pins.RW = 1;
                     regs.TR = (regs.TR - 1) & 0xFF;
                     regs.P.Z = +((regs.TR) === 0);
@@ -3619,6 +3707,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
         function(regs, pins) { //CLD
             switch(regs.TCU) {
                 case 1:
+                    pins.Addr = regs.PC;
                     regs.P.D = 0;
                     // Following is auto-generated code for instruction finish
                     break;
@@ -3644,14 +3733,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3:
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.Y) & 0xFFFF;
-                    if (regs.TA & 0xFF00 === pins.Addr & 0xFF00) { regs.TCU++; regs.skipped_cycle = true; pins.Addr = regs.TA; }
-                    else pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
                     break;
                 case 5: // cleanup_custom
-                    let o = regs.A - regs.TR;
+                    let o = regs.A - pins.D;
                     regs.P.C = +(!((o & 0x100) >>> 8));
                     regs.P.Z = +((o & 0xFF) === 0);
                     regs.P.N = ((o) & 0x80) >>> 7;
@@ -3686,14 +3775,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3:
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.X) & 0xFFFF;
-                    if (regs.TA & 0xFF00 === pins.Addr & 0xFF00) { regs.TCU++; regs.skipped_cycle = true; pins.Addr = regs.TA; }
-                    else pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
                     break;
                 case 5: // cleanup_custom
-                    let o = regs.A - regs.TR;
+                    let o = regs.A - pins.D;
                     regs.P.C = +(!((o & 0x100) >>> 8));
                     regs.P.Z = +((o & 0xFF) === 0);
                     regs.P.N = ((o) & 0x80) >>> 7;
@@ -3721,7 +3810,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = (regs.TA & 0xFF00) | ((regs.TA + regs.X) & 0xFF);
                     break;
                 case 4: // real read
-                    pins.Addr = regs.TA;
+                    pins.Addr = (regs.TA + regs.X) & 0xFFFF;
                     break;
                 case 5:
                     regs.TR = pins.D
@@ -3860,17 +3949,17 @@ const nesm6502_opcodes_decoded = Object.freeze({
     0xE6: new M6502_opcode_functions(M6502_stock_matrix[0xE6],
         function(regs, pins) { //INC d
             switch(regs.TCU) {
-                case 1:
+                case 1: // fetch ZP
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
-                case 2:
+                case 2: // capture data
                     pins.Addr = pins.D;
                     break;
-                case 3:
+                case 3: // spurious write
                     pins.RW = 1;
                     break;
-                case 4:
+                case 4: // real write
                     pins.D = (pins.D + 1) & 0xFF;
                     regs.P.Z = +((pins.D) === 0);
                     regs.P.N = ((pins.D) & 0x80) >>> 7;
@@ -3889,6 +3978,20 @@ const nesm6502_opcodes_decoded = Object.freeze({
     }),
     0xE8: new M6502_opcode_functions(M6502_stock_matrix[0xE8],
         function(regs, pins) { //INX
+            switch(regs.TCU) {
+                case 1:
+                    pins.Addr = regs.PC;
+                    regs.X = (regs.X + 1) & 0xFF;
+                    regs.P.Z = +((regs.X) === 0);
+                    regs.P.N = ((regs.X) & 0x80) >>> 7;
+                    // Following is auto-generated code for instruction finish
+                    break;
+                case 2: // cleanup
+                    pins.Addr = regs.PC;
+                    regs.PC = (regs.PC + 1) & 0xFFFF;
+                    regs.TCU = 0;
+                    break;
+            }
     }),
     0xE9: new M6502_opcode_functions(M6502_stock_matrix[0xE9],
         function(regs, pins) { //SBC #
@@ -3917,6 +4020,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
         function(regs, pins) { //NOP
             switch(regs.TCU) {
                 case 1:
+                    pins.Addr = regs.PC;
                     // Following is auto-generated code for instruction finish
                     break;
                 case 2: // cleanup
@@ -4062,20 +4166,19 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3: // get ABS H
                     regs.TR = pins.D;
                     regs.TA = pins.D + regs.Y;
-                    pins.Addr = (pins.Addr + 1) & 0xFFFF;
+                    pins.Addr = (pins.Addr + 1) & 0xFF;
                     break;
                 case 4: // idle if crossed
                     regs.TR = (regs.TR + (pins.D << 8)) & 0xFFFF;
                     regs.TA = (regs.TA + (pins.D << 8)) & 0xFFFF;
-                    if (regs.TR & 0xFF00 === regs.TA & 0xFF00) { regs.TCU++; pins.Addr = regs.TA; }
-                    else pins.Addr = (regs.TR & 0xFF00) | (regs.TA & 0xFF);
+                    if ((regs.TR & 0xFF00) === (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    pins.Addr = (regs.TR & 0xFF00) | (regs.TA & 0xFF);
                     break;
                 case 5:
                     pins.Addr = regs.TA;
                     break;
                 case 6: // cleanup_custom
-                    regs.TR = pins.D;
-                    let i = (~regs.TR) & 0xFF;
+                    let i = (~pins.D) & 0xFF;
                     let o = regs.A + i + regs.P.C;
                     regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                     regs.P.C = +(o > 0xFF);
@@ -4106,14 +4209,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
                 case 2: // spurious read
+                    regs.TA = (pins.D + regs.X) & 0xFF;
                     pins.Addr = pins.D;
                     break;
                 case 3:
-                    pins.Addr = (pins.D + regs.X) & 0xFFFF;
+                    pins.Addr = regs.TA;
                     break;
                 case 4: // cleanup_custom
-                    regs.TR = pins.D;
-                    let i = (~regs.TR) & 0xFF;
+                    let i = (~pins.D) & 0xFF;
                     let o = regs.A + i + regs.P.C;
                     regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                     regs.P.C = +(o > 0xFF);
@@ -4135,12 +4238,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
                 case 2: // spurious read
+                    regs.TA = (pins.D + regs.X) & 0xFF;
                     pins.Addr = pins.D;
                     break;
                 case 3:
-                    pins.Addr = (pins.D + regs.X) & 0xFFFF;
+                    pins.Addr = regs.TA;
                     break;
                 case 4: // spurious write
+                    regs.TR = pins.D;
                     pins.RW = 1;
                     regs.TR = (regs.TR + 1) & 0xFF;
                     regs.P.Z = +((regs.TR) === 0);
@@ -4165,6 +4270,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
         function(regs, pins) { //SED
             switch(regs.TCU) {
                 case 1:
+                    pins.Addr = regs.PC;
                     regs.P.D = 1;
                     // Following is auto-generated code for instruction finish
                     break;
@@ -4190,14 +4296,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3:
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.Y) & 0xFFFF;
-                    if (regs.TA & 0xFF00 === pins.Addr & 0xFF00) { regs.TCU++; regs.skipped_cycle = true; pins.Addr = regs.TA; }
-                    else pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
                     break;
                 case 5: // cleanup_custom
-                    let i = (~regs.TR) & 0xFF;
+                    let i = (~pins.D) & 0xFF;
                     let o = regs.A + i + regs.P.C;
                     regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                     regs.P.C = +(o > 0xFF);
@@ -4235,14 +4341,14 @@ const nesm6502_opcodes_decoded = Object.freeze({
                 case 3:
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.X) & 0xFFFF;
-                    if (regs.TA & 0xFF00 === pins.Addr & 0xFF00) { regs.TCU++; regs.skipped_cycle = true; pins.Addr = regs.TA; }
-                    else pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
                     break;
                 case 5: // cleanup_custom
-                    let i = (~regs.TR) & 0xFF;
+                    let i = (~pins.D) & 0xFF;
                     let o = regs.A + i + regs.P.C;
                     regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                     regs.P.C = +(o > 0xFF);
@@ -4273,7 +4379,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = (regs.TA & 0xFF00) | ((regs.TA + regs.X) & 0xFF);
                     break;
                 case 4: // real read
-                    pins.Addr = regs.TA;
+                    pins.Addr = (regs.TA + regs.X) & 0xFFFF;
                     break;
                 case 5:
                     regs.TR = pins.D
