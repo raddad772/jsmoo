@@ -230,6 +230,7 @@ const M6502_AM = Object.freeze({
     IMM: 4, // X
     IMPLIED: 5, // X
     IND: 6, // X
+    INDjmp: 601, // X
     X_INDr: 7, // X
     X_INDm: 701, // undocumented
     X_INDw: 702, // X
@@ -338,7 +339,7 @@ const M6502_stock_matrix = Object.freeze({
     0x68: new M6502_opcode_info(0x68, M6502_MN.PLA, M6502_AM.IMPLIED, 'PLA', M6502_VARIANTS.STOCK),
     0x69: new M6502_opcode_info(0x69, M6502_MN.ADC, M6502_AM.IMM, 'ADC #', M6502_VARIANTS.STOCK),
     0x6A: new M6502_opcode_info(0x6A, M6502_MN.ROR, M6502_AM.ACCUM, 'ROR A', M6502_VARIANTS.STOCK),
-    0x6C: new M6502_opcode_info(0x6C, M6502_MN.JMP, M6502_AM.IND, 'JMP (d)', M6502_VARIANTS.STOCK),
+    0x6C: new M6502_opcode_info(0x6C, M6502_MN.JMP, M6502_AM.INDjmp, 'JMP (d)', M6502_VARIANTS.STOCK),
     0x6D: new M6502_opcode_info(0x6D, M6502_MN.ADC, M6502_AM.ABSr, 'ADC a', M6502_VARIANTS.STOCK),
     0x6E: new M6502_opcode_info(0x6E, M6502_MN.ROR, M6502_AM.ABSm, 'ROR a', M6502_VARIANTS.STOCK),
 
@@ -365,7 +366,7 @@ const M6502_stock_matrix = Object.freeze({
     0x91: new M6502_opcode_info(0x91, M6502_MN.STA, M6502_AM.IND_Yw, 'STA (d),y', M6502_VARIANTS.STOCK),
     0x94: new M6502_opcode_info(0x94, M6502_MN.STY, M6502_AM.ZP_Xw, 'STY d,x', M6502_VARIANTS.STOCK),
     0x95: new M6502_opcode_info(0x95, M6502_MN.STA, M6502_AM.ZP_Xw, 'STA d,x', M6502_VARIANTS.STOCK),
-    0x96: new M6502_opcode_info(0x96, M6502_MN.STZ, M6502_AM.ZP_Yw, 'STZ d,y', M6502_VARIANTS.STOCK),
+    0x96: new M6502_opcode_info(0x96, M6502_MN.STX, M6502_AM.ZP_Yw, 'STX d,y', M6502_VARIANTS.STOCK),
     0x98: new M6502_opcode_info(0x98, M6502_MN.TYA, M6502_AM.IMPLIED, 'TYA', M6502_VARIANTS.STOCK),
     0x99: new M6502_opcode_info(0x99, M6502_MN.STA, M6502_AM.ABS_Yw, 'STA a,y', M6502_VARIANTS.STOCK),
     0x9A: new M6502_opcode_info(0x9A, M6502_MN.TXS, M6502_AM.IMPLIED, 'TXS', M6502_VARIANTS.STOCK),
@@ -388,7 +389,7 @@ const M6502_stock_matrix = Object.freeze({
     0xB1: new M6502_opcode_info(0xB1, M6502_MN.LDA, M6502_AM.IND_Yr, 'LDA (d),y', M6502_VARIANTS.STOCK),
     0xB4: new M6502_opcode_info(0xB4, M6502_MN.LDY, M6502_AM.ZP_Xr, 'LDY d,x', M6502_VARIANTS.STOCK),
     0xB5: new M6502_opcode_info(0xB5, M6502_MN.LDA, M6502_AM.ZP_Xr, 'LDA d,x', M6502_VARIANTS.STOCK),
-    0xB6: new M6502_opcode_info(0xB6, M6502_MN.LDX, M6502_AM.ZP_Xr, 'LDX d,x', M6502_VARIANTS.STOCK),
+    0xB6: new M6502_opcode_info(0xB6, M6502_MN.LDX, M6502_AM.ZP_Yr, 'LDX d,y', M6502_VARIANTS.STOCK),
     0xB8: new M6502_opcode_info(0xB8, M6502_MN.CLV, M6502_AM.IMPLIED, 'CLV', M6502_VARIANTS.STOCK),
     0xB9: new M6502_opcode_info(0xB9, M6502_MN.LDA, M6502_AM.ABS_Yr, 'LDA a,y', M6502_VARIANTS.STOCK),
     0xBA: new M6502_opcode_info(0xBA, M6502_MN.TSX, M6502_AM.IMPLIED, 'TSX', M6502_VARIANTS.STOCK),

@@ -106,6 +106,8 @@ class m6502_t {
 
         this.IRQ_ack = false;
         this.IRQ_count = 0;
+
+        this.first_reset = true;
     }
 
     cycle() {
@@ -241,8 +243,11 @@ class m6502_t {
             case M6502_AM.PC_REL:
                 outstr += ' $' + hex4((mksigned8(this.trace_peek(PC)) + PC) & 0xFFFF);
                 break;
+            case M6502_AM.INDjmp:
+                outstr += ' ($' + read16() + ')';
+                break;
             default:
-                console.log('UNKNWON AM', addr_mode);
+                console.log('UNKNOWN AM', addr_mode);
                 break;
         }
         output.disassembled = outstr;
@@ -278,11 +283,28 @@ class m6502_t {
         return outstr;
 	}
 
+    power_on() {
+        // Initial values from Visual6502
+        this.regs.A = 0xCC;
+        this.regs.S = 0xFD;
+        this.pins.D = 0x60;
+        this.pins.RW = 0;
+        this.regs.X = this.regs.Y = 0;
+        this.regs.P.I = 1;
+        this.regs.P.Z = 1;
+        this.regs.PC = 0;
+    }
+
     reset() {
         this.pins.RST = 0;
         this.RES_pending = false;
         this.regs.TCU = 0;
         this.pins.D = M6502_OP_RESET;
+        this.regs.P.B = 1;
+        this.regs.P.D = 0;
+        this.regs.P.I = 1;
+        if (this.first_reset) this.power_on();
+        this.first_reset = false;
     }
 }
 
