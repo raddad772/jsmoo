@@ -137,8 +137,8 @@ class m6502_switchgen {
         this.addl('break;')
     }
 
-    RW(what) {
-        if (what !== this.old_rw) {
+    RW(what, force=false) {
+        if ((what !== this.old_rw) || force) {
             this.addl('pins.RW = ' + what.toString() + ';');
             this.old_rw = what;
         }
@@ -280,9 +280,9 @@ class m6502_switchgen {
     }
 
     RESET() {
-        // This behavior is mostly taken from WDC65816, dimbly.
+        // This behavior is mostly taken from WDC65816, dumbly.
         this.addcycle(3);
-        this.RW(0);
+        this.RW(0, true);
         this.addr_to_S_then_dec();
 
         this.addcycle(4);

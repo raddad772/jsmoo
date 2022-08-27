@@ -211,7 +211,7 @@ function click_disable_tracing() {
 
 function click_step_clock() {
 	let steps = parseInt(ui_el.mc_input.value);
-	global_player.system.step(steps, 0, 0, 0);
+	global_player.system.step_master(steps);
 	global_player.system.catch_up();
 	after_step();
 }
@@ -278,8 +278,10 @@ function after_step() {
 		//dbg.traces.clear();
 		//scanline_dot_output.innerHTML = Math.floor(snes.clock.scanline.cycles_since_reset / 4);
 		//console.log(snes.clock.cycles_since_scanline_start);
-		ui_el.ppu_y_output.innerHTML = Math.floor(snes.clock.cycles_since_scanline_start / 4) + ', ' + snes.clock.scanline.ppu_y;
-		ui_el.frame_count_output.innerHTML = snes.clock.frames_since_restart;
+
+		//ui_el.ppu_y_output.innerHTML = Math.floor(snes.clock.cycles_since_scanline_start / 4) + ', ' + snes.clock.scanline.ppu_y;
+		ui_el.frame_count_output.innerHTML = global_player.system.clock.frames_since_restart;
+
 		//console.log('PPU', snes.ppu.io);
 		//console.log('CGRAM', snes.ppu.CRAM);
 		//console.log('CPU', snes.cpu.io, snes.cpu.status);
@@ -521,8 +523,8 @@ async function init_ui() {
 
 
 	ui_el.tracing_5a22_checkbox.addEventListener('change', (event) => {
-		if (event.currentTarget.checked) dbg.enable_tracing_for(D_RESOURCE_TYPES.R5A22);
-		else dbg.disable_tracing_for(D_RESOURCE_TYPES.R5A22);
+		if (event.currentTarget.checked) dbg.enable_tracing_for(D_RESOURCE_TYPES.M6502);
+		else dbg.disable_tracing_for(D_RESOURCE_TYPES.M6502);
 	});
 
 	ui_el.tracing_spc700_checkbox.addEventListener('change', (event) => {

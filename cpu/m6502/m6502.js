@@ -143,11 +143,12 @@ class m6502_t {
             if (this.regs.NMI_pending && !this.NMI_ack) {
                 this.NMI_ack = true;
                 this.regs.NMI_pending = false;
+                console.log('NMI1!');
                 this.regs.IR = M6502_OP_NMI;
             } else if (this.regs.IRQ_pending && !this.IRQ_ack && !this.regs.old_I) {
                 this.IRQ_ack = true;
                 this.regs.IRQ_pending = false;
-                this.regs.IR = M6502_OP.IRQ;
+                this.regs.IR = M6502_OP_IRQ;
             }
             this.regs.old_I = this.regs.P.I;
 			this.current_instruction = this.opcode_table[this.regs.IR];

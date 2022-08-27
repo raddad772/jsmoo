@@ -1,7 +1,7 @@
 "use strict";
 
 let R5A22_DO_TRACING_AT_START = false;
-let WDC_DO_TRACING_AT_START = false;
+let WDC_DO_TRACING_AT_START = true;
 let SPC_DO_TRACING_AT_START = false;
 let M6502_DO_TRACING_AT_START = false;
 let TRACE_COLOR = true;
@@ -298,7 +298,7 @@ class debugger_t {
             this.tracing_for[kind] = SPC_DO_TRACING_AT_START;
         }
         else if (kind === D_RESOURCE_TYPES.M6502) {
-            this.tracing_for[kind] = M6502_DO_TRACING_AT_START;
+            this.tracing_for[kind] = WDC_DO_TRACING_AT_START;
         }
         this.cpu_refresh_tracing();
     }
