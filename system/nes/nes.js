@@ -1,8 +1,3 @@
-class nes_cart {
-    function() {
-    }
-}
-
 class NES {
     constructor(jsanimator) {
         this.bus = new NES_bus();
@@ -13,10 +8,10 @@ class NES {
         this.cycles_left = 0;
 
         this.jsanimator = jsanimator;
-        this.jsanimator.callback = this.do_frame.bind(this);
+        this.jsanimator.callback = this.run_frame.bind(this);
     }
 
-    do_frame() {
+    run_frame() {
         if (dbg.frames_til_pause !== 0) {
             dbg.frames_til_pause--;
             ui_el.frames_til_pause.value = dbg.frames_til_pause;
@@ -25,10 +20,17 @@ class NES {
                 stop_fps_count();
             }
         }
+        let lines_to_do = (this.clock.timing.frame_lines - this.clock.ppu_y);
         for (let i = 0; i < this.clock.timing.frame_lines; i++) {
             this.run_scanline();
         }
         this.ppu.present();
+    }
+
+    catch_up() {}
+
+    step_master(howmany) {
+        this.run_cycles(howmany);
     }
 
     run_scanline() {

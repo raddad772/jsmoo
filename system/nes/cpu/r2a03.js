@@ -80,11 +80,20 @@ class ricoh2A03 {
             }
             return;
         }
-        if (!this.cpu.pins.RW)
+        if (!this.cpu.pins.RW) {
             this.cpu.pins.D = this.bus.CPU_read(this.cpu.pins.Addr, this.cpu.pins.D);
+            if (this.tracing) {
+                dbg.traces.add(TRACERS.M6502, this.cpu.trace_cycles, trace_format_read('MOS', MOS_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
+            }
+        }
         this.cpu.cycle();
-        if (this.cpu.pins.RW)
+        if (this.cpu.pins.RW) {
             this.bus.CPU_write(this.cpu.pins.Addr, this.cpu.pins.D);
+            if (this.tracing) {
+                dbg.traces.add(TRACERS.M6502, this.cpu.trace_cycles, trace_format_write('MOS', MOS_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
+
+            }
+        }
     }
 
     reg_read(addr, val, has_effect=true) {

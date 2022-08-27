@@ -58,6 +58,7 @@ const NES_DEFAULT_IO_DEVICES = Object.freeze({
 
 class NES_cart {
 	/**
+	 * @param {NES_clock} clock
 	 * @param {NES_bus} bus
 	 */
 	constructor(clock, bus) {
@@ -102,7 +103,7 @@ class NES_cart {
 		if (!worked) return false;
 
 
-		this.read_ROM_RAM(inp, 16 + this.header.trainer_present ? 512 : 0);
+		this.read_ROM_RAM(fil, 16 + (this.header.trainer_present ? 512 : 0));
 		worked = this.setup_mapper();
 		return worked;
 	}
@@ -111,6 +112,7 @@ class NES_cart {
 	setup_mapper() {
 		this.mapper = new NES_mapper_none(this.clock, this.bus);
 		this.mapper.set_cart(this);
+		return true;
 	}
 
 	/**

@@ -4407,6 +4407,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
         function(regs, pins) { //RESET
             switch(regs.TCU) {
                 case 1: // 3
+                    pins.RW = 0;
                     pins.Addr = regs.S | 0x100;
                     regs.S = (regs.S - 1) & 0xFF;
                     break;
@@ -4442,6 +4443,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
         function(regs, pins) { //NMI
             switch(regs.TCU) {
                 case 1:
+                    console.log('NMI2!')
                     regs.P.B = 0;
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;

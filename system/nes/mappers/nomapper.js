@@ -74,10 +74,11 @@ class NES_mapper_none {
             return this.bus.PPU_reg_read(addr, val, has_effect);
         if (addr < 0x4020)
             return this.bus.CPU_reg_read(addr, val, has_effect);
-        if (addr > 0x8000) {
+        if (addr >= 0x8000) {
             addr -= 0x8000;
             while(addr >= this.PRG_ROM.byteLength) addr -= this.PRG_ROM.byteLength;
-            return this.PRG_ROM[addr];
+            let a = this.PRG_ROM[addr];
+            return a;
         }
         // DOMORE
     }
