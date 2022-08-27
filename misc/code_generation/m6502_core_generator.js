@@ -206,19 +206,21 @@ class m6502_switchgen {
         this.addl('regs.S = (regs.S - 1) & 0xFF;');
     }
 
-    BRK(vector='0xFFFE', set_b=true) {
+    BRK(vector='0xFFFE', set_b=true, add_one_to_pc=false) {
         this.addcycle();
         this.addl('regs.P.B = ' + (+set_b) + ';');
         this.operand();
 
         this.addcycle();
         this.addr_to_S_then_dec();
-        this.addl('pins.D = (regs.PC >>> 8) & 0xFF;');
+        if (add_one_to_pc) this.addl('regs.TR = (regs.PC - 2) & 0xFFFF;');
+        else this.addl('regs.TR = regs.PC');
+        this.addl('pins.D = (regs.TR >>> 8) & 0xFF;');
         this.RW(1);
 
         this.addcycle();
         this.addr_to_S_then_dec();
-        this.addl('pins.D = regs.PC & 0xFF;');
+        this.addl('pins.D = regs.TR & 0xFF;');
         this.RW(1);
 
         this.addcycle();
@@ -272,11 +274,11 @@ class m6502_switchgen {
     }
 
     IRQ() {
-        this.BRK('0xFFFE', false);
+        this.BRK('0xFFFE', false, true);
     }
 
     NMI() {
-        this.BRK('0xFFFA', false);
+        this.BRK('0xFFFA', false, true);
     }
 
     RESET() {

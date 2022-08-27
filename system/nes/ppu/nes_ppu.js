@@ -103,9 +103,6 @@ class NES_ppu {
                 let di = (y * 256 * 4) + (x * 4);
                 let ppui = (y * 256) + x;
                 let p = this.output[ppui] ? 255 : 0;
-                if (this.output[ppui] !== 0) {
-                    console.log(this.output[ppui]);
-                }
 
                 imgdata.data[di] = p;
                 imgdata.data[di+1] = p;
