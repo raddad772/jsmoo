@@ -28,6 +28,8 @@ class NES_ppu {
         this.OAM_eval_sprite_overflow = false;
         this.OAM_eval_sprite0 = 0;
 
+        this.clock.ppu = this;
+
         this.CGRAM = new Uint8Array(0x20);
 
         this.output = new Uint8Array(256*240);
@@ -47,6 +49,7 @@ class NES_ppu {
         this.write_latch = 0;
 
         this.io = {
+            nmi_enable: 0,
             sprite_overflow: 0,
             sprite0_hit: 0,
             vblank: 0,
@@ -86,6 +89,11 @@ class NES_ppu {
             attribute: 0, // Attribute latch
         }
 
+    }
+
+    reset() {
+        this.line_cycle = 0;
+        this.io.w = 0;
     }
 
     write_cgram(addr, val) {
@@ -153,6 +161,15 @@ class NES_ppu {
             default:
                 break;
 
+        }
+    }
+
+    update_nmi() {
+        if (this.clock.vblank && this.io.nmi_enable) {
+            this.bus.CPU_notify_NMI(1);
+        }
+        else {
+            this.bus.CPU_notify_NMI(0);
         }
     }
 

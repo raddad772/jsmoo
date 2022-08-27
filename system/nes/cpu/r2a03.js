@@ -17,6 +17,9 @@ class ricoh2A03 {
         this.cpu = new m6502_t(nesm6502_opcodes_decoded);
         this.cpu.reset();
 
+        this.bus.CPU_notify_NMI = this.notify_nmi.bind(this);
+        this.bus.CPU_notify_IRQ = this.notify_irq.bind(this);
+
         this.bus = bus;
 
         this.bus.CPU_reg_write = this.reg_write.bind(this);
@@ -24,7 +27,49 @@ class ricoh2A03 {
 
         this.clock = clock;
 
-        this.cycles_deficit = 0;
+        this.cycles_left = 0;
+
+        this.io = {
+            dma: {
+                addr: 0,
+                running: 0,
+                bytes_left: 0,
+                step: 0
+            }
+        }
+    }
+
+    notify_NMI(level) {
+        this.cpu.pins.NMI = +level;
+    }
+
+    notify_IRQ(level) {
+        this.cpu.pins.IRQ = +level;
+    }
+
+    reset() {
+        this.cpu.reset();
+        this.io.dma.running = 0;
+    }
+
+    // Run 1 CPU cycle, bro!
+    run_cycle() {
+        if (this.io.dma.running) {
+            this.io.dma.step++;
+            if (this.io.dma.step === 1) return;
+            this.io.dma.step = 0;
+            this.bus.PPU_reg_write(0x2004, this.bus.CPU_read(this.io.dma.addr));
+            this.io.dma.bytes_left--;
+            if (this.io.dma.bytes_left === 0) {
+                this.io.dma.running = 0;
+            }
+            return;
+        }
+        if (!this.cpu.pins.RW)
+            this.cpu.pins.D = this.bus.CPU_read(this.cpu.pins.Addr, this.cpu.pins.D);
+        this.cpu.cycle();
+        if (this.cpu.pins.RW)
+            this.bus.CPU_write(this.cpu.pins.Addr, this.cpu.pins.D);
     }
 
     reg_read(addr, val) {
@@ -35,12 +80,9 @@ class ricoh2A03 {
         switch(addr) {
             case 0x4014: //OAMDMA
                 // TODO: make this better
-                val <<= 8;
-                for (let i = 0; i < 256; i++) {
-                    this.bus.PPU_reg_write(0x2004, this.bus.CPU_read(val+i));
-                    this.clock.advance_clock_from_cpu(2);
-                }
-                this.clock.advance_clock_from_cpu(1);
+                this.io.dma.addr = val << 8;
+                this.io.dma.running = 1;
+                this.io.dma.bytes_left = 256;
                 return;
         }
     }
