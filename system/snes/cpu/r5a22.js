@@ -228,21 +228,21 @@ class ricoh5A22 {
 		this.tracing = false;
 	}
 
-	read_nmi(have_effect=true) {
+	read_nmi(has_effect=true) {
 		//let r = this.status.nmi_line;
 		let r = this.cpu.pins.NMI;
-		/*if (!this.status.nmi_hold && have_effect) {
+		/*if (!this.status.nmi_hold && has_effect) {
 			console.log('READ NMI CLEAR', this.status.nmi_line, this.status.nmi_transition);
 			this.status.nmi_line = 0;
 		}*/
-		if (have_effect)
+		if (has_effect)
 			this.cpu.pins.NMI = 0;
 		return r;
 	}
 
-	read_irq(have_effect=true) {
+	read_irq(has_effect=true) {
 		let r = this.status.irq_line;
-		if (!this.status.irq_hold && have_effect) {
+		if (!this.status.irq_hold && has_effect) {
 			this.status.irq_line = 0;
 			this.status.irq_transition = 0;
 		}
@@ -255,10 +255,10 @@ class ricoh5A22 {
 		this.latch.counters = 1;
 	}
 
-	reg_read(addr, val=0, have_effect=true) { // Val is for open bus
+	reg_read(addr, val=0, has_effect=true) { // Val is for open bus
 		//console.log('5A22 read', hex0x4(addr));
-		//if ((addr & 0x4300) === 0x4300) { return this.dma.reg_read(addr, val, have_effect); }
-		if ((addr >= 0x4300) && (addr <= 0x43FF)) { return this.dma.reg_read(addr, val, have_effect); }
+		//if ((addr & 0x4300) === 0x4300) { return this.dma.reg_read(addr, val, has_effect); }
+		if ((addr >= 0x4300) && (addr <= 0x43FF)) { return this.dma.reg_read(addr, val, has_effect); }
 		switch(addr) {
 			case 0x4016: // URGH
 				return this.controller_port1.data();
@@ -266,12 +266,12 @@ class ricoh5A22 {
 				return this.controller_port2.data();
 			case 0x4210: // NMI read
 				val &= 0x70;
-				val |= this.read_nmi(have_effect) << 7;
+				val |= this.read_nmi(has_effect) << 7;
 				val |= (this.version.rev);
 				return val;
 			case 0x4211: // IRQ read
 				val &= 0x7F;
-				val |= this.read_irq(have_effect) << 7;
+				val |= this.read_irq(has_effect) << 7;
 				return val;
 			case 0x4212: // HVBJOY
 				val = +(this.io.auto_joypad_poll && this.status.auto_joypad_counter < 33);

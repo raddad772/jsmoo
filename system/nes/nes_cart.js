@@ -1,3 +1,5 @@
+"use strict";
+
 const NES_DEFAULT_IO_DEVICES = Object.freeze({
 	UNPSECIFIED: 0,
 	CONTROLLERS: 1,

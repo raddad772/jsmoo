@@ -2,12 +2,15 @@
 
 let after_js = function() {console.log('NO AFTER JS THING');};
 
+
 const SNES_STR = 'snes';
 const NES_STR = 'nes';
 const COMMODORE64_STR = 'c64';
 const SMS_STR = 'sms';
 const GENESIS_STR = 'megadrive';
 const GB_STR = 'gb';
+
+const DEFAULT_SYSTEM = NES_STR;
 
 const DEFAULT_STEPS = {
 	master: 12,
@@ -68,7 +71,7 @@ window.onload = init_ui;
 
 class global_player_t {
 	constructor() {
-		this.system_kind = 'snes';
+		this.system_kind = DEFAULT_SYSTEM;
 		this.state = 'paused';
 		this.power = false;
 		this.romfile = null;
@@ -89,6 +92,9 @@ class global_player_t {
 				this.system = new SNES(this.jsa);
 				snes = this.system;
 				break;
+			case 'nes':
+				this.system = new NES(this.jsa);
+				break;
 			default:
 				alert('system not found');
 				return;
@@ -107,7 +113,6 @@ class global_player_t {
 
 const global_player = new global_player_t();
 
-
 async function init_fs() {
 	after_js();
 }
@@ -120,17 +125,21 @@ let default_system_options = {
 	'last_rom': ''
 }
 
-// TODO: make it work for other-than SNES
 async function get_ui_system_options() {
-	let r = await bfs.read_file('/config/snes.json');
+	let r = await bfs.read_file('/config/' + global_player.system_kind + '.json');
 	if (r === null)
 		return structuredClone(default_system_options);
 	return r;
 }
 
-// TODO: make ti work for other-than SNES
 async function set_ui_system_options(g) {
-	await bfs.write_file('/config/snes.json', g);
+	await bfs.write_file('/config/' + global_player.system_kind + '.json', g);
+}
+
+async function set_last_system(whichone) {
+	let g = await get_ui_system_options();
+	g.last_system = whichone;
+	await set_ui_system_options(g);
 }
 
 async function set_last_rom(whichone) {
@@ -171,7 +180,7 @@ async function reload_roms(where) {
 	let allfiles = await fs._get_files();
 	let outfiles = [];
 	for (let i in allfiles) {
-		if (allfiles[i].indexOf('/snes/roms/') !== -1) {
+		if (allfiles[i].indexOf('/' + global_player.system_kind + '/roms/') !== -1) {
 			outfiles.push(allfiles[i]);
 		}
 	}
@@ -184,11 +193,12 @@ async function reload_roms(where) {
 	if (r.last_rom !== null && typeof r !== 'undefined') {
 		ui_el.rom_select.value = r.last_rom; //basic_fs_split(r.last_rom);
 	}
-	load_selected_rom();
+	await load_selected_rom();
 }
 
 async function system_selected(where) {
-	reload_roms(where);
+	ui_el.system_select.value = where;
+	await reload_roms(where);
 }
 
 function click_enable_tracing() {
@@ -201,8 +211,8 @@ function click_disable_tracing() {
 
 function click_step_clock() {
 	let steps = parseInt(ui_el.mc_input.value);
-	snes.step(steps, 0, 0, 0);
-	snes.catch_up();
+	global_player.system.step(steps, 0, 0, 0);
+	global_player.system.catch_up();
 	after_step();
 }
 
@@ -349,15 +359,15 @@ var fps_interval = null;
 
 function click_play() {
 	dbg.frames_til_pause = parseInt(ui_el.frames_til_pause.value);
-	fps_old_frames = snes.clock.frames_since_restart;
+	fps_old_frames = global_player.system.clock.frames_since_restart;
 	start_fps_count();
-	snes.jsanimator.play();
+	global_player.system.jsanimator.play();
 }
 
 let animations_called = 0;
 function do_fps() {
-	let fps = snes.clock.frames_since_restart - fps_old_frames;
-	fps_old_frames = snes.clock.frames_since_restart;
+	let fps = global_player.system.clock.frames_since_restart - fps_old_frames;
+	fps_old_frames = global_player.system.clock.frames_since_restart;
 	//let fps = animations_called - fps_old_frames;
 	//fps_old_frames = animations_called;
 	ui_el.fps.value = fps;
@@ -375,7 +385,7 @@ function stop_fps_count() {
 }
 
 function click_pause() {
-	snes.jsanimator.pause();
+	global_player.system.jsanimator.pause();
 	stop_fps_count();
 }
 
@@ -456,8 +466,18 @@ async function main() {
 	//let rtg = await getBinary(local_server_url + ROM_to_get);
 	//snes = new SNES(jsa);
 	global_player.set_system();
-	dbg.add_cpu(D_RESOURCE_TYPES.R5A22, snes.cpu);
-	dbg.add_cpu(D_RESOURCE_TYPES.SPC700, snes.apu)
+	switch(global_player.system_kind) {
+		case 'snes':
+			dbg.add_cpu(D_RESOURCE_TYPES.R5A22, global_player.system.cpu);
+			dbg.add_cpu(D_RESOURCE_TYPES.SPC700, global_player.system.apu)
+			break;
+		case 'nes':
+			dbg.add_cpu(D_RESOURCE_TYPES.M6502, global_player.system.cpu);
+			break;
+
+	}
+	//dbg.add_cpu(D_RESOURCE_TYPES.R5A22, snes.cpu);
+	//dbg.add_cpu(D_RESOURCE_TYPES.SPC700, snes.apu)
 	if (!init_gl()) {
 		return;
 	}
@@ -466,9 +486,9 @@ async function main() {
 	dbg.init_done();
 }
 
-//after_js = main;
+after_js = main;
 
-function init_ui() {
+async function init_ui() {
 	for (let k in ui_el) {
 		let v = ui_el[k];
 		let dom_id = v[0];
@@ -542,7 +562,7 @@ function init_ui() {
 		console.log(event);
 	})
 
-	system_selected('snes');
+	await system_selected('nes');
 
-	init_fs();
+	await init_fs();
 }

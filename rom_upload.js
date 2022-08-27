@@ -40,7 +40,7 @@ async function uploadFile(fileId) {
                 data: bits
             };
 
-            await bfs.write_file(basic_fs_join('/snes/roms/', file_name), e.target.result);
+            await bfs.write_file(basic_fs_join('/' + global_player.system_kind + '/roms/', file_name), e.target.result);
             await reload_roms();
             /*let trans = db.transaction(['files'], 'readwrite');
             let addReq = trans.objectStore('files').put(ob);

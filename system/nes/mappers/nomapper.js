@@ -1,3 +1,4 @@
+"use strict";
 
 class NES_mapper_none {
     /**
@@ -70,9 +71,9 @@ class NES_mapper_none {
             return this.CPU_RAM[addr];
         }
         if (addr < 0x3FFF)
-            return this.bus.PPU_reg_read(addr, val);
+            return this.bus.PPU_reg_read(addr, val, has_effect);
         if (addr < 0x4020)
-            return this.bus.CPU_reg_read(addr, val);
+            return this.bus.CPU_reg_read(addr, val, has_effect);
         if (addr > 0x8000) {
             addr -= 0x8000;
             while(addr >= this.PRG_ROM.byteLength) addr -= this.PRG_ROM.byteLength;

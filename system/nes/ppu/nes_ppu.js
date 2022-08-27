@@ -2,17 +2,19 @@
 
 class NES_ppu {
     /**
+     * @param {HTMLElement} canvas
      * @param {NES_clock} clock
      * @param {NES_bus} bus
      */
-    constructor(clock, bus) {
+    constructor(canvas, clock, bus) {
+        this.canvas = canvas;
         this.clock = clock;
         this.bus = bus;
 
         this.bus.PPU_reg_write = this.write_regs.bind(this);
         this.bus.PPU_reg_read = this.read_regs.bind(this);
 
-        this.render_cycle = function() {};
+        this.render_cycle = this.scanline_visible;
         this.mem_read = function(addr) { return 0x00; }
 
         this.line_cycle = 0;
@@ -88,7 +90,27 @@ class NES_ppu {
             vram_data: 0,
             attribute: 0, // Attribute latch
         }
+    }
 
+    present(buf=null) {
+        let ctx = this.canvas.getContext('2d');
+        let TOP_OVERSCAN = 8;
+        let BOTTOM_OVERSCAN = 232;
+        let imgdata = ctx.getImageData(0, 0, 256, 240 - ((240 - BOTTOM_OVERSCAN) + TOP_OVERSCAN));
+        for (let ry = TOP_OVERSCAN; ry < BOTTOM_OVERSCAN; ry++) {
+            let y = ry - TOP_OVERSCAN;
+            for (let x = 0; x < 256; x++) {
+                let di = (y * 256 * 4) + (x * 4);
+                let ppui = (y * 256) + x;
+                let p = this.output[ppui] ? 255 : 0;
+
+                imgdata.data[di] = p;
+                imgdata.data[di+1] = p;
+                imgdata.data[di+2] = p;
+                imgdata.data[di+3] = 255;
+            }
+        }
+        ctx.putImageData(imgdata, 0, 0);
     }
 
     reset() {
@@ -173,19 +195,21 @@ class NES_ppu {
         }
     }
 
-    read_regs(addr, val=0) {
-        let output;
+    read_regs(addr, val=0, has_effect=true) {
+        let output = val;
         switch(addr) {
             case 0x2002:
                 output = (this.io.sprite_overflow << 5) | (this.io.sprite0_hit << 6) | (this.clock.vblank);
-                this.clock.vblank = 0;
-                this.update_nmi();
+                if (has_effect) {
+                    this.clock.vblank = 0;
+                    this.update_nmi();
 
-                this.io.w = 0;
+                    this.io.w = 0;
+                }
                 // NOTFINISHED
                 break;
         }
-        return val;
+        return output;
     }
 
     fetch_chr_line(table, tile, line) {
@@ -380,7 +404,9 @@ class NES_ppu {
     }
 
     scanline_visible() {
-        if (this.line_cycle === 0) return; // DO NOTHING here
+        if (this.line_cycle === 0) {
+            return;
+        } // DO NOTHING here
 
         let sx = this.line_cycle-1;
         let sy = this.clock.ppu_y;
@@ -398,7 +424,6 @@ class NES_ppu {
 
         this.cycle_scanline_addr();
         this.oam_evaluate_slow();
-        if (this.clock.fblank) return;
 
         let tile_y = (sy & 7);
 
@@ -467,12 +492,23 @@ class NES_ppu {
     scanline_vblank() {
         // 241-260
         // LITERALLY DO NOTHING
+        if (this.line_cycle === 340) this.new_scanline();
     }
 
     new_scanline() {
-        if (this.clock.ppu_y === this.clock.timing.ppu_pre_render) this.clock.advance_frame();
-        else  this.clock.advance_scanline();
+        if (this.clock.ppu_y === this.clock.timing.ppu_pre_render) {
+            this.clock.advance_frame();
+        }
+        else this.clock.advance_scanline();
 
+        if (this.clock.ppu_y === this.clock.timing.vblank_start) {
+            this.vblank = 1;
+            this.update_nmi();
+        }
+        else if (this.clock.ppu_y === this.clock.timing.vblank_end) {
+            this.vblank = 0;
+            this.update_nmi();
+        }
         switch(this.clock.ppu_y) {
             case 0:
                 this.render_cycle = this.scanline_visible;
@@ -484,7 +520,7 @@ class NES_ppu {
                 this.render_cycle = this.scanline_prerender;
                 break;
         }
-        this.line_cycle = -1; // This will immediately get
+        this.line_cycle = 0; // This will immediately get
     }
 
     cycle(howmany) {

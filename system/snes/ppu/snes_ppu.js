@@ -160,9 +160,9 @@ class SNES_slow_1st_PPU {
 		//return ((this.cache.mode7.a & 0xFFFF) * ((this.cache.mode7.b >>> 8) & 0xFF));
 	}
 
-	reg_read(addr, val, have_effect= true) {
+	reg_read(addr, val, has_effect= true) {
 		//if ((addr - 0x3F) & 0x3F) { return this.mem_map.read_apu(addr, val); }
-		if (addr >= 0x2140 && addr < 0x217F) { return this.mem_map.read_apu(addr, val, have_effect); }
+		if (addr >= 0x2140 && addr < 0x217F) { return this.mem_map.read_apu(addr, val, has_effect); }
 		let addre, result;
 		//console.log('PPU read', hex0x6(addr));
 		switch(addr) {
@@ -222,8 +222,8 @@ class SNES_slow_1st_PPU {
 				}
 				return this.latch.ppu2.mdr;
 			case 0x2180: // WRAM access port
-				let r = this.mem_map.dispatch_read(0x7E0000 | this.io.wram_addr, have_effect);
-				if (have_effect) {
+				let r = this.mem_map.dispatch_read(0x7E0000 | this.io.wram_addr, has_effect);
+				if (has_effect) {
 					this.io.wram_addr++;
 					if (this.io.wram_addr > 0x1FFFF) this.io.wram_addr = 0;
 					/*if (this.wram_addr > 0x10000) {

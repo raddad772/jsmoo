@@ -300,6 +300,7 @@ class m6502_t {
         this.RES_pending = false;
         this.regs.TCU = 0;
         this.pins.D = M6502_OP_RESET;
+        this.pins.RW = 1;
         this.regs.P.B = 1;
         this.regs.P.D = 0;
         this.regs.P.I = 1;
