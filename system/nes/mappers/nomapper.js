@@ -35,7 +35,11 @@ class NES_mapper_none {
     }
 
     ppu_write(addr, val) {
-        if (addr < 0x2000) return; // can't write ROM
+        if (addr < 0x2000) {
+            console.log('CANT WRITE CHR!', hex4(addr));
+            return;
+        } // can't write ROM
+        //console.log('PPU WRITE', hex4(addr), hex2(val));
         this.CIRAM[this.mirror_ppu_addr(addr)-0x2000] = val;
     }
 
@@ -43,6 +47,7 @@ class NES_mapper_none {
         if (addr < 0x2000) {
             return this.CHR_ROM[addr];
         }
+        //console.log('PPU READ', hex4(addr));
         // TODO: implement mirroring
         return this.CIRAM[this.mirror_ppu_addr(addr)-0x2000];
     }

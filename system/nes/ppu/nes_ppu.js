@@ -217,7 +217,7 @@ class NES_ppu {
 
     write_cgram(addr, val) {
         if((addr & 0x13) === 0x10) addr &= 0xEF;
-        this.CGRAM[addr] = data;
+        this.CGRAM[addr] = val & 0x3F;
     }
 
     read_cgram(addr) {
@@ -259,6 +259,7 @@ class NES_ppu {
                 this.io.sprite_hide_left_8 = (val & 4) >>> 2;
                 this.io.bg_enable = (val & 8) >>> 3;
                 this.io.sprite_enable = (val & 0x10) >>> 4;
+                console.log(this.clock.master_frame, this.clock.ppu_y, val&8, val&0x10);
                 // NOTFINISHED: emphasizes
                 return;
             case 0x2003: // OAMADDR
@@ -282,11 +283,11 @@ class NES_ppu {
                 if (!this.io.w) {
                     this.io.t = (this.io.t & 0xFF) | ((val & 0x3F) << 8);
                 } else {
-                    this.io.t = (this.io.t & 0x7F) | val;
+                    this.io.t = (this.io.t & 0x3F00) | val;
                     this.io.v = this.io.t;
                 }
 
-                this.io.w = +(!this.io.w);
+                this.io.w = (this.io.w + 1) & 1;
                 return;
             case 0x2007: // PPUDATA
                 if (this.rendering() && ((this.clock.ppu_y < this.clock.timing.vblank_start) || (this.clock.ppu_y > this.clock.timing.vblank_end))) {
@@ -298,6 +299,7 @@ class NES_ppu {
                 this.io.v = (this.io.v + this.io.vram_increment) & 0x3FFF;
                 return;
             default:
+                console.log('WRITE UNIMPLEMENTED', hex4(addr));
                 break;
 
         }
@@ -330,12 +332,16 @@ class NES_ppu {
                 // reads do not increment counter
                 break;
             case 0x2007:
-                if (this.io.v < 0x3F00) {
-                    output = this.bus.PPU_read(this.io.v);
+                if ((this.io.v & 0x3FFF) < 0x3F00) {
+                    output = this.bus.PPU_read(this.io.v & 0x3FFF);
                 } else {
                     output = this.read_cgram(addr);
                 }
                 this.io.v = (this.io.v + this.io.vram_increment) & 0x3FFF;
+                break;
+            default:
+                console.log('READ UNIMPLEMENTED', hex4(addr));
+                break;
         }
         return output;
     }

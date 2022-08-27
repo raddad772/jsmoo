@@ -249,6 +249,7 @@ function click_sprite_dump() {
 			}
 			break;
 		case 'nes':
+			console.log('SPRITE, BG ENABLE:', global_player.system.ppu.io.sprite_enable, global_player.system.ppu.io.bg_enable)
 			break;
 	}
 	global_player.system.ppu.present();
