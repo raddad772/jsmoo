@@ -211,8 +211,11 @@ function click_disable_tracing() {
 
 function click_step_clock() {
 	let steps = parseInt(ui_el.mc_input.value);
+	dbg.do_break = false;
 	global_player.system.step_master(steps);
 	global_player.system.catch_up();
+	console.log('PPU X, Y', global_player.system.ppu.line_cycle, global_player.system.clock.ppu_y)
+	console.log('NMI ENABLED', global_player.system.ppu.io.nmi_enable);
 	after_step();
 }
 
@@ -238,11 +241,17 @@ function click_bg_dump(which) {
 }
 
 function click_sprite_dump() {
-	snes.ppu.render_sprites_from_memory(0, 520, false);
-	for (let y = 1; y < 224; y++) {
-		PPUF_render_objects(snes.ppu, snes.ppu.cachelines.lines[y], y, true);
+	global_player.system.ppu.render_sprites_from_memory(0, 520, false);
+	switch(global_player.system_kind) {
+		case 'snes':
+			for (let y = 1; y < 224; y++) {
+				PPUF_render_objects(snes.ppu, snes.ppu.cachelines.lines[y], y, true);
+			}
+			break;
+		case 'nes':
+			break;
 	}
-	snes.ppu.present();
+	global_player.system.ppu.present();
 }
 
 function click_render_scr() {
@@ -303,7 +312,16 @@ function click_dump_ram() {
 	for (let addr = iaddr; addr < (iaddr + NUM_BYTES); addr += MDUMP_COLS) {
 		let ln = hex6(addr) + ' ';
 		for (let baddr = addr; baddr < (addr + MDUMP_COLS); baddr++) {
-			ln += hex2(snes.mem_map.dispatch_read(baddr, 0, false)) + ' ';
+			let rd;
+			switch(global_player.system_kind) {
+				case 'snes':
+					rd = hex2(snes.mem_map.dispatch_read(baddr, 0, false));
+					break;
+				case 'nes':
+					rd = hex2(global_player.system.bus.CPU_read(baddr, 0, false));
+					break;
+			}
+			ln += rd + ' ';
 		}
 		mconsole.addl(ln);
 		console.log(ln);
@@ -361,6 +379,7 @@ var fps_interval = null;
 
 function click_play() {
 	dbg.frames_til_pause = parseInt(ui_el.frames_til_pause.value);
+	dbg.do_break = false;
 	fps_old_frames = global_player.system.clock.frames_since_restart;
 	start_fps_count();
 	global_player.system.jsanimator.play();

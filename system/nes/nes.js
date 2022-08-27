@@ -23,6 +23,7 @@ class NES {
         let lines_to_do = (this.clock.timing.frame_lines - this.clock.ppu_y);
         for (let i = 0; i < this.clock.timing.frame_lines; i++) {
             this.run_scanline();
+            if (dbg.do_break) break;
         }
         this.ppu.present();
     }
@@ -57,6 +58,7 @@ class NES {
             this.ppu.cycle(done / ppu_step);
             this.clock.ppu_master_clock += done;
             this.cycles_left -= cpu_step;
+            if (dbg.do_break) break;
         }
     }
 

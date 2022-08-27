@@ -14,7 +14,7 @@ class ricoh2A03 {
      * @param {NES_bus} bus
      */
     constructor(clock, bus) {
-        this.cpu = new m6502_t(nesm6502_opcodes_decoded);
+        this.cpu = new m6502_t(nesm6502_opcodes_decoded, clock);
         this.cpu.reset();
         this.bus = bus;
         this.clock = clock;
@@ -71,10 +71,13 @@ class ricoh2A03 {
     run_cycle() {
         if (this.io.dma.running) {
             this.io.dma.step++;
-            if (this.io.dma.step === 1) return;
+            if (this.io.dma.step === 1) {
+                return;
+            }
             this.io.dma.step = 0;
             this.bus.PPU_reg_write(0x2004, this.bus.CPU_read(this.io.dma.addr));
             this.io.dma.bytes_left--;
+            this.io.dma.addr = (this.io.dma.addr + 1) & 0xFFFF;
             if (this.io.dma.bytes_left === 0) {
                 this.io.dma.running = 0;
             }
@@ -97,6 +100,12 @@ class ricoh2A03 {
     }
 
     reg_read(addr, val, has_effect=true) {
+        switch(addr) {
+            case 0x4016: // JOYSER0
+                return 0;
+            case 0x4017: // JOYSER1
+                return 0;
+        }
         return val;
     }
 
@@ -107,6 +116,7 @@ class ricoh2A03 {
                 this.io.dma.addr = val << 8;
                 this.io.dma.running = 1;
                 this.io.dma.bytes_left = 256;
+                this.io.dma.step = 0;
                 return;
         }
     }

@@ -319,8 +319,9 @@ class debugger_t {
         snes.step(master_clocks, scanlines, frames, seconds);
     }
 
-    break(whodidit) {
+    break(whodidit, why=false) {
         // CASUE BREAK
+        console.log('DOING BREAK');
         this.state = DBG_STATES.PAUSE;
         this.do_break = true;
         let DOSNES = whodidit === D_RESOURCE_TYPES.R5A22 || whodidit === D_RESOURCE_TYPES.WDC65C816 || whodidit === D_RESOURCE_TYPES.SPC700;
@@ -336,6 +337,7 @@ class debugger_t {
             snes.ppu.catch_up();
         }
         if (DOSNES) snes.jsanimator.pause();
+        else global_player.system.jsanimator.pause();
         //snes.clock.apu_deficit -= overflow;
         //snes.clock.ppu_deficit -= overflow;
         if (DOSNES) console.log('AFTER BREAK deficits', snes.clock.cpu_deficit, snes.clock.apu_deficit, snes.clock.ppu_deficit)
