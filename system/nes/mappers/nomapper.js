@@ -48,7 +48,11 @@ class NES_mapper_none {
 
     cpu_write(addr, val) {
         if (addr < 0x2000) {
-            addr &= 0x7FFF;
+            addr &= 0x7FF;
+            /*if ((addr >= 0x100) && (addr < 0x1A0)) {
+                console.log('STACK BREAK');
+                dbg.break();
+            }*/
             this.CPU_RAM[addr] = val;
             return;
         }
@@ -67,7 +71,7 @@ class NES_mapper_none {
 
     cpu_read(addr, val, has_effect=true) {
         if (addr < 0x2000) {
-            addr &= 0x7FFF;
+            addr &= 0x7FF;
             return this.CPU_RAM[addr];
         }
         if (addr < 0x3FFF)

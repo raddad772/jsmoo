@@ -89,11 +89,12 @@ class m6502_pins_t {
 }
 
 class m6502_t {
-    constructor(opcode_table) {
+    constructor(opcode_table, clock=null) {
         this.regs = new m6502_registers_t();
         this.pins = new m6502_pins_t;
         this.opcode_table = opcode_table;
         this.PCO = 0;
+        this.clock = clock;
         this.regs.IR = M6502_BOOTUP; // Set instruction register to special "WDC_BOOTUP"
 
         this.trace_cycles = 0;
@@ -125,7 +126,28 @@ class m6502_t {
         }
         else this.IRQ_count = 0;
 
-        if (this.pins.NMI === this.NMI_old)
+        // Edge-sensitive 0->1
+        if (this.pins.NMI !== this.NMI_old) {
+            if (this.pins.NMI === 0) { // Reset NMI status
+                this.NMI_ack = false;
+            }
+            else { // Make NMI pending
+                this.NMI_ack = false;
+                this.regs.NMI_pending = true;
+            }
+            this.NMI_old = this.pins.NMI;
+        }
+        /*if (this.pins.NMI) {
+            this.NMI_count++;
+            if (this.NMI_count >= 2) {
+                this.pins.NMI = 0;
+                this.NMI_count = 0;
+                this.regs.NMI_pending = true;
+                this.NMI_ack = false;
+            }
+        }*/
+
+        /*if (this.pins.NMI === this.NMI_old)
             this.NMI_count = 0;
         else
             this.NMI_count++;
@@ -134,7 +156,7 @@ class m6502_t {
             this.NMI_ack = false;
             this.NMI_count = 0;
             this.regs.NMI_pending = true;
-        }
+        }*/
 
         this.regs.TCU++;
         if (this.regs.TCU === 1) {
@@ -143,8 +165,9 @@ class m6502_t {
             if (this.regs.NMI_pending && !this.NMI_ack) {
                 this.NMI_ack = true;
                 this.regs.NMI_pending = false;
-                console.log('NMI1!');
+                console.log('NMI1!', this.clock.master_frame, this.clock.ppu_y);
                 this.regs.IR = M6502_OP_NMI;
+                if (dbg.brk_on_NMIRQ) dbg.break(D_RESOURCE_TYPES.M6502);
             } else if (this.regs.IRQ_pending && !this.IRQ_ack && !this.regs.old_I) {
                 this.IRQ_ack = true;
                 this.regs.IRQ_pending = false;
@@ -242,10 +265,10 @@ class m6502_t {
                 outstr += ' ' + read8() + ',y';
                 break;
             case M6502_AM.PC_REL:
-                outstr += ' $' + hex4((mksigned8(this.trace_peek(PC)) + PC) & 0xFFFF);
+                outstr += ' $' + hex4((mksigned8(this.trace_peek(PC)) + PC + 1) & 0xFFFF);
                 break;
             case M6502_AM.INDjmp:
-                outstr += ' ($' + read16() + ')';
+                outstr += ' (' + read16() + ')';
                 break;
             default:
                 console.log('UNKNOWN AM', addr_mode);

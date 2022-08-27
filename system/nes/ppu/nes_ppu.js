@@ -103,6 +103,9 @@ class NES_ppu {
                 let di = (y * 256 * 4) + (x * 4);
                 let ppui = (y * 256) + x;
                 let p = this.output[ppui] ? 255 : 0;
+                if (this.output[ppui] !== 0) {
+                    console.log(this.output[ppui]);
+                }
 
                 imgdata.data[di] = p;
                 imgdata.data[di+1] = p;
@@ -130,7 +133,7 @@ class NES_ppu {
     }
 
     write_regs(addr, val) {
-        switch(addr & 7) {
+        switch((addr & 7) | 0x2000) {
             case 0x2000: // PPUCTRL
                 this.io.sprite_pattern_table = (val & 8) >>> 3;
                 this.io.bg_pattern_table = (val & 0x10) >>> 4;
@@ -139,7 +142,9 @@ class NES_ppu {
                 this.io.vram_increment = (val & 0x40) ? 32 : 1;
 
                 this.io.t = (this.io.t & 0x73FF) | ((val & 3) << 10);
+
                 this.update_nmi();
+                console.log('2k', this.io.nmi_enable);
                 return;
             case 0x2001: // PPUMASK
                 this.io.greyscale = val & 1;
@@ -153,7 +158,8 @@ class NES_ppu {
                 this.io.OAM_addr = val;
                 return;
             case 0x2004: // OAMDATA
-                this.OAM[this.io.OAM_addr++] = val;
+                this.OAM[this.io.OAM_addr] = val;
+                this.io.OAM_addr = (this.io.OAM_addr + 1) & 0xFF;
                 return;
             case 0x2005: // PPUSCROLL
                 if (!this.io.w) {
@@ -176,7 +182,7 @@ class NES_ppu {
                 this.io.w = +(!this.io.w);
                 return;
             case 0x2007: // PPUDATA
-                if (!this.io.vblank) return;
+                if (!this.clock.vblank) return;
                 this.mem_write(this.io.v & 0x3FFF, data);
                 this.io.v = (this.io.v + this.io.vram_increment) & 0x7FFF;
                 return;
@@ -199,7 +205,7 @@ class NES_ppu {
         let output = val;
         switch(addr) {
             case 0x2002:
-                output = (this.io.sprite_overflow << 5) | (this.io.sprite0_hit << 6) | (this.clock.vblank);
+                output = (this.io.sprite_overflow << 5) | (this.io.sprite0_hit << 6) | (this.clock.vblank << 7);
                 if (has_effect) {
                     this.clock.vblank = 0;
                     this.update_nmi();
@@ -207,6 +213,10 @@ class NES_ppu {
                     this.io.w = 0;
                 }
                 // NOTFINISHED
+                break;
+            case 0x2004: // OAMDATA
+                output = this.io.OAM[this.io.OAM_addr];
+                // reads do not increment counter
                 break;
         }
         return output;
@@ -502,11 +512,11 @@ class NES_ppu {
         else this.clock.advance_scanline();
 
         if (this.clock.ppu_y === this.clock.timing.vblank_start) {
-            this.vblank = 1;
+            this.clock.vblank = 1;
             this.update_nmi();
         }
         else if (this.clock.ppu_y === this.clock.timing.vblank_end) {
-            this.vblank = 0;
+            this.clock.vblank = 0;
             this.update_nmi();
         }
         switch(this.clock.ppu_y) {
@@ -525,9 +535,33 @@ class NES_ppu {
 
     cycle(howmany) {
         for (let i = 0; i < howmany; i++) {
-            this.render_cycle(this.clock.ppu_y, this.line_cycle);
+            this.render_cycle();
             this.line_cycle++;
         }
         return howmany;
     }
+
+	render_sprites_from_memory(y_origin, x_origin, builtin_color) {
+        console.log('THESE OBJECTS', this.OAM);
+        let ctx = this.canvas.getContext('2d');
+        let imgdata = ctx.getImageData(x_origin, y_origin, 256, 224);
+        for (let sy = 1; sy < 240; sy++) {
+            for (let sx = 0; sx < 256; sx++) {
+                let addr = (sy * 256 * 4) + (sx * 4);
+                imgdata.data[addr] = 0;
+                imgdata.data[addr + 1] = 0;
+                imgdata.data[addr + 2] = 0;
+                imgdata.data[addr + 3] = 255;
+            }
+        }
+
+        for (let m = 0; m < 64; m++) {
+            let oa = m*4;
+            let y = this.OAM[oa];
+            let x = this.OAM[oa+3];
+            console.log(x, y);
+        }
+		ctx.putImageData(imgdata, x_origin, y_origin);
+    }
+
 }

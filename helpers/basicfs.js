@@ -63,7 +63,6 @@ class basic_fs {
 
     async _get_metadata() {
         let md = await localforage.getItem(BFS_METADATA);
-        console.log('YAY!');
         if (md === null) {
             md = {
                 version: 1,
