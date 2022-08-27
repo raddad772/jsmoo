@@ -242,7 +242,7 @@ class r5a22DMA {
 
     }
 
-    reg_read(addr, val, have_effect=true) {
+    reg_read(addr, val, has_effect=true) {
         let channel = this.channels[((addr >>> 4) & 7)];
 
         switch(addr & 0xFF8F) {

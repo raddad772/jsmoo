@@ -90,7 +90,7 @@ class snes_memmap {
 			this.setup_mem_map_hirom();
 	}
 
-	dispatch_read(addr, val, have_effect= true) {
+	dispatch_read(addr, val, has_effect= true) {
 		let b = addr >>> 12;
 		let mkind = this.readmap[b].kind;
 		let outaddr = this.readmap[b].offset + (addr & 0xFFF);
@@ -112,10 +112,10 @@ class snes_memmap {
 				return this.SRAM[outaddr % this.SRAMSize];
 			case MAP_TI.PPU:
 				//console.log('PPU read');
-				return this.read_ppu(outaddr, val, have_effect);
+				return this.read_ppu(outaddr, val, has_effect);
 			case MAP_TI.CPU:
 				//console.log('CPU read');
-				return this.read_cpu(outaddr, val, have_effect);
+				return this.read_cpu(outaddr, val, has_effect);
 		}
 		return val;
 	};

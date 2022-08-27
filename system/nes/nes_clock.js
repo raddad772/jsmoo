@@ -20,6 +20,8 @@ class NES_clock {
         this.master_frame = 0;
         this.clocks_this_line = 0;
 
+        this.frames_since_restart = 0;
+
 
         this.cpu_master_clock = 0;
         this.sound_master_clock = 0;
@@ -68,7 +70,7 @@ class NES_clock {
         this.ppu_y = 0;
         this.fblank = 0;
         this.frame_odd = 0;
-
+        this.frames_since_restart = 0;
     }
 
     ppu_x(clock) {
@@ -104,20 +106,18 @@ class NES_clock {
         }
     }
 
-    new_scanline() {
-        this.ppu_y++;
-        if (this.ppu_y === this.timing.vblank_start) {
-            this.vblank = 1;
-        }
-        if (this.ppu_y === this.timing.vblank_end) {
-            this.vblank = 0;
-        }
+    advance_frame() {
+        this.ppu_y = 0;
+        this.frames_since_restart++;
+        this.frame_odd = +(!this.frame_odd);
+        this.master_frame++;
+        this.ppu_frame_ready = true;
+
+        this.clocks_this_line = 0;
     }
 
-    advance_clock_from_cpu(howmany) {
-        this.clocks_this_line += howmany;
-        while(this.clocks_this_line > this.clocks_per_line) {
-            this.new_scanline();
-        }
+    advance_scanline() {
+        this.clocks_this_line = 0;
+        this.ppu_y++;
     }
 }

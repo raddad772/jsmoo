@@ -16,16 +16,15 @@ class ricoh2A03 {
     constructor(clock, bus) {
         this.cpu = new m6502_t(nesm6502_opcodes_decoded);
         this.cpu.reset();
-
-        this.bus.CPU_notify_NMI = this.notify_nmi.bind(this);
-        this.bus.CPU_notify_IRQ = this.notify_irq.bind(this);
-
         this.bus = bus;
+        this.clock = clock;
+
+        this.tracing = false;
 
         this.bus.CPU_reg_write = this.reg_write.bind(this);
         this.bus.CPU_reg_read = this.reg_read.bind(this);
-
-        this.clock = clock;
+        this.bus.CPU_notify_NMI = this.notify_NMI.bind(this);
+        this.bus.CPU_notify_IRQ = this.notify_IRQ.bind(this);
 
         this.cycles_left = 0;
 
@@ -39,6 +38,18 @@ class ricoh2A03 {
         }
     }
 
+    enable_tracing() {
+        if (this.tracing) return;
+        this.cpu.enable_tracing(this.read_trace.bind(this));
+        this.tracing = true;
+    }
+
+    disable_tracing() {
+        if (!this.tracing) return;
+        this.cpu.disable_tracing();
+        this.tracing = false;
+    }
+
     notify_NMI(level) {
         this.cpu.pins.NMI = +level;
     }
@@ -50,6 +61,10 @@ class ricoh2A03 {
     reset() {
         this.cpu.reset();
         this.io.dma.running = 0;
+    }
+
+    read_trace(addr) {
+        return this.bus.CPU_read(addr, 0, false);
     }
 
     // Run 1 CPU cycle, bro!
@@ -72,7 +87,7 @@ class ricoh2A03 {
             this.bus.CPU_write(this.cpu.pins.Addr, this.cpu.pins.D);
     }
 
-    reg_read(addr, val) {
+    reg_read(addr, val, has_effect=true) {
         return val;
     }
 
