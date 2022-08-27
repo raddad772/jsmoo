@@ -329,6 +329,30 @@ function click_dump_ram() {
 	mconsole.draw();
 }
 
+function click_dump_vram() {
+	let iaddr = get_addr_from_dump_box();
+	let MDUMP_COLS = 16;
+	let NUM_BYTES = 256;
+	for (let addr = iaddr; addr < (iaddr + NUM_BYTES); addr += MDUMP_COLS) {
+		let ln = hex6(addr) + ' ';
+		for (let baddr = addr; baddr < (addr + MDUMP_COLS); baddr++) {
+			let rd;
+			switch(global_player.system_kind) {
+				case 'snes':
+					rd = hex2(snes.mem_map.dispatch_read(baddr, 0, false));
+					break;
+				case 'nes':
+					rd = hex2(global_player.system.bus.PPU_read(baddr, 0, false));
+					break;
+			}
+			ln += rd + ' ';
+		}
+		mconsole.addl(ln);
+		console.log(ln);
+	}
+	mconsole.draw();
+}
+
 class js_animator {
 	constructor(hz, func) {
 		this.hz = hz;
