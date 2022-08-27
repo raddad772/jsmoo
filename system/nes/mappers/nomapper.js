@@ -40,8 +40,9 @@ class NES_mapper_none {
     }
 
     ppu_read(addr, val, has_effect=true) {
-        if (addr < 0x2000)
+        if (addr < 0x2000) {
             return this.CHR_ROM[addr];
+        }
         // TODO: implement mirroring
         return this.CIRAM[this.mirror_ppu_addr(addr)-0x2000];
     }
