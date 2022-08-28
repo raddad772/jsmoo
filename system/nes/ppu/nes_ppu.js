@@ -1,3 +1,12 @@
+// TODO:
+//  * sprite/bg priority
+//  * fix rendering
+//  * fix attribute selection
+//  * fix other stuff
+//  * add nametable display
+//  * verify all timings vis a vis sprite0 hit, etc.
+//  * make sure sprite0 hit works with background properly
+//  * fix vblank to happen at correct dot
 "use strict";
 
 var NES_palette_str = "\
@@ -519,7 +528,7 @@ class NES_ppu {
         if ((this.line_cycle !== 0) && ((this.line_cycle & 7) === 0) && ((this.line_cycle >= 328) || (this.line_cycle < 256))) {
             // INCREMENT HORIZONTAL SCROLL IN v
             if ((this.io.v & 0x1F) === 0x1F)
-                this.io.v = (this.io.v & 0x7FFFFFE0) ^ 0x0400;
+                this.io.v = (this.io.v & 0xFFE0) ^ 0x0400;
             else
                 this.io.v++;
             return;
@@ -546,7 +555,7 @@ class NES_ppu {
                     else {
                         y += 1;
                     }
-                    this.io.v = (this.io.v & 0x7C1F) | (y << 5);
+                    this.io.v = (this.io.v & 0xFC1F) | (y << 5);
                     //if (dbg.watch_on) console.log('NEW Y', y, hex4(this.clock.ppu_y));
                 }
             }
@@ -646,7 +655,8 @@ class NES_ppu {
             bg_color |= (bga & 3) << 2;
             bg_color = this.CGRAM[bg_color];
         }
-        if (bg_color === 0) bg_color = this.CGRAM[0];
+        else bg_color = this.CGRAM[0];
+        let bg_has_color = bg_color !== 0;
 
         let sprite_priority = 0;
         let sprite_color = 0;
@@ -656,7 +666,6 @@ class NES_ppu {
             if ((this.sprite_x_counters[m] >= -8) && (this.sprite_x_counters[m] <= 0)) {
                 let s_x_flip = (this.sprite_attribute_latches[m] & 0x40) >>> 6;
                 let my_color = (this.sprite_attribute_latches[m] & 3) << 2;
-                sprite_priority = (this.sprite_attribute_latches[m] & 0x20) >>> 5;
                 if (s_x_flip) {
                     my_color |= (this.sprite_pattern_shifters[m] & 0xC000) >>> 14;
                     this.sprite_pattern_shifters[m] <<= 2;
@@ -665,12 +674,14 @@ class NES_ppu {
                     my_color |= (this.sprite_pattern_shifters[m] & 3);
                     this.sprite_pattern_shifters[m] >>>= 2;
                 }
-                if (my_color !== 0) my_color = this.CGRAM[0x10 + my_color];
-                sprite_color = my_color;
-                if (this.sprite0_on_this_line && !this.io.sprite0_hit) {
-                    if ((m === 0) && (my_color !== 0)) {
-                        this.io.sprite0_hit = true;
-                    }
+                if (my_color !== 0) {
+                    sprite_priority = (this.sprite_attribute_latches[m] & 0x20) >>> 5;
+                    sprite_color = this.CGRAM[0x10 + my_color];
+                }
+                if (!this.io.sprite0_hit && this.sprite0_on_this_line && my_color && !this.io.sprite0_hit && !m && bg_has_color) {
+                    //if ((m === 0) && (my_color !== 0) && (bg_has_color)) {
+                        this.io.sprite0_hit = 1;
+                    //}
                 }
             }
         }
@@ -678,15 +689,13 @@ class NES_ppu {
         // Decide background or sprite
         let out_color = bg_color;
         if (sprite_color !== 0) {
-            if (bg_color === 0) {
+            if (!bg_has_color) {
                 out_color = sprite_color;
             }
             else {
                 if (sprite_priority) out_color = sprite_color;
                 else out_color = bg_color;
-                out_color = sprite_color; // TODO: badhack
             }
-            out_color = sprite_color;
         }
 
         this.output[bo] = out_color;
