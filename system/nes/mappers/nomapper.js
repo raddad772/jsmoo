@@ -25,6 +25,7 @@ class NES_mapper_none {
     }
 
     mirror_ppu_addr(addr) {
+        if (addr > 0x3000) addr -= 0x1000;
         if (this.ppu_mirror === 0) {
             if ((addr >= 0x2400) && (addr < 0x2800)) return addr - 0x400;
             if ((addr >= 0x2C00)) return addr - 0x400;

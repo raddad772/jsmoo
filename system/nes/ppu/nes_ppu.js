@@ -259,7 +259,6 @@ class NES_ppu {
                 this.io.sprite_hide_left_8 = (val & 4) >>> 2;
                 this.io.bg_enable = (val & 8) >>> 3;
                 this.io.sprite_enable = (val & 0x10) >>> 4;
-                console.log(this.clock.master_frame, this.clock.ppu_y, val&8, val&0x10);
                 // NOTFINISHED: emphasizes
                 return;
             case 0x2003: // OAMADDR
@@ -498,19 +497,24 @@ class NES_ppu {
         if ((this.line_cycle !== 0) && ((this.line_cycle & 7) === 0) && ((this.line_cycle >= 328) || (this.line_cycle < 256))) {
             // INCREMENT HORIZONTAL SCROLL IN v
             if ((this.io.v & 0x1F) === 0x1F)
-                this.io.v = (this.io.v & 0x7FFFFFE0) & 0x0400;
+                this.io.v = (this.io.v & 0x7FFFFFE0) ^ 0x0400;
             else
                 this.io.v++;
             return;
         }
         if (this.line_cycle === 256) {
             // INCREMENT VERTICAL SCROLL IN v
-            if (!this.io.fblank) {
-                if ((this.io.v & 0x7000) !== 0x7000)
+            if (this.rendering()) {
+                if (dbg.watch_on) console.log('Adding to vertical scroll...');
+                if ((this.io.v & 0x7000) !== 0x7000) {
+                    if (dbg.watch_on) console.log('ADDING 0x1000', hex4(this.io.v));
                     this.io.v += 0x1000;
+                    if (dbg.watch_on) console.log('NEW V', hex4(this.io.v));
+                }
                 else {
                     this.io.v &= 0x8FFF;
                     let y = (this.io.v & 0x03E0) >>> 5;
+                    if (dbg.watch_on) console.log('OLD Y', y, hex4(this.io.v));
                     if (y === 29) {
                         y = 0;
                         this.io.v ^= 0x0800
@@ -521,6 +525,7 @@ class NES_ppu {
                         y += 1;
                     }
                     this.io.v = (this.io.v & 0x7C1F) | (y << 5);
+                    if (dbg.watch_on) console.log('NEW Y', y, hex4(this.io.y));
                 }
             }
             return;
@@ -560,7 +565,6 @@ class NES_ppu {
         if (this.line_cycle === 0) {
             return;
         } // DO NOTHING here, idle for cycle 0
-
         let sx = this.line_cycle-1;
         let sy = this.clock.ppu_y;
         let bo = (sy * 256) + sx;
@@ -578,7 +582,8 @@ class NES_ppu {
         this.cycle_scanline_addr();
         this.oam_evaluate_slow();
 
-        let tile_y = (sy & 7);
+        //let tile_y = (sy & 7);
+        let tile_y = (this.io.v >>> 12) & 7;
 
         let odd = (this.line_cycle & 1);
 
@@ -586,6 +591,7 @@ class NES_ppu {
         switch(this.line_cycle & 7) {
             case 0: // nametable, tile #
                 this.bg_fetches[0] = this.bus.PPU_read(0x2000 | (this.io.v & 0xFFF));
+                if (dbg.watch_on && (this.line_cycle === 255)) console.log(sy, sx, 'fetched tile #', this.bg_fetches[0], hex4(0x2000 | (this.io.v & 0xFFF)));
                 break;
             case 1: // reload shifter
                 this.bg_shifter = (this.bg_shifter & 0xFFFF) | (this.bg_fetches[2] << 16) | (this.bg_fetches[3] << 24);
