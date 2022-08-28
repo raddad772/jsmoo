@@ -1,3 +1,5 @@
+"use strict";
+
 class NES {
     constructor(jsanimator) {
         this.bus = new NES_bus();

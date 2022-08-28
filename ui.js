@@ -384,7 +384,6 @@ class js_animator {
 		//console.log(elapsed);
 		this.last_timestamp = timestamp;
 		this.callback(elapsed);
-
 		this.frame_to_cancel = requestAnimationFrame(this.doframe.bind(this));
 	}
 
