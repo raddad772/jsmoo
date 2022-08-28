@@ -199,11 +199,19 @@ class NES_ppu {
             for (let x = 0; x < 256; x++) {
                 let di = (y * 256 * 4) + (x * 4);
                 let ppui = (y * 256) + x;
-                let p = this.output[ppui] ? 255 : 0;
+                let r, g, b;
+                let o = this.output[ppui];
+                if (o === 0) r = g = b = 0; //o = 4;//FIX: TODO: BG_COLOR();
+                else {
+                    r = NES_palette[o][0];
+                    g = NES_palette[o][1];
+                    b = NES_palette[o][2];
+                }
+                //let p = this.output[ppui] ? 255 : 0;
 
-                imgdata.data[di] = p;
-                imgdata.data[di+1] = p;
-                imgdata.data[di+2] = p;
+                imgdata.data[di] = r;
+                imgdata.data[di+1] = g;
+                imgdata.data[di+2] = b;
                 imgdata.data[di+3] = 255;
             }
         }
@@ -271,12 +279,14 @@ class NES_ppu {
             case 0x2005: // PPUSCROLL
                 if (!this.io.w) {
                     this.io.x = val & 7;
+                    //console.log('SETTING X TO', this.clock.ppu_y, this.line_cycle, this.io.x);
                     this.io.t = (this.io.t & 0x7FE0) | (val >>> 3);
+                    //if ((this.clock.ppu_y === 30) && (this.io.x !== 0)) dbg.break();
                 } else {
                     this.io.t = (this.io.t & 0x0C1F) | ((val & 0xF8) << 2) | ((val & 7) << 12);
                 }
                 // NOTFINISHED
-                this.io.w = +(!this.io.w);
+                this.io.w = (this.io.w + 1) & 1;
                 return;
             case 0x2006: // PPUADDR
                 if (!this.io.w) {
@@ -494,6 +504,16 @@ class NES_ppu {
     }
 
     cycle_scanline_addr() {
+        if (this.clock.ppu_y < this.clock.timing.bottom_rendered_line) {
+            // Sprites
+            if ((this.line_cycle > 0) && (this.line_cycle < 257)) {
+                for (let m = 0; m < 8; m++) {
+                    this.sprite_x_counters[m]--;
+                }
+                //this.io.x = (this.io.x + 1) & 7;
+            }
+            // Fine X scroll
+        }
         if ((this.line_cycle !== 0) && ((this.line_cycle & 7) === 0) && ((this.line_cycle >= 328) || (this.line_cycle < 256))) {
             // INCREMENT HORIZONTAL SCROLL IN v
             if ((this.io.v & 0x1F) === 0x1F)
@@ -505,16 +525,16 @@ class NES_ppu {
         if (this.line_cycle === 256) {
             // INCREMENT VERTICAL SCROLL IN v
             if (this.rendering()) {
-                if (dbg.watch_on) console.log('Adding to vertical scroll...');
+                //if (dbg.watch_on) console.log('Adding to vertical scroll...');
                 if ((this.io.v & 0x7000) !== 0x7000) {
-                    if (dbg.watch_on) console.log('ADDING 0x1000', hex4(this.io.v));
+                    //if (dbg.watch_on) console.log('ADDING 0x1000', hex4(this.io.v));
                     this.io.v += 0x1000;
-                    if (dbg.watch_on) console.log('NEW V', hex4(this.io.v));
+                    //if (dbg.watch_on) console.log('NEW V', hex4(this.io.v));
                 }
                 else {
                     this.io.v &= 0x8FFF;
                     let y = (this.io.v & 0x03E0) >>> 5;
-                    if (dbg.watch_on) console.log('OLD Y', y, hex4(this.io.v));
+                    //if (dbg.watch_on) console.log('OLD Y', y, hex4(this.io.v));
                     if (y === 29) {
                         y = 0;
                         this.io.v ^= 0x0800
@@ -525,7 +545,7 @@ class NES_ppu {
                         y += 1;
                     }
                     this.io.v = (this.io.v & 0x7C1F) | (y << 5);
-                    if (dbg.watch_on) console.log('NEW Y', y, hex4(this.io.y));
+                    //if (dbg.watch_on) console.log('NEW Y', y, hex4(this.clock.ppu_y));
                 }
             }
             return;
@@ -565,6 +585,7 @@ class NES_ppu {
         if (this.line_cycle === 0) {
             return;
         } // DO NOTHING here, idle for cycle 0
+        if (this.line_cycle === 1) if (dbg.watch_on) console.log(this.clock.ppu_y, this.sprite_x_counters);
         let sx = this.line_cycle-1;
         let sy = this.clock.ppu_y;
         let bo = (sy * 256) + sx;
@@ -594,7 +615,8 @@ class NES_ppu {
                 if (dbg.watch_on && (this.line_cycle === 255)) console.log(sy, sx, 'fetched tile #', this.bg_fetches[0], hex4(0x2000 | (this.io.v & 0xFFF)));
                 break;
             case 1: // reload shifter
-                this.bg_shifter = (this.bg_shifter & 0xFFFF) | (this.bg_fetches[2] << 16) | (this.bg_fetches[3] << 24);
+                //this.bg_shifter = (this.bg_shifter & 0xFFFF) | (this.bg_fetches[2] << 16) | (this.bg_fetches[3] << 24);
+                this.bg_shifter = (this.bg_shifter >>> 16) | (this.bg_fetches[2] << 16) | (this.bg_fetches[3] << 24);
                 this.bg_attribute = this.bg_fetches[1];
                 break;
             case 2: // attribute table
@@ -610,8 +632,11 @@ class NES_ppu {
         }
 
         // Shift out some bits for backgrounds
-        let bg_color_low_bits = this.bg_shifter & 3;
-        this.bg_shifter >>>= 2;
+        //let b_to_get = (sx & 7) * 2;
+        let b_to_get = (((sx & 7) + this.io.x) & 15) * 2;
+        let bg_color_low_bits = (this.bg_shifter >>> b_to_get) & 3;
+        //let bg_color_low_bits = this.bg_shifter & 3;
+        //this.bg_shifter >>>= 2;
         let bg_color = bg_color_low_bits;
 
         let sprite_priority = 0;
@@ -619,12 +644,19 @@ class NES_ppu {
 
         // Check if any sprites need drawing
         for (let m = 0; m < 8; m++) {
-            this.sprite_x_counters[m]--;
-            if ((this.sprite_x_counters[m] >= -8) && (this.sprite_x_counters[m] <= -1)) {
-                let my_color = this.sprite_pattern_shifters[m] & 3;
-                this.sprite_pattern_shifters[m] >>>= 2;
-                my_color |= (this.sprite_attribute_latches[m] & 3) << 2;
+            if ((this.sprite_x_counters[m] >= -8) && (this.sprite_x_counters[m] <= 0)) {
+                let s_x_flip = (this.sprite_attribute_latches[m] & 0x40) >>> 6;
+                let my_color = (this.sprite_attribute_latches[m] & 3) << 2;
                 sprite_priority = (this.sprite_attribute_latches[m] & 0x20) >>> 5;
+                if (s_x_flip) {
+                    my_color |= (this.sprite_pattern_shifters[m] & 0xC000) >>> 14;
+                    this.sprite_pattern_shifters[m] <<= 2;
+                }
+                else {
+                    my_color |= (this.sprite_pattern_shifters[m] & 3);
+                    this.sprite_pattern_shifters[m] >>>= 2;
+                }
+                if (my_color !== 0) my_color = this.CGRAM[0x10 + my_color];
                 sprite_color = my_color;
                 if (this.sprite0_on_this_line && !this.io.sprite0_hit) {
                     if ((m === 0) && (my_color !== 0)) {
@@ -633,6 +665,7 @@ class NES_ppu {
                 }
             }
         }
+
         // Decide background or sprite
         let out_color = bg_color;
         if (sprite_color !== 0) {
@@ -642,7 +675,9 @@ class NES_ppu {
             else {
                 if (sprite_priority) out_color = sprite_color;
                 else out_color = bg_color;
+                out_color = sprite_color; // TODO: badhack
             }
+            out_color = sprite_color;
         }
 
         this.output[bo] = out_color;
