@@ -279,9 +279,7 @@ class NES_ppu {
             case 0x2005: // PPUSCROLL
                 if (!this.io.w) {
                     this.io.x = val & 7;
-                    //console.log('SETTING X TO', this.clock.ppu_y, this.line_cycle, this.io.x);
                     this.io.t = (this.io.t & 0x7FE0) | (val >>> 3);
-                    //if ((this.clock.ppu_y === 30) && (this.io.x !== 0)) dbg.break();
                 } else {
                     this.io.t = (this.io.t & 0x0C1F) | ((val & 0xF8) << 2) | ((val & 7) << 12);
                 }
@@ -289,10 +287,10 @@ class NES_ppu {
                 this.io.w = (this.io.w + 1) & 1;
                 return;
             case 0x2006: // PPUADDR
-                if (!this.io.w) {
+                if (this.io.w === 0) {
                     this.io.t = (this.io.t & 0xFF) | ((val & 0x3F) << 8);
                 } else {
-                    this.io.t = (this.io.t & 0x3F00) | val;
+                    this.io.t = (this.io.t & 0xFF00) | val;
                     this.io.v = this.io.t;
                 }
 
@@ -300,12 +298,12 @@ class NES_ppu {
                 return;
             case 0x2007: // PPUDATA
                 if (this.rendering() && ((this.clock.ppu_y < this.clock.timing.vblank_start) || (this.clock.ppu_y > this.clock.timing.vblank_end))) {
-                    //console.log('REJECT WRITE', this.clock.ppu_y, this.io.sprite_enable, this.io.bg_enable, hex4(this.io.v), hex2(val));
+                    console.log('REJECT WRITE', this.clock.ppu_y, this.io.sprite_enable, this.io.bg_enable, hex4(this.io.v), hex2(val));
                     return;
                 }
                 //console.log(hex4(this.io.v), hex2(val));
-                this.mem_write(this.io.v & 0x3FFF, val);
-                this.io.v = (this.io.v + this.io.vram_increment) & 0x3FFF;
+                this.mem_write(this.io.v, val);
+                this.io.v = (this.io.v + this.io.vram_increment) & 0x7FFF;
                 return;
             default:
                 console.log('WRITE UNIMPLEMENTED', hex4(addr));
@@ -341,6 +339,10 @@ class NES_ppu {
                 // reads do not increment counter
                 break;
             case 0x2007:
+                if (this.rendering() && ((this.clock.ppu_y < this.clock.timing.vblank_start) || (this.clock.ppu_y > this.clock.timing.vblank_end))) {
+                    return 0;
+                }
+
                 if ((this.io.v & 0x3FFF) < 0x3F00) {
                     output = this.bus.PPU_read(this.io.v & 0x3FFF);
                 } else {
@@ -633,11 +635,18 @@ class NES_ppu {
 
         // Shift out some bits for backgrounds
         //let b_to_get = (sx & 7) * 2;
-        let b_to_get = (((sx & 7) + this.io.x) & 15) * 2;
-        let bg_color_low_bits = (this.bg_shifter >>> b_to_get) & 3;
+        let bg_shift = ((sx & 7) + this.io.x) & 15;
+        let bg_color_low_bits = (this.bg_shifter >>> (bg_shift * 2)) & 3;
         //let bg_color_low_bits = this.bg_shifter & 3;
         //this.bg_shifter >>>= 2;
         let bg_color = bg_color_low_bits;
+        if (bg_color !== 0) {
+            let bga = this.bg_attribute;
+            if (bg_shift < 8) bga >>= 2;
+            bg_color |= (bga & 3) << 2;
+            bg_color = this.CGRAM[bg_color];
+        }
+        if (bg_color === 0) bg_color = this.CGRAM[0];
 
         let sprite_priority = 0;
         let sprite_color = 0;
