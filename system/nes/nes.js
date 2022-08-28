@@ -21,7 +21,7 @@ class NES {
             }
         }
         let lines_to_do = (this.clock.timing.frame_lines - this.clock.ppu_y);
-        for (let i = 0; i < this.clock.timing.frame_lines; i++) {
+        for (let i = 0; i < lines_to_do; i++) {
             this.run_scanline();
             if (dbg.do_break) break;
         }
