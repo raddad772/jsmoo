@@ -301,6 +301,11 @@ class NES_ppu {
                 } else {
                     this.io.t = (this.io.t & 0xFF00) | val;
                     this.io.v = this.io.t;
+                    console.log('SET V', hex4(this.io.v), this.clock.trace_cycles);
+                    if (this.io.v === 0x18DE) {// || this.io.v === 0x2654) {
+                        dbg.break(D_RESOURCE_TYPES.M6502);
+                        console.log(this.clock.master_frame, this.clock.ppu_y, this.line_cycle);
+                    }
                 }
 
                 this.io.w = (this.io.w + 1) & 1;
@@ -357,7 +362,7 @@ class NES_ppu {
                 } else {
                     output = this.read_cgram(addr);
                 }
-                this.io.v = (this.io.v + this.io.vram_increment) & 0x3FFF;
+                this.io.v = (this.io.v + this.io.vram_increment) & 0x7FFF;
                 break;
             default:
                 console.log('READ UNIMPLEMENTED', hex4(addr));
@@ -398,6 +403,9 @@ class NES_ppu {
         let even = !odd;
         let eval_y = this.clock.ppu_y + 1;
         if (this.line_cycle <= 64) {
+            if (this.line_cycle === 1) {
+                this.io.sprite_overflow = this.OAM_eval_sprite_overflow;
+            }
             if (even)
                 this.secondary_OAM[this.line_cycle >>> 1] = 0xFF;
             if (this.line_cycle === 1) {
@@ -405,7 +413,7 @@ class NES_ppu {
                 this.secondary_OAM_index = 0;
                 this.OAM_eval_index = 0;
                 this.secondary_OAM_lock = false;
-                this.OAM_eval_sprite_overflow = false;
+                this.OAM_eval_sprite_overflow = 0;
                 this.OAM_eval_done = false;
                 this.sprite0_on_next_line = false;
             }
@@ -453,7 +461,7 @@ class NES_ppu {
                     // Set overflow flag if needed
                     f++;
                     if (f >= 8) {
-                        this.OAM_eval_sprite_overflow = true;
+                        this.OAM_eval_sprite_overflow = 1;
                         break;
                     }
                     m = (m + 4) & 0x03;
@@ -521,10 +529,9 @@ class NES_ppu {
                 for (let m = 0; m < 8; m++) {
                     this.sprite_x_counters[m]--;
                 }
-                //this.io.x = (this.io.x + 1) & 7;
             }
-            // Fine X scroll
         }
+        if (!this.rendering()) return;
         if ((this.line_cycle !== 0) && ((this.line_cycle & 7) === 0) && ((this.line_cycle >= 328) || (this.line_cycle < 256))) {
             // INCREMENT HORIZONTAL SCROLL IN v
             if ((this.io.v & 0x1F) === 0x1F)
@@ -534,30 +541,27 @@ class NES_ppu {
             return;
         }
         if (this.line_cycle === 256) {
-            // INCREMENT VERTICAL SCROLL IN v
-            if (this.rendering()) {
-                //if (dbg.watch_on) console.log('Adding to vertical scroll...');
-                if ((this.io.v & 0x7000) !== 0x7000) {
-                    //if (dbg.watch_on) console.log('ADDING 0x1000', hex4(this.io.v));
-                    this.io.v += 0x1000;
-                    //if (dbg.watch_on) console.log('NEW V', hex4(this.io.v));
+            //if (dbg.watch_on) console.log('Adding to vertical scroll...');
+            if ((this.io.v & 0x7000) !== 0x7000) {
+                //if (dbg.watch_on) console.log('ADDING 0x1000', hex4(this.io.v));
+                this.io.v += 0x1000;
+                //if (dbg.watch_on) console.log('NEW V', hex4(this.io.v));
+            }
+            else {
+                this.io.v &= 0x8FFF;
+                let y = (this.io.v & 0x03E0) >>> 5;
+                //if (dbg.watch_on) console.log('OLD Y', y, hex4(this.io.v));
+                if (y === 29) {
+                    y = 0;
+                    this.io.v ^= 0x0800
+                } else if (y === 31) {
+                    y = 0;
                 }
                 else {
-                    this.io.v &= 0x8FFF;
-                    let y = (this.io.v & 0x03E0) >>> 5;
-                    //if (dbg.watch_on) console.log('OLD Y', y, hex4(this.io.v));
-                    if (y === 29) {
-                        y = 0;
-                        this.io.v ^= 0x0800
-                    } else if (y === 31) {
-                        y = 0;
-                    }
-                    else {
-                        y += 1;
-                    }
-                    this.io.v = (this.io.v & 0xFC1F) | (y << 5);
-                    //if (dbg.watch_on) console.log('NEW Y', y, hex4(this.clock.ppu_y));
+                    y += 1;
                 }
+                this.io.v = (this.io.v & 0xFC1F) | (y << 5);
+                //if (dbg.watch_on) console.log('NEW Y', y, hex4(this.clock.ppu_y));
             }
             return;
         }
@@ -622,8 +626,7 @@ class NES_ppu {
         // Do memory accesses and shifters
         switch(this.line_cycle & 7) {
             case 0: // nametable, tile #
-                this.bg_fetches[0] = this.bus.PPU_read(0x2000 | (this.io.v & 0xFFF));
-                if (dbg.watch_on && (this.line_cycle === 255)) console.log(sy, sx, 'fetched tile #', this.bg_fetches[0], hex4(0x2000 | (this.io.v & 0xFFF)));
+                this.bg_fetches[0] = this.bus.PPU_read(0x2000 | (this.io.v & 0x7FF));
                 break;
             case 1: // reload shifter
                 //this.bg_shifter = (this.bg_shifter & 0xFFFF) | (this.bg_fetches[2] << 16) | (this.bg_fetches[3] << 24);
@@ -649,6 +652,7 @@ class NES_ppu {
         //let bg_color_low_bits = this.bg_shifter & 3;
         //this.bg_shifter >>>= 2;
         let bg_color = bg_color_low_bits;
+        let bg_has_color = bg_color !== 0;
         if (bg_color !== 0) {
             let bga = this.bg_attribute;
             if (bg_shift < 8) bga >>= 2;
@@ -656,7 +660,6 @@ class NES_ppu {
             bg_color = this.CGRAM[bg_color];
         }
         else bg_color = this.CGRAM[0];
-        let bg_has_color = bg_color !== 0;
 
         let sprite_priority = 0;
         let sprite_color = 0;
@@ -665,23 +668,21 @@ class NES_ppu {
         for (let m = 0; m < 8; m++) {
             if ((this.sprite_x_counters[m] >= -8) && (this.sprite_x_counters[m] <= 0)) {
                 let s_x_flip = (this.sprite_attribute_latches[m] & 0x40) >>> 6;
-                let my_color = (this.sprite_attribute_latches[m] & 3) << 2;
+                let my_color;
                 if (s_x_flip) {
-                    my_color |= (this.sprite_pattern_shifters[m] & 0xC000) >>> 14;
+                    my_color = (this.sprite_pattern_shifters[m] & 0xC000) >>> 14;
                     this.sprite_pattern_shifters[m] <<= 2;
-                }
-                else {
-                    my_color |= (this.sprite_pattern_shifters[m] & 3);
+                } else {
+                    my_color = (this.sprite_pattern_shifters[m] & 3);
                     this.sprite_pattern_shifters[m] >>>= 2;
                 }
                 if (my_color !== 0) {
+                    my_color |= (this.sprite_attribute_latches[m] & 3) << 2;
                     sprite_priority = (this.sprite_attribute_latches[m] & 0x20) >>> 5;
                     sprite_color = this.CGRAM[0x10 + my_color];
-                }
-                if (!this.io.sprite0_hit && this.sprite0_on_this_line && my_color && !this.io.sprite0_hit && !m && bg_has_color) {
-                    //if ((m === 0) && (my_color !== 0) && (bg_has_color)) {
+                    if ((!this.io.sprite0_hit) && (this.sprite0_on_this_line) && (m === 0) && bg_has_color) {
                         this.io.sprite0_hit = 1;
-                    //}
+                    }
                 }
             }
         }
@@ -693,7 +694,7 @@ class NES_ppu {
                 out_color = sprite_color;
             }
             else {
-                if (sprite_priority) out_color = sprite_color;
+                if (!sprite_priority) out_color = sprite_color;
                 else out_color = bg_color;
             }
         }

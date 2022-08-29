@@ -89,6 +89,10 @@ class m6502_pins_t {
 }
 
 class m6502_t {
+    /**
+     * @param opcode_table
+     * @param NES_clock
+     */
     constructor(opcode_table, clock=null) {
         this.regs = new m6502_registers_t();
         this.pins = new m6502_pins_t;
@@ -97,7 +101,7 @@ class m6502_t {
         this.clock = clock;
         this.regs.IR = M6502_BOOTUP; // Set instruction register to special "WDC_BOOTUP"
 
-        this.trace_cycles = 0;
+        this.clock.trace_cycles = 0;
         this.trace_on = false;
         this.trace_peek = function(addr) { return 0xCD; }
 
@@ -113,7 +117,7 @@ class m6502_t {
 
     cycle() {
         // Perform 1 processor cycle
-        this.trace_cycles++;
+        this.clock.trace_cycles++;
         if (this.regs.HLT) return;
         if (this.pins.IRQ) {
             this.IRQ_count++;
@@ -180,7 +184,7 @@ class m6502_t {
                 dbg.break();
             }
             if (this.trace_on) {
-                dbg.traces.add(TRACERS.M6502, this.trace_cycles, this.trace_format(this.disassemble(), this.PCO));
+                dbg.traces.add(TRACERS.M6502, this.clock.trace_cycles, this.trace_format(this.disassemble(), this.PCO));
             }
         }
         this.IRQ_ack = false;
@@ -280,7 +284,7 @@ class m6502_t {
 
     enable_tracing(peek_func) {
         this.trace_peek = peek_func;
-        this.trace_cycles = 0;
+        this.clock.trace_cycles = 0;
         this.trace_on = true;
     }
 
@@ -290,7 +294,7 @@ class m6502_t {
     }
 
 	trace_format(da_out, PCO) {
-		let outstr = trace_start_format('MOS', MOS_COLOR, this.trace_cycles, ' ', PCO);
+		let outstr = trace_start_format('MOS', MOS_COLOR, this.clock.trace_cycles, ' ', PCO);
 		// General trace format is...
 		outstr += da_out.disassembled;
 		let sp = da_out.disassembled.length;

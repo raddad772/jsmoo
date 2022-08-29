@@ -26,7 +26,7 @@ class NES_clock {
         this.cpu_master_clock = 0;
         this.sound_master_clock = 0;
         this.ppu_master_clock = 0;
-
+        this.trace_cycles = 0;
         this.ppu = null;
 
         // Does the PPU have a frame ready?
@@ -45,7 +45,7 @@ class NES_clock {
             post_render_ppu_idle: 240,
             hblank_start: 280,
             vblank_start: 241,
-            vblank_end: 261,
+            vblank_end: 260,
             ppu_pre_render: 261,
             pixels_per_scanline: 280 // 277 for PAL
         };

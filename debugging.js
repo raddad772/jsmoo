@@ -320,6 +320,7 @@ class debugger_t {
     }
 
     break(whodidit, why=false) {
+        return;
         // CASUE BREAK
         console.log('DOING BREAK');
         this.state = DBG_STATES.PAUSE;
@@ -342,6 +343,9 @@ class debugger_t {
         //snes.clock.apu_deficit -= overflow;
         //snes.clock.ppu_deficit -= overflow;
         if (DOSNES) console.log('AFTER BREAK deficits', snes.clock.cpu_deficit, snes.clock.apu_deficit, snes.clock.ppu_deficit)
+        if (this.tracing) {
+            this.traces.draw(dconsole);
+        }
     }
 
     init_done() {
