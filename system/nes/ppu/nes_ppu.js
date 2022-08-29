@@ -438,7 +438,7 @@ class NES_ppu {
                 if (!this.secondary_OAM_lock) this.secondary_OAM[this.secondary_OAM_index] = this.OAM_transfer_latch;
                 if (!this.secondary_OAM_lock) {
                     if ((eval_y >= this.OAM_transfer_latch) && (eval_y < (this.OAM_transfer_latch + this.status.sprite_height))) {
-                        if (this.secondary_OAM_index === 0) this.sprite0_on_next_line = true;
+                        if (this.OAM_eval_index === 0) this.sprite0_on_next_line = true;
                         this.secondary_OAM[this.secondary_OAM_index + 1] = this.OAM[this.OAM_eval_index + 1];
                         this.secondary_OAM[this.secondary_OAM_index + 2] = this.OAM[this.OAM_eval_index + 2];
                         this.secondary_OAM[this.secondary_OAM_index + 3] = this.OAM[this.OAM_eval_index + 3];
@@ -467,7 +467,7 @@ class NES_ppu {
             while(n < 64) {
                 let e = this.OAM[(n * 4) + m];
                 // If value is in range....
-                if ((eval_y >= e) && (eval_y <= (e + this.status.sprite_height))) {
+                if ((eval_y >= e) && (eval_y < (e + this.status.sprite_height))) {
                     // Set overflow flag if needed
                     f++;
                     if (f > 8) {
@@ -511,6 +511,9 @@ class NES_ppu {
                     let tn = this.sprite_pattern_shifters[this.secondary_OAM_sprite_index];
                     let sy = this.sprite_y_lines[this.secondary_OAM_sprite_index];
                     let table = this.io.sprite_pattern_table;
+                    let attr = this.sprite_attribute_latches[this.secondary_OAM_sprite_index];
+                    // Vertical flip....
+                    if (attr & 0x80) sy = (this.status.sprite_height - 1) - sy;
                     if (this.status.sprite_height === 16) {
                         table = (tn & 80) ? 1 : 0;
                         tn &= 0x7F;
@@ -664,7 +667,8 @@ class NES_ppu {
         let bg_shift = (((sx & 7) + this.io.x) & 15) * 2;
         let bg_color = (this.bg_shifter >>> bg_shift) & 3;
         let bg_has_color = bg_color !== 0;
-        if (bg_color !== 0) {
+        let sprite_has_color = false;
+        if (bg_has_color) {
             let agb = this.bg_palette_shifter;
             if (this.io.x + (sx & 0x07) < 8) agb >>>= 2;
             bg_color = this.CGRAM[bg_color | ((agb & 3) << 2)];
