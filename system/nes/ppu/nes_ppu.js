@@ -142,6 +142,8 @@ class NES_ppu {
         this.bg_fetches = new Uint8Array(4); // Memory fetch buffer
         this.bg_shifter = 0;                       // Holds 32 bits (2 tiles) of 2bpp 8-wide background tiles
         this.bg_attribute = 0;                     // Holds current background attribute
+        this.bg_tile_fetch_addr = 0;               // Holds BG tile addr to fetch
+        this.bg_tile_fetch_buffer = 0 >>> 0;       // Holds tile data to put into fetches 2 & 3
         this.palette_shifters = new Uint8Array(2);
         this.sprite_pattern_shifters = new Uint16Array(8); // Keeps pattern data for sprites
         this.sprite_attribute_latches = new Uint8Array(8); // Keeps sprite attribute bytes
@@ -374,6 +376,33 @@ class NES_ppu {
         return output;
     }
 
+
+    fetch_chr_addr(table, tile, line) {
+        return (0x1000 * table) + (tile * 16) + line;
+    }
+
+    fetch_chr_line_low(addr) {
+        let low = this.bus.PPU_read(addr, 0);
+        let output = 0;
+        for (let i = 0; i < 8; i++) {
+            output <<= 2;
+            output |= (low & 1);
+            low >>>= 1;
+        }
+        return output;
+    }
+
+    fetch_chr_line_high(addr, o) {
+        let high = this.bus.PPU_read(addr + 8, 0);
+        let output = 0;
+        for (let i = 0; i < 8; i++) {
+            output <<= 2;
+            output |= ((high & 1) << 1);
+            high >>>= 1;
+        }
+        return output | o;
+    }
+
     fetch_chr_line16(table, tile, line) {
         let r = (0x1000 * table) + (tile * 16) + line;
         let low = this.bus.PPU_read(r, 0);
@@ -429,7 +458,7 @@ class NES_ppu {
             return;
         }
 
-        if (this.line_cycle === 257) {
+        if ((this.line_cycle === 257) && (!this.io.sprite_overflow)) { // Once set, it is set for whole frame, so don't bother with this
             this.secondary_OAM_index = 0;
             this.secondary_OAM_sprite_index = 0;
             // Perform weird sprite overflow glitch
@@ -568,6 +597,44 @@ class NES_ppu {
         }
     }
 
+    perform_bg_fetches() { // Only called from prerender and visible scanlines
+        let in_tile_y = (this.io.v >>> 12) & 7; // Y position inside tile
+
+        if (((this.line_cycle > 0) && (this.line_cycle <= 257)) || (this.line_cycle > 320)) {
+            // Do memory accesses and shifters
+            switch (this.line_cycle & 7) {
+                case 1: // nametable, tile #
+                    this.bg_fetches[0] = this.bus.PPU_read(0x2000 | (this.io.v & 0x7FF));
+                    this.bg_tile_fetch_addr = this.fetch_chr_addr(this.io.bg_pattern_table, this.bg_fetches[0], in_tile_y);
+                    this.bg_tile_fetch_buffer = 0;
+                    if (this.line_cycle !== 1) { // reload shifter at interval #9 9....257
+                        this.bg_shifter = (this.bg_shifter >>> 16) | (this.bg_fetches[2] << 16) | (this.bg_fetches[3] << 24);
+                        let shift = ((this.io.v >>> 4) & 0x04) | (this.io.v & 0x02);
+                        this.bg_attribute = ((this.bg_fetches[1] >>> shift) & 3) << 2; //(this.bg_attribute >>> 8) | (this.bg_fetches[1] << 8);
+                    }
+                    break;
+                case 3: // attribute table
+                    let attrib_addr = 0x23C0 | (this.io.v & 0x0C00) | ((this.io.v >>> 4) & 0x38) | ((this.io.v >>> 2) & 7);
+                    this.bg_fetches[1] = this.bus.PPU_read(attrib_addr, 0);
+                    break;
+                case 5: // low buffer
+                    //let r = this.fetch_chr_line(this.io.bg_pattern_table, this.bg_fetches[0], in_tile_y);
+                    /*let addr = this.fetch_chr_addr(this.io.bg_pattern_table, this.bg_fetches[0], in_tile_y);
+                    let r = this.fetch_chr_line_low(addr);
+                    r = this.fetch_chr_line_high(addr, r);
+                    this.bg_fetches[2] = r & 0xFF;
+                    this.bg_fetches[3] = (r >>> 8);*/
+                    this.bg_tile_fetch_buffer = this.fetch_chr_line_low(this.bg_tile_fetch_addr);
+                    break;
+                case 7: // high buffer
+                    this.bg_tile_fetch_buffer = this.fetch_chr_line_high(this.bg_tile_fetch_addr, this.bg_tile_fetch_buffer);
+                    this.bg_fetches[2] = this.bg_tile_fetch_buffer & 0xFF;
+                    this.bg_fetches[3] = (this.bg_tile_fetch_buffer >>> 8);
+                    break;
+            }
+        }
+    }
+
     scanline_visible() {
         if (!this.rendering_enabled()) {
             if (this.line_cycle === 340) {
@@ -579,9 +646,8 @@ class NES_ppu {
        }
         if (this.line_cycle === 0) {
             return;
-        } // DO NOTHING here, idle for cycle 0
-        if ((this.line_cycle === 1) && (this.clock.ppu_y === 32)) {
-            //console.log('CAPPING IT!', this.io.x, hex4(this.io.t));
+        }
+        if ((this.line_cycle === 1) && (this.clock.ppu_y === 32)) { // Capture scroll info for display
             this.dbg.v = this.io.v;
             this.dbg.t = this.io.t;
             this.dbg.x = this.io.x;
@@ -590,11 +656,6 @@ class NES_ppu {
         let sx = this.line_cycle-1;
         let sy = this.clock.ppu_y;
         let bo = (sy * 256) + sx;
-        if (this.clock.fblank) {
-            this.output[bo] = 0;
-            return;
-        }
-
         if (this.line_cycle === 340) {
             this.new_scanline();
             // Quit out if we've stumbled past the last rendered line
@@ -603,35 +664,7 @@ class NES_ppu {
 
         this.cycle_scanline_addr();
         this.oam_evaluate_slow();
-
-        //let tile_y = (sy & 7);
-        let in_tile_y = (this.io.v >>> 12) & 7; // Y position inside tile
-
-        let odd = (this.line_cycle & 1);
-
-        // Do memory accesses and shifters
-        switch(this.line_cycle & 7) {
-            case 0: // nametable, tile #
-                this.bg_fetches[0] = this.bus.PPU_read(0x2000 | (this.io.v & 0x7FF));
-                break;
-            case 1: // reload shifter at multiple of 9
-                //this.bg_shifter = (this.bg_shifter & 0xFFFF) | (this.bg_fetches[2] << 16) | (this.bg_fetches[3] << 24);
-                this.bg_shifter = (this.bg_shifter >>> 16) | (this.bg_fetches[2] << 16) | (this.bg_fetches[3] << 24);
-                let shift = ((this.io.v >>> 4) & 0x04) | (this.io.v & 0x02);
-                this.bg_attribute = ((this.bg_fetches[1] >>> shift) & 3) << 2; //(this.bg_attribute >>> 8) | (this.bg_fetches[1] << 8);
-                break;
-            case 2: // attribute table
-                let attrib_addr = 0x23C0 | (this.io.v & 0x0C00) | ((this.io.v >>> 4) & 0x38) | ((this.io.v >>> 2) & 7);
-                this.bg_fetches[1] = this.bus.PPU_read(attrib_addr, 0);
-                break;
-            case 4: // low buffer
-                let r = this.fetch_chr_line(this.io.bg_pattern_table, this.bg_fetches[0], in_tile_y);
-                this.bg_fetches[2] = r & 0xFF;
-                this.bg_fetches[3] = (r >>> 8);
-                break;
-            //case 6: // high buffer, already got it last time though
-            //    break;
-        }
+        this.perform_bg_fetches();
 
         // Shift out some bits for backgrounds
         let bg_shift = (((sx & 7) + this.io.x) & 15) * 2;
