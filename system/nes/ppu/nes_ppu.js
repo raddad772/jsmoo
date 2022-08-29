@@ -180,6 +180,13 @@ class NES_ppu {
             OAM_addr: 0
         }
 
+        this.dbg = {
+            v: 0,
+            t: 0,
+            x: 0,
+            w: 0
+        }
+
         this.status = {
             sprite_height: 8, // 8 or 16
             VRAM_addr: 0,
@@ -301,7 +308,7 @@ class NES_ppu {
                 } else {
                     this.io.t = (this.io.t & 0xFF00) | val;
                     this.io.v = this.io.t;
-                    console.log('SET V', hex4(this.io.v), this.clock.trace_cycles);
+                    //console.log('SET V', hex4(this.io.v), this.clock.trace_cycles);
                     if (this.io.v === 0x18DE) {// || this.io.v === 0x2654) {
                         dbg.break(D_RESOURCE_TYPES.M6502);
                         console.log(this.clock.master_frame, this.clock.ppu_y, this.line_cycle);
@@ -534,8 +541,10 @@ class NES_ppu {
         if (!this.rendering()) return;
         if ((this.line_cycle !== 0) && ((this.line_cycle & 7) === 0) && ((this.line_cycle >= 328) || (this.line_cycle < 256))) {
             // INCREMENT HORIZONTAL SCROLL IN v
-            if ((this.io.v & 0x1F) === 0x1F)
+            if ((this.io.v & 0x1F) === 0x1F) {
+                if ((dbg.watch_on) && (this.clock.ppu_y === 40)) console.log('SWAP NAMETABLE!');
                 this.io.v = (this.io.v & 0xFFE0) ^ 0x0400;
+            }
             else
                 this.io.v++;
             return;
@@ -566,7 +575,7 @@ class NES_ppu {
             return;
         }
         if (this.line_cycle === 257) {
-            this.io.v = (this.io.v & 0x7BE0) | (this.io.t & 0x20F);
+            this.io.v = (this.io.v & 0xFBE0) | (this.io.t & 0x41F);
         }
     }
 
@@ -600,7 +609,13 @@ class NES_ppu {
         if (this.line_cycle === 0) {
             return;
         } // DO NOTHING here, idle for cycle 0
-        if (this.line_cycle === 1) if (dbg.watch_on) console.log(this.clock.ppu_y, this.sprite_x_counters);
+        if ((this.line_cycle === 1) && (this.clock.ppu_y === 32)) {
+            //console.log('CAPPING IT!', this.io.x, hex4(this.io.t));
+            this.dbg.v = this.io.v;
+            this.dbg.t = this.io.t;
+            this.dbg.x = this.io.x;
+            this.dbg.w = this.io.w;
+        }
         let sx = this.line_cycle-1;
         let sy = this.clock.ppu_y;
         let bo = (sy * 256) + sx;
@@ -648,10 +663,9 @@ class NES_ppu {
         // Shift out some bits for backgrounds
         //let b_to_get = (sx & 7) * 2;
         let bg_shift = ((sx & 7) + this.io.x) & 15;
-        let bg_color_low_bits = (this.bg_shifter >>> (bg_shift * 2)) & 3;
         //let bg_color_low_bits = this.bg_shifter & 3;
         //this.bg_shifter >>>= 2;
-        let bg_color = bg_color_low_bits;
+        let bg_color = (this.bg_shifter >>> (bg_shift * 2)) & 3;
         let bg_has_color = bg_color !== 0;
         if (bg_color !== 0) {
             let bga = this.bg_attribute;
@@ -748,6 +762,79 @@ class NES_ppu {
             this.line_cycle++;
         }
         return howmany;
+    }
+
+    render_bgtables_from_memory(y_origin, x_origin, show_scroll_border=false) {
+        let ctx = this.canvas.getContext('2d');
+        let pattern_base = this.io.bg_pattern_table * 0x1000;
+        let imgdata = ctx.getImageData(x_origin, y_origin, 512, 480);
+        let nametable_bases = [0x2000, 0x2400, 0x2800, 0x2C00];
+        let attribute_bases = [0x23C0, 0x27C0, 0x2BC0, 0x2FC0];
+        for (let screen_y = 0; screen_y < 480; screen_y++) {
+            let nty = (screen_y > 239) ? screen_y - 240 : screen_y;
+            for (let screen_x = 0; screen_x < 512; screen_x++) {
+                let ntx = (screen_x > 255) ? screen_x - 256 : screen_x;
+                let nametable = ((screen_y > 239) ? 2 : 0) + ((screen_x > 255) ? 1 : 0);
+                let nametable_base = nametable_bases[nametable];
+                let attribute_base = attribute_bases[nametable];
+                let in_tile_x = screen_x & 7;
+                let in_tile_y = screen_y & 7;
+                let tile_x = ntx >>> 3;
+                let tile_y = nty >>> 3;
+                let ta = nametable_base + ((tile_y * 32) + tile_x);
+                let tile_num = this.bus.PPU_read(ta, 0, false);
+                let aa = attribute_base + ((tile_y >>> 2) * 8) + (tile_x >>> 2);
+                let attrib = this.bus.PPU_read(aa, 0, false);
+                let atx = (tile_x >>> 1) & 1;
+                let aty = (tile_y >>> 1) & 1;
+                // bottomright (1,1) << 6 | bottomleft << 4 (0,1) | topright << 2 (1,0) | topleft (0,0)
+                let ashift = (atx + (aty * 2)) * 2;
+
+                let attrib_color = ((attrib >>> ashift) & 3) << 2;
+                let tile_addr = pattern_base + ((tile_num * 16) + in_tile_y);
+                let tile_lo = this.bus.PPU_read(tile_addr, 0, false);
+                let tile_hi = this.bus.PPU_read(tile_addr+8, 0, false);
+                let mask = 0x80 >>> in_tile_x;
+                tile_lo = ((tile_lo & mask) === 0) ? 0 : 1;
+                tile_hi = ((tile_hi & mask) === 0) ? 0 : 2;
+                let tile_color = tile_lo | tile_hi;
+                if (tile_color === 0) {
+                    tile_color = this.CGRAM[0];
+                }
+                else {
+                    tile_color |= attrib_color;
+                    tile_color = this.CGRAM[tile_color];
+                }
+
+                let bo = ((screen_y * 512) + screen_x) * 4;
+                imgdata.data[bo] = NES_palette[tile_color][0];
+                imgdata.data[bo+1] = NES_palette[tile_color][1];
+                imgdata.data[bo+2] = NES_palette[tile_color][2];
+                imgdata.data[bo+3] = 255;
+            }
+        }
+
+        if (show_scroll_border) {
+            let ADJUST = 0x10;
+            let coarse_y = (this.dbg.v & 0x3E0) >>> 2;
+            let fine_y = (this.dbg.v & 0x7000) >>> 12;
+            let yscroll = (coarse_y | fine_y) - 32;
+            let coarse_x = (this.dbg.t & 0x1F) << 3;
+            let xscroll = coarse_x | this.dbg.x;
+            xscroll += (this.dbg.t & 0x400) ? 256 : 0;
+            yscroll += (this.dbg.t & 0x800) ? 240 : 0;
+            for (let screen_y = yscroll; screen_y < (yscroll + 240); screen_y++) {
+                for (let screen_x = xscroll; screen_x < (xscroll + 256); screen_x++) {
+                    let sx = screen_x % 512;
+                    let sy = screen_y % 480;
+                    let bo = ((sy * 512) + sx) * 4;
+
+                    imgdata.data[bo+3] = 192;
+                }
+            }
+
+        }
+        ctx.putImageData(imgdata, x_origin, y_origin);
     }
 
 	render_sprites_from_memory(y_origin, x_origin, builtin_color) {
