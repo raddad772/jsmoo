@@ -183,6 +183,9 @@ class NES_ppu {
             sprite_height: 8, // 8 or 16
             nmi_out: 0,     // Whether or not we're generating an NMI
         }
+        this.latch = {
+            VRAM_read: 0, // VRAM read buffer
+        }
     }
 
     present(buf=null) {
@@ -342,11 +345,12 @@ class NES_ppu {
                 if (this.rendering_enabled() && ((this.clock.ppu_y < this.clock.timing.vblank_start) || (this.clock.ppu_y > this.clock.timing.vblank_end))) {
                     return 0;
                 }
-
-                if ((this.io.v & 0x3FFF) < 0x3F00) {
-                    output = this.bus.PPU_read(this.io.v & 0x3FFF);
-                } else {
+                if ((this.io.v & 0x3FF) >= 0x3F00) {
                     output = this.read_cgram(addr);
+                }
+                else {
+                    output = this.latch.VRAM_read;
+                    this.latch.VRAM_read = this.bus.PPU_read(this.io.v & 0x3FFF);
                 }
                 this.io.v = (this.io.v + this.io.vram_increment) & 0x7FFF;
                 break;
@@ -668,9 +672,9 @@ class NES_ppu {
         // Shift out some bits for backgrounds
         let bg_shift = (((sx & 7) + this.io.x) & 15) * 2;
         let bg_color = (this.bg_shifter >>> bg_shift) & 3;
-        let bg_has_color = bg_color !== 0;
-        let sprite_has_color = false;
-        if (bg_has_color) {
+        let bg_has_pixel = bg_color !== 0;
+        let sprite_has_pixel = false;
+        if (bg_has_pixel) {
             let agb = this.bg_palette_shifter;
             if (this.io.x + (sx & 0x07) < 8) agb >>>= 2;
             bg_color = this.CGRAM[bg_color | ((agb & 3) << 2)];
@@ -693,10 +697,11 @@ class NES_ppu {
                     this.sprite_pattern_shifters[m] >>>= 2;
                 }
                 if (my_color !== 0) {
+                    sprite_has_pixel = true;
                     my_color |= (this.sprite_attribute_latches[m] & 3) << 2;
                     sprite_priority = (this.sprite_attribute_latches[m] & 0x20) >>> 5;
                     sprite_color = this.CGRAM[0x10 + my_color];
-                    if ((!this.io.sprite0_hit) && (this.sprite0_on_this_line) && (m === 0) && bg_has_color) {
+                    if ((!this.io.sprite0_hit) && (this.sprite0_on_this_line) && (m === 0) && bg_has_pixel) {
                         this.io.sprite0_hit = 1;
                     }
                 }
@@ -706,7 +711,7 @@ class NES_ppu {
         // Decide background or sprite
         let out_color = bg_color;
         if (sprite_color !== 0) {
-            if (!bg_has_color) {
+            if (!bg_has_pixel) {
                 out_color = sprite_color;
             }
             else {
