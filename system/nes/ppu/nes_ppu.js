@@ -541,9 +541,8 @@ class NES_ppu {
         if (!this.rendering()) return;
         if ((this.line_cycle !== 0) && ((this.line_cycle & 7) === 0) && ((this.line_cycle >= 328) || (this.line_cycle < 256))) {
             // INCREMENT HORIZONTAL SCROLL IN v
-            if ((this.io.v & 0x1F) === 0x1F) {
-                if ((dbg.watch_on) && (this.clock.ppu_y === 40)) console.log('SWAP NAMETABLE!');
-                this.io.v = (this.io.v & 0xFFE0) ^ 0x0400;
+            if ((this.io.v & 0x1F) === 0x1F) { // If X scroll is 31...
+                this.io.v = (this.io.v & 0xFFE0) ^ 0x0400; // clear x scroll to 0 and swap nametable
             }
             else
                 this.io.v++;
@@ -551,26 +550,21 @@ class NES_ppu {
         }
         if (this.line_cycle === 256) {
             //if (dbg.watch_on) console.log('Adding to vertical scroll...');
-            if ((this.io.v & 0x7000) !== 0x7000) {
-                //if (dbg.watch_on) console.log('ADDING 0x1000', hex4(this.io.v));
-                this.io.v += 0x1000;
-                //if (dbg.watch_on) console.log('NEW V', hex4(this.io.v));
+            if ((this.io.v & 0x7000) !== 0x7000) { // if fine y !== 7
+                this.io.v += 0x1000; // add 1 to fine y
             }
-            else {
-                this.io.v &= 0x8FFF;
-                let y = (this.io.v & 0x03E0) >>> 5;
-                //if (dbg.watch_on) console.log('OLD Y', y, hex4(this.io.v));
-                if (y === 29) {
+            else { // else it is overflow so
+                this.io.v &= 0x8FFF; // clear fine y
+                let y = (this.io.v & 0x03E0) >>> 5; // get coarse y
+                if (y === 29) { // y overflows 30->0
                     y = 0;
-                    this.io.v ^= 0x0800
-                } else if (y === 31) {
+                    this.io.v ^= 0x0800; // Change vertical nametable
+                } else if (y === 31) { // y also overflows at 31
                     y = 0;
                 }
-                else {
+                else // just add 1
                     y += 1;
-                }
-                this.io.v = (this.io.v & 0xFC1F) | (y << 5);
-                //if (dbg.watch_on) console.log('NEW Y', y, hex4(this.clock.ppu_y));
+                this.io.v = (this.io.v & 0xFC1F) | (y << 5); // VERIFIED
             }
             return;
         }
