@@ -554,6 +554,7 @@ class NES_ppu {
                 this.io.v++;  // just increment the X scroll
             return;
         }
+        // INCREMENT VERTICAL SCROLL IN v
         if (this.line_cycle === 256) {
             if ((this.io.v & 0x7000) !== 0x7000) { // if fine y !== 7
                 this.io.v += 0x1000;               // add 1 to fine y
@@ -573,7 +574,7 @@ class NES_ppu {
             }
             return;
         }
-        // Cycles 257...320, copy parts of T to V
+        // Cycles 257...320, copy parts of T to V over and over...
         if ((this.line_cycle >= 257) && (this.line_cycle <= 320)) {
             this.io.v = (this.io.v & 0xFBE0) | (this.io.t & 0x41F);
         }
@@ -582,6 +583,7 @@ class NES_ppu {
     // Get tile info into shifters using screen X, Y coordinates
     scanline_prerender() {
         // 261
+        if ((this.clock.frame_odd) && (this.line_cycle === 0)) this.line_cycle++;
         if (this.line_cycle === 1) {
             this.io.sprite0_hit = 0;
             this.io.sprite_overflow = 0;
@@ -594,7 +596,7 @@ class NES_ppu {
             }
             this.oam_evaluate_slow();
         }
-        if (((this.clock.frame_odd) && (this.line_cycle === 339)) || (this.line_cycle === 340)) {
+        if (this.line_cycle === 340) {
             this.new_scanline();
         }
     }
