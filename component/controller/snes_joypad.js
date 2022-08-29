@@ -4,7 +4,7 @@
 Joypad register emulation classes and functions.
  */
 
-const J1_MAP_KEY_TO_BUTTON = Object.freeze({
+const SNES_J1_MAP_KEY_TO_BUTTON = Object.freeze({
     'up': 'up',
     'left': 'left',
     'right': 'right',
@@ -19,7 +19,7 @@ const J1_MAP_KEY_TO_BUTTON = Object.freeze({
     'r': 'w'
 });
 
-const EMPTY_MAP_KEY_TO_BUTTON = {
+const SNES_EMPTY_MAP_KEY_TO_BUTTON = {
     'up': null,
     'left': null,
     'right': null,
@@ -39,8 +39,8 @@ class SNES_joypad {
         this.counter = 0;
         this.latched = 0;
         this.joynum = joynum;
-        if (this.joynum === 1) this.joymap = J1_MAP_KEY_TO_BUTTON;
-        else this.joymap = EMPTY_MAP_KEY_TO_BUTTON;
+        if (this.joynum === 1) this.joymap = SNES_J1_MAP_KEY_TO_BUTTON;
+        else this.joymap = SNES_EMPTY_MAP_KEY_TO_BUTTON;
 
         this.input_buffer = {
             'a': 0,
@@ -71,7 +71,6 @@ class SNES_joypad {
         this.counter = 0;
         if (this.latched === 0) {
             this.fill_input_buffer();
-            //if (this.joynum === 1) console.log(this.input_buffer['start']);//this.pprint();
 
             // if U/D not held down, update
             if (!(this.input_buffer['up'] & this.input_buffer['down'])) {
@@ -170,5 +169,6 @@ class SNES_joypad {
             if (key === null) { this.input_buffer[button] = 0; continue; }
             this.input_buffer[button] = +keyboard_input.keys[key];
         }
+        //this.pprint();
     }
 }

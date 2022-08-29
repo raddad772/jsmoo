@@ -688,7 +688,7 @@ class NES_ppu {
         for (let m = 0; m < 8; m++) {
             if ((this.sprite_x_counters[m] >= -7) && (this.sprite_x_counters[m] <= 0)) {
                 let s_x_flip = (this.sprite_attribute_latches[m] & 0x40) >>> 6;
-                let my_color;
+                let my_color = 0;
                 if (s_x_flip) {
                     my_color = (this.sprite_pattern_shifters[m] & 0xC000) >>> 14;
                     this.sprite_pattern_shifters[m] <<= 2;
@@ -701,7 +701,7 @@ class NES_ppu {
                     my_color |= (this.sprite_attribute_latches[m] & 3) << 2;
                     sprite_priority = (this.sprite_attribute_latches[m] & 0x20) >>> 5;
                     sprite_color = this.CGRAM[0x10 + my_color];
-                    if ((!this.io.sprite0_hit) && (this.sprite0_on_this_line) && (m === 0) && bg_has_pixel) {
+                    if ((!this.io.sprite0_hit) && (this.sprite0_on_this_line) && (m === 0) && bg_has_pixel && (this.line_cycle < 256)) {
                         this.io.sprite0_hit = 1;
                     }
                 }

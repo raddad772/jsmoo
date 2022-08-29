@@ -2,11 +2,28 @@
 /*
   Ricoh 2A03, i.e., the CPU at the heart of the NES.
   It includes:
-    * custom M6502 processor with BCD removed
-    * Some DMA capabilities
+    * custom M6502 processor with BCD removed (DONE!)
+    * Some sprite DMA capabilities (DONE!)
     * Sound output
-    * Some memory-mapped registers
+    * Some memory-mapped registers (SOME DONE! SOME NOT!)
  */
+
+class NES_controllerport {
+	constructor() {
+		this.device = null;
+		this.mdata = 0;
+	}
+
+	data() {
+		if (this.device) return this.device.data() & 3;
+		return 0;
+	}
+
+	latch(what) {
+		if (this.device) return this.device.latch(what);
+	}
+}
+
 
 class ricoh2A03 {
     /**
@@ -36,6 +53,14 @@ class ricoh2A03 {
                 step: 0
             }
         }
+        this.controller_port1 = new NES_controllerport();
+        this.controller_port2 = new NES_controllerport();
+
+		this.joypad1 = new SNES_joypad(1);
+		this.joypad2 = new SNES_joypad(2);
+		this.controller_port1.device = this.joypad1;
+		this.controller_port2.device = this.joypad2;
+
     }
 
     enable_tracing() {
@@ -102,9 +127,13 @@ class ricoh2A03 {
     reg_read(addr, val, has_effect=true) {
         switch(addr) {
             case 0x4016: // JOYSER0
-                return 0;
+                let r = this.controller_port1.data();
+                //console.log(r);
+                return r;
             case 0x4017: // JOYSER1
+                //let rr = this.controller_port2.data();
                 return 0;
+                //return rr;
         }
         return val;
     }
@@ -112,12 +141,14 @@ class ricoh2A03 {
     reg_write(addr, val) {
         switch(addr) {
             case 0x4014: //OAMDMA
-                // TODO: make this better
                 this.io.dma.addr = val << 8;
                 this.io.dma.running = 1;
                 this.io.dma.bytes_left = 256;
                 this.io.dma.step = 0;
                 return;
-        }
+            case 0x4016: // JOYSER0
+                this.controller_port1.latch(val&1);
+                break;
+       }
     }
 }
