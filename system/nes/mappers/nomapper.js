@@ -38,6 +38,7 @@ class NES_mapper_none {
     ppu_write(addr, val) {
         if (addr < 0x2000) {
             console.log('CANT WRITE CHR!', hex4(addr));
+            dbg.break(D_RESOURCE_TYPES.M6502);
             return;
         } // can't write ROM
         //console.log('PPU WRITE', hex4(addr), hex2(val));
@@ -54,6 +55,9 @@ class NES_mapper_none {
     }
 
     cpu_write(addr, val) {
+        /*if ((addr === 0) && (val === 0x29)) {
+            dbg.break(D_RESOURCE_TYPES.M6502);
+        }*/
         if (addr < 0x2000) {
             addr &= 0x7FF;
             /*if ((addr >= 0x100) && (addr < 0x1A0)) {

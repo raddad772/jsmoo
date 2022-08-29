@@ -1102,6 +1102,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
         function(regs, pins) { //RTI
             switch(regs.TCU) {
                 case 1: // spurious read
+                    if (dbg.brk_on_NMIRQ) dbg.break(D_RESOURCE_TYPES.M6502);
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;

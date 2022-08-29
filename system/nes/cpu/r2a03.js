@@ -86,14 +86,14 @@ class ricoh2A03 {
         if (!this.cpu.pins.RW) {
             this.cpu.pins.D = this.bus.CPU_read(this.cpu.pins.Addr, this.cpu.pins.D);
             if (this.tracing) {
-                dbg.traces.add(TRACERS.M6502, this.cpu.trace_cycles, trace_format_read('MOS', MOS_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
+                dbg.traces.add(TRACERS.M6502, this.clock.trace_cycles, trace_format_read('MOS', MOS_COLOR, this.clock.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
             }
         }
         this.cpu.cycle();
         if (this.cpu.pins.RW) {
             this.bus.CPU_write(this.cpu.pins.Addr, this.cpu.pins.D);
             if (this.tracing) {
-                dbg.traces.add(TRACERS.M6502, this.cpu.trace_cycles, trace_format_write('MOS', MOS_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
+                dbg.traces.add(TRACERS.M6502, this.clock.trace_cycles, trace_format_write('MOS', MOS_COLOR, this.clock.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
 
             }
         }
