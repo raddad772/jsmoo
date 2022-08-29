@@ -607,7 +607,7 @@ class NES_ppu {
         this.oam_evaluate_slow();
 
         //let tile_y = (sy & 7);
-        let tile_y = (this.io.v >>> 12) & 7;
+        let in_tile_y = (this.io.v >>> 12) & 7; // Y position inside tile
 
         let odd = (this.line_cycle & 1);
 
@@ -619,13 +619,14 @@ class NES_ppu {
             case 1: // reload shifter
                 //this.bg_shifter = (this.bg_shifter & 0xFFFF) | (this.bg_fetches[2] << 16) | (this.bg_fetches[3] << 24);
                 this.bg_shifter = (this.bg_shifter >>> 16) | (this.bg_fetches[2] << 16) | (this.bg_fetches[3] << 24);
-                this.bg_attribute = this.bg_fetches[1];
+                this.bg_attribute = (this.bg_attribute >>> 8) | (this.bg_fetches[1] << 8);
                 break;
             case 2: // attribute table
-                this.bg_fetches[1] = this.bus.PPU_read((0x23C0 | (this.io.v & 0x0C00)) | ((this.io.v >>> 4) & 0x38) | ((this.io.v >>> 2) & 7));
+                let attrib_addr = 0x23C0 | (this.io.v & 0x0C00) | ((this.io.v >>> 4) & 0x38) | ((this.io.v >>> 2) & 7);
+                this.bg_fetches[1] = this.bus.PPU_read(attrib_addr, 0);
                 break;
             case 4: // low buffer
-                let r = this.fetch_chr_line(this.io.bg_pattern_table, this.bg_fetches[0], tile_y);
+                let r = this.fetch_chr_line(this.io.bg_pattern_table, this.bg_fetches[0], in_tile_y);
                 this.bg_fetches[2] = r & 0xFF;
                 this.bg_fetches[3] = (r >>> 8);
                 break;
@@ -634,16 +635,20 @@ class NES_ppu {
         }
 
         // Shift out some bits for backgrounds
-        //let b_to_get = (sx & 7) * 2;
-        let bg_shift = ((sx & 7) + this.io.x) & 15;
-        //let bg_color_low_bits = this.bg_shifter & 3;
-        //this.bg_shifter >>>= 2;
-        let bg_color = (this.bg_shifter >>> (bg_shift * 2)) & 3;
+        let bg_shift = (((sx & 7) + this.io.x) & 15) * 2;
+        let bg_color = (this.bg_shifter >>> bg_shift) & 3;
         let bg_has_color = bg_color !== 0;
         if (bg_color !== 0) {
             let bga = this.bg_attribute;
-            if (bg_shift < 8) bga >>= 2;
-            bg_color |= (bga & 3) << 2;
+            if (bg_shift >= 16) bga >>>= 8;
+            // now do Y?
+            let tile_y = (this.io.v & 0x03E0) >> 5;
+            let tile_x = (this.io.v & 0x1F)// + ((bg_shift <= 16) ? 1 : 0);
+            let atx = (tile_x >>> 1) & 1;
+            let aty = (tile_y >>> 1) & 1;
+            let ashift = (atx + (aty * 2)) * 2;
+            let acolor = ((bga >>> ashift) & 3) << 2;
+            bg_color |= acolor;
             bg_color = this.CGRAM[bg_color];
         }
         else bg_color = this.CGRAM[0];
