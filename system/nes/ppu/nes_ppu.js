@@ -607,10 +607,10 @@ class NES_ppu {
                     this.bg_fetches[0] = this.bus.PPU_read(0x2000 | (this.io.v & 0x7FF));
                     this.bg_tile_fetch_addr = this.fetch_chr_addr(this.io.bg_pattern_table, this.bg_fetches[0], in_tile_y);
                     this.bg_tile_fetch_buffer = 0;
+                    // Reload shifters if needed
                     if (this.line_cycle !== 1) { // reload shifter at interval #9 9....257
                         this.bg_shifter = (this.bg_shifter >>> 16) | (this.bg_fetches[2] << 16) | (this.bg_fetches[3] << 24);
-                        let shift = ((this.io.v >>> 4) & 0x04) | (this.io.v & 0x02);
-                        this.bg_attribute = ((this.bg_fetches[1] >>> shift) & 3) << 2; //(this.bg_attribute >>> 8) | (this.bg_fetches[1] << 8);
+                        this.bg_attribute = this.bg_fetches[1]; //(this.bg_attribute >>> 8) | (this.bg_fetches[1] << 8);
                     }
                     break;
                 case 3: // attribute table
@@ -618,12 +618,6 @@ class NES_ppu {
                     this.bg_fetches[1] = this.bus.PPU_read(attrib_addr, 0);
                     break;
                 case 5: // low buffer
-                    //let r = this.fetch_chr_line(this.io.bg_pattern_table, this.bg_fetches[0], in_tile_y);
-                    /*let addr = this.fetch_chr_addr(this.io.bg_pattern_table, this.bg_fetches[0], in_tile_y);
-                    let r = this.fetch_chr_line_low(addr);
-                    r = this.fetch_chr_line_high(addr, r);
-                    this.bg_fetches[2] = r & 0xFF;
-                    this.bg_fetches[3] = (r >>> 8);*/
                     this.bg_tile_fetch_buffer = this.fetch_chr_line_low(this.bg_tile_fetch_addr);
                     break;
                 case 7: // high buffer
@@ -681,8 +675,9 @@ class NES_ppu {
             let ashift = (atx + (aty * 2)) * 2;
             let acolor = ((bga >>> ashift) & 3) << 2;
             bg_color |= acolor;*/
-
-            bg_color = this.CGRAM[bg_color | this.bg_attribute];
+            let shift = ((this.io.v >>> 4) & 0x04) | (this.io.v & 0x02);
+            let attr_shifted = ((this.bg_attribute >>> shift) & 3) << 2;
+            bg_color = this.CGRAM[bg_color | attr_shifted];
         }
         else bg_color = this.CGRAM[0];
 
