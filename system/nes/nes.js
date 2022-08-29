@@ -28,6 +28,7 @@ class NES {
             if (dbg.do_break) break;
         }
         this.ppu.present();
+        this.ppu.render_bgtables_from_memory(0, 260, true);
     }
 
     catch_up() {}

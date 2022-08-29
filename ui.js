@@ -221,23 +221,34 @@ function click_step_clock() {
 
 function click_bg_dump(which) {
 	let bg;
-	switch(which) {
-		case 1:
-			bg = snes.ppu.io.bg1;
+	switch(global_player.system_kind) {
+		case 'snes':
+			switch(which) {
+				case 1:
+					bg = snes.ppu.io.bg1;
+					break;
+				case 2:
+					bg = snes.ppu.io.bg2;
+					break;
+				case 3:
+					bg = snes.ppu.io.bg3;
+					break;
+				case 4:
+					bg = snes.ppu.io.bg4;
+					break;
+			}
+			//snes.ppu.render_bg1_from_memory(0, 260, bg);
+			console.log(hex4(snes.ppu.io.bg3.get_tile(snes.ppu.VRAM, snes.ppu.io, snes.ppu.io.bg3, 10*8, 5*8)))
+			snes.ppu.present();
 			break;
-		case 2:
-			bg = snes.ppu.io.bg2;
+		case 'nes':
+			console.log('DUMP IT!');
+			global_player.system.ppu.render_bgtables_from_memory(0, 260);
 			break;
-		case 3:
-			bg = snes.ppu.io.bg3;
-			break;
-		case 4:
-			bg = snes.ppu.io.bg4;
+		default:
+			console.log('HUH?', global_player.system_kind);
 			break;
 	}
-	//snes.ppu.render_bg1_from_memory(0, 260, bg);
-	console.log(hex4(snes.ppu.io.bg3.get_tile(snes.ppu.VRAM, snes.ppu.io, snes.ppu.io.bg3, 10*8, 5*8)))
-	snes.ppu.present();
 }
 
 function click_sprite_dump() {
