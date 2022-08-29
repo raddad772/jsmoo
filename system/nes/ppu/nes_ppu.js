@@ -415,6 +415,7 @@ class NES_ppu {
         let odd = (this.line_cycle % 2) === 1;
         let even = !odd;
         let eval_y = this.clock.ppu_y + 1;
+        if (eval_y === 262) eval_y = 0;
         if (this.line_cycle <= 64) {
             if (even)
                 this.secondary_OAM[this.line_cycle >>> 1] = 0xFF;
@@ -423,7 +424,6 @@ class NES_ppu {
                 this.secondary_OAM_index = 0;
                 this.OAM_eval_index = 0;
                 this.secondary_OAM_lock = false;
-                this.OAM_eval_sprite_overflow = 0;
                 this.OAM_eval_done = false;
                 this.sprite0_on_next_line = false;
             }
@@ -437,14 +437,14 @@ class NES_ppu {
             else {
                 if (!this.secondary_OAM_lock) this.secondary_OAM[this.secondary_OAM_index] = this.OAM_transfer_latch;
                 if (!this.secondary_OAM_lock) {
-                    if ((eval_y >= this.OAM_transfer_latch) && (eval_y <= (this.OAM_transfer_latch + this.status.sprite_height))) {
+                    if ((eval_y >= this.OAM_transfer_latch) && (eval_y < (this.OAM_transfer_latch + this.status.sprite_height))) {
                         if (this.secondary_OAM_index === 0) this.sprite0_on_next_line = true;
                         this.secondary_OAM[this.secondary_OAM_index + 1] = this.OAM[this.OAM_eval_index + 1];
                         this.secondary_OAM[this.secondary_OAM_index + 2] = this.OAM[this.OAM_eval_index + 2];
                         this.secondary_OAM[this.secondary_OAM_index + 3] = this.OAM[this.OAM_eval_index + 3];
                         this.secondary_OAM_index += 4;
                         this.secondary_OAM_sprite_total++;
-                        this.secondary_OAM_lock = this.OAM_eval_index >= 32;
+                        this.secondary_OAM_lock = this.secondary_OAM_index >= 32;
                     }
                 }
                 this.OAM_eval_index += 4;
@@ -676,7 +676,7 @@ class NES_ppu {
 
         // Check if any sprites need drawing
         for (let m = 0; m < 8; m++) {
-            if ((this.sprite_x_counters[m] >= -8) && (this.sprite_x_counters[m] <= 0)) {
+            if ((this.sprite_x_counters[m] >= -7) && (this.sprite_x_counters[m] <= 0)) {
                 let s_x_flip = (this.sprite_attribute_latches[m] & 0x40) >>> 6;
                 let my_color;
                 if (s_x_flip) {
@@ -758,8 +758,8 @@ class NES_ppu {
 
     cycle(howmany) {
         for (let i = 0; i < howmany; i++) {
-            this.render_cycle();
             this.line_cycle++;
+            this.render_cycle();
         }
         return howmany;
     }

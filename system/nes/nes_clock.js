@@ -45,7 +45,7 @@ class NES_clock {
             post_render_ppu_idle: 240,
             hblank_start: 280,
             vblank_start: 241,
-            vblank_end: 260,
+            vblank_end: 261,
             ppu_pre_render: 261,
             pixels_per_scanline: 280 // 277 for PAL
         };
