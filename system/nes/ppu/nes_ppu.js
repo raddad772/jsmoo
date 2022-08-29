@@ -141,10 +141,9 @@ class NES_ppu {
 
         this.bg_fetches = new Uint8Array(4); // Memory fetch buffer
         this.bg_shifter = 0;                       // Holds 32 bits (2 tiles) of 2bpp 8-wide background tiles
-        this.bg_attribute = 0;                     // Holds current background attribute
+        this.bg_palette_shifter = 0;                     // Holds current background attribute
         this.bg_tile_fetch_addr = 0;               // Holds BG tile addr to fetch
         this.bg_tile_fetch_buffer = 0 >>> 0;       // Holds tile data to put into fetches 2 & 3
-        this.palette_shifters = new Uint8Array(2);
         this.sprite_pattern_shifters = new Uint16Array(8); // Keeps pattern data for sprites
         this.sprite_attribute_latches = new Uint8Array(8); // Keeps sprite attribute bytes
         this.sprite_x_counters = new Int16Array(8); // Counts down to 0, when sprite should display
@@ -610,12 +609,13 @@ class NES_ppu {
                     // Reload shifters if needed
                     if (this.line_cycle !== 1) { // reload shifter at interval #9 9....257
                         this.bg_shifter = (this.bg_shifter >>> 16) | (this.bg_fetches[2] << 16) | (this.bg_fetches[3] << 24);
-                        this.bg_attribute = this.bg_fetches[1]; //(this.bg_attribute >>> 8) | (this.bg_fetches[1] << 8);
+                        this.bg_palette_shifter = ((this.bg_palette_shifter << 2) | this.bg_fetches[1]) & 0x0F; //(this.bg_palette_shifter >>> 8) | (this.bg_fetches[1] << 8);
                     }
                     break;
                 case 3: // attribute table
                     let attrib_addr = 0x23C0 | (this.io.v & 0x0C00) | ((this.io.v >>> 4) & 0x38) | ((this.io.v >>> 2) & 7);
-                    this.bg_fetches[1] = this.bus.PPU_read(attrib_addr, 0);
+                    let shift = ((this.io.v >>> 4) & 0x04) | (this.io.v & 0x02);
+                    this.bg_fetches[1] = (this.bus.PPU_read(attrib_addr, 0) >>> shift) & 3;
                     break;
                 case 5: // low buffer
                     this.bg_tile_fetch_buffer = this.fetch_chr_line_low(this.bg_tile_fetch_addr);
@@ -665,19 +665,9 @@ class NES_ppu {
         let bg_color = (this.bg_shifter >>> bg_shift) & 3;
         let bg_has_color = bg_color !== 0;
         if (bg_color !== 0) {
-            /*let bga = this.bg_attribute; // A...... B...... A byte has current attribute value, B has previous??
-            if (bg_shift >= 16) bga >>>= 8;
-            // now do Y?
-            let tile_y = (this.io.v & 0x03E0) >> 5;
-            let tile_x = (this.io.v & 0x1F)// + ((bg_shift <= 16) ? 1 : 0);
-            let atx = (tile_x >>> 1) & 1;
-            let aty = (tile_y >>> 1) & 1;
-            let ashift = (atx + (aty * 2)) * 2;
-            let acolor = ((bga >>> ashift) & 3) << 2;
-            bg_color |= acolor;*/
-            let shift = ((this.io.v >>> 4) & 0x04) | (this.io.v & 0x02);
-            let attr_shifted = ((this.bg_attribute >>> shift) & 3) << 2;
-            bg_color = this.CGRAM[bg_color | attr_shifted];
+            let agb = this.bg_palette_shifter;
+            if (this.io.x + (sx & 0x07) < 8) agb >>>= 2;
+            bg_color = this.CGRAM[bg_color | ((agb & 3) << 2)];
         }
         else bg_color = this.CGRAM[0];
 
