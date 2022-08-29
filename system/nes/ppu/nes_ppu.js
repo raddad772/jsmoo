@@ -133,43 +133,35 @@ class NES_ppu {
         this.sprite0_on_next_line = false;
         this.sprite0_on_this_line = false;
         this.OAM_eval_sprite_overflow = false;
-        this.OAM_eval_sprite0 = 0;
 
         this.clock.ppu = this;
 
-        this.CGRAM = new Uint8Array(0x20);
+        this.CGRAM = new Uint8Array(0x20);   // 32 byes of "color RAM"
 
         this.output = new Uint8Array(256*240);
 
-        this.bg_fetches = new Uint8Array(4);
-        this.bg_shifter = 0;
-        this.bg_attribute = 0;
+        this.bg_fetches = new Uint8Array(4); // Memory fetch buffer
+        this.bg_shifter = 0;                       // Holds 32 bits (2 tiles) of 2bpp 8-wide background tiles
+        this.bg_attribute = 0;                     // Holds current background attribute
         this.palette_shifters = new Uint8Array(2);
-        this.sprite_pattern_shifters = new Uint16Array(8);
-        this.sprite_attribute_latches = new Uint8Array(8);
-        this.sprite_x_counters = new Int16Array(8);
-        this.sprite_y_lines = new Uint8Array(8);
-
-        this.VRAM_addr = 0;
-        this.temp_VRAM_addr = 0;
-        this.fine_x_scroll = 0;
-        this.write_latch = 0;
+        this.sprite_pattern_shifters = new Uint16Array(8); // Keeps pattern data for sprites
+        this.sprite_attribute_latches = new Uint8Array(8); // Keeps sprite attribute bytes
+        this.sprite_x_counters = new Int16Array(8); // Counts down to 0, when sprite should display
+        this.sprite_y_lines = new Uint8Array(8); // Keeps track of what our Y coord inside the sprite is
 
         this.io = {
             nmi_enable: 0,
             sprite_overflow: 0,
             sprite0_hit: 0,
-            vblank: 0,
             vram_increment: 1,
-            base_nametable: 0,
 
-            sprite_pattern_table: 0,
-            bg_pattern_table: 0,
+            sprite_pattern_table: 0, // Which pattern table sprites use
+            bg_pattern_table: 0,     // Which pattern table backgrounds use
 
-            v: 0,
-            t: 0,
-            x: 0,
-            w: 0,
+            v: 0,    // VRAM access address
+            t: 0,    // Latch value for VRAM access and PPU scroll
+            x: 0,    // Fine X scroll
+            w: 0,    // low/high latch
 
             greyscale: 0,
             bg_hide_left_8: 0,
@@ -180,7 +172,7 @@ class NES_ppu {
             OAM_addr: 0
         }
 
-        this.dbg = {
+        this.dbg = { // Capture same from io to display scroll
             v: 0,
             t: 0,
             x: 0,
@@ -189,20 +181,7 @@ class NES_ppu {
 
         this.status = {
             sprite_height: 8, // 8 or 16
-            VRAM_addr: 0,
-            temp_VRAM_addr: 0,
-            fine_x_scroll: 0,
-            write_latch: 0,
-            nmi_out: 0,
-
-            attribute: 0, // Current attribute block
-        }
-
-        this.latch = {
-            write: 0,
-            y_scroll: 0,
-            vram_data: 0,
-            attribute: 0, // Attribute latch
+            nmi_out: 0,     // Whether or not we're generating an NMI
         }
     }
 
@@ -270,8 +249,6 @@ class NES_ppu {
                 this.status.sprite_height = (val & 0x20) >>> 5 ? 16 : 8;
                 this.io.nmi_enable = (val & 0x80) >>> 7;
                 this.io.vram_increment = (val & 4) ? 32 : 1;
-                this.io.base_nametable = (val & 3);
-                //console.log(this.io.vram_increment, val & 4);
 
                 this.io.t = (this.io.t & 0x73FF) | ((val & 3) << 10);
 
