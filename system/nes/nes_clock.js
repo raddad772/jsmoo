@@ -53,7 +53,6 @@ class NES_clock {
 
         // PPU timing info
         this.ppu_y = 0;
-        this.fblank = 0;
         this.frame_odd = 0; // 0 for odd, 1 for even
     }
 
@@ -68,7 +67,6 @@ class NES_clock {
         this.ppu_frame_ready = false;
         this.vblank = 0;
         this.ppu_y = 0;
-        this.fblank = 0;
         this.frame_odd = 0;
         this.frames_since_restart = 0;
     }
