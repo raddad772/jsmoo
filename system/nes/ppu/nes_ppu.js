@@ -1,6 +1,6 @@
 // TODO:
 //  * sprite/bg priority
-//  * fix rendering
+//  * fix rendering_enabled
 //  * fix attribute selection
 //  * fix other stuff
 //  * add nametable display
@@ -132,7 +132,6 @@ class NES_ppu {
         this.OAM_eval_done = false;
         this.sprite0_on_next_line = false;
         this.sprite0_on_this_line = false;
-        this.OAM_eval_sprite_overflow = false;
 
         this.clock.ppu = this;
 
@@ -236,7 +235,7 @@ class NES_ppu {
         else this.write_cgram(addr & 0x1F, val);
     }
 
-    rendering() {
+    rendering_enabled() {
         return this.io.bg_enable || this.io.sprite_enable;
     }
 
@@ -253,7 +252,6 @@ class NES_ppu {
                 this.io.t = (this.io.t & 0x73FF) | ((val & 3) << 10);
 
                 this.update_nmi();
-                //console.log('2k', this.io.nmi_enable);
                 return;
             case 0x2001: // PPUMASK
                 this.io.greyscale = val & 1;
@@ -290,6 +288,7 @@ class NES_ppu {
                     this.io.v = this.io.t;
                     this.io.w = 0;
                     //console.log('SET V', hex4(this.io.v), this.clock.trace_cycles);
+                    //TODO: Video RAM update is apparently delayed by 3 PPU cycles (based on Visual NES findings)
                     if (this.io.v === 0x18DE) {// || this.io.v === 0x2654) {
                         dbg.break(D_RESOURCE_TYPES.M6502);
                         console.log(this.clock.master_frame, this.clock.ppu_y, this.line_cycle);
@@ -297,7 +296,7 @@ class NES_ppu {
                 }
                 return;
             case 0x2007: // PPUDATA
-                if (this.rendering() && ((this.clock.ppu_y < this.clock.timing.vblank_start) || (this.clock.ppu_y > this.clock.timing.vblank_end))) {
+                if (this.rendering_enabled() && ((this.clock.ppu_y < this.clock.timing.vblank_start) || (this.clock.ppu_y > this.clock.timing.vblank_end))) {
                     console.log('REJECT WRITE', this.clock.ppu_y, this.io.sprite_enable, this.io.bg_enable, hex4(this.io.v), hex2(val));
                     return;
                 }
@@ -339,7 +338,7 @@ class NES_ppu {
                 // reads do not increment counter
                 break;
             case 0x2007:
-                if (this.rendering() && ((this.clock.ppu_y < this.clock.timing.vblank_start) || (this.clock.ppu_y > this.clock.timing.vblank_end))) {
+                if (this.rendering_enabled() && ((this.clock.ppu_y < this.clock.timing.vblank_start) || (this.clock.ppu_y > this.clock.timing.vblank_end))) {
                     return 0;
                 }
 
@@ -389,9 +388,6 @@ class NES_ppu {
         let even = !odd;
         let eval_y = this.clock.ppu_y + 1;
         if (this.line_cycle <= 64) {
-            if (this.line_cycle === 1) {
-                this.io.sprite_overflow = this.OAM_eval_sprite_overflow;
-            }
             if (even)
                 this.secondary_OAM[this.line_cycle >>> 1] = 0xFF;
             if (this.line_cycle === 1) {
@@ -446,8 +442,8 @@ class NES_ppu {
                 if ((eval_y >= e) && (eval_y <= (e + this.status.sprite_height))) {
                     // Set overflow flag if needed
                     f++;
-                    if (f >= 8) {
-                        this.OAM_eval_sprite_overflow = 1;
+                    if (f > 8) {
+                        this.io.sprite_overflow = 1;
                         break;
                     }
                     m = (m + 4) & 0x03;
@@ -517,37 +513,37 @@ class NES_ppu {
                 }
             }
         }
-        if (!this.rendering()) return;
+        if (!this.rendering_enabled()) return;
+        // Cycle # 8, 16,...248, and 328, 336. BUT NOT 0
         if ((this.line_cycle !== 0) && ((this.line_cycle & 7) === 0) && ((this.line_cycle >= 328) || (this.line_cycle < 256))) {
             // INCREMENT HORIZONTAL SCROLL IN v
-            if ((this.io.v & 0x1F) === 0x1F) { // If X scroll is 31...
-                this.io.v = (this.io.v & 0xFFE0) ^ 0x0400; // clear x scroll to 0 and swap nametable
-            }
+            if ((this.io.v & 0x1F) === 0x1F) // If X scroll is 31...
+                this.io.v = (this.io.v & 0xFFE0) ^ 0x0400; // clear x scroll to 0 (& FFE0) and swap nametable (^ 0x400)
             else
-                this.io.v++;
+                this.io.v++;  // just increment the X scroll
             return;
         }
         if (this.line_cycle === 256) {
-            //if (dbg.watch_on) console.log('Adding to vertical scroll...');
             if ((this.io.v & 0x7000) !== 0x7000) { // if fine y !== 7
-                this.io.v += 0x1000; // add 1 to fine y
+                this.io.v += 0x1000;               // add 1 to fine y
             }
-            else { // else it is overflow so
-                this.io.v &= 0x8FFF; // clear fine y
-                let y = (this.io.v & 0x03E0) >>> 5; // get coarse y
-                if (y === 29) { // y overflows 30->0
+            else {                                   // else it is overflow so
+                this.io.v &= 0x8FFF;                 // clear fine y to 0
+                let y = (this.io.v & 0x03E0) >>> 5;  // get coarse y
+                if (y === 29) {                      // y overflows 30->0 with vertical nametable swap
                     y = 0;
-                    this.io.v ^= 0x0800; // Change vertical nametable
-                } else if (y === 31) { // y also overflows at 31
+                    this.io.v ^= 0x0800;             // Change vertical nametable
+                } else if (y === 31) {               // y also overflows at 31 but without nametable swap
                     y = 0;
                 }
-                else // just add 1
+                else                                 // just add to coarse scroll
                     y += 1;
-                this.io.v = (this.io.v & 0xFC1F) | (y << 5); // VERIFIED
+                this.io.v = (this.io.v & 0xFC1F) | (y << 5); // put scroll back in
             }
             return;
         }
-        if (this.line_cycle === 257) {
+        // Cycles 257...320, copy parts of T to V
+        if ((this.line_cycle >= 257) && (this.line_cycle <= 320)) {
             this.io.v = (this.io.v & 0xFBE0) | (this.io.t & 0x41F);
         }
     }
@@ -555,11 +551,13 @@ class NES_ppu {
     // Get tile info into shifters using screen X, Y coordinates
     scanline_prerender() {
         // 261
-        if (this.rendering()) {
-            this.cycle_scanline_addr();
-            if (this.line_cycle === 1) {
-                this.io.sprite0_hit = 0;
-            }
+        if (this.line_cycle === 1) {
+            this.io.sprite0_hit = 0;
+            this.io.sprite_overflow = 0;
+            this.status.nmi_out = 0;
+            this.update_nmi();
+        }
+        if (this.rendering_enabled()) {
             if (this.line_cycle === 304) {
                 this.io.v = (this.io.v & 0x041F) | (this.io.t & 0x7BE0);
             }
@@ -571,7 +569,7 @@ class NES_ppu {
     }
 
     scanline_visible() {
-        if (!this.rendering()) {
+        if (!this.rendering_enabled()) {
             if (this.line_cycle === 340) {
                 this.new_scanline();
                 // Quit out if we've stumbled past the last rendered line
@@ -616,10 +614,11 @@ class NES_ppu {
             case 0: // nametable, tile #
                 this.bg_fetches[0] = this.bus.PPU_read(0x2000 | (this.io.v & 0x7FF));
                 break;
-            case 1: // reload shifter
+            case 1: // reload shifter at multiple of 9
                 //this.bg_shifter = (this.bg_shifter & 0xFFFF) | (this.bg_fetches[2] << 16) | (this.bg_fetches[3] << 24);
                 this.bg_shifter = (this.bg_shifter >>> 16) | (this.bg_fetches[2] << 16) | (this.bg_fetches[3] << 24);
-                this.bg_attribute = (this.bg_attribute >>> 8) | (this.bg_fetches[1] << 8);
+                let shift = ((this.io.v >>> 4) & 0x04) | (this.io.v & 0x02);
+                this.bg_attribute = ((this.bg_fetches[1] >>> shift) & 3) << 2; //(this.bg_attribute >>> 8) | (this.bg_fetches[1] << 8);
                 break;
             case 2: // attribute table
                 let attrib_addr = 0x23C0 | (this.io.v & 0x0C00) | ((this.io.v >>> 4) & 0x38) | ((this.io.v >>> 2) & 7);
@@ -639,7 +638,7 @@ class NES_ppu {
         let bg_color = (this.bg_shifter >>> bg_shift) & 3;
         let bg_has_color = bg_color !== 0;
         if (bg_color !== 0) {
-            let bga = this.bg_attribute;
+            /*let bga = this.bg_attribute; // A...... B...... A byte has current attribute value, B has previous??
             if (bg_shift >= 16) bga >>>= 8;
             // now do Y?
             let tile_y = (this.io.v & 0x03E0) >> 5;
@@ -648,8 +647,9 @@ class NES_ppu {
             let aty = (tile_y >>> 1) & 1;
             let ashift = (atx + (aty * 2)) * 2;
             let acolor = ((bga >>> ashift) & 3) << 2;
-            bg_color |= acolor;
-            bg_color = this.CGRAM[bg_color];
+            bg_color |= acolor;*/
+
+            bg_color = this.CGRAM[bg_color | this.bg_attribute];
         }
         else bg_color = this.CGRAM[0];
 
@@ -697,6 +697,10 @@ class NES_ppu {
     scanline_postrender() {
         // 240, (also 241-260)
         // LITERALLY DO NOTHING
+        if ((this.clock.ppu_y === this.clock.timing.vblank_start) && (this.line_cycle === 1)) {
+            this.status.nmi_out = 1;
+            this.update_nmi();
+        }
         if (this.line_cycle === 340) this.new_scanline();
     }
 
@@ -714,12 +718,10 @@ class NES_ppu {
 
         if (this.clock.ppu_y === this.clock.timing.vblank_start) {
             this.clock.vblank = 1;
-            this.status.nmi_out = 1;
             this.update_nmi();
         }
         else if (this.clock.ppu_y === this.clock.timing.vblank_end) {
             this.clock.vblank = 0;
-            this.status.nmi_out = 0;
             this.update_nmi();
         }
         switch(this.clock.ppu_y) {
