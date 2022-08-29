@@ -193,6 +193,7 @@ class NES_ppu {
             temp_VRAM_addr: 0,
             fine_x_scroll: 0,
             write_latch: 0,
+            nmi_out: 0,
 
             attribute: 0, // Current attribute block
         }
@@ -252,7 +253,7 @@ class NES_ppu {
     }
 
     mem_write(addr, val) {
-        if (addr <= 0x3EFF) this.bus.PPU_write(addr, val);
+        if ((addr & 0x3FFF) < 0x3F00) this.bus.PPU_write(addr, val);
         else this.write_cgram(addr & 0x1F, val);
     }
 
@@ -293,29 +294,30 @@ class NES_ppu {
                 this.io.OAM_addr = (this.io.OAM_addr + 1) & 0xFF;
                 return;
             case 0x2005: // PPUSCROLL
-                if (!this.io.w) {
+                if (this.io.w === 0) {
                     this.io.x = val & 7;
                     this.io.t = (this.io.t & 0x7FE0) | (val >>> 3);
+                    this.io.w = 1;
                 } else {
                     this.io.t = (this.io.t & 0x0C1F) | ((val & 0xF8) << 2) | ((val & 7) << 12);
+                    this.io.w = 0;
                 }
                 // NOTFINISHED
-                this.io.w = (this.io.w + 1) & 1;
                 return;
             case 0x2006: // PPUADDR
                 if (this.io.w === 0) {
                     this.io.t = (this.io.t & 0xFF) | ((val & 0x3F) << 8);
+                    this.io.w = 1;
                 } else {
-                    this.io.t = (this.io.t & 0xFF00) | val;
+                    this.io.t = (this.io.t & 0x7F00) | val;
                     this.io.v = this.io.t;
+                    this.io.w = 0;
                     //console.log('SET V', hex4(this.io.v), this.clock.trace_cycles);
                     if (this.io.v === 0x18DE) {// || this.io.v === 0x2654) {
                         dbg.break(D_RESOURCE_TYPES.M6502);
                         console.log(this.clock.master_frame, this.clock.ppu_y, this.line_cycle);
                     }
                 }
-
-                this.io.w = (this.io.w + 1) & 1;
                 return;
             case 0x2007: // PPUDATA
                 if (this.rendering() && ((this.clock.ppu_y < this.clock.timing.vblank_start) || (this.clock.ppu_y > this.clock.timing.vblank_end))) {
@@ -334,7 +336,7 @@ class NES_ppu {
     }
 
     update_nmi() {
-        if (this.clock.vblank && this.io.nmi_enable) {
+        if (this.status.nmi_out && this.io.nmi_enable) {
             this.bus.CPU_notify_NMI(1);
         }
         else {
@@ -346,9 +348,9 @@ class NES_ppu {
         let output = val;
         switch(addr) {
             case 0x2002:
-                output = (this.io.sprite_overflow << 5) | (this.io.sprite0_hit << 6) | (this.clock.vblank << 7);
+                output = (this.io.sprite_overflow << 5) | (this.io.sprite0_hit << 6) | (this.status.nmi_out << 7);
                 if (has_effect) {
-                    this.clock.vblank = 0;
+                    this.status.nmi_out = 0;
                     this.update_nmi();
 
                     this.io.w = 0;
@@ -730,10 +732,12 @@ class NES_ppu {
 
         if (this.clock.ppu_y === this.clock.timing.vblank_start) {
             this.clock.vblank = 1;
+            this.status.nmi_out = 1;
             this.update_nmi();
         }
         else if (this.clock.ppu_y === this.clock.timing.vblank_end) {
             this.clock.vblank = 0;
+            this.status.nmi_out = 0;
             this.update_nmi();
         }
         switch(this.clock.ppu_y) {
