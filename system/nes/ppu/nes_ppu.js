@@ -293,10 +293,6 @@ class NES_ppu {
                     this.io.w = 0;
                     //console.log('SET V', hex4(this.io.v), this.clock.trace_cycles);
                     //TODO: Video RAM update is apparently delayed by 3 PPU cycles (based on Visual NES findings)
-                    if (this.io.v === 0x18DE) {// || this.io.v === 0x2654) {
-                        dbg.break(D_RESOURCE_TYPES.M6502);
-                        console.log(this.clock.master_frame, this.clock.ppu_y, this.line_cycle);
-                    }
                 }
                 return;
             case 0x2007: // PPUDATA
@@ -418,8 +414,7 @@ class NES_ppu {
     oam_evaluate_slow() {
         let odd = (this.line_cycle % 2) === 1;
         let even = !odd;
-        let eval_y = this.clock.ppu_y + 1;
-        if (eval_y === 262) eval_y = 0;
+        let eval_y = this.clock.ppu_y;
         if (this.line_cycle <= 64) {
             if (even)
                 this.secondary_OAM[this.line_cycle >>> 1] = 0xFF;
@@ -598,7 +593,7 @@ class NES_ppu {
             if (this.line_cycle === 304) {
                 this.io.v = (this.io.v & 0x041F) | (this.io.t & 0x7BE0);
             }
-            this.oam_evaluate_slow();
+            //this.oam_evaluate_slow();
         }
         if (this.line_cycle === 340) {
             this.new_scanline();
@@ -848,8 +843,23 @@ class NES_ppu {
         ctx.putImageData(imgdata, x_origin, y_origin);
     }
 
+    render_chr_tables_from_memory(y_origin, x_origin) {
+        let ctx = this.canvas.getContext('2d');
+        let imgdata = ctx.getImageData(x_origin, y_origin, 256, 224);
+        for (let sy = 0; sy < 256; sy++) {
+            for (let sx = 0; sx < 128; sx++) {
+                let addr = (sy * 128 * 4) + (sx * 4);
+                imgdata.data[addr] = 0;
+                imgdata.data[addr + 1] = 0;
+                imgdata.data[addr + 2] = 0;
+                imgdata.data[addr + 3] = 255;
+            }
+        }
+
+        ctx.putImageData(imgdata, x_origin, y_origin);
+    }
+
 	render_sprites_from_memory(y_origin, x_origin, builtin_color) {
-        console.log('THESE OBJECTS', this.OAM);
         let ctx = this.canvas.getContext('2d');
         let imgdata = ctx.getImageData(x_origin, y_origin, 256, 224);
         for (let sy = 1; sy < 240; sy++) {

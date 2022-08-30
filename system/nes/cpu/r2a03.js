@@ -32,9 +32,13 @@ class ricoh2A03 {
      */
     constructor(clock, bus) {
         this.cpu = new m6502_t(nesm6502_opcodes_decoded, clock);
-        this.cpu.reset();
         this.bus = bus;
         this.clock = clock;
+
+        this.write_apu = function(addr, val) {};
+        this.read_apu = function(addr, val) {};
+
+        this.apu = new rp2a03(clock, bus, this);
 
         this.tracing = false;
 
@@ -42,6 +46,7 @@ class ricoh2A03 {
         this.bus.CPU_reg_read = this.reg_read.bind(this);
         this.bus.CPU_notify_NMI = this.notify_NMI.bind(this);
         this.bus.CPU_notify_IRQ = this.notify_IRQ.bind(this);
+        this.cpu.reset();
 
         this.cycles_left = 0;
 
@@ -85,6 +90,7 @@ class ricoh2A03 {
 
     reset() {
         this.cpu.reset();
+        this.apu.reset();
         this.io.dma.running = 0;
     }
 
