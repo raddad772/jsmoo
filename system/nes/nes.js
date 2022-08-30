@@ -69,6 +69,7 @@ class NES {
         this.clock.reset();
         this.cpu.reset();
         this.ppu.reset();
+        this.cart.mapper.reset();
     }
 
     load_ROM_from_RAM(ROM) {

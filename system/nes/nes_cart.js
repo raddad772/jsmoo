@@ -85,7 +85,7 @@ class NES_cart {
 			chr_nvram_size: 0
 		}
 
-		this.mapper = new NES_mapper_none(clock, bus);
+		this.mapper = null;
 	}
 
 	load_cart_from_RAM(inp) {
@@ -110,7 +110,17 @@ class NES_cart {
 
 	// Function to detect mapper type and do its setup. We don't support mappers yet.
 	setup_mapper() {
-		this.mapper = new NES_mapper_none(this.clock, this.bus);
+		switch(this.header.mapper_number) {
+			case 0: // no mapper
+				this.mapper = new NES_mapper_none(this.clock, this.bus);
+				break;
+			case 4: // MMC3
+				this.mapper = new NES_mapper_MMC3b(this.clock, this.bus);
+				break;
+			default:
+				console.log('Unknown mapper number', this.header.mapper_number);
+				break;
+		}
 		this.mapper.set_cart(this);
 		return true;
 	}
@@ -141,6 +151,7 @@ class NES_cart {
 		this.header.trainer_present = (fil[6] & 4) >>> 2;
 		this.header.four_screen_mode = (fil[6] & 8) >>> 3;
 		this.header.mapper_number = (fil[6] >>> 4) | (fil[7] & 0xF0);
+		console.log('MAPPER', this.header.mapper_number);
 		this.header.prg_ram_size = fil[8] !== 0 ? fil[8] * 8192 : 8192;
 		this.header.nes_timing = (fil[9] & 1) ? NES_TIMINGS.PAL : NES_TIMINGS.NTSC;
 		return true;

@@ -98,6 +98,8 @@ class NES_mapper_none {
         // DOMORE
     }
 
+    reset() {};
+
     /**
      * @param {NES_cart} cart
      */
