@@ -591,6 +591,7 @@ class NES_ppu {
         }
         if (this.rendering_enabled()) {
             if (this.line_cycle === 304) {
+                // Reload horizontal scroll
                 this.io.v = (this.io.v & 0x041F) | (this.io.t & 0x7BE0);
             }
             //this.oam_evaluate_slow();
@@ -607,7 +608,7 @@ class NES_ppu {
             // Do memory accesses and shifters
             switch (this.line_cycle & 7) {
                 case 1: // nametable, tile #
-                    this.bg_fetches[0] = this.bus.PPU_read(0x2000 | (this.io.v & 0x7FF));
+                    this.bg_fetches[0] = this.bus.PPU_read(0x2000 | (this.io.v & 0xFFF));
                     this.bg_tile_fetch_addr = this.fetch_chr_addr(this.io.bg_pattern_table, this.bg_fetches[0], in_tile_y);
                     this.bg_tile_fetch_buffer = 0;
                     // Reload shifters if needed
@@ -821,7 +822,6 @@ class NES_ppu {
         }
 
         if (show_scroll_border) {
-            let ADJUST = 0x10;
             let coarse_y = (this.dbg.v & 0x3E0) >>> 2;
             let fine_y = (this.dbg.v & 0x7000) >>> 12;
             let yscroll = (coarse_y | fine_y) - 32;
@@ -838,21 +838,60 @@ class NES_ppu {
                     imgdata.data[bo+3] = 192;
                 }
             }
-
         }
         ctx.putImageData(imgdata, x_origin, y_origin);
     }
 
+    print_current_scroll() {
+        let coarse_y = (this.io.v & 0x3E0) >>> 2;
+        let fine_y = (this.io.v & 0x7000) >>> 12;
+        let yscroll = (coarse_y | fine_y);
+        let coarse_x = (this.io.t & 0x1F) << 3;
+        let xscroll = coarse_x | this.io.x;
+        xscroll += (this.io.t & 0x400) ? 256 : 0;
+        yscroll += (this.io.t & 0x800) ? 240 : 0;
+        console.log('CURRENT X, Y SCROLLS:', xscroll, yscroll);
+        return (yscroll << 16) | xscroll;
+    }
+
     render_chr_tables_from_memory(y_origin, x_origin) {
         let ctx = this.canvas.getContext('2d');
-        let imgdata = ctx.getImageData(x_origin, y_origin, 256, 224);
-        for (let sy = 0; sy < 256; sy++) {
+        let imgdata = ctx.getImageData(x_origin, y_origin, 256, 512);
+        /*for (let sy = 0; sy < 256; sy++) {
             for (let sx = 0; sx < 128; sx++) {
-                let addr = (sy * 128 * 4) + (sx * 4);
+                let addr = ((sy * 128) + sx) * 4;
                 imgdata.data[addr] = 0;
                 imgdata.data[addr + 1] = 0;
                 imgdata.data[addr + 2] = 0;
                 imgdata.data[addr + 3] = 255;
+            }
+        }*/
+        let palette_to_use = 0;
+
+        for (let asy = 0; asy < 512; asy++) {
+            let sy = asy >>> 1;
+            let nametable = (sy < 128) ? 0 : 1;
+            for (let asx = 0; asx < 256; asx++) {
+                let sx = asx >>> 1;
+                let xtile = (sx >>> 3);
+                let ytile = (sy - (128 * nametable)) >>> 3;
+                let tilenum = (ytile * 16) + xtile;
+                let x_in_tile = sx & 7;
+                let y_in_tile = sy & 7;
+                //let tile_addr = (0x1000 * nametable) + tilenum + y_in_tile;
+                let tile_addr = this.fetch_chr_addr(nametable, tilenum, y_in_tile)
+                let tile_low = this.bus.PPU_read(tile_addr, 0, false);
+                let tile_hi = this.bus.PPU_read(tile_addr+8, 0, false);
+                let mask = 0x80 >>> x_in_tile;
+                let color = (tile_low & mask) ? 1 : 0;
+                color |= (tile_hi & mask) ? 2 : 0;
+                let dpo = ((asy * 256) + asx) * 4;
+                color = this.CGRAM[color];
+
+                imgdata.data[dpo] = NES_palette[color][0];
+                imgdata.data[dpo+1] = NES_palette[color][1];
+                imgdata.data[dpo+2] = NES_palette[color][2];
+                imgdata.data[dpo+3] = 255;
             }
         }
 

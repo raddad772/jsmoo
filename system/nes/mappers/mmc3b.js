@@ -110,19 +110,14 @@ class NES_mapper_MMC3b {
         this.PRG_map[b].offset = (bank_num % this.num_PRG_banks) * 0x2000;
     }
 
-    set_CHR_ROM_1k(addr, bank_num) {
-        let b = addr >>> 10;
-        this.CHR_map[b].addr = addr;
+    set_CHR_ROM_1k(b, bank_num) {
         this.CHR_map[b].offset = (bank_num % this.num_CHR_banks) * 0x0400;
     }
 
-    set_CHR_ROM_2k(addr, bank_num) {
-        let b = addr >>> 10;
-        bank_num &= 0xFFFE; // ignore lowest bit of 2KB bank select
-        this.CHR_map[b].addr = addr;
-        this.CHR_map[b].offset = (bank_num % this.num_CHR_banks) * 0x0400;
-        this.CHR_map[b+1].addr = addr+0x400;
-        this.CHR_map[b+1].offset = this.CHR_map[b+1].offset+0x0400;
+    pprint() {
+        for (let i = 0; i < 8; i++) {
+            console.log(hex0x4(this.CHR_map[i].addr) + ': ' + hex0x4(this.CHR_map[i].offset))
+        }
     }
 
     remap(boot=false) {
@@ -139,6 +134,7 @@ class NES_mapper_MMC3b {
             }
             for (let i = 0; i < 8; i++) {
                 this.CHR_map[i].data = this.CHR_ROM;
+                this.CHR_map[i].addr = 0x400 * i;
                 this.CHR_map[i].ROM = true;
                 this.CHR_map[i].RAM = false;
             }
@@ -163,23 +159,28 @@ class NES_mapper_MMC3b {
         }
         this.set_PRG_ROM(0xA000, this.regs.bank[7]);
 
-        if (this.status.CHR_mode === 0) {
+        if (this.status.CHR_mode === 1) {
             // 2KB CHR banks 0, 1KB CHR banks at 1000
-            this.set_CHR_ROM_2k(0x0000, this.regs.bank[0]);
-            this.set_CHR_ROM_2k(0x0800, this.regs.bank[1]);
-            this.set_CHR_ROM_1k(0x1000, this.regs.bank[2]);
-            this.set_CHR_ROM_1k(0x1400, this.regs.bank[3]);
-            this.set_CHR_ROM_1k(0x1800, this.regs.bank[4]);
-            this.set_CHR_ROM_1k(0x1C00, this.regs.bank[5]);
+            this.set_CHR_ROM_1k(0, this.regs.bank[0] & 0xFE);
+            this.set_CHR_ROM_1k(1, this.regs.bank[0] | 0x01);
+            this.set_CHR_ROM_1k(2, this.regs.bank[1] & 0xFE);
+            this.set_CHR_ROM_1k(3, this.regs.bank[1] & 0xFE);
+            this.set_CHR_ROM_1k(4, this.regs.bank[2]);
+            this.set_CHR_ROM_1k(5, this.regs.bank[3]);
+            this.set_CHR_ROM_1k(6, this.regs.bank[4]);
+            this.set_CHR_ROM_1k(7, this.regs.bank[5]);
         }
         else {
+            //console.log(this.regs.bank[5]);
             // 1KB CHR banks at 0, 2KB CHR banks at 1000
-            this.set_CHR_ROM_2k(0x1000, this.regs.bank[0]);
-            this.set_CHR_ROM_2k(0x1800, this.regs.bank[1]);
-            this.set_CHR_ROM_1k(0x0000, this.regs.bank[2]);
-            this.set_CHR_ROM_1k(0x0400, this.regs.bank[3]);
-            this.set_CHR_ROM_1k(0x0800, this.regs.bank[4]);
-            this.set_CHR_ROM_1k(0x0C00, this.regs.bank[5]);
+            this.set_CHR_ROM_1k(0, this.regs.bank[2]);
+            this.set_CHR_ROM_1k(1, this.regs.bank[3]);
+            this.set_CHR_ROM_1k(2, this.regs.bank[4]);
+            this.set_CHR_ROM_1k(3, this.regs.bank[5]);
+            this.set_CHR_ROM_1k(4, this.regs.bank[0] & 0xFE);
+            this.set_CHR_ROM_1k(5, this.regs.bank[0] | 0x01);
+            this.set_CHR_ROM_1k(6, this.regs.bank[1] & 0xFE);
+            this.set_CHR_ROM_1k(7, this.regs.bank[1] | 0x01);
         }
     }
 
@@ -189,7 +190,7 @@ class NES_mapper_MMC3b {
         if (this.ppu_mirror === -1) {
             return addr;
         }
-        if (this.ppu_mirror === 0) {
+        if (this.ppu_mirror === 1) {
             if ((addr >= 0x2400) && (addr < 0x2800)) return addr - 0x400;
             if ((addr >= 0x2C00)) return addr - 0x400;
         } else {
@@ -210,6 +211,7 @@ class NES_mapper_MMC3b {
 
     ppu_read(addr, val, has_effect=true) {
         if (addr < 0x2000) {
+            if (dbg.watch_on) console.log(hex4(addr), addr >>> 10, hex4(this.CHR_map[addr >>> 10].addr), hex4(this.CHR_map[addr >>> 10].offset));
             return this.CHR_map[addr >>> 10].read(addr, val, has_effect)
         }
         return this.CIRAM[this.mirror_ppu_addr(addr)-0x2000];
@@ -246,7 +248,7 @@ class NES_mapper_MMC3b {
                 this.regs.bank_select = (val & 7);
                 break;
             case 0x8001: // Bank data
-                if (this.regs.bank >= 6) val &= 0x3F; // R6 and 7 ignore top two bits
+                //if (this.regs.bank_select >= 6) val &= 0x3F; // R6 and 7 ignore top two bits
                 // R0 and R1 are ignored by the 2KB mapper function already
                 this.regs.bank[this.regs.bank_select] = val;
                 this.remap();
@@ -301,7 +303,8 @@ class NES_mapper_MMC3b {
 
         this.ppu_mirror = cart.header.mirroring;
         this.num_PRG_banks = (this.PRG_ROM.byteLength / 8192);
-        this.num_CHR_banks = (this.CHR_ROM.byteLength / 2048);
+        this.num_CHR_banks = (this.CHR_ROM.byteLength / 1024);
+        console.log('Num CHR banks', this.num_CHR_banks);
         this.remap(true);
     }
 }
