@@ -103,7 +103,7 @@ class global_player_t {
 	}
 
 	power_down() {
-		click_pause();
+		//click_pause();
 	}
 
 	load_rom(what) {
@@ -216,6 +216,8 @@ function click_step_clock() {
 	global_player.system.catch_up();
 	console.log('PPU X, Y', global_player.system.ppu.line_cycle, global_player.system.clock.ppu_y)
 	console.log('NMI ENABLED', global_player.system.ppu.io.nmi_enable);
+	global_player.system.ppu.print_current_scroll();
+
 	after_step();
 }
 
@@ -442,6 +444,7 @@ function stop_fps_count() {
 
 function click_pause() {
 	global_player.system.jsanimator.pause();
+	global_player.system.cart.mapper.pprint();
 	stop_fps_count();
 }
 
