@@ -22,7 +22,6 @@ class NES_clock {
 
         this.frames_since_restart = 0;
 
-
         this.cpu_master_clock = 0;
         this.sound_master_clock = 0;
         this.ppu_master_clock = 0;
@@ -34,6 +33,7 @@ class NES_clock {
 
         // Are we in nmi-time?
         this.nmi = 0;
+        this.cpu_frame_cycle = 0;
         this.ppu_frame_cycle = 0;
         this.timing = { // NTSC defaults
             clocks_per_line: 1364, // All scanlines except one get this on NTSC
@@ -111,6 +111,7 @@ class NES_clock {
         this.frame_odd = +(!this.frame_odd);
         this.master_frame++;
         this.ppu_frame_ready = true;
+        this.cpu_frame_cycle = 0;
 
         this.clocks_this_line = 0;
     }

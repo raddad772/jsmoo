@@ -94,6 +94,7 @@ class ricoh2A03 {
     reset() {
         this.cpu.reset();
         this.apu.reset();
+        this.clock.cpu_frame_cycle = 0;
         this.io.dma.running = 0;
     }
 
