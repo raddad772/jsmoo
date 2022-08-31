@@ -91,7 +91,7 @@ class m6502_pins_t {
 class m6502_t {
     /**
      * @param opcode_table
-     * @param NES_clock
+     * @param {NES_clock} clock
      */
     constructor(opcode_table, clock=null) {
         this.regs = new m6502_registers_t();
@@ -121,7 +121,7 @@ class m6502_t {
         if (this.regs.HLT) return;
         if (this.pins.IRQ) {
             this.IRQ_count++;
-            if (this.IRQ_count >= 2) {
+            if (this.IRQ_count >= 1) {
                 this.pins.IRQ = 0;
                 this.IRQ_count = 0;
                 this.regs.IRQ_pending = true;

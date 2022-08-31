@@ -85,6 +85,9 @@ class ricoh2A03 {
     }
 
     notify_IRQ(level) {
+        //this.cpu.pins.IRQ = +level;
+        if ((+level) === 0) this.cpu.IRQ_ack = true;
+        else if ((+level) !== this.cpu.pins.IRQ) this.cpu.IRQ_ack = false;
         this.cpu.pins.IRQ = +level;
     }
 
