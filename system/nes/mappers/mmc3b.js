@@ -245,12 +245,12 @@ class NES_mapper_MMC3b {
         }
         this.set_PRG_ROM(0xA000, this.regs.bank[7]);
 
-        if (this.status.CHR_mode === 1) {
+        if (this.status.CHR_mode === 0) {
             // 2KB CHR banks 0, 1KB CHR banks at 1000
             this.set_CHR_ROM_1k(0, this.regs.bank[0] & 0xFE);
             this.set_CHR_ROM_1k(1, this.regs.bank[0] | 0x01);
             this.set_CHR_ROM_1k(2, this.regs.bank[1] & 0xFE);
-            this.set_CHR_ROM_1k(3, this.regs.bank[1] & 0xFE);
+            this.set_CHR_ROM_1k(3, this.regs.bank[1] | 0x01);
             this.set_CHR_ROM_1k(4, this.regs.bank[2]);
             this.set_CHR_ROM_1k(5, this.regs.bank[3]);
             this.set_CHR_ROM_1k(6, this.regs.bank[4]);
@@ -333,8 +333,12 @@ class NES_mapper_MMC3b {
             case 0x8000: // Bank select
                 this.regs.r8000 = val;
                 this.regs.bank_select = (val & 7);
+                this.status.PRG_mode = (val & 0x40) >>> 6;
+                this.status.CHR_mode = (val & 0x80) >>> 7;
                 break;
             case 0x8001: // Bank data
+                // 6 25 // 1 1001
+                // 7 24 // 1 1000
                 this.regs.bank[this.regs.bank_select] = val;
                 this.remap();
                 break;

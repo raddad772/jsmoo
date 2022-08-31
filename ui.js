@@ -444,7 +444,7 @@ function stop_fps_count() {
 
 function click_pause() {
 	global_player.system.jsanimator.pause();
-	//global_player.system.cart.mapper.pprint();
+	global_player.system.cart.mapper.pprint();
 	stop_fps_count();
 }
 
