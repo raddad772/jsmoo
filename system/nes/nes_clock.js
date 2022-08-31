@@ -34,6 +34,7 @@ class NES_clock {
 
         // Are we in nmi-time?
         this.nmi = 0;
+        this.ppu_frame_cycle = 0;
         this.timing = { // NTSC defaults
             clocks_per_line: 1364, // All scanlines except one get this on NTSC
             frame_lines: 262, // 312 for PAL

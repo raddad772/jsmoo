@@ -41,6 +41,49 @@ class MMC3b_map {
     }
 }
 
+class a12_watcher {
+    /**
+     * @param {NES_clock} clock
+     */
+    constructor(clock) {
+        this.cycles_down = 0;
+        this.last_cycle = 0;
+        this.clock = clock;
+        this.delay = 3;
+
+        this.nothing = 0;
+        this.rise = 1;
+        this.fall = 2;
+    }
+
+    update(addr) {
+        let result = this.nothing;
+        if (this.cycles_down > 0) {
+            if (this.last_cycle > this.clock.ppu_frame_cycle) {
+                this.cycles_down += (89342 - this.last_cycle) + this.clock.ppu_frame_cycle;
+            } else {
+                this.cycles_down += this.clock.ppu_frame_cycle - this.last_cycle;
+            }
+        }
+
+        if ((addr & 0x1000) === 0) {
+            if (this.cycles_down === 0) {
+                this.cycles_down = 1;
+                result = this.fall;
+            }
+        }
+        else if (addr & 0x1000) {
+            if (this.cycles_down > this.delay) {
+                result = this.rise;
+            }
+            this.cycles_down = 0;
+        }
+        this.last_cycle = this.clock.ppu_frame_cycle;
+
+        return result;
+    }
+}
+
 class NES_mapper_MMC3b {
     /**
      * @param {NES_clock} clock
@@ -53,6 +96,7 @@ class NES_mapper_MMC3b {
         this.CPU_RAM = new Uint8Array(0x800); // Standard CPU RAM
         this.PRG_RAM = []; // Extra CPU RAM
         this.cart = null;
+        this.a12_watcher = new a12_watcher(clock);
 
         this.clock = clock;
         this.bus = bus;
@@ -74,6 +118,10 @@ class NES_mapper_MMC3b {
             bank_select: 0,
             bank: new Uint8Array(8),
         }
+
+        this.irq_enable = 0; // IRQs start disabled
+        this.irq_counter = 0;
+        this.irq_reload = false;
 
         this.status = {
             ROM_bank_mode: 0,
@@ -102,6 +150,44 @@ class NES_mapper_MMC3b {
         this.num_PRG_banks = 0;
         this.num_CHR_banks = 0;
 
+    }
+
+    a12_watch(addr) {
+        if (this.a12_watcher.update(addr) === this.a12_watcher.rise) {
+            let ocunt = this.irq_counter;
+            if ((this.irq_counter === 0) || (this.irq_reload)) {
+                this.irq_counter = this.regs.rC000;
+            } else {
+                this.irq_counter--;
+                if (this.irq_counter < 0) this.irq_counter = 0;
+            }
+
+            if ((this.irq_counter === 0) && (this.irq_enable)) {
+                this.bus.CPU_notify_IRQ(1);
+            }
+            this.irq_reload = false;
+        }
+        /*let a12 = (addr & 0x1000) >>> 12;
+
+        if (a12 !== this.last_a12) {
+            if (a12 === 1 && this.a12_count >= 3) {
+                //console.log(this.irq_counter, this.irq_enable);
+                if (this.irq_counter === 0) {
+                    this.irq_counter = this.regs.rC000;
+                    if (this.irq_enable) {
+                        //console.log('NOTIFY IRQ, RELOAD', this.regs.rC000)
+                        this.bus.CPU_notify_IRQ(1);
+                    }
+                }
+                else this.irq_counter--;
+                if (this.irq_counter < 0) this.irq_counter = 0;
+            }
+            this.last_a12 = a12;
+            this.a12_count = 0;
+        }
+        //console.log(a12);
+        if (a12 === 0) this.a12_count++;
+        else this.a12_count = 0;*/
     }
 
     set_PRG_ROM(addr, bank_num) {
@@ -187,7 +273,7 @@ class NES_mapper_MMC3b {
     mirror_ppu_addr(addr) {
         addr &= 0x3FFF;
         if (addr > 0x3000) addr -= 0x1000;
-        if (this.ppu_mirror === -1) {
+        if (this.ppu_mirror === -1) {  // 4-way mirror
             return addr;
         }
         if (this.ppu_mirror === 1) {
@@ -200,6 +286,7 @@ class NES_mapper_MMC3b {
     }
 
     ppu_write(addr, val) {
+        this.a12_watch(addr);
         addr = this.mirror_ppu_addr(addr);
         if (addr < 0x2000) {
             console.log('CANT WRITE CHR!', hex4(addr));
@@ -210,8 +297,8 @@ class NES_mapper_MMC3b {
     }
 
     ppu_read(addr, val, has_effect=true) {
+        if (has_effect) this.a12_watch(addr);
         if (addr < 0x2000) {
-            if (dbg.watch_on) console.log(hex4(addr), addr >>> 10, hex4(this.CHR_map[addr >>> 10].addr), hex4(this.CHR_map[addr >>> 10].offset));
             return this.CHR_map[addr >>> 10].read(addr, val, has_effect)
         }
         return this.CIRAM[this.mirror_ppu_addr(addr)-0x2000];
@@ -248,8 +335,6 @@ class NES_mapper_MMC3b {
                 this.regs.bank_select = (val & 7);
                 break;
             case 0x8001: // Bank data
-                //if (this.regs.bank_select >= 6) val &= 0x3F; // R6 and 7 ignore top two bits
-                // R0 and R1 are ignored by the 2KB mapper function already
                 this.regs.bank[this.regs.bank_select] = val;
                 this.remap();
                 break;
@@ -259,12 +344,16 @@ class NES_mapper_MMC3b {
             case 0xA001:
                 break;
             case 0xC000:
+                this.regs.rC000 = val;
                 break;
             case 0xC001:
+                this.irq_reload = true;
                 break;
             case 0xE000:
+                this.irq_enable = 0;
                 break;
             case 0xE001:
+                this.irq_enable = 1;
                 break;
         }
         //DOMORE

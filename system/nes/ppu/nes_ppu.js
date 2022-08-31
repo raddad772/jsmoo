@@ -191,7 +191,7 @@ class NES_ppu {
     present(buf=null) {
         let ctx = this.canvas.getContext('2d');
         let TOP_OVERSCAN = 8;
-        let BOTTOM_OVERSCAN = 232;
+        let BOTTOM_OVERSCAN = 240;
         let imgdata = ctx.getImageData(0, 0, 256, 240 - ((240 - BOTTOM_OVERSCAN) + TOP_OVERSCAN));
         for (let ry = TOP_OVERSCAN; ry < BOTTOM_OVERSCAN; ry++) {
             let y = ry - TOP_OVERSCAN;
@@ -357,10 +357,10 @@ class NES_ppu {
         return output;
     }
 
-    fetch_chr_line(table, tile, line) {
+    fetch_chr_line(table, tile, line, has_effect=true) {
         let r = (0x1000 * table) + (tile * 16) + line;
-        let low = this.bus.PPU_read(r, 0);
-        let high = this.bus.PPU_read(r + 8, 0);
+        let low = this.bus.PPU_read(r, 0, has_effect);
+        let high = this.bus.PPU_read(r + 8, 0, has_effect);
         let output = 0;
         for (let i = 0; i < 8; i++) {
             //output <<= 2;
@@ -413,29 +413,27 @@ class NES_ppu {
     // Do evaluation of next line of sprites
     oam_evaluate_slow() {
         let odd = (this.line_cycle % 2) === 1;
-        let even = !odd;
         let eval_y = this.clock.ppu_y;
-        if (this.line_cycle <= 64) {
-            if (even)
-                this.secondary_OAM[this.line_cycle >>> 1] = 0xFF;
+        if (this.line_cycle < 65) {
             if (this.line_cycle === 1) {
-                this.secondary_OAM_sprite_total = 0;
-                this.secondary_OAM_index = 0;
-                this.OAM_eval_index = 0;
-                this.secondary_OAM_lock = false;
-                this.OAM_eval_done = false;
-                this.sprite0_on_next_line = false;
+                for (let n = 0; n < 32; n++) {
+                    this.secondary_OAM[n] = 0xFF;
+                    this.secondary_OAM_sprite_total = 0;
+                    this.secondary_OAM_index = 0;
+                    this.OAM_eval_index = 0;
+                    this.secondary_OAM_lock = false;
+                    this.OAM_eval_done = false;
+                    this.sprite0_on_next_line = false;
+                }
             }
             return;
         }
         if (this.line_cycle <= 256) { // and >= 65...
             if (this.OAM_eval_done) return;
-            if (odd) {
+            if (!odd) {
                 this.OAM_transfer_latch = this.OAM[this.OAM_eval_index];
-            }
-            else {
-                if (!this.secondary_OAM_lock) this.secondary_OAM[this.secondary_OAM_index] = this.OAM_transfer_latch;
                 if (!this.secondary_OAM_lock) {
+                    this.secondary_OAM[this.secondary_OAM_index] = this.OAM_transfer_latch;
                     if ((eval_y >= this.OAM_transfer_latch) && (eval_y < (this.OAM_transfer_latch + this.status.sprite_height))) {
                         if (this.OAM_eval_index === 0) this.sprite0_on_next_line = true;
                         this.secondary_OAM[this.secondary_OAM_index + 1] = this.OAM[this.OAM_eval_index + 1];
@@ -443,7 +441,8 @@ class NES_ppu {
                         this.secondary_OAM[this.secondary_OAM_index + 3] = this.OAM[this.OAM_eval_index + 3];
                         this.secondary_OAM_index += 4;
                         this.secondary_OAM_sprite_total++;
-                        this.secondary_OAM_lock = this.secondary_OAM_index >= 32;
+                        //this.secondary_OAM_lock = this.secondary_OAM_index >= 32;
+                        this.OAM_eval_done |= this.secondary_OAM_index >= 32;
                     }
                 }
                 this.OAM_eval_index += 4;
@@ -456,57 +455,64 @@ class NES_ppu {
             return;
         }
 
-        if ((this.line_cycle === 257) && (!this.io.sprite_overflow)) { // Once set, it is set for whole frame, so don't bother with this
-            this.secondary_OAM_index = 0;
-            this.secondary_OAM_sprite_index = 0;
-            // Perform weird sprite overflow glitch
-            let n = 0;
-            let m = 0;
-            let f = 0;
-            while(n < 64) {
-                let e = this.OAM[(n * 4) + m];
-                // If value is in range....
-                if ((eval_y >= e) && (eval_y < (e + this.status.sprite_height))) {
-                    // Set overflow flag if needed
-                    f++;
-                    if (f > 8) {
-                        this.io.sprite_overflow = 1;
-                        break;
+        if ((this.line_cycle >= 257) && (this.line_cycle <= 320)) { // Sprite tile fetches
+            if (this.line_cycle === 257) { // Do some housekeeping on cycle 257
+                this.secondary_OAM_index = 0;
+                this.secondary_OAM_sprite_index = 0;
+                if (!this.io.sprite_overflow) {
+                    // Perform weird sprite overflow glitch
+                    let n = 0;
+                    let m = 0;
+                    let f = 0;
+                    while (n < 64) {
+                        let e = this.OAM[(n * 4) + m];
+                        // If value is in range....
+                        if ((eval_y >= e) && (eval_y < (e + this.status.sprite_height))) {
+                            // Set overflow flag if needed
+                            f++;
+                            if (f > 8) {
+                                this.io.sprite_overflow = 1;
+                                break;
+                            }
+                            m = (m + 4) & 0x03;
+                            n++;
+                        }
+                        // Value is not in range...
+                        else {
+                            n++;
+                            m = (m + 4) & 0x03; // Here is the hardware bug. This should be set to 0 instead!
+                        }
                     }
-                    m = (m + 4) & 0x03;
-                    n++;
-                }
-                // Value is not in range...
-                else {
-                    n++;
-                    m = (m + 4) & 0x03; // Here is the hardware bug. This should be set to 0 instead!
                 }
             }
-        }
-        if ((this.line_cycle >= 257) && (this.line_cycle <= 320)) {
+
             // Sprite data fetches into shift registers
-            if (this.secondary_OAM_sprite_index >= this.secondary_OAM_sprite_total) return;
-            if (this.secondary_OAM_index >= 32) return;
+            //if (this.secondary_OAM_sprite_index >= this.secondary_OAM_sprite_total) return;
+            if (this.secondary_OAM_sprite_index >= 8) return;
+            //if (this.secondary_OAM_index >= 32) return;
             this.sprite0_on_this_line = this.sprite0_on_next_line;
             let sub_cycle = (this.line_cycle - 257) & 0x07;
-            switch(sub_cycle) {
-                case 0: // Read Y coordinate.
-                    this.sprite_y_lines[this.secondary_OAM_sprite_index] = eval_y - this.secondary_OAM[this.secondary_OAM_index];
+            switch (sub_cycle) {
+                case 0: // Read Y coordinate.  257
+                    let syl = eval_y - this.secondary_OAM[this.secondary_OAM_index];
+                    if (syl < 0) syl = 0;
+                    if (syl > (this.status.sprite_height - 1)) syl = this.status.sprite_height - 1;
+                    this.sprite_y_lines[this.secondary_OAM_sprite_index] = syl;
                     this.secondary_OAM_index++;
                     break;
-                case 1: // Read tile number
+                case 1: // Read tile number 258
                     this.sprite_pattern_shifters[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index];
                     this.secondary_OAM_index++;
                     break;
-                case 2: // Read attributes
+                case 2: // Read attributes 259
                     this.sprite_attribute_latches[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index];
                     this.secondary_OAM_index++;
                     break;
-                case 3: // Read X-coordinate
+                case 3: // Read X-coordinate 260
                     this.sprite_x_counters[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index];
                     this.secondary_OAM_index++;
                     break;
-                case 4: // Fetch tiles for the shifters
+                case 4: // Fetch tiles for the shifters 261
                     let tn = this.sprite_pattern_shifters[this.secondary_OAM_sprite_index];
                     let sy = this.sprite_y_lines[this.secondary_OAM_sprite_index];
                     let table = this.io.sprite_pattern_table;
@@ -514,8 +520,8 @@ class NES_ppu {
                     // Vertical flip....
                     if (attr & 0x80) sy = (this.status.sprite_height - 1) - sy;
                     if (this.status.sprite_height === 16) {
-                        table = (tn & 80) ? 1 : 0;
-                        tn &= 0x7F;
+                        table = tn & 1;
+                        tn &= 0xFE;
                     }
                     if (sy > 7) {
                         sy -= 8;
@@ -524,13 +530,12 @@ class NES_ppu {
                     this.sprite_pattern_shifters[this.secondary_OAM_sprite_index] = this.fetch_chr_line(table, tn, sy);
                     break;
                 case 5:
-                case 6:
+                case 6: // 263
                     break;
                 case 7:
                     this.secondary_OAM_sprite_index++;
                     break;
             }
-
         }
     }
 
@@ -538,14 +543,19 @@ class NES_ppu {
         if (this.clock.ppu_y < this.clock.timing.bottom_rendered_line) {
             // Sprites
             if ((this.line_cycle > 0) && (this.line_cycle < 257)) {
-                for (let m = 0; m < 8; m++) {
-                    this.sprite_x_counters[m]--;
-                }
+                this.sprite_x_counters[0]--;
+                this.sprite_x_counters[1]--;
+                this.sprite_x_counters[2]--;
+                this.sprite_x_counters[3]--;
+                this.sprite_x_counters[4]--;
+                this.sprite_x_counters[5]--;
+                this.sprite_x_counters[6]--;
+                this.sprite_x_counters[7]--;
             }
         }
-        if (!this.rendering_enabled()) return;
+        if (!this.rendering_enabled() || (this.line_cycle === 0)) return;
         // Cycle # 8, 16,...248, and 328, 336. BUT NOT 0
-        if ((this.line_cycle !== 0) && ((this.line_cycle & 7) === 0) && ((this.line_cycle >= 328) || (this.line_cycle < 256))) {
+        if (((this.line_cycle & 7) === 0) && ((this.line_cycle >= 328) || (this.line_cycle < 256))) {
             // INCREMENT HORIZONTAL SCROLL IN v
             if ((this.io.v & 0x1F) === 0x1F) // If X scroll is 31...
                 this.io.v = (this.io.v & 0xFFE0) ^ 0x0400; // clear x scroll to 0 (& FFE0) and swap nametable (^ 0x400)
@@ -596,6 +606,9 @@ class NES_ppu {
             }
             //this.oam_evaluate_slow();
         }
+        if (this.io.sprite_enable && (this.line_cycle >= 257)) {
+            this.oam_evaluate_slow();
+        }
         if (this.line_cycle === 340) {
             this.new_scanline();
         }
@@ -643,7 +656,10 @@ class NES_ppu {
             }
             return;
        }
-        if (this.line_cycle === 0) {
+        if ((this.line_cycle < 1) && (this.clock.ppu_y === 0)) {
+            this.clock.ppu_frame_cycle = 0;
+        }
+        if (this.line_cycle < 1) {
             return;
         }
         if ((this.line_cycle === 1) && (this.clock.ppu_y === 32)) { // Capture scroll info for display
@@ -681,8 +697,9 @@ class NES_ppu {
         let sprite_color = 0;
 
         // Check if any sprites need drawing
-        for (let m = 0; m < 8; m++) {
-            if ((this.sprite_x_counters[m] >= -7) && (this.sprite_x_counters[m] <= 0)) {
+        //for (let m = 0; m < 8; m++) {
+        for (let m = 7; m >= 0; m--) {
+            if ((this.sprite_x_counters[m] >= -7) && (this.sprite_x_counters[m] <= 0) && this.line_cycle < 256) {
                 let s_x_flip = (this.sprite_attribute_latches[m] & 0x40) >>> 6;
                 let my_color = 0;
                 if (s_x_flip) {
@@ -699,6 +716,7 @@ class NES_ppu {
                     sprite_color = this.CGRAM[0x10 + my_color];
                     if ((!this.io.sprite0_hit) && (this.sprite0_on_this_line) && (m === 0) && bg_has_pixel && (this.line_cycle < 256)) {
                         this.io.sprite0_hit = 1;
+                        //console.log('s0 hit at PPU sy sx', this.clock.ppu_y, this.OAM[0], this.OAM[3]);
                     }
                 }
             }
@@ -760,12 +778,13 @@ class NES_ppu {
                 this.render_cycle = this.scanline_prerender;
                 break;
         }
-        this.line_cycle = 0; // This will immediately get
+        this.line_cycle = -1; // This will immediately get
     }
 
     cycle(howmany) {
         for (let i = 0; i < howmany; i++) {
             this.line_cycle++;
+            this.clock.ppu_frame_cycle++;
             this.render_cycle();
         }
         return howmany;
@@ -928,15 +947,15 @@ class NES_ppu {
                 let tdata;
                 let in_sprite_y = asy - sprite_y;
                 if (this.status.sprite_height === 8) {
-                    tdata = this.fetch_chr_line(tabl, tn, in_sprite_y);
+                    tdata = this.fetch_chr_line(tabl, tn, in_sprite_y, false);
                 } else {
                     tabl = tn & 1;
                     tn &= 0xFE;
                     if (in_sprite_y < 8) {
-                        tdata = this.fetch_chr_line(tabl, tn, in_sprite_y);
+                        tdata = this.fetch_chr_line(tabl, tn, in_sprite_y, false);
                     } else {
                         in_sprite_y -= 8;
-                        tdata = this.fetch_chr_line(tabl, tn+1, in_sprite_y);
+                        tdata = this.fetch_chr_line(tabl, tn+1, in_sprite_y, false);
                     }
                 }
                 let r = (0x1000 * tabl) + (tn * 16) + in_sprite_y;
@@ -966,6 +985,12 @@ class NES_ppu {
                     r = NES_palette[out_color][0];
                     g = NES_palette[out_color][1];
                     b = NES_palette[out_color][2];
+                    if (m===0) {
+                        r = 255;
+                        g = 0;
+                        b = 0;
+                    }
+
                     imgdata.data[doi] = r;
                     imgdata.data[doi+1] = g;
                     imgdata.data[doi+2] = b;
