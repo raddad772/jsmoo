@@ -77,7 +77,28 @@ class global_player_t {
 		this.romfile = null;
 		this.system = null;
 		this.jsa = null;
+		this.timing_thread = new timing_thread_t(this.on_timing_message.bind(this));
 		this.ready = false;
+	}
+
+
+	pause() {
+		this.timing_thread.pause();
+	}
+
+	play() {
+		this.timing_thread.play();
+		//this.system.cpu.apu.start();
+	}
+
+	on_timing_message(e) {
+		switch(e.kind) {
+			case timing_messages.frame_request:
+				this.system.run_frame();
+				this.timing_thread.frame_done();
+				this.system.present();
+				break;
+		}
 	}
 
 	set_system() {
@@ -417,9 +438,11 @@ var fps_interval = null;
 function click_play() {
 	dbg.frames_til_pause = parseInt(ui_el.frames_til_pause.value);
 	dbg.do_break = false;
-	fps_old_frames = global_player.system.clock.frames_since_restart;
+	/*fps_old_frames = global_player.system.clock.frames_since_restart;
 	start_fps_count();
-	global_player.system.jsanimator.play();
+	global_player.system.jsanimator.play();*/
+	start_fps_count();
+	global_player.play();
 }
 
 let animations_called = 0;
@@ -443,8 +466,9 @@ function stop_fps_count() {
 }
 
 function click_pause() {
-	global_player.system.jsanimator.pause();
-	global_player.system.cart.mapper.pprint();
+	//global_player.system.jsanimator.pause();
+	//global_player.system.cart.mapper.pprint();
+	global_player.pause();
 	stop_fps_count();
 }
 

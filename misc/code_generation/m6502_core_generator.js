@@ -1,5 +1,18 @@
 "use strict";
 
+/*
+List of differences between original NMOS 6502 and CMOS version
+ Taken care of? | NMOS
+    no            NMOS indexed read across page boundary causes extra read of invalid address. CMOS is extra operand read
+    yes           NMOS invalid opcodes. CMOS has none, any are NOP
+    no            JMP indirect xxFF, NMOS wraps, CMOS adds an extra cycle to increment
+    yes           RMW NMOS does RWW, CMOS does RRW
+    yes           NMOS doesn't touch decimal flag  at reset, CMOS sets to 0 on reset and interrupt
+    no            after decimal op, N, V< and Z invalid on NMOS. valid on CMOS, takes +1 cycle
+    CMOS-like one NMOS ignores the BRK instruction and loads the interrupt vector. CMOS does both
+    no            RMW absolute indexed in same page. NMOS = 7 cycles, CMOS = 6
+ */
+
 function str_m6502_ocode_matrix(opc, variant) {
     let opc2 = hex0x2(opc);
     switch(M6502_VARIANTS_R[variant]) {
@@ -64,10 +77,11 @@ function M6502_XAW(ins) {
 }
 
 class m6502_switchgen {
-    constructor(indent, what, BCD_support) {
+    constructor(indent, what, BCD_support, variant) {
         this.indent1 = indent;
         this.indent2 = '    ' + this.indent1;
         this.indent3 = '    ' + this.indent2;
+        this.variant = variant;
         this.in_case = false;
         this.last_case = 0;
         this.has_footer = false;
@@ -76,6 +90,7 @@ class m6502_switchgen {
         this.BCD_support = BCD_support;
         this.has_custom_end = false;
         this.outstr = '';
+        this.CMOS = variant === M6502_VARIANTS.CMOS;
 
         // We start any instruction on a addr_to_ZP of a valid address
         this.old_rw = 0;
@@ -231,6 +246,7 @@ class m6502_switchgen {
         this.addcycle();
         this.addl('regs.P.B = 1; // Confirmed via Visual6502 that this bit is actually set always during NMI, IRQ, and BRK');
         this.addl('regs.P.I = 1;');
+        if (this.CMOS) this.addl('regs.P.D = 0;'); // for 65C02
         this.RW(0);
         this.addr_to(vector);
 
@@ -617,10 +633,11 @@ class m6502_switchgen {
  * @param {boolean} BCD_support
  * @param {string} INVALID_OP
  */
-function m6502_generate_instruction_function(indent, opcode_info, BCD_support=true, INVALID_OP='') {
+function m6502_generate_instruction_function(indent, opcode_info, BCD_support=true, INVALID_OP='', final_variant) {
     let r;
     let indent2 = indent + '    ';
-    let ag = new m6502_switchgen(indent2, opcode_info.opcode, BCD_support);
+    let ag = new m6502_switchgen(indent2, opcode_info.opcode, BCD_support, final_variant);
+    let CMOS = final_variant === M6502_VARIANTS.CMOS;
     //ag.addl('// ' + opcode_info.mnemonic)
     switch(opcode_info.addr_mode) {
         case M6502_AM.ACCUM:
@@ -769,10 +786,11 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
             ag.addcycle('capture data');
             ag.addr_to_ZP('pins.D');
 
-            ag.addcycle('spurious write');
-            ag.RW(1);
+            ag.addcycle('spurious read/write');
+            if (!CMOS) ag.RW(1);
 
             ag.addcycle('real write');
+            ag.RW(1);
             ag.add_ins(opcode_info, 'pins.D');
             break;
         case M6502_AM.ZP_Xr: // Like LDA zp, X. 4 cycles
@@ -819,12 +837,13 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
             ag.addcycle();
             ag.addl('pins.Addr = regs.TA;');
 
-            ag.addcycle('spurious write');
+            ag.addcycle('spurious read/write');
             ag.addl('regs.TR = pins.D;');
-            ag.RW(1);
+            if (!CMOS) ag.RW(1);
             ag.add_ins(opcode_info);
 
             ag.addcycle();
+            ag.RW(1);
             ag.addl('pins.D = regs.TR;');
             break;
         case M6502_AM.ABSr: // like LDA abs., 4 cycles
@@ -867,10 +886,11 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
 
             ag.addcycle();
             ag.addl('regs.TR = pins.D;');
-            ag.RW(1);
+            if (!CMOS) ag.RW(1);
 
             ag.addcycle();
             ag.add_ins(opcode_info);
+            ag.RW(1);
             ag.addl('pins.D = regs.TR');
             break;
         case M6502_AM.ABS_Xr: // Like LDA abs, X. 4-5 cycles
@@ -915,7 +935,7 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
             ag.RW(1);
             ag.addl('pins.D = ' + M6502_XAW(opcode_info.ins) + ';');
             break;
-        case M6502_AM.ABS_Xm: // Like ASL abs, X  7 cycles
+        case M6502_AM.ABS_Xm: // Like ASL abs, X  7 cycles NMOS, 7/6 if same page CMOS
         case M6502_AM.ABS_Ym:
             r = (opcode_info.addr_mode === M6502_AM.ABS_Xm) ? 'regs.X' : 'regs.Y';
             ag.addcycle();
@@ -932,9 +952,9 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
             ag.addcycle('real read');
             ag.addl('pins.Addr = (regs.TA + ' + r + ') & 0xFFFF;');
 
-            ag.addcycle();
-            ag.addl('regs.TR = pins.D');
-            ag.RW(1);
+            ag.addcycle('spurious read/write');
+            ag.addl('regs.TR = pins.D;');
+            if (!CMOS) ag.RW(1);
 
             ag.addcycle();
             ag.add_ins(opcode_info);
@@ -971,25 +991,6 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
             ag.addl('regs.PC = regs.TA | (pins.D << 8);');
             break;
         case M6502_AM.ABSjsr:
-            /*
-For JSR abs
-0x20
-
-Neither you nor Higan does what Visual6502 does.
-
-At address 0000, put in
-20 40 60
-
-aka JSR $6040
-
-Cycle 1 decode instruction, fetch $00
-Cycle 2 fetch $01 ($40)
-Cycle 3 spurious read of stack
-Cycle 4 write stack
-Cycle 5 write stack
-Cycle 6 fetch $02 ($60)
-(Cycle 7->correct PC of 6040)
-             */
             ag.addcycle(); // 2
             ag.operand();
 
@@ -1190,7 +1191,7 @@ function generate_nes6502_core(INVALID_OP) {
         let mystr = indent + hex0x2(i) + ': new M6502_opcode_functions(';
         let opc = R2A03_matrix[i];
         mystr += str_m6502_ocode_matrix(opc.opcode, opc.variant) + ',\n';
-        let r = m6502_generate_instruction_function(indent, R2A03_matrix[i], false, INVALID_OP);
+        let r = m6502_generate_instruction_function(indent, R2A03_matrix[i], false, INVALID_OP, M6502_VARIANTS.STOCK);
         mystr += '        ' + r + ')';
         if (firstin)
             outstr += ',\n';
@@ -1198,6 +1199,25 @@ function generate_nes6502_core(INVALID_OP) {
         outstr += mystr;
     }
     outstr += '\n});'
+    return outstr;
+}
+
+function generate_6502_cmos_core() {
+    let CMOS_matrix = final_m6502_opcode_matrix([M6502_VARIANTS.STOCK, M6502_VARIANTS.CMOS]);
+    let outstr = 'use strict;\n\nconst m65c02_opcodes_decoded = Object.freeze({\n';
+    let indent = '    ';
+    let firstin = false;
+    for (let i = 0; i <= M6502_MAX_OPCODE; i++) {
+        let mystr = indent + hex0x2(i) + ': new M6502_opcode_functions(';
+        let opc = CMOS_matrix[i];
+        mystr += str_m6502_ocode_matrix(opc.opcode, opc.variant) + ',\n';
+        let r = m6502_generate_instruction_function(indent, CMOS_matrix[i], true, '', M6502_VARIANTS.CMOS);
+        mystr = '        ' + r  + ')';
+        if (firstin) outstr += ',\n';
+        firstin = true;
+        outstr += mystr;
+    }
+    outstr += '\n});';
     return outstr;
 }
 

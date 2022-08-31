@@ -40,3 +40,7 @@ function generate_nes6502_js() {
     save_js('nesm6502_generated_opcodes.js', generate_nes6502_core());
 }
 
+function generate_65c02_js() {
+    save_js('m65c02_generated_opcodes.js', generate_6502_cmos_core());
+}
+

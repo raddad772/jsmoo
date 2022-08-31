@@ -8,26 +8,22 @@ class NES {
         this.cpu = new ricoh2A03(this.clock, this.bus);
         this.ppu = new NES_ppu(document.getElementById('snescanvas'), this.clock, this.bus);
         this.cycles_left = 0;
+        this.here = 0;
 
         this.jsanimator = jsanimator;
         this.jsanimator.callback = this.run_frame.bind(this);
     }
 
+    present() {
+        this.ppu.present();
+    }
+
     run_frame() {
-        if (dbg.frames_til_pause !== 0) {
-            dbg.frames_til_pause--;
-            ui_el.frames_til_pause.value = dbg.frames_til_pause;
-            if (dbg.frames_til_pause === 0) {
-                this.jsanimator.pause();
-                stop_fps_count();
-            }
-        }
         let lines_to_do = (this.clock.timing.frame_lines - this.clock.ppu_y);
         for (let i = 0; i < lines_to_do; i++) {
             this.run_scanline();
             if (dbg.do_break) break;
         }
-        this.ppu.present();
         //this.ppu.render_bgtables_from_memory(0, 260, true);
         //this.ppu.render_chr_tables_from_memory(0, 260*3);
     }
@@ -51,6 +47,7 @@ class NES {
         while (this.cycles_left >= cpu_step) {
             this.clock.master_clock += cpu_step;
             this.cpu.run_cycle();
+            this.clock.cpu_frame_cycle++;
             this.clock.cpu_master_clock += cpu_step;
             this.clock.clocks_this_line += cpu_step;
             let ppu_left = this.clock.master_clock - this.clock.ppu_master_clock;
