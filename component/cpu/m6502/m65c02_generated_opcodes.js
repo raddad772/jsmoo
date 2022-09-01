@@ -5614,7 +5614,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     break;
                 case 3: // spurious read
                     regs.TA |= pins.D << 8;
-                    pins.Addr = (regs.TA & 0xFF00) | ((regs.TA + regs.X) & 0xFF);
+                    pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4: // real read
                     pins.Addr = (regs.TA + regs.X) & 0xFFFF;
@@ -6530,7 +6530,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     break;
                 case 3: // spurious read
                     regs.TA |= pins.D << 8;
-                    pins.Addr = (regs.TA & 0xFF00) | ((regs.TA + regs.X) & 0xFF);
+                    pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4: // real read
                     pins.Addr = (regs.TA + regs.X) & 0xFFFF;

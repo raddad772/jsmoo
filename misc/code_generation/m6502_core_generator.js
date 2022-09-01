@@ -1198,7 +1198,7 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
             ag.addl('regs.TA = pins.D;');
             ag.operand();
 
-            if (!CMOS || M65C02_TEST_ABS_Xm(opcode_info.ins)) { // not CMOS or DEC or INC
+            if (!CMOS) { // not CMOS or DEC or INC
                 ag.addcycle('spurious read');
                 ag.addl('regs.TA |= pins.D << 8;');
                 ag.addl('pins.Addr = (regs.TA & 0xFF00) | ((regs.TA + ' + r + ') & 0xFF);');
@@ -1207,7 +1207,7 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
                 ag.addl('pins.Addr = (regs.TA + ' + r + ') & 0xFFFF;');
             }
 
-            if (CMOS && !M65C02_TEST_ABS_Xm(opcode_info.ins)) { // CMOS and not DEC or INC
+            else if (CMOS && !M65C02_TEST_ABS_Xm(opcode_info.ins)) { // CMOS and not DEC or INC
                 ag.addcycle();
                 ag.addl('regs.TA |= pins.D << 8;');
                 ag.addl('regs.TR = (regs.TA + ' + r + ') & 0xFFFF;');
@@ -1216,6 +1216,15 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
 
                 ag.addcycle()
                 ag.addl('pins.Addr = regs.TR;');
+            }
+            else { // CMOS and DEC or INC
+                ag.addcycle('spurious read');
+                ag.addl('regs.TA |= pins.D << 8;');
+                ag.addl('pins.Addr = (regs.PC - 1) & 0xFFFF;');
+
+                ag.addcycle('real read');
+                ag.addl('pins.Addr = (regs.TA + ' + r + ') & 0xFFFF;');
+
             }
 
             ag.addcycle('spurious read/write');
