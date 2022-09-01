@@ -374,19 +374,23 @@ const m65c02_opcodes_decoded = Object.freeze({
                     break;
                 case 3: // 4
                     regs.TR = !(pins.D & 0x01);
+                    pins.RW = 1;
+                    break;
+                case 4: // 5
+                    pins.RW = 0;
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
                     break;
-                case 4: // 5
+                case 5: // 5
                     regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
                     pins.Addr = regs.PC;
                     if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                     break;
-                case 5: // 6 extra idle on page cross
+                case 6: // 6 extra idle on page cross
                     pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
                     break;
-                case 6: // cleanup_custom
+                case 7: // cleanup_custom
                     regs.PC = regs.TA;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
@@ -796,19 +800,23 @@ const m65c02_opcodes_decoded = Object.freeze({
                     break;
                 case 3: // 4
                     regs.TR = !(pins.D & 0x02);
+                    pins.RW = 1;
+                    break;
+                case 4: // 5
+                    pins.RW = 0;
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
                     break;
-                case 4: // 5
+                case 5: // 5
                     regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
                     pins.Addr = regs.PC;
                     if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                     break;
-                case 5: // 6 extra idle on page cross
+                case 6: // 6 extra idle on page cross
                     pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
                     break;
-                case 6: // cleanup_custom
+                case 7: // cleanup_custom
                     regs.PC = regs.TA;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
@@ -1174,19 +1182,23 @@ const m65c02_opcodes_decoded = Object.freeze({
                     break;
                 case 3: // 4
                     regs.TR = !(pins.D & 0x04);
+                    pins.RW = 1;
+                    break;
+                case 4: // 5
+                    pins.RW = 0;
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
                     break;
-                case 4: // 5
+                case 5: // 5
                     regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
                     pins.Addr = regs.PC;
                     if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                     break;
-                case 5: // 6 extra idle on page cross
+                case 6: // 6 extra idle on page cross
                     pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
                     break;
-                case 6: // cleanup_custom
+                case 7: // cleanup_custom
                     regs.PC = regs.TA;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
@@ -1591,19 +1603,23 @@ const m65c02_opcodes_decoded = Object.freeze({
                     break;
                 case 3: // 4
                     regs.TR = !(pins.D & 0x08);
+                    pins.RW = 1;
+                    break;
+                case 4: // 5
+                    pins.RW = 0;
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
                     break;
-                case 4: // 5
+                case 5: // 5
                     regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
                     pins.Addr = regs.PC;
                     if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                     break;
-                case 5: // 6 extra idle on page cross
+                case 6: // 6 extra idle on page cross
                     pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
                     break;
-                case 6: // cleanup_custom
+                case 7: // cleanup_custom
                     regs.PC = regs.TA;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
@@ -1955,19 +1971,23 @@ const m65c02_opcodes_decoded = Object.freeze({
                     break;
                 case 3: // 4
                     regs.TR = !(pins.D & 0x10);
+                    pins.RW = 1;
+                    break;
+                case 4: // 5
+                    pins.RW = 0;
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
                     break;
-                case 4: // 5
+                case 5: // 5
                     regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
                     pins.Addr = regs.PC;
                     if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                     break;
-                case 5: // 6 extra idle on page cross
+                case 6: // 6 extra idle on page cross
                     pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
                     break;
-                case 6: // cleanup_custom
+                case 7: // cleanup_custom
                     regs.PC = regs.TA;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
@@ -2372,19 +2392,23 @@ const m65c02_opcodes_decoded = Object.freeze({
                     break;
                 case 3: // 4
                     regs.TR = !(pins.D & 0x20);
+                    pins.RW = 1;
+                    break;
+                case 4: // 5
+                    pins.RW = 0;
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
                     break;
-                case 4: // 5
+                case 5: // 5
                     regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
                     pins.Addr = regs.PC;
                     if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                     break;
-                case 5: // 6 extra idle on page cross
+                case 6: // 6 extra idle on page cross
                     pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
                     break;
-                case 6: // cleanup_custom
+                case 7: // cleanup_custom
                     regs.PC = regs.TA;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
@@ -2820,19 +2844,23 @@ const m65c02_opcodes_decoded = Object.freeze({
                     break;
                 case 3: // 4
                     regs.TR = !(pins.D & 0x40);
+                    pins.RW = 1;
+                    break;
+                case 4: // 5
+                    pins.RW = 0;
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
                     break;
-                case 4: // 5
+                case 5: // 5
                     regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
                     pins.Addr = regs.PC;
                     if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                     break;
-                case 5: // 6 extra idle on page cross
+                case 6: // 6 extra idle on page cross
                     pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
                     break;
-                case 6: // cleanup_custom
+                case 7: // cleanup_custom
                     regs.PC = regs.TA;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
@@ -3333,19 +3361,23 @@ const m65c02_opcodes_decoded = Object.freeze({
                     break;
                 case 3: // 4
                     regs.TR = !(pins.D & 0x80);
+                    pins.RW = 1;
+                    break;
+                case 4: // 5
+                    pins.RW = 0;
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
                     break;
-                case 4: // 5
+                case 5: // 5
                     regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
                     pins.Addr = regs.PC;
                     if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                     break;
-                case 5: // 6 extra idle on page cross
+                case 6: // 6 extra idle on page cross
                     pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
                     break;
-                case 6: // cleanup_custom
+                case 7: // cleanup_custom
                     regs.PC = regs.TA;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
@@ -3675,19 +3707,23 @@ const m65c02_opcodes_decoded = Object.freeze({
                     break;
                 case 3: // 4
                     regs.TR = !!(pins.D & 0x01);
+                    pins.RW = 1;
+                    break;
+                case 4: // 5
+                    pins.RW = 0;
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
                     break;
-                case 4: // 5
+                case 5: // 5
                     regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
                     pins.Addr = regs.PC;
                     if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                     break;
-                case 5: // 6 extra idle on page cross
+                case 6: // 6 extra idle on page cross
                     pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
                     break;
-                case 6: // cleanup_custom
+                case 7: // cleanup_custom
                     regs.PC = regs.TA;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
@@ -4060,19 +4096,23 @@ const m65c02_opcodes_decoded = Object.freeze({
                     break;
                 case 3: // 4
                     regs.TR = !!(pins.D & 0x02);
+                    pins.RW = 1;
+                    break;
+                case 4: // 5
+                    pins.RW = 0;
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
                     break;
-                case 4: // 5
+                case 5: // 5
                     regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
                     pins.Addr = regs.PC;
                     if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                     break;
-                case 5: // 6 extra idle on page cross
+                case 6: // 6 extra idle on page cross
                     pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
                     break;
-                case 6: // cleanup_custom
+                case 7: // cleanup_custom
                     regs.PC = regs.TA;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
@@ -4401,19 +4441,23 @@ const m65c02_opcodes_decoded = Object.freeze({
                     break;
                 case 3: // 4
                     regs.TR = !!(pins.D & 0x04);
+                    pins.RW = 1;
+                    break;
+                case 4: // 5
+                    pins.RW = 0;
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
                     break;
-                case 4: // 5
+                case 5: // 5
                     regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
                     pins.Addr = regs.PC;
                     if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                     break;
-                case 5: // 6 extra idle on page cross
+                case 6: // 6 extra idle on page cross
                     pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
                     break;
-                case 6: // cleanup_custom
+                case 7: // cleanup_custom
                     regs.PC = regs.TA;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
@@ -4805,19 +4849,23 @@ const m65c02_opcodes_decoded = Object.freeze({
                     break;
                 case 3: // 4
                     regs.TR = !!(pins.D & 0x08);
+                    pins.RW = 1;
+                    break;
+                case 4: // 5
+                    pins.RW = 0;
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
                     break;
-                case 4: // 5
+                case 5: // 5
                     regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
                     pins.Addr = regs.PC;
                     if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                     break;
-                case 5: // 6 extra idle on page cross
+                case 6: // 6 extra idle on page cross
                     pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
                     break;
-                case 6: // cleanup_custom
+                case 7: // cleanup_custom
                     regs.PC = regs.TA;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
@@ -5168,19 +5216,23 @@ const m65c02_opcodes_decoded = Object.freeze({
                     break;
                 case 3: // 4
                     regs.TR = !!(pins.D & 0x10);
+                    pins.RW = 1;
+                    break;
+                case 4: // 5
+                    pins.RW = 0;
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
                     break;
-                case 4: // 5
+                case 5: // 5
                     regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
                     pins.Addr = regs.PC;
                     if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                     break;
-                case 5: // 6 extra idle on page cross
+                case 6: // 6 extra idle on page cross
                     pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
                     break;
-                case 6: // cleanup_custom
+                case 7: // cleanup_custom
                     regs.PC = regs.TA;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
@@ -5584,19 +5636,23 @@ const m65c02_opcodes_decoded = Object.freeze({
                     break;
                 case 3: // 4
                     regs.TR = !!(pins.D & 0x20);
+                    pins.RW = 1;
+                    break;
+                case 4: // 5
+                    pins.RW = 0;
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
                     break;
-                case 4: // 5
+                case 5: // 5
                     regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
                     pins.Addr = regs.PC;
                     if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                     break;
-                case 5: // 6 extra idle on page cross
+                case 6: // 6 extra idle on page cross
                     pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
                     break;
-                case 6: // cleanup_custom
+                case 7: // cleanup_custom
                     regs.PC = regs.TA;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
@@ -5998,19 +6054,23 @@ const m65c02_opcodes_decoded = Object.freeze({
                     break;
                 case 3: // 4
                     regs.TR = !!(pins.D & 0x40);
+                    pins.RW = 1;
+                    break;
+                case 4: // 5
+                    pins.RW = 0;
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
                     break;
-                case 4: // 5
+                case 5: // 5
                     regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
                     pins.Addr = regs.PC;
                     if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                     break;
-                case 5: // 6 extra idle on page cross
+                case 6: // 6 extra idle on page cross
                     pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
                     break;
-                case 6: // cleanup_custom
+                case 7: // cleanup_custom
                     regs.PC = regs.TA;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
@@ -6489,19 +6549,23 @@ const m65c02_opcodes_decoded = Object.freeze({
                     break;
                 case 3: // 4
                     regs.TR = !!(pins.D & 0x80);
+                    pins.RW = 1;
+                    break;
+                case 4: // 5
+                    pins.RW = 0;
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
                     break;
-                case 4: // 5
+                case 5: // 5
                     regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
                     pins.Addr = regs.PC;
                     if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                     break;
-                case 5: // 6 extra idle on page cross
+                case 6: // 6 extra idle on page cross
                     pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
                     break;
-                case 6: // cleanup_custom
+                case 7: // cleanup_custom
                     regs.PC = regs.TA;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
