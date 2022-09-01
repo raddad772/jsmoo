@@ -229,7 +229,7 @@ async function test_pt_nesm6502() {
 
 async function test_pt_m65c02() {
     local_server_url = 'http://[::1]:8000/misc/tests/ProcessorTests/wdc65c02/v1/'
-    await test_pt_m6502(m65c02_opcodes_decoded);
+    await test_pt_m6502(m65c02_opcodes_decoded, true);
 }
 
 async function test_pt_m6502_ins(cpu, ins) {
@@ -269,7 +269,7 @@ async function test_pt_m6502_ins(cpu, ins) {
     return result.passed;
 }
 
-async function test_pt_m6502(opcodes) {
+async function test_pt_m6502(opcodes, skip65c02brr=false) {
     console.log('TRYIN TO GET ME SOME JSON')
      let read8 = function(addr) {
         return M6502testRAM[addr];
@@ -283,7 +283,9 @@ async function test_pt_m6502(opcodes) {
     }
     let start_test = 0x0F;
     let skip_tests = []; // Tests do not correctly set B after BRK
-
+    if (skip65c02brr) {
+        skip_tests = [0x0F, 0x1F, 0x2F, 0x3F, 0x4F, 0x5F, 0x6F, 0x7F, 0x8F, 0x9F, 0xAF, 0xBF, 0xCF, 0xDF, 0xEF, 0xFF];
+    }
     if (M6502_TEST_DO_TRACING) cpu.enable_tracing(read8);
     //console.log('DO TRACING?', WDC_TEST_DO_TRACING);
     for (let i = start_test; i < 256; i++) {

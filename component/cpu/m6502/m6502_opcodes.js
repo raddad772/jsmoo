@@ -272,7 +272,6 @@ class M6502_opcode_info {
         this.addr_mode = addr_mode;
         this.mnemonic = mnemonic;
         this.variant = variant;
-        if (opcode === 2) console.log('INS WITH OPCODE 2', ins, this.variant);
     }
 }
 
@@ -869,7 +868,7 @@ const M6502_cmos_matrix = Object.freeze({
     0x27: new M6502_opcode_info(0x27, M6502_MN.RMB2, M6502_AM.ZPm, 'RMB2', M6502_VARIANTS.CMOS),
     0x2B: new M6502_opcode_info(0x2B, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
     0x2F: new M6502_opcode_info(0x2F, M6502_MN.BBR2, M6502_AM.PC_REL_ZP, 'BBR2', M6502_VARIANTS.CMOS),
-    0x32: new M6502_opcode_info(0x32, M6502_MN.AND, M6502_AM.ZPr, 'AND (d)', M6502_VARIANTS.CMOS),
+    0x32: new M6502_opcode_info(0x32, M6502_MN.AND, M6502_AM.ZP_INDr, 'AND (d)', M6502_VARIANTS.CMOS),
     0x33: new M6502_opcode_info(0x33, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
     0x34: new M6502_opcode_info(0x34, M6502_MN.BIT, M6502_AM.ZP_Xr, 'BIT d,x', M6502_VARIANTS.CMOS),
     0x37: new M6502_opcode_info(0x37, M6502_MN.RMB3, M6502_AM.ZPm, 'RMB3', M6502_VARIANTS.CMOS),
