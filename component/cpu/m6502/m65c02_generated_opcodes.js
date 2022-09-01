@@ -2110,12 +2110,15 @@ const m65c02_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
-                case 2:
+                case 2: // spurious read
+                    regs.TA = (pins.D + regs.X) & 0xFF;
+                    pins.Addr = pins.D;
                     break;
                 case 3:
-                    // Following is auto-generated code for instruction finish
+                    pins.Addr = regs.TA;
                     break;
-                case 4: // cleanup
+                case 4: // cleanup_custom
+                    // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     regs.TCU = 0;
@@ -2747,9 +2750,8 @@ const m65c02_opcodes_decoded = Object.freeze({
                     break;
                 case 4: // read PCH
                     regs.PC = pins.D;
-                    if ((pins.Addr & 0xFF) !== 0xFF) { regs.TCU++; pins.Addr++; break; }
                     regs.TA = (pins.Addr + 1) & 0xFFFF;
-                    pins.Addr &= 0xFF00;
+                    pins.Addr = (pins.Addr & 0xFF00) | ((pins.Addr + 1) & 0xFF);
                     break;
                 case 5: // extra cycle for CMOS page increment
                     pins.Addr = regs.TA;
@@ -2920,7 +2922,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                 case 4: // idle if crossed
                     regs.TR = (regs.TR + (pins.D << 8)) & 0xFFFF;
                     regs.TA = (regs.TA + (pins.D << 8)) & 0xFFFF;
-                    if ((regs.TR & 0xFF00) === (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    if ((regs.TR & 0xFF00) === (regs.TA & 0xFF00)) { regs.TCU += (regs.P.D) ? 1 : 2; pins.Addr = regs.TA; break; }
                     pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 5:
@@ -3164,7 +3166,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                 case 3:
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.Y) & 0xFFFF;
-                    if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU += (regs.P.D) ? 1 : 2; pins.Addr = regs.TA; break; }
                     pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4: // optional
@@ -3246,7 +3248,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
                 case 3: // add X
-                    pins.Addr = ((regs.TA + regs.X) & 0xFF) | (pins.D << 8);
+                    pins.Addr = (pins.Addr - 1) & 0xFFFF;
                     regs.TA = ((regs.TA | (pins.D << 8)) + regs.X) & 0xFFFF;
                     break;
                 case 4: // read PCL
@@ -3280,7 +3282,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                 case 3:
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.X) & 0xFFFF;
-                    if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU += (regs.P.D) ? 1 : 2; pins.Addr = regs.TA; break; }
                     pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4: // optional
@@ -3814,12 +3816,14 @@ const m65c02_opcodes_decoded = Object.freeze({
                     break;
                 case 4: // Write to addr
                     pins.Addr = regs.TA | (pins.D << 8);
+                    pins.RW = 1;
                     pins.D = regs.A;
                     // Following is auto-generated code for instruction finish
                     break;
                 case 5: // cleanup
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
+                    pins.RW = 0;
                     regs.TCU = 0;
                     break;
             }
@@ -3963,7 +3967,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     break;
                 case 3: // idle incorrect
                     regs.TA |= pins.D << 8;
-                    pins.Addr = (regs.TA & 0xFF00) | ((regs.TA + regs.Y) & 0xFF);
+                    pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4:
                     pins.Addr = (regs.TA + regs.Y) & 0xFFFF;
@@ -4045,7 +4049,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     break;
                 case 3: // idle incorrect
                     regs.TA |= pins.D << 8;
-                    pins.Addr = (regs.TA & 0xFF00) | ((regs.TA + regs.X) & 0xFF);
+                    pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4:
                     pins.Addr = (regs.TA + regs.X) & 0xFFFF;
@@ -4075,7 +4079,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     break;
                 case 3: // idle incorrect
                     regs.TA |= pins.D << 8;
-                    pins.Addr = (regs.TA & 0xFF00) | ((regs.TA + regs.X) & 0xFF);
+                    pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4:
                     pins.Addr = (regs.TA + regs.X) & 0xFFFF;
@@ -5357,12 +5361,15 @@ const m65c02_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
-                case 2:
+                case 2: // spurious read
+                    regs.TA = (pins.D + regs.X) & 0xFF;
+                    pins.Addr = pins.D;
                     break;
                 case 3:
-                    // Following is auto-generated code for instruction finish
+                    pins.Addr = regs.TA;
                     break;
-                case 4: // cleanup
+                case 4: // cleanup_custom
+                    // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     regs.TCU = 0;
@@ -6130,7 +6137,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                 case 4: // idle if crossed
                     regs.TR = (regs.TR + (pins.D << 8)) & 0xFFFF;
                     regs.TA = (regs.TA + (pins.D << 8)) & 0xFFFF;
-                    if ((regs.TR & 0xFF00) === (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    if ((regs.TR & 0xFF00) === (regs.TA & 0xFF00)) { regs.TCU += (regs.P.D) ? 1 : 2; pins.Addr = regs.TA; break; }
                     pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 5:
@@ -6226,12 +6233,15 @@ const m65c02_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
-                case 2:
+                case 2: // spurious read
+                    regs.TA = (pins.D + regs.X) & 0xFF;
+                    pins.Addr = pins.D;
                     break;
                 case 3:
-                    // Following is auto-generated code for instruction finish
+                    pins.Addr = regs.TA;
                     break;
-                case 4: // cleanup
+                case 4: // cleanup_custom
+                    // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     regs.TCU = 0;
@@ -6367,7 +6377,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                 case 3:
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.Y) & 0xFFFF;
-                    if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU += (regs.P.D) ? 1 : 2; pins.Addr = regs.TA; break; }
                     pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4: // optional
@@ -6472,7 +6482,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                 case 3:
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.X) & 0xFFFF;
-                    if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                    if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU += (regs.P.D) ? 1 : 2; pins.Addr = regs.TA; break; }
                     pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4: // optional

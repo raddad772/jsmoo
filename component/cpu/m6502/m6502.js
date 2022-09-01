@@ -231,6 +231,7 @@ class m6502_t {
             case M6502_AM.ACCUM:
                 outstr += ' A';
                 break;
+            case M6502_AM.ZP_INDw:
             case M6502_AM.ZP_INDr:
                 outstr += ' (' + read8() + ')'
                 break;
@@ -239,6 +240,9 @@ class m6502_t {
                 break;
             case M6502_AM.IND:
                 outstr += ' (' + read8() + ')';
+                break;
+            case M6502_AM.ABS_IND_Xr:
+                outstr += ' (' + read16() + ',x)';
                 break;
             case M6502_AM.IND_Yr:
             case M6502_AM.IND_Yw:
