@@ -72,6 +72,10 @@ class m6502_registers_t {
         this.IRQ_pending = false;
         this.NMI_pending = false;
         this.old_I = 0; // for tracking interrupt
+
+        // For 65C02, STP and WAI
+        this.STP = false;
+        this.WAI = false;
     }
 }
 

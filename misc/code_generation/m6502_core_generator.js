@@ -3,15 +3,19 @@
 /*
 List of differences between original NMOS 6502 and CMOS version
  Taken care of? | NMOS
-    no            NMOS indexed read across page boundary causes extra read of invalid address. CMOS is extra operand read
+    maybe         NMOS indexed read across page boundary causes extra read of invalid address. CMOS is extra operand read
     yes           NMOS invalid opcodes. CMOS has none, any are NOP
-    no            JMP indirect xxFF, NMOS wraps, CMOS adds an extra cycle to increment
+    yes           JMP indirect xxFF, NMOS wraps, CMOS adds an extra cycle to increment
     yes           RMW NMOS does RWW, CMOS does RRW
     yes           NMOS doesn't touch decimal flag  at reset, CMOS sets to 0 on reset and interrupt
     no            after decimal op, N, V< and Z invalid on NMOS. valid on CMOS, takes +1 cycle
     CMOS-like one NMOS ignores the BRK instruction and loads the interrupt vector. CMOS does both
-    no            RMW absolute indexed in same page. NMOS = 7 cycles, CMOS = 6
+    yes           RMW absolute indexed in same page. NMOS = 7 cycles, CMOS = 6
  */
+
+function M65C02_TEST_ABS_Xm(ins) {
+    return ((ins === M6502_MN.DEC) || (ins === M6502_MN.INC));
+}
 
 function str_m6502_ocode_matrix(opc, variant) {
     let opc2 = hex0x2(opc);
@@ -219,6 +223,26 @@ class m6502_switchgen {
     addr_to_S_then_dec() {
         this.addl('pins.Addr = regs.S | 0x100;');
         this.addl('regs.S = (regs.S - 1) & 0xFF;');
+    }
+
+    STP() {
+        this.addcycle();
+        this.addl('pins.Addr = regs.PC;');
+
+        this.addcycle();
+
+        this.cleanup();
+        this.addl('regs.STP = true;');
+    }
+
+    WAI() {
+        this.addcycle(2);
+        this.addl('pins.Addr = regs.PC;');
+
+        this.addl('if (!regs.IRQ_pending && !regs.NMI_pending) regs.TCU--;');
+        this.addcycle(3)
+        //this.addl('regs.PC = (regs.PC + 1) & 0xFFFF;');
+        break;
     }
 
     BRK(vector='0xFFFE', set_b=true, add_one_to_pc=false) {
@@ -463,6 +487,10 @@ class m6502_switchgen {
         this.addl('regs.P.V = (' + what + ' & 0x40) >>> 6;');
     }
 
+    BITZ(what='regs.TR') {
+        this.setz('regs.A & ' + what);
+    }
+
     CMP(what, from='regs.TR') { // CPX, CPY too
         this.addl('let o = ' + what + ' - ' + from + ';');
         this.addl('regs.P.C = +(!((o & 0x100) >>> 8));');
@@ -523,6 +551,57 @@ class m6502_switchgen {
         this.setn(what);
     }
 
+    TRB(what='regs.TR') {
+        this.setz(what + ' & regs.A');
+        this.addl(what + ' &= (regs.A ^ 0xFF);');
+    }
+
+    TSB(what='regs.TR') {
+        this.setz(what + ' & regs.A');
+        this.addl(what + ' |= regs.A;');
+    }
+
+    BRAA() { // Always branch
+        this.addcycle();
+        this.operand();
+
+        this.addcycle();
+        this.addl('regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;');
+        this.addl('pins.Addr = regs.PC;');
+        this.addl('if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page');
+
+        this.addcycle('extra idle on page cross');
+        this.addl('pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);');
+
+        this.cleanup();
+        this.addl('regs.PC = regs.TA;');
+    }
+
+    BRAZP(cond) {  // 4, 5, or 6?
+        this.addcycle(2);
+        this.operand();
+
+        this.addcycle(3);
+        this.addl('pins.Addr = pins.D;');
+
+        this.addcycle(4);
+        this.addl(cond);
+        this.operand();
+
+        this.addl('if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }')
+
+        this.addcycle(5);
+        this.addl('regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;');
+        this.addl('pins.Addr = regs.PC;');
+        this.addl('if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page');
+
+        this.addcycle('6 extra idle on page cross');
+        this.addl('pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);');
+
+        this.cleanup();
+        this.addl('regs.PC = regs.TA;');
+    }
+
     BRA(cond) { // 2, or 3, or 4
         this.addcycle(); // This will be our last cycle if cond is False
         this.addl(cond); // regs.TR is now True or False
@@ -545,18 +624,38 @@ class m6502_switchgen {
     }
 
     SBC(what='regs.TR') {
-        this.addl('let i = (~' + what + ') & 0xFF;');
+        this.addl('let o;');
+        this.addl('let i = ' + what + ' ^ 0xFF;');
 
-        if (!this.BCD_support) {
-            this.addl('let o = regs.A + i + regs.P.C;');
-            this.addl('regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;');
+        if (this.BCD_support) {
+            this.addl('if (regs.P.D) {');
+            this.addl('    o = (regs.A & 0x0F) + (i & 0x0F) + regs.P.C;');
+            this.addl('    if (o <= 0x0F) o -= 0x06;');
+            this.addl('    regs.P.C = +(o > 0x0F);');
+            this.addl('    o = (regs.A & 0xF0) + (i & 0xF0) + (regs.P.C << 4) + (o & 0x0F);');
+            this.addl('    if (o <= 0xFF) o -= 0x60;');
+            this.addl('} else {');
+            this.addl('    o = regs.A + i + regs.P.C;');
+            this.addl('    regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;');
+            this.addl('}');
         } else {
-            alert('SBC not implemented for decimal mode yet');
+            this.addl('o = regs.A + i + regs.P.C;');
+            this.addl('regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;');
         }
         this.addl('regs.P.C = +(o > 0xFF);');
         this.addl('regs.A = o & 0xFF;');
         this.setz('regs.A');
         this.setn('regs.A');
+    }
+
+    // Clear bit bnum in reg
+    RMB(bnum, reg) {
+        this.addl(reg + ' &= ' + hex0x2(0xFF ^ (1 << bnum)) + ';');
+    }
+
+    // Set bit bnum in reg
+    SMB(bnum, reg) {
+        this.addl(reg + ' |= ' + hex0x2(1 << bnum) + ';');
     }
 
     /**
@@ -577,6 +676,12 @@ class m6502_switchgen {
                 break;
             case M6502_MN.BIT:
                 this.BIT(out_reg);
+                break;
+            case M6502_MN.NOPL:
+                // Literally NO oPeration-at-aL
+                break;
+            case M6502_MN.BITZ: // version of BIT that only affects Z
+                this.BITZ(out_reg);
                 break;
             case M6502_MN.CMP:
                 this.CMP('regs.A', out_reg);
@@ -620,6 +725,32 @@ class m6502_switchgen {
             case M6502_MN.SBC:
                 this.SBC(out_reg);
                 break;
+            case M6502_MN.TRB:
+                this.TRB(out_reg);
+                break;
+            case M6502_MN.TSB:
+                this.TSB(out_reg);
+                break;
+            case M6502_MN.RMB0:
+            case M6502_MN.RMB1:
+            case M6502_MN.RMB2:
+            case M6502_MN.RMB3:
+            case M6502_MN.RMB4:
+            case M6502_MN.RMB5:
+            case M6502_MN.RMB6:
+            case M6502_MN.RMB7:
+                this.RMB(opcode_info.opcode >>> 4, out_reg);
+                break;
+            case M6502_MN.SMB0:
+            case M6502_MN.SMB1:
+            case M6502_MN.SMB2:
+            case M6502_MN.SMB3:
+            case M6502_MN.SMB4:
+            case M6502_MN.SMB5:
+            case M6502_MN.SMB6:
+            case M6502_MN.SMB7:
+                this.SMB((opcode_info.opcode - 0x80) >>> 4, out_reg);
+                break;
             default:
                 console.log('M6502 unhandled instruction ', ins);
                 break;
@@ -636,8 +767,10 @@ class m6502_switchgen {
 function m6502_generate_instruction_function(indent, opcode_info, BCD_support=true, INVALID_OP='', final_variant) {
     let r;
     let indent2 = indent + '    ';
+    let bnum;
     let ag = new m6502_switchgen(indent2, opcode_info.opcode, BCD_support, final_variant);
     let CMOS = final_variant === M6502_VARIANTS.CMOS;
+    let is_ADCSBA = (opcode_info.ins === M6502_MN.ADC) || (opcode_info.ins === M6502_MN.SBC);
     //ag.addl('// ' + opcode_info.mnemonic)
     switch(opcode_info.addr_mode) {
         case M6502_AM.ACCUM:
@@ -659,8 +792,26 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
                 case M6502_MN.BRK:
                     ag.BRK();
                     break;
+                case M6502_MN.STP:
+                    ag.STP();
+                    break;
+                case M6502_MN.WAI:
+                    ag.WAI();
+                    break;
                 case M6502_MN.PHP:
                     ag.PushP();
+                    break;
+                case M6502_MN.PHX:
+                    ag.Push('regs.X');
+                    break;
+                case M6502_MN.PHY:
+                    ag.Push('regs.Y');
+                    break;
+                case M6502_MN.PLX:
+                    ag.Pull('regs.X');
+                    break;
+                case M6502_MN.PLY:
+                    ag.Pull('regs.Y');
                     break;
                 case M6502_MN.CLC:
                     ag.addcycle();
@@ -745,9 +896,40 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
                     ag.addl('pins.Addr = regs.PC;');
                     ag.INC('regs.X');
                     break;
-                case M6502_MN.NOP:
+                case M6502_MN.NOP: // 1 byte 2 cycle
                     ag.addcycle();
                     ag.addl('pins.Addr = regs.PC;');
+                    break;
+                case M6502_MN.NOP11:  // 1 byte 1 cycle
+                    ag.cleanup();
+                    break;
+                case M6502_MN.NOP22: // 2 byte 2 cycle
+                    ag.addcycle();
+                    ag.operand();
+                    break;
+                case M6502_MN.NOP24: // 2 byte 4 cycle
+                    ag.addcycle();
+                    ag.operand();
+                    ag.addcycle();
+                    ag.addcycle();
+                    break;
+                case M6502_MN.NOP34: // 3 byte 4 cycle
+                    ag.addcycle();
+                    ag.operand();
+                    ag.addcycle();
+                    ag.operand();
+                    ag.addcycle();
+                    break;
+                case M6502_MN.NOP38: // 3 byte 8 cycle
+                    ag.addcycle();
+                    ag.operand();
+                    ag.addcycle();
+                    ag.operand();
+                    ag.addcycle();
+                    ag.addcycle();
+                    ag.addcycle();
+                    ag.addcycle();
+                    ag.addcycle();
                     break;
                 case M6502_MN.SED:
                     ag.addcycle();
@@ -764,9 +946,14 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
             ag.operand();
             ag.addcycle();
             ag.addr_to_ZP('pins.D');
+
+            if (is_ADCSBA && CMOS) {
+                ag.addl('if (!regs.P.D) { regs.TCU++; break; }');
+                ag.addcycle('Empty cycle for D');
+            }
+
             ag.cleanup();
-            ag.addl('regs.TR = pins.D;');
-            ag.add_ins(opcode_info);
+            ag.add_ins(opcode_info, 'pins.D');
             break;
         case M6502_AM.ZPw: // 3 cycles like STA ZP
             ag.addcycle();
@@ -806,8 +993,12 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
             ag.addcycle();
             ag.addl('pins.Addr = regs.TA;');
 
+            if (is_ADCSBA && CMOS) {
+                ag.addl('if (!regs.P.D) { regs.TCU++; break; }');
+                ag.addcycle('Empty cycle for D');
+            }
+
             ag.cleanup();
-            //ag.addl('regs.TR = pins.D;');
             ag.add_ins(opcode_info, 'pins.D');
             break;
         case M6502_AM.ZP_Xw: // Like STA zp, X. 3 cycles
@@ -857,6 +1048,11 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
             ag.addcycle();
             ag.addl('pins.Addr = regs.TA | (pins.D << 8);')
 
+            if (is_ADCSBA && CMOS) {
+                ag.addl('if (!regs.P.D) { regs.TCU++; break; }');
+                ag.addcycle('Empty cycle for D');
+            }
+
             ag.cleanup();
             ag.add_ins(opcode_info, 'pins.D');
             break;
@@ -885,13 +1081,11 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
             ag.addl('pins.Addr = regs.TA | (pins.D << 8);')
 
             ag.addcycle();
-            ag.addl('regs.TR = pins.D;');
             if (!CMOS) ag.RW(1);
 
             ag.addcycle();
-            ag.add_ins(opcode_info);
+            ag.add_ins(opcode_info, 'pins.D');
             ag.RW(1);
-            ag.addl('pins.D = regs.TR');
             break;
         case M6502_AM.ABS_Xr: // Like LDA abs, X. 4-5 cycles
         case M6502_AM.ABS_Yr:
@@ -913,8 +1107,36 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
             ag.addcycle('optional')
             ag.addl('pins.Addr = regs.TA;');
 
+            if (is_ADCSBA && CMOS) {
+                ag.addl('if (!regs.P.D) { regs.TCU++; break; }');
+                ag.addcycle('Empty cycle for D');
+                ag.addl('pins.Addr = regs.TA;');
+            }
+
             ag.cleanup();
             ag.add_ins(opcode_info, 'pins.D');
+            break;
+        case M6502_AM.ABS_IND_Xr: // JMP (abs,X). 6 cycles
+            ag.addcycle('read ABSL');
+            ag.operand();
+
+            ag.addcycle('read ABSH');
+            ag.addl('regs.TA = pins.D;');
+            ag.operand();
+
+            ag.addcycle('add X');
+            ag.addl('pins.Addr = ((regs.TA + regs.X) & 0xFF) | (pins.D << 8);');
+            ag.addl('regs.TA = ((regs.TA | (pins.D << 8)) + regs.X) & 0xFFFF;');
+
+            ag.addcycle('read PCL');
+            ag.addl('pins.Addr = regs.TA;');
+
+            ag.addcycle('read PCH');
+            ag.addl('regs.PC = pins.D;');
+            ag.addr_inc();
+
+            ag.cleanup();
+            ag.addl('regs.PC |= pins.D << 8;');
             break;
         case M6502_AM.ABS_Xw: // Like STA abs, X. 5 cycles
         case M6502_AM.ABS_Yw:
@@ -945,12 +1167,25 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
             ag.addl('regs.TA = pins.D;');
             ag.operand();
 
-            ag.addcycle('spurious read');
-            ag.addl('regs.TA |= pins.D << 8;');
-            ag.addl('pins.Addr = (regs.TA & 0xFF00) | ((regs.TA + ' + r + ') & 0xFF);');
+            if (!CMOS || M65C02_TEST_ABS_Xm(opcode_info.ins)) { // not CMOS or DEC or INC
+                ag.addcycle('spurious read');
+                ag.addl('regs.TA |= pins.D << 8;');
+                ag.addl('pins.Addr = (regs.TA & 0xFF00) | ((regs.TA + ' + r + ') & 0xFF);');
 
-            ag.addcycle('real read');
-            ag.addl('pins.Addr = (regs.TA + ' + r + ') & 0xFFFF;');
+                ag.addcycle('real read');
+                ag.addl('pins.Addr = (regs.TA + ' + r + ') & 0xFFFF;');
+            }
+
+            if (CMOS && !M65C02_TEST_ABS_Xm(opcode_info.ins)) { // CMOS and not DEC or INC
+                ag.addcycle();
+                ag.addl('regs.TA |= pins.D << 8;');
+                ag.addl('regs.TR = (regs.TA + ' + r + ') & 0xFFFF;');
+                ag.addl('if ((regs.TA & 0xFF00) === (regs.TR & 0xFF00)) { pins.Addr = regs.TR;  regs.TCU++; break; }');
+                ag.addl('pins.Addr = (regs.TA & 0xFF00) | (regs.TR & 0xFF);');
+
+                ag.addcycle()
+                ag.addl('pins.Addr = regs.TR;');
+            }
 
             ag.addcycle('spurious read/write');
             ag.addl('regs.TR = pins.D;');
@@ -974,7 +1209,15 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
 
             ag.addcycle('read PCH');
             ag.addl('regs.PC = pins.D;');
-            ag.addr_inc_wrap();
+            if (!CMOS) ag.addr_inc_wrap();
+            else {
+                ag.addl('if ((pins.Addr & 0xFF) !== 0xFF) { regs.TCU++; pins.Addr++; break; }');
+                ag.addl('regs.TA = (pins.Addr + 1) & 0xFFFF;');
+                ag.addl('pins.Addr &= 0xFF00;');
+
+                ag.addcycle('extra cycle for CMOS page increment');
+                ag.addl('pins.Addr = regs.TA;');
+            }
 
             ag.cleanup();
             ag.addl('regs.PC |= pins.D << 8;');
@@ -1018,9 +1261,13 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
             ag.addcycle();
             ag.operand();
 
+            if (is_ADCSBA && CMOS) {
+                ag.addl('if (!regs.P.D) { regs.TCU++; break; }');
+                ag.addcycle('Empty cycle for D');
+            }
+
             ag.cleanup();
-            ag.addl('regs.TR = pins.D;');
-            ag.add_ins(opcode_info);
+            ag.add_ins(opcode_info, 'pins.D');
             break;
         case M6502_AM.IND: // This is a JMP
             ag.addcycle();
@@ -1057,9 +1304,13 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
             ag.addcycle('Read from addr');
             ag.addl('pins.Addr = regs.TA | (pins.D << 8);');
 
+            if (is_ADCSBA && CMOS) {
+                ag.addl('if (!regs.P.D) { regs.TCU++; break; }');
+                ag.addcycle('Empty cycle for D');
+            }
+
             ag.cleanup('Do ALU');
-            ag.addl('regs.TR = pins.D;');
-            ag.add_ins(opcode_info);
+            ag.add_ins(opcode_info, 'pins.D');
             break;
         case M6502_AM.X_INDw: // Like STA (oper,X) 6 cycles
             ag.addcycle();
@@ -1080,6 +1331,43 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
             ag.addl('pins.Addr = regs.TA | (pins.D << 8);');
             ag.addl('pins.D = ' + M6502_XAW(opcode_info.ins) + ';');
             ag.RW(1);
+            break;
+        case M6502_AM.ZP_INDr: // 5 cycles, 6 if ADC/SBC. this is 65C02-only
+            ag.addcycle();
+            ag.operand();
+
+            ag.addcycle('real read ABS L');
+            ag.addl('pins.Addr = pins.D;');
+
+            ag.addcycle('read ABS H');
+            ag.addl('regs.TA = pins.D;');
+            ag.addr_inc_ZP();
+
+            ag.addcycle('Read from addr');
+            ag.addl('pins.Addr = regs.TA | (pins.D << 8);');
+
+            if (is_ADCSBA && CMOS) {
+                ag.addl('if (!regs.P.D) { regs.TCU++; break; }');
+                ag.addcycle('Empty cycle for D');
+            }
+
+            ag.cleanup('Do ALU');
+            ag.add_ins(opcode_info, 'pins.D');
+            break;
+        case M6502_AM.ZP_INDw: // 5 cycles, 6 if ADC/SBC
+            ag.addcycle();
+            ag.operand();
+
+            ag.addcycle('real read ABS L');
+            ag.addl('pins.Addr = pins.D;');
+
+            ag.addcycle('read ABS H');
+            ag.addl('regs.TA = pins.D;');
+            ag.addr_inc_ZP();
+
+            ag.addcycle('Write to addr');
+            ag.addl('pins.Addr = regs.TA | (pins.D << 8);');
+            ag.addl('pins.D = ' + M6502_XAW(opcode_info.ins) + ';');
             break;
         case M6502_AM.X_INDm: // For undocumented opcodes
             console.log('X_INDm not implemented for opcode ' + hex0x2(opcode_info.opcode));
@@ -1105,10 +1393,17 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
             ag.addl('regs.TA = (regs.TA + (pins.D << 8)) & 0xFFFF;'); // after
 
             ag.addl('if ((regs.TR & 0xFF00) === (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }');
-            ag.addl('pins.Addr = (regs.TR & 0xFF00) | (regs.TA & 0xFF);');
+            if (!CMOS) ag.addl('pins.Addr = (regs.TR & 0xFF00) | (regs.TA & 0xFF);');
+            else ag.addl('pins.Addr = (regs.PC - 1) & 0xFFFF;');
 
             ag.addcycle();
             ag.addl('pins.Addr = regs.TA;');
+
+            if (is_ADCSBA && CMOS) {
+                ag.addl('if (!regs.P.D) { regs.TCU++; break; }');
+                ag.addcycle('Empty cycle for D');
+                ag.addl('pins.Addr = regs.TA;');
+            }
 
             ag.cleanup();
             ag.add_ins(opcode_info, 'pins.D');
@@ -1127,12 +1422,45 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
 
             ag.addcycle('always idle');
             ag.addl('regs.TA = (regs.TA + (pins.D << 8)) & 0xFFFF;');
-            ag.addl('pins.Addr = (pins.D << 8) | regs.TR;');
+            if (!CMOS) ag.addl('pins.Addr = (pins.D << 8) | regs.TR;');
+            else ag.addl('pins.Addr = (regs.PC - 1) & 0xFFFF;');
 
             ag.addcycle('write data')
             ag.addl('pins.Addr = regs.TA;')
             ag.RW(1);
             ag.addl('pins.D = ' + M6502_XAW(opcode_info.ins) + ';');
+            break;
+        case M6502_AM.PC_REL_ZP: // For branch bit test instructions. 5, 6, 7 cycles
+            switch(opcode_info.ins) {
+                case M6502_MN.BBR0:
+                case M6502_MN.BBR1:
+                case M6502_MN.BBR2:
+                case M6502_MN.BBR3:
+                case M6502_MN.BBR4:
+                case M6502_MN.BBR5:
+                case M6502_MN.BBR6:
+                case M6502_MN.BBR7:
+                    bnum = opcode_info.opcode >>> 4;
+                    bnum = 1 << bnum;
+                    r = '!(pins.D & ' + hex0x2(bnum) + ')';
+                    break;
+                case M6502_MN.BBS0:
+                case M6502_MN.BBS1:
+                case M6502_MN.BBS2:
+                case M6502_MN.BBS3:
+                case M6502_MN.BBS4:
+                case M6502_MN.BBS5:
+                case M6502_MN.BBS6:
+                case M6502_MN.BBS7:
+                    bnum = (opcode_info.opcode - 0x80) >>> 4;
+                    bnum = 1 << bnum;
+                    r = '!!(pins.D & ' + hex0x2(bnum) + ')';
+                    break;
+                default:
+                    console.log('Unknown PC_REL_ZP instructions');
+                    break;
+            }
+            ag.BRAZP('regs.TR = ' + r + ';');
             break;
         case M6502_AM.PC_REL: // For branch instructions.
             // 2 cycles
@@ -1163,11 +1491,15 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
                 case M6502_MN.BEQ:
                     r = 'regs.P.Z === 1';
                     break;
+                case M6502_MN.BRA:
+                    ag.BRAA();
+                    r = false;
+                    break;
                 default:
                     console.log('M6502 Unknown case PC relative addressing');
                     return '';
             }
-            ag.BRA('regs.TR = +(' + r + ');');
+            if (r !== false) ag.BRA('regs.TR = +(' + r + ');');
             break;
         case M6502_AM.NONE:
             ag.addl('// Invalid operation')
