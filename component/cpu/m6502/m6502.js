@@ -188,7 +188,7 @@ class m6502_t {
                 dbg.break();
             }
             if (this.trace_on) {
-                dbg.traces.add(TRACERS.M6502, this.clock.trace_cycles, this.trace_format(this.disassemble(), this.PCO));
+                dbg.traces.add(TRACERS.M6502, this.clock.trace_cycles-1, this.trace_format(this.disassemble(), this.PCO));
             }
         }
         this.IRQ_ack = false;
@@ -286,7 +286,7 @@ class m6502_t {
                 outstr += ' (' + read16() + ')';
                 break;
             case M6502_AM.PC_REL_ZP:
-                outstr += ' ' + read8() + ', ' + hex4(mksigned8(this.trace_peek(PC+1)) + PC + 2)
+                outstr += ' ' + read8() + ', $' + hex4(mksigned8(this.trace_peek(PC+1)) + PC + 2)
                 break;
             default:
                 console.log('UNKNOWN AM', addr_mode);
@@ -308,7 +308,7 @@ class m6502_t {
     }
 
 	trace_format(da_out, PCO) {
-		let outstr = trace_start_format('MOS', MOS_COLOR, this.clock.trace_cycles, ' ', PCO);
+		let outstr = trace_start_format('MOS', MOS_COLOR, this.clock.trace_cycles-1, ' ', PCO);
 		// General trace format is...
 		outstr += da_out.disassembled;
 		let sp = da_out.disassembled.length;

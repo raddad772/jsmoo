@@ -281,7 +281,7 @@ async function test_pt_m6502(opcodes) {
         dbg.enable_tracing_for(D_RESOURCE_TYPES.M6502);
         dbg.enable_tracing();
     }
-    let start_test = 0x00;
+    let start_test = 0x0F;
     let skip_tests = []; // Tests do not correctly set B after BRK
 
     if (M6502_TEST_DO_TRACING) cpu.enable_tracing(read8);

@@ -589,10 +589,13 @@ class m6502_switchgen {
         this.addcycle(3);
         this.addl('pins.Addr = pins.D;');
 
-        this.addcycle(4);
+        this.addcycle(4); // spurious write
         this.addl(cond);
-        this.operand();
+        this.RW(1);
 
+        this.addcycle(5);
+        this.RW(0);
+        this.operand();
         this.addl('if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }')
 
         this.addcycle(5);
