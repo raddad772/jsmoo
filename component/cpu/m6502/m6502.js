@@ -122,7 +122,7 @@ class m6502_t {
     cycle() {
         // Perform 1 processor cycle
         this.clock.trace_cycles++;
-        if (this.regs.HLT) return;
+        if (this.regs.HLT || this.regs.STP) return;
         if (this.pins.IRQ) {
             this.IRQ_count++;
             if (this.IRQ_count >= 1) {
@@ -216,7 +216,14 @@ class m6502_t {
             return '$' + hex4(cpu.trace_peek(PC) + (cpu.trace_peek(PC+1) << 8));
         }
 
-        let outstr = output.mnemonic.slice(0,3);
+        let outstr;
+        //let outstr = output.mnemonic.slice(0,3);
+        if (output.mnemonic.indexOf(' ') === -1) {
+            outstr = output.mnemonic;
+        }
+        else {
+            outstr = output.mnemonic.slice(0, output.mnemonic.indexOf(' '));
+        }
         switch(addr_mode) {
             case M6502_AM.IMPLIED:
             case M6502_AM.NONE:
@@ -278,6 +285,9 @@ class m6502_t {
             case M6502_AM.INDjmp:
                 outstr += ' (' + read16() + ')';
                 break;
+            case M6502_AM.PC_REL_ZP:
+                outstr += ' ' + read8() + ', ' + hex4(mksigned8(this.trace_peek(PC+1)) + PC + 2)
+                break;
             default:
                 console.log('UNKNOWN AM', addr_mode);
                 break;
@@ -336,6 +346,8 @@ class m6502_t {
         this.regs.P.B = 1;
         this.regs.P.D = 0;
         this.regs.P.I = 1;
+        this.regs.WAI = false;
+        this.regs.STP = false;
         if (this.first_reset) this.power_on();
         this.first_reset = false;
     }

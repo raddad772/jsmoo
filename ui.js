@@ -569,7 +569,7 @@ async function main() {
 	dbg.init_done();
 }
 
-after_js = main;
+//after_js = main;
 
 async function init_ui() {
 	for (let k in ui_el) {

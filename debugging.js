@@ -1,7 +1,7 @@
 "use strict";
 
 let R5A22_DO_TRACING_AT_START = false;
-let WDC_DO_TRACING_AT_START = false;
+let WDC_DO_TRACING_AT_START = true;
 let SPC_DO_TRACING_AT_START = false;
 let M6502_DO_TRACING_AT_START = false;
 let TRACE_COLOR = true;

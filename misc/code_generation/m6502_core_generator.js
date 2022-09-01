@@ -38,16 +38,21 @@ function final_m6502_opcode_matrix(variant_list) {
     let output_matrix = [];
     for (let v in variant_list) {
         for (let i = 0; i <= M6502_MAX_OPCODE; i++) {
-            switch (M6502_VARIANTS_R[v]) {
+            switch (M6502_VARIANTS_R[variant_list[v]]) {
                 case 'stock':
-                    output_matrix[i] = M6502_stock_matrix[i];
+                    if (typeof M6502_stock_matrix[i] !== 'undefined')
+                        output_matrix[i] = M6502_stock_matrix[i];
                     break;
                 case 'stock_undocumented':
-                    output_matrix[i] = M6502_undocumented_matrix[i];
+                    if (typeof M6502_undocumented_matrix[i] !== 'undefined') {
+                        output_matrix[i] = M6502_undocumented_matrix[i];
+                    }
                     break;
-                /*case 'cmos':
-                    output_matrix[i] = M6502_cmos_matrix[i];
-                    break;*/
+                case 'cmos':
+                    if (typeof M6502_cmos_matrix[i] !== 'undefined') {
+                        output_matrix[i] = M6502_cmos_matrix[i];
+                    }
+                    break;
                 default:
                     console.log('WHAT !?', variant_list);
                     break;
@@ -55,8 +60,9 @@ function final_m6502_opcode_matrix(variant_list) {
         }
     }
     for (let i = 0; i <= M6502_MAX_OPCODE; i++) {
-        if (typeof output_matrix[i] === 'undefined')
+        if (typeof output_matrix[i] === 'undefined') {
             output_matrix[i] = M6502_invalid_matrix[i];
+        }
     }
     return output_matrix;
 }
@@ -242,7 +248,6 @@ class m6502_switchgen {
         this.addl('if (!regs.IRQ_pending && !regs.NMI_pending) regs.TCU--;');
         this.addcycle(3)
         //this.addl('regs.PC = (regs.PC + 1) & 0xFFFF;');
-        break;
     }
 
     BRK(vector='0xFFFE', set_b=true, add_one_to_pc=false) {
@@ -763,6 +768,7 @@ class m6502_switchgen {
  * @param {M6502_opcode_info} opcode_info
  * @param {boolean} BCD_support
  * @param {string} INVALID_OP
+ * @param {Number} final_variant
  */
 function m6502_generate_instruction_function(indent, opcode_info, BCD_support=true, INVALID_OP='', final_variant) {
     let r;
@@ -937,7 +943,7 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
                     ag.addl('regs.P.D = 1;');
                     break;
                 default:
-                    console.log('M6502 IMPLIED unknown ins', opcode_info.ins);
+                    console.log('M6502 IMPLIED unknown ins', opcode_info);
                     break;
             }
             break;
@@ -1496,7 +1502,7 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
                     r = false;
                     break;
                 default:
-                    console.log('M6502 Unknown case PC relative addressing');
+                    console.log('M6502 Unknown case PC relative addressing', opcode_info.ins);
                     return '';
             }
             if (r !== false) ag.BRA('regs.TR = +(' + r + ');');
@@ -1512,18 +1518,16 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
     return 'function(regs, pins) { //' + opcode_info.mnemonic + '\n' + ag.finished() + indent + '}';
 }
 
-
-// Undocumented included, you'd want to pass [M6502_VARIANTS.STOCK_UNDOCUMENTED, M6502_VARIANTS.STOCK]
-function generate_nes6502_core(INVALID_OP) {
-    let R2A03_matrix = final_m6502_opcode_matrix([M6502_VARIANTS.STOCK]);
-    let outstr = '"use strict";\n\nconst nesm6502_opcodes_decoded = Object.freeze({\n';
+function generate_6502_core(variant_list, final_variant, output_name, BCD_SUPPORT, INVALID_OP) {
+    let opc_matrix = final_m6502_opcode_matrix(variant_list);
+    let outstr = '"use strict";\n\nconst ' + output_name + ' = Object.freeze({\n';
     let indent = '    ';
     let firstin = false;
     for (let i = 0; i <= M6502_MAX_OPCODE; i++) {
         let mystr = indent + hex0x2(i) + ': new M6502_opcode_functions(';
-        let opc = R2A03_matrix[i];
+        let opc = opc_matrix[i];
         mystr += str_m6502_ocode_matrix(opc.opcode, opc.variant) + ',\n';
-        let r = m6502_generate_instruction_function(indent, R2A03_matrix[i], false, INVALID_OP, M6502_VARIANTS.STOCK);
+        let r = m6502_generate_instruction_function(indent, opc_matrix[i], BCD_SUPPORT, INVALID_OP, final_variant);
         mystr += '        ' + r + ')';
         if (firstin)
             outstr += ',\n';
@@ -1534,23 +1538,10 @@ function generate_nes6502_core(INVALID_OP) {
     return outstr;
 }
 
-function generate_6502_cmos_core() {
-    let CMOS_matrix = final_m6502_opcode_matrix([M6502_VARIANTS.STOCK, M6502_VARIANTS.CMOS]);
-    let outstr = 'use strict;\n\nconst m65c02_opcodes_decoded = Object.freeze({\n';
-    let indent = '    ';
-    let firstin = false;
-    for (let i = 0; i <= M6502_MAX_OPCODE; i++) {
-        let mystr = indent + hex0x2(i) + ': new M6502_opcode_functions(';
-        let opc = CMOS_matrix[i];
-        mystr += str_m6502_ocode_matrix(opc.opcode, opc.variant) + ',\n';
-        let r = m6502_generate_instruction_function(indent, CMOS_matrix[i], true, '', M6502_VARIANTS.CMOS);
-        mystr = '        ' + r  + ')';
-        if (firstin) outstr += ',\n';
-        firstin = true;
-        outstr += mystr;
-    }
-    outstr += '\n});';
-    return outstr;
+function generate_nes6502_core() {
+    return generate_6502_core([M6502_VARIANTS.STOCK], M6502_VARIANTS.STOCK, 'nesm6502_opcodes_decoded', false, '');
 }
 
-//console.log(generate_nes6502_core());
+function generate_6502_cmos_core() {
+    return generate_6502_core([M6502_VARIANTS.STOCK, M6502_VARIANTS.CMOS], M6502_VARIANTS.CMOS, 'm65c02_opcodes_decoded', true, '');
+}
