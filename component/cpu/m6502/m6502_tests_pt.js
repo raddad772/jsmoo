@@ -92,7 +92,7 @@ function test_it_automated(cpu, tests) {
         return (from.indexOf(what) !== -1);
     }
 
-    cpu.trace_cycles = 1;
+    cpu.clock.trace_cycles = 1;
     let cyclei;
     let last_pc;
     let ins;
@@ -158,14 +158,14 @@ function test_it_automated(cpu, tests) {
             addr = cpu.pins.Addr;
             if (cpu.pins.RW) { // Write
                 if (M6502_TEST_DO_TRACING) {
-                    dbg.traces.add(D_RESOURCE_TYPES.M6502, cpu.trace_cycles, trace_format_write('MOS', MOS_COLOR, cpu.trace_cycles, (addr & 0xFFFF), cpu.pins.D));
+                    dbg.traces.add(D_RESOURCE_TYPES.M6502, cpu.clock.trace_cycles, trace_format_write('MOS', MOS_COLOR, cpu.clock.trace_cycles, (addr & 0xFFFF), cpu.pins.D));
                 }
                 M6502testRAM[addr] = cpu.pins.D;
             }
             else {
                 cpu.pins.D = M6502testRAM[addr];
                 if (M6502_TEST_DO_TRACING) {
-                    dbg.traces.add(D_RESOURCE_TYPES.M6502, cpu.trace_cycles, trace_format_read('MOS', MOS_COLOR, cpu.trace_cycles, addr & 0xFFFF, cpu.pins.D));
+                    dbg.traces.add(D_RESOURCE_TYPES.M6502, cpu.clock.trace_cycles, trace_format_read('MOS', MOS_COLOR, cpu.clock.trace_cycles, addr & 0xFFFF, cpu.pins.D));
                 }
             }
         }
@@ -275,7 +275,7 @@ async function test_pt_m6502(opcodes) {
         return M6502testRAM[addr];
     }
 
-    let cpu = new m6502_t();
+    let cpu = new m6502_t(opcodes, {});
     dbg.add_cpu(D_RESOURCE_TYPES.M6502, cpu);
     if (M6502_TEST_DO_TRACING) {
         dbg.enable_tracing_for(D_RESOURCE_TYPES.M6502);
@@ -284,7 +284,6 @@ async function test_pt_m6502(opcodes) {
     let start_test = 0x00;
     let skip_tests = []; // Tests do not correctly set B after BRK
 
-    // 6502 emulation mode
     if (M6502_TEST_DO_TRACING) cpu.enable_tracing(read8);
     //console.log('DO TRACING?', WDC_TEST_DO_TRACING);
     for (let i = start_test; i < 256; i++) {
