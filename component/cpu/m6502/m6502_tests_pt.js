@@ -10,7 +10,8 @@ const getJSON = async url => {
   const data = response.json(); // get JSON from the response
   return data; // returns a promise, which resolves to this data value
 }
-let local_server_url = 'http://[::1]:8000/misc/tests/ProcessorTests/nes6502/v1/'
+let local_server_url;
+
 
 let M6502testRAM = new Uint8Array(65536);
 
@@ -221,6 +222,16 @@ function test_it_automated(cpu, tests) {
 
 let M6502_io_mismatches = [];
 
+async function test_pt_nesm6502() {
+    local_server_url = 'http://[::1]:8000/misc/tests/ProcessorTests/nes6502/v1/'
+    await test_pt_m6502(nesm6502_opcodes_decoded);
+}
+
+async function test_pt_m65c02() {
+    local_server_url = 'http://[::1]:8000/misc/tests/ProcessorTests/wdc65c02/v1/'
+    await test_pt_m6502(m65c02_opcodes_decoded);
+}
+
 async function test_pt_m6502_ins(cpu, ins) {
     let opc = hex2(ins).toLowerCase();
     let data = await getJSON(local_server_url + opc + '.json');
@@ -258,13 +269,13 @@ async function test_pt_m6502_ins(cpu, ins) {
     return result.passed;
 }
 
-async function test_pt_m6502() {
+async function test_pt_m6502(opcodes) {
     console.log('TRYIN TO GET ME SOME JSON')
      let read8 = function(addr) {
         return M6502testRAM[addr];
     }
 
-    let cpu = new m6502_t(nesm6502_opcodes_decoded);
+    let cpu = new m6502_t();
     dbg.add_cpu(D_RESOURCE_TYPES.M6502, cpu);
     if (M6502_TEST_DO_TRACING) {
         dbg.enable_tracing_for(D_RESOURCE_TYPES.M6502);

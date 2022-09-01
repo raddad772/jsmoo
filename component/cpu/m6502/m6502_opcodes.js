@@ -20,56 +20,6 @@ const M6502_VARIANTS_R = Object.freeze({
     3: 'invalid'
 });
 
-
-const M6502_MN_LIST = Object.freeze([
-    // Base model instructions
-    'ADC', 'AND', 'ASL', 'BCC',
-    'BCS', 'BEQ', 'BIT', 'BMI',
-    'BNE', 'BPL', 'BRK', 'BVC',
-    'BVS', 'CLC', 'CLD', 'CLI',
-    'CLV', 'CMP', 'CPX', 'CPY',
-    'DEC', 'DEX', 'DEY', 'EOR',
-    'INC', 'INX', 'INY', 'JMP',
-    'JSR', 'LDA', 'LDX', 'LDY',
-    'LSR', 'NOP', 'ORA', 'PHA',
-    'PHP', 'PLA', 'PLP', 'ROL',
-    'ROR', 'RTI', 'RTS', 'SBC',
-    'SEC', 'SED', 'SEI', 'STA',
-    'STX', 'STY', 'TAX', 'TAY',
-    'TSX', 'TXA', 'TXS', 'TYA',
-    'NONE', 'S_RESET', 'S_NMI', 'S_IRQ'
-]);
-
-const M6502_AM_LIST = Object.freeze([
-    'ACCUM', 'ABS', 'ABS_X',
-    'ABS_Y', 'IMM', 'IMPLIED',
-    'IND', 'X_INDr', 'IND_Yr',
-    'PC_REL', 'ZP', 'ZP_Xr',
-    'ZP_Yr', 'NONE'
-]);
-
-function m6502_mn_gen() {
-
-    let outstr = 'const M6502_MN = Object.freeze({\n';
-    let cnt = 0;
-    for (let i in M6502_MN_LIST) {
-        outstr += '    ' + M6502_MN_LIST[i] + ': ' + cnt + ',\n';
-        cnt++;
-    }
-    return outstr + '});\n';
-}
-
-function m6502_am_gen() {
-
-    let outstr = 'const M6502_AM = Object.freeze({\n';
-    let cnt = 0;
-    for (let i in M6502_AM_LIST) {
-        outstr += '    ' + M6502_AM_LIST[i] + ': ' + cnt + ',\n';
-        cnt++;
-    }
-    return outstr + '});\n';
-}
-
 //console.log(m6502_mn_gen());
 const M6502_MN = Object.freeze({
     // Stock opcodes
@@ -205,7 +155,65 @@ const M6502_MN = Object.freeze({
     XAS: 81,
     SHS: 81,
     TAS: 81,
+
+    //CMOS instructions
+    NOP11: 82, // X....
+    NOP22: 83,
+    NOP24: 84,
+    NOP34: 85,
+    NOP38: 86, // ...
+
+    BBR0: 87, // X...
+    BBR1: 88,
+    BBR2: 89,
+    BBR3: 90,
+    BBR4: 91,
+    BBR5: 92,
+    BBR6: 93,
+    BBR7: 94,
+    BBS0: 95,
+    BBS1: 96,
+    BBS2: 97,
+    BBS3: 98,
+    BBS4: 99,
+    BBS5: 100,
+    BBS6: 101,
+    BBS7: 102, // ...
+
+    PHX: 103, // X
+    PHY: 104, // X
+
+    RMB0: 105, // X...
+    RMB1: 106,
+    RMB2: 107,
+    RMB3: 108,
+    RMB4: 109,
+    RMB5: 110,
+    RMB6: 111,
+    RMB7: 112,
+    SMB0: 113,
+    SMB1: 114,
+    SMB2: 115,
+    SMB3: 116,
+    SMB4: 117,
+    SMB5: 118,
+    SMB6: 119,
+    SMB7: 120, // ...
+
+    PLX: 121, // X ...
+    PLY: 122,
+    BITZ: 123,
+
+    TRB: 124,
+    TSB: 125, // ...
+
+    STP: 126,
+    WAI: 127,
+
+    NOPL: 128, // X
 });
+
+
 
 //console.log(m6502_am_gen());
 const M6502_AM = Object.freeze({
@@ -239,6 +247,7 @@ const M6502_AM = Object.freeze({
     IND_Yw: 802, // X
     
     PC_REL: 9, // X
+    PC_REL_ZP: 901,
     ZPr: 10, // X
     ZPm: 1001, // X
     ZPw: 1002, // X
@@ -248,7 +257,12 @@ const M6502_AM = Object.freeze({
     ZP_Yr: 12, // X
     ZP_Ym: 1201, // X
     ZP_Yw: 1202, // X
-    NONE: 13,
+    NONE: 13, // X
+
+    ABS_IND_Xr: 14, // X 65C02
+
+    ZP_INDr: 15, // X 65C02
+    ZP_INDw: 1501, // X 65C02
 });
 
 class M6502_opcode_info {
@@ -268,6 +282,16 @@ function generate_om_to_fill(name, default_mn='', default_am='', default_variant
     }
     return ostr + '});\n';
 }
+
+function generate_om_to_fill_holes(name, default_mn='', default_am='', default_variant='STOCK', holes_from=[]) {
+    let ostr = 'const ' + name + ' = Object.freeze({\n';
+    for (let i = 0; i < 256; i++) {
+        if (typeof holes_from[i] !== 'undefined') continue;
+        ostr += '    ' + hex0x2(i) + ': new M6502_opcode_info(' + hex0x2(i) + ', M6502_MN.' + default_mn + ', M6502_AM.' + default_am + ', \'\', M6502_VARIANTS.' + default_variant + '),\n'
+    }
+    return ostr + '});\n';
+}
+
 
 //console.log(generate_om_to_fill('M6502_invalid_matrix', 'NONE', 'NONE', 'INVALID'));
 
@@ -451,6 +475,7 @@ function generate_undoc_om_to_fill(name, default_mn='', default_am='', default_v
     }
     return ostr + '});\n';
 }
+
 
 //console.log(generate_undoc_om_to_fill('M6502_undocumented_matrix', '', '', 'STOCK'));
 
@@ -821,6 +846,114 @@ const M6502_invalid_matrix = Object.freeze({
     0xFF: new M6502_opcode_info(0xFF, M6502_MN.NONE, M6502_AM.NONE, '', M6502_VARIANTS.INVALID),
 });
 
+//console.log(generate_om_to_fill_holes('M6502_cmos_matrix', '', '', 'CMOS', M6502_stock_matrix));
+const M6502_cmos_matrix = Object.freeze({
+    0x02: new M6502_opcode_info(0x02, M6502_MN.NOP22, M6502_AM.IMPLIED, 'NOP22', M6502_VARIANTS.CMOS),
+    0x03: new M6502_opcode_info(0x03, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0x04: new M6502_opcode_info(0x04, M6502_MN.TSB, M6502_AM.ZPm, 'TSB d', M6502_VARIANTS.CMOS),
+    0x07: new M6502_opcode_info(0x07, M6502_MN.RMB0, M6502_AM.ZPm, 'RMB0', M6502_VARIANTS.CMOS),
+    0x0B: new M6502_opcode_info(0x0B, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0x0C: new M6502_opcode_info(0x0C, M6502_MN.TSB, M6502_AM.ABSm, 'TSB abs', M6502_VARIANTS.CMOS),
+    0x0F: new M6502_opcode_info(0x0F, M6502_MN.BBR0, M6502_AM.PC_REL, 'BBR0', M6502_VARIANTS.CMOS),
+    0x12: new M6502_opcode_info(0x12, M6502_MN.ORA, M6502_AM.ZP_INDr, 'ORA (d)', M6502_VARIANTS.CMOS),
+    0x13: new M6502_opcode_info(0x13, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0x14: new M6502_opcode_info(0x14, M6502_MN.TRB, M6502_AM.ZPm, 'TRB d', M6502_VARIANTS.CMOS),
+    0x17: new M6502_opcode_info(0x17, M6502_MN.RMB1, M6502_AM.ZPm, 'RMB1', M6502_VARIANTS.CMOS),
+    0x1A: new M6502_opcode_info(0x1A, M6502_MN.INC, M6502_AM.ACCUM, 'INC A', M6502_VARIANTS.CMOS),
+    0x1B: new M6502_opcode_info(0x1B, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0x1C: new M6502_opcode_info(0x1C, M6502_MN.TRB, M6502_AM.ABSm, 'TRB abs', M6502_VARIANTS.CMOS),
+    0x1F: new M6502_opcode_info(0x1F, M6502_MN.BBR1, M6502_AM.PC_REL, 'BBR1', M6502_VARIANTS.CMOS),
+    0x22: new M6502_opcode_info(0x22, M6502_MN.NOP22, M6502_AM.IMPLIED, 'NOP22', M6502_VARIANTS.CMOS),
+    0x23: new M6502_opcode_info(0x23, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0x27: new M6502_opcode_info(0x27, M6502_MN.RMB2, M6502_AM.ZPm, 'RMB2', M6502_VARIANTS.CMOS),
+    0x2B: new M6502_opcode_info(0x2B, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0x2F: new M6502_opcode_info(0x2F, M6502_MN.BBR2, M6502_AM.PC_REL, 'BBR2', M6502_VARIANTS.CMOS),
+    0x32: new M6502_opcode_info(0x32, M6502_MN.AND, M6502_AM.ZPr, 'AND (d)', M6502_VARIANTS.CMOS),
+    0x33: new M6502_opcode_info(0x33, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0x34: new M6502_opcode_info(0x34, M6502_MN.BIT, M6502_AM.ZP_Xr, 'BIT d,x', M6502_VARIANTS.CMOS),
+    0x37: new M6502_opcode_info(0x37, M6502_MN.RMB3, M6502_AM.ZPm, 'RMB3', M6502_VARIANTS.CMOS),
+    0x3A: new M6502_opcode_info(0x3A, M6502_MN.DEC, M6502_AM.ACCUM, 'DEC A', M6502_VARIANTS.CMOS),
+    0x3B: new M6502_opcode_info(0x3B, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0x3C: new M6502_opcode_info(0x3C, M6502_MN.BIT, M6502_AM.ABS_Xr, 'BIT abs,x', M6502_VARIANTS.CMOS),
+    0x3F: new M6502_opcode_info(0x3F, M6502_MN.BBR3, M6502_AM.PC_REL, 'BBR3', M6502_VARIANTS.CMOS),
+    0x42: new M6502_opcode_info(0x42, M6502_MN.NOP22, M6502_AM.IMPLIED, 'NOP22', M6502_VARIANTS.CMOS),
+    0x43: new M6502_opcode_info(0x43, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0x44: new M6502_opcode_info(0x44, M6502_MN.NOPL, M6502_AM.ZPr, 'NOP zp', M6502_VARIANTS.CMOS),
+    0x47: new M6502_opcode_info(0x47, M6502_MN.RMB4, M6502_AM.ZPm, 'RMB4', M6502_VARIANTS.CMOS),
+    0x4B: new M6502_opcode_info(0x4B, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0x4F: new M6502_opcode_info(0x4F, M6502_MN.BBR4, M6502_AM.PC_REL, 'BBR4', M6502_VARIANTS.CMOS),
+    0x52: new M6502_opcode_info(0x52, M6502_MN.EOR, M6502_AM.ZP_INDr, 'EOR (d)', M6502_VARIANTS.CMOS),
+    0x53: new M6502_opcode_info(0x53, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0x54: new M6502_opcode_info(0x54, M6502_MN.NOP24, M6502_AM.IMPLIED, 'NOP24', M6502_VARIANTS.CMOS),
+    0x57: new M6502_opcode_info(0x57, M6502_MN.RMB5, M6502_AM.ZPm, 'RMB5', M6502_VARIANTS.CMOS),
+    0x5A: new M6502_opcode_info(0x5A, M6502_MN.PHY, M6502_AM.IMPLIED, 'PHY', M6502_VARIANTS.CMOS),
+    0x5B: new M6502_opcode_info(0x5B, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0x5C: new M6502_opcode_info(0x5C, M6502_MN.NOP38, M6502_AM.IMPLIED, 'NOP38', M6502_VARIANTS.CMOS),
+    0x5F: new M6502_opcode_info(0x5F, M6502_MN.BBR5, M6502_AM.PC_REL, 'BBR5', M6502_VARIANTS.CMOS),
+    0x62: new M6502_opcode_info(0x62, M6502_MN.NOP22, M6502_AM.IMPLIED, 'NOP22', M6502_VARIANTS.CMOS),
+    0x63: new M6502_opcode_info(0x63, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0x64: new M6502_opcode_info(0x64, M6502_MN.STZ, M6502_AM.ZPw, 'STZ d', M6502_VARIANTS.CMOS),
+    0x67: new M6502_opcode_info(0x67, M6502_MN.RMB6, M6502_AM.ZPm, 'RMB6', M6502_VARIANTS.CMOS),
+    0x6B: new M6502_opcode_info(0x6B, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0x6F: new M6502_opcode_info(0x6F, M6502_MN.BBR6, M6502_AM.PC_REL, 'BBR6', M6502_VARIANTS.CMOS),
+    0x72: new M6502_opcode_info(0x72, M6502_MN.ADC, M6502_AM.ZP_INDr, 'ADC (d)', M6502_VARIANTS.CMOS),
+    0x73: new M6502_opcode_info(0x73, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0x74: new M6502_opcode_info(0x74, M6502_MN.STZ, M6502_AM.ZP_Xw, 'STZ d,x', M6502_VARIANTS.CMOS),
+    0x77: new M6502_opcode_info(0x77, M6502_MN.RMB7, M6502_AM.ZPm, 'RMB7', M6502_VARIANTS.CMOS),
+    0x7A: new M6502_opcode_info(0x7A, M6502_MN.PLY, M6502_AM.IMPLIED, 'PLY', M6502_VARIANTS.CMOS),
+    0x7B: new M6502_opcode_info(0x7B, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0x7C: new M6502_opcode_info(0x7C, M6502_MN.JMP, M6502_AM.ABS_IND_Xr, 'JMP (a,x)', M6502_VARIANTS.CMOS),
+    0x7F: new M6502_opcode_info(0x7F, M6502_MN.BBR7, M6502_AM.PC_REL, 'BBR7', M6502_VARIANTS.CMOS),
+    0x80: new M6502_opcode_info(0x80, M6502_MN.BRA, M6502_AM.PC_REL, 'BRA', M6502_VARIANTS.CMOS),
+    0x82: new M6502_opcode_info(0x82, M6502_MN.NOP22, M6502_AM.IMPLIED, 'NOP22', M6502_VARIANTS.CMOS),
+    0x83: new M6502_opcode_info(0x83, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0x87: new M6502_opcode_info(0x87, M6502_MN.SMB0, M6502_AM.ZPm, 'SMB0', M6502_VARIANTS.CMOS),
+    0x89: new M6502_opcode_info(0x89, M6502_MN.BITZ, M6502_AM.IMM, 'BIT #', M6502_VARIANTS.CMOS),
+    0x8B: new M6502_opcode_info(0x8B, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0x8F: new M6502_opcode_info(0x8F, M6502_MN.BBS0, M6502_AM.PC_REL, 'BBS0', M6502_VARIANTS.CMOS),
+    0x92: new M6502_opcode_info(0x92, M6502_MN.STA, M6502_AM.ZP_INDw, 'STA (d)', M6502_VARIANTS.CMOS),
+    0x93: new M6502_opcode_info(0x93, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0x97: new M6502_opcode_info(0x97, M6502_MN.SMB1, M6502_AM.ZPm, 'SMB1', M6502_VARIANTS.CMOS),
+    0x9B: new M6502_opcode_info(0x9B, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0x9C: new M6502_opcode_info(0x9C, M6502_MN.STZ, M6502_AM.ABSw, 'STZ abs', M6502_VARIANTS.CMOS),
+    0x9E: new M6502_opcode_info(0x9E, M6502_MN.STZ, M6502_AM.ABS_Xw, 'STZ abs,x', M6502_VARIANTS.CMOS),
+    0x9F: new M6502_opcode_info(0x9F, M6502_MN.BBS1, M6502_AM.PC_REL, 'BBS1', M6502_VARIANTS.CMOS),
+    0xA3: new M6502_opcode_info(0xA3, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0xA7: new M6502_opcode_info(0xA7, M6502_MN.SMB2, M6502_AM.ZPm, 'SMB2', M6502_VARIANTS.CMOS),
+    0xAB: new M6502_opcode_info(0xAB, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0xAF: new M6502_opcode_info(0xAF, M6502_MN.BBS2, M6502_AM.PC_REL, 'BBS2', M6502_VARIANTS.CMOS),
+    0xB2: new M6502_opcode_info(0xB2, M6502_MN.LDA, M6502_AM.ZP_INDr, 'LDA (d)', M6502_VARIANTS.CMOS),
+    0xB3: new M6502_opcode_info(0xB3, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0xB7: new M6502_opcode_info(0xB7, M6502_MN.SMB3, M6502_AM.ZPm, 'SMB3', M6502_VARIANTS.CMOS),
+    0xBB: new M6502_opcode_info(0xBB, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0xBF: new M6502_opcode_info(0xBF, M6502_MN.BBS3, M6502_AM.PC_REL, 'BBS3', M6502_VARIANTS.CMOS),
+    0xC2: new M6502_opcode_info(0xC2, M6502_MN.NOP22, M6502_AM.IMPLIED, 'NOP22', M6502_VARIANTS.CMOS),
+    0xC3: new M6502_opcode_info(0xC3, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0xC7: new M6502_opcode_info(0xC7, M6502_MN.SMB4, M6502_AM.ZPm, 'SMB4', M6502_VARIANTS.CMOS),
+    0xCB: new M6502_opcode_info(0xCB, M6502_MN.WAI, M6502_AM.IMPLIED, 'WAI', M6502_VARIANTS.CMOS),
+    0xCF: new M6502_opcode_info(0xCF, M6502_MN.BBS4, M6502_AM.PC_REL, 'BBS4', M6502_VARIANTS.CMOS),
+    0xD2: new M6502_opcode_info(0xD2, M6502_MN.CMP, M6502_AM.ZP_INDr, 'CMP (d)', M6502_VARIANTS.CMOS),
+    0xD3: new M6502_opcode_info(0xD3, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0xD4: new M6502_opcode_info(0xD4, M6502_MN.NOP24, M6502_AM.IMPLIED, 'NOP24', M6502_VARIANTS.CMOS),
+    0xD7: new M6502_opcode_info(0xD7, M6502_MN.SMB5, M6502_AM.ZPm, 'SMB5', M6502_VARIANTS.CMOS),
+    0xDA: new M6502_opcode_info(0xDA, M6502_MN.PHX, M6502_AM.IMPLIED, 'PHX', M6502_VARIANTS.CMOS),
+    0xDB: new M6502_opcode_info(0xDB, M6502_MN.STP, M6502_AM.IMPLIED, 'STP', M6502_VARIANTS.CMOS),
+    0xDC: new M6502_opcode_info(0xDC, M6502_MN.NOP34, M6502_AM.IMPLIED, 'NOP34', M6502_VARIANTS.CMOS),
+    0xDF: new M6502_opcode_info(0xDF, M6502_MN.BBS5, M6502_AM.PC_REL, 'BBS5', M6502_VARIANTS.CMOS),
+    0xE2: new M6502_opcode_info(0xE2, M6502_MN.NOP22, M6502_AM.IMPLIED, 'NOP22', M6502_VARIANTS.CMOS),
+    0xE3: new M6502_opcode_info(0xE3, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0xE7: new M6502_opcode_info(0xE7, M6502_MN.SMB6, M6502_AM.ZPm, 'SMB6', M6502_VARIANTS.CMOS),
+    0xEB: new M6502_opcode_info(0xEB, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0xEF: new M6502_opcode_info(0xEF, M6502_MN.BBS6, M6502_AM.PC_REL, 'BBS6', M6502_VARIANTS.CMOS),
+    0xF2: new M6502_opcode_info(0xF2, M6502_MN.SBC, M6502_AM.ZP_INDr, 'SBC (d)', M6502_VARIANTS.CMOS),
+    0xF3: new M6502_opcode_info(0xF3, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0xF4: new M6502_opcode_info(0xF4, M6502_MN.NOP24, M6502_AM.IMPLIED, 'NOP24', M6502_VARIANTS.CMOS),
+    0xF7: new M6502_opcode_info(0xF7, M6502_MN.SMB7, M6502_AM.ZPm, 'SMB7', M6502_VARIANTS.CMOS),
+    0xFA: new M6502_opcode_info(0xFA, M6502_MN.PLX, M6502_AM.IMPLIED, 'PLX', M6502_VARIANTS.CMOS),
+    0xFB: new M6502_opcode_info(0xFB, M6502_MN.NOP11, M6502_AM.IMPLIED, 'NOP11', M6502_VARIANTS.CMOS),
+    0xFC: new M6502_opcode_info(0xFC, M6502_MN.NOP34, M6502_AM.IMPLIED, 'NOP34', M6502_VARIANTS.CMOS),
+    0xFF: new M6502_opcode_info(0xFF, M6502_MN.BBS7, M6502_AM.PC_REL, 'BBS7', M6502_VARIANTS.CMOS),
+});
 
 class M6502_opcode_functions {
     constructor(opcode_info, exec_func) {
