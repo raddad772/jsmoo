@@ -231,6 +231,9 @@ class m6502_t {
             case M6502_AM.ACCUM:
                 outstr += ' A';
                 break;
+            case M6502_AM.ZP_INDr:
+                outstr += ' (' + read8() + ')'
+                break;
             case M6502_AM.IMM:
                 outstr += ' #' + read8();
                 break;

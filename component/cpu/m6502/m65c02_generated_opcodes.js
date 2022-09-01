@@ -640,7 +640,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.Y) & 0xFFFF;
                     if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
-                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
@@ -731,7 +731,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.X) & 0xFFFF;
                     if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
-                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
@@ -763,7 +763,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     regs.TA |= pins.D << 8;
                     regs.TR = (regs.TA + regs.X) & 0xFFFF;
                     if ((regs.TA & 0xFF00) === (regs.TR & 0xFF00)) { pins.Addr = regs.TR;  regs.TCU++; break; }
-                    pins.Addr = (regs.TA & 0xFF00) | (regs.TR & 0xFF);
+                    pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4:
                     pins.Addr = regs.TR;
@@ -1275,10 +1275,17 @@ const m65c02_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     break;
-                case 2:
+                case 2: // real read ABS L
                     pins.Addr = pins.D;
                     break;
-                case 3: // cleanup_custom
+                case 3: // read ABS H
+                    regs.TA = pins.D;
+                    pins.Addr = (pins.Addr + 1) & 0xFF;
+                    break;
+                case 4: // Read from addr
+                    pins.Addr = regs.TA | (pins.D << 8);
+                    break;
+                case 5: // cleanup_custom
                     regs.A &= pins.D;
                     regs.P.Z = +((regs.A) === 0);
                     regs.P.N = ((regs.A) & 0x80) >>> 7;
@@ -1441,7 +1448,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.Y) & 0xFFFF;
                     if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
-                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
@@ -1501,7 +1508,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.X) & 0xFFFF;
                     if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
-                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
@@ -1533,7 +1540,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.X) & 0xFFFF;
                     if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
-                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
@@ -1565,7 +1572,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     regs.TA |= pins.D << 8;
                     regs.TR = (regs.TA + regs.X) & 0xFFFF;
                     if ((regs.TA & 0xFF00) === (regs.TR & 0xFF00)) { pins.Addr = regs.TR;  regs.TCU++; break; }
-                    pins.Addr = (regs.TA & 0xFF00) | (regs.TR & 0xFF);
+                    pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4:
                     pins.Addr = regs.TR;
@@ -2230,7 +2237,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.Y) & 0xFFFF;
                     if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
-                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
@@ -2323,7 +2330,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.X) & 0xFFFF;
                     if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
-                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
@@ -2355,7 +2362,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     regs.TA |= pins.D << 8;
                     regs.TR = (regs.TA + regs.X) & 0xFFFF;
                     if ((regs.TA & 0xFF00) === (regs.TR & 0xFF00)) { pins.Addr = regs.TR;  regs.TCU++; break; }
-                    pins.Addr = (regs.TA & 0xFF00) | (regs.TR & 0xFF);
+                    pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4:
                     pins.Addr = regs.TR;
@@ -3158,7 +3165,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.Y) & 0xFFFF;
                     if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
-                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
@@ -3274,7 +3281,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.X) & 0xFFFF;
                     if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
-                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
@@ -3323,7 +3330,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     regs.TA |= pins.D << 8;
                     regs.TR = (regs.TA + regs.X) & 0xFFFF;
                     if ((regs.TA & 0xFF00) === (regs.TR & 0xFF00)) { pins.Addr = regs.TR;  regs.TCU++; break; }
-                    pins.Addr = (regs.TA & 0xFF00) | (regs.TR & 0xFF);
+                    pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4:
                     pins.Addr = regs.TR;
@@ -4697,7 +4704,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.Y) & 0xFFFF;
                     if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
-                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
@@ -4757,7 +4764,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.X) & 0xFFFF;
                     if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
-                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
@@ -4789,7 +4796,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.X) & 0xFFFF;
                     if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
-                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
@@ -4821,7 +4828,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.Y) & 0xFFFF;
                     if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
-                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
@@ -5477,7 +5484,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.Y) & 0xFFFF;
                     if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
-                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
@@ -5569,7 +5576,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.X) & 0xFFFF;
                     if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
-                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
@@ -6361,7 +6368,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.Y) & 0xFFFF;
                     if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
-                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
@@ -6466,7 +6473,7 @@ const m65c02_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.TA | (pins.D << 8);
                     regs.TA = (pins.Addr + regs.X) & 0xFFFF;
                     if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
-                    pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
+                    pins.Addr = (regs.PC - 1) & 0xFFFF;
                     break;
                 case 4: // optional
                     pins.Addr = regs.TA;
