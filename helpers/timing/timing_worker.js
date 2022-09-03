@@ -14,7 +14,7 @@ class timing_worker_t {
         this.frame_time_target = 0;
         this.frame_time_full = 0;
         this.next_frame_start = 0;
-        this.set_fps_target(80);
+        this.set_fps_target(1000);
         this.sleep_start = 0;
         this.frame_start = 0;
 
