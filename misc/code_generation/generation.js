@@ -44,3 +44,6 @@ function generate_65c02_js() {
     save_js('m65c02_generated_opcodes.js', generate_6502_cmos_core());
 }
 
+function generate_z80_js() {
+    save_js('z80_generated_opcodes.js', generate_z80_core());
+}

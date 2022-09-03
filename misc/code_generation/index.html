@@ -7,11 +7,13 @@
     <script type="text/javascript" src="/helpers/jszip/dist/jszip.js"></script>
     <script type="text/javascript" src="/component/cpu/wdc65816/wdc65816_t.js"></script>
     <script type="text/javascript" src="/component/cpu/m6502/m6502_opcodes.js"></script>
+    <script type="text/javascript" src="/component/cpu/z80/z80_opcodes.js"></script>
     <script type="text/javascript" src="wdc65816_core_generator.js"></script>
     <script type="text/javascript" src="m68k_core_generator.js"></script>
     <script type="text/javascript" src="spc700_test_generator.js"></script>
     <script type="text/javascript" src="spc700_core_generator.js"></script>
     <script type="text/javascript" src="m6502_core_generator.js"></script>
+    <script type="text/javascript" src="z80_core_generator.js"></script>
     <script type="text/javascript" src="generation.js"></script>
     <meta charset="utf-8">
     <link rel="stylesheet" href="/jsmoo.css">
@@ -28,6 +30,7 @@ Seed to use for SPC700 tests:<input id="seed">
 <button id="downloadjsSPC" type="button" onclick="generate_spc700_js()">Generate SPC</button>
 <button id="downloadjsnes6502" type="button" onclick="generate_nes6502_js()">Generate NES m6502</button>
 <button id="downloadjs65c02" type="button" onclick="generate_65c02_js()">Generate M65C02 (Commodore64, Atari Lynx, ...)</button>
+<button id="downloadjsz80" type="button" onclick="generate_z80_js()">Generate Z80</button>
 
 <div id="statushere">Status of generating will go here...</div>
 

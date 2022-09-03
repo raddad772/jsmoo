@@ -24,10 +24,8 @@ class NES {
 
     run_frame() {
         let current_frame = this.clock.master_frame;
-        let ld = 0;
         while (this.clock.master_frame === current_frame) {
             this.run_scanline();
-            ld++;
             if (dbg.do_break) break;
         }
         //this.ppu.render_bgtables_from_memory(0, 260, true);
@@ -41,9 +39,29 @@ class NES {
     }
 
     run_scanline() {
-        let to_do = (this.clock.timing.clocks_per_line - this.clock.clocks_this_line);
-        this.run_cycles(to_do);
+        let cpu_step = this.clock.timing.cpu_divisor;
+        let ppu_step = this.clock.timing.ppu_divisor;
+        let done = 0>>>0;
+        let start_y = this.clock.ppu_y;
+        while (this.clock.ppu_y === start_y) {
+            this.clock.master_clock += cpu_step;
+            this.cpu.run_cycle();
+            this.clock.cpu_frame_cycle++;
+            this.clock.cpu_master_clock += cpu_step;
+            this.clock.clocks_this_line += cpu_step;
+            let ppu_left = this.clock.master_clock - this.clock.ppu_master_clock;
+            done = 0;
+            while (ppu_left >= ppu_step) {
+                ppu_left -= ppu_step;
+                done += ppu_step;
+            }
+            this.ppu.cycle(done / ppu_step);
+            this.clock.ppu_master_clock += done;
+            this.cycles_left -= cpu_step;
+            if (dbg.do_break) break;
+        }
     }
+
 
     run_cycles(howmany) {
         this.cycles_left += howmany;
