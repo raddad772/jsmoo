@@ -19,9 +19,12 @@ class NES {
     }
 
     run_frame() {
-        let lines_to_do = (this.clock.timing.frame_lines - this.clock.ppu_y);
-        for (let i = 0; i < lines_to_do; i++) {
+        let current_frame = this.clock.master_frame;
+        //for (let i = 0; i < lines_to_do; i++) {
+        let ld = 0;
+        while (this.clock.master_frame === current_frame) {
             this.run_scanline();
+            ld++;
             if (dbg.do_break) break;
         }
         //this.ppu.render_bgtables_from_memory(0, 260, true);
