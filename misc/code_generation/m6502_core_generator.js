@@ -1576,7 +1576,7 @@ function generate_6502_core(variant_list, final_variant, output_name, BCD_SUPPOR
         firstin = true;
         outstr += mystr;
     }
-    outstr += '\n});'
+    outstr += '\n});';
     return outstr;
 }
 

@@ -106,6 +106,15 @@ class z80_registers_t {
         this.Es = this.Et;
         this.Hs = this.Ht;
         this.Ls = this.Lt;
+
+
+        this.EI = 0; //"ei" executed last
+        this.P = 0; //"ld a,i" or "ld a,r executed last
+        this.Q = 0; // Opcode that updated flag registers executed last
+        this.IFF1 = 0; // IRQ flipflip 1
+        this.IFF2 = 0; // IRQ flipflop 2
+        this.IM = 0; // Interrupt Mode
+        this.HALT = 0; // If HALT was executed
     }
 
     exchange_shadow_af() {
