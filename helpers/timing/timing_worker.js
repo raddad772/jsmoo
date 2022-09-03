@@ -14,11 +14,9 @@ class timing_worker_t {
         this.frame_time_target = 0;
         this.frame_time_full = 0;
         this.next_frame_start = 0;
-        this.set_fps_target(1000);
+        this.set_fps_target(60);
         this.sleep_start = 0;
         this.frame_start = 0;
-
-        let frame_avg_window =
 
         this.fps_counter = 0;
         this.fps = 0;
@@ -28,7 +26,7 @@ class timing_worker_t {
     set_fps_target(to) {
         this.fps_target = to;
         this.frame_time_full = (1000 / this.fps_target);
-        this.sleep_target = this.frame_time_full * .95; // Sleep 80% of the time
+        this.sleep_target = this.frame_time_full * .80; // Sleep 80% of the time
         this.frame_time_target = this.frame_time_full *.9; // Wait until 90% of the time
         console.log('SLEEP TARGET', this.sleep_target)
         console.log('FRAME TIME TARGET', this.frame_time_target)
@@ -74,10 +72,7 @@ class timing_worker_t {
     }
 
     frame_complete_and_wait() {
-        let ft = performance.now() - this.frame_start; // Frame time
-        this.frame_start = performance.now();
-        //console.log('FRAME TIME', ft);
-
+        let ft = performance.now() - this.frame_start;
         Atomics.store(this.shared_counters, timing_sab.frame_counter, this.frames_since_reset);
 
         if (this.status !== timing_status.playing) return;
@@ -86,17 +81,15 @@ class timing_worker_t {
             this.shared_counters[timing_sab.waiter] = 0;
             Atomics.wait(this.shared_counters, timing_sab.waiter, 0, time_to_sleep);
         }
-        /*let time_to_spin = this.frame_time_target - (ft + time_to_sleep);
-        console.log(ft, time_to_spin, this.frame_time_target, time_to_sleep);
+
+        let time_to_spin = this.frame_time_target - (ft + time_to_sleep);
         if (time_to_spin > 0) {
             let i = 0;
             while((performance.now() - this.frame_start) < this.frame_time_target) {
                 i++;
             }
-        }*/
-        //console.log(performance.now(), this.frame_start + this.frame_time_full);
-        /*let fs = this.frame_start + this.frame_time_target;
-        this.frame_start = fs;*/
+        }
+        this.frame_start = Math.max(performance.now(), this.frame_start+this.frame_time_full);
         this.request_frame();
     }
 

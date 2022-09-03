@@ -79,6 +79,7 @@ class global_player_t {
 		this.jsa = null;
 		this.timing_thread = new timing_thread_t(this.on_timing_message.bind(this));
 		this.ready = false;
+
 	}
 
 
@@ -649,3 +650,26 @@ async function init_ui() {
 
 	await init_fs();
 }
+
+// The performance.now() method returns a DOMHighResTimeStamp, measured in milliseconds.
+var samples = [];
+var t0 = performance.now();
+
+for (var i = 0; i < 10000; i++) {
+  samples.push(performance.now());
+}
+
+var t1 = performance.now();
+
+let diff1 = t1 - t0;
+let diff2 = samples[samples.length - 1] - samples[0];
+
+console.log('#1 Elapsed measured by performance.now(): ' + diff1 + 'ms');
+console.log('#2 Elapsed measured by collected samples: ' + diff2 + 'ms');
+
+console.log('Number of samples: ' + samples.length);
+let s = new Set(samples);
+console.log('Number of unique samples / measuring steps: ' + s.size);
+
+console.log('Granularity/Precision #1 of performance.now(): ' + diff1 / s.size + 'ms');
+console.log('Granularity/Precision #2 of performance.now(): ' + diff2 / s.size + 'ms');
