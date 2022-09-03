@@ -14,13 +14,16 @@ class NES {
         this.jsanimator.callback = this.run_frame.bind(this);
     }
 
+    killall() {
+
+    }
+
     present() {
         this.ppu.present();
     }
 
     run_frame() {
         let current_frame = this.clock.master_frame;
-        //for (let i = 0; i < lines_to_do; i++) {
         let ld = 0;
         while (this.clock.master_frame === current_frame) {
             this.run_scanline();
