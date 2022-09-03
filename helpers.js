@@ -41,22 +41,17 @@
  *      Super FX
  *      DSP-1 LLE with ROMs for 1a, 1b and 2
  *      SA-1
- *   65816 emulation
  *
  * To do - Commodore64
- *   6510? emulation
  *   Graphics emulation
  *   I/O emulation
  *
  * To do - NES
- *   5022/6502 emulation
- *   PPU
  *   Sound
- *   Input
- *   Mapper chips
+ *   NES controller
+ *   Mapper chips other than MMC3
  *
  * Atari 2600
- *   6502
  *   TIA
  *
  * Genesis
@@ -65,7 +60,7 @@
  *   VDP
  *
  * Gameboy/color
- *   SM80
+ *   SM83
  *   PPU
  *
  * GBA
@@ -74,6 +69,93 @@
  *
  */
 
+class perf_split_t {
+    constructor(name, order) {
+        this.name = name;
+        this.order = order;
+        this.total = 0;
+        this.sample = 0;
+    }
+}
+
+class perf_timer_t {
+    constructor(name, breakdown_every=1, splits=[]) {
+        this.name = name;
+        this.samples = 0;
+        this.splits = {};
+        this.splits_order = {};
+        this.splits_order_r = {};
+
+        this.sample_start = 0;
+        this.sample_end = 0;
+        this.sample_time_total = 0;
+
+        this.req_breakdowns = 0;
+        this.breakdown_every = breakdown_every;
+        for (let i in splits) {
+            this.add_split(splits[i]);
+        }
+    }
+
+    add_split(name) {
+        this.splits_order[this.splits.length] = name;
+        this.splits_order_r[name] = this.splits.length;
+        this.splits[name] = new perf_split_t(name, this.splits.length);
+    }
+
+    start_sample() {
+        this.sample_start = performance.now();
+    }
+
+    record_split(name) {
+        this.splits[name].sample = performance.now();
+    }
+
+    end_sample() {
+        this.sample_end = performance.now();
+        this.samples++;
+        //this.sample_time_total += this.sample_end - this.sample_start;
+        this.do_samples();
+        this.req_breakdowns++;
+        if (this.req_breakdowns >= this.breakdown_every) {
+            //this.req_breakdowns = 0;
+            //this.analyze();
+            //this.reset();
+        }
+    }
+
+    analyze() {
+        console.log('----Breakdown of performance for', this.name);
+        console.log('Sample size:', this.samples);
+        for (let sn in this.splits) {
+            let split = this.splits[sn];
+            console.log(sn + ': ' + (split.total / this.sample_time_total) + ', avg ' + (split.total / this.samples));
+        }
+        console.log('TOTAL TIME TAKEN', this.sample_time_total);
+    }
+
+    // Reset statistics
+    reset() {
+        for (let i in this.splits) {
+            this.splits[i].total = 0;
+        }
+        this.samples = 0;
+        this.sample_time_total = 0;
+    }
+
+    // Take reported splits and tally up times
+    do_samples() {
+        let last_val = this.sample_start;
+        for (let i in this.splits) {
+            let split = this.splits[i];
+            if (split.sample === 0) { console.log('YO', i); }
+            //console.log(split.sample);
+            split.total += (split.sample - last_val);
+            last_val = split.sample;
+        }
+        this.sample_time_total += last_val;
+    }
+}
 
 // For relative addressing
 /**

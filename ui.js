@@ -82,9 +82,10 @@ class global_player_t {
 
 	}
 
-
 	pause() {
 		this.timing_thread.pause();
+		//this.system.ppu.scanline_timer.analyze();
+		//this.system.ppu.scanline_timer.reset();
 	}
 
 	play() {

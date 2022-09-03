@@ -186,16 +186,22 @@ class NES_ppu {
         this.latch = {
             VRAM_read: 0, // VRAM read buffer
         }
+
+        this.scanline_timer = new perf_timer_t('scanline timer', 60*240, ['startup', 'startup2', 'maint', 'bgcolor', 'sprite_eval', 'color_out']);
+        /*this.scanline_timer.add_split('startup');
+        this.scanline_timer.add_split('')*/
     }
 
     present(buf=null) {
         let ctx = this.canvas.getContext('2d');
         let TOP_OVERSCAN = 8;
         let BOTTOM_OVERSCAN = 240;
+        let LEFT_OVERSCAN = 8;
+        let RIGHT_OVERSCAN = 248;
         let imgdata = ctx.getImageData(0, 0, 256, 240 - ((240 - BOTTOM_OVERSCAN) + TOP_OVERSCAN));
         for (let ry = TOP_OVERSCAN; ry < BOTTOM_OVERSCAN; ry++) {
             let y = ry - TOP_OVERSCAN;
-            for (let x = 0; x < 256; x++) {
+            for (let x = LEFT_OVERSCAN; x < RIGHT_OVERSCAN; x++) {
                 let di = (y * 256 * 4) + (x * 4);
                 let ppui = (y * 256) + x;
                 let r, g, b;
@@ -648,6 +654,7 @@ class NES_ppu {
     }
 
     scanline_visible() {
+        //this.scanline_timer.start_sample();
         if (!this.rendering_enabled()) {
             if (this.line_cycle === 340) {
                 this.new_scanline();
@@ -668,18 +675,24 @@ class NES_ppu {
             this.dbg.x = this.io.x;
             this.dbg.w = this.io.w;
         }
+        //this.scanline_timer.record_split('startup');
         let sx = this.line_cycle-1;
         let sy = this.clock.ppu_y;
         let bo = (sy * 256) + sx;
         if (this.line_cycle === 340) {
             this.new_scanline();
             // Quit out if we've stumbled past the last rendered line
-            if (this.clock.ppu_y >= 240) return;
+            if (this.clock.ppu_y >= 240) {
+                return;
+            }
         }
+        //this.scanline_timer.record_split('startup2');
 
         this.cycle_scanline_addr();
         this.oam_evaluate_slow();
         this.perform_bg_fetches();
+
+        //this.scanline_timer.record_split('maint');
 
         // Shift out some bits for backgrounds
         let bg_shift = (((sx & 7) + this.io.x) & 15) * 2;
@@ -692,6 +705,9 @@ class NES_ppu {
             bg_color = this.CGRAM[bg_color | ((agb & 3) << 2)];
         }
         else bg_color = this.CGRAM[0];
+
+        //this.scanline_timer.record_split('bgcolor')
+
 
         let sprite_priority = 0;
         let sprite_color = 0;
@@ -721,6 +737,7 @@ class NES_ppu {
                 }
             }
         }
+        //this.scanline_timer.record_split('sprite_eval');
 
         // Decide background or sprite
         let out_color = bg_color;
@@ -735,6 +752,8 @@ class NES_ppu {
         }
 
         this.output[bo] = out_color;
+        //this.scanline_timer.record_split('color_out');
+        //this.scanline_timer.end_sample();
     }
 
     scanline_postrender() {
