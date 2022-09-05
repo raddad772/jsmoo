@@ -45,5 +45,5 @@ function generate_65c02_js() {
 }
 
 function generate_z80_js() {
-    save_js('z80_generated_opcodes.js', generate_z80_core());
+    save_js('z80_generated_opcodes.js', generate_z80_core(false));
 }

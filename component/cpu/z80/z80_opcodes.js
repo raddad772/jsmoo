@@ -7,6 +7,13 @@
     But I used Ares a lot for "inspiration"
 */
 
+function Z80_parity(val) {
+    val ^= val >>> 4;
+    val ^= val >>> 2;
+    val ^= val >>> 1;
+    return +((val & 1) === 0);
+}
+
 // Combo addressing mode & opcode table
 const Z80_MN = Object.freeze({
   UKN: 0,
@@ -1080,3 +1087,11 @@ const Z80_ED_opcode_matrix = Object.freeze({
     0xBB: new Z80_opcode_info(0xBB, Z80_MN.OTDR, 'OTDR'),
 });
 
+class Z80_opcode_functions {
+    constructor(opcode_info, exec_func) {
+        this.opcode = opcode_info.opcode;
+        this.ins = opcode_info.ins;
+        this.mnemonic = opcode_info.mnemonic;
+        this.exec_func = exec_func;
+    }
+}

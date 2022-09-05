@@ -4,17 +4,17 @@ const Z80_MAX_OPCODE = 0xFF;
 // opcode
 // prefix
 // two-prefix
-const Z80_prefixes = [null, 0xCB, 0xDD, 0xED, 0xFD, 0xDDCB, 0xFDCB]
+const Z80_prefixes = [0, 0xCB, 0xDD, 0xED, 0xFD, 0xDDCB, 0xFDCB]
 const Z80_matrix_size = Z80_MAX_OPCODE * Z80_prefixes.length;
 
 const Z80_prefix_to_codemap = Object.freeze({
     [Z80_prefixes[0]]: 0x00,
-    [Z80_prefixes[1]]: Z80_MAX_OPCODE;
-    [Z80_prefixes[2]]: Z80_MAX_OPCODE * 2;
-    [Z80_prefixes[3]]: Z80_MAX_OPCODE * 3;
-    [Z80_prefixes[4]]: Z80_MAX_OPCODE * 4;
-    [Z80_prefixes[5]]: Z80_MAX_OPCODE * 5;
-    [Z80_prefixes[6]]: Z80_MAX_OPCODE * 6;
+    [Z80_prefixes[1]]: (Z80_MAX_OPCODE + 1),
+    [Z80_prefixes[2]]: (Z80_MAX_OPCODE + 1) * 2,
+    [Z80_prefixes[3]]: (Z80_MAX_OPCODE + 1) * 3,
+    [Z80_prefixes[4]]: (Z80_MAX_OPCODE + 1) * 4,
+    [Z80_prefixes[5]]: (Z80_MAX_OPCODE + 1) * 5,
+    [Z80_prefixes[6]]: (Z80_MAX_OPCODE + 1) * 6,
 });
 
 class Z80_get_opc_by_prefix_ret {
@@ -26,7 +26,7 @@ class Z80_get_opc_by_prefix_ret {
 
 function Z80_get_opc_by_prefix(prfx, i) {
     switch(prfx) {
-        case null:
+        case 0:
             return new Z80_get_opc_by_prefix_ret(Z80_opcode_matrix[i], null);
         case 0xCB:
             return new Z80_get_opc_by_prefix_ret(Z80_CB_opcode_matrix[i], null);
@@ -37,9 +37,12 @@ function Z80_get_opc_by_prefix(prfx, i) {
         case 0xFD: // Substitute IY
             return new Z80_get_opc_by_prefix_ret(Z80_opcode_matrix[i], 'IY');
         case 0xDDCB: // CBd but with substitute IX+d
-            return new Z80_get_opc_by_prefix_ret(Z80_CBd_opcode_matrix[i], 'IX+d');
+            return new Z80_get_opc_by_prefix_ret(Z80_CBd_opcode_matrix[i], 'IX');
         case 0xFDCB:
-            return new Z80_get_opc_by_prefix_ret(Z80_CBd_opcode_matrix[i], 'IY+d');
+            return new Z80_get_opc_by_prefix_ret(Z80_CBd_opcode_matrix[i], 'IY');
+        default:
+            console.log('WHAT?', hex2(prfx), hex2(i));;
+            return;
     }
 }
 
@@ -53,19 +56,37 @@ class Z80_switchgen {
         this.has_footer = false;
         this.no_addr_at_end = false;
         this.no_RW_at_end = false;
-        this.outstr = '';
+        this.outstr = this.indent1 + 'switch(regs.TCU) {\n';
+        this.has_cycle = false;
+        this.on_cycle = [];
 
         this.old_wr = 0;
         this.old_rd = 0;
         this.old_io = 0;
+        this.old_mrq = 0;
 
         this.opcode_info = what;
+    }
 
-        this.clear(indent, what);
+    psaddl(what) {
+        this.outstr = this.indent1 + what + '\n' + this.outstr;
+    }
+
+    SP_dec() {
+        this.addl('regs.SP = (regs.SP - 1) & 0xFFFF;');
+    }
+    push16(what) {
+        this.SP_dec();
+        this.write('regs.SP', '(what >>> 8) & 0xFF');
+        this.SP_dec();
+        this.write('regs.SP', 'what & 0xFF');
     }
 
     addl(what) {
-        this.outstr += this.indent3 + what + '\n';
+        if (this.has_cycle)
+            this.outstr += this.indent3 + what + '\n';
+        else
+            this.on_cycle.push(what);
     }
 
     // We actually ignore the input cycle #
@@ -81,6 +102,15 @@ class Z80_switchgen {
             this.outstr += this.indent2 + 'case ' + what + ': // ' + whatup + '\n';
         else
             this.outstr += this.indent2 + 'case ' + what + ':\n';
+        if (!this.has_cycle) {
+            this.has_cycle = true;
+            for (let i in this.on_cycle) {
+                this.addl(this.on_cycle[i])
+            }
+            this.on_cycle = [];
+            this.has_cycle = true;
+        }
+
     }
 
     // This is a final "cycle" only SOME functions use, mostly to get final data read done
@@ -97,12 +127,12 @@ class Z80_switchgen {
         if (!this.no_addr_at_end)
             this.addr_to_PC_then_inc();
         if (!this.no_RW_at_end)
-            this.RWIO(1, 0, 0);
+            this.RWMIO(1, 0, 0);
         this.addl('regs.TCU = 0;')
         this.addl('break;')
     }
 
-    RWIO(rd, wr, io) {
+    RWMIO(rd, wr, mrq, io) {
         let ostr = '';
         let ndsp = false;
         if (rd !== this.old_rd) {
@@ -116,6 +146,12 @@ class Z80_switchgen {
             this.old_wr = wr;
             ndsp = true;
         }
+        if (mrq !== this.old_mrq) {
+            if (ndsp) ostr += ' ';
+            ostr += 'pins.MRQ = ' + mrq;
+            this.old_mrq = mrq;
+            ndsp = true;
+        }
         if (io !== this.old_io) {
             if (ndsp) ostr += ' ';
             ostr += 'pins.IO = '+ io + ';';
@@ -123,6 +159,10 @@ class Z80_switchgen {
             ndsp = true;
         }
         this.addl(ostr);
+    }
+
+    addr_to_PC() {
+        this.addl('pins.Addr = regs.PC;');
     }
 
     addr_to_PC_then_inc() {
@@ -140,51 +180,1103 @@ class Z80_switchgen {
         return this.outstr;
     }
 
+    operand8(what) {
+        this.addcycle('operand8() start');
+        this.addr_to_PC_then_inc();
+        this.addcycle();
+        this.addcycle('operand8() end')
+        this.addl(what + ' = pins.D;');
+    }
+
+    operand16(what) {
+        this.addcycle('operand16 byte1');
+        this.addr_to_PC_then_inc();
+        this.addcycle();
+        this.addcycle()
+        this.addl(what + ' = pins.D;');
+        this.addcycle('operand16 byte2');
+        this.addr_to_PC_then_inc();
+        this.addcycle();
+        this.addcycle('operand16 end')
+        this.addl(what + ' |= (pins.D << 8);');
+
+    }
+
+    addcycles(howmany) {
+        this.RWMIO(0, 0, 0, 0);
+        let first = true;
+        for (let i = 0; i < howmany; i++) {
+            if (first) this.addcycle('Adding ' + howmany + ' cycles');
+            else this.addcycle();
+            first = false;
+        }
+    }
+
+    displace(withwhat, outto) {
+        if ((withwhat !== 'IX') && (withwhat !== 'IY')) {
+            this.addl(outto + ' = ' + this.zregrip(withwhat));
+            return;
+        }
+        this.operand8('regs.TR');
+        this.addcycles(5);
+        withwhat = this.zregrip(withwhat);
+        this.addl('regs.WZ = (' + withwhat + ' + mksigned8(regs.TR)) & 0xFFFF;');
+        this.addl(outto + ' = regs.WZ;');
+    }
+
+    write(where, val) {
+        this.addcycle('write begin');
+        this.RWMIO(0, 1, 0, 0);
+        this.addl('pins.D = (' + val + ');');
+        if (where !== 'pins.Addr') {
+            this.addl('pins.Addr = (' + where + ');');
+        }
+
+        this.addcycle();
+        this.RWMIO(0, 0, 0, 0);
+
+        this.addcycle('write end');
+    }
+
+    in(addr, to) {
+        this.addcycle('IN start');
+        this.RWMIO(1, 0, 1, 1);
+        this.addl('pins.Addr = ' + addr + ';');
+
+        this.addcycle('IN actual read');
+        this.addl(to + ' = pins.D;');
+        this.RWMIO(0, 0, 0, 0);
+
+        this.addcycle();
+
+        this.addcycle('IN end');
+    }
+
+    read(where, to) {
+        this.addcycle('Start read')
+        this.addl('pins.Addr = (' + where + ');');
+        this.RWMIO(0, 0, 0, 0);
+
+        this.addcycle();
+        this.RWMIO(1, 0, 0, 0)
+
+        this.addcycle('Read end')
+        this.addl(to + ' = pins.D;');
+        this.RWMIO(0, 0, 0, 0);
+    }
+
+    Q(val) {
+        this.addl('regs.Q = ' + val + ';');
+    }
+
+    zregripH(r) {
+        switch(r) {
+            case 'HL':
+                return 'regs.H';
+            case 'AF':
+                return 'regs.A';
+            case 'BC':
+                return 'regs.B';
+            case 'DE':
+                return 'regs.D';
+            default:
+                console.log('UNDONE ZREGRIPH', r);
+                break;
+        }
+    }
+
+    zregripL(r) {
+        switch(r) {
+            case 'HL':
+                return 'regs.L';
+            case 'AF':
+                return 'regs.F.getbyte()';
+            case 'BC':
+                return 'regs.C';
+            case 'DE':
+                return 'regs.E';
+            default:
+                console.log('UNDONE ZREGRIPL', r);
+                break;
+        }
+    }
+
+    zregrip(r) {
+        switch(r) {
+            case 'A':
+                return 'regs.A';
+            case 'B':
+                return 'regs.B';
+            case 'C':
+                return 'regs.C';
+            case 'D':
+                return 'regs.D';
+            case 'H':
+                return 'regs.H';
+            case 'L':
+                return 'regs.L';
+            case 'F':
+                return 'regs.F';
+            case 'AF':
+                return '(regs.A << 8) | regs.F.getbyte()';
+            case 'BC':
+                return '(regs.B << 8) | regs.C';
+            case 'DE':
+                return '(regs.D << 8) | regs.E';
+            case 'HL':
+                return '(regs.H << 8) | regs.L';
+            case 'IX':
+                return 'regs.IX';
+            case 'IY':
+                return 'regs.IY';
+            default:
+                console.log('UNDONE ZREGRIP', r);
+                return 'ERROR';
+        }
+    }
+
+    zregripw(r, val) {
+        switch(r) {
+            case 'A':
+                this.addl('regs.A = ' + val + ';');
+                break;
+            case 'B':
+                this.addl('regs.B = ' + val + ';');
+                break;
+            case 'C':
+                this.addl('regs.C = ' + val + ';');
+                break;
+            case 'D':
+                this.addl('regs.D = ' + val + ';');
+                break;
+            case 'E':
+                this.addl('regs.E = ' + val + ';');
+                break;
+            case 'F':
+                this.addl('regs.F.setbyte(' + val + ');');
+                break;
+            case 'H':
+                this.addl('regs.H = ' + val + ';');
+                break;
+            case 'L':
+                this.addl('regs.L = ' + val + ';');
+                break;
+            case 'AF':
+                this.addl('regs.A = ((' + val + ') & 0xFF00) >>> 8;');
+                this.addl('regs.F.setbyte((' + val + ') & 0xFF);');
+                break;
+            case 'BC':
+                this.addl('regs.B = ((' + val + ') & 0xFF00) >>> 8;');
+                this.addl('regs.C = (' + val + ') & 0xFF;');
+                break;
+            case 'DE':
+                this.addl('regs.D = ((' + val + ') & 0xFF00) >>> 8;');
+                this.addl('regs.E = (' + val + ') & 0xFF;');
+                break;
+            case 'HL':
+                this.addl('regs.H = ((' + val + ') & 0xFF00) >>> 8;');
+                this.addl('regs.L = (' + val + ') & 0xFF;');
+                break;
+            case 'I':
+                this.addl('regs.I = (' + val + ');');
+                break;
+            case 'R':
+                this.addl('regs.R = (' + val + ');');
+                break;
+            default:
+                console.log('UNDONE ZREGRIPW', r);
+                break;
+        }
+    }
+
+    zregripwL(r, val) {
+        switch(r) {
+            case 'HL':
+                this.addl('regs.L = (' + val + ');');
+                break;
+            case 'AF':
+                this.addl('regs.F.setbyte(' + val + ');');
+                break;
+            case 'BC':
+                this.addl('regs.C = (' + val + ');');
+                break;
+            case 'DE':
+                this.addl('regs.E = (' + val + ');');
+                break;
+            default:
+                console.log('UNKNOWN ZREGRIPWL', r);
+                break;
+        }
+    }
+
+    zregripwH(r, val) {
+        switch(r) {
+            case 'HL':
+                this.addl('regs.H = (' + val + ');');
+                break;
+            case 'AF':
+                this.addl('regs.A = (' + val + ');');
+                break;
+            case 'BC':
+                this.addl('regs.B = (' + val + ');');
+                break;
+            case 'DE':
+                this.addl('regs.D = (' + val + ');');
+                break;
+            default:
+                console.log('UNKNOWN ZREGRIPWH', r);
+                break;
+        }
+    }
+
+
+    ADD(x, y, c, out='regs.TR', do_declare=true) {
+        if (do_declare) {
+            this.addl('let x = ' + x + ';');
+            this.addl('let y = ' + y + ';');
+            this.addl('let z = x + y + ' + c + ';');
+        } else {
+            this.addl('x = ' + x + ';');
+            this.addl('y = ' + y + ';');
+            this.addl('z = x + y + ' + c + ';');
+        }
+        this.addl('regs.F.C = +(z > 0xFF);')
+        this.addl('regs.F.N = 0;');
+        this.addl('regs.F.V = ((((x ^ y) ^ 0xFF) & (x ^ z)) & 0x80) >>> 7;');
+        this.setX('z');
+        this.addl('regs.F.H = (((x ^ y ^ z) ^ 0xFF) & 0x10) >>> 4;');
+        this.setY('z');
+        this.setZ('z & 0xFF');
+        this.setS8('z');
+        this.addl(out + ' = z & 0xFF;');
+    }
+    
+    AND(x, y, out) {
+        this.addl('let z = (' + x + ') & (' + y + ');');
+        this.addl('regs.F.C = regs.F.N = 0;');
+        this.setP('z');
+        this.setX('z');
+        this.addl('regs.F.H = 1;');
+        this.setY('z');
+        this.setZ('z');
+        this.setS8('z');
+        this.addl(out + ' = z;');
+    }
+
+    BIT(bit, x, out=null) {
+        this.addl('let z = ((' + x + ') & 1) << ' + bit + ';');
+
+        this.addl('regs.F.N = 0;');
+        this.setP('z');
+        this.setX(x);
+        this.addl('regs.F.H = 1;');
+        this.setXY(x);
+        this.setZ('z');
+        this.setS8('z');
+        if (out !== null) this.addl(out + ' = ' + x + ';');
+    }
+
+    CP(x, y) {
+        this.addl('let x = ' + x + ';');
+        this.addl('let y = ' + y + ';');
+        this.addl('let z = x - y;');
+
+        this.addl('regs.F.C = +(z < 0);');
+        this.addl('regs.F.N = 1;');
+        this.addl('regs.F.V = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;');
+        this.setXY('y');
+        this.addl('regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;');
+        this.addl('regs.F.Z = +((z & 0xFF) === 0);');
+        this.setS8('z');
+    }
+
+    CPD() {
+        this.addl('regs.WZ = (regs.WZ - 1) & 0xFFFF;');
+        this.read('regs.HL', 'regs.TR');
+        this.addl('regs.HL = (regs.HL - 1) & 0xFFFF;');
+        this.addcycles(5);
+        this.addl('let tv = (((regs.B << 8) | regs.C) - 1) & 0xFFFF;');
+        this.addl('regs.B = (tv & 0xFF00) >>> 8;');
+        this.addl('regs.C = rv & 0xFF;');
+        this.addl('let n = regs.A - regs.TR;');
+        this.addl('regs.F.N = 1;');
+        this.addl('regs.F.V = +(tv !== 0);');
+        this.addl('regs.F.H = ((regs.A ^ regs.TR ^ n) & 0x10) >>> 4;');
+        this.addl('regs.F.X = ((n - regs.F.H) & 8) >>> 3;');
+        this.addl('regs.F.Y = ((n - regs.F.H) & 0x20) >>> 5;');
+        this.addl('regs.F.Z = +(n === 0);');
+        this.setS8('n');
+    }
+
+    CPI() {
+        this.Q(1)
+        this.addl('regs.WZ = (regs.WZ + 1) & 0xFFFF;');
+        this.read('(regs.H << 8) | regs.L', 'regs.TR');
+        this.addcycles(5);
+        this.addl('let n = (regs.A - regs.TR) & 0xFF;');
+        this.addl('regs.F.N = 1;');
+        this.addl('let tv = (regs.B << 8) | regs.C;');
+        this.addl('regs.F.V = +(tv !== 0)');
+        this.addl('tv = (tv - 1) & 0xFFFF;');
+        this.addl('regs.B = (tv & 0xFF00) >>> 8;');
+        this.addl('regs.C = tv & 0xFF;');
+        this.setXY('(n - regs.F.H) & 0xFF');
+        this.addl('regs.F.Z = +(n == 0);');
+        this.setS8('n');
+    }
+
+    DEC(what) {
+        this.addl('regs.TR = ((' + what + ') - 1) & 0xFF;');
+        this.addl('regs.F.N = 1;');
+        this.addl('regs.F.V = +(regs.TR === 0x7F);');
+        this.setXY('regs.TR');
+        this.addl('regs.F.H = +((regs.TR & 0x0F) === 0x0F);');
+        this.setZ('regs.TR');
+        this.setS8('regs.TR');
+    }
+
+    IN(x) {
+        this.addl('regs.F.N = regs.F.H = 0;');
+        this.setXY(x);
+        this.setP(x);
+        this.setZ(x);
+        this.setS8(x);
+    }
+
+    INC(x) {
+        this.addl('regs.TR = ((' + x + ') + 1) & 0xFF;');
+        this.addl('regs.F.N = 0;');
+        this.addl('regs.F.V = +(z === 0);');
+        this.setXY('regs.TR');
+        this.addl('regs.F.H = +((regs.TR & 0x0F) === 0);');
+        this.addl('regs.F.Z = +(regs.TR === 0);');
+        this.setS8('regs.TR');
+    }
+
+    IND() {
+        this.Q(1);
+        this.addl('regs.WZ = (((regs.B << 8) | regs.C) - 1) & 0xFFFF;');
+        this.addcycle();
+        this.in(this.zregrip('BC'), 'regs.TR');
+        this.addl('regs.B = (regs.B - 1) & 0xFF;');
+        this.write(this.zregrip('HL'), 'regs.TR');
+        this.addl('let regs.TA = (((regs.H << 8) | regs.L) - 1) & 0xFFFF;');
+        this.addl('regs.F.C = ((((regs.C - 1) & 0xFF) + regs.TR) & 0x100) >>> 8;');
+        this.addl('regs.F.N = (regs.TR & 0x80) >>> 7;');
+        this.addl('let tv = ((regs.C - 1) & 0xFF) + data & 7 ^ regs.B;');
+        this.setP('tv');
+        this.setXY('regs.B');
+        this.addl('regs.P.H = regs.P.C;');
+        this.setZ('regs.B');
+        this.setS8('regs.B');
+    }
+
+    INI() {
+        this.Q(1);
+        this.addcycle();
+        this.addl('let tv = (regs.B << 8) | regs.C;')
+        this.addl('regs.WZ = (tv + 1) & 0xFFFF;');
+        this.in('tv', 'regs.TR');
+        this.addl('regs.B = (regs.B - 1) & 0xFF;');
+        this.addl('regs.TA = (regs.H << 8) | regs.L;')
+        this.write('regs.TA', 'regs.TR');
+        this.addl('regs.TA = (regs.TA + 1) & 0xFFFF;');
+        this.addl('regs.H = (regs.TA & 0xFF00) >>> 8;');
+        this.addl('regs.L = regs.TA & 0xFF;');
+
+        this.addl('regs.F.C = (((regs.C + 1) + regs.TR) & 0x100) >>> 8;');
+        this.addl('regs.F.N = (regs.TR & 0x80) >>> 7;');
+        this.addl('regs.TA = ((regs.C + 1) & 0xFF) + regs.TR & 7 ^ regs.B;');
+        this.setP('regs.TA');
+        this.setXY('regs.B');
+        this.addl('regs.F.H = regs.F.C;');
+        this.setZ('regs.B');
+        this.setS8('regs.B');
+    }
+
+    setHto(what) {
+        this.addl('regs.F.H = ' + what);
+    }
+    setS8(what) {
+        this.addl('regs.F.S = ((' + what + ') & 0x80) >>> 7;');
+    }
+
+    setP(what) {
+        this.addl('regs.F.P = Z80_parity(' + what + ');');
+    }
+
+    setZ(what) {
+        this.addl('regs.F.Z = +((' + what + ') === 0);');
+    }
+
+    setX(what) {
+        this.addl('regs.F.X = ((' + what + ') & 8) >>> 3;');
+    }
+
+    setY(what) {
+        this.addl('regs.F.Y = ((' + what + ') & 0x20) >>> 5;');
+    }
+
+    setXY(what) {
+        this.setX(what);
+        this.setY(what);
+    }
+}
+
+
+function Z80_replace_arg(arg, sub) {
+    // _HL means it can't be replaced
+    // Otherwise, HL will be replaced with sub, if sub is not null
+    if (arg === '_') {
+        return 'regs.junkvar';
+    }
+    if ((typeof arg === 'string') && (arg !== '_HL') && ((arg.indexOf('HL') !== -1))) {
+        return arg.replace('HL', sub);
+    }
+    return arg;
 }
 
 /**
  * @param {String} indent
  * @param {Z80_opcode_info} opcode_info
  * @param {null|String} sub
- * @constructor
  */
-function Z80_generate_instruction_function(indent, opcode_info, sub) {
+function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
     let r;
     let indent2 = indent + '    ';
     let bnum;
-    let ag = new Z80_switchgen(indent2, opcode_info.opcode, sub);
-    switch(opcode_info.ins) {
+    let ag = new Z80_switchgen(indent2, opcode_info, sub);
+    if (sub === null) sub = 'HL';
+    if (typeof opcode_info === 'undefined') debugger;
+    let arg1 = opcode_info.arg1;
+    let arg2 = opcode_info.arg2;
+    let arg3 = opcode_info.arg3;
 
+    /*if (opcode_info.ins === Z80_MN.ADC_a_irr) {
+        console.log(arg1, typeof arg1, arg1.indexOf('HL'));
+    }*/
+    // Do IX/IY substitution
+    arg1 = Z80_replace_arg(arg1, sub);
+    arg2 = Z80_replace_arg(arg2, sub);
+    arg3 = Z80_replace_arg(arg3, sub);
+    let argH, argL;
+    switch(opcode_info.ins) {
+        case Z80_MN.ADC_a_irr:  //n16&
+            ag.Q(1);
+            ag.displace(arg1, 'regs.TA');
+            ag.read('regs.TA', 'regs.TR');
+            ag.ADD('regs.A', 'regs.TR', 'regs.F.C', 'regs.A');
+            break;
+        case Z80_MN.ADC_a_n:  //
+            ag.Q(1);
+            ag.operand8('regs.TR');
+            ag.ADD('regs.A', 'regs.TR', 'regs.F.C', 'regs.A');
+            break;
+        case Z80_MN.ADC_a_r:  //n8&
+            ag.Q(1);
+            ag.cleanup();
+            ag.ADD('regs.A', arg1, 'regs.F.C')
+            break;
+        case Z80_MN.ADC_hl_rr:  //n16&
+            argL = ag.zregripL(arg1);
+            argH = ag.zregripH(arg1);
+            ag.Q(1);
+            ag.psaddl('let x, y, z;');
+            ag.addcycles(4);
+            ag.addl('regs.WZ = (((regs.H << 8) | regs.L) + 1) & 0xFFFF;');
+            ag.ADD('regs.L', argL, 'regs.F.C', 'regs.L', false);
+            ag.addcycles(3);
+            ag.ADD('regs.H', argH, 'regs.F.C', 'regs.H', false);
+            ag.addl('regs.F.Z = +((regs.H === 0) && (regs.L === 0));');
+            break;
+        case Z80_MN.ADD_a_irr:  //n16&
+            ag.Q(1);
+            ag.displace(arg1, 'regs.TA');
+            ag.read('regs.TA', 'regs.TR');
+            ag.ADD('regs.A', 'regs.TR', '0', 'regs.TA');
+            break;
+        case Z80_MN.ADD_a_n:  //
+            ag.Q(1);
+            ag.operand8('regs.TR');
+            ag.ADD('regs.A', 'regs.TR', '0', 'regs.A');
+            break;
+        case Z80_MN.ADD_a_r:  //n8&
+            ag.Q(1);
+            ag.ADD('regs.A', arg1, '0', 'regs.A');
+            break;
+        case Z80_MN.ADD_hl_rr:  //n16&
+            argH = ag.zregripH(arg1);
+            argL = ag.zregripL(arg1);
+            ag.Q(1);
+            ag.psaddl('let x, y, z;');
+            ag.addl('regs.WZ = (((regs.H << 8) | regs.L) + 1) & 0xFFFF;');
+            ag.addl('regs.t[0] = regs.F.V; regs.t[1] = regs.F.Z; regs.t[2] = regs.F.S;');
+            ag.addcycles(4);
+            ag.ADD('regs.H', argL, '0', 'regs.H', false);
+            ag.addcycles(3);
+            ag.ADD('regs.L', argH, 'regs.F.C', 'regs.L', false);
+            ag.addl('regs.F.V = regs.t[0]; regs.F.Z = regs.t[1]; regs.F.S = regs.t[2];');
+            break;
+        case Z80_MN.AND_a_irr:  //n16&
+            ag.Q(1);
+            ag.displace(arg1, 'regs.TA');
+            ag.read('regs.TA', 'regs.TR');
+            ag.AND('regs.A', 'regs.TR', 'regs.A');
+            break;
+        case Z80_MN.AND_a_n:  //
+            ag.Q(1);
+            ag.operand8('regs.TR');
+            ag.AND('regs.A', 'regs.TR', 'regs.A');
+            break;
+        case Z80_MN.AND_a_r:  //n8&
+            ag.Q(1);
+            ag.AND('regs.A', arg1, 'regs.A');
+            break;
+        case Z80_MN.BIT_o_irr:  //n3, n16&
+            ag.Q(1);
+            ag.read(arg2, 'regs.TR');
+            ag.BIT(arg1, 'regs.TR');
+            ag.setXY('(regs.WZ >>> 8)');
+            break;
+        case Z80_MN.BIT_o_irr_r:  //n3, n16&, n8&
+            ag.Q(1);
+            ag.read(arg2, 'regs.TR');
+            ag.BIT(arg1, 'regs.TR', 'regs.TR');
+            ag.zregripw(arg3, 'regs.TR');
+            ag.setXY('(regs.WZ >>> 8)');
+            break;
+        case Z80_MN.BIT_o_r:  //n3, n8&
+            ag.Q(1);
+            ag.BIT(arg1, ag.zregrip(r));
+            break;
+        case Z80_MN.CALL_c_nn:  //bool c
+            ag.Q(0);
+            ag.operand16('regs.WZ');
+            ag.addl('regs.TA = regs.WZ;');
+            ag.addl('regs.TR = +(' + arg1 + ')');
+            // regs.TR is now true or false
+            // if we don't do it, skip the push and call...
+            ag.addl('if (!regs.TR) { regs.TA = regs.PC; regs.TCU+=7; break; }');
+            ag.addcycle();
+            ag.push16('regs.PC');
+            ag.addl('regs.PC = regs.TA;');
+            break;
+        case Z80_MN.CALL_nn:  //
+            ag.Q(0);
+            ag.operand16('regs.WZ');
+            ag.addcycle();
+            ag.push16('regs.PC');
+            ag.cleanup();
+            ag.addl('regs.PC = regs.WZ;');
+            break;
+        case Z80_MN.CCF:  //
+            ag.addl('if (regs.Q) { regs.F.X = regs.F.Y = 0; } ');
+            ag.addl('regs.F.H = regs.F.C;');
+            ag.addl('regs.F.C = +(!regs.F.C);');
+            ag.addl('regs.F.N = 0;');
+            ag.addl('regs.F.X |= (regs.A & 8) >>> 3;');
+            ag.addl('regs.F.Y |= (regs.A & 0x20) >>> 5;');
+            ag.Q(1);
+            break;
+        case Z80_MN.CP_a_irr:  //n16& x
+            ag.Q(1);
+            ag.displace(arg1, 'regs.TA');
+            ag.read('regs.TA', 'regs.TR');
+            ag.CP('regs.A', 'regs.TR');
+            break;
+        case Z80_MN.CP_a_n:  //
+            ag.Q(1);
+            ag.operand8('regs.TR');
+            ag.CP('regs.A', 'regs.TR');
+            break;
+        case Z80_MN.CP_a_r:  //n8& x
+            ag.Q(1);
+            ag.CP('regs.TR', ag.zregrip(arg1));
+            break;
+        case Z80_MN.CPD:  //
+            ag.Q(1);
+            ag.CPD();
+            break;
+        case Z80_MN.CPDR:  //
+            ag.Q(1)
+            ag.CPD();
+            ag.addl('if (((regs.B === 0) && (regs.C === 0)) || (regs.F.Z)) {regs.TCU += 5; break; }');
+
+            ag.addcycles(5);
+            ag.cleanup();
+            ag.addl('regs.PC = (regs.PC - 2) & 0xFFFF;');
+            ag.addl('regs.WZ = (regs.PC + 1) & 0xFFFF;');
+            break;
+        case Z80_MN.CPI:  //
+            ag.CPI();
+            break;
+        case Z80_MN.CPIR:  //
+            ag.CPI();
+            ag.addl('if (((regs.B === 0) && (regs.C === 0)) || (regs.F.Z)) {regs.TCU += 5; break; }');
+
+            ag.addcycles(5);
+            ag.cleanup();
+            ag.addl('regs.PC = (regs.PC - 2) & 0xFFFF;');
+            ag.addl('regs.WZ = (regs.PC + 1) & 0xFFFF;');
+            break;
+        case Z80_MN.CPL:  //
+            ag.Q(1);
+            ag.addl('regs.A ^= 0xFF;');
+            ag.addl('regs.F.N = regs.F.H = 1;');
+            ag.setXY('regs.A');
+            break;
+        case Z80_MN.DAA:  //
+            ag.Q(1);
+            ag.addl('let a = A;');
+            ag.addl('if (regs.F.C || (regs.A > 0x99)) { regs.A += (regs.F.N ? -0x60: 0x60); regs.F.C = 1; }')
+            ag.addl('if (regs.F.H || ((regs.A & 0x0F) > 0x09)) { regs.A += (regs.F.N ? -0x06: 0x06; }');
+
+            ag.addl('regs.F.P = Z80_parity(regs.A);');
+            ag.setXY('regs.A');
+            ag.addl('regs.F.H = ((a ^ A) & 0x10) >>> 4;');
+            ag.addl('regs.F.Z = +(regs.A === 0);');
+            ag.setS8('regs.A');
+            break;
+        case Z80_MN.DEC_irr:  //n16&
+            ag.Q(1);
+            ag.displace(arg1);
+            ag.read('regs.TA', 'regs.TR');
+            ag.addcycle();
+            ag.DEC('regs.TR');
+            ag.write('regs.TA', 'regs.TR');
+            break;
+        case Z80_MN.DEC_r:  //n8&
+            ag.Q(1);
+            ag.write(ag.zregrip(arg1), ag.zregrip(arg1));
+            break;
+        case Z80_MN.DEC_rr:  //n16&
+            ag.Q(0);
+            ag.addcycles(2);
+            arg1 = ag.zregrip(arg1);
+            ag.addl(arg1 + ' = (' + arg1 + ' - 1) & 0xFFFF;');
+            break;
+        case Z80_MN.DI:  //
+            ag.Q(0);
+            ag.addl('regs.IFF1 = regs.IFF2 = 0;');
+            break;
+        case Z80_MN.DJNZ_e:  //
+            ag.Q(0);
+            ag.addcycle();
+            ag.operand8('regs.TR');
+            ag.addl('regs.TR = mksigned8(regs.TR);');
+            ag.addl('regs.B = (regs.B - 1) & 0xFF;');
+            ag.addl('if (((regs.B + 1) & 0xFF) === 0) { regs.TCU += 5; break; }');
+            ag.addl('regs.WZ = (regs.PC + regs.TR) & 0xFFFF;');
+            ag.addl('regs.PC = regs.WZ;');
+            ag.addcycles(5);
+            break;
+        case Z80_MN.EI:  //
+            ag.Q(0);
+            ag.addl('regs.IFF1 = regs.IFF2 = regs.EI = 1;')
+            break;
+        case Z80_MN.EX_irr_rr:  //n16&, n16&
+            ag.Q(0);
+            arg1 = ag.zregrip(arg1);
+            arg2 = ag.zregrip(arg2);
+            ag.read(arg1, 'regs.WZ');
+            ag.addl('regs.TA = (' + arg1 + '+ 1) & 0xFFFF;');
+            ag.read('regs.TA', 'regs.TR');
+            ag.addl('regs.WZ |= (regs.TR << 8);');
+            ag.write(arg1, arg2 + ' & 0xFF');
+            ag.write('regs.TA', '((' + arg2 + ') & 0xFF00) >>> 8;')
+            ag.addl(arg2 + ' = regs.WZ;');
+            break;
+        case Z80_MN.EX_rr_rr:  //n16&, n16&
+            ag.Q(0);
+            arg1 = ag.zregrip(arg1);
+            arg2 = ag.zregrip(arg2);
+            ag.addl('regs.TR = ' + arg1 + ';');
+            ag.addl(arg2 + ' = ' + arg1 + ';');
+            ag.addl(arg1 + ' = regs.TR;');
+            break;
+        case Z80_MN.EXX:  //
+            ag.Q(0);
+            ag.addl('regs.exchange_shadow();');
+            break;
+        case Z80_MN.HALT:  //
+            ag.Q(0);
+            ag.addl('regs.HALT = 1;');
+            break;
+        case Z80_MN.IM_o:  //n2
+            ag.Q(0);
+            ag.addcycles(4);
+            ag.addl('regs.IM = ' + arg1 + ';');
+            break;
+        case Z80_MN.IN_a_in:  //
+            ag.Q(0);
+            ag.operand8('regs.WZ');
+            ag.addl('regs.WZ |= (regs.A << 8);');
+            ag.in('regs.WZ', 'regs.A');
+            ag.addl('regs.WZ = (regs.WZ + 1) & 0xFFFF;');
+            break;
+        case Z80_MN.IN_r_ic:  //n8&
+            ag.Q(1);
+            ag.addl('regs.TA = (regs.B << 8) | regs.C;');
+            ag.in('regs.TA', 'regs.TR');
+            ag.IN('regs.TR');
+            ag.zregripw(arg1, 'regs.TR');
+            ag.addl('regs.WZ = (regs.TA + 1) & 0xFFFF;');
+            break;
+        case Z80_MN.IN_ic:  //
+            ag.Q(1);
+            ag.addl('regs.TA = (regs.B << 8) | regs.C;');
+            ag.in('regs.TA', 'regs.TR');
+            ag.IN('regs.TR');
+            ag.addl('regs.WZ = (regs.TA + 1) & 0xFFFF;');
+            break;
+        case Z80_MN.INC_irr:  //n16&
+            ag.Q(1);
+            ag.displace(arg1, 'regs.TA');
+            ag.read('regs.TA', 'regs.TR');
+            ag.addcycle();
+            ag.INC('regs.TR');
+            ag.write('regs.TA', 'regs.TR');
+            break;
+        case Z80_MN.INC_r:  //n8&
+            ag.Q(1);
+            ag.addl('regs.TR = ' + ag.zregrip(arg1));
+            ag.zregripw(arg1, 'regs.TR');
+            break;
+        case Z80_MN.INC_rr:  //n16&
+            ag.Q(1);
+            ag.addcycles(2);
+            ag.addl('regs.TR = ((' + ag.zregrip(arg1) + ' ) + 1) & 0xFFFF;');
+            ag.zregripw(arg1, 'regs.TR');
+            break;
+        case Z80_MN.IND:  //
+            ag.IND();
+            break;
+        case Z80_MN.INDR:  //
+            ag.IND();
+            ag.addl('if (regs.B === 0) { regs.TCU += 5; break; }');
+            ag.addl('regs.PC = (regs.PC - 2) & 0xFFFF;');
+            ag.addcycles(5);
+            break;
+        case Z80_MN.INI:  //
+            ag.INI();
+            break;
+        case Z80_MN.INIR:  //
+            ag.INI();
+            ag.addl('if (regs.B === 0) { regs.TCU += 5; break; }');
+            ag.addcycles(3);
+            ag.addl('regs.PC = (regs.PC - 2) & 0xFFFF;');
+            ag.addcycles(2);
+            break;
+       case Z80_MN.JP_c_nn:  //bool
+           ag.Q(0);
+           ag.operand16('regs.WZ');
+           ag.addl('if (' + arg1 + ') regs.PC = regs.WZ;');
+           break;
+        case Z80_MN.JP_rr:  //n16&
+            ag.Q(0);
+            ag.addl('regs.PC = ' + ag.zregrip((arg1)) + ';');
+            break;
+        case Z80_MN.JR_c_e:  //bool
+            ag.Q(0);
+            ag.operand8('regs.TR');
+            ag.addl('regs.TR = mksigned8(regs.TR);');
+            ag.addl('if (!(' + arg1 + ')) { regs.TCU += 5; break; }');
+            ag.addl('regs.WZ = (regs.PC + regs.TR) & 0xFFFF;');
+            ag.addl('regs.PC = regs.WZ;');
+            ag.addcycles(5);
+            break;
+        case Z80_MN.LD_a_inn:  //
+            ag.Q(0);
+            ag.operand16('regs.WZ');
+            ag.read('regs.WZ', 'regs.A');
+            ag.addl('regs.WZ = (regs.WZ + 1) & 0xFFFF;');
+            break;
+        case Z80_MN.LD_a_irr:  //n16& x
+            ag.Q(0);
+            ag.addl('regs.WZ = ' + ag.zregrip(arg1) + ';');
+            ag.displace(arg1, 'regs.TA'); // what the heck Ares?
+            ag.read('regs.TA', 'regs.A');
+            ag.addl('regs.WZ = (regs.WZ + 1) & 0xFFFF;');
+            break;
+        case Z80_MN.LD_inn_a:  //
+            ag.Q(0);
+            ag.operand16('regs.WZ');
+            ag.write('regs.WZ', 'regs.A');
+            ag.addl('regs.WZ = ((regs.WZ + 1) & 0xFF) | (regs.A << 8);');
+            break;
+        case Z80_MN.LD_inn_rr:  //n16&
+            ag.Q(0);
+            ag.operand16('regs.WZ');
+            ag.write('regs.WZ', ag.zregripL(arg1));
+            ag.addl('regs.WZ = (regs.WZ + 1) & 0xFFFF;');
+            ag.write('regs.WZ', ag.zregripH(arg1));
+            break;
+        case Z80_MN.LD_irr_a:  //n16&
+            ag.Q(0);
+            ag.addl('regs.WZ = ' + ag.zregrip(arg1));
+            ag.displace(arg1, 'regs.TA');
+            ag.write('regs.TA', 'regs.A');
+            ag.addl('regs.WZ = ((regs.WZ + 1) & 0xFF) | (regs.A << 8);');
+            break;
+        case Z80_MN.LD_irr_n:  //n16&
+            ag.Q(0);
+            ag.displace(arg1, 'regs.TA');
+            ag.operand8('regs.TR');
+            ag.write('regs.TA', 'regs.TR');
+            break;
+        case Z80_MN.LD_irr_r:  //n16&, n8&
+            ag.Q(0);
+            ag.displace(arg1, 'regs.TA');
+            ag.write('regs.TA', ag.zregrip(arg2));
+            break;
+        case Z80_MN.LD_r_n:  //n8&
+            ag.Q(0);
+            ag.operand8('regs.TR');
+            ag.zregripw(arg1, 'regs.TR');
+            break;
+        case Z80_MN.LD_r_irr:  //n8&, n16&
+            ag.Q(0);
+            ag.displace(arg2, 'regs.TA');
+            ag.read('regs.TA', 'regs.TR');
+            ag.zregripw(arg1, 'regs.TR');
+            break;
+        case Z80_MN.LD_r_r:  //n8&, n8&
+            ag.Q(0);
+            ag.zregripw(arg1, ag.zregrip(arg2));
+            break;
+        case Z80_MN.LD_r_r1:  //n8&, n8&
+            ag.Q(0);
+            ag.addcycle();
+            ag.zregripw(arg1, ag.zregrip(arg2));
+            break;
+        case Z80_MN.LD_r_r2:  //n8&, n8&
+            ag.Q(1);
+            ag.addcycle();
+            ag.addl('let x = ' + ag.zregrip(arg1) + ';');
+            ag.zregripw(arg1, ag.zregrip(arg2));
+            ag.addl('regs.F.N = regs.F.H = 0;');
+            ag.setXY('x');
+            ag.addl('regs.F.P = regs.IFF2;');
+            ag.setZ('x');
+            ag.setS8('x');
+            if (!CMOS) ag.addl('regs.P = 1;');
+            else ag.addl('regs.P = 0;');
+            break;
+        case Z80_MN.LD_rr_inn:  //n16&
+            ag.operand16('regs.TA');
+            ag.read('regs.TA', 'regs.TR');
+            ag.zregripwL(arg1, 'regs.TR');
+            ag.addl('regs.TA = (regs.TA + 1) & 0xFFFF;');
+            ag.read('regs.TA', 'regs.TR');
+            ag.zregripwH(arg1, 'regs.TR');
+            break;
+        case Z80_MN.LD_rr_nn:  //n16&
+            ag.operand16('regs.TR');
+            ag.zregripw(arg1, 'regs.TR');
+            break;
+        case Z80_MN.LD_sp_rr:  //n16&
+            ag.addcycles(2);
+            ag.addl('regs.SP = ' + ag.zregrip(arg1));
+            break;
+        case Z80_MN.LDD:  //
+
+            break;
+        case Z80_MN.LDDR:  //
+            break;
+        case Z80_MN.LDI:  //
+            break;
+        case Z80_MN.LDIR:  //
+            break;
+        case Z80_MN.NEG:  //
+            break;
+        case Z80_MN.NOP:  //
+            break;
+        case Z80_MN.OR_a_irr:  //n16&
+            break;
+        case Z80_MN.OR_a_n:  //
+            break;
+        case Z80_MN.OR_a_r:  //n8&
+            break;
+        case Z80_MN.OTDR:  //
+            break;
+        case Z80_MN.OTIR:  //
+            break;
+        case Z80_MN.OUT_ic_r:  //n8&
+            break;
+        case Z80_MN.OUT_ic:  //
+            break;
+        case Z80_MN.OUT_in_a:  //
+            break;
+        case Z80_MN.OUTD:  //
+            break;
+        case Z80_MN.OUTI:  //
+            break;
+        case Z80_MN.POP_rr:  //n16&
+            break;
+        case Z80_MN.PUSH_rr:  //n16&
+            break;
+        case Z80_MN.RES_o_irr:  //n3, n16&
+            break;
+        case Z80_MN.RES_o_irr_r:  //n3, n16&, n8&
+            break;
+        case Z80_MN.RES_o_r:  //n3, n8&
+            break;
+        case Z80_MN.RET:  //
+            break;
+        case Z80_MN.RET_c:  //bool c
+            break;
+        case Z80_MN.RETI:  //
+            break;
+        case Z80_MN.RETN:  //
+            break;
+        case Z80_MN.RL_irr:  //n16&
+            break;
+        case Z80_MN.RL_irr_r:  //n16&, n8&
+            break;
+        case Z80_MN.RL_r:  //n8&
+            break;
+        case Z80_MN.RLA:  //
+            break;
+        case Z80_MN.RLC_irr:  //n16&
+            break;
+        case Z80_MN.RLC_irr_r:  //n16&, n8&
+            break;
+        case Z80_MN.RLC_r:  //n8&
+            break;
+        case Z80_MN.RLCA:  //
+            break;
+        case Z80_MN.RLD:  //
+            break;
+        case Z80_MN.RR_irr:  //n16&
+            break;
+        case Z80_MN.RR_irr_r:  //n16&, n8&
+            break;
+        case Z80_MN.RR_r:  //n8&
+            break;
+        case Z80_MN.RRA:  //
+            break;
+        case Z80_MN.RRC_irr:  //n16&
+            break;
+        case Z80_MN.RRC_irr_r:  //n16&, n8&
+            break;
+        case Z80_MN.RRC_r:  //n8&
+            break;
+        case Z80_MN.RRCA:  //
+            break;
+        case Z80_MN.RRD:  //
+            break;
+        case Z80_MN.RST_o:  //n3
+            break;
+        case Z80_MN.SBC_a_irr:  //n16&
+            break;
+        case Z80_MN.SBC_a_n:  //
+            break;
+        case Z80_MN.SBC_a_r:  //n8&
+            break;
+        case Z80_MN.SBC_hl_rr:  //n16&
+            break;
+        case Z80_MN.SCF:  //
+            break;
+        case Z80_MN.SET_o_irr:  //n3, n16&
+            break;
+        case Z80_MN.SET_o_irr_r:  //n3, n16&, n8&
+            break;
+        case Z80_MN.SET_o_r:  //n3, n8&
+            break;
+        case Z80_MN.SLA_irr:  //n16&
+            break;
+        case Z80_MN.SLA_irr_r:  //n16&, n8&
+            break;
+        case Z80_MN.SLA_r:  //n8&
+            break;
+        case Z80_MN.SLL_irr:  //n16&
+            break;
+        case Z80_MN.SLL_irr_r:  //n16&, n8&
+            break;
+        case Z80_MN.SLL_r:  //n8&
+            break;
+        case Z80_MN.SRA_irr:  //n16&
+            break;
+        case Z80_MN.SRA_irr_r:  //n16&, n8&
+            break;
+        case Z80_MN.SRA_r:  //n8&
+            break;
+        case Z80_MN.SRL_irr:  //n16&
+            break;
+        case Z80_MN.SRL_irr_r:  //n16&, n8&
+            break;
+        case Z80_MN.SRL_r:  //n8&
+            break;
+        case Z80_MN.SUB_a_irr:  //n16&
+            break;
+        case Z80_MN.SUB_a_n:  //
+            break;
+        case Z80_MN.SUB_a_r:  //n8&
+            break;
+        case Z80_MN.XOR_a_irr:  //n16&
+            break;
+        case Z80_MN.XOR_a_n:  //
+            break;
+        case Z80_MN.XOR_a_r:  //n8&
+            break;
     }
+    return 'function(regs, pins) { //' + opcode_info.mnemonic + '\n' + ag.finished() + indent + '}';
 }
 
-function generate_z80_core() {
+function Z80_get_matrix_by_prefix(prfx, i) {
+    switch(prfx) {
+        case 0:
+            return 'Z80_opcode_matrix[' + hex0x2(i) + '], // ' + hex2(i) + '\n';
+        case 0xCB:
+            return 'Z80_CB_opcode_matrix[' + hex0x2(i) + '], // CB ' + hex2(i) + '\n';
+        case 0xED:
+            return 'Z80_ED_opcode_matrix[' + hex0x2(i) + '], // ED ' + hex2(i) + '\n';
+        case 0xDD:
+            return 'Z80_opcode_matrix[' + hex0x2(i) + '], // DD ' + hex2(i) + '\n';
+        case 0xFD:
+            return 'Z80_opcode_matrix[' + hex0x2(i) + '], // FD ' + hex2(i) + '\n';
+        case 0xDDCB:
+            return 'Z80_CBd_opcode_matrix[' + hex0x2(i) + '], // CB DD ' + hex2(i) + '\n';
+        case 0xFDCB:
+            return 'Z80_CBd_opcode_matrix[' + hex0x2(i) + '], // CB FD ' + hex2(i) + '\n';
+    }
+
+
+}
+
+function generate_z80_core(CMOS) {
     let outstr = '"use strict";\n\nconst z80_decoded_opcodes = Object.freeze({\n';
     let indent = '    ';
     let firstin = false;
     for (let p in Z80_prefixes) {
-        let prfx = Z80_prefixes[prfx];
+        let prfx = Z80_prefixes[p];
         for (let i = 0; i <= Z80_MAX_OPCODE; i++) {
-            let mystr = indent + hex0x2(i) + ': new Z80_opcode_functions(';
             let matrix_code = Z80_prefix_to_codemap[prfx] + i;
+            let mystr = indent + hex0x2(matrix_code) + ': new Z80_opcode_functions(';
             let r = Z80_get_opc_by_prefix(prfx, i);
             let ra;
-            if (typeof r === 'undefined') {
+            if ((typeof r === 'undefined') || (typeof r.opc === 'undefined')) {
                 mystr += 'Z80_opcode_matrix[0x00],\n';
-                ra = Z80_generate_instruction_function(indent, Z80_opcode_matrix[0], null);
+                ra = Z80_generate_instruction_function(indent, Z80_opcode_matrix[0], null, CMOS);
             }
             else {
-                ra = Z80_generate_instruction_function(indent, r.opc, r.sub);
+                let sre = Z80_get_matrix_by_prefix(prfx, i);
+                if (typeof sre === 'undefined') {
+                    console.log('WHAT?', hex2(prfx), hex2(i));
+                }
+                mystr += sre;
+                ra = Z80_generate_instruction_function(indent, r.opc, r.sub, CMOS);
             }
-            mystr += '        ' + r + ')';
+            mystr += '        ' + ra + ')';
             if (firstin)
                 outstr += ',\n';
             firstin = true;
             outstr += mystr;
         }
-        outstr += '\n});';
-        return outstr;
     }
+    outstr += '\n});';
+    return outstr;
 }
 
-generate_z80_core();
+//generate_z80_core();
+//console.log(Z80_generate_instruction_function('', Z80_opcode_matrix[0x8E], null));
