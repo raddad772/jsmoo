@@ -152,6 +152,8 @@ const Z80_MN = Object.freeze({
   XOR_a_irr: 133,
   XOR_a_n: 134,
   XOR_a_r: 135,
+  IRQ: 136,
+  RESET: 137,
 });
 
 class Z80_opcode_info {
@@ -449,6 +451,8 @@ const Z80_opcode_matrix = Object.freeze({
     //0xFD: new Z80_opcode_info(0xFD, Z80_MN.),
     0xFE: new Z80_opcode_info(0xFE, Z80_MN.CP_a_n, ''),
     0xFF: new Z80_opcode_info(0xFF, Z80_MN.RST_o, '', '7'),
+    0x100: new Z80_opcode_info(0x100, Z80_MN.IRQ, 'IRQ'),
+    0x101: new Z80_opcode_info(0x101, Z80_MN.RESET, 'RESET')
 });
 
 const Z80_CB_opcode_matrix = Object.freeze({
@@ -1041,7 +1045,7 @@ const Z80_ED_opcode_matrix = Object.freeze({
     0x64: new Z80_opcode_info(0x64, Z80_MN.NEG, 'NEG'),
     0x65: new Z80_opcode_info(0x65, Z80_MN.RETN, 'RETN'),
     0x66: new Z80_opcode_info(0x66, Z80_MN.IM_o, '', '0'),
-    0x67: new Z80_opcode_info(0x67, Z80_MN.RRD, 'RRD'),
+    0x67: new Z80_opcode_info(0x67, Z80_MN.RRD, 'RRD', 'HL'),
     0x68: new Z80_opcode_info(0x68, Z80_MN.IN_r_ic, '', 'L'),
     0x69: new Z80_opcode_info(0x69, Z80_MN.OUT_ic_r, '', 'L'),
     0x6A: new Z80_opcode_info(0x6A, Z80_MN.ADC_hl_rr, '', 'HL'),
@@ -1049,7 +1053,7 @@ const Z80_ED_opcode_matrix = Object.freeze({
     0x6C: new Z80_opcode_info(0x6C, Z80_MN.NEG, 'NEG'),
     0x6D: new Z80_opcode_info(0x6D, Z80_MN.RETI, 'RETI'),
     0x6E: new Z80_opcode_info(0x6E, Z80_MN.IM_o, '', '0'),
-    0x6F: new Z80_opcode_info(0x6F, Z80_MN.RLD, 'RLD'),
+    0x6F: new Z80_opcode_info(0x6F, Z80_MN.RLD, 'RLD', 'HL'),
 
     0x70: new Z80_opcode_info(0x70, Z80_MN.IN_ic, ''),
     0x71: new Z80_opcode_info(0x71, Z80_MN.OUT_ic, ''),
@@ -1094,4 +1098,27 @@ class Z80_opcode_functions {
         this.mnemonic = opcode_info.mnemonic;
         this.exec_func = exec_func;
     }
+}
+
+const Z80_S_IRQ = 0x100;
+const Z80_S_RESET = 0x101;
+// SPECIAL #. This is above Z80_MAX because it is special-case handled by cycle()
+const Z80_S_DECODE = 0x102;
+
+const Z80_MAX_OPCODE = 0x101;
+const Z80_prefixes = [0, 0xCB, 0xDD, 0xED, 0xFD, 0xDDCB, 0xFDCB]
+const Z80_prefix_to_codemap = Object.freeze({
+    [Z80_prefixes[0]]: 0x00,
+    [Z80_prefixes[1]]: (Z80_MAX_OPCODE + 1),
+    [Z80_prefixes[2]]: (Z80_MAX_OPCODE + 1) * 2,
+    [Z80_prefixes[3]]: (Z80_MAX_OPCODE + 1) * 3,
+    [Z80_prefixes[4]]: (Z80_MAX_OPCODE + 1) * 4,
+    [Z80_prefixes[5]]: (Z80_MAX_OPCODE + 1) * 5,
+    [Z80_prefixes[6]]: (Z80_MAX_OPCODE + 1) * 6,
+});
+
+
+function Z80_fetch_decoded(opcode, prefix) {
+    let r = Z80_decoded_opcodes[Z80_prefix_to_codemap[prefix] + opcode];
+    return r;
 }

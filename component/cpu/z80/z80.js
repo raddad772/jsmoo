@@ -1,5 +1,11 @@
 "use strict";
 
+const Z80P = Object.freeze({
+    HL: 0,
+    IX: 1,
+    IY: 2
+});
+
 class z80_register_F_t {
     constructor() {
         this.S = 0;
@@ -96,6 +102,15 @@ class z80_registers_t {
         this.IFF2 = 0; // IRQ flipflop 2
         this.IM = 0; // Interrupt Mode
         this.HALT = 0; // If HALT was executed
+
+        // Internal registers
+        this.IRQ_vec = null;
+        this.rprefix = Z80P.HL;
+        this.prefix = 0x00;
+    }
+
+    inc_R() {
+        this.R = (this.R + 1) & 0x7F;
     }
 
     exchange_shadow() {
@@ -135,20 +150,189 @@ class z80_registers_t {
 
 class z80_pins_t {
     constructor() {
-        this.RES = 0;
-        this.NMI = 0;
-        this.Addr = 0;
-        this.D = 0;
+        this.RES = 0; // RESET
+        this.NMI = 0; // NMI
+        this.IRQ = 0; // IRQ
+        this.Addr = 0; // Address/port number
+        this.D = 0; // Data
 
         this.RD = 0; // Read
         this.WR = 0; // Write
-        this.IO = 0; // IO (1) or RAM (0) on low 8 bits of address bus
+        this.IO = 0; // IO request
+        this.MRQ = 0; // Memory request
     }
 }
 
 class z80_t {
-    constructor() {
+    constructor(CMOS) {
         this.regs = new z80_registers_t();
         this.pins = new z80_pins_t();
+        this.CMOS = CMOS;
+
+        this.IRQ_pending = false;
+        this.IRQ_ack = false;
+
+        this.NMI_pending = false;
+        this.NMI_ack = false;
+    }
+
+    reset() {
+        this.regs.rprefix = Z80P.HL;
+        this.regs.prefix = 0x00;
+        this.regs.A = 0xFF;
+        this.regs.F.setbyte(0xFF);
+        this.regs.B = this.regs.C = this.regs.D = this.regs.E = 0;
+        this.regs.H = this.regs.L = this.regs.IX = this.regs.IY = 0;
+        this.regs.WZ = this.regs.PC = 0;
+        this.regs.SP = 0xFFFF;
+        this.regs.EI = this.regs.P = this.regs.Q = 0;
+        this.regs.HALT = this.regs.IFF1 = this.regs.IFF2 = 0;
+        this.regs.IM = 1;
+
+        this.regs.As = this.regs.Fs = this.regs.Bs = this.regs.Cs = 0;
+        this.regs.Ds = this.regs.Es = this.regs.Hs = this.regs.Ls = 0;
+
+        this.IRQ_pending = this.NMI_pending = this.IRQ_ack = this.NMI_ack = false;
+        this.regs.IRQ_vec = null;
+
+        this.regs.IR = Z80_S_RESET;
+        this.current_instruction = Z80_fetch_decoded(this.regs.IR, 0x00);
+        this.regs.TCU = 0;
+    }
+
+    irq(irq_vec=0x0000) {
+        if (this.regs.IRQ_vec === null) this.regs.IRQ_vec = irq_vec;
+        this.IRQ_pending = true;
+        this.IRQ_ack = false;
+    }
+
+    set_pins_opcode() {
+        this.pins.RD = 1;
+        this.pins.MRQ = 1;
+        this.pins.WR = 0;
+        this.pins.IO = 0;
+        this.pins.Addr = this.regs.PC;
+        this.regs.PC = (this.regs.PC + 1) & 0xFFFF;
+    }
+
+    set_pins_nothing() {
+        this.pins.RD = this.pins.MRQ = 0;
+        this.pins.WR = this.pins.IO = 0;
+    }
+
+    set_instruction(to) {
+        this.IR = to;
+        this.current_instruction = Z80_fetch_decoded(this.IR, this.regs.prefix);
+        this.regs.TCU = 0;
+    }
+
+    ins_cycles() {
+        switch(this.regs.TCU) {
+            // 1-4 is fetch next thing and interpret
+            case 0: // already handled by fetch of next instruction starting
+                break;
+            case 1:
+                if (this.regs.HALT) { this.regs.TCU = 0; break; }
+                // TODO: add NMI/IRQ checks here
+                if (this.NMI_pending && !this.NMI_ack) {
+                    console.log('NMI not implemented yet')
+                    this.NMI_ack = true;
+                }
+                else if (this.IRQ_pending && !this.IRQ_ack) {
+                    this.IRQ_ack = true;
+                    this.pins.D = 0xFF;
+                    this.regs.PC = (this.regs.PC - 1) & 0xFFFF;
+                    this.set_instruction(Z80_S_IRQ);
+                    break;
+                }
+                this.regs.t[0] = this.pins.D;
+                this.pins.RD = 0;
+                this.pins.MRQ = 0;
+                break;
+            case 2:
+                this.regs.inc_R();
+                break;
+            case 3:
+                // If we need to fetch another, start that and set TCU back to 1
+                if (this.regs.t[0] === 0xDD) { this.regs.prefix = 0xDD; this.regs.rprefix = Z80P.IX; this.set_pins_opcode(); this.regs.TCU = 0; break; }
+                if (this.regs.t[0] === 0xfD) { this.regs.prefix = 0xFD; this.regs.rprefix = Z80P.IY; this.set_pins_opcode(); this. regs.TCU = 0; break; }
+                // elsewise figure out what to do next
+                // this gets a little tricky
+                // 4, 5, 6, 7, 8, 9, 10, 11, 12 = rprefix != HL and is CB, execute CBd
+                if ((this.regs.t[0] === 0xCB) && (this.regs.rprefix !== Z80P.HL)) {
+                    this.regs.prefix = (this.regs.prefix << 8) | 0xCB;
+                    break;
+                }
+                // . so 13, 14, 15, 16. opcode, then immediate execution CB
+                else if (this.regs.t[0] === 0xCB) {
+                    this.regs.prefix = 0xCB;
+                    this.regs.TCU = 12;
+                    break;
+                }
+                // reuse 13-16
+                else if (this.regs.t[0] === 0xED) {
+                    this.regs.prefix = 0xED;
+                    this.regs.TCU = 12;
+                    break;
+                }
+                else {
+                    this.set_instruction(this.regs.t[0]);
+                    break;
+                }
+            case 4: // CBd begins here, as does operand()
+                this.regs.WZ = (this.regs.H << 8) | this.regs.L;
+                this.set_pins_opcode();
+                break;
+            case 5:
+                this.regs.WZ = (this.regs.WZ + mksigned8(this.pins.D)) & 0xFFFF;
+                this.set_pins_nothing();
+                break;
+            case 6: // last step of operand
+                break;
+            case 7: // wait a cycle
+                break;
+            case 8: // wait one more cycle
+                break;
+            case 9: // start opcode fetch
+                this.set_pins_opcode();
+                break;
+            case 10:
+                this.set_pins_nothing();
+                this.regs.t[0] = this.pins.D;
+                break;
+            case 11: // cycle 3 of opcode tech
+                break;
+            case 12: // cycle 4 of opcode fetch. execute instruction!
+                this.set_instruction(this.regs.t[0]);
+                break;
+            case 13: // CB regular and ED regular starts here
+                this.regs.inc_R();
+                this.set_pins_opcode();
+                break;
+            case 14:
+                this.regs.t[0] = this.pins.D;
+                this.set_pins_nothing();
+                break;
+            case 15:
+                break;
+            case 16:
+                // execute from ED now
+                this.set_instruction(this.regs.t[0]);
+                break;
+            default:
+                console.log('HOW DID WE GET HERE!?');
+                break;
+        }
+    }
+
+    cycle() {
+        this.regs.TCU++;
+        if (this.regs.IR === Z80_S_DECODE) {
+            // Long logic to decode opcodes and decide what to do
+            this.ins_cycles();
+        } else {
+            // Execute an actual opcode
+            this.current_instruction.exec_func(this.regs, this.pins);
+        }
     }
 }
