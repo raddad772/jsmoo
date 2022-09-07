@@ -179,7 +179,6 @@ class ZXSpectrum_ULA {
                 let val = this.bus.ula_read(addr, 0);
                 // Only 2 shifts left before we need this data
                 this.bg_shift |= (val << 2);
-                this.clock.contended = false;
                 break;
             case 7: // next next attr
                 this.next_attr = this.bus.ula_read(0x5800 + ((dy >>> 3) * 0x20) + (dx >>> 3));
