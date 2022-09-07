@@ -25,9 +25,9 @@ const DEFAULT_STEPS = {
 //   default value.
 let ui_el = {
 	//tracing_checkbox: ['tracingbox', null],
-	log_hdma_checkbox: ['loghdma', false],
-	tracing_5a22_checkbox: ['tracing5a22', WDC_DO_TRACING_AT_START],
-	tracing_spc700_checkbox: ['tracingspc700', SPC_DO_TRACING_AT_START],
+	log_hdma_checkbox: ['loghdma', 'checkbox', false],
+	tracing_CPU_checkbox: ['tracingCPU', CPU_DO_TRACING_AT_START],
+	tracing_APU_checkbox: ['tracingAPU', APU_DO_TRACING_AT_START],
 	watching_checkbox: ['watchpt', null],
 	mc_input: ['masterclocksteps', DEFAULT_STEPS.master],
 	scanline_input: ['scanlinesteps', DEFAULT_STEPS.scanlines],
@@ -73,13 +73,17 @@ class global_player_t {
 	constructor() {
 		this.system_kind = DEFAULT_SYSTEM;
 		this.state = 'paused';
-		this.power = false;
-		this.romfile = null;
 		this.system = null;
-		this.jsa = null;
 		this.timing_thread = new timing_thread_t(this.on_timing_message.bind(this));
 		this.ready = false;
+		this.tech_specs = {};
 
+		this.input_focused = false;
+	}
+
+	set_fps_target(to) {
+		to = parseInt(to);
+		this.timing_thread.set_fps_target(to);
 	}
 
 	pause() {
@@ -103,25 +107,31 @@ class global_player_t {
 		}
 	}
 
-	set_system() {
-		if (!this.jsa)
-			this.jsa = new js_animator(60, function(){});
+	set_system(to) {
+		this.timing_thread.pause();
+		if (this.system_kind === to) {
+			console.log('Already using that one bro')
+			return;
+		}
 		if (this.system !== null) {
 			this.system.killall();
 			this.system = null;
 		}
 		switch(this.system_kind) {
 			case 'snes':
-				this.system = new SNES(this.jsa);
-				snes = this.system;
+				this.system = new SNES();
 				break;
 			case 'nes':
-				this.system = new NES(this.jsa);
+				this.system = new NES();
+				break;
+			case 'spectrum':
+				this.system = new ZXSpectrum();
 				break;
 			default:
 				alert('system not found');
 				return;
 		}
+		this.tech_specs = this.system.get_description();
 		this.ready = true;
 	}
 

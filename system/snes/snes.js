@@ -31,7 +31,7 @@ cycles in scanline
 
 
 class SNES {
-	constructor(jsanimator) {
+	constructor() {
 		this.cart = new snes_cart();
 		this.version = {rev: 0, nstc: true, pal: false}
 
@@ -41,10 +41,22 @@ class SNES {
 		this.ppu = new SNES_slow_1st_PPU(document.getElementById('snescanvas'), this.version, this.mem_map, this.clock);
 		this.apu = new spc700(this.mem_map, this.clock);
 		this.cpu.reset();
-		this.jsanimator = jsanimator;
-		this.jsanimator.callback = this.do_frame.bind(this);
 		dbg.watch.wdc = this.cpu;
 		dbg.watch.spc = this.apu;
+	}
+
+	killall() {
+		alert('Thread kill not implemented for SNES yet');
+	}
+
+	get_description() {
+        let d = new machine_description('SNES');
+        d.technical.standard = 'NTSC';
+        d.technical.fps = 60;
+        d.input_types = [INPUT_TYPES.SNES_CONTROLLER];
+		d.technical.x_resolution = 256;
+		d.technical.y_resolution = 240;
+        return d;
 	}
 
 	do_display(force) {
@@ -73,17 +85,7 @@ class SNES {
 	}
 
 	do_frame(elapsed) {
-		if (elapsed > 15) {
-			if (dbg.frames_til_pause !== 0) {
-				dbg.frames_til_pause--;
-				ui_el.frames_til_pause.value = dbg.frames_til_pause;
-				if (dbg.frames_til_pause === 0) {
-					this.jsanimator.pause();
-					stop_fps_count();
-				}
-			}
-			this.step(0, 0, 1, 0);
-		}
+		this.step(0, 0, 1, 0);
 	}
 
 	step(master_clocks, scanlines, frames, seconds) {

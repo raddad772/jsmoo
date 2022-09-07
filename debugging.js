@@ -1,9 +1,7 @@
 "use strict";
 
-let R5A22_DO_TRACING_AT_START = false;
-let WDC_DO_TRACING_AT_START = false;
-let SPC_DO_TRACING_AT_START = false;
-let M6502_DO_TRACING_AT_START = false;
+let CPU_DO_TRACING_AT_START = false;
+let APU_DO_TRACING_AT_START = false;
 let TRACE_COLOR = true;
 let SPC_TRACING_START = 20 * 68 * 262 * 9;
                      // 20 master clock cycles = 1 of ours
@@ -12,7 +10,6 @@ let SPC_TRACING_START = 20 * 68 * 262 * 9;
                                      // 9 frames
 SPC_TRACING_START = 0; // Start at beginning
 let WDC_LOG_DMAs = true;
-let WDC_LOG_HDMAs = false;
 let TRACE_ADDR = '{*}'
 let TRACE_READ = '{g}';
 let TRACE_WRITE = '{b}';
@@ -289,16 +286,16 @@ class debugger_t {
     add_cpu(kind, cpu) {
         this.cpus[kind] = cpu;
         if (kind === D_RESOURCE_TYPES.R5A22) {
-            this.tracing_for[kind] = R5A22_DO_TRACING_AT_START;
+            this.tracing_for[kind] = CPU_DO_TRACING_AT_START;
         }
         else if (kind === D_RESOURCE_TYPES.WDC65C816) {
-            this.tracing_for[kind] = WDC_DO_TRACING_AT_START;
+            this.tracing_for[kind] = CPU_DO_TRACING_AT_START;
         }
         else if (kind === D_RESOURCE_TYPES.SPC700) {
-            this.tracing_for[kind] = SPC_DO_TRACING_AT_START;
+            this.tracing_for[kind] = APU_DO_TRACING_AT_START;
         }
         else if (kind === D_RESOURCE_TYPES.M6502) {
-            this.tracing_for[kind] = WDC_DO_TRACING_AT_START;
+            this.tracing_for[kind] = CPU_DO_TRACING_AT_START;
         }
         this.cpu_refresh_tracing();
     }
@@ -308,7 +305,7 @@ class debugger_t {
             alert('Cannot step while running');
             return;
         }
-        snes.step_masterclock(howmany);
+        global_player.system.step_masterclock(howmany);
     }
 
     step(master_clocks, scanlines, frames, seconds) {
@@ -316,7 +313,7 @@ class debugger_t {
             alert('Cannot step while running');
             return;
         }
-        snes.step(master_clocks, scanlines, frames, seconds);
+        global_player.system.step(master_clocks, scanlines, frames, seconds);
     }
 
     break(whodidit, why=false) {
@@ -324,24 +321,26 @@ class debugger_t {
         console.log('DOING BREAK');
         this.state = DBG_STATES.PAUSE;
         this.do_break = true;
-        let DOSNES = whodidit === D_RESOURCE_TYPES.R5A22 || whodidit === D_RESOURCE_TYPES.WDC65C816 || whodidit === D_RESOURCE_TYPES.SPC700;
-        if (!DOSNES) { global_player.system.cycles_left = 0; }
         let overflow = 0;
-        if (DOSNES) overflow = snes.clock.cpu_deficit;
-        if (DOSNES) console.log('BREAK AT PPU Y', snes.clock.scanline.ppu_y);
-        if (whodidit === D_RESOURCE_TYPES.WDC65C816 || whodidit === D_RESOURCE_TYPES.R5A22) {
-            snes.clock.cpu_deficit = 0;
-            snes.apu.catch_up();
-            snes.ppu.catch_up();
+        switch(global_player.system_kind) {
+            case 'nes':
+                global_player.system.cycles_left = 0;
+                break;
+            case 'snes':
+                overflow = global_player.system.clock.cpu_deficit;
+                console.log('BREAK AT PPU Y', global_player.system.clock.scanline.ppu_y);
+                global_player.system.clock.cpu_deficit = 0;
+                if (whodidit === D_RESOURCE_TYPES.SPC700) {
+                    global_player.system.ppu.catch_up();
+                } else {
+                    global_player.system.apu.catch_up();
+                    global_player.system.ppu.catch_up();
+                }
+                console.log('AFTER BREAK deficits', global_player.system.clock.cpu_deficit, global_player.system.clock.apu_deficit, global_player.system.clock.ppu_deficit)
+                break;
+            case 'spectrum':
+                break;
         }
-        else if (whodidit === D_RESOURCE_TYPES.SPC700) {
-            snes.ppu.catch_up();
-        }
-        if (DOSNES) snes.jsanimator.pause();
-        else global_player.system.jsanimator.pause();
-        //snes.clock.apu_deficit -= overflow;
-        //snes.clock.ppu_deficit -= overflow;
-        if (DOSNES) console.log('AFTER BREAK deficits', snes.clock.cpu_deficit, snes.clock.apu_deficit, snes.clock.ppu_deficit)
         if (this.tracing) {
             this.traces.draw(dconsole);
         }
@@ -349,10 +348,7 @@ class debugger_t {
 
     init_done() {
         this.disable_tracing();
-        //snes.step(INITIAL_STEPS.master, INITIAL_STEPS.scanlines-1, INITIAL_STEPS.frames, INITIAL_STEPS.seconds)
         this.enable_tracing();
-        //snes.step(0, 1);
-        //this.traces.draw(dconsole);
     }
 }
 

@@ -1,7 +1,7 @@
 "use strict";
 
 class NES {
-    constructor(jsanimator) {
+    constructor() {
         this.bus = new NES_bus();
         this.clock = new NES_clock();
         this.cart = new NES_cart(this.clock, this.bus);
@@ -9,14 +9,21 @@ class NES {
         this.ppu = new NES_ppu(document.getElementById('snescanvas'), this.clock, this.bus);
         this.cycles_left = 0;
         this.here = 0;
-
-        this.jsanimator = jsanimator;
-        this.jsanimator.callback = this.run_frame.bind(this);
     }
 
     killall() {
 
     }
+
+	get_description() {
+        let d = new machine_description('Nintendo Entertainment System');
+        d.technical.standard = 'NTSC';
+        d.technical.fps = 60;
+        d.input_types = [INPUT_TYPES.SNES_CONTROLLER];
+        d.technical.x_resolution = 256;
+        d.technical.y_resolution = 240;
+        return d;
+	}
 
     present() {
         this.ppu.present();

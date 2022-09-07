@@ -50,6 +50,9 @@ class timing_worker_t {
             case timing_messages.pause_request:
                 this.pause_request();
                 break;
+            case timing_messages.set_fps_target:
+                this.set_fps_target(e.target);
+                break;
             default:
                 console.log('TIMING THREAD UNHANDLED MESSAGE');
         }
