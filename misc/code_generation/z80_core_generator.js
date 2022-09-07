@@ -612,7 +612,7 @@ class Z80_switchgen {
         this.addl('let tv = ((regs.C - 1) & 0xFF) + data & 7 ^ regs.B;');
         this.setP('tv');
         this.setXY('regs.B');
-        this.addl('regs.P.H = regs.P.C;');
+        this.addl('regs.F.H = regs.F.C;');
         this.setZ('regs.B');
         this.setS8('regs.B');
     }

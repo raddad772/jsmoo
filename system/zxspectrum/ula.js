@@ -1,7 +1,7 @@
 "use strict";
 
 // 0-7, or 8-15 for bright ones
-const ZXSpectrum_palette = new Object.freeze({
+const ZXSpectrum_palette = Object.freeze({
     0: {0: [0, 0, 0], 1: [0, 0, 0xD8],
         2: [0xD8, 0, 0], 3: [0xD8, 0, 0xD8],
         4: [0, 0xD8, 0], 5: [0, 0xD8, 0xD8],
@@ -12,7 +12,7 @@ const ZXSpectrum_palette = new Object.freeze({
         6: [0xFF, 0xFF, 0], 7: [0xFF, 0xFF, 0xFF]}
 })
 
-const ZXSpectrum_keyboard_halfrows = new Object.freeze({
+const ZXSpectrum_keyboard_halfrows = Object.freeze({
     0xF7: ['1', '2', '3', '4', '5'],
     0xEF: ['0', '9', '8', '7', '6'],
     0xFB: ['q', 'w', 'e', 'r', 't'],
@@ -25,11 +25,12 @@ const ZXSpectrum_keyboard_halfrows = new Object.freeze({
 
 class ZXSpectrum_ULA {
     /**
+     * @param {HTMLElement} canvas
      * @param {ZXSpectrum_clock} clock
      * @param {ZXSpectrum_bus} bus
      */
-    constructor(clock, bus) {
-
+    constructor(canvas, clock, bus) {
+        this.canvas = canvas;
         this.clock = clock;
         this.bus = bus;
         this.scanline_func = this.scanline_vblank.bind(this);
@@ -52,7 +53,6 @@ class ZXSpectrum_ULA {
 
         this.io = {
             border_color: 0,
-            paper_color: 0
         }
     }
 
@@ -64,10 +64,31 @@ class ZXSpectrum_ULA {
         for (let i = 0; i < 5; i++) {
             let key = row[i];
             //let kp = +(!CHECK_KEY_PRESSED(key));
-            let kp = 1; // no keys pressed ATM
+            //let kp = 1; // no keys pressed ATM
+            let kp = keyboard_input.keys[key];
+            if (typeof kp === 'undefined') {
+                console.log('WHAT NO', key, i, row, row[i]);
+                kp = 0;
+            }
+            kp = +(!kp);
             out |= kp << i;
         }
         return out;
+    }
+
+    reset() {
+        this.clock.ula_frame_cycle = this.clock.ula_x = this.clock.ula_y = 0;
+        this.clock.contended = false;
+        this.clock.flash.bit = 0;
+        this.clock.flash.count = 16;
+        this.clock.master_frame_count = 0;
+        this.clock.frame_master_clock = 0;
+
+        this.bg_shift = 0;
+        this.scanline_vblank.bind(this);
+        this.first_vblank = true;
+        this.screen_x = this.screen_y = 0;
+        this.next_attr = 0;
     }
 
     reg_read(addr, val, has_effect=false) {
@@ -225,5 +246,27 @@ class ZXSpectrum_ULA {
             case 256: // 256-311 are lower border
                 this.scanline_func = this.scanline_border_bottom.bind(this);
         }
+    }
+
+    present(buf=null) {
+        // 352x304
+        let ctx = this.canvas.getContext('2d');
+        let imgdata = ctx.getImageData(0, 0, 352, 304);
+        for (let ry = 0; ry < 304; ry++) {
+            let y = ry;
+            for (let rx = 0; rx < 352; rx++) {
+                let x = rx;
+                let di = ((y * 352) + x) * 4;
+                let ulai = (y * 352) + x;
+
+                let color = this.output[ulai];
+
+                imgdata.data[di] = ZXSpectrum_palette[color][0];
+                imgdata.data[di+1] = ZXSpectrum_palette[color][1];
+                imgdata.data[di+2] = ZXSpectrum_palette[color][2];
+                imgdata.data[3] = 255;
+            }
+        }
+        ctx.putImageData(imgdata, 0, 0);
     }
 }

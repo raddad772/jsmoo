@@ -25,31 +25,31 @@ const DEFAULT_STEPS = {
 //   default value.
 let ui_el = {
 	//tracing_checkbox: ['tracingbox', null],
-	log_hdma_checkbox: ['loghdma', 'checkbox', false],
-	tracing_CPU_checkbox: ['tracingCPU', CPU_DO_TRACING_AT_START],
-	tracing_APU_checkbox: ['tracingAPU', APU_DO_TRACING_AT_START],
-	watching_checkbox: ['watchpt', null],
-	mc_input: ['masterclocksteps', DEFAULT_STEPS.master],
-	scanline_input: ['scanlinesteps', DEFAULT_STEPS.scanlines],
-	frame_input: ['framesteps', DEFAULT_STEPS.frames],
-	seconds_input: ['secondsteps', DEFAULT_STEPS.seconds],
-	brknmirq_checkbox: ['brknmirq', null],
-	memaddr_input: ['memaddr', null],
-	ppu_y_output: ['ppu_y_output', null],
-	frame_count_output: ['frame_count_output', null],
-	bg1on_checkbox: ['bg1on', true],
-	bg2on_checkbox: ['bg2on', true],
-	bg3on_checkbox: ['bg3on', true],
-	bg4on_checkbox: ['bg4on', true],
-	objon_checkbox: ['objon', true],
-	log_windows_checkbox: ['log_windows', false],
-	render_windows_checkbox: ['render_windows', true],
-	play_button: ['playbutton', null],
-	pause_button: ['pausebutton', null],
-	frames_til_pause: ['framestilpause', 0],
-	fps: ['fps', 0],
-	system_select: ['systemselect', null],
-	rom_select: ['romselect', null],
+	log_hdma_checkbox: ['checkbox', 'loghdma', false],
+	tracing_CPU_checkbox: ['checkbox', 'tracingCPU', CPU_DO_TRACING_AT_START],
+	tracing_APU_checkbox: ['checkbox', 'tracingAPU', APU_DO_TRACING_AT_START],
+	watching_checkbox: ['checkbox', 'watchpt', null],
+	mc_input: ['input', 'masterclocksteps', DEFAULT_STEPS.master],
+	scanline_input: ['input', 'scanlinesteps', DEFAULT_STEPS.scanlines],
+	frame_input: ['input', 'framesteps', DEFAULT_STEPS.frames],
+	seconds_input: ['input', 'secondsteps', DEFAULT_STEPS.seconds],
+	brknmirq_checkbox: ['checkbox', 'brknmirq', null],
+	memaddr_input: ['input', 'memaddr', null],
+	ppu_y_output: ['output', 'ppu_y_output', null],
+	frame_count_output: ['output', 'frame_count_output', null],
+	bg1on_checkbox: ['checkbox', 'bg1on', true],
+	bg2on_checkbox: ['checkbox', 'bg2on', true],
+	bg3on_checkbox: ['checkbox', 'bg3on', true],
+	bg4on_checkbox: ['checkbox', 'bg4on', true],
+	objon_checkbox: ['checkbox', 'objon', true],
+	log_windows_checkbox: ['checkbox', 'log_windows', false],
+	render_windows_checkbox: ['checkbox', 'render_windows', true],
+	play_button: ['button', 'playbutton', null],
+	pause_button: ['button', 'pausebutton', null],
+	frames_til_pause: ['input', 'framestilpause', 0],
+	fps: ['output', 'fps', 0],
+	system_select: ['select', 'systemselect', null],
+	rom_select: ['select', 'romselect', null],
 }
 
 
@@ -78,7 +78,7 @@ class global_player_t {
 		this.ready = false;
 		this.tech_specs = {};
 
-		this.input_focused = false;
+		this.input_capture = true;
 	}
 
 	set_fps_target(to) {
@@ -486,22 +486,45 @@ function click_pause() {
 
 class keyboard_input_t {
 	constructor() {
-		this.keys_cared_about = ['a', 's', 'z', 'x', 'tab', 'up', 'down', 'left', 'right', 'q', 'w', 'f'];
+		this.keys_cared_about = [
+			'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f',
+			'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm',
+			'tab', 'up', 'down', 'left', 'right', 'enter', 'shift', 'alt', 'space'];
 
 		this.keys_cared_about_codes = [];
 		this.conversion = {
-			'a': 'a',
-			's': 's',
-			'z': 'z',
-			'x': 'x',
-			'f': 'f',
 			'q': 'q',
 			'w': 'w',
+			'e': 'e',
+			'r': 'r',
+			't': 't',
+			'y': 'y',
+			'u': 'u',
+			'i': 'i',
+			'o': 'o',
+			'p': 'p',
+			'a': 'a',
+			's': 's',
+			'd': 'd',
+			'f': 'f',
+			'g': 'g',
+			'h': 'h',
+			'j': 'j',
+			'k': 'k',
+			'z': 'z',
+			'x': 'x',
+			'v': 'v',
+			'b': 'b',
+			'n': 'n',
+			'm': 'm',
+			'space': ' ',
+			'shift': 'Shift',
 			'up': 'ArrowUp',
 			'down': 'ArrowDown',
 			'left': 'ArrowLeft',
 			'right': 'ArrowRight',
 			'enter': 'Enter',
+			'alt': 'Alt',
 			'tab': 'Tab'
 		}
 		this.conversion_back = {}
@@ -519,18 +542,23 @@ class keyboard_input_t {
 	}
 
 	keydown(keycode, event) {
+		console.log(keycode);
 		if (this.keys_cared_about_codes.indexOf(keycode) !== -1) {
 			this.keys[this.conversion_back[keycode]] = true;
-			event.stopPropagation();
-			event.preventDefault();
+			if (global_player.input_capture) {
+				event.stopPropagation();
+				event.preventDefault();
+			}
 		}
 	}
 
 	keyup(keycode, event) {
 		if (this.keys_cared_about_codes.indexOf(keycode) !== -1) {
 			this.keys[this.conversion_back[keycode]] = false;
-			event.stopPropagation();
-			event.preventDefault();
+			if (global_player.input_capture) {
+				event.stopPropagation();
+				event.preventDefault();
+			}
 		}
 	}
 }
@@ -583,18 +611,30 @@ async function main() {
 
 after_js = main;
 
+function uie_input_focus() {
+	global_player.input_capture = false;
+}
+
+function uie_input_blur() {
+	global_player.input_capture = true;
+}
+
 async function init_ui() {
 	for (let k in ui_el) {
 		let v = ui_el[k];
-		let dom_id = v[0];
-		let default_value = v[1];
+		let t = v[0];
+		let dom_id = v[1];
+		let default_value = v[2];
 		ui_el[k] = document.getElementById(dom_id);
-		if (default_value !== null) {
-			if (k.indexOf('checkbox') !== -1) {
-				ui_el[k].checked = default_value;
-			} else {
-				ui_el[k].value = default_value;
-			}
+		switch(t) {
+			case 'input':
+				if (default_value !== null) ui_el[k].checked = default_value;
+				ui_el[k].onfocus = uie_input_focus;
+				ui_el[k].onblur = uie_input_blur;
+				break;
+			case 'checkbox':
+				if (default_value !== null) ui_el[k].value = default_value;
+				break;
 		}
 	}
 
@@ -615,12 +655,12 @@ async function init_ui() {
 	});
 
 
-	ui_el.tracing_5a22_checkbox.addEventListener('change', (event) => {
+	ui_el.tracing_CPU_checkbox.addEventListener('change', (event) => {
 		if (event.currentTarget.checked) dbg.enable_tracing_for(D_RESOURCE_TYPES.M6502);
 		else dbg.disable_tracing_for(D_RESOURCE_TYPES.M6502);
 	});
 
-	ui_el.tracing_spc700_checkbox.addEventListener('change', (event) => {
+	ui_el.tracing_APU_checkbox.addEventListener('change', (event) => {
 		if (event.currentTarget.checked) dbg.enable_tracing_for(D_RESOURCE_TYPES.SPC700);
 		else dbg.disable_tracing_for(D_RESOURCE_TYPES.SPC700);
 	});

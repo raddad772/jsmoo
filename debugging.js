@@ -185,7 +185,7 @@ class traces_t {
 
 //let traces = new traces_t();
 
-const D_RESOURCE_TYPES = Object.freeze({R5A22: 0, SPC700: 1, WDC65C816: 2, SNESPPU: 3, M6502: 4});
+const D_RESOURCE_TYPES = Object.freeze({R5A22: 0, SPC700: 1, WDC65C816: 2, SNESPPU: 3, M6502: 4, Z80: 5});
 
 class breakpoint_t {
     constructor(resource_type, resource) {

@@ -61,18 +61,33 @@ class ZXSpectrum_clock {
 
 class ZXSpectrum_bus {
     constructor(clock, memsize) {
+        this.ROM = new Uint8Array(16*1024);
+        this.RAM = new Uint8Array(48*1024);
         this.clock = clock;
-
-        this.cpu_read = function(addr, val, has_effect=false) {debugger;};
-        this.cpu_write = function(addr, val) { debugger; }
 
         this.ula_read = function(addr, val) { debugger; return 0xCC; };
 
-        this.cpu_ula_read = function(addr, val, has_effect) {debugger;};
+        this.cpu_ula_read = function(addr, val, has_effect) { return 0xCC; };
         this.cpu_ula_write = function(addr, val) {debugger;}
 
         this.notify_IRQ = function(level) { debugger; }
     }
+
+    ula_read = function(addr, val) {
+        return this.RAM[addr - 0x4000];
+    }
+
+    cpu_read(addr, val, has_effect=false) {
+        if (addr < 0x4000) return this.ROM[addr];
+        return this.RAM[addr - 0x4000];
+    };
+
+    cpu_write = function(addr, val) {
+        if (addr < 0x4000) return;
+        this.RAM[addr - 0x4000] = val;
+    }
+
+
 }
 
 class ZXSpectrum {
@@ -82,9 +97,13 @@ class ZXSpectrum {
         this.cpu = new z80_t();
         this.cpu.reset();
 
+        this.bus.notify_IRQ = this.cpu.notify_IRQ.bind();
+
         this.bus = new ZXSpectrum_bus(this.clock, 48);
 
-        this.ula = new ZXSpectrum_ULA(this.clock, this.bus);
+        this.ula = new ZXSpectrum_ULA(document.getElementById('snescanvas'), this.clock, this.bus);
+
+        dbg.add_cpu(D_RESOURCE_TYPES.Z80, this.cpu);
     }
 
     killall() {
@@ -93,6 +112,24 @@ class ZXSpectrum {
 
     reset() {
         this.cpu.reset();
+        this.ula.reset();
+    }
+
+    cpu_cycle() {
+        if (this.clock.contended && ((this.cpu.pins.Addr - 0x4000) < 0x4000)) return;
+        if (this.cpu.pins.RD) {
+            if (this.cpu.pins.MRQ) // ROM/RAM
+                this.cpu.pins.D = this.bus.cpu_read(this.cpu.pins.Addr);
+            else // IO port
+                this.cpu.pins.D = this.bus.cpu_ula_read(this.cpu.pins.Addr)
+        }
+        this.cpu.cycle();
+        if (this.cpu.pins.WR) {
+            if (this.cpu.pins.MRQ) // ROM/RAM
+                this.bus.cpu_write(this.cpu.pins.Addr, this.cpu.pins.D);
+            else
+                this.bus.cpu_ula_write(this.cpu.pins.Addr, this.cpu.pins.D);
+        }
     }
 
     get_description() {
@@ -106,10 +143,23 @@ class ZXSpectrum {
     }
 
     run_frame() {
+        let current_frame = this.clock.master_frame_count;
+        while(current_frame === this.clock.master_frame_count) {
+            this.finish_scanline();
+        }
+    }
 
+    finish_scanline() {
+        let cycles_left = this.clock.master_clocks_per_line - this.clock.ula_x;
+
+        for (let cycle = 0; cycle < cycles_left; cycle++) {
+            this.cpu_cycle();
+            this.ula.cycle();
+            this.ula.cycle();
+        }
     }
 
     present() {
-
+        this.ula.present();
     }
 }
