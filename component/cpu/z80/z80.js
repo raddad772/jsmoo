@@ -200,6 +200,11 @@ class z80_t {
         this.regs.TCU = 0;
     }
 
+    notify_IRQ(){
+        this.irq();
+    }
+
+
     irq(irq_vec=0x0000) {
         if (this.regs.IRQ_vec === null) this.regs.IRQ_vec = irq_vec;
         this.IRQ_pending = true;
@@ -233,16 +238,17 @@ class z80_t {
                 break;
             case 1:
                 if (this.regs.HALT) { this.regs.TCU = 0; break; }
-                // TODO: add NMI/IRQ checks here
                 if (this.NMI_pending && !this.NMI_ack) {
                     console.log('NMI not implemented yet')
                     this.NMI_ack = true;
+                    if (dbg.brk_on_NMIRQ) dbg.break(D_RESOURCE_TYPES.Z80);
                 }
                 else if (this.IRQ_pending && !this.IRQ_ack) {
                     this.IRQ_ack = true;
                     this.pins.D = 0xFF;
                     this.regs.PC = (this.regs.PC - 1) & 0xFFFF;
                     this.set_instruction(Z80_S_IRQ);
+                    if (dbg.brk_on_NMIRQ) dbg.break();
                     break;
                 }
                 this.regs.t[0] = this.pins.D;

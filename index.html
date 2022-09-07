@@ -9,6 +9,7 @@
     <script type="text/javascript" src="helpers/timing/timing_header.js"></script>
     <script type="text/javascript" src="ui.js"></script>
     <script type="text/javascript" src="rom_upload.js"></script>
+    <script type="text/javascript" src="helpers/machine_description.js"></script>
 <!-- SNES -->
     <script type="text/javascript" src="component/cpu/wdc65816/wdc65816_opcodes.js"></script>
     <script type="text/javascript" src="component/cpu/wdc65816/wdc65816_t.js"></script>
@@ -51,9 +52,13 @@
     <!-- commodore64 and more -->
     <script type="text/javascript" src="component/cpu/m6502/m65c02_generated_opcodes.js"></script>
 
-    <!-- SMS -->
+    <!-- ZX Spectrum -->
+    <script type="text/javascript" src="system/zxspectrum/ula.js"></script>
+    <script type="text/javascript" src="system/zxspectrum/zxspectrum.js"></script>
     <script type="text/javascript" src="component/cpu/z80/z80_opcodes.js"></script>
     <script type="text/javascript" src="component/cpu/z80/z80.js"></script>
+
+    <!-- SMS -->
 
     <!-- because bad organization -->
     <script type="text/javascript" src="system/snes/snes.js"></script>
@@ -75,9 +80,10 @@
                 <span>SYSTEM SELECT<select id="systemselect" name="systemselect">
                     <option value="snes">SNES</option>
                     <option value="nes">NES</option>
-                    <option value="genesis">Genesis</option>
+                    <option value="spectrum">ZX Spectrum 48</option>
+                    <!--<option value="genesis">Genesis</option>
                     <option value="c64">Commodore64</option>
-                    <option value="sms">SMS</option>
+                    <option value="sms">SMS</option>-->
                 </select>
                 </span>
             </div>
