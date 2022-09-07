@@ -715,7 +715,7 @@ class NES_ppu {
         // Check if any sprites need drawing
         //for (let m = 0; m < 8; m++) {
         for (let m = 7; m >= 0; m--) {
-            if ((this.sprite_x_counters[m] >= -7) && (this.sprite_x_counters[m] <= 0) && this.line_cycle < 256) {
+            if ((this.sprite_x_counters[m] >= -8) && (this.sprite_x_counters[m] <= -1) && this.line_cycle < 256) {
                 let s_x_flip = (this.sprite_attribute_latches[m] & 0x40) >>> 6;
                 let my_color = 0;
                 if (s_x_flip) {
