@@ -144,7 +144,6 @@ class global_player_t {
 const global_player = new global_player_t();
 
 async function init_fs() {
-	after_js();
 }
 
 async function load_sel_rom() {
@@ -694,7 +693,7 @@ async function init_ui() {
 		console.log(event);
 	})
 
-	await system_selected('nes');
-
 	await init_fs();
+	await system_selected('spectrum');
+	after_js();
 }

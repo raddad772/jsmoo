@@ -73,7 +73,7 @@ class ZXSpectrum_bus {
         this.notify_IRQ = function(level) { debugger; }
     }
 
-    ula_read = function(addr, val) {
+    ula_read(addr, val) {
         return this.RAM[addr - 0x4000];
     }
 
@@ -82,12 +82,15 @@ class ZXSpectrum_bus {
         return this.RAM[addr - 0x4000];
     };
 
-    cpu_write = function(addr, val) {
+    cpu_write(addr, val) {
         if (addr < 0x4000) return;
         this.RAM[addr - 0x4000] = val;
     }
 
-
+    load_ROM_from_RAM(what) {
+        this.ROM = new Uint8Array(what);
+        console.log('LOADED', this.ROM.length, 'bytes');
+    }
 }
 
 class ZXSpectrum {
@@ -164,6 +167,10 @@ class ZXSpectrum {
             this.ula.cycle();
             this.ula.cycle();
         }
+    }
+
+    load_ROM_from_RAM(what) {
+        this.bus.load_ROM_from_RAM(what);
     }
 
     present() {

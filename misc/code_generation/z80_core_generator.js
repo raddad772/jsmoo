@@ -322,7 +322,14 @@ class Z80_switchgen {
                 return 'regs.B';
             case 'DE':
                 return 'regs.D';
+            case 'SP':
+                return '((regs.SP & 0xFF00) >>> 8)';
+            case 'IX':
+                return '((regs.IX & 0xFF00) >>> 8)';
+            case 'IY':
+                return '((regs.IY & 0xFF00) >>> 8)';
             default:
+                if (r === '(regs.B << 8) | regs.C') debugger;
                 console.log('UNDONE ZREGRIPH', r);
                 break;
         }
@@ -338,6 +345,12 @@ class Z80_switchgen {
                 return 'regs.C';
             case 'DE':
                 return 'regs.E';
+            case 'IX':
+                return '(regs.IX & 0xFF)';
+            case 'IY':
+                return '(regs.IY & 0xFF)';
+            case 'SP':
+                return '(regs.SP & 0xFF)';
             default:
                 console.log('UNDONE ZREGRIPL', r);
                 break;
@@ -354,10 +367,18 @@ class Z80_switchgen {
                 return 'regs.C';
             case 'D':
                 return 'regs.D';
+            case 'E':
+                return 'regs.E';
+            case '_H':
             case 'H':
                 return 'regs.H';
+            case '_L':
             case 'L':
                 return 'regs.L';
+            case 'I':
+                return 'regs.I';
+            case 'R':
+                return 'regs.R';
             case 'F':
                 return 'regs.F';
             case 'AF':
@@ -366,13 +387,26 @@ class Z80_switchgen {
                 return '(regs.B << 8) | regs.C';
             case 'DE':
                 return '(regs.D << 8) | regs.E';
+            case '_HL':
             case 'HL':
                 return '(regs.H << 8) | regs.L';
             case 'IX':
                 return 'regs.IX';
             case 'IY':
                 return 'regs.IY';
+            case 'WZ':
+                return 'regs.WZ';
+            case 'regs.TA':
+                debugger;
+                return 'regs.TA';
+            case 'regs.junkvar':
+                return 'regs.junkvar';
+            case 'AFs':
+                return 'regs.AFs';
+            case 'SP':
+                return 'regs.SP';
             default:
+                if (typeof r === 'undefined') debugger;
                 console.log('UNDONE ZREGRIP', r);
                 return 'ERROR';
         }
@@ -380,6 +414,15 @@ class Z80_switchgen {
 
     zregripw(r, val) {
         switch(r) {
+            case 'IX':
+                this.addl('regs.IX = ' + val + ';');
+                break;
+            case 'IY':
+                this.addl('regs.IY = ' + val + ';');
+                break;
+            case 'SP':
+                this.addl('regs.SP = ' + val + ';');
+                break;
             case 'A':
                 this.addl('regs.A = ' + val + ';');
                 break;
@@ -398,9 +441,11 @@ class Z80_switchgen {
             case 'F':
                 this.addl('regs.F.setbyte(' + val + ');');
                 break;
+            case '_H':
             case 'H':
                 this.addl('regs.H = ' + val + ';');
                 break;
+            case '_L':
             case 'L':
                 this.addl('regs.L = ' + val + ';');
                 break;
@@ -416,6 +461,7 @@ class Z80_switchgen {
                 this.addl('regs.D = ((' + val + ') & 0xFF00) >>> 8;');
                 this.addl('regs.E = (' + val + ') & 0xFF;');
                 break;
+            case '_HL':
             case 'HL':
                 this.addl('regs.H = ((' + val + ') & 0xFF00) >>> 8;');
                 this.addl('regs.L = (' + val + ') & 0xFF;');
@@ -428,6 +474,14 @@ class Z80_switchgen {
                 break;
             case 'WZ':
                 this.addl('regs.WZ = (' + val + ');');
+                break;
+            case 'regs.WZ':
+                this.addl('regs.WZ = (' + val + ');');
+                break;
+            case '_H':
+                this.addl('regs.H')
+            case 'regs.junkvar':
+                this.addl('// JUNKVAR set here to ' + val);
                 break;
             default:
                 console.log('UNDONE ZREGRIPW', r);
@@ -449,6 +503,15 @@ class Z80_switchgen {
             case 'DE':
                 this.addl('regs.E = (' + val + ');');
                 break;
+            case 'SP':
+                this.addl('regs.SP = (regs.SP & 0xFF00) | (' + val + ');');
+                break;
+            case 'IX':
+                this.addl('regs.IX = (regs.IX & 0xFF00) | (' + val + ');');
+                break;
+            case 'IY':
+                this.addl('regs.IY = (regs.IY & 0xFF00) | (' + val + ');');
+                break;
             default:
                 console.log('UNKNOWN ZREGRIPWL', r);
                 break;
@@ -468,6 +531,15 @@ class Z80_switchgen {
                 break;
             case 'DE':
                 this.addl('regs.D = (' + val + ');');
+                break;
+            case 'SP':
+                this.addl('regs.SP = (' + val + ' << 8) | (regs.SP & 0xFF);');
+                break;
+            case 'IX':
+                this.addl('regs.IX = (' + val + ' << 8) | (regs.IX & 0xFF);');
+                break;
+            case 'IY':
+                this.addl('regs.IY = (' + val + ' << 8) | (regs.IY & 0xFF);');
                 break;
             default:
                 console.log('UNKNOWN ZREGRIPWH', r);
@@ -538,8 +610,10 @@ class Z80_switchgen {
 
     CPD() {
         this.addl('regs.WZ = (regs.WZ - 1) & 0xFFFF;');
-        this.read('regs.HL', 'regs.TR');
-        this.addl('regs.HL = (regs.HL - 1) & 0xFFFF;');
+        this.addl('regs.TA = ' + this.zregrip('HL') + ';');
+        this.read('regs.TA', 'regs.TR');
+        this.addl('regs.TA = (regs.TA - 1) & 0xFFFF;')
+        this.zregripw('HL', 'regs.TA');
         this.addcycles(5);
         this.addl('let tv = (((regs.B << 8) | regs.C) - 1) & 0xFFFF;');
         this.addl('regs.B = (tv & 0xFF00) >>> 8;');
@@ -934,7 +1008,7 @@ function Z80_replace_arg(arg, sub) {
         return 'regs.junkvar';
     }
     if (arg === 'addr') {
-        return 'regs.WZ';
+        return 'WZ';
     }
     if ((typeof arg === 'string') && (arg !== '_HL') && ((arg.indexOf('HL') !== -1))) {
         return arg.replace('HL', sub);
@@ -1113,7 +1187,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.BIT_o_r:  //n3, n8&
             ag.Q(1);
-            ag.BIT(arg1, ag.zregrip(r));
+            ag.BIT(arg1, ag.zregrip(arg2));
             break;
         case Z80_MN.CALL_c_nn:  //bool c
             ag.Q(0);
@@ -1218,8 +1292,9 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
         case Z80_MN.DEC_rr:  //n16&
             ag.Q(0);
             ag.addcycles(2);
-            arg1 = ag.zregrip(arg1);
-            ag.addl(arg1 + ' = (' + arg1 + ' - 1) & 0xFFFF;');
+            ag.addl('regs.TA = ' + ag.zregrip(arg1));
+            ag.addl('regs.TA = (regs.TA - 1) & 0xFFFF;');
+            ag.zregripw(arg1, 'regs.TA');
             break;
         case Z80_MN.DI:  //
             ag.Q(0);
@@ -1242,15 +1317,14 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.EX_irr_rr:  //n16&, n16&
             ag.Q(0);
-            arg1 = ag.zregrip(arg1);
-            arg2 = ag.zregrip(arg2);
-            ag.read(arg1, 'regs.WZ');
-            ag.addl('regs.TA = (' + arg1 + '+ 1) & 0xFFFF;');
+            ag.addl('regs.TA = ' + ag.zregrip(arg1));
+            ag.read('regs.TA', 'regs.WZ');
+            ag.addl('regs.TA = (regs.TA + 1) & 0xFFFF;');
             ag.read('regs.TA', 'regs.TR');
             ag.addl('regs.WZ |= (regs.TR << 8);');
-            ag.write(arg1, arg2 + ' & 0xFF');
-            ag.write('regs.TA', '((' + arg2 + ') & 0xFF00) >>> 8;')
-            ag.addl(arg2 + ' = regs.WZ;');
+            ag.write(arg1, ag.zregrip(arg2) + ' & 0xFF');
+            ag.write('regs.TA', ag.zregripH(arg2));
+            ag.zregripw(arg2, 'regs.WZ');
             break;
         case Z80_MN.EX_rr_rr:  //n16&, n16&
             ag.Q(0);
@@ -1538,7 +1612,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
         case Z80_MN.PUSH_rr:  //n16&
             ag.Q(0);
             ag.addcycle();
-            ag.push16rip(ag.zregrip(arg1));
+            ag.push16rip(arg1);
             break;
         case Z80_MN.RES_o_irr:  //n3, n16&
             ag.Q(1);
