@@ -54,8 +54,10 @@ class timing_thread_t {
     }
 
 	frame_done() {
-        if (dbg.frames_til_pause !== 0) {
-            dbg.frames_til_pause--;
+        let ftp = parseInt(dbg.frames_til_pause);
+        console.log(ftp);
+        if (ftp !== 0) {
+            dbg.frames_til_pause = ftp - 1;
             ui_el.frames_til_pause.value = dbg.frames_til_pause;
             if (dbg.frames_til_pause === 0) {
                 this.pause();

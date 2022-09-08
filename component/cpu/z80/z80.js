@@ -157,6 +157,8 @@ class z80_pins_t {
         this.Addr = 0; // Address/port number
         this.D = 0; // Data
 
+        this.IRQ_maskable = 1; // Ummm
+
         this.RD = 0; // Read
         this.WR = 0; // Write
         this.IO = 0; // IO request
@@ -178,6 +180,7 @@ class z80_t {
 
         this.trace_on = false;
         this.trace_cycles = 0;
+        this.last_trace_cycle = 0;
 
         this.trace_peek = function(addr, val, has_effect) { return 0xCD; }
         this.PCO = 0;
@@ -185,7 +188,7 @@ class z80_t {
 
     enable_tracing(trace_peek) {
         if (this.trace_on) return;
-        this.trace_on = false;
+        this.trace_on = true;
         this.trace_cycles = 0;
         this.trace_peek = trace_peek;
     }
@@ -220,6 +223,7 @@ class z80_t {
     }
 
     notify_IRQ(){
+        console.log(this);
         this.irq();
     }
 
@@ -244,8 +248,9 @@ class z80_t {
     }
 
     set_instruction(to) {
-        this.IR = to;
-        this.current_instruction = Z80_fetch_decoded(this.IR, this.regs.prefix);
+        console.log('SETTING INSTRUCTION', hex2(to));
+        this.regs.IR = to;
+        this.current_instruction = Z80_fetch_decoded(this.regs.IR, this.regs.prefix);
         this.regs.TCU = 0;
     }
 
@@ -262,11 +267,17 @@ class z80_t {
                     if (dbg.brk_on_NMIRQ) dbg.break(D_RESOURCE_TYPES.Z80);
                 }
                 else if (this.IRQ_pending && !this.IRQ_ack) {
-                    this.IRQ_ack = true;
-                    this.pins.D = 0xFF;
-                    this.regs.PC = (this.regs.PC - 1) & 0xFFFF;
-                    this.set_instruction(Z80_S_IRQ);
-                    if (dbg.brk_on_NMIRQ) dbg.break();
+                    if (this.pins.IRQ_maskable && (!this.regs.IFF1 || this.regs.EI)) {
+                        console.log('SKIP IRQ!');
+                        this.IRQ_pending = false;
+                    }
+                    else {
+                        this.IRQ_ack = true;
+                        this.pins.D = 0xFF;
+                        this.regs.PC = (this.regs.PC - 1) & 0xFFFF;
+                        this.set_instruction(Z80_S_IRQ);
+                        if (dbg.brk_on_NMIRQ) dbg.break();
+                    }
                     break;
                 }
                 this.regs.t[0] = this.pins.D;
@@ -350,7 +361,7 @@ class z80_t {
     }
 
 	trace_format(da_out, PCO) {
-		let outstr = trace_start_format('Z80', Z80_COLOR, this.trace_cycles-1, ' ', PCO);
+		let outstr = trace_start_format('Z80', Z80_COLOR, this.trace_cycles, ' ', PCO);
 		// General trace format is...
 		outstr += da_out.disassembled;
 		let sp = da_out.disassembled.length;
@@ -359,7 +370,8 @@ class z80_t {
 			sp++;
 		}
 
-		outstr += 'PC:' + hex4(this.regs.PC) + ' ';
+		outstr += 'TCU:' + this.regs.TCU + ' ';
+        outstr += 'PC:' + hex4(this.regs.PC) + ' ';
 		outstr += ' A:' + hex2(this.regs.A);
 		outstr += ' B:' + hex2(this.regs.B);
 		outstr += ' C:' + hex2(this.regs.C);
@@ -376,14 +388,18 @@ class z80_t {
 
     cycle() {
         this.regs.TCU++;
+        this.trace_cycles++;
         if (this.regs.IR === Z80_S_DECODE) {
             // Long logic to decode opcodes and decide what to do
-            if (this.regs.TCU === 1) this.PCO = (this.pins.Addr - 1) & 0xFFFF;
+            if (this.regs.TCU === 1) this.PCO = this.pins.Addr;
+            console.log('DECODING', this.trace_cycles)
             this.ins_cycles();
-            if ((this.trace_on) && (this.regs.TCU === 1)) {
-                dbg.traces.add(TRACERS.Z80, this.trace_cycles-1, this.trace_format(Z80_disassemble(this.PCO, this.IR, this.trace_peek), this.PCO));
-            }
         } else {
+            console.log('EXECUTING', this.current_instruction, this.trace_cycles)
+            if (this.trace_on && this.regs.TCU === 1) {
+                this.last_trace_cycle = this.PCO;
+                dbg.traces.add(TRACERS.Z80, this.trace_cycles, this.trace_format(Z80_disassemble(this.PCO, this.regs.IR, this.trace_peek), this.PCO));
+            }
             // Execute an actual opcode
             this.current_instruction.exec_func(this.regs, this.pins);
         }

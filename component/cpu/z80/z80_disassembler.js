@@ -27,11 +27,23 @@ const Z80D_tabl_bli = [[], [], [], [], [
 
 function Z80_disassemble(PC, IR, peek_func) {
     let opcode = IR;
-    let ins = z80_decoded_opcodes[opcode].ins;
-    let mnemonic = z80_decoded_opcodes[opcode].mnemonic;
+    //let ins = z80_decoded_opcodes[opcode].ins;
+    //let mnemonic = z80_decoded_opcodes[opcode].mnemonic;
     let output = new Z80_disassembly_output();
-    output.mnemonic = mnemonic;
+    //output.mnemonic = mnemonic;
     PC = (PC + 1) & 0xFFFF;
+    if (IR === Z80_S_DECODE) {
+        output.disassembled = 'DECODE';
+        return output;
+    }
+    else if (IR === Z80_S_RESET) {
+        output.disassembled = 'RESET';
+        return output;
+    }
+    else if (IR === Z80_S_IRQ) {
+        output.disassembled = 'IRQ';
+        return output;
+    }
 
     let H, L, HL;
     let repl0 = function(reg) {

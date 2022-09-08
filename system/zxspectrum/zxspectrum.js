@@ -36,7 +36,7 @@ class ZXSpectrum_clock {
         this.cpu_divider = 2; // ~3.5MHz
         this.ula_divider = 1; // ~7MHz
 
-        this.master_frame_count = 0;
+        this.frames_since_restart = 0;
 
         this.frame_master_clock = 0;
 
@@ -64,8 +64,6 @@ class ZXSpectrum_bus {
         this.ROM = new Uint8Array(16*1024);
         this.RAM = new Uint8Array(48*1024);
         this.clock = clock;
-
-        this.ula_read = function(addr, val) { debugger; return 0xCC; };
 
         this.cpu_ula_read = function(addr, val, has_effect) { return 0xCC; };
         this.cpu_ula_write = function(addr, val) {debugger;}
@@ -102,7 +100,7 @@ class ZXSpectrum {
 
         this.bus = new ZXSpectrum_bus(this.clock, 48);
 
-        this.bus.notify_IRQ = this.cpu.notify_IRQ.bind();
+        this.bus.notify_IRQ = this.cpu.notify_IRQ.bind(this.cpu);
         this.ula = new ZXSpectrum_ULA(document.getElementById('snescanvas'), this.clock, this.bus);
 
         dbg.add_cpu(D_RESOURCE_TYPES.Z80, this);
@@ -117,27 +115,75 @@ class ZXSpectrum {
         this.ula.reset();
     }
 
+    trace_peek(addr) {
+        return this.bus.cpu_read(addr, 0, false);
+    }
+
     enable_tracing() {
-        this.cpu.enable_tracing(this.trace_peek.bind());
+        console.log('ENABLING TRACE');
+        this.cpu.enable_tracing(this.trace_peek.bind(this));
     }
 
     disable_tracing() {
         this.cpu.disable_tracing();
     }
 
+    step_master(howmany) {
+        let todo = (howmany >>> 1);
+        if (todo === 0) todo = 1;
+        for (let i = 0; i < todo; i++) {
+            this.cpu_cycle();
+            this.ula.cycle();
+            this.ula.cycle();
+        }
+    }
+
+    catch_up() {}
+
+    trace_format_nonio(what) {
+        return;
+        let ostr = trace_start_format('Z80', Z80_COLOR, this.cpu.trace_cycles, 'b', this.cpu.pins.Addr);
+        ostr += 'BLANK     TCU:' + this.cpu.regs.TCU + ' IR:' + hex2(this.cpu.regs.IR);
+        dbg.traces.add(D_RESOURCE_TYPES.Z80, this.cpu.trace_cycles, ostr);
+    }
+
     cpu_cycle() {
         if (this.clock.contended && ((this.cpu.pins.Addr - 0x4000) < 0x4000)) return;
         if (this.cpu.pins.RD) {
-            if (this.cpu.pins.MRQ) // ROM/RAM
+            if (this.cpu.pins.MRQ) {// ROM/RAM
                 this.cpu.pins.D = this.bus.cpu_read(this.cpu.pins.Addr);
-            else // IO port
+                if (this.cpu.trace_on) {
+                    dbg.traces.add(D_RESOURCE_TYPES.Z80, this.cpu.trace_cycles, trace_format_read('Z80', Z80_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
+                                console.log('DO A TRACE READ!');
+                    console.log(dbg.traces);
+                    }
+            }
+            else if (this.cpu.pins.IO) { // IO port
                 this.cpu.pins.D = this.bus.cpu_ula_read(this.cpu.pins.Addr)
+            }
+            else {
+                if (this.cpu.trace_on && (this.cpu.last_trace_cycle !== this.cpu.trace_cycles)) {
+                    this.trace_format_nonio();F
+                    this.cpu.last_trace_cycle = this.cpu.trace_cycles;
+                }
+            }
+        } else if (!this.cpu.pins.WR) {
+            if (this.cpu.trace_on && (this.cpu.last_trace_cycle !== this.cpu.trace_cycles)) {
+                this.trace_format_nonio();
+                this.cpu.last_trace_cycle = this.cpu.trace_cycles;
+            }
         }
         this.cpu.cycle();
         if (this.cpu.pins.WR) {
-            if (this.cpu.pins.MRQ) // ROM/RAM
+            if (this.cpu.pins.MRQ) {// ROM/RAM
+                if (this.cpu.trace_on && (this.cpu.last_trace_cycle !== this.cpu.trace_cycles)) {
+                    console.log('DO A TRACE WRITE!');
+                    dbg.traces.add(D_RESOURCE_TYPES.Z80, this.cpu.trace_cycles, trace_format_write('Z80', Z80_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
+                    this.cpu.last_trace_cycle = this.cpu.trace_cycles;
+                }
                 this.bus.cpu_write(this.cpu.pins.Addr, this.cpu.pins.D);
-            else
+            }
+            else // IO WRITE
                 this.bus.cpu_ula_write(this.cpu.pins.Addr, this.cpu.pins.D);
         }
     }
@@ -153,8 +199,8 @@ class ZXSpectrum {
     }
 
     run_frame() {
-        let current_frame = this.clock.master_frame_count;
-        while(current_frame === this.clock.master_frame_count) {
+        let current_frame = this.clock.frames_since_restart;
+        while(current_frame === this.clock.frames_since_restart) {
             this.finish_scanline();
         }
     }
@@ -174,6 +220,7 @@ class ZXSpectrum {
     }
 
     present() {
+        console.log('HEY!');
         this.ula.present();
     }
 }

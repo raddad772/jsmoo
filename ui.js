@@ -14,7 +14,7 @@ const SPECTRUM_STR = 'spectrum';
 const DEFAULT_SYSTEM = SPECTRUM_STR;
 
 const DEFAULT_STEPS = {
-	master: 12,
+	master: 50,
 	scanlines: 1,
 	frames: 0,
 	seconds: 0,
@@ -243,9 +243,9 @@ function click_step_clock() {
 	dbg.do_break = false;
 	global_player.system.step_master(steps);
 	global_player.system.catch_up();
-	console.log('PPU X, Y', global_player.system.ppu.line_cycle, global_player.system.clock.ppu_y)
-	console.log('NMI ENABLED', global_player.system.ppu.io.nmi_enable);
-	global_player.system.ppu.print_current_scroll();
+	//console.log('PPU X, Y', global_player.system.ppu.line_cycle, global_player.system.clock.ppu_y)
+	//console.log('NMI ENABLED', global_player.system.ppu.io.nmi_enable);
+	//global_player.system.ppu.print_current_scroll();
 
 	after_step();
 }
@@ -357,6 +357,9 @@ function click_dump_ram() {
 		for (let baddr = addr; baddr < (addr + MDUMP_COLS); baddr++) {
 			let rd;
 			switch(global_player.system_kind) {
+				case 'spectrum':
+					rd = hex2(global_player.system.bus.cpu_read(baddr, 0, false));
+					break;
 				case 'snes':
 					rd = hex2(snes.mem_map.dispatch_read(baddr, 0, false));
 					break;
@@ -444,7 +447,9 @@ var fps_old_frames = 0;
 var fps_interval = null;
 
 function click_play() {
-	dbg.frames_til_pause = parseInt(ui_el.frames_til_pause.value);
+	if (ui_el.frames_til_pause.value === '') dbg.frames_til_pause = 0;
+	else dbg.frames_til_pause = parseInt(ui_el.frames_til_pause.value);
+	console.log('LOOK DUDE', dbg.frames_til_pause);
 	dbg.do_break = false;
 	/*fps_old_frames = global_player.system.clock.frames_since_restart;
 	start_fps_count();
@@ -586,6 +591,10 @@ async function main() {
 	//snes = new SNES(jsa);
 	global_player.set_system();
 	switch(global_player.system_kind) {
+		case 'spectrum':
+			//dbg.add_cpu(D_RESOURCE_TYPES.Z80, global_player.system.cpu);
+			//console.log('ADDED CPU')
+			break;
 		case 'snes':
 			dbg.add_cpu(D_RESOURCE_TYPES.R5A22, global_player.system.cpu);
 			dbg.add_cpu(D_RESOURCE_TYPES.SPC700, global_player.system.apu)
@@ -624,12 +633,12 @@ async function init_ui() {
 		ui_el[k] = document.getElementById(dom_id);
 		switch(t) {
 			case 'input':
-				if (default_value !== null) ui_el[k].checked = default_value;
+				if (default_value !== null) ui_el[k].value = default_value;
 				ui_el[k].onfocus = uie_input_focus;
 				ui_el[k].onblur = uie_input_blur;
 				break;
 			case 'checkbox':
-				if (default_value !== null) ui_el[k].value = default_value;
+				if (default_value !== null) ui_el[k].checked = default_value;
 				break;
 		}
 	}
