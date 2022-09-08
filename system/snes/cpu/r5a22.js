@@ -858,7 +858,7 @@ class ricoh5A22 {
 	}
 
 	service_CPU_cycle() {
-		// Interpret CPU pins and dispatch writes or reads, also, do trace_on stuff
+		// Interpret CPU pins and dispatch writes or reads, also, do tracing stuff
 		if (this.cpu.pins.PDV) { // Read/write. THIS ONLY WORKS FOR PDV MODE not expanded pins
 			if (this.cpu.pins.RW) { // Write
 				this.mem_map.dispatch_write(this.cpu_addr, this.cpu.pins.D);
