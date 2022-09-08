@@ -18,12 +18,12 @@ const Z80D_tabl_cc = ['NZ', 'Z', 'NC', 'C', 'PO', 'PE', 'P', 'M'];
 const Z80D_tabl_alu = ['ADD A, ', 'ADC A, ', 'SUB', 'SBC A, ', 'AND', 'XOR', 'OR', 'CP'];
 const Z80D_tabl_rot = ['RLC', 'RRC', 'RL', 'RR', 'SLA', 'SRA', 'SSL', 'SRL'];
 const Z80D_tabl_im = ['0', '0/1', '1', '2', '0', '0/1', '1', '2'];
-const Z80D_tabl_bli = [[], [], [], [], [
+const Z80D_tabl_bli = [[], [], [], [],
     ['LDI', 'CPI', 'INI', 'OUTI'], // 4, 0...3
     ['LDD', 'CPD', 'IND', 'OUTD'], // 5, 0...3
     ['LDIR', 'CPIR', 'INIR', 'OTIR'], // 6, 0...3
     ['LDDR', 'CPDR', 'INDR', 'OTDR'], // 7, 0...3
-]];
+];
 
 function Z80_disassemble(PC, IR, peek_func) {
     let opcode = IR;
@@ -324,8 +324,10 @@ function Z80_disassemble(PC, IR, peek_func) {
                     }
                     break;
                 case 2: // 0xED x=2
-                    if ((z <= 3) && (y >= 4))
+                    if ((z <= 3) && (y >= 4)) {
+                        console.log(typeof z, typeof y, z, y, Z80D_tabl_bli);
                         ostr = Z80D_tabl_bli[y][z];
+                    }
                     else
                         ostr = 'INVALID#2 NONI NOP';
                     break;
@@ -378,8 +380,8 @@ function test_Z80_disassemble() {
     // bit 1, b
     //let ins = [0x35, 0xDD, 0x35, 0xCB, 0x48]
     //let PCs = [0x00, 0x01, 0x03]
-    let ins = [0xFD, 0xDD, 0xCB, 0x10, 0xDC]
-    let PCs = [0x00];
+    let ins = [0xFD, 0xDD, 0xCB, 0x10, 0xDC, 0xED, 0xB0]
+    let PCs = [0x00, 5];
     for (let i = 0; i < ins.length; i++) {
         mem[i] = ins[i];
     }

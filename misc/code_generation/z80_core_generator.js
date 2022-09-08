@@ -684,7 +684,7 @@ operand8(what) {
     INC(x) {
         this.addl('regs.TR = ((' + x + ') + 1) & 0xFF;');
         this.addl('regs.F.N = 0;');
-        this.addl('regs.F.V = +(z === 0);');
+        this.addl('regs.F.V = +(regs.TR === 0);');
         this.setXY('regs.TR');
         this.addl('regs.F.H = +((regs.TR & 0x0F) === 0);');
         this.addl('regs.F.Z = +(regs.TR === 0);');
@@ -765,7 +765,7 @@ operand8(what) {
         this.addl('regs.TA = (regs.TA + 1) & 0xFFFF;');
         this.zregripw('DE', 'regs.TA');
         this.addcycles(2);
-        this.addl('this.F.N = this.F.H = 0;');
+        this.addl('regs.F.N = regs.F.H = 0;');
         this.addl('regs.F.X = (regs.TA & 8) >>> 3;');
         this.addl('regs.F.Y = (regs.TA & 2) >>> 1;');
         this.addl('regs.TA = (((regs.B << 8) | regs.C) - 1) & 0xFFFF;');
@@ -1193,13 +1193,13 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.BIT_o_irr:  //n3, n16&
             ag.Q(1);
-            ag.read(arg2, 'regs.TR');
+            ag.read(ag.zregrip(arg2), 'regs.TR');
             ag.BIT(arg1, 'regs.TR');
             ag.setXY('(regs.WZ >>> 8)');
             break;
         case Z80_MN.BIT_o_irr_r:  //n3, n16&, n8&
             ag.Q(1);
-            ag.read(arg2, 'regs.TR');
+            ag.read(ag.zregrip(arg2), 'regs.TR');
             ag.BIT(arg1, 'regs.TR', 'regs.TR');
             ag.zregripw(arg3, 'regs.TR');
             ag.setXY('(regs.WZ >>> 8)');
@@ -1561,6 +1561,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.LDIR:  //
             ag.Q(1);
+            ag.LDI();
             ag.addl('if ((regs.B === 0) && (regs.C === 0)) { regs.TCU += 5; break; }');
             ag.addl('regs.PC = (regs.PC - 2) & 0xFFFF;');
             ag.addl('regs.WZ = (regs.PC + 1) & 0xFFFF;');
