@@ -1,0 +1,382 @@
+"use strict";
+
+class Z80_disassembly_output {
+    constructor() {
+        this.mnemonic = 'UKN ###';
+        this.disassembled = 'UKN ###';
+    }
+}
+
+function Z80_disassemble(PC, IR, peek_func) {
+    let opcode = IR;
+    let ins = z80_decoded_opcodes[opcode].ins;
+    let mnemonic = z80_decoded_opcodes[opcode].mnemonic;
+    let output = new Z80_disassembly_output();
+    output.mnemonic = mnemonic;
+    PC = (PC + 1) & 0xFFFF;
+
+    let H, L, HL;
+    let repl0 = function(reg) {
+        let o = reg;
+        if (o === 'HL') o = HL;
+        if (o === 'L') o = L;
+        if (o === 'H') o = H;
+        if (o === '(HL)') o = '(' + HL + ')';
+        return o;
+    }
+    let fetch = function() {
+        let r = peek_func(PC, 0, false);
+        PC = (PC + 1) & 0xFFFF;
+        return r;
+    }
+
+    let read8 = function() {
+        let r =  '$' + hex2(peek_func(PC, 0, false));
+        PC = (PC + 1) & 0xFFFF;
+        return r;
+    }
+
+    let read16 = function() {
+        let r =  '$' + hex4(peek_func(PC, 0, false) + (peek_func((PC+1) & 0xFFFF, 0, false) << 8));
+        PC = (PC + 2) & 0xFFFF;
+        return r;
+    }
+
+    let current_prefix = 0x00;
+    let current_byte = opcode;
+
+    let ostr = '';
+
+    let tabl_r = ['B', 'C', 'D', 'E', 'H', 'L', '(HL)', 'A'];
+    let tabl_rp = ['BC', 'DE', 'HL', 'SP'];
+    let tabl_rp2 = ['BC', 'DE', 'HL', 'AF'];
+    let tabl_cc = ['NZ', 'Z', 'NC', 'C', 'PO', 'PE', 'P', 'M'];
+    let tabl_alu = ['ADD A, ', 'ADC A, ', 'SUB', 'SBC A, ', 'AND', 'XOR', 'OR', 'CP'];
+    let tabl_rot = ['RLC', 'RRC', 'RL', 'RR', 'SLA', 'SRA', 'SSL', 'SRL'];
+    let tabl_im = ['0', '0/1', '1', '2', '0', '0/1', '1', '2'];
+    let tabl_bli = [[], [], [], [], [
+        ['LDI', 'CPI', 'INI', 'OUTI'], // 4, 0...3
+        ['LDD', 'CPD', 'IND', 'OUTD'], // 5, 0...3
+        ['LDIR', 'CPIR', 'INIR', 'OTIR'], // 6, 0...3
+        ['LDDR', 'CPDR', 'INDR', 'OTDR'], // 7, 0...3
+    ]];
+
+    let decoded_bytes = 0;
+    // So we don't loop forever
+    // Decode regular
+    while(decoded_bytes < 16) {
+        // First decide what to do: update prefix or decode
+        if (current_byte === 0xDD) {
+            current_prefix = 0xDD;
+            decoded_bytes++;
+            current_byte = fetch();
+            continue;
+        }
+
+        if (current_byte === 0xFD) {
+            current_prefix = 0xFD;
+            decoded_bytes++;
+            current_byte = fetch();
+            continue;
+        }
+
+        if ((current_byte === 0xCB) && (current_prefix === 0)) {
+            // prefix = CB for reglar
+            current_prefix = 0xCB;
+            current_byte = fetch();
+            decoded_bytes++;
+            continue;
+        }
+        else if ((current_byte === 0xCB) && ((current_prefix === 0xDD) || (current_prefix === 0xFD))) {
+            current_prefix = (current_prefix << 8) | 0xCB;
+            current_byte = fetch();
+            decoded_bytes++;
+            continue;
+        }
+        else if (current_byte === 0xED) {
+            current_prefix = 0xED; // lose IX/IY
+            decoded_bytes++;
+            current_byte = fetch();
+            continue;
+        }
+
+        let x = (current_byte & 0xC0) >>> 6;
+        let y = (current_byte & 0x38) >>> 3;
+        let z = (current_byte & 7);
+        let p = (y >>> 1);
+        let q = y % 2;
+        let d, IXY;
+        HL = 'HL';
+        L = 'L';
+        H = 'H';
+        switch(current_prefix) {
+            case 0xDD:
+            case 0xFD:
+            case 0x00:
+                if (current_prefix === 0xDD) {
+                    console.log('DOIN IX');
+                    HL = 'IX';
+                    L = 'IXL';
+                    H = 'IXH';
+                }
+                else if (current_prefix === 0xFD) {
+                    console.log('DOIN IY');
+                    HL = 'IY';
+                    L = 'IYL';
+                    H = 'IYH';
+                }
+                switch (x) {
+                    case 0: // x = 0
+                        switch (z) {
+                            case 0: // x=0 z=0
+                                switch (y) {
+                                    case 0:
+                                        ostr = 'NOP';
+                                        break;
+                                    case 1:
+                                        ostr = "EX AF, AF'";
+                                        break;
+                                    case 2:
+                                        ostr = 'DJNZ ' + read8();
+                                        break;
+                                    case 3:
+                                        ostr = 'DJ ' + read8();
+                                        break;
+                                    case 4:
+                                    case 5:
+                                    case 6:
+                                    case 7:
+                                        ostr = 'JR ' + tabl_cc[y - 4] + ', ' + read8();
+                                        break;
+                                }
+
+                                break;
+                            case 1: // x = 0, z = 1
+                                if (q === 0) ostr = "LD " + repl0(tabl_rp[p]) + ', ' + read16();
+                                else ostr = "ADD " + repl0('HL') + ", " + tabl_rp[p];
+                                break;
+                            case 2: // x = 0, z = 2
+                                switch (p) {
+                                    case 0:
+                                        if (q === 0) ostr = 'LD (BC), A';
+                                        else ostr = 'LD A, (BC)';
+                                        break;
+                                    case 1:
+                                        if (q === 0) ostr = 'LD (DE), A';
+                                        else ostr = 'LD A, (DE)';
+                                        break;
+                                    case 2:
+                                        if (q === 0) ostr = 'LD (' + read16() + '), ' + repl0('HL');
+                                        else ostr = ostr = 'LD ' + repl0('HL') + ',(' + read16() + ')';
+                                        break;
+                                    case 3:
+                                        if (q === 0) ostr = 'LD (' + read16() + '), A';
+                                        else ostr = 'LD A, (' + read16() + ')';
+                                        break;
+                                }
+                                break;
+                            case 3: // x = 0, z = 3
+                                if (q === 0) ostr = 'INC ' + repl0(tabl_rp[p]);
+                                else ostr = 'DEC ' + repl0(tabl_rp[p]);
+                                break;
+                            case 4: // x = 0 z = 3
+                                ostr = 'INC ' + repl0(tabl_r[y]);
+                                break;
+                            case 5:
+                                ostr = 'DEC ' + repl0(tabl_r[y]);
+                                break;
+                            case 6:
+                                ostr = 'LD ' + repl0(tabl_r[y]) + ', ' + read8();
+                                break;
+                            case 7:
+                                ostr = ['RLCA', 'RRCA', 'RLA', 'RRA', 'DAA', 'CPL', 'SCF', 'CCF'][y];
+                                break;
+                        }
+                        break;
+                    case 1: // x = 1
+                        if ((z === 6) && (y === 6)) ostr = 'HALT';
+                        else ostr = 'LD ' + repl0(tabl_r[y]) + ', ' + repl0(tabl_r[z]);
+                        break;
+                    case 2: // x = 2
+                        ostr = tabl_alu[y] + ' ' + repl0(tabl_r[z]);
+                        break;
+                    case 3: // x = 3
+                        switch (z) {
+                            case 0: // x=3 z=0
+                                ostr = 'RET ' + tabl_cc[y];
+                                break;
+                            case 1: // x=3 z=1
+                                if (q === 0)
+                                    ostr = 'POP ' + repl0(tabl_rp2[p]);
+                                else
+                                    ostr = ['RET', 'EXX', 'JP HL', 'LD SP, ' + repl0('HL')][p];
+                                break;
+                            case 2:
+                                ostr = 'JP ' + tabl_cc[y] + ', ' + read16();
+                                break;
+                            case 3: // x=3 z=3
+                                switch (y) {
+                                    case 0:
+                                        ostr = 'JP ' + read16();
+                                        break;
+                                    case 1:
+                                        console.log('SHOULDNT BE HERE CB');
+                                        break;
+                                    case 2:
+                                        ostr = 'OUT (' + read8() + '), A';
+                                        break;
+                                    case 3:
+                                        ostr = 'IN (' + read8() + '), A';
+                                        break;
+                                    case 4:
+                                    case 5:
+                                    case 6:
+                                    case 7:
+                                        ostr = ['', '', '', '', 'EX (SP), ' + repl0('HL'), 'EX DE, ' + repl0('HL'), 'DI', 'EI'][y];
+                                        break;
+                                }
+                                break;
+                            case 4: // x=3 z=4
+                                ostr = 'CALL ' + tabl_cc[y] + ', ' + read16();
+                                break;
+                            case 5: // x=3 z=5
+                                if (q === 0) ostr = 'PUSH ' + tabl_rp2[p];
+                                else ostr = 'CALL ' + read16();
+                                break;
+                            case 6: // x=3 z=6
+                                ostr = tabl_alu[y] + ' ' + read8();
+                                break;
+                            case 7: // x=3 z=7
+                                ostr = 'RST ' + y * 8;
+                                break;
+                        }
+                }
+            break;
+        case 0xCB: // prefix 0xCB
+            switch(x) {
+                case 0:
+                    ostr = tabl_rot[y] + ' ' + tabl_r[z];
+                    break;
+                case 1:
+                    ostr = 'BIT ' + y + ', ' + tabl_r[z];
+                    break;
+                case 2:
+                    ostr = 'RES ' + y + ', ' + tabl_r[z];
+                    break;
+                case 3:
+                    ostr = 'SET ' + y + ', ' + tabl_r[z];
+                    break;
+            }
+            break;
+        case 0xED:
+            switch(x) {
+                case 0:
+                case 3:
+                    ostr = 'INVALID NONI NOP';
+                    break;
+                case 1: // 0xED x=1
+                    switch(z) {
+                        case 0: // 0xED x=1 z=0
+                            if (y === 6) ostr = 'IN (C)';
+                            else ostr = 'IN ' + tabl_r[y] + ', (C)';
+                            break;
+                        case 1:
+                            if (y === 6) ostr = 'OUT (C)';
+                            else ostr = 'OUT ' + tabl_r[y] + ', (C)';
+                            break;
+                        case 2: // 0xED x=1 z=2
+                            if (q === 0) ostr = 'SBC HL, ' + tabl_rp[p];
+                            else ostr = 'ADC HL, ' + tabl_rp[p];
+                            break;
+                        case 3: // 0xED x=1 z=3
+                            if (q === 0) ostr = 'LD (' + read16() + '), ' + tabl_rp[p];
+                            else ostr = 'LD ' + tabl_rp[p] + ', (' + read16() + ')';
+                            break;
+                        case 4:
+                            ostr = 'NEG';
+                            break;
+                        case 5:
+                            if (y === 1) ostr = 'RETI';
+                            else ostr = 'RETN';
+                            break;
+                        case 6: // 0xED x=1 z=6
+                            ostr = 'IM ' + tabl_im[y];
+                            break;
+                        case 7: // 0xED x=1 z=7
+                            ostr = ['LD I, A', 'LD R, A', 'LD A, I', 'LD A, R', 'RRD', 'RLD', 'NOP', 'NOP'][y];
+                            break;
+                    }
+                    break;
+                case 2: // 0xED x=2
+                    if ((z <= 3) && (y >= 4))
+                        ostr = tabl_bli[y][z];
+                    else
+                        ostr = 'INVALID#2 NONI NOP';
+                    break;
+            }
+            break;
+        case 0xDDCB:
+        case 0xFDCB:
+            if (current_prefix === 0xDDCB) IXY = 'IX';
+            else IXY = 'IY';
+            d = '$' + hex2(current_byte);
+            current_byte = fetch();
+            decoded_bytes++;
+            x = (current_byte & 0xC0) >>> 6;
+            y = (current_byte & 0x38) >>> 3;
+            z = (current_byte & 7);
+            switch(x) {
+                case 0: // CBd x=0
+                    if (z !== 6) ostr = 'LD ' + tabl_r[z] + ', ' + tabl_rot[y] + '(' + IXY + '+' + d + ')';
+                    else ostr = tabl_rot[y] + ' (' + IXY + '+' + d + ')';
+                    break;
+                case 1: // CBd x=1
+                    ostr = 'BIT ' + y + ', (' + IXY + '+' + d + ')';
+                    break;
+                case 2: // CBd x=2
+                    if (z !== 6) ostr = 'LD ' + tabl_r[z] + ', RES ' + y + ', (' + IXY + '+' + d + ')';
+                    else ostr = 'RES ' + y + ', (' + IXY + '+' + d + ')';
+                    break;
+                case 3: // CBd x=3
+                    if (z !== 6) ostr = 'LD ' + tabl_r[z] + ', SET ' + y + ', (' + IXY + '+' + d + ')';
+                    else ostr = 'SET ' + y + ', (' + IXY + '+' + d + ')';
+                    break;
+            }
+            break;
+        default:
+            console.log('HOW DID WE GET HERE GOVNA');
+            break;
+        }
+        if (ostr !== '') break;
+        decoded_bytes++;
+    }
+    output.disassembled = ostr;
+    return output;
+}
+
+
+function test_Z80_disassemble() {
+    let mem = new Uint8Array(100);
+    //let ins = [0x02, 0x05, 0x06, 0xFD, 0x22, 0x05, 0x06, 0];
+    //let PCs = [0x00, 0x03];
+    // bit 1, b
+    //let ins = [0x35, 0xDD, 0x35, 0xCB, 0x48]
+    //let PCs = [0x00, 0x01, 0x03]
+    let ins = [0xFD, 0xDD, 0xCB, 0x10, 0xDC]
+    let PCs = [0x00];
+    for (let i = 0; i < ins.length; i++) {
+        mem[i] = ins[i];
+    }
+
+    let readit = function(addr) {
+        console.log(addr);
+        return mem[addr];
+    }
+
+    for (let i = 0; i < PCs.length; i++) {
+        let PC = PCs[i];
+        let o = Z80_disassemble(PC, ins[PC], readit);
+        console.log(hex4(PC), o.disassembled);
+    }
+}
+test_Z80_disassemble();

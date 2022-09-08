@@ -1119,6 +1119,6 @@ const Z80_prefix_to_codemap = Object.freeze({
 
 
 function Z80_fetch_decoded(opcode, prefix) {
-    let r = Z80_decoded_opcodes[Z80_prefix_to_codemap[prefix] + opcode];
+    let r = z80_decoded_opcodes[Z80_prefix_to_codemap[prefix] + opcode];
     return r;
 }

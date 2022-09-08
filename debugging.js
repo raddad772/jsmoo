@@ -16,6 +16,7 @@ let TRACE_WRITE = '{b}';
 let SPC_COLOR = '{r}';
 let WDC_COLOR = '{b}';
 let MOS_COLOR = '{g}';
+let Z80_COLOR = '{g}';
 let WDC_TRACE_IO = false;
 let TRACE_INS_PADDING = 20;
 
@@ -23,7 +24,8 @@ const TRACERS = Object.freeze({
     R5A22: 0,
     SPC: 1,
     WDC: 2,
-    M6502: 3
+    M6502: 3,
+    Z80: 4
 });
 
 const TRACE_BG_COLORS = Object.freeze({

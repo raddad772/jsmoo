@@ -9,8 +9,9 @@ const COMMODORE64_STR = 'c64';
 const SMS_STR = 'sms';
 const GENESIS_STR = 'megadrive';
 const GB_STR = 'gb';
+const SPECTRUM_STR = 'spectrum';
 
-const DEFAULT_SYSTEM = NES_STR;
+const DEFAULT_SYSTEM = SPECTRUM_STR;
 
 const DEFAULT_STEPS = {
 	master: 12,
@@ -59,11 +60,6 @@ let ui_el = {
 // 2. load previous system, ROM data from config
 // 3. Pre-load previous system adn ROm
 // 4. Set state as not-emulating, indicate to UI that we are ready to emulate
-
-
-function snes_rom_path(rom_name) {
-	return basic_fs_join('/snes/roms/', rom_name);
-}
 
 
 //window.onload = test_pathstuff
@@ -132,6 +128,7 @@ class global_player_t {
 				return;
 		}
 		this.tech_specs = this.system.get_description();
+		this.set_fps_target(this.tech_specs.fps);
 		this.ready = true;
 	}
 
@@ -701,26 +698,3 @@ async function init_ui() {
 
 	await init_fs();
 }
-
-// The performance.now() method returns a DOMHighResTimeStamp, measured in milliseconds.
-var samples = [];
-var t0 = performance.now();
-
-for (var i = 0; i < 10000; i++) {
-  samples.push(performance.now());
-}
-
-var t1 = performance.now();
-
-let diff1 = t1 - t0;
-let diff2 = samples[samples.length - 1] - samples[0];
-
-console.log('#1 Elapsed measured by performance.now(): ' + diff1 + 'ms');
-console.log('#2 Elapsed measured by collected samples: ' + diff2 + 'ms');
-
-console.log('Number of samples: ' + samples.length);
-let s = new Set(samples);
-console.log('Number of unique samples / measuring steps: ' + s.size);
-
-console.log('Granularity/Precision #1 of performance.now(): ' + diff1 / s.size + 'ms');
-console.log('Granularity/Precision #2 of performance.now(): ' + diff2 / s.size + 'ms');

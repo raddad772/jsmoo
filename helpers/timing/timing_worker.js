@@ -28,9 +28,6 @@ class timing_worker_t {
         this.frame_time_full = (1000 / this.fps_target);
         this.sleep_target = this.frame_time_full * .80; // Sleep 80% of the time
         this.frame_time_target = this.frame_time_full *.9; // Wait until 90% of the time
-        console.log('SLEEP TARGET', this.sleep_target)
-        console.log('FRAME TIME TARGET', this.frame_time_target)
-        console.log('FRAME TIEM FULL', this.frame_time_full);
     }
 
     onmessage(e) {
@@ -111,7 +108,6 @@ class timing_worker_t {
     }
 
     reset() {
-        console.log('TIMING THREAD: reset');
         this.frames_since_reset = 0;
         this.update_sab();
     }

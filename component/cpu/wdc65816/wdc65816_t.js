@@ -177,7 +177,7 @@ class wdc65816_t {
 
 		this.trace_cycles = 0;
 		this.trace_on = false;
-		this.trace_peek = function(BA, Addr){return 0xC0;}; // A function to do reads without consequence, for debugging and tracing
+		this.trace_peek = function(BA, Addr){return 0xC0;}; // A function to do reads without consequence, for debugging and trace_on
 
 		this.NMI_old = 0;
 		this.NMI_ack = false;
@@ -217,7 +217,7 @@ class wdc65816_t {
 		this.regs.TCU++;
 		if (this.regs.TCU === 1) {
 			// Do NMI check
-			this.PCO = this.pins.Addr; // PCO is PC for tracing purposes
+			this.PCO = this.pins.Addr; // PCO is PC for trace_on purposes
 			this.regs.IR = this.pins.D;
 			if (this.regs.NMI_pending && !this.NMI_ack) {
 				this.NMI_ack = true;
