@@ -735,13 +735,13 @@ operand8(what) {
     
     LDD() {
         this.addl('regs.TA = ' + this.zregrip('HL') + ';');
-        this.read(this.zregrip('HL'), 'regs.TR');
+        this.read('regs.TA', 'regs.TR');
         this.addl('regs.TA = (regs.TA - 1) & 0xFFFF;');
         this.addl('regs.H = (regs.TA & 0xFF00) >>> 8;');
         this.addl('regs.L = regs.TA & 0xFF;');
 
         this.addl('regs.TA = (regs.D << 8) | regs.E;');
-        this.write('regs.DE', 'regs.TR');
+        this.write('regs.TA', 'regs.TR');
         this.addl('regs.TA = (regs.TA - 1) & 0xFFFF;');
         this.addl('regs.D = (regs.TA & 0xFF00) >>> 8;');
         this.addl('regs.E = regs.TA & 0xFF;');
@@ -1076,7 +1076,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             // case 2 should skip none of them
             // but we've already used 1.
             ag.addl('let wait;')
-            ag.addl('switch(regs.IRQ_maskable ? regs.IM : 1) {');
+            ag.addl('switch(pins.IRQ_maskable ? regs.IM : 1) {');
             ag.addl('case 0:');
             ag.addl('    regs.t[0] = 0;')
             ag.addl('    regs.WZ = pins.D;');
@@ -1086,7 +1086,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.addl('case 1:');
             ag.addl('    regs.t[0] = 0;')
             ag.addl('    regs.WZ = regs.IRQ_vec;');
-            ag.addl('    wait = 12 - (maskable ? 7 : 5);');
+            ag.addl('    wait = 12 - (pins.IRQ_maskable ? 7 : 5);');
             ag.addl('    regs.TCU += wait;')
             ag.addl('    break;');
             ag.addl('case 2:');
@@ -1103,11 +1103,11 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
 
             ag.addl('regs.PC = regs.WZ;');
             ag.addl('regs.IFF1 = 0;');
-            ag.addl('if (regs.IRQ_maskable) regs.IFF2 = 0;');
+            ag.addl('if (pins.IRQ_maskable) regs.IFF2 = 0;');
             ag.addl('regs.HALT = 0;');
             ag.addl('if (regs.P) regs.F.P = 0;');
             ag.addl('regs.P = 0;');
-            ag.addl('reqgs.Q = 0;');
+            ag.addl('regs.Q = 0;');
             ag.addl('regs.IRQ_vec = null;');
             break;
         case Z80_MN.RESET:
@@ -1189,7 +1189,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.AND_a_r:  //n8&
             ag.Q(1);
-            ag.AND('regs.A', arg1, 'regs.A');
+            ag.AND('regs.A', ag.zregrip(arg1), 'regs.A');
             break;
         case Z80_MN.BIT_o_irr:  //n3, n16&
             ag.Q(1);

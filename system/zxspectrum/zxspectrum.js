@@ -154,16 +154,14 @@ class ZXSpectrum {
                 this.cpu.pins.D = this.bus.cpu_read(this.cpu.pins.Addr);
                 if (this.cpu.trace_on) {
                     dbg.traces.add(D_RESOURCE_TYPES.Z80, this.cpu.trace_cycles, trace_format_read('Z80', Z80_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
-                                console.log('DO A TRACE READ!');
-                    console.log(dbg.traces);
-                    }
+                }
             }
             else if (this.cpu.pins.IO) { // IO port
                 this.cpu.pins.D = this.bus.cpu_ula_read(this.cpu.pins.Addr)
             }
             else {
                 if (this.cpu.trace_on && (this.cpu.last_trace_cycle !== this.cpu.trace_cycles)) {
-                    this.trace_format_nonio();F
+                    this.trace_format_nonio();
                     this.cpu.last_trace_cycle = this.cpu.trace_cycles;
                 }
             }
@@ -177,7 +175,10 @@ class ZXSpectrum {
         if (this.cpu.pins.WR) {
             if (this.cpu.pins.MRQ) {// ROM/RAM
                 if (this.cpu.trace_on && (this.cpu.last_trace_cycle !== this.cpu.trace_cycles)) {
-                    console.log('DO A TRACE WRITE!');
+                    if (typeof this.cpu.pins.Addr === 'undefined') {
+                        console.log(this.cpu.trace_cycles, this.cpu.current_instruction, this.cpu.regs.TCU);
+                        debugger;
+                    }
                     dbg.traces.add(D_RESOURCE_TYPES.Z80, this.cpu.trace_cycles, trace_format_write('Z80', Z80_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
                     this.cpu.last_trace_cycle = this.cpu.trace_cycles;
                 }
@@ -220,7 +221,6 @@ class ZXSpectrum {
     }
 
     present() {
-        console.log('HEY!');
         this.ula.present();
     }
 }
