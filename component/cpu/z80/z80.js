@@ -6,6 +6,7 @@ const Z80P = Object.freeze({
     IY: 2
 });
 
+
 class z80_register_F_t {
     constructor() {
         this.S = 0;
@@ -174,6 +175,24 @@ class z80_t {
 
         this.NMI_pending = false;
         this.NMI_ack = false;
+
+        this.trace_on = false;
+        this.trace_cycles = 0;
+
+        this.trace_peek = function(addr, val, has_effect) { return 0xCD; }
+        this.PCO = 0;
+    }
+
+    enable_tracing(trace_peek) {
+        if (this.trace_on) return;
+        this.trace_on = false;
+        this.trace_cycles = 0;
+        this.trace_peek = trace_peek;
+    }
+
+    disable_tracing() {
+        if (!this.trace_on) return;
+        this.trace_on = false;
     }
 
     reset() {
@@ -203,7 +222,6 @@ class z80_t {
     notify_IRQ(){
         this.irq();
     }
-
 
     irq(irq_vec=0x0000) {
         if (this.regs.IRQ_vec === null) this.regs.IRQ_vec = irq_vec;
@@ -331,11 +349,41 @@ class z80_t {
         }
     }
 
+
+	trace_format(da_out, PCO) {
+		let outstr = trace_start_format('Z80', Z80_COLOR, this.trace_cycles-1, ' ', PCO);
+		// General trace format is...
+		outstr += da_out.disassembled;
+		let sp = da_out.disassembled.length;
+		while(sp < TRACE_INS_PADDING) {
+			outstr += ' ';
+			sp++;
+		}
+
+		outstr += 'PC:' + hex4(this.regs.PC) + ' ';
+		outstr += ' A:' + hex2(this.regs.A);
+		outstr += ' B:' + hex2(this.regs.B);
+		outstr += ' C:' + hex2(this.regs.C);
+		outstr += ' D:' + hex2(this.regs.D);
+		outstr += ' E:' + hex2(this.regs.E);
+		outstr += ' H:' + hex2(this.regs.H);
+		outstr += ' L:' + hex2(this.regs.L);
+		outstr += ' SP:' + hex4(this.regs.SP);
+		outstr += ' IX:' + hex4(this.regs.IX);
+		outstr += ' IY:' + hex4(this.regs.IY);
+		outstr += ' F:' + this.regs.F.formatbyte();
+        return outstr;
+	}
+
     cycle() {
         this.regs.TCU++;
         if (this.regs.IR === Z80_S_DECODE) {
             // Long logic to decode opcodes and decide what to do
+            if (this.regs.TCU === 1) this.PCO = (this.pins.Addr - 1) & 0xFFFF;
             this.ins_cycles();
+            if ((this.trace_on) && (this.regs.TCU === 1)) {
+                dbg.traces.add(TRACERS.Z80, this.trace_cycles-1, this.trace_format(Z80_disassemble(this.PCO, this.IR, this.trace_peek), this.PCO));
+            }
         } else {
             // Execute an actual opcode
             this.current_instruction.exec_func(this.regs, this.pins);

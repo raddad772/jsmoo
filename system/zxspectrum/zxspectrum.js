@@ -97,13 +97,12 @@ class ZXSpectrum {
         this.cpu = new z80_t();
         this.cpu.reset();
 
-        this.bus.notify_IRQ = this.cpu.notify_IRQ.bind();
-
         this.bus = new ZXSpectrum_bus(this.clock, 48);
 
+        this.bus.notify_IRQ = this.cpu.notify_IRQ.bind();
         this.ula = new ZXSpectrum_ULA(document.getElementById('snescanvas'), this.clock, this.bus);
 
-        dbg.add_cpu(D_RESOURCE_TYPES.Z80, this.cpu);
+        dbg.add_cpu(D_RESOURCE_TYPES.Z80, this);
     }
 
     killall() {
@@ -113,6 +112,14 @@ class ZXSpectrum {
     reset() {
         this.cpu.reset();
         this.ula.reset();
+    }
+
+    enable_tracing() {
+        this.cpu.enable_tracing(this.trace_peek.bind());
+    }
+
+    disable_tracing() {
+        this.cpu.disable_tracing();
     }
 
     cpu_cycle() {
