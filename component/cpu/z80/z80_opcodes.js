@@ -156,6 +156,157 @@ const Z80_MN = Object.freeze({
   RESET: 137,
 });
 
+
+function z80_generate_mn_r() {
+    let ostr = 'const Z80_MN_R = new Object.freeze({\n';
+    for (let k in Z80_MN) {
+        ostr += '  ' + Z80_MN[k] + ': \'' + k + '\',\n'
+    }
+    return ostr + '});';
+}
+//console.log(z80_generate_mn_r());
+
+const Z80_MN_R = Object.freeze({
+  0: 'UKN',
+  1: 'ADC_a_irr',
+  2: 'ADC_a_n',
+  3: 'ADC_a_r',
+  4: 'ADC_hl_rr',
+  5: 'ADD_a_irr',
+  6: 'ADD_a_n',
+  7: 'ADD_a_r',
+  8: 'ADD_hl_rr',
+  9: 'AND_a_irr',
+  10: 'AND_a_n',
+  11: 'AND_a_r',
+  12: 'BIT_o_irr',
+  13: 'BIT_o_irr_r',
+  14: 'BIT_o_r',
+  15: 'CALL_c_nn',
+  16: 'CALL_nn',
+  17: 'CCF',
+  18: 'CP_a_irr',
+  19: 'CP_a_n',
+  20: 'CP_a_r',
+  21: 'CPD',
+  22: 'CPDR',
+  23: 'CPI',
+  24: 'CPIR',
+  25: 'CPL',
+  26: 'DAA',
+  27: 'DEC_irr',
+  28: 'DEC_r',
+  29: 'DEC_rr',
+  30: 'DI',
+  31: 'DJNZ_e',
+  32: 'EI',
+  33: 'EX_irr_rr',
+  34: 'EX_rr_rr',
+  35: 'EXX',
+  36: 'HALT',
+  37: 'IM_o',
+  38: 'IN_a_in',
+  39: 'IN_r_ic',
+  40: 'IN_ic',
+  41: 'INC_irr',
+  42: 'INC_r',
+  43: 'INC_rr',
+  44: 'IND',
+  45: 'INDR',
+  46: 'INI',
+  47: 'INIR',
+  48: 'JP_c_nn',
+  49: 'JP_rr',
+  50: 'JR_c_e',
+  51: 'LD_a_inn',
+  52: 'LD_a_irr',
+  53: 'LD_inn_a',
+  54: 'LD_inn_rr',
+  55: 'LD_irr_a',
+  56: 'LD_irr_n',
+  57: 'LD_irr_r',
+  58: 'LD_r_n',
+  59: 'LD_r_irr',
+  60: 'LD_r_r',
+  61: 'LD_r_r1',
+  62: 'LD_r_r2',
+  63: 'LD_rr_inn',
+  64: 'LD_rr_nn',
+  65: 'LD_sp_rr',
+  66: 'LDD',
+  67: 'LDDR',
+  68: 'LDI',
+  69: 'LDIR',
+  70: 'NEG',
+  71: 'NOP',
+  72: 'OR_a_irr',
+  73: 'OR_a_n',
+  74: 'OR_a_r',
+  75: 'OTDR',
+  76: 'OTIR',
+  77: 'OUT_ic_r',
+  78: 'OUT_ic',
+  79: 'OUT_in_a',
+  80: 'OUTD',
+  81: 'OUTI',
+  82: 'POP_rr',
+  83: 'PUSH_rr',
+  84: 'RES_o_irr',
+  85: 'RES_o_irr_r',
+  86: 'RES_o_r',
+  87: 'RET',
+  88: 'RET_c',
+  89: 'RETI',
+  90: 'RETN',
+  91: 'RL_irr',
+  92: 'RL_irr_r',
+  93: 'RL_r',
+  94: 'RLA',
+  95: 'RLC_irr',
+  96: 'RLC_irr_r',
+  97: 'RLC_r',
+  98: 'RLCA',
+  99: 'RLD',
+  100: 'RR_irr',
+  101: 'RR_irr_r',
+  102: 'RR_r',
+  103: 'RRA',
+  104: 'RRC_irr',
+  105: 'RRC_irr_r',
+  106: 'RRC_r',
+  107: 'RRCA',
+  108: 'RRD',
+  109: 'RST_o',
+  110: 'SBC_a_irr',
+  111: 'SBC_a_n',
+  112: 'SBC_a_r',
+  113: 'SBC_hl_rr',
+  114: 'SCF',
+  115: 'SET_o_irr',
+  116: 'SET_o_irr_r',
+  117: 'SET_o_r',
+  118: 'SLA_irr',
+  119: 'SLA_irr_r',
+  120: 'SLA_r',
+  121: 'SLL_irr',
+  122: 'SLL_irr_r',
+  123: 'SLL_r',
+  124: 'SRA_irr',
+  125: 'SRA_irr_r',
+  126: 'SRA_r',
+  127: 'SRL_irr',
+  128: 'SRL_irr_r',
+  129: 'SRL_r',
+  130: 'SUB_a_irr',
+  131: 'SUB_a_n',
+  132: 'SUB_a_r',
+  133: 'XOR_a_irr',
+  134: 'XOR_a_n',
+  135: 'XOR_a_r',
+  136: 'IRQ',
+  137: 'RESET',
+});
+
 class Z80_opcode_info {
     constructor(opcode, ins, mnemonic, arg1=null, arg2=null, arg3=null) {
         this.opcode = opcode;
@@ -179,23 +330,23 @@ function Z80_generate_opcode_matrix()
 
 //console.log(Z80_generate_opcode_matrix());
 
-const Z80_opcode_matrix = Object.freeze({
+const Z80_opcode_matrix_premn = {
     0x00: new Z80_opcode_info(0x00, Z80_MN.NOP, 'NOP'),
-    0x01: new Z80_opcode_info(0x01, Z80_MN.LD_rr_nn, '', 'BC'),
-    0x02: new Z80_opcode_info(0x02, Z80_MN.LD_irr_a, '', 'BC'),
-    0x03: new Z80_opcode_info(0x03, Z80_MN.INC_rr, '', 'BC'),
-    0x04: new Z80_opcode_info(0x04, Z80_MN.INC_r, '', 'B'),
-    0x05: new Z80_opcode_info(0x05, Z80_MN.DEC_r, '', 'B'),
-    0x06: new Z80_opcode_info(0x06, Z80_MN.LD_r_n, '', 'B'),
-    0x07: new Z80_opcode_info(0x07, Z80_MN.RLCA, ''),
-    0x08: new Z80_opcode_info(0x08, Z80_MN.EX_rr_rr, '', 'AF', 'AFs'),
-    0x09: new Z80_opcode_info(0x09, Z80_MN.ADD_hl_rr, '', 'BC'),
-    0x0A: new Z80_opcode_info(0x0A, Z80_MN.LD_a_irr, '', 'BC'),
-    0x0B: new Z80_opcode_info(0x0B, Z80_MN.DEC_rr, '', 'BC'),
-    0x0C: new Z80_opcode_info(0x0C, Z80_MN.INC_r, '', 'C'),
-    0x0D: new Z80_opcode_info(0x0D, Z80_MN.DEC_r, '', 'C'),
-    0x0E: new Z80_opcode_info(0x0E, Z80_MN.LD_r_n, '', 'C'),
-    0x0F: new Z80_opcode_info(0x0F, Z80_MN.RRCA, ''),
+    0x01: new Z80_opcode_info(0x01, Z80_MN.LD_rr_nn, 'LD_rr_nn BC', 'BC'),
+    0x02: new Z80_opcode_info(0x02, Z80_MN.LD_irr_a, 'LD_irr_a BC', 'BC'),
+    0x03: new Z80_opcode_info(0x03, Z80_MN.INC_rr, 'INC_rr BC', 'BC'),
+    0x04: new Z80_opcode_info(0x04, Z80_MN.INC_r, 'INC_r B', 'B'),
+    0x05: new Z80_opcode_info(0x05, Z80_MN.DEC_r, 'DEC_r B', 'B'),
+    0x06: new Z80_opcode_info(0x06, Z80_MN.LD_r_n, 'LD_r_n B', 'B'),
+    0x07: new Z80_opcode_info(0x07, Z80_MN.RLCA, 'RLCA'),
+    0x08: new Z80_opcode_info(0x08, Z80_MN.EX_rr_rr, 'EX_rr_rr AF AFs', 'AF', 'AFs'),
+    0x09: new Z80_opcode_info(0x09, Z80_MN.ADD_hl_rr, 'ADD_hl_rr BC', 'BC'),
+    0x0A: new Z80_opcode_info(0x0A, Z80_MN.LD_a_irr, 'LD_a_irr BC', 'BC'),
+    0x0B: new Z80_opcode_info(0x0B, Z80_MN.DEC_rr, 'DEC_rr BC', 'BC'),
+    0x0C: new Z80_opcode_info(0x0C, Z80_MN.INC_r, 'INC_r C', 'C'),
+    0x0D: new Z80_opcode_info(0x0D, Z80_MN.DEC_r, 'DEC_r C', 'C'),
+    0x0E: new Z80_opcode_info(0x0E, Z80_MN.LD_r_n, 'LD_r_n C', 'C'),
+    0x0F: new Z80_opcode_info(0x0F, Z80_MN.RRCA, 'RRCA'),
 
     0x10: new Z80_opcode_info(0x10, Z80_MN.DJNZ_e, ''),
     0x11: new Z80_opcode_info(0x11, Z80_MN.LD_rr_nn, '', 'DE'),
@@ -387,7 +538,7 @@ const Z80_opcode_matrix = Object.freeze({
     0xC0: new Z80_opcode_info(0xC0, Z80_MN.RET_c, '', 'regs.F.Z === 0'),
     0xC1: new Z80_opcode_info(0xC1, Z80_MN.POP_rr, '', 'BC'),
     0xC2: new Z80_opcode_info(0xC2, Z80_MN.JP_c_nn, '', 'regs.F.Z === 0'),
-    0xC3: new Z80_opcode_info(0xC3, Z80_MN.CALL_c_nn, '', '1'),
+    0xC3: new Z80_opcode_info(0xC3, Z80_MN.JP_c_nn, '', '1'),
     0xC4: new Z80_opcode_info(0xC4, Z80_MN.CALL_c_nn, '', 'regs.F.Z === 0'),
     0xC5: new Z80_opcode_info(0xC5, Z80_MN.PUSH_rr, '', 'BC'),
     0xC6: new Z80_opcode_info(0xC6, Z80_MN.ADD_a_n, ''),
@@ -410,7 +561,7 @@ const Z80_opcode_matrix = Object.freeze({
     0xD6: new Z80_opcode_info(0xD6, Z80_MN.SUB_a_n, ''),
     0xD7: new Z80_opcode_info(0xD7, Z80_MN.RST_o, '', '2'),
     0xD8: new Z80_opcode_info(0xD8, Z80_MN.RET_c, '', 'regs.F.C === 1'),
-    0xD9: new Z80_opcode_info(0xD9, Z80_MN.EXX),
+    0xD9: new Z80_opcode_info(0xD9, Z80_MN.EXX, ''),
     0xDA: new Z80_opcode_info(0xDA, Z80_MN.JP_c_nn, '', 'regs.F.C === 1'),
     0xDB: new Z80_opcode_info(0xDB, Z80_MN.IN_a_in, ''),
     0xDC: new Z80_opcode_info(0xDC, Z80_MN.CALL_c_nn, '', 'regs.F.C === 1'),
@@ -453,9 +604,25 @@ const Z80_opcode_matrix = Object.freeze({
     0xFF: new Z80_opcode_info(0xFF, Z80_MN.RST_o, '', '7'),
     0x100: new Z80_opcode_info(0x100, Z80_MN.IRQ, 'IRQ'),
     0x101: new Z80_opcode_info(0x101, Z80_MN.RESET, 'RESET')
-});
+};
 
-const Z80_CB_opcode_matrix = Object.freeze({
+function Z80_fill_mnemonics(what) {
+    for (let i in what) {
+        let o = what[i];
+        if (o.mnemonic === '') {
+            let ostr = Z80_MN_R[o.ins];
+            if (o.arg1 !== null) ostr += ' ' + o.arg1;
+            if (o.arg2 !== null) ostr += ' ' + o.arg2;
+            if (o.arg3 !== null) ostr += ' ' + o.arg3;
+            o.mnemonic = ostr;
+        }
+    }
+    return what;
+}
+
+const Z80_opcode_matrix = Object.freeze(Z80_fill_mnemonics(Z80_opcode_matrix_premn));
+
+const Z80_CB_opcode_matrix_premn = {
     0x00: new Z80_opcode_info(0x00, Z80_MN.RLC_r, '', 'B'),
     0x01: new Z80_opcode_info(0x01, Z80_MN.RLC_r, '', 'C'),
     0x02: new Z80_opcode_info(0x02, Z80_MN.RLC_r, '', 'D'),
@@ -727,9 +894,11 @@ const Z80_CB_opcode_matrix = Object.freeze({
     0xFD: new Z80_opcode_info(0xFD, Z80_MN.SET_o_r, '', '7', 'L'),
     0xFE: new Z80_opcode_info(0xFE, Z80_MN.SET_o_irr, '', '7','_HL'),
     0xFF: new Z80_opcode_info(0xFF, Z80_MN.SET_o_r, '', '7', 'A'),
-});
+};
 
-const Z80_CBd_opcode_matrix = Object.freeze({
+const Z80_CB_opcode_matrix = Object.freeze(Z80_fill_mnemonics(Z80_CB_opcode_matrix_premn));
+
+const Z80_CBd_opcode_matrix_premn = {
     0x00: new Z80_opcode_info(0x00, Z80_MN.RLC_irr_r, '', 'addr', 'B'),
     0x01: new Z80_opcode_info(0x01, Z80_MN.RLC_irr_r, '', 'addr', 'C'),
     0x02: new Z80_opcode_info(0x02, Z80_MN.RLC_irr_r, '', 'addr', 'D'),
@@ -1001,9 +1170,12 @@ const Z80_CBd_opcode_matrix = Object.freeze({
     0xFD: new Z80_opcode_info(0xFD, Z80_MN.SET_o_irr_r, '', '7', 'addr', 'L'),
     0xFE: new Z80_opcode_info(0xFE, Z80_MN.SET_o_irr_r, '', '7', 'addr', '_'),
     0xFF: new Z80_opcode_info(0xFF, Z80_MN.SET_o_irr_r, '', '7', 'addr', 'A'),
-});
+};
+const Z80_CBd_opcode_matrix = Object.freeze(Z80_fill_mnemonics(Z80_CBd_opcode_matrix_premn));
 
-const Z80_ED_opcode_matrix = Object.freeze({
+
+
+const Z80_ED_opcode_matrix_premn = {
     0x40: new Z80_opcode_info(0x40, Z80_MN.IN_r_ic, '', 'B'),
     0x41: new Z80_opcode_info(0x41, Z80_MN.OUT_ic_r, '', 'B'),
     0x42: new Z80_opcode_info(0x42, Z80_MN.SBC_hl_rr, '', 'BC'),
@@ -1089,7 +1261,7 @@ const Z80_ED_opcode_matrix = Object.freeze({
     0xB9: new Z80_opcode_info(0xB9, Z80_MN.CPDR, 'CPDR'),
     0xBA: new Z80_opcode_info(0xBA, Z80_MN.INDR, 'INDR'),
     0xBB: new Z80_opcode_info(0xBB, Z80_MN.OTDR, 'OTDR'),
-});
+};
 
 class Z80_opcode_functions {
     constructor(opcode_info, exec_func) {
@@ -1116,6 +1288,9 @@ const Z80_prefix_to_codemap = Object.freeze({
     [Z80_prefixes[5]]: (Z80_MAX_OPCODE + 1) * 5,
     [Z80_prefixes[6]]: (Z80_MAX_OPCODE + 1) * 6,
 });
+
+const Z80_ED_opcode_matrix = Object.freeze(Z80_fill_mnemonics(Z80_ED_opcode_matrix_premn));
+
 
 
 function Z80_fetch_decoded(opcode, prefix) {

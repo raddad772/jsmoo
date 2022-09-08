@@ -81,11 +81,11 @@ class ZXSpectrum_ULA {
         this.clock.contended = false;
         this.clock.flash.bit = 0;
         this.clock.flash.count = 16;
-        this.clock.master_frame_count = 0;
+        this.clock.frames_since_restart = 0;
         this.clock.frame_master_clock = 0;
 
         this.bg_shift = 0;
-        this.scanline_vblank.bind(this);
+        this.scanline_func = this.scanline_vblank.bind(this);
         this.first_vblank = true;
         this.screen_x = this.screen_y = 0;
         this.next_attr = 0;
@@ -221,7 +221,7 @@ class ZXSpectrum_ULA {
             this.clock.ula_y = 0;
             this.clock.ula_frame_cycle = 0;
             this.screen_y = -8;
-            this.clock.master_frame_count++;
+            this.clock.frames_since_restart++;
             this.clock.flash.count--;
             if (this.clock.flash.count === 0) {
                 this.clock.flash.count = 16;
@@ -264,7 +264,7 @@ class ZXSpectrum_ULA {
                 imgdata.data[di] = ZXSpectrum_palette[color][0];
                 imgdata.data[di+1] = ZXSpectrum_palette[color][1];
                 imgdata.data[di+2] = ZXSpectrum_palette[color][2];
-                imgdata.data[3] = 255;
+                imgdata.data[di+3] = 255;
             }
         }
         ctx.putImageData(imgdata, 0, 0);
