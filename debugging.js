@@ -327,6 +327,7 @@ class debugger_t {
         this.state = DBG_STATES.PAUSE;
         this.do_break = true;
         let overflow = 0;
+        global_player.pause();
         switch(global_player.system_kind) {
             case 'nes':
                 global_player.system.cycles_left = 0;

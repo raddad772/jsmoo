@@ -141,14 +141,14 @@ class ZXSpectrum_ULA {
     */
     scanline_border_top() {
         if ((this.screen_x >= 0) && (this.screen_x < 352)) {
-            let bo = (362 * this.screen_y) + this.screen_x;
+            let bo = (352 * this.screen_y) + this.screen_x;
             this.output[bo] = this.io.border_color;
         }
     }
 
     scanline_border_bottom() {
         if ((this.screen_x >= 0) && (this.screen_x < 352)) {
-            let bo = (362 * this.screen_y) + this.screen_x;
+            let bo = (352 * this.screen_y) + this.screen_x;
             this.output[bo] = this.io.border_color;
         }
     }

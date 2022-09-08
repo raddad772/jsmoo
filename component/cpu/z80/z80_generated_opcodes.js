@@ -1731,7 +1731,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 4:
                 regs.TR = ((regs.TR) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.V = +(z === 0);
+                regs.F.V = +(regs.TR === 0);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);
@@ -10602,7 +10602,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (_HL);
+                pins.Addr = ((regs.H << 8) | regs.L);
                 
                 break;
             case 2:
@@ -10831,7 +10831,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (_HL);
+                pins.Addr = ((regs.H << 8) | regs.L);
                 
                 break;
             case 2:
@@ -11060,7 +11060,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (_HL);
+                pins.Addr = ((regs.H << 8) | regs.L);
                 
                 break;
             case 2:
@@ -11289,7 +11289,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (_HL);
+                pins.Addr = ((regs.H << 8) | regs.L);
                 
                 break;
             case 2:
@@ -11518,7 +11518,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (_HL);
+                pins.Addr = ((regs.H << 8) | regs.L);
                 
                 break;
             case 2:
@@ -11747,7 +11747,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (_HL);
+                pins.Addr = ((regs.H << 8) | regs.L);
                 
                 break;
             case 2:
@@ -11976,7 +11976,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (_HL);
+                pins.Addr = ((regs.H << 8) | regs.L);
                 
                 break;
             case 2:
@@ -12205,7 +12205,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (_HL);
+                pins.Addr = ((regs.H << 8) | regs.L);
                 
                 break;
             case 2:
@@ -16877,7 +16877,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 12:
                 regs.TR = ((regs.TR) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.V = +(z === 0);
+                regs.F.V = +(regs.TR === 0);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);
@@ -28496,7 +28496,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 7: // Adding 2 cycles
                 break;
             case 8:
-                this.F.N = this.F.H = 0;
+                regs.F.N = regs.F.H = 0;
                 regs.F.X = (regs.TA & 8) >>> 3;
                 regs.F.Y = (regs.TA & 2) >>> 1;
                 regs.TA = (((regs.B << 8) | regs.C) - 1) & 0xFFFF;
@@ -29065,23 +29065,64 @@ const z80_decoded_opcodes = Object.freeze({
     0x3B6: new Z80_opcode_functions(Z80_ED_opcode_matrix[0xB0], // ED B0
         function(regs, pins) { //LDIR
         switch(regs.TCU) {
-            case 1: // Adding 5 cycles
+            case 1: // Start read
                 regs.Q = 1;
+                regs.TA = (regs.H << 8) | regs.L;
+                pins.Addr = (regs.TA);
+                
+                break;
+            case 2:
+                pins.RD = 1; pins.MRQ = 1;
+                break;
+            case 3: // Read end
+                regs.TR = pins.D;
+                pins.RD = 0; pins.MRQ = 0;
+                regs.TA = (regs.TA + 1) & 0xFFFF;
+                regs.H = ((regs.TA) & 0xFF00) >>> 8;
+                regs.L = (regs.TA) & 0xFF;
+                regs.TA = (regs.D << 8) | regs.E;
+                break;
+            case 4: // write begin
+                pins.WR = 1; pins.MRQ = 1;
+                pins.D = (regs.TR);
+                pins.Addr = (regs.TA);
+                break;
+            case 5:
+                pins.WR = 0; pins.MRQ = 0;
+                break;
+            case 6: // write end
+                regs.TA = (regs.TA + 1) & 0xFFFF;
+                regs.D = ((regs.TA) & 0xFF00) >>> 8;
+                regs.E = (regs.TA) & 0xFF;
+                
+                break;
+            case 7: // Adding 2 cycles
+                break;
+            case 8:
+                regs.F.N = regs.F.H = 0;
+                regs.F.X = (regs.TA & 8) >>> 3;
+                regs.F.Y = (regs.TA & 2) >>> 1;
+                regs.TA = (((regs.B << 8) | regs.C) - 1) & 0xFFFF;
+                regs.B = ((regs.TA) & 0xFF00) >>> 8;
+                regs.C = (regs.TA) & 0xFF;
+                regs.F.V = +(regs.TA !== 0);
                 if ((regs.B === 0) && (regs.C === 0)) { regs.TCU += 5; break; }
                 regs.PC = (regs.PC - 2) & 0xFFFF;
                 regs.WZ = (regs.PC + 1) & 0xFFFF;
                 
                 break;
-            case 2:
+            case 9: // Adding 5 cycles
                 break;
-            case 3:
+            case 10:
                 break;
-            case 4:
+            case 11:
                 break;
-            case 5:
+            case 12:
+                break;
+            case 13:
                 // Following is auto-generated code for instruction finish
                 break;
-            case 6: // cleanup_custom
+            case 14: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 pins.RD = 1; pins.MRQ = 1;
@@ -32671,7 +32712,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 12:
                 regs.TR = ((regs.TR) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.V = +(z === 0);
+                regs.F.V = +(regs.TR === 0);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);
@@ -43114,7 +43155,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -43156,7 +43197,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -43198,7 +43239,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -43240,7 +43281,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -43282,7 +43323,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -43324,7 +43365,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -43366,7 +43407,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -43408,7 +43449,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -43450,7 +43491,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -43492,7 +43533,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -43534,7 +43575,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -43576,7 +43617,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -43618,7 +43659,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -43660,7 +43701,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -43702,7 +43743,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -43744,7 +43785,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -43786,7 +43827,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -43828,7 +43869,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -43870,7 +43911,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -43912,7 +43953,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -43954,7 +43995,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -43996,7 +44037,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -44038,7 +44079,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -44080,7 +44121,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -44122,7 +44163,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -44164,7 +44205,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -44206,7 +44247,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -44248,7 +44289,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -44290,7 +44331,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -44332,7 +44373,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -44374,7 +44415,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -44416,7 +44457,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -44458,7 +44499,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -44500,7 +44541,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -44542,7 +44583,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -44584,7 +44625,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -44626,7 +44667,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -44668,7 +44709,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -44710,7 +44751,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -44752,7 +44793,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -44794,7 +44835,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -44836,7 +44877,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -44878,7 +44919,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -44920,7 +44961,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -44962,7 +45003,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -45004,7 +45045,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -45046,7 +45087,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -45088,7 +45129,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -45130,7 +45171,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -45172,7 +45213,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -45214,7 +45255,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -45256,7 +45297,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -45298,7 +45339,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -45340,7 +45381,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -45382,7 +45423,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -45424,7 +45465,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -45466,7 +45507,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -45508,7 +45549,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -45550,7 +45591,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -45592,7 +45633,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -45634,7 +45675,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -45676,7 +45717,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -45718,7 +45759,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -45760,7 +45801,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -54334,7 +54375,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -54376,7 +54417,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -54418,7 +54459,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -54460,7 +54501,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -54502,7 +54543,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -54544,7 +54585,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -54586,7 +54627,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -54628,7 +54669,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -54670,7 +54711,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -54712,7 +54753,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -54754,7 +54795,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -54796,7 +54837,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -54838,7 +54879,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -54880,7 +54921,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -54922,7 +54963,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -54964,7 +55005,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -55006,7 +55047,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -55048,7 +55089,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -55090,7 +55131,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -55132,7 +55173,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -55174,7 +55215,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -55216,7 +55257,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -55258,7 +55299,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -55300,7 +55341,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -55342,7 +55383,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -55384,7 +55425,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -55426,7 +55467,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -55468,7 +55509,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -55510,7 +55551,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -55552,7 +55593,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -55594,7 +55635,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -55636,7 +55677,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -55678,7 +55719,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -55720,7 +55761,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -55762,7 +55803,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -55804,7 +55845,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -55846,7 +55887,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -55888,7 +55929,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -55930,7 +55971,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -55972,7 +56013,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -56014,7 +56055,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -56056,7 +56097,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -56098,7 +56139,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -56140,7 +56181,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -56182,7 +56223,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -56224,7 +56265,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -56266,7 +56307,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -56308,7 +56349,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -56350,7 +56391,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -56392,7 +56433,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -56434,7 +56475,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -56476,7 +56517,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -56518,7 +56559,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -56560,7 +56601,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -56602,7 +56643,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -56644,7 +56685,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -56686,7 +56727,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -56728,7 +56769,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -56770,7 +56811,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -56812,7 +56853,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -56854,7 +56895,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -56896,7 +56937,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -56938,7 +56979,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:
@@ -56980,7 +57021,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
-                pins.Addr = (WZ);
+                pins.Addr = (regs.WZ);
                 
                 break;
             case 2:

@@ -128,7 +128,7 @@ class global_player_t {
 				return;
 		}
 		this.tech_specs = this.system.get_description();
-		this.set_fps_target(this.tech_specs.fps);
+		this.set_fps_target(this.tech_specs.technical.fps);
 		this.ready = true;
 	}
 
@@ -661,8 +661,32 @@ async function init_ui() {
 
 
 	ui_el.tracing_CPU_checkbox.addEventListener('change', (event) => {
-		if (event.currentTarget.checked) dbg.enable_tracing_for(D_RESOURCE_TYPES.M6502);
-		else dbg.disable_tracing_for(D_RESOURCE_TYPES.M6502);
+		if (event.currentTarget.checked) {
+			switch(global_player.system_kind) {
+				case 'nes':
+					dbg.enable_tracing_for(D_RESOURCE_TYPES.M6502);
+					break;
+				case 'snes':
+					dbg.enable_tracing_for(D_RESOURCE_TYPES.R5A22);
+					break;
+				case 'spectrum':
+					dbg.enable_tracing_for(D_RESOURCE_TYPES.Z80);
+					break;
+			}
+		}
+		else {
+			switch(global_player.system_kind) {
+				case 'nes':
+					dbg.disable_tracing_for(D_RESOURCE_TYPES.M6502);
+					break;
+				case 'snes':
+					dbg.disable_tracing_for(D_RESOURCE_TYPES.R5A22);
+					break;
+				case 'spectrum':
+					dbg.disable_tracing_for(D_RESOURCE_TYPES.Z80);
+					break;
+			}
+		}
 	});
 
 	ui_el.tracing_APU_checkbox.addEventListener('change', (event) => {
