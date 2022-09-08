@@ -223,7 +223,6 @@ class z80_t {
     }
 
     notify_IRQ(){
-        console.log(this);
         this.irq();
     }
 
@@ -248,7 +247,6 @@ class z80_t {
     }
 
     set_instruction(to) {
-        console.log('SETTING INSTRUCTION', hex2(to));
         this.regs.IR = to;
         this.current_instruction = Z80_fetch_decoded(this.regs.IR, this.regs.prefix);
         this.regs.TCU = 0;
@@ -268,10 +266,10 @@ class z80_t {
                 }
                 else if (this.IRQ_pending && !this.IRQ_ack) {
                     if (this.pins.IRQ_maskable && (!this.regs.IFF1 || this.regs.EI)) {
-                        console.log('SKIP IRQ!');
                         this.IRQ_pending = false;
                     }
                     else {
+                        console.log('IRQ!');
                         this.IRQ_ack = true;
                         this.pins.D = 0xFF;
                         this.regs.PC = (this.regs.PC - 1) & 0xFFFF;
@@ -392,10 +390,8 @@ class z80_t {
         if (this.regs.IR === Z80_S_DECODE) {
             // Long logic to decode opcodes and decide what to do
             if (this.regs.TCU === 1) this.PCO = this.pins.Addr;
-            console.log('DECODING', this.trace_cycles)
             this.ins_cycles();
         } else {
-            console.log('EXECUTING', this.current_instruction, this.trace_cycles)
             if (this.trace_on && this.regs.TCU === 1) {
                 this.last_trace_cycle = this.PCO;
                 dbg.traces.add(TRACERS.Z80, this.trace_cycles, this.trace_format(Z80_disassemble(this.PCO, this.regs.IR, this.trace_peek), this.PCO));

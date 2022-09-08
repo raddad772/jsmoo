@@ -260,10 +260,12 @@ class ZXSpectrum_ULA {
                 let ulai = (y * 352) + x;
 
                 let color = this.output[ulai];
+                let pal = (color & 0x08) >>> 3;
+                color &= 7;
 
-                imgdata.data[di] = ZXSpectrum_palette[color][0];
-                imgdata.data[di+1] = ZXSpectrum_palette[color][1];
-                imgdata.data[di+2] = ZXSpectrum_palette[color][2];
+                imgdata.data[di] = ZXSpectrum_palette[pal][color][0];
+                imgdata.data[di+1] = ZXSpectrum_palette[pal][color][1];
+                imgdata.data[di+2] = ZXSpectrum_palette[pal][color][2];
                 imgdata.data[di+3] = 255;
             }
         }
