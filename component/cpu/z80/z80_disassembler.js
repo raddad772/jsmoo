@@ -7,6 +7,24 @@ class Z80_disassembly_output {
     }
 }
 
+/* Z80 instruction decoding courtesy algorithm at
+    http://www.z80.info/decoding.htm
+ */
+
+const Z80D_tabl_r = ['B', 'C', 'D', 'E', 'H', 'L', '(HL)', 'A'];
+const Z80D_tabl_rp = ['BC', 'DE', 'HL', 'SP'];
+const Z80D_tabl_rp2 = ['BC', 'DE', 'HL', 'AF'];
+const Z80D_tabl_cc = ['NZ', 'Z', 'NC', 'C', 'PO', 'PE', 'P', 'M'];
+const Z80D_tabl_alu = ['ADD A, ', 'ADC A, ', 'SUB', 'SBC A, ', 'AND', 'XOR', 'OR', 'CP'];
+const Z80D_tabl_rot = ['RLC', 'RRC', 'RL', 'RR', 'SLA', 'SRA', 'SSL', 'SRL'];
+const Z80D_tabl_im = ['0', '0/1', '1', '2', '0', '0/1', '1', '2'];
+const Z80D_tabl_bli = [[], [], [], [], [
+    ['LDI', 'CPI', 'INI', 'OUTI'], // 4, 0...3
+    ['LDD', 'CPD', 'IND', 'OUTD'], // 5, 0...3
+    ['LDIR', 'CPIR', 'INIR', 'OTIR'], // 6, 0...3
+    ['LDDR', 'CPDR', 'INDR', 'OTDR'], // 7, 0...3
+]];
+
 function Z80_disassemble(PC, IR, peek_func) {
     let opcode = IR;
     let ins = z80_decoded_opcodes[opcode].ins;
@@ -46,20 +64,6 @@ function Z80_disassemble(PC, IR, peek_func) {
     let current_byte = opcode;
 
     let ostr = '';
-
-    let tabl_r = ['B', 'C', 'D', 'E', 'H', 'L', '(HL)', 'A'];
-    let tabl_rp = ['BC', 'DE', 'HL', 'SP'];
-    let tabl_rp2 = ['BC', 'DE', 'HL', 'AF'];
-    let tabl_cc = ['NZ', 'Z', 'NC', 'C', 'PO', 'PE', 'P', 'M'];
-    let tabl_alu = ['ADD A, ', 'ADC A, ', 'SUB', 'SBC A, ', 'AND', 'XOR', 'OR', 'CP'];
-    let tabl_rot = ['RLC', 'RRC', 'RL', 'RR', 'SLA', 'SRA', 'SSL', 'SRL'];
-    let tabl_im = ['0', '0/1', '1', '2', '0', '0/1', '1', '2'];
-    let tabl_bli = [[], [], [], [], [
-        ['LDI', 'CPI', 'INI', 'OUTI'], // 4, 0...3
-        ['LDD', 'CPD', 'IND', 'OUTD'], // 5, 0...3
-        ['LDIR', 'CPIR', 'INIR', 'OTIR'], // 6, 0...3
-        ['LDDR', 'CPDR', 'INDR', 'OTDR'], // 7, 0...3
-    ]];
 
     let decoded_bytes = 0;
     // So we don't loop forever
@@ -146,14 +150,14 @@ function Z80_disassemble(PC, IR, peek_func) {
                                     case 5:
                                     case 6:
                                     case 7:
-                                        ostr = 'JR ' + tabl_cc[y - 4] + ', ' + read8();
+                                        ostr = 'JR ' + Z80D_tabl_cc[y - 4] + ', ' + read8();
                                         break;
                                 }
 
                                 break;
                             case 1: // x = 0, z = 1
-                                if (q === 0) ostr = "LD " + repl0(tabl_rp[p]) + ', ' + read16();
-                                else ostr = "ADD " + repl0('HL') + ", " + tabl_rp[p];
+                                if (q === 0) ostr = "LD " + repl0(Z80D_tabl_rp[p]) + ', ' + read16();
+                                else ostr = "ADD " + repl0('HL') + ", " + Z80D_tabl_rp[p];
                                 break;
                             case 2: // x = 0, z = 2
                                 switch (p) {
@@ -176,17 +180,17 @@ function Z80_disassemble(PC, IR, peek_func) {
                                 }
                                 break;
                             case 3: // x = 0, z = 3
-                                if (q === 0) ostr = 'INC ' + repl0(tabl_rp[p]);
-                                else ostr = 'DEC ' + repl0(tabl_rp[p]);
+                                if (q === 0) ostr = 'INC ' + repl0(Z80D_tabl_rp[p]);
+                                else ostr = 'DEC ' + repl0(Z80D_tabl_rp[p]);
                                 break;
                             case 4: // x = 0 z = 3
-                                ostr = 'INC ' + repl0(tabl_r[y]);
+                                ostr = 'INC ' + repl0(Z80D_tabl_r[y]);
                                 break;
                             case 5:
-                                ostr = 'DEC ' + repl0(tabl_r[y]);
+                                ostr = 'DEC ' + repl0(Z80D_tabl_r[y]);
                                 break;
                             case 6:
-                                ostr = 'LD ' + repl0(tabl_r[y]) + ', ' + read8();
+                                ostr = 'LD ' + repl0(Z80D_tabl_r[y]) + ', ' + read8();
                                 break;
                             case 7:
                                 ostr = ['RLCA', 'RRCA', 'RLA', 'RRA', 'DAA', 'CPL', 'SCF', 'CCF'][y];
@@ -195,24 +199,24 @@ function Z80_disassemble(PC, IR, peek_func) {
                         break;
                     case 1: // x = 1
                         if ((z === 6) && (y === 6)) ostr = 'HALT';
-                        else ostr = 'LD ' + repl0(tabl_r[y]) + ', ' + repl0(tabl_r[z]);
+                        else ostr = 'LD ' + repl0(Z80D_tabl_r[y]) + ', ' + repl0(Z80D_tabl_r[z]);
                         break;
                     case 2: // x = 2
-                        ostr = tabl_alu[y] + ' ' + repl0(tabl_r[z]);
+                        ostr = Z80D_tabl_alu[y] + ' ' + repl0(Z80D_tabl_r[z]);
                         break;
                     case 3: // x = 3
                         switch (z) {
                             case 0: // x=3 z=0
-                                ostr = 'RET ' + tabl_cc[y];
+                                ostr = 'RET ' + Z80D_tabl_cc[y];
                                 break;
                             case 1: // x=3 z=1
                                 if (q === 0)
-                                    ostr = 'POP ' + repl0(tabl_rp2[p]);
+                                    ostr = 'POP ' + repl0(Z80D_tabl_rp2[p]);
                                 else
                                     ostr = ['RET', 'EXX', 'JP HL', 'LD SP, ' + repl0('HL')][p];
                                 break;
                             case 2:
-                                ostr = 'JP ' + tabl_cc[y] + ', ' + read16();
+                                ostr = 'JP ' + Z80D_tabl_cc[y] + ', ' + read16();
                                 break;
                             case 3: // x=3 z=3
                                 switch (y) {
@@ -237,14 +241,14 @@ function Z80_disassemble(PC, IR, peek_func) {
                                 }
                                 break;
                             case 4: // x=3 z=4
-                                ostr = 'CALL ' + tabl_cc[y] + ', ' + read16();
+                                ostr = 'CALL ' + Z80D_tabl_cc[y] + ', ' + read16();
                                 break;
                             case 5: // x=3 z=5
-                                if (q === 0) ostr = 'PUSH ' + tabl_rp2[p];
+                                if (q === 0) ostr = 'PUSH ' + Z80D_tabl_rp2[p];
                                 else ostr = 'CALL ' + read16();
                                 break;
                             case 6: // x=3 z=6
-                                ostr = tabl_alu[y] + ' ' + read8();
+                                ostr = Z80D_tabl_alu[y] + ' ' + read8();
                                 break;
                             case 7: // x=3 z=7
                                 ostr = 'RST ' + y * 8;
@@ -255,16 +259,16 @@ function Z80_disassemble(PC, IR, peek_func) {
         case 0xCB: // prefix 0xCB
             switch(x) {
                 case 0:
-                    ostr = tabl_rot[y] + ' ' + tabl_r[z];
+                    ostr = Z80D_tabl_rot[y] + ' ' + Z80D_tabl_r[z];
                     break;
                 case 1:
-                    ostr = 'BIT ' + y + ', ' + tabl_r[z];
+                    ostr = 'BIT ' + y + ', ' + Z80D_tabl_r[z];
                     break;
                 case 2:
-                    ostr = 'RES ' + y + ', ' + tabl_r[z];
+                    ostr = 'RES ' + y + ', ' + Z80D_tabl_r[z];
                     break;
                 case 3:
-                    ostr = 'SET ' + y + ', ' + tabl_r[z];
+                    ostr = 'SET ' + y + ', ' + Z80D_tabl_r[z];
                     break;
             }
             break;
@@ -278,19 +282,19 @@ function Z80_disassemble(PC, IR, peek_func) {
                     switch(z) {
                         case 0: // 0xED x=1 z=0
                             if (y === 6) ostr = 'IN (C)';
-                            else ostr = 'IN ' + tabl_r[y] + ', (C)';
+                            else ostr = 'IN ' + Z80D_tabl_r[y] + ', (C)';
                             break;
                         case 1:
                             if (y === 6) ostr = 'OUT (C)';
-                            else ostr = 'OUT ' + tabl_r[y] + ', (C)';
+                            else ostr = 'OUT ' + Z80D_tabl_r[y] + ', (C)';
                             break;
                         case 2: // 0xED x=1 z=2
-                            if (q === 0) ostr = 'SBC HL, ' + tabl_rp[p];
-                            else ostr = 'ADC HL, ' + tabl_rp[p];
+                            if (q === 0) ostr = 'SBC HL, ' + Z80D_tabl_rp[p];
+                            else ostr = 'ADC HL, ' + Z80D_tabl_rp[p];
                             break;
                         case 3: // 0xED x=1 z=3
-                            if (q === 0) ostr = 'LD (' + read16() + '), ' + tabl_rp[p];
-                            else ostr = 'LD ' + tabl_rp[p] + ', (' + read16() + ')';
+                            if (q === 0) ostr = 'LD (' + read16() + '), ' + Z80D_tabl_rp[p];
+                            else ostr = 'LD ' + Z80D_tabl_rp[p] + ', (' + read16() + ')';
                             break;
                         case 4:
                             ostr = 'NEG';
@@ -300,7 +304,7 @@ function Z80_disassemble(PC, IR, peek_func) {
                             else ostr = 'RETN';
                             break;
                         case 6: // 0xED x=1 z=6
-                            ostr = 'IM ' + tabl_im[y];
+                            ostr = 'IM ' + Z80D_tabl_im[y];
                             break;
                         case 7: // 0xED x=1 z=7
                             ostr = ['LD I, A', 'LD R, A', 'LD A, I', 'LD A, R', 'RRD', 'RLD', 'NOP', 'NOP'][y];
@@ -309,7 +313,7 @@ function Z80_disassemble(PC, IR, peek_func) {
                     break;
                 case 2: // 0xED x=2
                     if ((z <= 3) && (y >= 4))
-                        ostr = tabl_bli[y][z];
+                        ostr = Z80D_tabl_bli[y][z];
                     else
                         ostr = 'INVALID#2 NONI NOP';
                     break;
@@ -327,18 +331,18 @@ function Z80_disassemble(PC, IR, peek_func) {
             z = (current_byte & 7);
             switch(x) {
                 case 0: // CBd x=0
-                    if (z !== 6) ostr = 'LD ' + tabl_r[z] + ', ' + tabl_rot[y] + '(' + IXY + '+' + d + ')';
-                    else ostr = tabl_rot[y] + ' (' + IXY + '+' + d + ')';
+                    if (z !== 6) ostr = 'LD ' + Z80D_tabl_r[z] + ', ' + Z80D_tabl_rot[y] + '(' + IXY + '+' + d + ')';
+                    else ostr = Z80D_tabl_rot[y] + ' (' + IXY + '+' + d + ')';
                     break;
                 case 1: // CBd x=1
                     ostr = 'BIT ' + y + ', (' + IXY + '+' + d + ')';
                     break;
                 case 2: // CBd x=2
-                    if (z !== 6) ostr = 'LD ' + tabl_r[z] + ', RES ' + y + ', (' + IXY + '+' + d + ')';
+                    if (z !== 6) ostr = 'LD ' + Z80D_tabl_r[z] + ', RES ' + y + ', (' + IXY + '+' + d + ')';
                     else ostr = 'RES ' + y + ', (' + IXY + '+' + d + ')';
                     break;
                 case 3: // CBd x=3
-                    if (z !== 6) ostr = 'LD ' + tabl_r[z] + ', SET ' + y + ', (' + IXY + '+' + d + ')';
+                    if (z !== 6) ostr = 'LD ' + Z80D_tabl_r[z] + ', SET ' + y + ', (' + IXY + '+' + d + ')';
                     else ostr = 'SET ' + y + ', (' + IXY + '+' + d + ')';
                     break;
             }
@@ -379,4 +383,4 @@ function test_Z80_disassemble() {
         console.log(hex4(PC), o.disassembled);
     }
 }
-test_Z80_disassemble();
+//test_Z80_disassemble();

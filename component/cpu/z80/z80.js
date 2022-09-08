@@ -349,7 +349,6 @@ class z80_t {
         }
     }
 
-
 	trace_format(da_out, PCO) {
 		let outstr = trace_start_format('Z80', Z80_COLOR, this.trace_cycles-1, ' ', PCO);
 		// General trace format is...
