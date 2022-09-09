@@ -140,7 +140,7 @@ class Z80_switchgen {
         if (!this.no_addr_at_end)
             this.addr_to_PC_then_inc();
         if (!this.no_RW_at_end)
-            this.RWMIO(1, 0, 1, 0);
+            this.RWMIO(0, 0, 0, 0);
         this.addl('regs.TCU = 0;');
         this.addl('regs.EI = 0;');
         this.addl('regs.P = 0;');
@@ -222,89 +222,98 @@ class Z80_switchgen {
 
     write(where, val) {
         this.addcycle('write begin');
-        this.RWMIO(0, 1, 1, 0);
-        this.addl('pins.D = (' + val + ');');
+        // addr T0-T2
+        // MRQ T0-T1
+        // WR T1 only
+
+        this.RWMIO(0, 0, 0, 0);
         if (where !== 'pins.Addr') {
             this.addl('pins.Addr = (' + where + ');');
         }
 
         this.addcycle();
-        this.RWMIO(0, 0, 0, 0);
+        this.addl('pins.D = (' + val + ');');
+        this.RWMIO(0, 1, 1, 0);
 
         this.addcycle('write end');
+        this.RWMIO(0, 0, 0, 0);
     }
 
     out(addr, from) {
+        /*
+        Port addr T0-T1-TW-T2
+        IORQ T1-TW
+        RD T1-TW
+        data latched T2
+
+        WR T1-TW
+        data output on D starts T0
+         */
         this.addcycle('OUT start');
-        this.RWMIO(0, 1, 0, 1)
+        this.RWMIO(0, 0, 0, 0)
         this.addl('pins.Addr = ' + addr + ';');
         this.addl('pins.D = ' + from + ';');
 
-        this.addcycle('OUT write is finished')
+        this.addcycle('OUT continues')
+        this.RWMIO(0, 1, 0, 1);
+        this.addcycle('WAIT STATE');
         this.RWMIO(0, 0, 0, 0);
-        this.addcycle();
 
         this.addcycle('OUT end');
     }
 
     in(addr, to) {
+        /*
+        Port addr T0-T1-TW-T2
+        IORQ T1-TW
+        RD T1-TW
+        data latched T2
+
+        WR T1-TW
+        data output on D starts T0
+         */
         this.addcycle('IN start');
-        this.RWMIO(1, 0, 0, 1);
+        this.RWMIO(0, 0, 0, 0);
         this.addl('pins.Addr = ' + addr + ';');
 
         this.addcycle('IN actual read');
-        this.addl(to + ' = pins.D;');
+        this.RWMIO(1, 0, 0, 1);
+
+        this.addcycle('IN wait state');
         this.RWMIO(0, 0, 0, 0);
 
-        this.addcycle();
 
-        this.addcycle('IN end');
+        this.addcycle('IN end/latch');
+        this.addl(to + ' = pins.D;');
     }
 
-operand8(what) {
-        this.addcycle('operand8() start');
-        this.addr_to_PC_then_inc();
-        this.RWMIO(1, 0, 1, 0);
-
-        this.addcycle();
-        this.addl(what + ' = pins.D;');
-        this.RWMIO(0, 0, 0, 0);
-
-        this.addcycle('operand8() end')
+    operand8(what) {
+        this.read('regs.PC', what)
+        this.addl('regs.PC = (regs.PC + 1) & 0xFFFF;');
     }
 
     operand16(what) {
-        this.addcycle('operand16 byte1');
-        this.addr_to_PC_then_inc();
+        this.read('regs.PC', what);
+        this.addl('regs.PC = (regs.PC + 1) & 0xFFFF;');
 
-        this.addcycle();
-        this.RWMIO(1, 0, 1, 0);
-
-        this.addcycle()
-        this.addl(what + ' = pins.D;');
-        this.RWMIO(0, 0, 0, 0);
-
-        this.addcycle('operand16 byte2');
-        this.addr_to_PC_then_inc();
-
-        this.addcycle();
-        this.RWMIO(1, 0, 1, 0);
-
-        this.addcycle('operand16 end');
-        this.addl(what + ' |= (pins.D << 8);');
-        this.RWMIO(0, 0, 0, 0);
-
+        this.read('regs.PC', 'regs.t[4]');
+        this.addl('regs.PC = (regs.PC + 1) & 0xFFFF;');
+        this.addl(what + ' |= (regs.t[4] << 8);');
     }
 
     read(where, to) {
+        // address T0-2
+        // MREQ T0-1
+        // RD T0-1
+
         this.addcycle('Start read')
         this.addl('pins.Addr = (' + where + ');');
         this.RWMIO(0, 0, 0, 0);
 
-        this.addcycle();
+        this.addcycle('signal');
         this.RWMIO(1, 0, 1, 0)
 
-        this.addcycle('Read end')
+        this.addcycle('Read end/latch')
         this.addl(to + ' = pins.D;');
         this.RWMIO(0, 0, 0, 0);
     }
