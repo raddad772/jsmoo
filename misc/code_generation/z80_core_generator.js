@@ -1161,7 +1161,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.ADD_a_r:  //n8&
             ag.Q(1);
-            ag.ADD('regs.A', arg1, '0', 'regs.A');
+            ag.ADD('regs.A', ag.zregrip(arg1), '0', 'regs.A');
             break;
         case Z80_MN.ADD_hl_rr:  //n16&
             argH = ag.zregripH(arg1);

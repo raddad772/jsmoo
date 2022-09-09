@@ -3476,7 +3476,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.Q = 1;
                 let x = regs.A;
-                let y = B;
+                let y = regs.B;
                 let z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
                 regs.F.N = 0;
@@ -3506,7 +3506,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.Q = 1;
                 let x = regs.A;
-                let y = C;
+                let y = regs.C;
                 let z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
                 regs.F.N = 0;
@@ -3536,7 +3536,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.Q = 1;
                 let x = regs.A;
-                let y = D;
+                let y = regs.D;
                 let z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
                 regs.F.N = 0;
@@ -3566,7 +3566,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.Q = 1;
                 let x = regs.A;
-                let y = E;
+                let y = regs.E;
                 let z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
                 regs.F.N = 0;
@@ -3596,7 +3596,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.Q = 1;
                 let x = regs.A;
-                let y = H;
+                let y = regs.H;
                 let z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
                 regs.F.N = 0;
@@ -3626,7 +3626,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.Q = 1;
                 let x = regs.A;
-                let y = L;
+                let y = regs.L;
                 let z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
                 regs.F.N = 0;
@@ -3698,7 +3698,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.Q = 1;
                 let x = regs.A;
-                let y = A;
+                let y = regs.A;
                 let z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
                 regs.F.N = 0;
@@ -18926,7 +18926,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.Q = 1;
                 let x = regs.A;
-                let y = B;
+                let y = regs.B;
                 let z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
                 regs.F.N = 0;
@@ -18956,7 +18956,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.Q = 1;
                 let x = regs.A;
-                let y = C;
+                let y = regs.C;
                 let z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
                 regs.F.N = 0;
@@ -18986,7 +18986,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.Q = 1;
                 let x = regs.A;
-                let y = D;
+                let y = regs.D;
                 let z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
                 regs.F.N = 0;
@@ -19016,7 +19016,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.Q = 1;
                 let x = regs.A;
-                let y = E;
+                let y = regs.E;
                 let z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
                 regs.F.N = 0;
@@ -19046,7 +19046,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.Q = 1;
                 let x = regs.A;
-                let y = H;
+                let y = regs.H;
                 let z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
                 regs.F.N = 0;
@@ -19076,7 +19076,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.Q = 1;
                 let x = regs.A;
-                let y = L;
+                let y = regs.L;
                 let z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
                 regs.F.N = 0;
@@ -19171,7 +19171,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.Q = 1;
                 let x = regs.A;
-                let y = A;
+                let y = regs.A;
                 let z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
                 regs.F.N = 0;
@@ -34697,7 +34697,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.Q = 1;
                 let x = regs.A;
-                let y = B;
+                let y = regs.B;
                 let z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
                 regs.F.N = 0;
@@ -34727,7 +34727,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.Q = 1;
                 let x = regs.A;
-                let y = C;
+                let y = regs.C;
                 let z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
                 regs.F.N = 0;
@@ -34757,7 +34757,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.Q = 1;
                 let x = regs.A;
-                let y = D;
+                let y = regs.D;
                 let z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
                 regs.F.N = 0;
@@ -34787,7 +34787,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.Q = 1;
                 let x = regs.A;
-                let y = E;
+                let y = regs.E;
                 let z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
                 regs.F.N = 0;
@@ -34817,7 +34817,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.Q = 1;
                 let x = regs.A;
-                let y = H;
+                let y = regs.H;
                 let z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
                 regs.F.N = 0;
@@ -34847,7 +34847,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.Q = 1;
                 let x = regs.A;
-                let y = L;
+                let y = regs.L;
                 let z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
                 regs.F.N = 0;
@@ -34942,7 +34942,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.Q = 1;
                 let x = regs.A;
-                let y = A;
+                let y = regs.A;
                 let z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
                 regs.F.N = 0;
