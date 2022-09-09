@@ -142,10 +142,10 @@ class z80_registers_t {
 
     exchange_shadow_af() {
         this.At = this.A;
-        this.Ft = this.F;
+        this.Ft = this.F.getbyte();
 
         this.A = this.As;
-        this.F = this.Fs;
+        this.F.setbyte(this.Fs);
 
         this.As = this.At;
         this.Fs = this.Ft;
@@ -202,7 +202,7 @@ class z80_t {
         this.trace_on = false;
     }
 
-    reset() {
+    reset(PC_VEC=0) {
         this.regs.rprefix = Z80P.HL;
         this.regs.prefix = 0x00;
         this.regs.A = 0xFF;

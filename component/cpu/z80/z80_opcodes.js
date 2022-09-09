@@ -596,7 +596,7 @@ const Z80_opcode_matrix_premn = {
     0xF7: new Z80_opcode_info(0xF7, Z80_MN.RST_o, '', '6'),
     0xF8: new Z80_opcode_info(0xF8, Z80_MN.RET_c, '', 'regs.F.S === 1'),
     0xF9: new Z80_opcode_info(0xF9, Z80_MN.LD_sp_rr, '', 'HL'),
-    0xFA: new Z80_opcode_info(0xFA, Z80_MN.JP_c_nn, 'regs.F.S === 1'),
+    0xFA: new Z80_opcode_info(0xFA, Z80_MN.JP_c_nn, '', 'regs.F.S === 1'),
     0xFB: new Z80_opcode_info(0xFB, Z80_MN.EI, 'EI'),
     0xFC: new Z80_opcode_info(0xFC, Z80_MN.CALL_c_nn, '', 'regs.F.S === 1'),
     //0xFD: new Z80_opcode_info(0xFD, Z80_MN.),

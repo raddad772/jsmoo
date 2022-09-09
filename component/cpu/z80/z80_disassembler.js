@@ -262,7 +262,7 @@ function Z80_disassemble(PC, IR, peek_func) {
                                 ostr = 'CALL ' + Z80D_tabl_cc[y] + ', ' + read16();
                                 break;
                             case 5: // x=3 z=5
-                                if (q === 0) ostr = 'PUSH ' + Z80D_tabl_rp2[p];
+                                if (q === 0) ostr = 'PUSH ' + repl0(Z80D_tabl_rp2[p]);
                                 else ostr = 'CALL ' + read16();
                                 break;
                             case 6: // x=3 z=6
@@ -388,8 +388,8 @@ function test_Z80_disassemble() {
     //let PCs = [0x00, 0x01, 0x03]
     //let ins = [0xFD, 0xDD, 0xCB, 0x10, 0xDC, 0xED, 0xB0]
     //let PCs = [0x00, 5];
-    let ins = [0xA7, 0xED, 0x52, 0x19];
-    let PCs = [0, 2, 3];
+    let ins = [0xA7, 0xFD, 0xE5];
+    let PCs = [0, 1];
     for (let i = 0; i < ins.length; i++) {
         mem[i] = ins[i];
     }
