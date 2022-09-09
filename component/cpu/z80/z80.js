@@ -114,7 +114,7 @@ class z80_registers_t {
     }
 
     inc_R() {
-        this.R = (this.R + 1) & 0x7F;
+        this.R = (this.R & 0x80) | ((this.R + 1) & 0x7F);
     }
 
     exchange_shadow() {
@@ -246,8 +246,8 @@ class z80_t {
     }
 
     set_pins_opcode() {
-        this.pins.RD = 1;
-        this.pins.MRQ = 1;
+        this.pins.RD = 0;
+        this.pins.MRQ = 0;
         this.pins.WR = 0;
         this.pins.IO = 0;
         this.pins.Addr = this.regs.PC;
@@ -273,9 +273,14 @@ class z80_t {
     ins_cycles() {
         switch(this.regs.TCU) {
             // 1-4 is fetch next thing and interpret
+            // addr T0-1
+            // REFRESH on addr T2-3
+            // MREQ on T1
+            // RD on T1
+            // data latch T2
             case 0: // already handled by fetch of next instruction starting
                 break;
-            case 1:
+            case 1: // T1 MREQ, RD
                 if (this.regs.HALT) { this.regs.TCU = 0; break; }
                 if (this.NMI_pending && !this.NMI_ack) {
                     console.log('NMI not implemented yet')
@@ -296,17 +301,17 @@ class z80_t {
                         break;
                     }
                 }
-                this.regs.t[0] = this.pins.D;
+                this.pins.RD = 1;
+                this.pins.MRQ = 1;
+                break;
+            case 2: // T2, RD/MRQ to 0 and data latch. REFRESH
                 this.pins.RD = 0;
                 this.pins.MRQ = 0;
-                if (dbg.watch_on) {
-                    console.log('SETTING RD AND MRQ 0', this.pins);
-                }
-                break;
-            case 2:
+                this.regs.t[0] = this.pins.D;
                 this.regs.inc_R();
+                this.pins.Addr = (this.regs.I << 8) | this.regs.R;
                 break;
-            case 3:
+            case 3: // T3 not much here
                 // If we need to fetch another, start that and set TCU back to 1
                 if (this.regs.t[0] === 0xDD) { this.regs.prefix = 0xDD; this.regs.rprefix = Z80P.IX; this.set_pins_opcode(); this.regs.TCU = 0; break; }
                 if (this.regs.t[0] === 0xfD) { this.regs.prefix = 0xFD; this.regs.rprefix = Z80P.IY; this.set_pins_opcode(); this. regs.TCU = 0; break; }
