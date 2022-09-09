@@ -92,14 +92,6 @@ class generic_z80_computer {
         if (this.cpu.pins.RD) {
             if (this.cpu.pins.MRQ) {// read ROM/RAM
                 this.cpu.pins.D = this.RAM[this.cpu.pins.Addr];
-                if (this.cpu.pins.Addr === 0) {
-                    console.log('ADDR 0 detected');
-                }
-                if (this.cpu.pins.Addr === 0x460) {
-                    dbg.break();
-                    console.log('CYCLE ' + this.cpu.trace_cycles + 'ERROR!');
-                }
-
                 if (this.cpu.trace_on) {
                     dbg.traces.add(D_RESOURCE_TYPES.Z80, this.cpu.trace_cycles, trace_format_read('Z80', Z80_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D, null, this.cpu.regs.TCU));
                 }
