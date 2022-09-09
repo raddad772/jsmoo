@@ -15,8 +15,8 @@ class generic_z80_computer {
         this.cpu = new z80_t(false);
         this.RAM = new Uint8Array(65536);
 
-        this.fps = 60;
-        this.speed = 4000000; // 4 MHz
+        this.fps = 30;
+        this.speed = 80000000; // 4 MHz
         this.zexall_mode = true;
 
         this.console_str = '';
@@ -80,10 +80,12 @@ class generic_z80_computer {
     }
 
     cpu_reg_write(addr, val) {
-        console.log('WRITE TO CONSOLE DETECTED', this.cpu.regs.C);
-        let nstr = String.fromCharCode(this.cpu.regs.C);
+        //console.log('WRITE TO CONSOLE DETECTED', val);
+        let nstr = String.fromCharCode(val);
         this.console_str += nstr;
-        console.log(this.console_str);
+        if (val === 13) {
+            console.log(this.console_str);
+        }
     }
 
     cpu_cycle() {
@@ -141,7 +143,7 @@ class generic_z80_computer {
     get_description() {
         let d = new machine_description('Generic Z80');
         d.technical.standard = 'NTSC';
-        d.technical.fps = 60;
+        d.technical.fps = this.fps;
         d.input_types = [INPUT_TYPES.KEYBOARD];
         d.technical.x_resolution = 320;
         d.technical.y_resolution = 240;
@@ -153,6 +155,7 @@ class generic_z80_computer {
     }
 
     load_ROM_from_RAM(what) {
+        console.log('LOADING...');
         this.cpu.reset();
         let inbuf = new Uint8Array(what);
         let ptr = 0x100;

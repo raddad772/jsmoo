@@ -1349,10 +1349,12 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.EX_rr_rr:  //n16&, n16&
             ag.Q(0);
+            if (arg1 === 'AF') ag.addl('regs.exchange_shadow_af();')
+            else ag.addl('regs.exchange_de_hl();');
             //ag.addl('regs.TR = ' + ag.zregrip(arg1) + ';');
             //ag.zregripw(arg2, ag.zregrip(arg1));
             //ag.zregripw(arg1, 'regs.TR');
-            ag.addl('regs.exchange_shadow_af();')
+
             //ag.addl(arg1 + ' = regs.TR;');
             break;
         case Z80_MN.EXX:  //
@@ -1730,7 +1732,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
         case Z80_MN.RLCA:  //
             ag.Q(1);
             ag.addl('let c = (regs.A & 0x80) >>> 7;');
-            ag.addl('regs.A = ((A << 1) | regs.F.C) & 0xFF;')
+            ag.addl('regs.A = ((regs.A << 1) | regs.F.C) & 0xFF;')
 
             ag.addl('regs.F.C = c;');
             ag.addl('regs.F.N = regs.F.H = 0;');
