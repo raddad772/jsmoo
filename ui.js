@@ -10,8 +10,9 @@ const SMS_STR = 'sms';
 const GENESIS_STR = 'megadrive';
 const GB_STR = 'gb';
 const SPECTRUM_STR = 'spectrum';
+const GENERICZ80_STR = 'genericz80'
 
-const DEFAULT_SYSTEM = SPECTRUM_STR;
+const DEFAULT_SYSTEM = GENERICZ80_STR;
 
 const DEFAULT_STEPS = {
 	master: 50,
@@ -122,6 +123,9 @@ class global_player_t {
 				break;
 			case 'spectrum':
 				this.system = new ZXSpectrum();
+				break;
+			case 'genericz80':
+				this.system = new generic_z80_computer();
 				break;
 			default:
 				alert('system not found');
@@ -359,6 +363,9 @@ function click_dump_ram() {
 			switch(global_player.system_kind) {
 				case 'spectrum':
 					rd = hex2(global_player.system.bus.cpu_read(baddr, 0, false));
+					break;
+				case 'genericz80':
+					rd = hex2(global_player.system.RAM[baddr]);
 					break;
 				case 'snes':
 					rd = hex2(snes.mem_map.dispatch_read(baddr, 0, false));
@@ -668,6 +675,9 @@ async function init_ui() {
 				case 'snes':
 					dbg.enable_tracing_for(D_RESOURCE_TYPES.R5A22);
 					break;
+				case 'genericz80':
+					dbg.enable_tracing_for(D_RESOURCE_TYPES.Z80);
+					break;
 				case 'spectrum':
 					dbg.enable_tracing_for(D_RESOURCE_TYPES.Z80);
 					break;
@@ -680,6 +690,9 @@ async function init_ui() {
 					break;
 				case 'snes':
 					dbg.disable_tracing_for(D_RESOURCE_TYPES.R5A22);
+					break;
+				case 'genericz80':
+					dbg.disable_tracing_for(D_RESOURCE_TYPES.Z80);
 					break;
 				case 'spectrum':
 					dbg.disable_tracing_for(D_RESOURCE_TYPES.Z80);

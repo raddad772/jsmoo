@@ -346,6 +346,8 @@ class debugger_t {
                 break;
             case 'spectrum':
                 break;
+            case 'genericz80':
+                break;
         }
         if (this.tracing) {
             this.traces.draw(dconsole);

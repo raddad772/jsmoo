@@ -74,7 +74,7 @@ class Z80_switchgen {
         this.read('regs.SP', 'regs.TR');
         this.SP_inc();
 
-        this.read('regs.TA', 'regs.t[0]');
+        this.read('regs.SP', 'regs.t[0]');
         this.SP_inc();
         this.addl('regs.TR |= regs.t[0] << 8;');
         this.zregripw(where, 'regs.TR');
@@ -1306,7 +1306,8 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.DEC_r:  //n8&
             ag.Q(1);
-            ag.write(ag.zregrip(arg1), ag.zregrip(arg1));
+            ag.addl('regs.TR = (' + ag.zregrip(arg1) + ' - 1) & 0xFF;');
+            ag.zregripw(arg1, 'regs.TR');
             break;
         case Z80_MN.DEC_rr:  //n16&
             ag.Q(0);
@@ -1326,7 +1327,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.operand8('regs.TR');
             ag.addl('regs.TR = mksigned8(regs.TR);');
             ag.addl('regs.B = (regs.B - 1) & 0xFF;');
-            ag.addl('if (((regs.B + 1) & 0xFF) === 0) { regs.TCU += 5; break; }');
+            ag.addl('if (regs.B === 0) { regs.TCU += 5; break; }');
             ag.addl('regs.WZ = (regs.PC + regs.TR) & 0xFFFF;');
             ag.addl('regs.PC = regs.WZ;');
             ag.addcycles(5);
@@ -1348,9 +1349,10 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.EX_rr_rr:  //n16&, n16&
             ag.Q(0);
-            ag.addl('regs.TR = ' + ag.zregrip(arg1) + ';');
-            ag.zregripw(arg2, ag.zregrip(arg1));
-            ag.zregripw(arg1, 'regs.TR');
+            //ag.addl('regs.TR = ' + ag.zregrip(arg1) + ';');
+            //ag.zregripw(arg2, ag.zregrip(arg1));
+            //ag.zregripw(arg1, 'regs.TR');
+            ag.addl('regs.exchange_shadow_af();')
             //ag.addl(arg1 + ' = regs.TR;');
             break;
         case Z80_MN.EXX:  //
@@ -1399,7 +1401,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.INC_r:  //n8&
             ag.Q(1);
-            ag.addl('regs.TR = ' + ag.zregrip(arg1));
+            ag.addl('regs.TR = (' + ag.zregrip(arg1) + ' + 1) & 0xFF;');
             ag.zregripw(arg1, 'regs.TR');
             break;
         case Z80_MN.INC_rr:  //n16&

@@ -135,6 +135,7 @@ class ZXSpectrum {
             this.cpu_cycle();
             this.ula.cycle();
             this.ula.cycle();
+            if (dbg.do_break) return;
         }
     }
 
