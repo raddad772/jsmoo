@@ -141,8 +141,8 @@ class ZXSpectrum {
     catch_up() {}
 
     trace_format_nonio(what) {
-        return;
-        let ostr = trace_start_format('Z80', Z80_COLOR, this.cpu.trace_cycles, 'b', this.cpu.pins.Addr);
+        if (!dbg.watch_on) return;
+        let ostr = trace_start_format('Z80', Z80_COLOR, this.cpu.trace_cycles, 'b', this.cpu.pins.Addr, null, this.cpu.regs.TCU);
         ostr += 'BLANK     TCU:' + this.cpu.regs.TCU + ' IR:' + hex2(this.cpu.regs.IR);
         dbg.traces.add(D_RESOURCE_TYPES.Z80, this.cpu.trace_cycles, ostr);
     }
@@ -150,13 +150,13 @@ class ZXSpectrum {
     cpu_cycle() {
         if (this.clock.contended && ((this.cpu.pins.Addr - 0x4000) < 0x4000)) return;
         if (this.cpu.pins.RD) {
-            if (this.cpu.pins.MRQ) {// ROM/RAM
+            if (this.cpu.pins.MRQ) {// read ROM/RAM
                 this.cpu.pins.D = this.bus.cpu_read(this.cpu.pins.Addr);
                 if (this.cpu.trace_on) {
-                    dbg.traces.add(D_RESOURCE_TYPES.Z80, this.cpu.trace_cycles, trace_format_read('Z80', Z80_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
+                    dbg.traces.add(D_RESOURCE_TYPES.Z80, this.cpu.trace_cycles, trace_format_read('Z80', Z80_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D, null, this.cpu.regs.TCU));
                 }
             }
-            else if (this.cpu.pins.IO) { // IO port
+            else if (this.cpu.pins.IO) { // read IO port
                 this.cpu.pins.D = this.bus.cpu_ula_read(this.cpu.pins.Addr)
             }
             else {
@@ -173,7 +173,7 @@ class ZXSpectrum {
         }
         this.cpu.cycle();
         if (this.cpu.pins.WR) {
-            if (this.cpu.pins.MRQ) {// ROM/RAM
+            if (this.cpu.pins.MRQ) {// write ROM/RAM
                 if (this.cpu.trace_on && (this.cpu.last_trace_cycle !== this.cpu.trace_cycles)) {
                     if (typeof this.cpu.pins.Addr === 'undefined') {
                         console.log(this.cpu.trace_cycles, this.cpu.current_instruction, this.cpu.regs.TCU);
@@ -184,7 +184,7 @@ class ZXSpectrum {
                 }
                 this.bus.cpu_write(this.cpu.pins.Addr, this.cpu.pins.D);
             }
-            else // IO WRITE
+            else if (this.cpu.pins.IO) // write IO
                 this.bus.cpu_ula_write(this.cpu.pins.Addr, this.cpu.pins.D);
         }
     }
@@ -203,6 +203,7 @@ class ZXSpectrum {
         let current_frame = this.clock.frames_since_restart;
         while(current_frame === this.clock.frames_since_restart) {
             this.finish_scanline();
+            if (dbg.do_break) return;
         }
     }
 
@@ -213,6 +214,7 @@ class ZXSpectrum {
             this.cpu_cycle();
             this.ula.cycle();
             this.ula.cycle();
+            if (dbg.do_break) return;
         }
     }
 

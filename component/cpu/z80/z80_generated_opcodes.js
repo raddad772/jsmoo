@@ -257,7 +257,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3:
                 break;
             case 4:
-                x = regs.H;
+                x = regs.L;
                 y = regs.C;
                 z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
@@ -268,7 +268,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((z) & 0x20) >>> 5;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = z & 0xFF;
+                regs.L = z & 0xFF;
                 
                 break;
             case 5: // Adding 3 cycles
@@ -276,7 +276,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 6:
                 break;
             case 7:
-                x = regs.L;
+                x = regs.H;
                 y = regs.B;
                 z = x + y + regs.F.C;
                 regs.F.C = +(z > 0xFF);
@@ -287,7 +287,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((z) & 0x20) >>> 5;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = z & 0xFF;
+                regs.H = z & 0xFF;
                 regs.F.V = regs.t[0]; regs.F.Z = regs.t[1]; regs.F.S = regs.t[2];
                 // Following is auto-generated code for instruction finish
                 break;
@@ -770,7 +770,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3:
                 break;
             case 4:
-                x = regs.H;
+                x = regs.L;
                 y = regs.E;
                 z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
@@ -781,7 +781,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((z) & 0x20) >>> 5;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = z & 0xFF;
+                regs.L = z & 0xFF;
                 
                 break;
             case 5: // Adding 3 cycles
@@ -789,7 +789,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 6:
                 break;
             case 7:
-                x = regs.L;
+                x = regs.H;
                 y = regs.D;
                 z = x + y + regs.F.C;
                 regs.F.C = +(z > 0xFF);
@@ -800,7 +800,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((z) & 0x20) >>> 5;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = z & 0xFF;
+                regs.H = z & 0xFF;
                 regs.F.V = regs.t[0]; regs.F.Z = regs.t[1]; regs.F.S = regs.t[2];
                 // Following is auto-generated code for instruction finish
                 break;
@@ -1313,7 +1313,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3:
                 break;
             case 4:
-                x = regs.H;
+                x = regs.L;
                 y = regs.L;
                 z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
@@ -1324,7 +1324,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((z) & 0x20) >>> 5;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = z & 0xFF;
+                regs.L = z & 0xFF;
                 
                 break;
             case 5: // Adding 3 cycles
@@ -1332,7 +1332,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 6:
                 break;
             case 7:
-                x = regs.L;
+                x = regs.H;
                 y = regs.H;
                 z = x + y + regs.F.C;
                 regs.F.C = +(z > 0xFF);
@@ -1343,7 +1343,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((z) & 0x20) >>> 5;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = z & 0xFF;
+                regs.H = z & 0xFF;
                 regs.F.V = regs.t[0]; regs.F.Z = regs.t[1]; regs.F.S = regs.t[2];
                 // Following is auto-generated code for instruction finish
                 break;
@@ -1552,7 +1552,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x30: new Z80_opcode_functions(Z80_opcode_matrix[0x30], // 30
-        function(regs, pins) { //regs.F.C === 0
+        function(regs, pins) { //JR_c_e regs.F.C === 0
         switch(regs.TCU) {
             case 1: // operand8() start
                 regs.Q = 0;
@@ -1566,7 +1566,9 @@ const z80_decoded_opcodes = Object.freeze({
                 break;
             case 3: // operand8() end
                 regs.TR = mksigned8(regs.TR);
-                if (!(null)) { regs.TCU += 5; break; }
+                if (!(regs.F.C === 0)) { regs.TCU += 5; break; }
+                //dbg.break();
+                //console.log('BREAKIN HERE');
                 regs.WZ = (regs.PC + regs.TR) & 0xFFFF;
                 regs.PC = regs.WZ;
                 
@@ -1933,7 +1935,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3:
                 break;
             case 4:
-                x = regs.H;
+                x = regs.L;
                 y = (regs.SP & 0xFF);
                 z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
@@ -1944,7 +1946,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((z) & 0x20) >>> 5;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = z & 0xFF;
+                regs.L = z & 0xFF;
                 
                 break;
             case 5: // Adding 3 cycles
@@ -1952,7 +1954,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 6:
                 break;
             case 7:
-                x = regs.L;
+                x = regs.H;
                 y = ((regs.SP & 0xFF00) >>> 8);
                 z = x + y + regs.F.C;
                 regs.F.C = +(z > 0xFF);
@@ -1963,7 +1965,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((z) & 0x20) >>> 5;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = z & 0xFF;
+                regs.H = z & 0xFF;
                 regs.F.V = regs.t[0]; regs.F.Z = regs.t[1]; regs.F.S = regs.t[2];
                 // Following is auto-generated code for instruction finish
                 break;
@@ -4051,7 +4053,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -4082,7 +4084,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -4113,7 +4115,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -4144,7 +4146,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -4175,7 +4177,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -4206,7 +4208,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -4247,7 +4249,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 break;
             case 4: // cleanup_custom
@@ -4280,7 +4282,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -4311,7 +4313,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -4342,7 +4344,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -4373,7 +4375,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -4404,7 +4406,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -4435,7 +4437,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -4466,7 +4468,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -4507,7 +4509,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 break;
             case 4: // cleanup_custom
@@ -4540,7 +4542,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -5227,7 +5229,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let x = regs.TR;
+                let x = regs.A;
                 let y = regs.B;
                 let z = x - y;
                 regs.F.C = +(z < 0);
@@ -5256,7 +5258,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let x = regs.TR;
+                let x = regs.A;
                 let y = regs.C;
                 let z = x - y;
                 regs.F.C = +(z < 0);
@@ -5285,7 +5287,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let x = regs.TR;
+                let x = regs.A;
                 let y = regs.D;
                 let z = x - y;
                 regs.F.C = +(z < 0);
@@ -5314,7 +5316,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let x = regs.TR;
+                let x = regs.A;
                 let y = regs.E;
                 let z = x - y;
                 regs.F.C = +(z < 0);
@@ -5343,9 +5345,10 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let x = regs.TR;
+                let x = regs.A;
                 let y = regs.H;
                 let z = x - y;
+                //if (z === 0) dbg.break();
                 regs.F.C = +(z < 0);
                 regs.F.N = 1;
                 regs.F.V = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -5372,7 +5375,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let x = regs.TR;
+                let x = regs.A;
                 let y = regs.L;
                 let z = x - y;
                 regs.F.C = +(z < 0);
@@ -5442,7 +5445,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let x = regs.TR;
+                let x = regs.A;
                 let y = regs.A;
                 let z = x - y;
                 regs.F.C = +(z < 0);
@@ -5885,7 +5888,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0xC9: new Z80_opcode_functions(Z80_opcode_matrix[0xC9], // C9
-        function(regs, pins) { //undefined
+        function(regs, pins) { //RET
         switch(regs.TCU) {
             case 1:
                 regs.Q = 0;
@@ -6521,7 +6524,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 break;
             case 4: // cleanup_custom
@@ -6844,7 +6847,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 break;
             case 4: // cleanup_custom
@@ -15383,7 +15386,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3:
                 break;
             case 4:
-                x = regs.H;
+                x = regs.L;
                 y = regs.C;
                 z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
@@ -15394,7 +15397,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((z) & 0x20) >>> 5;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = z & 0xFF;
+                regs.L = z & 0xFF;
                 
                 break;
             case 5: // Adding 3 cycles
@@ -15402,7 +15405,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 6:
                 break;
             case 7:
-                x = regs.L;
+                x = regs.H;
                 y = regs.B;
                 z = x + y + regs.F.C;
                 regs.F.C = +(z > 0xFF);
@@ -15413,7 +15416,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((z) & 0x20) >>> 5;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = z & 0xFF;
+                regs.H = z & 0xFF;
                 regs.F.V = regs.t[0]; regs.F.Z = regs.t[1]; regs.F.S = regs.t[2];
                 // Following is auto-generated code for instruction finish
                 break;
@@ -15896,7 +15899,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3:
                 break;
             case 4:
-                x = regs.H;
+                x = regs.L;
                 y = regs.E;
                 z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
@@ -15907,7 +15910,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((z) & 0x20) >>> 5;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = z & 0xFF;
+                regs.L = z & 0xFF;
                 
                 break;
             case 5: // Adding 3 cycles
@@ -15915,7 +15918,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 6:
                 break;
             case 7:
-                x = regs.L;
+                x = regs.H;
                 y = regs.D;
                 z = x + y + regs.F.C;
                 regs.F.C = +(z > 0xFF);
@@ -15926,7 +15929,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((z) & 0x20) >>> 5;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = z & 0xFF;
+                regs.H = z & 0xFF;
                 regs.F.V = regs.t[0]; regs.F.Z = regs.t[1]; regs.F.S = regs.t[2];
                 // Following is auto-generated code for instruction finish
                 break;
@@ -16437,7 +16440,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3:
                 break;
             case 4:
-                x = regs.H;
+                x = regs.L;
                 y = (regs.IX & 0xFF);
                 z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
@@ -16448,7 +16451,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((z) & 0x20) >>> 5;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = z & 0xFF;
+                regs.L = z & 0xFF;
                 
                 break;
             case 5: // Adding 3 cycles
@@ -16456,7 +16459,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 6:
                 break;
             case 7:
-                x = regs.L;
+                x = regs.H;
                 y = ((regs.IX & 0xFF00) >>> 8);
                 z = x + y + regs.F.C;
                 regs.F.C = +(z > 0xFF);
@@ -16467,7 +16470,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((z) & 0x20) >>> 5;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = z & 0xFF;
+                regs.H = z & 0xFF;
                 regs.F.V = regs.t[0]; regs.F.Z = regs.t[1]; regs.F.S = regs.t[2];
                 // Following is auto-generated code for instruction finish
                 break;
@@ -16675,7 +16678,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x234: new Z80_opcode_functions(Z80_opcode_matrix[0x30], // DD 30
-        function(regs, pins) { //regs.F.C === 0
+        function(regs, pins) { //JR_c_e regs.F.C === 0
         switch(regs.TCU) {
             case 1: // operand8() start
                 regs.Q = 0;
@@ -16689,7 +16692,7 @@ const z80_decoded_opcodes = Object.freeze({
                 break;
             case 3: // operand8() end
                 regs.TR = mksigned8(regs.TR);
-                if (!(null)) { regs.TCU += 5; break; }
+                if (!(regs.F.C === 0)) { regs.TCU += 5; break; }
                 regs.WZ = (regs.PC + regs.TR) & 0xFFFF;
                 regs.PC = regs.WZ;
                 
@@ -17125,7 +17128,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3:
                 break;
             case 4:
-                x = regs.H;
+                x = regs.L;
                 y = (regs.SP & 0xFF);
                 z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
@@ -17136,7 +17139,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((z) & 0x20) >>> 5;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = z & 0xFF;
+                regs.L = z & 0xFF;
                 
                 break;
             case 5: // Adding 3 cycles
@@ -17144,7 +17147,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 6:
                 break;
             case 7:
-                x = regs.L;
+                x = regs.H;
                 y = ((regs.SP & 0xFF00) >>> 8);
                 z = x + y + regs.F.C;
                 regs.F.C = +(z > 0xFF);
@@ -17155,7 +17158,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((z) & 0x20) >>> 5;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = z & 0xFF;
+                regs.H = z & 0xFF;
                 regs.F.V = regs.t[0]; regs.F.Z = regs.t[1]; regs.F.S = regs.t[2];
                 // Following is auto-generated code for instruction finish
                 break;
@@ -19611,7 +19614,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -19642,7 +19645,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -19673,7 +19676,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -19704,7 +19707,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -19735,7 +19738,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -19766,7 +19769,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -19830,7 +19833,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 break;
             case 12: // cleanup_custom
@@ -19863,7 +19866,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -19894,7 +19897,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -19925,7 +19928,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -19956,7 +19959,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -19987,7 +19990,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -20018,7 +20021,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -20049,7 +20052,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -20113,7 +20116,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 break;
             case 12: // cleanup_custom
@@ -20146,7 +20149,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -20902,7 +20905,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let x = regs.TR;
+                let x = regs.A;
                 let y = regs.B;
                 let z = x - y;
                 regs.F.C = +(z < 0);
@@ -20931,7 +20934,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let x = regs.TR;
+                let x = regs.A;
                 let y = regs.C;
                 let z = x - y;
                 regs.F.C = +(z < 0);
@@ -20960,7 +20963,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let x = regs.TR;
+                let x = regs.A;
                 let y = regs.D;
                 let z = x - y;
                 regs.F.C = +(z < 0);
@@ -20989,7 +20992,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let x = regs.TR;
+                let x = regs.A;
                 let y = regs.E;
                 let z = x - y;
                 regs.F.C = +(z < 0);
@@ -21018,7 +21021,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let x = regs.TR;
+                let x = regs.A;
                 let y = regs.H;
                 let z = x - y;
                 regs.F.C = +(z < 0);
@@ -21047,7 +21050,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let x = regs.TR;
+                let x = regs.A;
                 let y = regs.L;
                 let z = x - y;
                 regs.F.C = +(z < 0);
@@ -21140,7 +21143,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let x = regs.TR;
+                let x = regs.A;
                 let y = regs.A;
                 let z = x - y;
                 regs.F.C = +(z < 0);
@@ -21583,7 +21586,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x2CD: new Z80_opcode_functions(Z80_opcode_matrix[0xC9], // DD C9
-        function(regs, pins) { //undefined
+        function(regs, pins) { //RET
         switch(regs.TCU) {
             case 1:
                 regs.Q = 0;
@@ -22219,7 +22222,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 break;
             case 4: // cleanup_custom
@@ -22542,7 +22545,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 break;
             case 4: // cleanup_custom
@@ -25317,7 +25320,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.t[0] = z;
+                regs.t[0] = z & 0xFF;
                 
                 break;
             case 5: // Adding 3 cycles
@@ -25337,7 +25340,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.t[1] = z;
+                regs.t[1] = z & 0xFF;
                 regs.H = regs.t[1];
                 regs.L = regs.t[0];
                 regs.F.Z = +((regs.H === 0) && (regs.L === 0));
@@ -25434,7 +25437,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -25756,7 +25759,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -25963,7 +25966,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.t[0] = z;
+                regs.t[0] = z & 0xFF;
                 
                 break;
             case 5: // Adding 3 cycles
@@ -25983,7 +25986,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.t[1] = z;
+                regs.t[1] = z & 0xFF;
                 regs.H = regs.t[1];
                 regs.L = regs.t[0];
                 regs.F.Z = +((regs.H === 0) && (regs.L === 0));
@@ -26080,7 +26083,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -26410,7 +26413,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -26625,7 +26628,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.t[0] = z;
+                regs.t[0] = z & 0xFF;
                 
                 break;
             case 5: // Adding 3 cycles
@@ -26645,7 +26648,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.t[1] = z;
+                regs.t[1] = z & 0xFF;
                 regs.H = regs.t[1];
                 regs.L = regs.t[0];
                 regs.F.Z = +((regs.H === 0) && (regs.L === 0));
@@ -26742,7 +26745,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -27100,7 +27103,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -27341,7 +27344,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.t[0] = z;
+                regs.t[0] = z & 0xFF;
                 
                 break;
             case 5: // Adding 3 cycles
@@ -27361,7 +27364,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.t[1] = z;
+                regs.t[1] = z & 0xFF;
                 regs.H = regs.t[1];
                 regs.L = regs.t[0];
                 regs.F.Z = +((regs.H === 0) && (regs.L === 0));
@@ -27458,7 +27461,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -27777,7 +27780,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -31218,7 +31221,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3:
                 break;
             case 4:
-                x = regs.H;
+                x = regs.L;
                 y = regs.C;
                 z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
@@ -31229,7 +31232,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((z) & 0x20) >>> 5;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = z & 0xFF;
+                regs.L = z & 0xFF;
                 
                 break;
             case 5: // Adding 3 cycles
@@ -31237,7 +31240,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 6:
                 break;
             case 7:
-                x = regs.L;
+                x = regs.H;
                 y = regs.B;
                 z = x + y + regs.F.C;
                 regs.F.C = +(z > 0xFF);
@@ -31248,7 +31251,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((z) & 0x20) >>> 5;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = z & 0xFF;
+                regs.H = z & 0xFF;
                 regs.F.V = regs.t[0]; regs.F.Z = regs.t[1]; regs.F.S = regs.t[2];
                 // Following is auto-generated code for instruction finish
                 break;
@@ -31731,7 +31734,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3:
                 break;
             case 4:
-                x = regs.H;
+                x = regs.L;
                 y = regs.E;
                 z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
@@ -31742,7 +31745,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((z) & 0x20) >>> 5;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = z & 0xFF;
+                regs.L = z & 0xFF;
                 
                 break;
             case 5: // Adding 3 cycles
@@ -31750,7 +31753,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 6:
                 break;
             case 7:
-                x = regs.L;
+                x = regs.H;
                 y = regs.D;
                 z = x + y + regs.F.C;
                 regs.F.C = +(z > 0xFF);
@@ -31761,7 +31764,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((z) & 0x20) >>> 5;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = z & 0xFF;
+                regs.H = z & 0xFF;
                 regs.F.V = regs.t[0]; regs.F.Z = regs.t[1]; regs.F.S = regs.t[2];
                 // Following is auto-generated code for instruction finish
                 break;
@@ -32272,7 +32275,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3:
                 break;
             case 4:
-                x = regs.H;
+                x = regs.L;
                 y = (regs.IY & 0xFF);
                 z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
@@ -32283,7 +32286,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((z) & 0x20) >>> 5;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = z & 0xFF;
+                regs.L = z & 0xFF;
                 
                 break;
             case 5: // Adding 3 cycles
@@ -32291,7 +32294,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 6:
                 break;
             case 7:
-                x = regs.L;
+                x = regs.H;
                 y = ((regs.IY & 0xFF00) >>> 8);
                 z = x + y + regs.F.C;
                 regs.F.C = +(z > 0xFF);
@@ -32302,7 +32305,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((z) & 0x20) >>> 5;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = z & 0xFF;
+                regs.H = z & 0xFF;
                 regs.F.V = regs.t[0]; regs.F.Z = regs.t[1]; regs.F.S = regs.t[2];
                 // Following is auto-generated code for instruction finish
                 break;
@@ -32510,7 +32513,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x438: new Z80_opcode_functions(Z80_opcode_matrix[0x30], // FD 30
-        function(regs, pins) { //regs.F.C === 0
+        function(regs, pins) { //JR_c_e regs.F.C === 0
         switch(regs.TCU) {
             case 1: // operand8() start
                 regs.Q = 0;
@@ -32524,7 +32527,7 @@ const z80_decoded_opcodes = Object.freeze({
                 break;
             case 3: // operand8() end
                 regs.TR = mksigned8(regs.TR);
-                if (!(null)) { regs.TCU += 5; break; }
+                if (!(regs.F.C === 0)) { regs.TCU += 5; break; }
                 regs.WZ = (regs.PC + regs.TR) & 0xFFFF;
                 regs.PC = regs.WZ;
                 
@@ -32960,7 +32963,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3:
                 break;
             case 4:
-                x = regs.H;
+                x = regs.L;
                 y = (regs.SP & 0xFF);
                 z = x + y + 0;
                 regs.F.C = +(z > 0xFF);
@@ -32971,7 +32974,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((z) & 0x20) >>> 5;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = z & 0xFF;
+                regs.L = z & 0xFF;
                 
                 break;
             case 5: // Adding 3 cycles
@@ -32979,7 +32982,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 6:
                 break;
             case 7:
-                x = regs.L;
+                x = regs.H;
                 y = ((regs.SP & 0xFF00) >>> 8);
                 z = x + y + regs.F.C;
                 regs.F.C = +(z > 0xFF);
@@ -32990,7 +32993,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((z) & 0x20) >>> 5;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = z & 0xFF;
+                regs.H = z & 0xFF;
                 regs.F.V = regs.t[0]; regs.F.Z = regs.t[1]; regs.F.S = regs.t[2];
                 // Following is auto-generated code for instruction finish
                 break;
@@ -35446,7 +35449,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -35477,7 +35480,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -35508,7 +35511,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -35539,7 +35542,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -35570,7 +35573,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -35601,7 +35604,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -35665,7 +35668,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 break;
             case 12: // cleanup_custom
@@ -35698,7 +35701,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -35729,7 +35732,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -35760,7 +35763,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -35791,7 +35794,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -35822,7 +35825,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -35853,7 +35856,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -35884,7 +35887,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -35948,7 +35951,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 break;
             case 12: // cleanup_custom
@@ -35981,7 +35984,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -36737,7 +36740,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let x = regs.TR;
+                let x = regs.A;
                 let y = regs.B;
                 let z = x - y;
                 regs.F.C = +(z < 0);
@@ -36766,7 +36769,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let x = regs.TR;
+                let x = regs.A;
                 let y = regs.C;
                 let z = x - y;
                 regs.F.C = +(z < 0);
@@ -36795,7 +36798,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let x = regs.TR;
+                let x = regs.A;
                 let y = regs.D;
                 let z = x - y;
                 regs.F.C = +(z < 0);
@@ -36824,7 +36827,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let x = regs.TR;
+                let x = regs.A;
                 let y = regs.E;
                 let z = x - y;
                 regs.F.C = +(z < 0);
@@ -36853,7 +36856,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let x = regs.TR;
+                let x = regs.A;
                 let y = regs.H;
                 let z = x - y;
                 regs.F.C = +(z < 0);
@@ -36882,7 +36885,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let x = regs.TR;
+                let x = regs.A;
                 let y = regs.L;
                 let z = x - y;
                 regs.F.C = +(z < 0);
@@ -36975,7 +36978,7 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let x = regs.TR;
+                let x = regs.A;
                 let y = regs.A;
                 let z = x - y;
                 regs.F.C = +(z < 0);
@@ -37418,7 +37421,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x4D1: new Z80_opcode_functions(Z80_opcode_matrix[0xC9], // FD C9
-        function(regs, pins) { //undefined
+        function(regs, pins) { //RET
         switch(regs.TCU) {
             case 1:
                 regs.Q = 0;
@@ -38054,7 +38057,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 break;
             case 4: // cleanup_custom
@@ -38377,7 +38380,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;
                 regs.F.Z = +((z & 0xFF) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = z;
+                regs.A = z & 0xFF;
                 // Following is auto-generated code for instruction finish
                 break;
             case 4: // cleanup_custom

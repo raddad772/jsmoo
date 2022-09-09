@@ -1,5 +1,8 @@
 "use strict";
 
+//let Z80_TRACE_BRK = 1659300;
+let Z80_TRACE_BRK = -1;
+
 const Z80P = Object.freeze({
     HL: 0,
     IX: 1,
@@ -184,6 +187,7 @@ class z80_t {
 
         this.trace_peek = function(addr, val, has_effect) { return 0xCD; }
         this.PCO = 0;
+        this.decode_start_addr = 0;
     }
 
     enable_tracing(trace_peek) {
@@ -249,7 +253,12 @@ class z80_t {
     set_instruction(to) {
         this.regs.IR = to;
         this.current_instruction = Z80_fetch_decoded(this.regs.IR, this.regs.prefix);
+        if (dbg.watch_on) {
+            console.log(hex4(this.PCO), 'prefix', hex2(this.regs.prefix), 'instruction', this.current_instruction)
+        }
         this.regs.TCU = 0;
+        this.regs.prefix = 0;
+        this.regs.rprefix = Z80P.HL;
     }
 
     ins_cycles() {
@@ -275,12 +284,15 @@ class z80_t {
                         this.regs.PC = (this.regs.PC - 1) & 0xFFFF;
                         this.set_instruction(Z80_S_IRQ);
                         if (dbg.brk_on_NMIRQ) dbg.break();
+                        break;
                     }
-                    break;
                 }
                 this.regs.t[0] = this.pins.D;
                 this.pins.RD = 0;
                 this.pins.MRQ = 0;
+                if (dbg.watch_on) {
+                    console.log('SETTING RD AND MRQ 0', this.pins);
+                }
                 break;
             case 2:
                 this.regs.inc_R();
@@ -380,6 +392,9 @@ class z80_t {
 		outstr += ' SP:' + hex4(this.regs.SP);
 		outstr += ' IX:' + hex4(this.regs.IX);
 		outstr += ' IY:' + hex4(this.regs.IY);
+        outstr += ' I:' + hex2(this.regs.I);
+        outstr += ' R:' + hex2(this.regs.R);
+        outstr += ' WZ:' + hex4(this.regs.WZ);
 		outstr += ' F:' + this.regs.F.formatbyte();
         return outstr;
 	}
@@ -387,14 +402,22 @@ class z80_t {
     cycle() {
         this.regs.TCU++;
         this.trace_cycles++;
+        if (this.trace_cycles === Z80_TRACE_BRK) {
+            console.log('TRACE BREAK')
+            dbg.break();
+            //dbg.watch_on = true;
+        }
         if (this.regs.IR === Z80_S_DECODE) {
             // Long logic to decode opcodes and decide what to do
-            if (this.regs.TCU === 1) this.PCO = this.pins.Addr;
+            if ((this.regs.TCU === 1) && (this.regs.prefix === 0)) this.PCO = this.pins.Addr;
+            if (dbg.watch_on) {
+                console.log(hex4(this.pins.Addr), this.trace_cycles, this.regs.TCU)
+            }
             this.ins_cycles();
         } else {
             if (this.trace_on && this.regs.TCU === 1) {
                 this.last_trace_cycle = this.PCO;
-                dbg.traces.add(TRACERS.Z80, this.trace_cycles, this.trace_format(Z80_disassemble(this.PCO, this.regs.IR, this.trace_peek), this.PCO));
+                dbg.traces.add(TRACERS.Z80, this.trace_cycles, this.trace_format(Z80_disassemble(this.PCO, this.trace_peek(this.PCO, 0,0, false), this.trace_peek), this.PCO));
             }
             // Execute an actual opcode
             this.current_instruction.exec_func(this.regs, this.pins);
