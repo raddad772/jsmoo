@@ -193,7 +193,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.Q = 1;
                 let c = (regs.A & 0x80) >>> 7;
-                regs.A = ((regs.A << 1) | regs.F.C) & 0xFF;
+                regs.A = ((regs.A << 1) | c) & 0xFF;
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
                 regs.F.X = ((regs.A) & 8) >>> 3;
@@ -428,7 +428,7 @@ const z80_decoded_opcodes = Object.freeze({
                 let c = regs.A & 1;
                 regs.A = (c << 7) | (regs.A >>> 1);
                 regs.F.C = c;
-                regs.F.N = regs.F.H = 0;
+                regs.F.NA = regs.F.H = 0;
                 regs.F.X = ((regs.A) & 8) >>> 3;
                 regs.F.Y = ((regs.A) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -8207,7 +8207,7 @@ const z80_decoded_opcodes = Object.freeze({
                 case 0:
                     regs.t[0] = 0;
                     regs.WZ = pins.D;
-                    wait = 12 - (((pins.D | 0x38) == 0xFF) ? 6 : 7);
+                    wait = 12 - (((pins.D | 0x38) === 0xFF) ? 6 : 7);
                     regs.TCU += wait;
                     break;
                 case 1:
@@ -8291,7 +8291,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.IM = 0;
                 regs.I = 0;
                 regs.R = 0;
-                regs.PC = 0x100;
+                regs.PC = 0;
                 // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
@@ -9076,8 +9076,8 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let c = x & 1;
                 let x = regs.B;
+                let c = x & 1;
                 x = (x >>> 1) | (regs.F.C << 7);
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
@@ -9106,8 +9106,8 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let c = x & 1;
                 let x = regs.C;
+                let c = x & 1;
                 x = (x >>> 1) | (regs.F.C << 7);
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
@@ -9136,8 +9136,8 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let c = x & 1;
                 let x = regs.D;
+                let c = x & 1;
                 x = (x >>> 1) | (regs.F.C << 7);
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
@@ -9166,8 +9166,8 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let c = x & 1;
                 let x = regs.E;
+                let c = x & 1;
                 x = (x >>> 1) | (regs.F.C << 7);
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
@@ -9196,8 +9196,8 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let c = x & 1;
                 let x = regs.H;
+                let c = x & 1;
                 x = (x >>> 1) | (regs.F.C << 7);
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
@@ -9226,8 +9226,8 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let c = x & 1;
                 let x = regs.L;
+                let c = x & 1;
                 x = (x >>> 1) | (regs.F.C << 7);
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
@@ -9265,8 +9265,8 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let c = x & 1;
                 let x = regs.TR;
+                let c = x & 1;
                 x = (x >>> 1) | (regs.F.C << 7);
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
@@ -9306,8 +9306,8 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let c = x & 1;
                 let x = regs.A;
+                let c = x & 1;
                 x = (x >>> 1) | (regs.F.C << 7);
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
@@ -9525,7 +9525,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = (x << 1) & 0xFF;
                 regs.F.C = c;
@@ -9785,7 +9785,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >> 1) & 0xFF;
                 regs.F.C = c;
@@ -10045,7 +10045,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = ((x << 1) | 1) & 0xFF;
                 regs.F.C = c;
@@ -10305,7 +10305,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >>> 1) & 0xFF;
                 regs.F.C = c;
@@ -10376,10 +10376,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.B) & 1) << 0;
+                let z = (regs.B) & (1 << 0);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.B) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.B) & 8) >>> 3;
                 regs.F.Y = ((regs.B) & 0x20) >>> 5;
@@ -10403,10 +10402,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.C) & 1) << 0;
+                let z = (regs.C) & (1 << 0);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.C) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.C) & 8) >>> 3;
                 regs.F.Y = ((regs.C) & 0x20) >>> 5;
@@ -10430,10 +10428,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.D) & 1) << 0;
+                let z = (regs.D) & (1 << 0);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.D) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.D) & 8) >>> 3;
                 regs.F.Y = ((regs.D) & 0x20) >>> 5;
@@ -10457,10 +10454,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.E) & 1) << 0;
+                let z = (regs.E) & (1 << 0);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.E) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.E) & 8) >>> 3;
                 regs.F.Y = ((regs.E) & 0x20) >>> 5;
@@ -10484,10 +10480,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.H) & 1) << 0;
+                let z = (regs.H) & (1 << 0);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.H) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.H) & 8) >>> 3;
                 regs.F.Y = ((regs.H) & 0x20) >>> 5;
@@ -10511,10 +10506,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.L) & 1) << 0;
+                let z = (regs.L) & (1 << 0);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.L) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.L) & 8) >>> 3;
                 regs.F.Y = ((regs.L) & 0x20) >>> 5;
@@ -10547,10 +10541,9 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 0;
+                let z = (regs.TR) & (1 << 0);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
@@ -10578,10 +10571,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.A) & 1) << 0;
+                let z = (regs.A) & (1 << 0);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.A) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.A) & 8) >>> 3;
                 regs.F.Y = ((regs.A) & 0x20) >>> 5;
@@ -10605,10 +10597,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.B) & 1) << 1;
+                let z = (regs.B) & (1 << 1);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.B) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.B) & 8) >>> 3;
                 regs.F.Y = ((regs.B) & 0x20) >>> 5;
@@ -10632,10 +10623,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.C) & 1) << 1;
+                let z = (regs.C) & (1 << 1);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.C) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.C) & 8) >>> 3;
                 regs.F.Y = ((regs.C) & 0x20) >>> 5;
@@ -10659,10 +10649,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.D) & 1) << 1;
+                let z = (regs.D) & (1 << 1);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.D) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.D) & 8) >>> 3;
                 regs.F.Y = ((regs.D) & 0x20) >>> 5;
@@ -10686,10 +10675,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.E) & 1) << 1;
+                let z = (regs.E) & (1 << 1);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.E) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.E) & 8) >>> 3;
                 regs.F.Y = ((regs.E) & 0x20) >>> 5;
@@ -10713,10 +10701,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.H) & 1) << 1;
+                let z = (regs.H) & (1 << 1);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.H) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.H) & 8) >>> 3;
                 regs.F.Y = ((regs.H) & 0x20) >>> 5;
@@ -10740,10 +10727,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.L) & 1) << 1;
+                let z = (regs.L) & (1 << 1);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.L) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.L) & 8) >>> 3;
                 regs.F.Y = ((regs.L) & 0x20) >>> 5;
@@ -10776,10 +10762,9 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 1;
+                let z = (regs.TR) & (1 << 1);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
@@ -10807,10 +10792,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.A) & 1) << 1;
+                let z = (regs.A) & (1 << 1);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.A) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.A) & 8) >>> 3;
                 regs.F.Y = ((regs.A) & 0x20) >>> 5;
@@ -10834,10 +10818,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.B) & 1) << 2;
+                let z = (regs.B) & (1 << 2);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.B) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.B) & 8) >>> 3;
                 regs.F.Y = ((regs.B) & 0x20) >>> 5;
@@ -10861,10 +10844,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.C) & 1) << 2;
+                let z = (regs.C) & (1 << 2);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.C) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.C) & 8) >>> 3;
                 regs.F.Y = ((regs.C) & 0x20) >>> 5;
@@ -10888,10 +10870,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.D) & 1) << 2;
+                let z = (regs.D) & (1 << 2);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.D) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.D) & 8) >>> 3;
                 regs.F.Y = ((regs.D) & 0x20) >>> 5;
@@ -10915,10 +10896,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.E) & 1) << 2;
+                let z = (regs.E) & (1 << 2);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.E) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.E) & 8) >>> 3;
                 regs.F.Y = ((regs.E) & 0x20) >>> 5;
@@ -10942,10 +10922,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.H) & 1) << 2;
+                let z = (regs.H) & (1 << 2);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.H) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.H) & 8) >>> 3;
                 regs.F.Y = ((regs.H) & 0x20) >>> 5;
@@ -10969,10 +10948,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.L) & 1) << 2;
+                let z = (regs.L) & (1 << 2);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.L) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.L) & 8) >>> 3;
                 regs.F.Y = ((regs.L) & 0x20) >>> 5;
@@ -11005,10 +10983,9 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 2;
+                let z = (regs.TR) & (1 << 2);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
@@ -11036,10 +11013,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.A) & 1) << 2;
+                let z = (regs.A) & (1 << 2);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.A) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.A) & 8) >>> 3;
                 regs.F.Y = ((regs.A) & 0x20) >>> 5;
@@ -11063,10 +11039,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.B) & 1) << 3;
+                let z = (regs.B) & (1 << 3);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.B) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.B) & 8) >>> 3;
                 regs.F.Y = ((regs.B) & 0x20) >>> 5;
@@ -11090,10 +11065,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.C) & 1) << 3;
+                let z = (regs.C) & (1 << 3);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.C) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.C) & 8) >>> 3;
                 regs.F.Y = ((regs.C) & 0x20) >>> 5;
@@ -11117,10 +11091,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.D) & 1) << 3;
+                let z = (regs.D) & (1 << 3);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.D) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.D) & 8) >>> 3;
                 regs.F.Y = ((regs.D) & 0x20) >>> 5;
@@ -11144,10 +11117,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.E) & 1) << 3;
+                let z = (regs.E) & (1 << 3);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.E) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.E) & 8) >>> 3;
                 regs.F.Y = ((regs.E) & 0x20) >>> 5;
@@ -11171,10 +11143,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.H) & 1) << 3;
+                let z = (regs.H) & (1 << 3);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.H) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.H) & 8) >>> 3;
                 regs.F.Y = ((regs.H) & 0x20) >>> 5;
@@ -11198,10 +11169,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.L) & 1) << 3;
+                let z = (regs.L) & (1 << 3);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.L) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.L) & 8) >>> 3;
                 regs.F.Y = ((regs.L) & 0x20) >>> 5;
@@ -11234,10 +11204,9 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 3;
+                let z = (regs.TR) & (1 << 3);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
@@ -11265,10 +11234,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.A) & 1) << 3;
+                let z = (regs.A) & (1 << 3);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.A) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.A) & 8) >>> 3;
                 regs.F.Y = ((regs.A) & 0x20) >>> 5;
@@ -11292,10 +11260,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.B) & 1) << 4;
+                let z = (regs.B) & (1 << 4);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.B) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.B) & 8) >>> 3;
                 regs.F.Y = ((regs.B) & 0x20) >>> 5;
@@ -11319,10 +11286,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.C) & 1) << 4;
+                let z = (regs.C) & (1 << 4);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.C) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.C) & 8) >>> 3;
                 regs.F.Y = ((regs.C) & 0x20) >>> 5;
@@ -11346,10 +11312,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.D) & 1) << 4;
+                let z = (regs.D) & (1 << 4);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.D) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.D) & 8) >>> 3;
                 regs.F.Y = ((regs.D) & 0x20) >>> 5;
@@ -11373,10 +11338,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.E) & 1) << 4;
+                let z = (regs.E) & (1 << 4);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.E) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.E) & 8) >>> 3;
                 regs.F.Y = ((regs.E) & 0x20) >>> 5;
@@ -11400,10 +11364,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.H) & 1) << 4;
+                let z = (regs.H) & (1 << 4);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.H) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.H) & 8) >>> 3;
                 regs.F.Y = ((regs.H) & 0x20) >>> 5;
@@ -11427,10 +11390,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.L) & 1) << 4;
+                let z = (regs.L) & (1 << 4);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.L) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.L) & 8) >>> 3;
                 regs.F.Y = ((regs.L) & 0x20) >>> 5;
@@ -11463,10 +11425,9 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 4;
+                let z = (regs.TR) & (1 << 4);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
@@ -11494,10 +11455,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.A) & 1) << 4;
+                let z = (regs.A) & (1 << 4);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.A) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.A) & 8) >>> 3;
                 regs.F.Y = ((regs.A) & 0x20) >>> 5;
@@ -11521,10 +11481,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.B) & 1) << 5;
+                let z = (regs.B) & (1 << 5);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.B) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.B) & 8) >>> 3;
                 regs.F.Y = ((regs.B) & 0x20) >>> 5;
@@ -11548,10 +11507,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.C) & 1) << 5;
+                let z = (regs.C) & (1 << 5);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.C) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.C) & 8) >>> 3;
                 regs.F.Y = ((regs.C) & 0x20) >>> 5;
@@ -11575,10 +11533,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.D) & 1) << 5;
+                let z = (regs.D) & (1 << 5);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.D) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.D) & 8) >>> 3;
                 regs.F.Y = ((regs.D) & 0x20) >>> 5;
@@ -11602,10 +11559,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.E) & 1) << 5;
+                let z = (regs.E) & (1 << 5);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.E) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.E) & 8) >>> 3;
                 regs.F.Y = ((regs.E) & 0x20) >>> 5;
@@ -11629,10 +11585,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.H) & 1) << 5;
+                let z = (regs.H) & (1 << 5);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.H) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.H) & 8) >>> 3;
                 regs.F.Y = ((regs.H) & 0x20) >>> 5;
@@ -11656,10 +11611,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.L) & 1) << 5;
+                let z = (regs.L) & (1 << 5);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.L) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.L) & 8) >>> 3;
                 regs.F.Y = ((regs.L) & 0x20) >>> 5;
@@ -11692,10 +11646,9 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 5;
+                let z = (regs.TR) & (1 << 5);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
@@ -11723,10 +11676,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.A) & 1) << 5;
+                let z = (regs.A) & (1 << 5);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.A) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.A) & 8) >>> 3;
                 regs.F.Y = ((regs.A) & 0x20) >>> 5;
@@ -11750,10 +11702,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.B) & 1) << 6;
+                let z = (regs.B) & (1 << 6);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.B) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.B) & 8) >>> 3;
                 regs.F.Y = ((regs.B) & 0x20) >>> 5;
@@ -11777,10 +11728,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.C) & 1) << 6;
+                let z = (regs.C) & (1 << 6);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.C) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.C) & 8) >>> 3;
                 regs.F.Y = ((regs.C) & 0x20) >>> 5;
@@ -11804,10 +11754,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.D) & 1) << 6;
+                let z = (regs.D) & (1 << 6);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.D) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.D) & 8) >>> 3;
                 regs.F.Y = ((regs.D) & 0x20) >>> 5;
@@ -11831,10 +11780,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.E) & 1) << 6;
+                let z = (regs.E) & (1 << 6);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.E) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.E) & 8) >>> 3;
                 regs.F.Y = ((regs.E) & 0x20) >>> 5;
@@ -11858,10 +11806,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.H) & 1) << 6;
+                let z = (regs.H) & (1 << 6);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.H) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.H) & 8) >>> 3;
                 regs.F.Y = ((regs.H) & 0x20) >>> 5;
@@ -11885,10 +11832,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.L) & 1) << 6;
+                let z = (regs.L) & (1 << 6);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.L) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.L) & 8) >>> 3;
                 regs.F.Y = ((regs.L) & 0x20) >>> 5;
@@ -11921,10 +11867,9 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 6;
+                let z = (regs.TR) & (1 << 6);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
@@ -11952,10 +11897,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.A) & 1) << 6;
+                let z = (regs.A) & (1 << 6);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.A) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.A) & 8) >>> 3;
                 regs.F.Y = ((regs.A) & 0x20) >>> 5;
@@ -11979,10 +11923,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.B) & 1) << 7;
+                let z = (regs.B) & (1 << 7);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.B) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.B) & 8) >>> 3;
                 regs.F.Y = ((regs.B) & 0x20) >>> 5;
@@ -12006,10 +11949,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.C) & 1) << 7;
+                let z = (regs.C) & (1 << 7);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.C) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.C) & 8) >>> 3;
                 regs.F.Y = ((regs.C) & 0x20) >>> 5;
@@ -12033,10 +11975,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.D) & 1) << 7;
+                let z = (regs.D) & (1 << 7);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.D) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.D) & 8) >>> 3;
                 regs.F.Y = ((regs.D) & 0x20) >>> 5;
@@ -12060,10 +12001,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.E) & 1) << 7;
+                let z = (regs.E) & (1 << 7);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.E) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.E) & 8) >>> 3;
                 regs.F.Y = ((regs.E) & 0x20) >>> 5;
@@ -12087,10 +12027,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.H) & 1) << 7;
+                let z = (regs.H) & (1 << 7);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.H) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.H) & 8) >>> 3;
                 regs.F.Y = ((regs.H) & 0x20) >>> 5;
@@ -12114,10 +12053,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.L) & 1) << 7;
+                let z = (regs.L) & (1 << 7);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.L) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.L) & 8) >>> 3;
                 regs.F.Y = ((regs.L) & 0x20) >>> 5;
@@ -12150,10 +12088,9 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 7;
+                let z = (regs.TR) & (1 << 7);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
@@ -12181,10 +12118,9 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 1;
-                let z = ((regs.A) & 1) << 7;
+                let z = (regs.A) & (1 << 7);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.A) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.A) & 8) >>> 3;
                 regs.F.Y = ((regs.A) & 0x20) >>> 5;
@@ -15255,7 +15191,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.Q = 1;
                 let c = (regs.A & 0x80) >>> 7;
-                regs.A = ((regs.A << 1) | regs.F.C) & 0xFF;
+                regs.A = ((regs.A << 1) | c) & 0xFF;
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
                 regs.F.X = ((regs.A) & 8) >>> 3;
@@ -15490,7 +15426,7 @@ const z80_decoded_opcodes = Object.freeze({
                 let c = regs.A & 1;
                 regs.A = (c << 7) | (regs.A >>> 1);
                 regs.F.C = c;
-                regs.F.N = regs.F.H = 0;
+                regs.F.NA = regs.F.H = 0;
                 regs.F.X = ((regs.A) & 8) >>> 3;
                 regs.F.Y = ((regs.A) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -23839,7 +23775,7 @@ const z80_decoded_opcodes = Object.freeze({
                 case 0:
                     regs.t[0] = 0;
                     regs.WZ = pins.D;
-                    wait = 12 - (((pins.D | 0x38) == 0xFF) ? 6 : 7);
+                    wait = 12 - (((pins.D | 0x38) === 0xFF) ? 6 : 7);
                     regs.TCU += wait;
                     break;
                 case 1:
@@ -28396,7 +28332,8 @@ const z80_decoded_opcodes = Object.freeze({
             case 1: // Start read
                 regs.Q = 1;
                 regs.WZ = (regs.WZ + 1) & 0xFFFF;
-                pins.Addr = ((regs.H << 8) | regs.L);
+                regs.TA = (regs.H << 8) | regs.L;
+                pins.Addr = (regs.TA);
                 
                 break;
             case 2:
@@ -28405,6 +28342,9 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                regs.TA = (regs.TA + 1) & 0xFFFF;
+                regs.H = ((regs.TA) & 0xFF00) >>> 8;
+                regs.L = (regs.TA) & 0xFF;
                 
                 break;
             case 4: // Adding 5 cycles
@@ -28418,14 +28358,13 @@ const z80_decoded_opcodes = Object.freeze({
             case 8:
                 let n = (regs.A - regs.TR) & 0xFF;
                 regs.F.N = 1;
-                let tv = (regs.B << 8) | regs.C;
-                regs.F.V = +(tv !== 0)
-                tv = (tv - 1) & 0xFFFF;
-                regs.B = (tv & 0xFF00) >>> 8;
-                regs.C = tv & 0xFF;
+                regs.TA = (((regs.B << 8) | regs.C) - 1) & 0xFFFF;
+                regs.F.V = +(regs.TA !== 0)
+                regs.B = (regs.TA & 0xFF00) >>> 8;
+                regs.C = regs.TA & 0xFF;
                 regs.F.X = (((n - regs.F.H) & 0xFF) & 8) >>> 3;
                 regs.F.Y = (((n - regs.F.H) & 0xFF) & 0x20) >>> 5;
-                regs.F.Z = +(n == 0);
+                regs.F.Z = +(n === 0);
                 regs.F.S = ((n) & 0x80) >>> 7;
                 // Following is auto-generated code for instruction finish
                 break;
@@ -28447,12 +28386,12 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1:
                 regs.Q = 1;
-                let tv = (regs.B << 8) | regs.C;
-                regs.WZ = (tv + 1) & 0xFFFF;
+                regs.TA = (regs.B << 8) | regs.C;
+                regs.WZ = (regs.TA + 1) & 0xFFFF;
                 break;
             case 2: // IN start
                 pins.RD = 1; pins.IO = 1;
-                pins.Addr = tv;
+                pins.Addr = regs.TA;
                 break;
             case 3: // IN actual read
                 regs.TR = pins.D;
@@ -28721,12 +28660,12 @@ const z80_decoded_opcodes = Object.freeze({
             case 7:
                 break;
             case 8:
-                let tv = (((regs.B << 8) | regs.C) - 1) & 0xFFFF;
-                regs.B = (tv & 0xFF00) >>> 8;
-                regs.C = rv & 0xFF;
+                regs.TA = (((regs.B << 8) | regs.C) - 1) & 0xFFFF;
+                regs.B = (regs.TA & 0xFF00) >>> 8;
+                regs.C = regs.TA & 0xFF;
                 let n = regs.A - regs.TR;
                 regs.F.N = 1;
-                regs.F.V = +(tv !== 0);
+                regs.F.V = +(regs.TA !== 0);
                 regs.F.H = ((regs.A ^ regs.TR ^ n) & 0x10) >>> 4;
                 regs.F.X = ((n - regs.F.H) & 8) >>> 3;
                 regs.F.Y = ((n - regs.F.H) & 0x20) >>> 5;
@@ -28753,10 +28692,11 @@ const z80_decoded_opcodes = Object.freeze({
             case 1:
                 regs.Q = 1;
                 regs.WZ = (((regs.B << 8) | regs.C) - 1) & 0xFFFF;
+                regs.TA = (regs.B << 8) | regs.C;
                 break;
             case 2: // IN start
                 pins.RD = 1; pins.IO = 1;
-                pins.Addr = (regs.B << 8) | regs.C;
+                pins.Addr = regs.TA;
                 break;
             case 3: // IN actual read
                 regs.TR = pins.D;
@@ -28781,8 +28721,8 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.L = (regs.TA) & 0xFF;
                 regs.F.C = ((((regs.C - 1) & 0xFF) + regs.TR) & 0x100) >>> 8;
                 regs.F.N = (regs.TR & 0x80) >>> 7;
-                let tv = ((regs.C - 1) & 0xFF) + data & 7 ^ regs.B;
-                regs.F.P = Z80_parity(tv);
+                regs.TA = ((regs.C - 1) & 0xFF) + data & 7 ^ regs.B;
+                regs.F.P = Z80_parity(regs.TA);
                 regs.F.X = ((regs.B) & 8) >>> 3;
                 regs.F.Y = ((regs.B) & 0x20) >>> 5;
                 regs.F.H = regs.F.C;
@@ -29013,7 +28953,8 @@ const z80_decoded_opcodes = Object.freeze({
             case 1: // Start read
                 regs.Q = 1;
                 regs.WZ = (regs.WZ + 1) & 0xFFFF;
-                pins.Addr = ((regs.H << 8) | regs.L);
+                regs.TA = (regs.H << 8) | regs.L;
+                pins.Addr = (regs.TA);
                 
                 break;
             case 2:
@@ -29022,6 +28963,9 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                regs.TA = (regs.TA + 1) & 0xFFFF;
+                regs.H = ((regs.TA) & 0xFF00) >>> 8;
+                regs.L = (regs.TA) & 0xFF;
                 
                 break;
             case 4: // Adding 5 cycles
@@ -29035,14 +28979,13 @@ const z80_decoded_opcodes = Object.freeze({
             case 8:
                 let n = (regs.A - regs.TR) & 0xFF;
                 regs.F.N = 1;
-                let tv = (regs.B << 8) | regs.C;
-                regs.F.V = +(tv !== 0)
-                tv = (tv - 1) & 0xFFFF;
-                regs.B = (tv & 0xFF00) >>> 8;
-                regs.C = tv & 0xFF;
+                regs.TA = (((regs.B << 8) | regs.C) - 1) & 0xFFFF;
+                regs.F.V = +(regs.TA !== 0)
+                regs.B = (regs.TA & 0xFF00) >>> 8;
+                regs.C = regs.TA & 0xFF;
                 regs.F.X = (((n - regs.F.H) & 0xFF) & 8) >>> 3;
                 regs.F.Y = (((n - regs.F.H) & 0xFF) & 0x20) >>> 5;
-                regs.F.Z = +(n == 0);
+                regs.F.Z = +(n === 0);
                 regs.F.S = ((n) & 0x80) >>> 7;
                 if (((regs.B === 0) && (regs.C === 0)) || (regs.F.Z)) {regs.TCU += 5; break; }
                 
@@ -29078,12 +29021,12 @@ const z80_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1:
                 regs.Q = 1;
-                let tv = (regs.B << 8) | regs.C;
-                regs.WZ = (tv + 1) & 0xFFFF;
+                regs.TA = (regs.B << 8) | regs.C;
+                regs.WZ = (regs.TA + 1) & 0xFFFF;
                 break;
             case 2: // IN start
                 pins.RD = 1; pins.IO = 1;
-                pins.Addr = tv;
+                pins.Addr = regs.TA;
                 break;
             case 3: // IN actual read
                 regs.TR = pins.D;
@@ -29393,12 +29336,12 @@ const z80_decoded_opcodes = Object.freeze({
             case 7:
                 break;
             case 8:
-                let tv = (((regs.B << 8) | regs.C) - 1) & 0xFFFF;
-                regs.B = (tv & 0xFF00) >>> 8;
-                regs.C = rv & 0xFF;
+                regs.TA = (((regs.B << 8) | regs.C) - 1) & 0xFFFF;
+                regs.B = (regs.TA & 0xFF00) >>> 8;
+                regs.C = regs.TA & 0xFF;
                 let n = regs.A - regs.TR;
                 regs.F.N = 1;
-                regs.F.V = +(tv !== 0);
+                regs.F.V = +(regs.TA !== 0);
                 regs.F.H = ((regs.A ^ regs.TR ^ n) & 0x10) >>> 4;
                 regs.F.X = ((n - regs.F.H) & 8) >>> 3;
                 regs.F.Y = ((n - regs.F.H) & 0x20) >>> 5;
@@ -29439,10 +29382,11 @@ const z80_decoded_opcodes = Object.freeze({
             case 1:
                 regs.Q = 1;
                 regs.WZ = (((regs.B << 8) | regs.C) - 1) & 0xFFFF;
+                regs.TA = (regs.B << 8) | regs.C;
                 break;
             case 2: // IN start
                 pins.RD = 1; pins.IO = 1;
-                pins.Addr = (regs.B << 8) | regs.C;
+                pins.Addr = regs.TA;
                 break;
             case 3: // IN actual read
                 regs.TR = pins.D;
@@ -29467,8 +29411,8 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.L = (regs.TA) & 0xFF;
                 regs.F.C = ((((regs.C - 1) & 0xFF) + regs.TR) & 0x100) >>> 8;
                 regs.F.N = (regs.TR & 0x80) >>> 7;
-                let tv = ((regs.C - 1) & 0xFF) + data & 7 ^ regs.B;
-                regs.F.P = Z80_parity(tv);
+                regs.TA = ((regs.C - 1) & 0xFF) + data & 7 ^ regs.B;
+                regs.F.P = Z80_parity(regs.TA);
                 regs.F.X = ((regs.B) & 8) >>> 3;
                 regs.F.Y = ((regs.B) & 0x20) >>> 5;
                 regs.F.H = regs.F.C;
@@ -31026,7 +30970,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.Q = 1;
                 let c = (regs.A & 0x80) >>> 7;
-                regs.A = ((regs.A << 1) | regs.F.C) & 0xFF;
+                regs.A = ((regs.A << 1) | c) & 0xFF;
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
                 regs.F.X = ((regs.A) & 8) >>> 3;
@@ -31261,7 +31205,7 @@ const z80_decoded_opcodes = Object.freeze({
                 let c = regs.A & 1;
                 regs.A = (c << 7) | (regs.A >>> 1);
                 regs.F.C = c;
-                regs.F.N = regs.F.H = 0;
+                regs.F.NA = regs.F.H = 0;
                 regs.F.X = ((regs.A) & 8) >>> 3;
                 regs.F.Y = ((regs.A) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -39610,7 +39554,7 @@ const z80_decoded_opcodes = Object.freeze({
                 case 0:
                     regs.t[0] = 0;
                     regs.WZ = pins.D;
-                    wait = 12 - (((pins.D | 0x38) == 0xFF) ? 6 : 7);
+                    wait = 12 - (((pins.D | 0x38) === 0xFF) ? 6 : 7);
                     regs.TCU += wait;
                     break;
                 case 1:
@@ -40932,8 +40876,8 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let c = x & 1;
                 let x = regs.TR;
+                let c = x & 1;
                 x = (x >>> 1) | (regs.F.C << 7);
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
@@ -40983,8 +40927,8 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let c = x & 1;
                 let x = regs.TR;
+                let c = x & 1;
                 x = (x >>> 1) | (regs.F.C << 7);
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
@@ -41034,8 +40978,8 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let c = x & 1;
                 let x = regs.TR;
+                let c = x & 1;
                 x = (x >>> 1) | (regs.F.C << 7);
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
@@ -41085,8 +41029,8 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let c = x & 1;
                 let x = regs.TR;
+                let c = x & 1;
                 x = (x >>> 1) | (regs.F.C << 7);
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
@@ -41136,8 +41080,8 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let c = x & 1;
                 let x = regs.TR;
+                let c = x & 1;
                 x = (x >>> 1) | (regs.F.C << 7);
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
@@ -41187,8 +41131,8 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let c = x & 1;
                 let x = regs.TR;
+                let c = x & 1;
                 x = (x >>> 1) | (regs.F.C << 7);
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
@@ -41238,8 +41182,8 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let c = x & 1;
                 let x = regs.TR;
+                let c = x & 1;
                 x = (x >>> 1) | (regs.F.C << 7);
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
@@ -41289,8 +41233,8 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let c = x & 1;
                 let x = regs.TR;
+                let c = x & 1;
                 x = (x >>> 1) | (regs.F.C << 7);
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
@@ -41340,7 +41284,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = (x << 1) & 0xFF;
                 regs.F.C = c;
@@ -41391,7 +41335,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = (x << 1) & 0xFF;
                 regs.F.C = c;
@@ -41442,7 +41386,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = (x << 1) & 0xFF;
                 regs.F.C = c;
@@ -41493,7 +41437,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = (x << 1) & 0xFF;
                 regs.F.C = c;
@@ -41544,7 +41488,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = (x << 1) & 0xFF;
                 regs.F.C = c;
@@ -41595,7 +41539,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = (x << 1) & 0xFF;
                 regs.F.C = c;
@@ -41646,7 +41590,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = (x << 1) & 0xFF;
                 regs.F.C = c;
@@ -41697,7 +41641,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = (x << 1) & 0xFF;
                 regs.F.C = c;
@@ -41748,7 +41692,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >> 1) & 0xFF;
                 regs.F.C = c;
@@ -41799,7 +41743,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >> 1) & 0xFF;
                 regs.F.C = c;
@@ -41850,7 +41794,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >> 1) & 0xFF;
                 regs.F.C = c;
@@ -41901,7 +41845,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >> 1) & 0xFF;
                 regs.F.C = c;
@@ -41952,7 +41896,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >> 1) & 0xFF;
                 regs.F.C = c;
@@ -42003,7 +41947,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >> 1) & 0xFF;
                 regs.F.C = c;
@@ -42054,7 +41998,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >> 1) & 0xFF;
                 regs.F.C = c;
@@ -42105,7 +42049,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >> 1) & 0xFF;
                 regs.F.C = c;
@@ -42156,7 +42100,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = ((x << 1) | 1) & 0xFF;
                 regs.F.C = c;
@@ -42207,7 +42151,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = ((x << 1) | 1) & 0xFF;
                 regs.F.C = c;
@@ -42258,7 +42202,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = ((x << 1) | 1) & 0xFF;
                 regs.F.C = c;
@@ -42309,7 +42253,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = ((x << 1) | 1) & 0xFF;
                 regs.F.C = c;
@@ -42360,7 +42304,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = ((x << 1) | 1) & 0xFF;
                 regs.F.C = c;
@@ -42411,7 +42355,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = ((x << 1) | 1) & 0xFF;
                 regs.F.C = c;
@@ -42462,7 +42406,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = ((x << 1) | 1) & 0xFF;
                 regs.F.C = c;
@@ -42513,7 +42457,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = ((x << 1) | 1) & 0xFF;
                 regs.F.C = c;
@@ -42564,7 +42508,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >>> 1) & 0xFF;
                 regs.F.C = c;
@@ -42615,7 +42559,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >>> 1) & 0xFF;
                 regs.F.C = c;
@@ -42666,7 +42610,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >>> 1) & 0xFF;
                 regs.F.C = c;
@@ -42717,7 +42661,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >>> 1) & 0xFF;
                 regs.F.C = c;
@@ -42768,7 +42712,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >>> 1) & 0xFF;
                 regs.F.C = c;
@@ -42819,7 +42763,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >>> 1) & 0xFF;
                 regs.F.C = c;
@@ -42870,7 +42814,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >>> 1) & 0xFF;
                 regs.F.C = c;
@@ -42921,7 +42865,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >>> 1) & 0xFF;
                 regs.F.C = c;
@@ -42972,16 +42916,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 0;
+                let z = (regs.TR) & (1 << 0);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -43014,16 +42956,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 0;
+                let z = (regs.TR) & (1 << 0);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -43056,16 +42996,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 0;
+                let z = (regs.TR) & (1 << 0);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -43098,16 +43036,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 0;
+                let z = (regs.TR) & (1 << 0);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -43140,16 +43076,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 0;
+                let z = (regs.TR) & (1 << 0);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -43182,16 +43116,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 0;
+                let z = (regs.TR) & (1 << 0);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -43224,16 +43156,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 0;
+                let z = (regs.TR) & (1 << 0);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -43266,16 +43196,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 0;
+                let z = (regs.TR) & (1 << 0);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -43308,16 +43236,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 1;
+                let z = (regs.TR) & (1 << 1);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -43350,16 +43276,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 1;
+                let z = (regs.TR) & (1 << 1);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -43392,16 +43316,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 1;
+                let z = (regs.TR) & (1 << 1);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -43434,16 +43356,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 1;
+                let z = (regs.TR) & (1 << 1);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -43476,16 +43396,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 1;
+                let z = (regs.TR) & (1 << 1);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -43518,16 +43436,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 1;
+                let z = (regs.TR) & (1 << 1);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -43560,16 +43476,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 1;
+                let z = (regs.TR) & (1 << 1);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -43602,16 +43516,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 1;
+                let z = (regs.TR) & (1 << 1);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -43644,16 +43556,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 2;
+                let z = (regs.TR) & (1 << 2);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -43686,16 +43596,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 2;
+                let z = (regs.TR) & (1 << 2);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -43728,16 +43636,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 2;
+                let z = (regs.TR) & (1 << 2);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -43770,16 +43676,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 2;
+                let z = (regs.TR) & (1 << 2);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -43812,16 +43716,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 2;
+                let z = (regs.TR) & (1 << 2);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -43854,16 +43756,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 2;
+                let z = (regs.TR) & (1 << 2);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -43896,16 +43796,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 2;
+                let z = (regs.TR) & (1 << 2);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -43938,16 +43836,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 2;
+                let z = (regs.TR) & (1 << 2);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -43980,16 +43876,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 3;
+                let z = (regs.TR) & (1 << 3);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -44022,16 +43916,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 3;
+                let z = (regs.TR) & (1 << 3);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -44064,16 +43956,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 3;
+                let z = (regs.TR) & (1 << 3);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -44106,16 +43996,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 3;
+                let z = (regs.TR) & (1 << 3);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -44148,16 +44036,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 3;
+                let z = (regs.TR) & (1 << 3);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -44190,16 +44076,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 3;
+                let z = (regs.TR) & (1 << 3);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -44232,16 +44116,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 3;
+                let z = (regs.TR) & (1 << 3);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -44274,16 +44156,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 3;
+                let z = (regs.TR) & (1 << 3);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -44316,16 +44196,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 4;
+                let z = (regs.TR) & (1 << 4);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -44358,16 +44236,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 4;
+                let z = (regs.TR) & (1 << 4);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -44400,16 +44276,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 4;
+                let z = (regs.TR) & (1 << 4);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -44442,16 +44316,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 4;
+                let z = (regs.TR) & (1 << 4);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -44484,16 +44356,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 4;
+                let z = (regs.TR) & (1 << 4);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -44526,16 +44396,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 4;
+                let z = (regs.TR) & (1 << 4);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -44568,16 +44436,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 4;
+                let z = (regs.TR) & (1 << 4);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -44610,16 +44476,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 4;
+                let z = (regs.TR) & (1 << 4);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -44652,16 +44516,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 5;
+                let z = (regs.TR) & (1 << 5);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -44694,16 +44556,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 5;
+                let z = (regs.TR) & (1 << 5);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -44736,16 +44596,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 5;
+                let z = (regs.TR) & (1 << 5);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -44778,16 +44636,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 5;
+                let z = (regs.TR) & (1 << 5);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -44820,16 +44676,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 5;
+                let z = (regs.TR) & (1 << 5);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -44862,16 +44716,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 5;
+                let z = (regs.TR) & (1 << 5);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -44904,16 +44756,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 5;
+                let z = (regs.TR) & (1 << 5);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -44946,16 +44796,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 5;
+                let z = (regs.TR) & (1 << 5);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -44988,16 +44836,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 6;
+                let z = (regs.TR) & (1 << 6);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -45030,16 +44876,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 6;
+                let z = (regs.TR) & (1 << 6);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -45072,16 +44916,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 6;
+                let z = (regs.TR) & (1 << 6);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -45114,16 +44956,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 6;
+                let z = (regs.TR) & (1 << 6);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -45156,16 +44996,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 6;
+                let z = (regs.TR) & (1 << 6);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -45198,16 +45036,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 6;
+                let z = (regs.TR) & (1 << 6);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -45240,16 +45076,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 6;
+                let z = (regs.TR) & (1 << 6);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -45282,16 +45116,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 6;
+                let z = (regs.TR) & (1 << 6);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -45324,16 +45156,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 7;
+                let z = (regs.TR) & (1 << 7);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -45366,16 +45196,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 7;
+                let z = (regs.TR) & (1 << 7);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -45408,16 +45236,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 7;
+                let z = (regs.TR) & (1 << 7);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -45450,16 +45276,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 7;
+                let z = (regs.TR) & (1 << 7);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -45492,16 +45316,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 7;
+                let z = (regs.TR) & (1 << 7);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -45534,16 +45356,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 7;
+                let z = (regs.TR) & (1 << 7);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -45576,16 +45396,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 7;
+                let z = (regs.TR) & (1 << 7);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -45618,16 +45436,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 7;
+                let z = (regs.TR) & (1 << 7);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -52152,8 +51968,8 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let c = x & 1;
                 let x = regs.TR;
+                let c = x & 1;
                 x = (x >>> 1) | (regs.F.C << 7);
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
@@ -52203,8 +52019,8 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let c = x & 1;
                 let x = regs.TR;
+                let c = x & 1;
                 x = (x >>> 1) | (regs.F.C << 7);
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
@@ -52254,8 +52070,8 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let c = x & 1;
                 let x = regs.TR;
+                let c = x & 1;
                 x = (x >>> 1) | (regs.F.C << 7);
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
@@ -52305,8 +52121,8 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let c = x & 1;
                 let x = regs.TR;
+                let c = x & 1;
                 x = (x >>> 1) | (regs.F.C << 7);
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
@@ -52356,8 +52172,8 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let c = x & 1;
                 let x = regs.TR;
+                let c = x & 1;
                 x = (x >>> 1) | (regs.F.C << 7);
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
@@ -52407,8 +52223,8 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let c = x & 1;
                 let x = regs.TR;
+                let c = x & 1;
                 x = (x >>> 1) | (regs.F.C << 7);
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
@@ -52458,8 +52274,8 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let c = x & 1;
                 let x = regs.TR;
+                let c = x & 1;
                 x = (x >>> 1) | (regs.F.C << 7);
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
@@ -52509,8 +52325,8 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let c = x & 1;
                 let x = regs.TR;
+                let c = x & 1;
                 x = (x >>> 1) | (regs.F.C << 7);
                 regs.F.C = c;
                 regs.F.N = regs.F.H = 0;
@@ -52560,7 +52376,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = (x << 1) & 0xFF;
                 regs.F.C = c;
@@ -52611,7 +52427,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = (x << 1) & 0xFF;
                 regs.F.C = c;
@@ -52662,7 +52478,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = (x << 1) & 0xFF;
                 regs.F.C = c;
@@ -52713,7 +52529,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = (x << 1) & 0xFF;
                 regs.F.C = c;
@@ -52764,7 +52580,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = (x << 1) & 0xFF;
                 regs.F.C = c;
@@ -52815,7 +52631,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = (x << 1) & 0xFF;
                 regs.F.C = c;
@@ -52866,7 +52682,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = (x << 1) & 0xFF;
                 regs.F.C = c;
@@ -52917,7 +52733,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = (x << 1) & 0xFF;
                 regs.F.C = c;
@@ -52968,7 +52784,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >> 1) & 0xFF;
                 regs.F.C = c;
@@ -53019,7 +52835,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >> 1) & 0xFF;
                 regs.F.C = c;
@@ -53070,7 +52886,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >> 1) & 0xFF;
                 regs.F.C = c;
@@ -53121,7 +52937,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >> 1) & 0xFF;
                 regs.F.C = c;
@@ -53172,7 +52988,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >> 1) & 0xFF;
                 regs.F.C = c;
@@ -53223,7 +53039,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >> 1) & 0xFF;
                 regs.F.C = c;
@@ -53274,7 +53090,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >> 1) & 0xFF;
                 regs.F.C = c;
@@ -53325,7 +53141,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >> 1) & 0xFF;
                 regs.F.C = c;
@@ -53376,7 +53192,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = ((x << 1) | 1) & 0xFF;
                 regs.F.C = c;
@@ -53427,7 +53243,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = ((x << 1) | 1) & 0xFF;
                 regs.F.C = c;
@@ -53478,7 +53294,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = ((x << 1) | 1) & 0xFF;
                 regs.F.C = c;
@@ -53529,7 +53345,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = ((x << 1) | 1) & 0xFF;
                 regs.F.C = c;
@@ -53580,7 +53396,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = ((x << 1) | 1) & 0xFF;
                 regs.F.C = c;
@@ -53631,7 +53447,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = ((x << 1) | 1) & 0xFF;
                 regs.F.C = c;
@@ -53682,7 +53498,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = ((x << 1) | 1) & 0xFF;
                 regs.F.C = c;
@@ -53733,7 +53549,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = ((x << 1) | 1) & 0xFF;
                 regs.F.C = c;
@@ -53784,7 +53600,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >>> 1) & 0xFF;
                 regs.F.C = c;
@@ -53835,7 +53651,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >>> 1) & 0xFF;
                 regs.F.C = c;
@@ -53886,7 +53702,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >>> 1) & 0xFF;
                 regs.F.C = c;
@@ -53937,7 +53753,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >>> 1) & 0xFF;
                 regs.F.C = c;
@@ -53988,7 +53804,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >>> 1) & 0xFF;
                 regs.F.C = c;
@@ -54039,7 +53855,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >>> 1) & 0xFF;
                 regs.F.C = c;
@@ -54090,7 +53906,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >>> 1) & 0xFF;
                 regs.F.C = c;
@@ -54141,7 +53957,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let x = regs,TR;
+                let x = regs.TR;
                 let c = x & 1;
                 x = (x >>> 1) & 0xFF;
                 regs.F.C = c;
@@ -54192,16 +54008,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 0;
+                let z = (regs.TR) & (1 << 0);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -54234,16 +54048,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 0;
+                let z = (regs.TR) & (1 << 0);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -54276,16 +54088,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 0;
+                let z = (regs.TR) & (1 << 0);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -54318,16 +54128,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 0;
+                let z = (regs.TR) & (1 << 0);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -54360,16 +54168,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 0;
+                let z = (regs.TR) & (1 << 0);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -54402,16 +54208,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 0;
+                let z = (regs.TR) & (1 << 0);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -54444,16 +54248,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 0;
+                let z = (regs.TR) & (1 << 0);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -54486,16 +54288,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 0;
+                let z = (regs.TR) & (1 << 0);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -54528,16 +54328,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 1;
+                let z = (regs.TR) & (1 << 1);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -54570,16 +54368,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 1;
+                let z = (regs.TR) & (1 << 1);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -54612,16 +54408,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 1;
+                let z = (regs.TR) & (1 << 1);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -54654,16 +54448,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 1;
+                let z = (regs.TR) & (1 << 1);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -54696,16 +54488,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 1;
+                let z = (regs.TR) & (1 << 1);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -54738,16 +54528,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 1;
+                let z = (regs.TR) & (1 << 1);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -54780,16 +54568,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 1;
+                let z = (regs.TR) & (1 << 1);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -54822,16 +54608,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 1;
+                let z = (regs.TR) & (1 << 1);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -54864,16 +54648,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 2;
+                let z = (regs.TR) & (1 << 2);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -54906,16 +54688,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 2;
+                let z = (regs.TR) & (1 << 2);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -54948,16 +54728,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 2;
+                let z = (regs.TR) & (1 << 2);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -54990,16 +54768,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 2;
+                let z = (regs.TR) & (1 << 2);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -55032,16 +54808,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 2;
+                let z = (regs.TR) & (1 << 2);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -55074,16 +54848,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 2;
+                let z = (regs.TR) & (1 << 2);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -55116,16 +54888,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 2;
+                let z = (regs.TR) & (1 << 2);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -55158,16 +54928,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 2;
+                let z = (regs.TR) & (1 << 2);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -55200,16 +54968,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 3;
+                let z = (regs.TR) & (1 << 3);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -55242,16 +55008,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 3;
+                let z = (regs.TR) & (1 << 3);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -55284,16 +55048,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 3;
+                let z = (regs.TR) & (1 << 3);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -55326,16 +55088,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 3;
+                let z = (regs.TR) & (1 << 3);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -55368,16 +55128,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 3;
+                let z = (regs.TR) & (1 << 3);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -55410,16 +55168,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 3;
+                let z = (regs.TR) & (1 << 3);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -55452,16 +55208,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 3;
+                let z = (regs.TR) & (1 << 3);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -55494,16 +55248,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 3;
+                let z = (regs.TR) & (1 << 3);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -55536,16 +55288,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 4;
+                let z = (regs.TR) & (1 << 4);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -55578,16 +55328,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 4;
+                let z = (regs.TR) & (1 << 4);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -55620,16 +55368,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 4;
+                let z = (regs.TR) & (1 << 4);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -55662,16 +55408,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 4;
+                let z = (regs.TR) & (1 << 4);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -55704,16 +55448,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 4;
+                let z = (regs.TR) & (1 << 4);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -55746,16 +55488,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 4;
+                let z = (regs.TR) & (1 << 4);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -55788,16 +55528,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 4;
+                let z = (regs.TR) & (1 << 4);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -55830,16 +55568,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 4;
+                let z = (regs.TR) & (1 << 4);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -55872,16 +55608,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 5;
+                let z = (regs.TR) & (1 << 5);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -55914,16 +55648,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 5;
+                let z = (regs.TR) & (1 << 5);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -55956,16 +55688,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 5;
+                let z = (regs.TR) & (1 << 5);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -55998,16 +55728,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 5;
+                let z = (regs.TR) & (1 << 5);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -56040,16 +55768,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 5;
+                let z = (regs.TR) & (1 << 5);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -56082,16 +55808,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 5;
+                let z = (regs.TR) & (1 << 5);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -56124,16 +55848,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 5;
+                let z = (regs.TR) & (1 << 5);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -56166,16 +55888,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 5;
+                let z = (regs.TR) & (1 << 5);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -56208,16 +55928,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 6;
+                let z = (regs.TR) & (1 << 6);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -56250,16 +55968,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 6;
+                let z = (regs.TR) & (1 << 6);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -56292,16 +56008,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 6;
+                let z = (regs.TR) & (1 << 6);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -56334,16 +56048,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 6;
+                let z = (regs.TR) & (1 << 6);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -56376,16 +56088,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 6;
+                let z = (regs.TR) & (1 << 6);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -56418,16 +56128,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 6;
+                let z = (regs.TR) & (1 << 6);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -56460,16 +56168,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 6;
+                let z = (regs.TR) & (1 << 6);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -56502,16 +56208,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 6;
+                let z = (regs.TR) & (1 << 6);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -56544,16 +56248,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 7;
+                let z = (regs.TR) & (1 << 7);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -56586,16 +56288,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 7;
+                let z = (regs.TR) & (1 << 7);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -56628,16 +56328,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 7;
+                let z = (regs.TR) & (1 << 7);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -56670,16 +56368,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 7;
+                let z = (regs.TR) & (1 << 7);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -56712,16 +56408,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 7;
+                let z = (regs.TR) & (1 << 7);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -56754,16 +56448,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 7;
+                let z = (regs.TR) & (1 << 7);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -56796,16 +56488,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 7;
+                let z = (regs.TR) & (1 << 7);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
@@ -56838,16 +56528,14 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
-                let z = ((regs.TR) & 1) << 7;
+                let z = (regs.TR) & (1 << 7);
                 regs.F.N = 0;
                 regs.F.P = Z80_parity(z);
-                regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.H = 1;
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.TR = regs.TR;
                 regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
