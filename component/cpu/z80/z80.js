@@ -140,6 +140,15 @@ class z80_registers_t {
         this.Ls = this.Lt;
     }
 
+    exchange_de_hl() {
+        this.Ht = this.H;
+        this.Lt = this.L;
+        this.H = this.D;
+        this.L = this.E;
+        this.D = this.Ht;
+        this.E = this.Lt;
+    }
+
     exchange_shadow_af() {
         this.At = this.A;
         this.Ft = this.F.getbyte();

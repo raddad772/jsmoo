@@ -12,7 +12,7 @@ const GB_STR = 'gb';
 const SPECTRUM_STR = 'spectrum';
 const GENERICZ80_STR = 'genericz80'
 
-const DEFAULT_SYSTEM = SPECTRUM_STR;
+const DEFAULT_SYSTEM = GENERICZ80_STR;
 
 const DEFAULT_STEPS = {
 	master: 50,
@@ -106,10 +106,10 @@ class global_player_t {
 
 	set_system(to) {
 		this.timing_thread.pause();
-		if (this.system_kind === to) {
-			console.log('Already using that one bro')
-			return;
-		}
+		///if (this.system_kind === to) {
+		//	console.log('Already using that one bro')
+		//	return;
+		//}
 		if (this.system !== null) {
 			this.system.killall();
 			this.system = null;
@@ -244,9 +244,11 @@ function click_disable_tracing() {
 
 function click_step_clock() {
 	let steps = parseInt(ui_el.mc_input.value);
+	if (steps > 100000) console.log('STEP START');
 	dbg.do_break = false;
 	global_player.system.step_master(steps);
 	global_player.system.catch_up();
+	if (steps > 100000) console.log('STEP FINISH');
 	//console.log('PPU X, Y', global_player.system.ppu.line_cycle, global_player.system.clock.ppu_y)
 	//console.log('NMI ENABLED', global_player.system.ppu.io.nmi_enable);
 	//global_player.system.ppu.print_current_scroll();
@@ -594,7 +596,8 @@ async function main() {
 
 	//let rtg = await getBinary(local_server_url + ROM_to_get);
 	//snes = new SNES(jsa);
-	global_player.set_system();
+	console.log('DOIN IT HERE!');
+	global_player.set_system(DEFAULT_SYSTEM);
 	switch(global_player.system_kind) {
 		case 'spectrum':
 			//dbg.add_cpu(D_RESOURCE_TYPES.Z80, global_player.system.cpu);
