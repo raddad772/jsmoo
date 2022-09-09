@@ -12,7 +12,7 @@ const GB_STR = 'gb';
 const SPECTRUM_STR = 'spectrum';
 const GENERICZ80_STR = 'genericz80'
 
-const DEFAULT_SYSTEM = GENERICZ80_STR;
+const DEFAULT_SYSTEM = SPECTRUM_STR;
 
 const DEFAULT_STEPS = {
 	master: 50,
@@ -456,7 +456,6 @@ var fps_interval = null;
 function click_play() {
 	if (ui_el.frames_til_pause.value === '') dbg.frames_til_pause = 0;
 	else dbg.frames_til_pause = parseInt(ui_el.frames_til_pause.value);
-	console.log('LOOK DUDE', dbg.frames_til_pause);
 	dbg.do_break = false;
 	/*fps_old_frames = global_player.system.clock.frames_since_restart;
 	start_fps_count();
