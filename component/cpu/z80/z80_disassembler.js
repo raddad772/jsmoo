@@ -60,6 +60,12 @@ function Z80_disassemble(PC, IR, peek_func) {
         return r;
     }
 
+    let sread8 = function() {
+        let r = mksigned8(peek_func(PC, 0, false));
+        PC = (PC + 1) & 0xFFFF;
+        return '$' + hex4((PC + r) & 0xFFFF);
+    }
+
     let read8 = function() {
         let r =  '$' + hex2(peek_func(PC, 0, false));
         PC = (PC + 1) & 0xFFFF;
@@ -130,13 +136,13 @@ function Z80_disassemble(PC, IR, peek_func) {
             case 0xFD:
             case 0x00:
                 if (current_prefix === 0xDD) {
-                    console.log('DOIN IX');
+                    //console.log('DOIN IX');
                     HL = 'IX';
                     L = 'IXL';
                     H = 'IXH';
                 }
                 else if (current_prefix === 0xFD) {
-                    console.log('DOIN IY');
+                    //console.log('DOIN IY');
                     HL = 'IY';
                     L = 'IYL';
                     H = 'IYH';
@@ -156,13 +162,13 @@ function Z80_disassemble(PC, IR, peek_func) {
                                         ostr = 'DJNZ ' + read8();
                                         break;
                                     case 3:
-                                        ostr = 'DJ ' + read8();
+                                        ostr = 'JR ' + sread8();
                                         break;
                                     case 4:
                                     case 5:
                                     case 6:
                                     case 7:
-                                        ostr = 'JR ' + Z80D_tabl_cc[y - 4] + ', ' + read8();
+                                        ostr = 'JR ' + Z80D_tabl_cc[y - 4] + ', ' + sread8();
                                         break;
                                 }
 
@@ -325,7 +331,7 @@ function Z80_disassemble(PC, IR, peek_func) {
                     break;
                 case 2: // 0xED x=2
                     if ((z <= 3) && (y >= 4)) {
-                        console.log(typeof z, typeof y, z, y, Z80D_tabl_bli);
+                        //console.log(typeof z, typeof y, z, y, Z80D_tabl_bli);
                         ostr = Z80D_tabl_bli[y][z];
                     }
                     else
@@ -380,8 +386,10 @@ function test_Z80_disassemble() {
     // bit 1, b
     //let ins = [0x35, 0xDD, 0x35, 0xCB, 0x48]
     //let PCs = [0x00, 0x01, 0x03]
-    let ins = [0xFD, 0xDD, 0xCB, 0x10, 0xDC, 0xED, 0xB0]
-    let PCs = [0x00, 5];
+    //let ins = [0xFD, 0xDD, 0xCB, 0x10, 0xDC, 0xED, 0xB0]
+    //let PCs = [0x00, 5];
+    let ins = [0xA7, 0xED, 0x52, 0x19];
+    let PCs = [0, 2, 3];
     for (let i = 0; i < ins.length; i++) {
         mem[i] = ins[i];
     }

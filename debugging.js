@@ -18,7 +18,7 @@ let WDC_COLOR = '{b}';
 let MOS_COLOR = '{g}';
 let Z80_COLOR = '{g}';
 let WDC_TRACE_IO = false;
-let TRACE_INS_PADDING = 20;
+let TRACE_INS_PADDING = 14;
 
 const TRACERS = Object.freeze({
     R5A22: 0,

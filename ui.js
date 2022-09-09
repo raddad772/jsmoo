@@ -543,7 +543,6 @@ class keyboard_input_t {
 	}
 
 	keydown(keycode, event) {
-		console.log(keycode);
 		if (this.keys_cared_about_codes.indexOf(keycode) !== -1) {
 			this.keys[this.conversion_back[keycode]] = true;
 			if (global_player.input_capture) {

@@ -382,7 +382,7 @@ const Z80_opcode_matrix_premn = {
     0x2E: new Z80_opcode_info(0x2E, Z80_MN.LD_r_n, '', 'L'),
     0x2F: new Z80_opcode_info(0x2F, Z80_MN.CPL, 'CPL'),
 
-    0x30: new Z80_opcode_info(0x30, Z80_MN.JR_c_e, 'regs.F.C === 0'),
+    0x30: new Z80_opcode_info(0x30, Z80_MN.JR_c_e, '', 'regs.F.C === 0'),
     0x31: new Z80_opcode_info(0x31, Z80_MN.LD_rr_nn, '', 'SP'),
     0x32: new Z80_opcode_info(0x32, Z80_MN.LD_inn_a, ''),
     0x33: new Z80_opcode_info(0x33, Z80_MN.INC_rr, '', 'SP'),
@@ -544,7 +544,7 @@ const Z80_opcode_matrix_premn = {
     0xC6: new Z80_opcode_info(0xC6, Z80_MN.ADD_a_n, ''),
     0xC7: new Z80_opcode_info(0xC7, Z80_MN.RST_o, '', '0'),
     0xC8: new Z80_opcode_info(0xC8, Z80_MN.RET_c, '', 'regs.F.Z === 1'),
-    0xC9: new Z80_opcode_info(0xC9, Z80_MN.RET),
+    0xC9: new Z80_opcode_info(0xC9, Z80_MN.RET, ''),
     0xCA: new Z80_opcode_info(0xCA, Z80_MN.JP_c_nn, '', 'regs.F.Z === 1'),
     //0xCB: new Z80_opcode_info(0xCB, Z80_MN.),
     0xCC: new Z80_opcode_info(0xCC, Z80_MN.CALL_c_nn, '', 'regs.F.Z === 1'),

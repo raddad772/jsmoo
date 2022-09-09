@@ -975,7 +975,7 @@ operand8(what) {
         this.addl('regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;');
         this.addl('regs.F.Z = +((z & 0xFF) === 0);')
         this.setS8('z');
-        if (out !== null) this.addl(out + ' = z;');
+        if (out !== null) this.addl(out + ' = z & 0xFF;');
     }
 
     XOR(x, y, out=null) {
@@ -1171,9 +1171,9 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.addl('regs.WZ = (((regs.H << 8) | regs.L) + 1) & 0xFFFF;');
             ag.addl('regs.t[0] = regs.F.V; regs.t[1] = regs.F.Z; regs.t[2] = regs.F.S;');
             ag.addcycles(4);
-            ag.ADD('regs.H', argL, '0', 'regs.H', false);
+            ag.ADD('regs.L', argL, '0', 'regs.L', false);
             ag.addcycles(3);
-            ag.ADD('regs.L', argH, 'regs.F.C', 'regs.L', false);
+            ag.ADD('regs.H', argH, 'regs.F.C', 'regs.H', false);
             ag.addl('regs.F.V = regs.t[0]; regs.F.Z = regs.t[1]; regs.F.S = regs.t[2];');
             break;
         case Z80_MN.AND_a_irr:  //n16&
@@ -1250,7 +1250,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.CP_a_r:  //n8& x
             ag.Q(1);
-            ag.CP('regs.TR', ag.zregrip(arg1));
+            ag.CP('regs.A', ag.zregrip(arg1));
             break;
         case Z80_MN.CPD:  //
             ag.Q(1);
