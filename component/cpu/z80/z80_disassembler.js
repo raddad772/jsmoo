@@ -7,7 +7,7 @@ class Z80_disassembly_output {
     }
 }
 
-/* Z80 instruction decoding courtesy algorithm at
+/* Z80 instruction decoding adapted from algorithm at
     http://www.z80.info/decoding.htm
  */
 
@@ -51,7 +51,11 @@ function Z80_disassemble(PC, IR, peek_func) {
         if (o === 'HL') o = HL;
         if (o === 'L') o = L;
         if (o === 'H') o = H;
-        if (o === '(HL)') o = '(' + HL + ')';
+        if (o === '(HL)') {
+            if (HL === 'HL')
+                o = '(HL)';
+            else o = '(' + HL + '+' + read8() + ')';
+        }
         return o;
     }
     let fetch = function() {
@@ -84,6 +88,7 @@ function Z80_disassemble(PC, IR, peek_func) {
     let ostr = '';
 
     let decoded_bytes = 0;
+    HL = 'HL';
     // So we don't loop forever
     // Decode regular
     while(decoded_bytes < 16) {
@@ -188,6 +193,7 @@ function Z80_disassemble(PC, IR, peek_func) {
                                         else ostr = 'LD A, (DE)';
                                         break;
                                     case 2:
+                                        console.log('IS HERE');
                                         if (q === 0) ostr = 'LD (' + read16() + '), ' + repl0('HL');
                                         else ostr = ostr = 'LD ' + repl0('HL') + ',(' + read16() + ')';
                                         break;
@@ -218,6 +224,7 @@ function Z80_disassemble(PC, IR, peek_func) {
                     case 1: // x = 1
                         if ((z === 6) && (y === 6)) ostr = 'HALT';
                         else ostr = 'LD ' + repl0(Z80D_tabl_r[y]) + ', ' + repl0(Z80D_tabl_r[z]);
+                        console.log('IS HERE2');
                         break;
                     case 2: // x = 2
                         ostr = Z80D_tabl_alu[y] + ' ' + repl0(Z80D_tabl_r[z]);
@@ -388,8 +395,8 @@ function test_Z80_disassemble() {
     //let PCs = [0x00, 0x01, 0x03]
     //let ins = [0xFD, 0xDD, 0xCB, 0x10, 0xDC, 0xED, 0xB0]
     //let PCs = [0x00, 5];
-    let ins = [0xA7, 0xFD, 0xE5];
-    let PCs = [0, 1];
+    let ins = [0xFD, 0x6E, 0x0E, 0x02];
+    let PCs = [0];
     for (let i = 0; i < ins.length; i++) {
         mem[i] = ins[i];
     }
@@ -405,4 +412,4 @@ function test_Z80_disassemble() {
         console.log(hex4(PC), o.disassembled);
     }
 }
-//test_Z80_disassemble();
+test_Z80_disassemble();

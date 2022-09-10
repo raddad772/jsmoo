@@ -1,7 +1,11 @@
 "use strict";
 
 //let Z80_TRACE_BRK = 1659300;
-let Z80_TRACE_BRK = -1;
+//let Z80_TRACE_BRK = -1;
+//let Z80_PC_BRK = 0x0EDF; //0x0C0A;
+
+let Z80_TRACE_BRK = 5713457;
+let Z80_PC_BRK = -1;
 
 const Z80P = Object.freeze({
     HL: 0,
@@ -266,6 +270,7 @@ class z80_t {
         if (dbg.watch_on) {
             console.log(hex4(this.PCO), 'prefix', hex2(this.regs.prefix), 'instruction', this.current_instruction)
         }
+        if (this.PCO === Z80_PC_BRK) dbg.break();
         this.regs.TCU = 0;
         this.regs.prefix = 0;
         this.regs.rprefix = Z80P.HL;
@@ -340,7 +345,18 @@ class z80_t {
                     break;
                 }
             case 4: // CBd begins here, as does operand()
-                this.regs.WZ = (this.regs.H << 8) | this.regs.L;
+                //
+                switch(this.regs.rprefix) {
+                    case Z80P.HL:
+                        this.regs.WZ = (this.regs.H << 8) | this.regs.L;
+                        break;
+                    case Z80P.IX:
+                        this.regs.WZ = this.regs.IX;
+                        break;
+                    case Z80P.IY:
+                        this.regs.WZ = this.regs.IY;
+                        break;
+                }
                 this.set_pins_opcode();
                 break;
             case 5:
@@ -438,7 +454,7 @@ class z80_t {
         } else {
             if (this.trace_on && this.regs.TCU === 1) {
                 this.last_trace_cycle = this.PCO;
-                dbg.traces.add(TRACERS.Z80, this.trace_cycles, this.trace_format(Z80_disassemble(this.PCO, this.trace_peek(this.PCO, 0,0, false), this.trace_peek), this.PCO));
+                dbg.traces.add(TRACERS.Z80, this.trace_cycles, this.trace_format(Z80_disassemble(this.PCO, this.trace_peek(this.PCO, 0, false), this.trace_peek), this.PCO));
             }
             // Execute an actual opcode
             this.current_instruction.exec_func(this.regs, this.pins);

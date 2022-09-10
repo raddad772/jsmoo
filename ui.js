@@ -285,6 +285,9 @@ function click_bg_dump(which) {
 			console.log('DUMP IT!');
 			global_player.system.ppu.render_bgtables_from_memory(0, 260);
 			break;
+		case 'spectrum':
+			global_player.system.ula.dump_bg(0, 370);
+			break;
 		default:
 			console.log('HUH?', global_player.system_kind);
 			break;

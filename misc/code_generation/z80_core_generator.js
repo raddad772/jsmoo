@@ -1317,7 +1317,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.DEC_r:  //n8&
             ag.Q(1);
-            ag.addl('regs.TR = (' + ag.zregrip(arg1) + ' - 1) & 0xFF;');
+            ag.DEC(ag.zregrip(arg1));
             ag.zregripw(arg1, 'regs.TR');
             break;
         case Z80_MN.DEC_rr:  //n16&
@@ -1414,7 +1414,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.INC_r:  //n8&
             ag.Q(1);
-            ag.addl('regs.TR = (' + ag.zregrip(arg1) + ' + 1) & 0xFF;');
+            ag.INC(ag.zregrip(arg1));
             ag.zregripw(arg1, 'regs.TR');
             break;
         case Z80_MN.INC_rr:  //n16&
