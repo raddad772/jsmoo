@@ -271,5 +271,30 @@ class ZXSpectrum_ULA {
             }
         }
         ctx.putImageData(imgdata, 0, 0);
+        //this.dump_bg(0, 370);
+    }
+
+    dump_bg(y_origin, x_origin) {
+        let ctx = this.canvas.getContext('2d');
+        let pattern_base = this.io.bg_pattern_table * 0x1000;
+        let imgdata = ctx.getImageData(x_origin, y_origin, 256, 192);
+        for (let sy = 0; sy < 192; sy++) {
+            for (let sx = 0; sx < 256; sx++) {
+                let addr = (((sy >>> 3) * 32) + (sx >>> 3)) + sy & 7;
+                let bmask = 1 << (sx & 7);
+                let color = this.bus.ula_read(0x4000 | addr) & bmask;
+                //console.log(color);
+                color = +(color !== 0) * 255;
+                if (color !== 0) console.log(color);
+                //color = 0;
+
+                let di = ((sy * 256) + sx) * 4;
+                imgdata.data[di] = color;
+                imgdata.data[di+1] = color;
+                imgdata.data[di+2] = color;
+                imgdata.data[di+3] = 255;
+            }
+        }
+        ctx.putImageData(imgdata, x_origin, y_origin);
     }
 }
