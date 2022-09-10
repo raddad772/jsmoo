@@ -12,7 +12,8 @@ const GB_STR = 'gb';
 const SPECTRUM_STR = 'spectrum';
 const GENERICZ80_STR = 'genericz80'
 
-const DEFAULT_SYSTEM = GENERICZ80_STR;
+//const DEFAULT_SYSTEM = GENERICZ80_STR;
+const DEFAULT_SYSTEM = SPECTRUM_STR;
 
 const DEFAULT_STEPS = {
 	master: 50,
@@ -209,11 +210,12 @@ async function load_selected_rom() {
 }
 
 async function reload_roms(where) {
+	console.log('realoding ROMs')
 	let fs = new basic_fs();
 	let allfiles = await fs._get_files();
 	let outfiles = [];
 	for (let i in allfiles) {
-		if (allfiles[i].indexOf('/' + global_player.system_kind + '/roms/') !== -1) {
+		if (allfiles[i].indexOf('/' + where + '/roms/') !== -1) {
 			outfiles.push(allfiles[i]);
 		}
 	}
@@ -232,6 +234,7 @@ async function reload_roms(where) {
 async function system_selected(where) {
 	ui_el.system_select.value = where;
 	await reload_roms(where);
+
 }
 
 function click_enable_tracing() {

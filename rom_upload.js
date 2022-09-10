@@ -41,7 +41,7 @@ async function uploadFile(fileId) {
             };
 
             await bfs.write_file(basic_fs_join('/' + global_player.system_kind + '/roms/', file_name), e.target.result);
-            await reload_roms();
+            await reload_roms(global_player.system_kind);
             /*let trans = db.transaction(['files'], 'readwrite');
             let addReq = trans.objectStore('files').put(ob);
 

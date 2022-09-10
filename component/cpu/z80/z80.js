@@ -236,6 +236,7 @@ class z80_t {
     }
 
     notify_IRQ(){
+        return;
         this.irq();
     }
 
@@ -314,12 +315,12 @@ class z80_t {
             case 3: // T3 not much here
                 // If we need to fetch another, start that and set TCU back to 1
                 if (this.regs.t[0] === 0xDD) { this.regs.prefix = 0xDD; this.regs.rprefix = Z80P.IX; this.set_pins_opcode(); this.regs.TCU = 0; break; }
-                if (this.regs.t[0] === 0xfD) { this.regs.prefix = 0xFD; this.regs.rprefix = Z80P.IY; this.set_pins_opcode(); this. regs.TCU = 0; break; }
+                if (this.regs.t[0] === 0xfD) { this.regs.prefix = 0xFD; this.regs.rprefix = Z80P.IY; this.set_pins_opcode(); this.regs.TCU = 0; break; }
                 // elsewise figure out what to do next
                 // this gets a little tricky
                 // 4, 5, 6, 7, 8, 9, 10, 11, 12 = rprefix != HL and is CB, execute CBd
                 if ((this.regs.t[0] === 0xCB) && (this.regs.rprefix !== Z80P.HL)) {
-                    this.regs.prefix = (this.regs.prefix << 8) | 0xCB;
+                    this.regs.prefix = ((this.regs.prefix << 8) | 0xCB) & 0xFFFF;
                     break;
                 }
                 // . so 13, 14, 15, 16. opcode, then immediate execution CB
@@ -343,10 +344,12 @@ class z80_t {
                 this.set_pins_opcode();
                 break;
             case 5:
-                this.regs.WZ = (this.regs.WZ + mksigned8(this.pins.D)) & 0xFFFF;
-                this.set_pins_nothing();
+                this.pins.RD = 1;
+                this.pins.MRQ = 1;
                 break;
             case 6: // last step of operand
+                this.regs.WZ = (this.regs.WZ + mksigned8(this.pins.D)) & 0xFFFF;
+                this.set_pins_nothing();
                 break;
             case 7: // wait a cycle
                 break;
@@ -356,10 +359,12 @@ class z80_t {
                 this.set_pins_opcode();
                 break;
             case 10:
-                this.set_pins_nothing();
-                this.regs.t[0] = this.pins.D;
+                this.pins.RD = 1;
+                this.pins.MRQ = 1;
                 break;
             case 11: // cycle 3 of opcode tech
+                this.set_pins_nothing();
+                this.regs.t[0] = this.pins.D;
                 break;
             case 12: // cycle 4 of opcode fetch. execute instruction!
                 this.set_instruction(this.regs.t[0]);
@@ -369,10 +374,12 @@ class z80_t {
                 this.set_pins_opcode();
                 break;
             case 14:
-                this.regs.t[0] = this.pins.D;
-                this.set_pins_nothing();
+                this.pins.MRQ = 1;
+                this.pins.RD = 1;
                 break;
             case 15:
+                this.regs.t[0] = this.pins.D;
+                this.set_pins_nothing();
                 break;
             case 16:
                 // execute from ED now
