@@ -4,7 +4,7 @@
 //let Z80_TRACE_BRK = -1;
 //let Z80_PC_BRK = 0x0EDF; //0x0C0A;
 
-let Z80_TRACE_BRK = 5713457;
+let Z80_TRACE_BRK = -1; //5713457;
 let Z80_PC_BRK = -1;
 
 const Z80P = Object.freeze({
