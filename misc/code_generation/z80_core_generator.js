@@ -294,7 +294,7 @@ class Z80_switchgen {
 
     operand16(what) {
         this.read('regs.PC', what);
-        this.addl('regs.PC = (regs.PC  1) & 0xFFFF;');
+        this.addl('regs.PC = (regs.PC + 1) & 0xFFFF;');
 
         this.read('regs.PC', 'regs.t[4]');
         this.addl('regs.PC = (regs.PC + 1) & 0xFFFF;');
