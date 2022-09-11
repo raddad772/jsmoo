@@ -1,6 +1,7 @@
 "use strict";
 
 const Z80_DO_FULL_MEMCYCLES = false;
+const Z80_DO_MEM_REFRESHES = true; // Put I/R on address bus
 /*
  For convenience for my own emulator, MRQ/RD, MRQ/WR,
   IO/RD, and IO/WR only last 1 cycle, to cut down on
@@ -29,21 +30,24 @@ const Z80T = Object.freeze({
 
 
 class Z80_cycle {
-    constructor(addr, val, RD, WR, MRQ, IO) {
+    constructor(addr, val, RD, WR, MRQ, IO, force_treat_as_read) {
         this.addr = addr;
         this.val = val;
-        this.RD = RD;
-        this.WR = WR;
-        this.MRQ = MRQ;
-        this.IO = IO;
+        this.pins = {
+            RD: RD,
+            WR: WR,
+            MRQ: MRQ,
+            IO: IO
+        }
+        this.force_treat_as_read = force_treat_as_read;
     }
 
     serializable() {
         let ostr = '';
-        ostr += this.RD ? 'r' : '-';
-        ostr += this.WR ? 'w' : '-';
-        ostr += this.MRQ ? 'm' : '-';
-        ostr += this.IO ? 'i' : '-';
+        ostr += this.pins.RD ? 'r' : '-';
+        ostr += this.pins.WR ? 'w' : '-';
+        ostr += this.pins.MRQ ? 'm' : '-';
+        ostr += this.pins.IO ? 'i' : '-';
         return [this.addr, this.val, ostr];
     }
 }
@@ -61,14 +65,15 @@ class Z80_t_states {
         }
     }
 
-    add(addr, val, RD, WR, MRQ, IO) {
-        this.cycles.push(new Z80_cycle(addr, val, RD, WR, MRQ, IO));
+    add(addr, val, RD, WR, MRQ, IO, force_treat_as_read) {
+        this.cycles.push(new Z80_cycle(addr, val, RD, WR, MRQ, IO, force_treat_as_read));
     }
 
     serializeable() {
         let out = [];
         for (let i in this.cycles) {
-            out.push(this.cycles[i].serializeable());
+            if (this.cycles[i].hasOwnProperty('serializeable')) out.push(this.cycles[i].serializeable());
+            else out.push(this.cycles[i]);
         }
         return out;
     }
@@ -112,43 +117,50 @@ class Z80_proc_test {
         }
     }
 
-    finalize(regs) {
+    finalize(regs, initial_PC, opcode_stream) {
         regs.dump_to(this.final);
         let initial_RAMs = [];
         let final_RAMs = [];
-        let ports = [];
         let initial_set = new Set();
         let final_set = new Set();
+        for (let i in opcode_stream) {
+            let addr = parseInt(initial_PC)+parseInt(i);
+            initial_set.add(addr);
+            final_set.add(addr);
+            initial_RAMs.push([addr, opcode_stream[i]]);
+            final_RAMs.push([addr, opcode_stream[i]]);
+        }
         for (let i in this.cycles.cycles) {
-            let cycle = this.cycles.cycles[i];
-           let addr = cycle[0];
-           let val = cycle[1];
-           let pins = cycle[2];
-           if (addr !== null && val !== null) {
-               if (Z80T_pins_RDR(pins)) {
-                   if (!initial_set.has(addr)) {
-                       initial_set.add(addr);
-                       initial_RAMs.push([addr, val]);
-                   }
-               }
-               if (Z80T_pins_WRR(pins)) {
-                   if (!initial_set.has(addr)) {
-                       initial_set.add(addr);
-                       initial_RAMs.push([addr, 0]);
-                   }
-               }
-               if ((!final_set.has(addr)) && (Z80T_pins_RDR(pins) || Z80T_pins_WRR(pins))) {
-                   final_set.add(addr);
-                   final_RAMs.push([addr, val]);
-               } else {
-                   for (let j in final_RAMs) {
-                       if (final_RAMs[j][0] === addr) {
-                           final_RAMs[j][1] = val;
-                           break;
-                       }
-                   }
-               }
-           }
+            let icycle = this.cycles.cycles[i];
+            let cycle = icycle.serializable();
+            let addr = cycle[0];
+            let val = cycle[1];
+            let pins = cycle[2];
+            if (addr !== null && val !== null) {
+                if (icycle.force_treat_as_read) {
+                    if (!initial_set.has(addr)) {
+                        initial_set.add(addr);
+                        initial_RAMs.push([addr, val]);
+                    }
+                }
+                if (Z80T_pins_WRR(pins)) {
+                    if (!initial_set.has(addr)) {
+                        initial_set.add(addr);
+                        initial_RAMs.push([addr, 0]);
+                    }
+                }
+                if ((!final_set.has(addr)) && (Z80T_pins_RDR(pins) || Z80T_pins_WRR(pins))) {
+                    final_set.add(addr);
+                    final_RAMs.push([addr, val]);
+                } else {
+                    for (let j in final_RAMs) {
+                        if (final_RAMs[j][0] === addr) {
+                            final_RAMs[j][1] = val;
+                            break;
+                        }
+                    }
+                }
+            }
         }
         initial_RAMs = initial_RAMs.sort((a, b) => {return a[0] - b[0]});
         final_RAMs = final_RAMs.sort((a, b) => {return a[0] - b[0]});
@@ -164,8 +176,8 @@ class Z80_proc_test {
         this.ports.push([addr, val, 'w']);
     }
 
-    add_cycle(addr, val, RD, WR, MRQ, IO) {
-        this.cycles.add(addr, val, RD, WR, MRQ, IO);
+    add_cycle(addr, val, RD, WR, MRQ, IO, force_treat_as_read) {
+        this.cycles.add(addr, val, RD, WR, MRQ, IO, force_treat_as_read);
     }
 }
 
@@ -390,6 +402,8 @@ function Z80_generate_registers(where) {
     where.l = pt_rnd8();
     where.i = pt_rnd8();
     where.r = pt_rnd8() & 0x7F;
+
+    where.ei = pt_rnd8() & 1;
     
     where.wz = pt_rnd16();
     where.ix = pt_rnd16();
@@ -403,6 +417,8 @@ function Z80_generate_registers(where) {
     where.im = pt_rnd8() % 3;
     where.p = pt_rnd8() & 1;
     where.q = pt_rnd8() & 1;
+    where.iff1 = pt_rnd8() & 1;
+    where.iff2 = pt_rnd8() & 1;
 }
 
 class Z80_test_generator {
@@ -445,7 +461,9 @@ class Z80_test_generator {
     }
 
     read(wherefrom, val=null) {
-        if (typeof wherefrom !== 'number') debugger;
+        if (typeof wherefrom !== 'number') {
+            wherefrom = this.readreg(wherefrom);
+        }
         if (val === null) val = pt_rnd8();
         wherefrom &= 0xFFFF;
         if (wherefrom in this.already_done_addrs) {
@@ -461,20 +479,22 @@ class Z80_test_generator {
         if (Z80_DO_FULL_MEMCYCLES) {
             this.test.add_cycle(wherefrom, null, 1, 0, 1, 0);
             this.test.add_cycle(wherefrom, null, 1, 0, 1, 0);
-            this.test.add_cycle(wherefrom, val, 0, 0, 0, 0);
+            this.test.add_cycle(wherefrom, val, 0, 0, 0, 0, true);
         }
         else {
             // For convenience of emulation, we only MREQ on T2
             this.test.add_cycle(wherefrom, null, 0, 0, 0, 0);
             this.test.add_cycle(wherefrom, null, 1, 0, 1, 0);
-            this.test.add_cycle(wherefrom, val, 0, 0, 0, 0);
+            this.test.add_cycle(wherefrom, val, 0, 0, 0, 0, true);
         }
 
         return val;
     }
 
     write(addr, val) {
-        if (typeof addr !== 'number') debugger;
+        if (typeof addr !== 'number') {
+            addr = this.readreg(addr);
+        }
         addr &= 0xFFFF;
         val &= 0xFF;
         // Data is present for all 3 cycles
@@ -558,8 +578,11 @@ class Z80_test_generator {
     fetch_opcode(opcode_stream, i) {
         this.test.add_cycle(this.regs.PC, null, 0, 0, 0, 0);
         this.test.add_cycle(this.regs.PC, null, 1, 0, 1, 0);
-        this.test.add_cycle(this.regs.I | this.regs.R, opcode_stream[i], 0, 0, Z80_DO_FULL_MEMCYCLES ? 1 : 0, 0);
-        this.test.add_cycle(this.regs.I | this.regs.R, null, 0, 0, 0, 0);
+        let s;
+        if (Z80_DO_MEM_REFRESHES) s = (this.regs.I << 8) | this.regs.R;
+        else s = this.regs.PC;
+        this.test.add_cycle(s, opcode_stream[i], 0, 0, Z80_DO_FULL_MEMCYCLES ? 1 : 0, 0);
+        this.test.add_cycle(s, null, 0, 0, 0, 0);
     }
 
     Q(w) {
@@ -568,6 +591,8 @@ class Z80_test_generator {
 
     writereg(what, val) {
         switch (what) {
+            case '_':
+                break;
             case 'A':
                 this.regs.A = val & 0xFF;
                 break;
@@ -832,7 +857,7 @@ class Z80_test_generator {
 
         this.regs.F.N = 0;
         this.regs.F.PV = +(z === 0x80);
-        this.regs.F.setXYSZ(z);
+        this.regs.setXYSZ(z);
         this.regs.F.H = +((z & 0x0F) === 0);
 
         return z;
@@ -866,7 +891,9 @@ class Z80_test_generator {
     }
 
     RLC(x) {
+        console.log('SHIFTING', x, 'RIGHT BY 1');
         x = ((x << 1) | (x >>> 7)) & 0xFF;
+        console.log(x);
 
         this.regs.F.C = x & 1;
         this.regs.F.N = this.regs.F.H = 0;
@@ -2022,9 +2049,34 @@ class Z80_test_generator {
 
     instruction(code) {
         let c = Z80_opcode_matrix[code];
-        let fn = this[Z80_MN_R[c.ins]];
+        let fn = this[Z80_MN_R[c.ins]].bind(this);
         fn(c.arg1, c.arg2, c.arg3);
     }
+
+    instructionCB(code) {
+        let c = Z80_CB_opcode_matrix[code];
+        let fn = this[Z80_MN_R[c.ins]].bind(this);
+        fn(c.arg1, c.arg2, c.arg3);
+    }
+
+    instructionED(code) {
+        let c = Z80_ED_opcode_matrix[code];
+        let fn = this[Z80_MN_R[c.ins]].bind(this);
+        fn(c.arg1, c.arg2, c.arg3);
+    }
+
+    instructionCBd(addr, code) {
+        let c = Z80_CBd_opcode_matrix[code];
+        let fn = this[Z80_MN_R[c.ins]].bind(this);
+        let arg1 = c.arg1;
+        let arg2 = c.arg2;
+        let arg3 = c.arg3;
+        if (arg1 === 'addr') arg1 = addr;
+        if (arg2 === 'addr') arg2 = addr;
+        if (arg3 === 'addr') arg3 = addr;
+        fn(arg1, arg2, arg3);
+    }
+
 
     /**
      * @param opcode_stream {Uint8Array}
@@ -2043,6 +2095,7 @@ class Z80_test_generator {
             this.test = new Z80_proc_test();
             Z80_generate_registers(this.test.initial);
             this.regs = new Z80T_state(this.test.initial);
+            let ipc = this.regs.PC;
 
             let curd;
 
@@ -2073,15 +2126,16 @@ class Z80_test_generator {
             }
             let operand;
 
-            if ((curd === 0xCB) && (rprefix !== Z80T.HL)) {
+            if ((curd === 0xCB) && (this.rprefix !== Z80T.HL)) {
                 this.prefix = ((this.prefix << 8) | 0xCB) & 0xFFFF;
-                let yr = (rprefix === Z80T.IX) ? this.regs.IX : this.regs.IY;
+                let yr = (this.rprefix === Z80T.IX) ? this.regs.IX : this.regs.IY;
                 // fetch operand from instruction stream
                 this.fetch_opcode(opcode_stream, i);
                 operand = opcode_stream[i];
                 this.wait(2);
                 i++;
                 this.regs.WZ = (yr + mksigned8(operand)) & 0xFFFF;
+                curd = operand;
                 this.instructionCBd(this.regs.WZ, operand);
             }
             else if (curd === 0xCB) { // with no prefix
@@ -2090,6 +2144,7 @@ class Z80_test_generator {
                 i++;
                 this.regs.inc_R();
                 this.prefix = 0xCB;
+                curd = operand;
                 this.instructionCB(operand);
             }
             else if (curd === 0xED) {
@@ -2098,11 +2153,42 @@ class Z80_test_generator {
                 i++;
                 this.regs.inc_R();
                 this.prefix = 0xED;
+                curd = operand;
                 this.instructionED(operand);
             }
             else {
                 this.instruction(curd)
             }
+            this.test.finalize(this.regs, ipc, opcode_stream);
+            let ns = '';
+            for (let i in opcode_stream) {
+                if (i !== '0') ns += ' ';
+                ns += hex2(opcode_stream[i]);
+            }
+            this.test.name = ns + ' ' + hex4(testnum)
+            tests.push(this.test.serializable());
         }
+        return tests;
     }
 }
+
+function generate_Z80_tests(seed=null) {
+    if (seed !== null) rand_seed = seed;
+    let os1 = new Uint8Array(1);
+    let os2 = new Uint8Array(2);
+    let os3 = new Uint8Array(3);
+    let os4 = new Uint8Array(4);
+    let test_generator = new Z80_test_generator(false);
+
+    //os1[0] = 0x04; // INC B
+
+    //os2[0] = 0xDD;
+    //os2[1] = 0x4C; // LD C, IXH
+
+    os2[0] = 0xCB;
+    os2[1] = 0x06; // RLC (HL)
+    let tst = test_generator.generate_test(os2, 1);
+    console.log(tst);
+}
+
+generate_Z80_tests();
