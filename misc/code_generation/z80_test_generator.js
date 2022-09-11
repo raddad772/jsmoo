@@ -42,7 +42,7 @@ class Z80_cycle {
         this.force_treat_as_read = force_treat_as_read;
     }
 
-    serializable() {
+    serializeable() {
         let ostr = '';
         ostr += this.pins.RD ? 'r' : '-';
         ostr += this.pins.WR ? 'w' : '-';
@@ -72,8 +72,7 @@ class Z80_t_states {
     serializeable() {
         let out = [];
         for (let i in this.cycles) {
-            if (this.cycles[i].hasOwnProperty('serializeable')) out.push(this.cycles[i].serializeable());
-            else out.push(this.cycles[i]);
+            out.push(this.cycles[i].serializeable());
         }
         return out;
     }
@@ -119,6 +118,7 @@ class Z80_proc_test {
 
     finalize(regs, initial_PC, opcode_stream) {
         regs.dump_to(this.final);
+        //console.log(this.cycles.cycles);
         let initial_RAMs = [];
         let final_RAMs = [];
         let initial_set = new Set();
@@ -130,9 +130,11 @@ class Z80_proc_test {
             initial_RAMs.push([addr, opcode_stream[i]]);
             final_RAMs.push([addr, opcode_stream[i]]);
         }
+        let ocycles = [];
         for (let i in this.cycles.cycles) {
             let icycle = this.cycles.cycles[i];
-            let cycle = icycle.serializable();
+            let cycle = icycle.serializeable();
+            ocycles.push(cycle);
             let addr = cycle[0];
             let val = cycle[1];
             let pins = cycle[2];
@@ -166,6 +168,7 @@ class Z80_proc_test {
         final_RAMs = final_RAMs.sort((a, b) => {return a[0] - b[0]});
         this.initial.ram = initial_RAMs;
         this.final.ram = final_RAMs;
+        //this.cycles = ocycles;
     }
 
     add_port_in(addr, val) {
@@ -176,7 +179,7 @@ class Z80_proc_test {
         this.ports.push([addr, val, 'w']);
     }
 
-    add_cycle(addr, val, RD, WR, MRQ, IO, force_treat_as_read) {
+    add_cycle(addr, val, RD, WR, MRQ, IO, force_treat_as_read=false) {
         this.cycles.add(addr, val, RD, WR, MRQ, IO, force_treat_as_read);
     }
 }
