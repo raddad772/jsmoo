@@ -445,6 +445,7 @@ class Z80_test_generator {
     }
 
     read(wherefrom, val=null) {
+        if (typeof wherefrom !== 'number') debugger;
         if (val === null) val = pt_rnd8();
         wherefrom &= 0xFFFF;
         if (wherefrom in this.already_done_addrs) {
@@ -473,6 +474,7 @@ class Z80_test_generator {
     }
 
     write(addr, val) {
+        if (typeof addr !== 'number') debugger;
         addr &= 0xFFFF;
         val &= 0xFF;
         // Data is present for all 3 cycles
@@ -667,6 +669,9 @@ class Z80_test_generator {
             case 'R':
                 this.regs.R = val & 0xFF;
                 break;
+            case 'AFs':
+                this.regs.AF_ = val;
+                break;
             default:
                 console.log('MISSING REGWRITE', what);
                 break;
@@ -747,6 +752,8 @@ class Z80_test_generator {
                 return this.regs.I;
             case 'R':
                 return this.regs.R;
+            case 'AFs':
+                return this.regs.AF_;
             default:
                 console.log('MISSING REGREAD', what);
                 return null;
@@ -1405,7 +1412,7 @@ class Z80_test_generator {
     }
 
     LD_irr_n(x) {
-        this.Q(0;)
+        this.Q(0);
         let addr = this.displace(x, 2);
         this.write(addr, this.operand());
     }
@@ -1466,9 +1473,517 @@ class Z80_test_generator {
         this.regs.SP = this.readreg(x);
     }
 
+    LDD() {
+        this.Q(1);
+        let ta = this.readreg('_HL');
+        let data = this.read(ta);
+        ta = (ta - 1) & 0xFFFF;
+        this.writereg('_HL', ta);
+        ta = this.readreg('DE');
+        this.write(ta, data);
+        ta = (ta - 1) & 0xFFFF;
+        this.writereg('DE', data);
+        this.wait(2);
+        this.regs.F.N = this.regs.F.H = 0;
+        ta = this.readreg('BC');
+        ta = (ta - 1) & 0xFFFF;
+        this.regs.F.PV = +(ta !== 0);
+        this.writereg('BC', ta);
+        this.regs.F.X = ((this.regs.A + data) & 8) >>> 3;
+        this.regs.F.Y = ((this.regs.A + data) & 2) >>> 1;
+    }
+
+    LDDR() {
+        this.Q(1);
+        this.LDD();
+        if ((this.regs.B === 0) && (this.regs.C === 0)) return;
+        this.wait(5);
+        this.regs.PC = (this.regs.PC - 2) & 0xFFFF;
+        this.regs.WZ = (this.regs.PC + 1) & 0xFFFF;
+    }
+
+    LDI() {
+        this.Q(1);
+        let ta = this.readreg('_HL');
+        let data = this.read(ta);
+        ta = (ta + 1) & 0xFFFF;
+        this.writereg('_HL', ta);
+        ta = this.readreg('DE');
+        this.write(ta, data);
+        ta = (ta + 1) & 0xFFFF;
+        this.writereg('DE', data);
+        this.wait(2);
+        this.regs.F.N = this.regs.F.H = 0;
+        ta = this.readreg('BC');
+        ta = (ta - 1) & 0xFFFF;
+        this.regs.F.PV = +(ta !== 0);
+        this.writereg('BC', ta);
+        this.regs.F.X = ((this.regs.A + data) & 8) >>> 3;
+        this.regs.F.Y = ((this.regs.A + data) & 2) >>> 1;
+    }
+
+    LDIR() {
+        this.Q(1);
+        this.LDI();
+        if ((this.regs.B === 0) && (this.regs.C === 0)) return;
+        this.wait(5);
+        this.regs.PC = (this.regs.PC - 2) & 0xFFFF;
+        this.regs.WZ = (this.regs.PC + 1) & 0xFFFF;
+    }
+
+    NEG() {
+        this.Q(1);
+        this.regs.A = this.SUB(0, this.regs.A);
+    }
+
     NOP() {
         this.Q(0);
     }
+
+    OR_a_irr(x) {
+        this.Q(1);
+        this.regs.A = this.OR(this.regs.A, this.read(this.displace(x)));
+    }
+
+    OR_a_n() {
+        this.Q(1);
+        this.regs.A = this.OR(this.regs.A, this.operand());
+    }
+
+    OR_a_r(x) {
+        this.Q(1);
+        this.regs.A = this.OR(this.regs.A, this.readreg(x));
+    }
+
+    OTDR() {
+        this.Q(1);
+        this.OUTD();
+        if (this.regs.B === 0) return;
+        this.wait(5);
+        this.regs.PC = (this.regs.PC - 2) & 0xFFFF;
+    }
+
+    OTIR() {
+        this.Q(1);
+        this.OUTI();
+        if (this.regs.B === 0) return;
+        this.wait(5);
+        this.regs.PC = (this.regs.PC - 2) & 0xFFFF;
+    }
+
+    OUT_ic_r(x) {
+        this.Q(0);
+        let ta = this.readreg('BC');
+        this.out(ta, this.readreg(x));
+        this.regs.WZ = (ta + 1) & 0xFFFF;
+    }
+
+    OUT_ic() {
+        this.Q(0);
+        let ta = this.readreg('BC');
+        if (this.CMOS) this.out(ta, 0xFF);
+        else this.out(ta, 0x00);
+    }
+
+    OUT_in_a() {
+        this.Q(0);
+        let WZL = this.operand();
+        let WZH = this.regs.A;
+        this.regs.WZ = (WZH << 8) | WZL;
+        this.out(this.regs.WZ, this.regs.A);
+        this.regs.WZ = (this.regs.WZ & 0xFF00) | ((this.regs.WZ + 1) & 0xFF);
+    }
+
+    OUTD() {
+        this.Q(1);
+        this.wait(1);
+        let ta = this.readreg('_HL');
+        let data = this.read(ta);
+        ta = (ta - 1) & 0xFFFF;
+        this.writereg('_HL', ta);
+        this.regs.B = (this.regs.B - 1) & 0xFF;
+        ta = this.readreg('BC');
+        this.out(ta, data);
+        this.regs.WZ = (ta - 1) & 0xFFFF;
+
+        this.regs.F.C = ((this.regs.L + data) & 0x100) >>> 8;
+        this.regs.N = (data & 0x80) >>> 7;
+        this.regs.parity((this.regs.L + data & 7 ^ this.regs.B) & 0xFF);
+        this.regs.setXYSZ(this.regs.B);
+        this.regs.F.H = this.regs.F.C;
+    }
+
+    OUTI() {
+        this.Q(1);
+        this.wait(1);
+        let ta = this.readreg('_HL');
+        let data = this.read(ta);
+        ta = (ta + 1) & 0xFFFF;
+        this.writereg('_HL', ta);
+        this.regs.B = (this.regs.B - 1) & 0xFF;
+        ta = this.readreg('BC');
+        this.out(ta, data);
+        this.regs.WZ = (ta + 1) & 0xFFFF;
+
+        this.regs.F.C = ((this.regs.L + data) & 0x100) >>> 8;
+        this.regs.N = (data & 0x80) >>> 7;
+        this.regs.parity((this.regs.L + data & 7 ^ this.regs.B) & 0xFF);
+        this.regs.setXYSZ(this.regs.B);
+        this.regs.F.H = this.regs.F.C;
+    }
+
+    POP_rr(x) {
+        this.Q(0);
+        this.writereg(x, this.pop());
+    }
+
+    PUSH_rr(x) {
+        this.Q();
+        this.wait(1);
+        this.push(this.readreg(x));
+    }
+
+    RES_o_irr(bit, addr) {
+        this.Q(1);
+        this.write(addr, this.RES(bit, this.read(addr)))
+    }
+
+    RES_o_irr_r(bit, addr, x) {
+        this.Q(1);
+        this.writereg(x, this.RES(bit, this.read(addr)));
+        this.write(addr, this.readreg(x));
+    }
+
+    RES_o_r(bit, x) {
+        this.Q(1);
+        this.writereg(x, this.RES(bit, this.readreg(x)));
+    }
+
+    RET() {
+        this.Q(0);
+        this.regs.WZ = this.pop();
+        this.regs.PC = this.regs.WZ;
+    }
+
+    RET_c(cond) {
+        this.Q(0);
+        this.wait(1);
+        if (!this.cond_eval(cond)) return;
+        this.regs.WZ = this.pop();
+        this.regs.PC = this.regs.WZ;
+    }
+
+    RETI() {
+        this.Q(0);
+        this.regs.WZ = this.pop();
+        this.regs.PC = this.regs.WZ;
+        this.regs.IFF1 = this.regs.IFF2;
+    }
+
+    RETN() {
+        this.Q(0);
+        this.regs.WZ = this.pop();
+        this.regs.PC = this.regs.WZ;
+        this.regs.IFF1 = this.regs.IFF2;
+    }
+
+    RL_irr(addr) {
+        this.Q(1);
+        this.write(addr, this.RL(this.read(addr)));
+    }
+
+    RL_irr_r(addr, x) {
+        this.Q(1);
+        let tv = this.RL(this.read(addr));
+        this.writereg(x, tv);
+        this.write(addr, tv);
+    }
+
+    RL_r(x) {
+        this.Q(1);
+        this.writereg(x, this.RL(this.readreg(x)));
+    }
+
+    RLA() {
+        this.Q(1);
+        let c = (this.regs.A & 0x80) >>> 7;
+        this.regs.A = ((this.regs.A << 1) | this.regs.F.C) & 0xFFFF;
+
+        this.regs.F.C = c;
+        this.regs.F.N = tis.regs.F.H = 0;
+        this.regs.setXY(this.regs.A);
+    }
+
+    RLC_irr(addr) {
+        this.Q(1);
+        this.write(addr, this.RLC(this.read(addr)));
+    }
+
+    RLC_irr_r(addr, x) {
+        this.Q(1);
+        let tv = this.RLC(this.read(addr));
+        this.writereg(x, tv);
+        this.write(addr, tv);
+    }
+
+    RLC_r(x) {
+        this.Q(1);
+        this.writereg(x, this.RLC(this.readreg(x)));
+    }
+
+    RLCA() {
+        this.Q(1);
+        let c = (this.regs.A & 0x80) >>> 7;
+        this.regs.A = ((this.regs.A << 1) | c) & 0xFF;
+
+        this.regs.F.C = c;
+        this.regs.F.N = this.regs.F.H = 0;
+        this.regs.setXY(this.regs.A);
+    }
+
+    RLD() {
+        this.Q(1);
+        let ta = this.readreg('HL');
+        this.regs.WZ = (ta + 1) & 0xFFFF;
+        let data = this.read(ta);
+        this.wait(1);
+        this.write(ta, ((data << 4) | (this.regs.A & 0x0F)) & 0xFF);
+        this.wait(3);
+        this.regs.A = (this.regs.A & 0xF0) | (data >>> 4);
+
+        this.regs.N = this.regs.H = 0;
+        this.regs.parity(this.regs.A);
+        this.regs.setXYSZ(this.regs.A);
+    }
+
+    RR_irr(addr) {
+        this.Q(1);
+        this.write(addr, this.RR(this.read(addr)));
+    }
+
+    RR_irr_r(addr, x) {
+        this.Q(1);
+        let tv = this.RR(this.read(addr));
+        this.writereg(x, tv);
+        this.write(addr, tv);
+    }
+
+    RR_r(x) {
+        this.Q(1);
+        this.writereg(x, this.RR(this.readreg(x)));
+    }
+
+    RRA() {
+        this.Q(1);
+        let c = this.regs.A & 1;
+        this.regs.A = (this.regs.F.C << 7) | (this.regs.A >>> 1);
+
+        this.regs.F.C = c;
+        this.regs.F.N = this.regs.F.H = 0;
+        this.regs.setXY(this.regs.A);
+    }
+
+    RRC_irr(addr) {
+        this.Q(1);
+        this.write(addr, this.RRC(this.read(addr)));
+    }
+
+    RRC_irr_r(addr, x) {
+        this.Q(1);
+        let tv = this.RRC(this.read(addr));
+        this.writereg(x, tv);
+        this.write(addr, tv);
+    }
+
+    RRC_r(x) {
+        this.Q(1);
+        this.writereg(x, this.RRC(this.readreg(x)));
+    }
+
+    RRCA() {
+        this.Q(1);
+        let C = this.regs.A & 1;
+        this.regs.A = (c << 7) | (this.regs.A >>> 1);
+
+        this.regs.F.C = c;
+        this.regs.F.N = this.regs.F.H = 0;
+        this.regs.setXY(this.regs.A);
+    }
+
+    RRD() {
+        this.Q(1);
+        let ta = this.readreg('HL');
+        this.regs.WZ = (ta + 1) & 0xFFFF;
+        let data = this.read(ta);
+        this.wait(1);
+        this.write(ta, ((data >>> 4) | (this.regs.A << 4)) & 0xFF);
+        this.wait(3);
+        this.regs.A = (this.regs.A & 0xF0) | (data & 0x0F);
+
+        this.regs.F.N = this.regs.F.H = 0;
+        this.regs.parity(this.regs.A);
+        this.regs.setXYSZ(this.regs.A);
+    }
+
+    RST_o(vector) {
+        this.Q(0);
+        this.wait(1);
+        this.push(this.regs.PC);
+        this.regs.WZ = parseInt(vector) << 3;
+        this.regs.PC = this.regs.WZ;
+    }
+
+    SBC_a_irr(x) {
+        this.Q(1);
+        this.regs.A = this.SUB(this.regs.A, this.read(this.displace(x)), this.regs.F.C);
+    }
+
+    SBC_a_n() {
+        this.Q(1);
+        this.regs.A = this.SUB(this.regs.A, this.operand(), this.regs.F.C);
+    }
+
+    SBC_a_r(x) {
+        this.Q(1);
+        this.regs.A = this.SUB(this.regs.A, this.readreg(x), this.regs.F.C);
+    }
+
+    SBC_hl_rr(x) {
+        this.Q(1);
+        let ta = this.readreg('HL');
+        this.regs.WZ = (ta + 1) & 0xFFFF;
+        this.wait(4);
+        let lo = this.SUB(this.regs.L, this.readreg(x) & 0xFF, this.regs.F.C);
+        this.wait(3);
+        let hi = this.SUB(this.regs.H, (this.readreg(x) & 0xFF00) >>> 8, this.regs.F.C);
+        this.writereg('HL', (hi << 8) | lo);
+        this.regs.F.Z = +((hi === 0) && (lo === 0));
+    }
+
+    SCF() {
+        if (this.regs.Q) { this.regs.F.X = this.regs.F.Y = 0; }
+        this.regs.F.C = 1;
+        this.regs.F.N = this.regs.F.H = 0;
+        this.regs.F.X |= (this.regs.A & 8) >>> 3;
+        this.regs.F.Y |= (this.regs.A & 0x20) >>> 5;
+        this.Q(1);
+    }
+
+    SET_o_irr(bit, addr) {
+        this.Q(1);
+        this.write(addr, this.SET(bit, this.read(addr)));
+    }
+
+    SET_o_irr_r(bit, addr, x) {
+        this.Q(1);
+        let tv = this.SET(bit, this.read(addr));
+        this.writereg(x, tv);
+        this.write(addr, tv);
+    }
+
+    SET_o_r(bit, x) {
+        this.Q(1);
+        this.writereg(x, this.SET(bit, this.readreg(x)));
+    }
+
+    SLA_irr(addr) {
+        this.Q(1);
+        this.write(addr, this.SLA(this.read(addr)));
+    }
+
+    SLA_irr_r(addr, x) {
+        this.Q(1);
+        let tv = this.SLA(this.read(addr));
+        this.writereg(x, tv);
+        this.write(addr, tv);
+    }
+
+    SLA_r(x) {
+        this.Q(1);
+        this.writereg(x, this.SLA(this.readreg(x)));
+    }
+
+    SLL_irr(addr) {
+        this.Q(1);
+        this.write(addr, this.SLL(this.read(addr)));
+    }
+
+    SLL_irr_r(addr, x) {
+        this.Q(1);
+        let tv = this.SLL(this.read(addr));
+        this.writereg(x, tv);
+        this.write(addr, tv);
+    }
+
+    SLL_r(x) {
+        this.Q(1);
+        this.writereg(x, this.SLL(this.readreg(x)));
+    }
+
+    SRA_irr(addr) {
+        this.Q(1);
+        this.write(addr, this.SRA(this.read(addr)));
+    }
+
+    SRA_irr_r(addr, x) {
+        this.Q(1);
+        let tv = this.SRA(this.read(addr));
+        this.writereg(x, tv);
+        this.write(addr, tv);
+    }
+
+    SRA_r(x) {
+        this.Q(1);
+        this.writereg(x, this.SRA(this.readreg(x)));
+    }
+
+    SRL_irr(addr) {
+        this.Q(1);
+        this.write(addr, this.SRL(this.read(addr)));
+    }
+
+    SRL_irr_r(addr, x) {
+        this.Q(1);
+        let tv = this.SRL(this.read(addr));
+        this.writereg(x, tv);
+        this.write(addr, tv);
+    }
+
+    SRL_r(x) {
+        this.Q(1);
+        this.writereg(x, this.SRL(this.readreg(x)));
+    }
+
+    SUB_a_irr(x) {
+        this.Q(1);
+        this.regs.A = this.SUB(this.regs.A, this.read(this.displace(x)));
+    }
+
+    SUB_a_n() {
+        this.Q(1);
+        this.regs.A = this.SUB(this.regs.A, this.operand());
+    }
+
+    SUB_a_r(x) {
+        this.Q(1);
+        this.regs.A = this.SUB(this.regs.A, this.readreg(x));
+    }
+
+    XOR_a_irr(x) {
+        this.Q(1);
+        this.regs.A = this.XOR(this.regs.A, this.read(this.displace(x)));
+    }
+
+    XOR_a_n() {
+        this.Q(1);
+        this.regs.A = this.XOR(this.regs.A, this.operand());
+    }
+
+    XOR_a_r(x) {
+        this.Q(1);
+        this.regs.A = this.XOR(this.regs.A, this.readreg(x));
+    }
+
 
     /*** STUFF FOR ACTUAL TESTING CREATION ***/
     cond_eval(cond) {
