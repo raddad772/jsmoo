@@ -13,7 +13,7 @@ const SPECTRUM_STR = 'spectrum';
 const GENERICZ80_STR = 'genericz80'
 
 //const DEFAULT_SYSTEM = GENERICZ80_STR;
-const DEFAULT_SYSTEM = SPECTRUM_STR;
+const DEFAULT_SYSTEM = NES_STR;
 
 const DEFAULT_STEPS = {
 	master: 50,
@@ -747,6 +747,6 @@ async function init_ui() {
 	})
 
 	await init_fs();
-	await system_selected('spectrum');
+	await system_selected(DEFAULT_SYSTEM);
 	after_js();
 }

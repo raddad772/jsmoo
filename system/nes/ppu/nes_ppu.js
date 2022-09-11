@@ -695,9 +695,13 @@ class NES_ppu {
         //this.scanline_timer.record_split('maint');
 
         // Shift out some bits for backgrounds
-        let bg_shift = (((sx & 7) + this.io.x) & 15) * 2;
-        let bg_color = (this.bg_shifter >>> bg_shift) & 3;
-        let bg_has_pixel = bg_color !== 0;
+        let bg_shift, bg_color;
+        let bg_has_pixel = false;
+        if (this.io.bg_enable) {
+            bg_shift = (((sx & 7) + this.io.x) & 15) * 2;
+            bg_color = (this.bg_shifter >>> bg_shift) & 3;
+            bg_has_pixel = bg_color !== 0;
+        }
         let sprite_has_pixel = false;
         if (bg_has_pixel) {
             let agb = this.bg_palette_shifter;
@@ -741,13 +745,14 @@ class NES_ppu {
 
         // Decide background or sprite
         let out_color = bg_color;
-        if (sprite_color !== 0) {
-            if (!bg_has_pixel) {
-                out_color = sprite_color;
-            }
-            else {
-                if (!sprite_priority) out_color = sprite_color;
-                else out_color = bg_color;
+        if (this.io.sprite_enable) {
+            if (sprite_color !== 0) {
+                if (!bg_has_pixel) {
+                    out_color = sprite_color;
+                } else {
+                    if (!sprite_priority) out_color = sprite_color;
+                    else out_color = bg_color;
+                }
             }
         }
 
