@@ -86,3 +86,11 @@ if (typeof save_js !== 'function') {
     }
 }
 
+function pt_rnd8() {
+    return Math.floor(rand_seeded() * 256) & 0xFF;
+}
+
+function pt_rnd16() {
+    return Math.floor(rand_seeded() * 65536) & 0xFFFF;
+}
+
