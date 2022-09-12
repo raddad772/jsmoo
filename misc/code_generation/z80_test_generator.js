@@ -103,6 +103,8 @@ class Z80_proc_test {
         this.final = {};
         this.cycles = new Z80_t_states();
 
+        this.opcode_RAMs = {};
+
         // not serialized
         this.current_cycle = 0;
     }
@@ -469,6 +471,9 @@ class Z80_test_generator {
         }
         if (val === null) val = pt_rnd8();
         wherefrom &= 0xFFFF;
+        if (wherefrom in this.test.opcode_RAMs) {
+            val = this.test.opcode_RAMs[wherefrom];
+        }
         if (wherefrom in this.already_done_addrs) {
             val = this.already_done_addrs[wherefrom];
         }
@@ -500,6 +505,9 @@ class Z80_test_generator {
         }
         addr &= 0xFFFF;
         val &= 0xFF;
+        if (addr in this.test.opcode_RAMs) {
+            delete this.test.opcode_RAMs[addr];
+        }
         // Data is present for all 3 cycles
         // MRQ for 1, 2
         // WR only on 2
@@ -578,14 +586,14 @@ class Z80_test_generator {
         }
     }
 
-    fetch_opcode(opcode_stream, i) {
+    fetch_opcode(opcode_stream, i, less_one_cycle=false) {
         this.test.add_cycle(this.regs.PC, null, 0, 0, 0, 0);
         this.test.add_cycle(this.regs.PC, null, 1, 0, 1, 0);
         let s;
         if (Z80_DO_MEM_REFRESHES) s = (this.regs.I << 8) | this.regs.R;
         else s = this.regs.PC;
         this.test.add_cycle(s, opcode_stream[i], 0, 0, Z80_DO_FULL_MEMCYCLES ? 1 : 0, 0);
-        this.test.add_cycle(s, null, 0, 0, 0, 0);
+        if (!less_one_cycle) this.test.add_cycle(s, null, 0, 0, 0, 0);
     }
 
     Q(w) {
@@ -894,9 +902,7 @@ class Z80_test_generator {
     }
 
     RLC(x) {
-        console.log('SHIFTING', x, 'RIGHT BY 1');
         x = ((x << 1) | (x >>> 7)) & 0xFF;
-        console.log(x);
 
         this.regs.F.C = x & 1;
         this.regs.F.N = this.regs.F.H = 0;
@@ -1494,7 +1500,8 @@ class Z80_test_generator {
 
     LD_rr_nn(x) {
         this.Q(0);
-        this.writereg(x, this.operands());
+        let r = this.operands();
+        this.writereg(x, r);
     }
 
     LD_sp_rr(x) {
@@ -2084,8 +2091,9 @@ class Z80_test_generator {
     /**
      * @param opcode_stream {Uint8Array}
      * @param {Number} number
+     * @param {String} osn
      */
-    generate_test(opcode_stream, number) {
+    generate_test(opcode_stream, number, osn) {
         let tests = [];
         for (let testnum = 0; testnum < number; testnum++) {
             let opcode_stream_sum = 0;
@@ -2099,7 +2107,9 @@ class Z80_test_generator {
             Z80_generate_registers(this.test.initial);
             this.regs = new Z80T_state(this.test.initial);
             let ipc = this.regs.PC;
-
+            for (let i =0; i < opcode_stream.length; i++) {
+                this.test.opcode_RAMs[(i+this.regs.PC) & 0xFFFF] = opcode_stream[i];
+            }
             let curd;
 
             this.rprefix = Z80T.HL;
@@ -2133,13 +2143,16 @@ class Z80_test_generator {
                 this.prefix = ((this.prefix << 8) | 0xCB) & 0xFFFF;
                 let yr = (this.rprefix === Z80T.IX) ? this.regs.IX : this.regs.IY;
                 // fetch operand from instruction stream
-                this.fetch_opcode(opcode_stream, i);
+                this.fetch_opcode(opcode_stream, i, true);
                 operand = opcode_stream[i];
                 this.wait(2);
                 i++;
                 this.regs.WZ = (yr + mksigned8(operand)) & 0xFFFF;
-                curd = operand;
-                this.instructionCBd(this.regs.WZ, operand);
+                this.rprefix = Z80T.HL;
+                // fetch actual instruction now
+                this.fetch_opcode(opcode_stream, i);
+                curd = opcode_stream[i];
+                this.instructionCBd(this.regs.WZ, curd);
             }
             else if (curd === 0xCB) { // with no prefix
                 this.fetch_opcode(opcode_stream, i);
@@ -2163,12 +2176,25 @@ class Z80_test_generator {
                 this.instruction(curd)
             }
             this.test.finalize(this.regs, ipc, opcode_stream);
-            let ns = '';
+            //let ns = osn + ' ' + ;
+            /*let cbd = false;
+            let prfx = false;
             for (let i in opcode_stream) {
                 if (i !== '0') ns += ' ';
+                if ((i === '0') && ((opcode_stream[i] === 0xDD) || (opcode_stream[i] === 0xFD))) prfx = true;
+                if ((i === '1') && (opcode_stream[i] === 0xCB) && prfx) cbd = true;
+                if (cbd && (i === '2') && (opcode_stream.length === 4)) {
+                    // DDCB/FDCB opcodes
+                    ns += '..';
+                    continue;
+                }
+                if (!cbd && prfx && ((i === '2') || (i === '3'))) {
+                    ns += '..';
+                    continue;
+                }
                 ns += hex2(opcode_stream[i]);
-            }
-            this.test.name = ns + ' ' + hex4(testnum)
+            }*/
+            this.test.name = osn + ' ' + hex4(testnum)
             tests.push(this.test.serializable());
         }
         return tests;
@@ -2188,9 +2214,18 @@ function generate_Z80_tests(seed=null) {
     //os2[0] = 0xDD;
     //os2[1] = 0x4C; // LD C, IXH
 
-    os2[0] = 0xCB;
-    os2[1] = 0x06; // RLC (HL)
-    let tst = test_generator.generate_test(os2, 1);
+    //os2[0] = 0xFD;
+    //os2[1] = 0xCB; // RLC (HL)
+    /* os4[0] = 0xDD;
+    os4[1] = 0xCB;
+    os4[2] = 0x28;
+    os4[3] = 0x05; // RLC, (IX+40/$28), L */
+    os4[0] = 0xFD;
+    os4[1] = 0x21;
+    os4[2] = 0x67;
+    os4[3] = 0x89;// LD IY, 8967   4 bytes 14 cycles
+
+    let tst = test_generator.generate_test(os4, 10, 'FD 21');
     console.log(tst);
 }
 
