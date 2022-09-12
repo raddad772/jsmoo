@@ -339,7 +339,7 @@ const Z80_opcode_matrix_premn = {
     0x05: new Z80_opcode_info(0x05, Z80_MN.DEC_r, 'DEC_r B', 'B'),
     0x06: new Z80_opcode_info(0x06, Z80_MN.LD_r_n, 'LD_r_n B', 'B'),
     0x07: new Z80_opcode_info(0x07, Z80_MN.RLCA, 'RLCA'),
-    0x08: new Z80_opcode_info(0x08, Z80_MN.EX_rr_rr, 'EX_rr_rr AF AFs', 'AF', 'AFs'),
+    0x08: new Z80_opcode_info(0x08, Z80_MN.EX_rr_rr, 'EX_rr_rr AF AF_', 'AF', 'AF_'),
     0x09: new Z80_opcode_info(0x09, Z80_MN.ADD_hl_rr, 'ADD_hl_rr BC', 'BC'),
     0x0A: new Z80_opcode_info(0x0A, Z80_MN.LD_a_irr, 'LD_a_irr BC', 'BC'),
     0x0B: new Z80_opcode_info(0x0B, Z80_MN.DEC_rr, 'DEC_rr BC', 'BC'),
