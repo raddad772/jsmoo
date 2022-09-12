@@ -73,26 +73,20 @@ class z80_registers_t {
         this.R = 0; // Refresh counter
 
         // Shadow registers
-        this.Bs = 0;
-        this.Cs = 0;
-        this.Ds = 0;
-        this.Es = 0;
-        this.Hs = 0;
-        this.Ls = 0;
-        this.As = 0;
-        this.Fs = 0;
+        this.AF_ = 0;
+        this.BC_ = 0;
+        this.DE_ = 0;
+        this.HL_ = 0;
         // For junk calculations
         this.junkvar = 0;
 
         // Temp registers for swapping
-        this.Bt = 0;
-        this.Ct = 0;
-        this.Dt = 0;
-        this.Et = 0;
+        this.AFt = 0;
+        this.BCt = 0;
+        this.DEt = 0;
+        this.HLt = 0;
         this.Ht = 0;
         this.Lt = 0;
-        this.At = 0;
-        this.Ft = 0;
 
         // 16-bit registers
         this.PC = 0;
@@ -100,7 +94,6 @@ class z80_registers_t {
         this.IX = 0;
         this.IY = 0;
 
-        // Temporary registers
         this.t = new Int32Array(10);
         this.WZ = 0; // ?
         this.EI = 0; //"ei" executed last
@@ -122,26 +115,20 @@ class z80_registers_t {
     }
 
     exchange_shadow() {
-        this.Bt = this.B;
-        this.Ct = this.C;
-        this.Dt = this.D;
-        this.Et = this.E;
-        this.Ht = this.H;
-        this.Lt = this.L;
+        this.BCt = (this.B << 8) | this.C;
+        this.DEt = (this.D << 8) | this.E;
+        this.HLt = (this.H << 8) | this.L;
 
-        this.B = this.Bs;
-        this.C = this.Cs;
-        this.D = this.Ds;
-        this.E = this.Es;
-        this.H = this.Hs;
-        this.L = this.Ls;
+        this.B = (this.BC_ & 0xFF00) >>> 8;
+        this.C = this.BC_ & 0xFF;
+        this.D = (this.DE_ & 0xFF00) >>> 8;
+        this.E = this.DE_ & 0xFF;
+        this.H = (this.HL_ & 0xFF00) >>> 8;
+        this.L = this.HL_ & 0xFF;
 
-        this.Bs = this.Bt;
-        this.Cs = this.Ct;
-        this.Ds = this.Dt;
-        this.Es = this.Et;
-        this.Hs = this.Ht;
-        this.Ls = this.Lt;
+        this.BC_ = this.BCt;
+        this.DE_ = this.DEt;
+        this.HL_ = this.HLt;
     }
 
     exchange_de_hl() {
@@ -154,14 +141,12 @@ class z80_registers_t {
     }
 
     exchange_shadow_af() {
-        this.At = this.A;
-        this.Ft = this.F.getbyte();
+        this.AFt = (this.A << 8) | this.F.getbyte();
 
-        this.A = this.As;
-        this.F.setbyte(this.Fs);
+        this.A = (this.AF_ & 0xFF00) >>> 8;
+        this.F.setbyte(this.AF_ & 0xFF);
 
-        this.As = this.At;
-        this.Fs = this.Ft;
+        this.AF_ = this.AFt;
     }
 }
 

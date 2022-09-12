@@ -628,8 +628,7 @@ async function main() {
 	dbg.init_done();
 }
 
-after_js = main;
-
+//after_js = main;
 function uie_input_focus() {
 	global_player.input_capture = false;
 }
