@@ -341,6 +341,7 @@ class z80_t {
                     break;
                 }
                 else {
+                    this.regs.prefix = 0x00;
                     this.set_instruction(this.regs.t[0]);
                     break;
                 }

@@ -1,7 +1,7 @@
 "use strict";
 
-const Z80_DO_FULL_MEMCYCLES = false;
-const Z80_DO_MEM_REFRESHES = true; // Put I/R on address bus
+let Z80_DO_FULL_MEMCYCLES = false;
+let Z80_DO_MEM_REFRESHES = true; // Put I/R on address bus
 /*
  For convenience for my own emulator, MRQ/RD, MRQ/WR,
   IO/RD, and IO/WR only last 1 cycle, to cut down on
@@ -13,7 +13,7 @@ const Z80_DO_MEM_REFRESHES = true; // Put I/R on address bus
    behavior.
  */
 
-const Z80_NUM_TO_GENERATE = 1000; // Generate 1 of each test
+let Z80_NUM_TO_GENERATE = 1000; // Generate 1 of each test
 const Z80_GEN_WAIT_HOW_LONG = 6; // 6 cycles of Wait are generated
 
 
@@ -98,15 +98,12 @@ class Z80_proc_test {
     constructor() {
         // Serialized
         this.name = '';
-        this.ports = {};
+        this.ports = [];
         this.initial = {};
         this.final = {};
         this.cycles = new Z80_t_states();
 
         this.opcode_RAMs = {};
-
-        // not serialized
-        this.current_cycle = 0;
     }
 
     serializable() {
@@ -136,7 +133,6 @@ class Z80_proc_test {
         for (let i in this.cycles.cycles) {
             let icycle = this.cycles.cycles[i];
             let cycle = icycle.serializeable();
-            ocycles.push(cycle);
             let addr = cycle[0];
             let val = cycle[1];
             let pins = cycle[2];
@@ -153,7 +149,7 @@ class Z80_proc_test {
                         initial_RAMs.push([addr, 0]);
                     }
                 }
-                if ((!final_set.has(addr)) && (Z80T_pins_RDR(pins) || Z80T_pins_WRR(pins))) {
+                if ((!final_set.has(addr)) && (icycle.force_treat_as_read || Z80T_pins_RDR(pins) || Z80T_pins_WRR(pins))) {
                     final_set.add(addr);
                     final_RAMs.push([addr, val]);
                 } else {
@@ -284,8 +280,8 @@ class Z80T_state {
             this.EI = from.ei;
             this.P = from.p;
             this.Q = from.q;
-
         }
+        this.junkvar = 0;
     }
 
     setXY(z) {
@@ -594,6 +590,8 @@ class Z80_test_generator {
         else s = this.regs.PC;
         this.test.add_cycle(s, opcode_stream[i], 0, 0, Z80_DO_FULL_MEMCYCLES ? 1 : 0, 0);
         if (!less_one_cycle) this.test.add_cycle(s, null, 0, 0, 0, 0);
+        this.regs.PC = (this.regs.PC + 1) & 0xFFFF;
+        return opcode_stream[i];
     }
 
     Q(w) {
@@ -603,6 +601,7 @@ class Z80_test_generator {
     writereg(what, val) {
         switch (what) {
             case '_':
+                this.regs.junkvar = val;
                 break;
             case 'A':
                 this.regs.A = val & 0xFF;
@@ -790,8 +789,11 @@ class Z80_test_generator {
                 return this.regs.R;
             case 'AFs':
                 return this.regs.AF_;
+            case '_':
+                return this.regs.junkvar;
             default:
                 console.log('MISSING REGREAD', what);
+                if (what === '_') debugger;
                 return null;
         }
     }
@@ -814,7 +816,7 @@ class Z80_test_generator {
         let z = x & y;
 
         this.regs.F.C = this.regs.F.N = 0;
-        this.regs.F.parity(z);
+        this.regs.parity(z);
         this.regs.F.H = 1;
         this.regs.setXYSZ(z);
 
@@ -1747,7 +1749,7 @@ class Z80_test_generator {
         this.regs.A = ((this.regs.A << 1) | this.regs.F.C) & 0xFFFF;
 
         this.regs.F.C = c;
-        this.regs.F.N = tis.regs.F.H = 0;
+        this.regs.F.N = this.regs.F.H = 0;
         this.regs.setXY(this.regs.A);
     }
 
@@ -1839,7 +1841,7 @@ class Z80_test_generator {
 
     RRCA() {
         this.Q(1);
-        let C = this.regs.A & 1;
+        let c = this.regs.A & 1;
         this.regs.A = (c << 7) | (this.regs.A >>> 1);
 
         this.regs.F.C = c;
@@ -2026,6 +2028,10 @@ class Z80_test_generator {
     cond_eval(cond) {
         let c;
         switch(cond) {
+            case 1:
+            case '1':
+                c = true;
+                break;
             case 'regs.F.Z === 0':
                 c = this.regs.F.Z === 0;
                 break;
@@ -2107,9 +2113,9 @@ class Z80_test_generator {
             Z80_generate_registers(this.test.initial);
             this.regs = new Z80T_state(this.test.initial);
             let ipc = this.regs.PC;
-            for (let i =0; i < opcode_stream.length; i++) {
-                this.test.opcode_RAMs[(i+this.regs.PC) & 0xFFFF] = opcode_stream[i];
-            }
+            //for (let i =0; i < opcode_stream.length; i++) {
+            //    this.test.opcode_RAMs[(i+this.regs.PC) & 0xFFFF] = opcode_stream[i];
+            //}
             let curd;
 
             this.rprefix = Z80T.HL;
@@ -2120,10 +2126,8 @@ class Z80_test_generator {
             // 4 T-states for an opcode read
 
             while(true) {
-                this.fetch_opcode(opcode_stream, i);
-                curd = opcode_stream[i];
+                curd = this.fetch_opcode(opcode_stream, i);
                 i++;
-                this.regs.inc_PC();
                 this.regs.inc_R();
                 if (curd === 0xDD) {
                     this.prefix = 0xDD;
@@ -2142,38 +2146,33 @@ class Z80_test_generator {
             if ((curd === 0xCB) && (this.rprefix !== Z80T.HL)) {
                 this.prefix = ((this.prefix << 8) | 0xCB) & 0xFFFF;
                 let yr = (this.rprefix === Z80T.IX) ? this.regs.IX : this.regs.IY;
-                // fetch operand from instruction stream
-                this.fetch_opcode(opcode_stream, i, true);
-                operand = opcode_stream[i];
-                this.wait(2);
+                operand = this.operand();
                 i++;
+                this.wait(2);
                 this.regs.WZ = (yr + mksigned8(operand)) & 0xFFFF;
                 this.rprefix = Z80T.HL;
                 // fetch actual instruction now
-                this.fetch_opcode(opcode_stream, i);
-                curd = opcode_stream[i];
+                curd = this.fetch_opcode(opcode_stream, i);
+                i++;
                 this.instructionCBd(this.regs.WZ, curd);
             }
             else if (curd === 0xCB) { // with no prefix
-                this.fetch_opcode(opcode_stream, i);
-                operand = opcode_stream[i];
+                curd = this.fetch_opcode(opcode_stream, i);
                 i++;
                 this.regs.inc_R();
                 this.prefix = 0xCB;
-                curd = operand;
-                this.instructionCB(operand);
+                this.instructionCB(curd);
             }
             else if (curd === 0xED) {
-                this.fetch_opcode(opcode_stream, i);
-                operand = opcode_stream[i];
+                this.rprefix = Z80T.HL;
+                curd = this.fetch_opcode(opcode_stream, i);
                 i++;
                 this.regs.inc_R();
                 this.prefix = 0xED;
-                curd = operand;
-                this.instructionED(operand);
+                this.instructionED(curd);
             }
             else {
-                this.instruction(curd)
+                this.instruction(curd);
             }
             this.test.finalize(this.regs, ipc, opcode_stream);
             //let ns = osn + ' ' + ;
@@ -2201,32 +2200,95 @@ class Z80_test_generator {
     }
 }
 
-function generate_Z80_tests(seed=null) {
+function generate_Z80_tests(seed=null, CMOS) {
     if (seed !== null) rand_seed = seed;
     let os1 = new Uint8Array(1);
     let os2 = new Uint8Array(2);
     let os3 = new Uint8Array(3);
     let os4 = new Uint8Array(4);
-    let test_generator = new Z80_test_generator(false);
+    let test_generator = new Z80_test_generator(CMOS);
 
-    //os1[0] = 0x04; // INC B
+    let tests = {};
 
-    //os2[0] = 0xDD;
-    //os2[1] = 0x4C; // LD C, IXH
+    let opc_table;
 
-    //os2[0] = 0xFD;
-    //os2[1] = 0xCB; // RLC (HL)
-    /* os4[0] = 0xDD;
-    os4[1] = 0xCB;
-    os4[2] = 0x28;
-    os4[3] = 0x05; // RLC, (IX+40/$28), L */
-    os4[0] = 0xFD;
-    os4[1] = 0x21;
-    os4[2] = 0x67;
-    os4[3] = 0x89;// LD IY, 8967   4 bytes 14 cycles
+    console.log('1/7 Generating regular opcodes...');
+    opc_table = Z80_opcode_matrix;
+    for (let i in opc_table) {
+        os1[0] = i;
+        let n = hex2(parseInt(i));
+        tests[n] = test_generator.generate_test(os1, Z80_NUM_TO_GENERATE, n);
+    }
 
-    let tst = test_generator.generate_test(os4, 10, 'FD 21');
-    console.log(tst);
+    console.log('2/7 Generating CB opcodes...');
+    opc_table = Z80_CB_opcode_matrix;
+    for (let i in opc_table) {
+        os2[0] = 0xCB;
+        os2[1] = i;
+        let n = 'CB ' + hex2(parseInt(i));
+        tests[n] = test_generator.generate_test(os2, Z80_NUM_TO_GENERATE, n);
+    }
+
+    console.log('3/7 Generating ED opcodes...')
+    opc_table = Z80_ED_opcode_matrix;
+    for (let i in opc_table) {
+        os2[0] = 0xED;
+        os2[1] = i;
+        let n = 'ED ' + hex2(parseInt(i));
+        tests[n] = test_generator.generate_test(os2, Z80_NUM_TO_GENERATE, n);
+    }
+
+    console.log('4/7 Generating DDnn opcodes...')
+    opc_table = Z80_opcode_matrix;
+    for (let i in opc_table) {
+        os2[0] = 0xDD;
+        os2[1] = i;
+        let n = 'DD ' + hex2(parseInt(i));
+        tests[n] = test_generator.generate_test(os2, Z80_NUM_TO_GENERATE, n);
+    }
+
+    console.log('5/7 Generating FDnn opcodes...')
+    opc_table = Z80_opcode_matrix;
+    for (let i in opc_table) {
+        os2[0] = 0xFD;
+        os2[1] = i;
+        let n = 'FD ' + hex2(parseInt(i));
+        tests[n] = test_generator.generate_test(os2, Z80_NUM_TO_GENERATE, n);
+    }
+
+    console.log('6/7 Generating DD CB opcodes...')
+    opc_table = Z80_CBd_opcode_matrix;
+    for (let i in opc_table) {
+        os4[0] = 0xDD;
+        os4[1] = 0xCB;
+        os4[2] = null;
+        os4[3] = i;
+        let n = 'DD CB __ ' + hex2(parseInt(i));
+        tests[n] = test_generator.generate_test(os4, Z80_NUM_TO_GENERATE, n);
+    }
+
+    console.log('7/7 Generating FD CB opcodes...')
+    opc_table = Z80_CBd_opcode_matrix;
+    for (let i in opc_table) {
+        os4[0] = 0xFD;
+        os4[1] = 0xCB;
+        os4[2] = null;
+        os4[3] = i;
+        let n = 'FD CB __ ' + hex2(parseInt(i));
+        tests[n] = test_generator.generate_test(os4, Z80_NUM_TO_GENERATE, n);
+    }
+
+    console.log('Zipping tests...');
+    let zip = new JSZip();
+    for (let i in tests) {
+        zip.file(i.toLowerCase() + '.json', JSON.stringify(tests[i]));
+    }
+
+    dconsole.addl(null,'Finalizing ZIP for download...')
+    zip.generateAsync({type:"blob"}).then(function(content) {
+        dconsole.addl(null, 'Downloading...');
+        save_js("z80 tests.zip", content, 'application/zip');
+        dconsole.addl(null, 'Done!');
+    });
+
 }
-
-generate_Z80_tests();
