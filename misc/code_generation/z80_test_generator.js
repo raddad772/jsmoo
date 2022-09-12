@@ -1,5 +1,118 @@
 "use strict";
 
+/*
+ A note on the format of the tests produced by this.
+
+ Z80 is a bit complicated to test every opcode for, but I did it!
+
+ That means opcodes in the following format:
+
+nn
+CB nn
+DD nn
+FD nn
+ED nn
+DD CB __ nn
+FD CB __ nn
+
+where __ denotes a value that's not strictly part of the "opcode,"
+and nn denotes the opcode being tested.
+ Just add .json to the end, and you have the generated file.
+example:
+
+FD CB __ 04.json
+
+ I have attempted to follow the ProcessorTests general format, as
+laid out by Thomas Harte's ProcessorTests. That project has been
+a huge help to me and can be found here:
+https://github.com/TomHarte/ProcessorTests
+
+The general test format looks like this:
+
+{
+"name": "DD CB __ 93 0000", // human-readable name
+"initial": {      // initial state of Z80 registers and RAM
+  "pc": 31234,
+  "sp": 40332,
+  "a": 237,   // A, B, C, etc. are stored as 8-bit values
+  "b": 161,
+  "c": 113,
+  "d": 38,
+  "e": 61,
+  "f": 129,
+  "h": 108,
+  "l": 101,
+  "i": 126,
+  "r": 87,
+  "ei": 1,      // EI refers to if Enable Interrupt was the last-emualted instruction. You can probably ignore this.
+  "wz": 13187,
+  "ix": 32970,
+  "iy": 14777,
+  "af_": 41627, // af_ etc. are the "shadow registers"
+  "bc_": 38678,
+  "de_": 21949,
+  "hl_": 60947,
+  "im": 1,
+  "p": 1, // Used to track specific behavior during interrupt depending on if CMOS or not and previously-executed instructions. You can probably ignore this.
+  "q": 0, // Used to track if the last-modified opcode modified flag registers (with a few exceptions). This is important because CCF will behave differently depending on this
+  "iff1": 1,
+  "iff2": 0,
+  "ram": [ // Address, value pairs to initialize RAM
+    [ 31234, 221 ],
+    [ 31235, 203 ],
+    [ 31236, 0 ],
+    [ 31237, 147 ],
+    [ 33075, 18 ]
+  ]
+},
+"final": { // Expected final state of Z80 and RAM after instruction is executed
+  "a": 237,
+  "b": 161,
+  "c": 113,
+  "d": 38,
+  "e": 18,
+  "f": 129,
+  "h": 108,
+  "l": 101,
+  "i": 126,
+  "r": 89,
+  "af_": 41627,
+  "bc_": 38678,
+  "de_": 21949,
+  "hl_": 60947,
+  "ix": 32970,
+  "iy": 14777,
+  "pc": 31238,
+  "sp": 40332,
+  "wz": 33075,
+  "iff1": 1,
+  "iff2": 0,
+  "im": 1,
+  "ei": 1,
+  "p": 1,
+  "q": 1,
+  "ram": [
+    [ 31234, 221 ],
+    [ 31235, 203 ],
+    [ 31236, 105 ],
+    [ 31237, 147 ],
+    [ 33075, 18 ]
+  ]
+},
+"cycles": [ // Cycle-by-cycle breakdown of bus activity
+  [ 31234, null, "----" ],
+  [ 31234, null, "r-m-" ],
+  [ 32343, 221, "-wm-" ],
+  ....
+  ]
+},
+
+The format of each cycle from left to right is:
+Address pins
+Data pins, if the value is important, or null if it doesn't matter.
+State of ReaD(r), WRite(w), Memory request(m), and Io requst(i) pins, where the letter denotes it is asserted, and - denotes it is not.
+ */
+
 let Z80_DO_FULL_MEMCYCLES = false;
 let Z80_DO_MEM_REFRESHES = true; // Put I/R on address bus
 /*
