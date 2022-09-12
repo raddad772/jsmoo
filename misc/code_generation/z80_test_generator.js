@@ -5,7 +5,7 @@
 
  Z80 is a bit complicated to test every opcode for, but I did it!
 
- That means opcodes in the following format:
+ That means opcodes are in the following format:
 
 nn
 CB nn
@@ -2225,6 +2225,10 @@ class Z80_test_generator {
             this.test = new Z80_proc_test();
             Z80_generate_registers(this.test.initial);
             this.regs = new Z80T_state(this.test.initial);
+            // Set EI and P to 0 so they are that way in the end
+            // Unless an instruction sets them...
+            this.regs.EI = 0;
+            this.regs.P = 0
             let ipc = this.regs.PC;
             //for (let i =0; i < opcode_stream.length; i++) {
             //    this.test.opcode_RAMs[(i+this.regs.PC) & 0xFFFF] = opcode_stream[i];
