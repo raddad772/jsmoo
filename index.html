@@ -9,6 +9,7 @@
     <script type="text/javascript" src="helpers/timing/timing_header.js"></script>
     <script type="text/javascript" src="ui.js"></script>
     <script type="text/javascript" src="rom_upload.js"></script>
+    <script type="text/javascript" src="helpers/machine_description.js"></script>
 <!-- SNES -->
     <script type="text/javascript" src="component/cpu/wdc65816/wdc65816_opcodes.js"></script>
     <script type="text/javascript" src="component/cpu/wdc65816/wdc65816_t.js"></script>
@@ -51,9 +52,19 @@
     <!-- commodore64 and more -->
     <script type="text/javascript" src="component/cpu/m6502/m65c02_generated_opcodes.js"></script>
 
-    <!-- SMS -->
+    <!-- Generic Z80 computer -->
+    <script type="text/javascript" src="system/genericz80/genericz80.js"></script>
+
+    <!-- ZX Spectrum -->
+    <script type="text/javascript" src="system/zxspectrum/ula.js"></script>
+    <script type="text/javascript" src="system/zxspectrum/zxspectrum.js"></script>
     <script type="text/javascript" src="component/cpu/z80/z80_opcodes.js"></script>
+    <script type="text/javascript" src="component/cpu/z80/z80_generated_opcodes.js"></script>
+    <script type="text/javascript" src="component/cpu/z80/z80_disassembler.js"></script>
     <script type="text/javascript" src="component/cpu/z80/z80.js"></script>
+    <script type="text/javascript" src="component/cpu/z80/z80_tests_pt.js"></script>
+
+    <!-- SMS -->
 
     <!-- because bad organization -->
     <script type="text/javascript" src="system/snes/snes.js"></script>
@@ -64,7 +75,7 @@
 </head>
 
 <body>
-  <canvas id="snescanvas" width="256" height="240"></canvas>
+  <canvas id="snescanvas" width="1000" height="380"></canvas>
 
 
 <div class="grid-container">
@@ -75,9 +86,11 @@
                 <span>SYSTEM SELECT<select id="systemselect" name="systemselect">
                     <option value="snes">SNES</option>
                     <option value="nes">NES</option>
-                    <option value="genesis">Genesis</option>
+                    <option value="spectrum">ZX Spectrum 48</option>
+                    <option value="genericz80">Generic Z80</option>
+                    <!--<option value="genesis">Genesis</option>
                     <option value="c64">Commodore64</option>
-                    <option value="sms">SMS</option>
+                    <option value="sms">SMS</option>-->
                 </select>
                 </span>
             </div>
@@ -150,8 +163,8 @@
             <br>
             <input type="checkbox" id="loghdma"/><label for="loghdma">Log HDMAs</label>
             <br>
-            <input type="checkbox" id="tracing5a22"/><label for="tracing5a22">Trace CPU</label>
-            <input type="checkbox" id="tracingspc700"/><label for="tracingspc700">Trace APU</label>
+            <input type="checkbox" id="tracingCPU"/><label for="tracingCPU">Trace CPU</label>
+            <input type="checkbox" id="tracingAPU"/><label for="tracingAPU">Trace APU</label>
             <input type="checkbox" id="watchpt"/><label for="watchpt">Watching</label>
             <br>
             <input type="checkbox" id="brknmirq"><label for="brknmirq">Break on NMI/IRQ</label>
