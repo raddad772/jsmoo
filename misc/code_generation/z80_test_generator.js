@@ -1360,7 +1360,7 @@ class Z80_test_generator {
     }
 
     DEC_rr(x) {
-        this.Q(1);
+        this.Q(0);
         this.wait(2);
         this.writereg(x, (this.readreg(x) - 1) & 0xFFFF);
     }
@@ -1866,7 +1866,7 @@ class Z80_test_generator {
     RLA() {
         this.Q(1);
         let c = (this.regs.A & 0x80) >>> 7;
-        this.regs.A = ((this.regs.A << 1) | this.regs.F.C) & 0xFFFF;
+        this.regs.A = ((this.regs.A << 1) | this.regs.F.C) & 0xFF;
 
         this.regs.F.C = c;
         this.regs.F.N = this.regs.F.H = 0;

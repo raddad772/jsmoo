@@ -193,7 +193,6 @@ function Z80_disassemble(PC, IR, peek_func) {
                                         else ostr = 'LD A, (DE)';
                                         break;
                                     case 2:
-                                        console.log('IS HERE');
                                         if (q === 0) ostr = 'LD (' + read16() + '), ' + repl0('HL');
                                         else ostr = ostr = 'LD ' + repl0('HL') + ',(' + read16() + ')';
                                         break;
@@ -224,7 +223,6 @@ function Z80_disassemble(PC, IR, peek_func) {
                     case 1: // x = 1
                         if ((z === 6) && (y === 6)) ostr = 'HALT';
                         else ostr = 'LD ' + repl0(Z80D_tabl_r[y]) + ', ' + repl0(Z80D_tabl_r[z]);
-                        console.log('IS HERE2');
                         break;
                     case 2: // x = 2
                         ostr = Z80D_tabl_alu[y] + ' ' + repl0(Z80D_tabl_r[z]);

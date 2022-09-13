@@ -91,7 +91,7 @@ function Z80_PARSEP(w) {
         outstr += ' P' + ((w & 0x04) >>> 2);
         outstr += ' X' + ((w & 0x08) >>> 3);
         outstr += ' H' + ((w & 0x10) >>> 4);
-        outstr += ' Y';
+        outstr += ' Y' + ((w & 0x20) >>> 5);
         outstr += ' Z' + ((w & 0x40) >>> 6);
         outstr += ' S' + ((w & 0x80) >>> 7);
     //}
@@ -201,7 +201,8 @@ function Z80test_it_automated(cpu, tests) {
                 passed = false;
             }
             if (cycle[1] !== null && (cycle[1] !== cpu.pins.D)) {
-                messages.push(cyclei.toString() + ' MISMATCH IN RAM AT ' + hex0x4(cycle[0]) + ' THEIRS: ' + hex0x2(cycle[1]) + ' OURS: ' + hex0x2(cpu.pins.D));
+                console.log(cyclei, cycle[1], cpu.pins.D);
+                //messages.push(cyclei.toString() + ' MISMATCH IN RAM AT ' + hex0x4(cycle[0]) + ' THEIRS: ' + hex0x2(cycle[1]) + ' OURS: ' + hex0x2(cpu.pins.D));
                 passed = false;
             }
             // Check pins
@@ -244,6 +245,7 @@ function Z80test_it_automated(cpu, tests) {
         let testregs = function(name, mine, theirs) {
             if (mine !== theirs) {
                 if (name === 'F') {
+                    messages.push('startF ' + Z80_PARSEP(tests[i].f))
                     messages.push('ourF   ' + Z80_PARSEP(cpu.regs.F.getbyte()));
                     messages.push('theirF ' + Z80_PARSEP(theirs));
                 }
@@ -259,7 +261,7 @@ function Z80test_it_automated(cpu, tests) {
         } else passed &= testregs('PC', last_pc, final.pc);*/
         cpu.cycle(); // for more trace
         passed &= testregs('PC', last_pc, final.pc);
-        passed &= testregs('SP', cpu.regs.A, final.a);
+        passed &= testregs('SP', cpu.regs.SP, final.sp);
         passed &= testregs('A', cpu.regs.A, final.a);
         passed &= testregs('B', cpu.regs.B, final.b);
         passed &= testregs('C', cpu.regs.C, final.c);
@@ -397,8 +399,9 @@ async function dotest_pt_z80() {
         dbg.enable_tracing_for(D_RESOURCE_TYPES.Z80);
         dbg.enable_tracing();
     }
-    let start_test = 8;
-    let skip_tests = []; // Tests do not correctly set B after BRK
+    let start_test = 0x86;
+    let skip_tests = [0x76 // HALT
+    ];
     //let test_classes = [0x00, 0xCB, 0xED, 0xDD, 0xFD, 0xDDCB, 0xFDCB]
     let test_classes = [0x00];
     if (Z80_TEST_DO_TRACING) cpu.enable_tracing(read8);
