@@ -24,7 +24,7 @@ class timing_worker_t {
     }
 
     set_fps_target(to) {
-        console.log('FPS target set to', to);
+        //console.log('FPS target set to', to);
         this.fps_target = to;
         this.frame_time_full = (1000 / this.fps_target);
         this.sleep_target = this.frame_time_full * .80; // Sleep 80% of the time
