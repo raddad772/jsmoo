@@ -77,14 +77,14 @@ class Z80_switchgen {
         this.read('regs.SP', 'regs.t[0]');
         this.SP_inc();
         this.addl('regs.TR |= regs.t[0] << 8;');
-        this.zregripw(where, 'regs.TR');
+        this.writereg(where, 'regs.TR');
     }
 
     push16rip(what) {
         this.SP_dec();
-        this.write('regs.SP', this.zregripH(what));
+        this.write('regs.SP', this.readregH(what));
         this.SP_dec();
-        this.write('regs.SP', this.zregripL(what));
+        this.write('regs.SP', this.readregL(what));
     }
 
     push16(what) {
@@ -210,12 +210,12 @@ class Z80_switchgen {
 
     displace(withwhat, outto) {
         if ((withwhat !== 'IX') && (withwhat !== 'IY')) {
-            this.addl(outto + ' = ' + this.zregrip(withwhat));
+            this.addl(outto + ' = ' + this.readreg(withwhat));
             return;
         }
         this.operand8('regs.TR');
         this.addcycles(5);
-        withwhat = this.zregrip(withwhat);
+        withwhat = this.readreg(withwhat);
         this.addl('regs.WZ = (' + withwhat + ' + mksigned8(regs.TR)) & 0xFFFF;');
         this.addl(outto + ' = regs.WZ;');
     }
@@ -337,7 +337,7 @@ class Z80_switchgen {
         this.addl('regs.Q = ' + val + ';');
     }
 
-    zregripH(r) {
+    readregH(r) {
         switch(r) {
             case 'HL':
                 return 'regs.H';
@@ -360,7 +360,7 @@ class Z80_switchgen {
         }
     }
 
-    zregripL(r) {
+    readregL(r) {
         switch(r) {
             case 'HL':
                 return 'regs.L';
@@ -382,7 +382,7 @@ class Z80_switchgen {
         }
     }
 
-    zregrip(r) {
+    readreg(r) {
         switch(r) {
             case 'A':
                 return 'regs.A';
@@ -437,7 +437,7 @@ class Z80_switchgen {
         }
     }
 
-    zregripw(r, val) {
+    writereg(r, val) {
         switch(r) {
             case 'IX':
                 this.addl('regs.IX = ' + val + ';');
@@ -516,7 +516,7 @@ class Z80_switchgen {
         }
     }
 
-    zregripwL(r, val) {
+    writeregL(r, val) {
         switch(r) {
             case 'HL':
                 this.addl('regs.L = (' + val + ');');
@@ -545,7 +545,7 @@ class Z80_switchgen {
         }
     }
 
-    zregripwH(r, val) {
+    writeregH(r, val) {
         switch(r) {
             case 'HL':
                 this.addl('regs.H = (' + val + ');');
@@ -589,7 +589,7 @@ class Z80_switchgen {
         this.addl('regs.F.N = 0;');
         this.addl('regs.F.PV = ((((x ^ y) ^ 0xFF) & (x ^ z)) & 0x80) >>> 7;');
         this.setX('z');
-        this.addl('regs.F.H = (((x ^ y ^ z) ^ 0xFF) & 0x10) >>> 4;');
+        this.addl('regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;');
         this.setY('z');
         this.setZ('z & 0xFF');
         this.setS8('z');
@@ -636,10 +636,10 @@ class Z80_switchgen {
 
     CPD() {
         this.addl('regs.WZ = (regs.WZ - 1) & 0xFFFF;');
-        this.addl('regs.TA = ' + this.zregrip('HL') + ';');
+        this.addl('regs.TA = ' + this.readreg('HL') + ';');
         this.read('regs.TA', 'regs.TR');
         this.addl('regs.TA = (regs.TA - 1) & 0xFFFF;')
-        this.zregripw('HL', 'regs.TA');
+        this.writereg('HL', 'regs.TA');
         this.addcycles(5);
         this.addl('regs.TA = (((regs.B << 8) | regs.C) - 1) & 0xFFFF;');
         this.addl('regs.B = (regs.TA & 0xFF00) >>> 8;');
@@ -657,10 +657,10 @@ class Z80_switchgen {
     CPI() {
         this.Q(1)
         this.addl('regs.WZ = (regs.WZ + 1) & 0xFFFF;');
-        this.addl('regs.TA = ' + this.zregrip('HL') + ';');
+        this.addl('regs.TA = ' + this.readreg('HL') + ';');
         this.read('regs.TA', 'regs.TR');
         this.addl('regs.TA = (regs.TA + 1) & 0xFFFF;');
-        this.zregripw('_HL', 'regs.TA');
+        this.writereg('_HL', 'regs.TA');
         this.addcycles(5);
         this.addl('let n = (regs.A - regs.TR) & 0xFF;');
         this.addl('regs.F.N = 1;');
@@ -705,12 +705,12 @@ class Z80_switchgen {
         this.Q(1);
         this.addl('regs.WZ = (((regs.B << 8) | regs.C) - 1) & 0xFFFF;');
         this.addcycle();
-        this.addl('regs.TA = ' + this.zregrip('BC') + ';');
+        this.addl('regs.TA = ' + this.readreg('BC') + ';');
         this.in('regs.TA', 'regs.TR');
         this.addl('regs.B = (regs.B - 1) & 0xFF;');
-        this.write(this.zregrip('HL'), 'regs.TR');
+        this.write(this.readreg('HL'), 'regs.TR');
         this.addl('regs.TA = (((regs.H << 8) | regs.L) - 1) & 0xFFFF;');
-        this.zregripw('HL', 'regs.TA');
+        this.writereg('HL', 'regs.TA');
         this.addl('regs.F.C = ((((regs.C - 1) & 0xFF) + regs.TR) & 0x100) >>> 8;');
         this.addl('regs.F.N = (regs.TR & 0x80) >>> 7;');
         this.addl('regs.TA = ((regs.C - 1) & 0xFF) + data & 7 ^ regs.B;');
@@ -745,7 +745,7 @@ class Z80_switchgen {
     }
     
     LDD() {
-        this.addl('regs.TA = ' + this.zregrip('HL') + ';');
+        this.addl('regs.TA = ' + this.readreg('HL') + ';');
         this.read('regs.TA', 'regs.TR');
         this.addl('regs.TA = (regs.TA - 1) & 0xFFFF;');
         this.addl('regs.H = (regs.TA & 0xFF00) >>> 8;');
@@ -759,7 +759,7 @@ class Z80_switchgen {
         this.addcycles(2);
         this.addl('regs.F.N = regs.F.H = 0;');
         this.addl('regs.TA = (((regs.B << 8) | regs.C) - 1) & 0xFFFF;');
-        this.zregripw('BC', 'regs.TA');
+        this.writereg('BC', 'regs.TA');
         this.addl('regs.F.PV = +(regs.TA !== 0);');
         this.addl('regs.TA = (regs.A + regs.TR) & 0xFF;');
         this.addl('regs.F.X = (regs.TA & 8) >>> 3;');
@@ -770,17 +770,17 @@ class Z80_switchgen {
         this.addl('regs.TA = (regs.H << 8) | regs.L;');
         this.read('regs.TA', 'regs.TR');
         this.addl('regs.TA = (regs.TA + 1) & 0xFFFF;');
-        this.zregripw('HL', 'regs.TA');
+        this.writereg('HL', 'regs.TA');
         this.addl('regs.TA = (regs.D << 8) | regs.E;');
         this.write('regs.TA', 'regs.TR');
         this.addl('regs.TA = (regs.TA + 1) & 0xFFFF;');
-        this.zregripw('DE', 'regs.TA');
+        this.writereg('DE', 'regs.TA');
         this.addcycles(2);
         this.addl('regs.F.N = regs.F.H = 0;');
         this.addl('regs.F.X = (regs.TA & 8) >>> 3;');
         this.addl('regs.F.Y = (regs.TA & 2) >>> 1;');
         this.addl('regs.TA = (((regs.B << 8) | regs.C) - 1) & 0xFFFF;');
-        this.zregripw('BC', 'regs.TA');
+        this.writereg('BC', 'regs.TA');
         this.addl('regs.F.PV = +(regs.TA !== 0);');
     }
 
@@ -797,12 +797,12 @@ class Z80_switchgen {
 
     OUTD() {
         this.addcycle();
-        this.addl('regs.TA = ' + this.zregrip('HL') + ';');
+        this.addl('regs.TA = ' + this.readreg('HL') + ';');
         this.read('regs.TA', 'regs.TR');
         this.addl('regs.TA = (regs.TA - 1) & 0xFFFF;');
-        this.zregripw('HL', 'regs.TA');
+        this.writereg('HL', 'regs.TA');
         this.addl('regs.B = (regs.B - 1) & 0xFF;');
-        this.addl('regs.TA = ' + this.zregrip('BC') + ';');
+        this.addl('regs.TA = ' + this.readreg('BC') + ';');
         this.out('regs.TA', 'regs.TR');
         this.addl('regs.WZ = (regs.TA - 1) & 0xFFFF;');
 
@@ -818,12 +818,12 @@ class Z80_switchgen {
 
     OUTI() {
         this.addcycle();
-        this.addl('regs.TA = ' + this.zregrip('HL') + ';');
+        this.addl('regs.TA = ' + this.readreg('HL') + ';');
         this.read('regs.TA', 'regs.TR');
         this.addl('regs.TA = (regs.TA + 1) & 0xFFFF;');
-        this.zregripw('HL', 'regs.TA');
+        this.writereg('HL', 'regs.TA');
         this.addl('regs.B = (regs.B - 1) & 0xFF;');
-        this.addl('regs.TA = ' + this.zregrip('BC') + ';');
+        this.addl('regs.TA = ' + this.readreg('BC') + ';');
         this.out('regs.TA', 'regs.TR');
         this.addl('regs.WZ = (regs.TA + 1) & 0xFFFF;');
 
@@ -1145,11 +1145,11 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
         case Z80_MN.ADC_a_r:  //n8&
             ag.Q(1);
             ag.cleanup();
-            ag.ADD('regs.A', arg1, 'regs.F.C')
+            ag.ADD('regs.A', ag.readreg(arg1), 'regs.F.C', 'regs.A')
             break;
         case Z80_MN.ADC_hl_rr:  //n16&
-            argL = ag.zregripL(arg1);
-            argH = ag.zregripH(arg1);
+            argL = ag.readregL(arg1);
+            argH = ag.readregH(arg1);
             ag.Q(1);
             ag.psaddl('let x, y, z;');
             ag.addcycles(4);
@@ -1163,7 +1163,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.Q(1);
             ag.displace(arg1, 'regs.TA');
             ag.read('regs.TA', 'regs.TR');
-            ag.ADD('regs.A', 'regs.TR', '0', 'regs.TA');
+            ag.ADD('regs.A', 'regs.TR', '0', 'regs.A');
             break;
         case Z80_MN.ADD_a_n:  //
             ag.Q(1);
@@ -1172,11 +1172,11 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.ADD_a_r:  //n8&
             ag.Q(1);
-            ag.ADD('regs.A', ag.zregrip(arg1), '0', 'regs.A');
+            ag.ADD('regs.A', ag.readreg(arg1), '0', 'regs.A');
             break;
         case Z80_MN.ADD_hl_rr:  //n16&
-            argH = ag.zregripH(arg1);
-            argL = ag.zregripL(arg1);
+            argH = ag.readregH(arg1);
+            argL = ag.readregL(arg1);
             ag.Q(1);
             ag.psaddl('let x, y, z;');
             ag.addl('regs.WZ = (((regs.H << 8) | regs.L) + 1) & 0xFFFF;');
@@ -1200,24 +1200,24 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.AND_a_r:  //n8&
             ag.Q(1);
-            ag.AND('regs.A', ag.zregrip(arg1), 'regs.A');
+            ag.AND('regs.A', ag.readreg(arg1), 'regs.A');
             break;
         case Z80_MN.BIT_o_irr:  //n3, n16&
             ag.Q(1);
-            ag.read(ag.zregrip(arg2), 'regs.TR');
+            ag.read(ag.readreg(arg2), 'regs.TR');
             ag.BIT(arg1, 'regs.TR');
             ag.setXY('(regs.WZ >>> 8)');
             break;
         case Z80_MN.BIT_o_irr_r:  //n3, n16&, n8&
             ag.Q(1);
-            ag.read(ag.zregrip(arg2), 'regs.TR');
+            ag.read(ag.readreg(arg2), 'regs.TR');
             ag.BIT(arg1, 'regs.TR', 'regs.TR');
-            ag.zregripw(arg3, 'regs.TR');
+            ag.writereg(arg3, 'regs.TR');
             ag.setXY('(regs.WZ >>> 8)');
             break;
         case Z80_MN.BIT_o_r:  //n3, n8&
             ag.Q(1);
-            ag.BIT(arg1, ag.zregrip(arg2));
+            ag.BIT(arg1, ag.readreg(arg2));
             break;
         case Z80_MN.CALL_c_nn:  //bool c
             ag.Q(0);
@@ -1261,7 +1261,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.CP_a_r:  //n8& x
             ag.Q(1);
-            ag.CP('regs.A', ag.zregrip(arg1));
+            ag.CP('regs.A', ag.readreg(arg1));
             break;
         case Z80_MN.CPD:  //
             ag.Q(1);
@@ -1297,13 +1297,13 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.DAA:  //
             ag.Q(1);
-            ag.addl('let a = A;');
-            ag.addl('if (regs.F.C || (regs.A > 0x99)) { regs.A += regs.F.N ? -0x60: 0x60; regs.F.C = 1; }')
-            ag.addl('if (regs.F.H || ((regs.A & 0x0F) > 0x09)) { regs.A += regs.F.N ? -6 : 6; }');
+            ag.addl('let a = regs.A;');
+            ag.addl('if (regs.F.C || (regs.A > 0x99)) { regs.A = (regs.A + (regs.F.N ? -0x60: 0x60)) & 0xFF; regs.F.C = 1; }')
+            ag.addl('if (regs.F.H || ((regs.A & 0x0F) > 0x09)) { regs.A = (regs.A + (regs.F.N ? -6 : 6)) & 0xFF; }');
 
             ag.addl('regs.F.PV = Z80_parity(regs.A);');
             ag.setXY('regs.A');
-            ag.addl('regs.F.H = ((a ^ A) & 0x10) >>> 4;');
+            ag.addl('regs.F.H = ((a ^ regs.A) & 0x10) >>> 4;');
             ag.addl('regs.F.Z = +(regs.A === 0);');
             ag.setS8('regs.A');
             break;
@@ -1317,15 +1317,15 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.DEC_r:  //n8&
             ag.Q(1);
-            ag.DEC(ag.zregrip(arg1));
-            ag.zregripw(arg1, 'regs.TR');
+            ag.DEC(ag.readreg(arg1));
+            ag.writereg(arg1, 'regs.TR');
             break;
         case Z80_MN.DEC_rr:  //n16&
             ag.Q(0);
             ag.addcycles(2);
-            ag.addl('regs.TA = ' + ag.zregrip(arg1));
+            ag.addl('regs.TA = ' + ag.readreg(arg1));
             ag.addl('regs.TA = (regs.TA - 1) & 0xFFFF;');
-            ag.zregripw(arg1, 'regs.TA');
+            ag.writereg(arg1, 'regs.TA');
             break;
         case Z80_MN.DI:  //
             ag.cleanup();
@@ -1349,22 +1349,22 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.EX_irr_rr:  //n16&, n16&
             ag.Q(0);
-            ag.addl('regs.TA = ' + ag.zregrip(arg1) + ';');
+            ag.addl('regs.TA = ' + ag.readreg(arg1) + ';');
             ag.read('regs.TA', 'regs.WZ');
             ag.addl('regs.TA = (regs.TA + 1) & 0xFFFF;');
             ag.read('regs.TA', 'regs.TR');
             ag.addl('regs.WZ |= (regs.TR << 8);');
-            ag.write(ag.zregrip(arg1), ag.zregripL(arg2));
-            ag.write('regs.TA', ag.zregripH(arg2));
-            ag.zregripw(arg2, 'regs.WZ');
+            ag.write(ag.readreg(arg1), ag.readregL(arg2));
+            ag.write('regs.TA', ag.readregH(arg2));
+            ag.writereg(arg2, 'regs.WZ');
             break;
         case Z80_MN.EX_rr_rr:  //n16&, n16&
             ag.Q(0);
             if (arg1 === 'AF') ag.addl('regs.exchange_shadow_af();')
             else ag.addl('regs.exchange_de_hl();');
-            //ag.addl('regs.TR = ' + ag.zregrip(arg1) + ';');
-            //ag.zregripw(arg2, ag.zregrip(arg1));
-            //ag.zregripw(arg1, 'regs.TR');
+            //ag.addl('regs.TR = ' + ag.readreg(arg1) + ';');
+            //ag.writereg(arg2, ag.readreg(arg1));
+            //ag.writereg(arg1, 'regs.TR');
 
             //ag.addl(arg1 + ' = regs.TR;');
             break;
@@ -1394,7 +1394,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.addl('regs.TA = (regs.B << 8) | regs.C;');
             ag.in('regs.TA', 'regs.TR');
             ag.IN('regs.TR');
-            ag.zregripw(arg1, 'regs.TR');
+            ag.writereg(arg1, 'regs.TR');
             ag.addl('regs.WZ = (regs.TA + 1) & 0xFFFF;');
             break;
         case Z80_MN.IN_ic:  //
@@ -1414,14 +1414,14 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.INC_r:  //n8&
             ag.Q(1);
-            ag.INC(ag.zregrip(arg1));
-            ag.zregripw(arg1, 'regs.TR');
+            ag.INC(ag.readreg(arg1));
+            ag.writereg(arg1, 'regs.TR');
             break;
         case Z80_MN.INC_rr:  //n16&
             ag.Q(0);
             ag.addcycles(2);
-            ag.addl('regs.TR = ((' + ag.zregrip(arg1) + ' ) + 1) & 0xFFFF;');
-            ag.zregripw(arg1, 'regs.TR');
+            ag.addl('regs.TR = ((' + ag.readreg(arg1) + ' ) + 1) & 0xFFFF;');
+            ag.writereg(arg1, 'regs.TR');
             break;
         case Z80_MN.IND:  //
             ag.IND();
@@ -1453,7 +1453,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
            break;
         case Z80_MN.JP_rr:  //n16&
             ag.Q(0);
-            ag.addl('regs.PC = ' + ag.zregrip((arg1)) + ';');
+            ag.addl('regs.PC = ' + ag.readreg((arg1)) + ';');
             break;
         case Z80_MN.JR_c_e:  //bool
             ag.Q(0);
@@ -1472,7 +1472,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.LD_a_irr:  //n16& x
             ag.Q(0);
-            ag.addl('regs.WZ = ' + ag.zregrip(arg1) + ';');
+            ag.addl('regs.WZ = ' + ag.readreg(arg1) + ';');
             ag.read('regs.WZ', 'regs.A');
             ag.addl('regs.WZ = (regs.WZ + 1) & 0xFFFF;');
             break;
@@ -1485,13 +1485,13 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
         case Z80_MN.LD_inn_rr:  //n16&
             ag.Q(0);
             ag.operand16('regs.WZ');
-            ag.write('regs.WZ', ag.zregripL(arg1));
+            ag.write('regs.WZ', ag.readregL(arg1));
             ag.addl('regs.WZ = (regs.WZ + 1) & 0xFFFF;');
-            ag.write('regs.WZ', ag.zregripH(arg1));
+            ag.write('regs.WZ', ag.readregH(arg1));
             break;
         case Z80_MN.LD_irr_a:  //n16&
             ag.Q(0);
-            ag.addl('regs.WZ = ' + ag.zregrip(arg1));
+            ag.addl('regs.WZ = ' + ag.readreg(arg1));
             ag.write('regs.WZ', 'regs.A');
             ag.addl('regs.WZ = ((regs.WZ + 1) & 0xFF) | (regs.A << 8);');
             break;
@@ -1504,33 +1504,33 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
         case Z80_MN.LD_irr_r:  //n16&, n8&
             ag.Q(0);
             ag.displace(arg1, 'regs.TA');
-            ag.write('regs.TA', ag.zregrip(arg2));
+            ag.write('regs.TA', ag.readreg(arg2));
             break;
         case Z80_MN.LD_r_n:  //n8&
             ag.Q(0);
             ag.operand8('regs.TR');
-            ag.zregripw(arg1, 'regs.TR');
+            ag.writereg(arg1, 'regs.TR');
             break;
         case Z80_MN.LD_r_irr:  //n8&, n16&
             ag.Q(0);
             ag.displace(arg2, 'regs.TA');
             ag.read('regs.TA', 'regs.TR');
-            ag.zregripw(arg1, 'regs.TR');
+            ag.writereg(arg1, 'regs.TR');
             break;
         case Z80_MN.LD_r_r:  //n8&, n8&
             ag.Q(0);
-            ag.zregripw(arg1, ag.zregrip(arg2));
+            ag.writereg(arg1, ag.readreg(arg2));
             break;
         case Z80_MN.LD_r_r1:  //n8&, n8&
             ag.Q(0);
             ag.addcycle();
-            ag.zregripw(arg1, ag.zregrip(arg2));
+            ag.writereg(arg1, ag.readreg(arg2));
             break;
         case Z80_MN.LD_r_r2:  //n8&, n8&
             ag.Q(1);
             ag.addcycle();
-            ag.addl('let x = ' + ag.zregrip(arg1) + ';');
-            ag.zregripw(arg1, ag.zregrip(arg2));
+            ag.addl('let x = ' + ag.readreg(arg1) + ';');
+            ag.writereg(arg1, ag.readreg(arg2));
             ag.addl('regs.F.N = regs.F.H = 0;');
             ag.setXY('x');
             ag.addl('regs.F.PV = regs.IFF2;');
@@ -1540,22 +1540,23 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             else ag.addl('regs.P = 0;');
             break;
         case Z80_MN.LD_rr_inn:  //n16&
+            ag.Q(0);
             ag.operand16('regs.TA');
             ag.read('regs.TA', 'regs.TR');
-            ag.zregripwL(arg1, 'regs.TR');
+            ag.writeregL(arg1, 'regs.TR');
             ag.addl('regs.TA = (regs.TA + 1) & 0xFFFF;');
             ag.read('regs.TA', 'regs.TR');
-            ag.zregripwH(arg1, 'regs.TR');
+            ag.writeregH(arg1, 'regs.TR');
             break;
         case Z80_MN.LD_rr_nn:  //n16&
             ag.Q(0);
             ag.operand16('regs.TR');
-            ag.zregripw(arg1, 'regs.TR');
+            ag.writereg(arg1, 'regs.TR');
             break;
         case Z80_MN.LD_sp_rr:  //n16&
             ag.Q(0);
             ag.addcycles(2);
-            ag.addl('regs.SP = ' + ag.zregrip(arg1));
+            ag.addl('regs.SP = ' + ag.readreg(arg1));
             break;
         case Z80_MN.LDD:  //
             ag.Q(1);
@@ -1602,7 +1603,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.OR_a_r:  //n8&
             ag.Q(1);
-            ag.OR('regs.A', ag.zregrip(arg1), 'regs.A');
+            ag.OR('regs.A', ag.readreg(arg1), 'regs.A');
             break;
         case Z80_MN.OTDR:  //
             ag.Q(1);
@@ -1620,13 +1621,13 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.OUT_ic_r:  //n8&
             ag.Q(0);
-            ag.addl('regs.TA = ' + ag.zregrip('BC') + ';');
-            ag.out('regs.TA', ag.zregrip(arg1));
+            ag.addl('regs.TA = ' + ag.readreg('BC') + ';');
+            ag.out('regs.TA', ag.readreg(arg1));
             ag.addl('regs.WZ = (regs.TA + 1) & 0xFFFF;');
             break;
         case Z80_MN.OUT_ic:  //
             ag.Q(0);
-            ag.addl('regs.TA = ' + ag.zregrip('BC') + ';');
+            ag.addl('regs.TA = ' + ag.readreg('BC') + ';');
             if (!CMOS) ag.out('regs.TA', '0x00');
             else ag.out('regs.TA', '0xFF');
             break;
@@ -1656,20 +1657,20 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.RES_o_irr:  //n3, n16&
             ag.Q(1);
-            ag.read(ag.zregrip(arg2), 'regs.TR');
+            ag.read(ag.readreg(arg2), 'regs.TR');
             ag.RES(arg1, 'regs.TR', 'regs.TR');
-            ag.write(ag.zregrip(arg2), 'regs.TR');
+            ag.write(ag.readreg(arg2), 'regs.TR');
             break;
         case Z80_MN.RES_o_irr_r:  //n3, n16&, n8&
             ag.Q(1);
-            ag.read(ag.zregrip(arg2), 'regs.TR');
+            ag.read(ag.readreg(arg2), 'regs.TR');
             ag.RES(arg1, 'regs.TR', 'regs.TR');
-            ag.zregripw(arg3, 'regs.TR');
-            ag.write(ag.zregrip(arg2), 'regs.TR');
+            ag.writereg(arg3, 'regs.TR');
+            ag.write(ag.readreg(arg2), 'regs.TR');
             break;
         case Z80_MN.RES_o_r:  //n3, n8&
             ag.Q(1);
-            ag.RES(arg1, ag.zregrip(arg2), ag.zregrip(arg2));
+            ag.RES(arg1, ag.readreg(arg2), ag.readreg(arg2));
             break;
         case Z80_MN.RET:  //
             ag.Q(0);
@@ -1698,21 +1699,21 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.RL_irr:  //n16&
             ag.Q(1);
-            ag.read(ag.zregrip(arg1), 'regs.TR');
+            ag.read(ag.readreg(arg1), 'regs.TR');
             ag.RL('regs.TR', 'regs.TR');
-            ag.write(ag.zregrip(arg1), 'regs.TR');
+            ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.RL_irr_r:  //n16&, n8&
             ag.Q(1);
-            ag.read(ag.zregrip(arg1), 'regs.TR');
+            ag.read(ag.readreg(arg1), 'regs.TR');
             ag.RL('regs.TR', 'regs.TR');
-            ag.zregripw(arg2, 'regs.TR');
-            ag.write(ag.zregrip(arg1), 'regs.TR');
+            ag.writereg(arg2, 'regs.TR');
+            ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.RL_r:  //n8&
             ag.Q(1);
-            ag.RL(ag.zregrip(arg1), 'regs.TR');
-            ag.zregripw(arg1, 'regs.TR');
+            ag.RL(ag.readreg(arg1), 'regs.TR');
+            ag.writereg(arg1, 'regs.TR');
             break;
         case Z80_MN.RLA:  //
             ag.Q(1);
@@ -1724,21 +1725,21 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.RLC_irr:  //n16&
             ag.Q(1);
-            ag.read(ag.zregrip(arg1), 'regs.TR');
+            ag.read(ag.readreg(arg1), 'regs.TR');
             ag.RLC('regs.TR', 'regs.TR');
-            ag.write(ag.zregrip(arg1), 'regs.TR');
+            ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.RLC_irr_r:  //n16&, n8&
             ag.Q(1);
-            ag.read(ag.zregrip(arg1), 'regs.TR');
+            ag.read(ag.readreg(arg1), 'regs.TR');
             ag.RLC('regs.TR', 'regs.TR');
-            ag.zregripw(arg2, 'regs.TR');
-            ag.write(ag.zregrip(arg1), 'regs.TR');
+            ag.writereg(arg2, 'regs.TR');
+            ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.RLC_r:  //n8&
             ag.Q(1);
-            ag.RLC(ag.zregrip(arg1), 'regs.TR');
-            ag.zregripw(arg1, 'regs.TR');
+            ag.RLC(ag.readreg(arg1), 'regs.TR');
+            ag.writereg(arg1, 'regs.TR');
             break;
         case Z80_MN.RLCA:  //
             ag.Q(1);
@@ -1751,7 +1752,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.RLD:  //
             ag.Q(1);
-            ag.addl('regs.WZ = ' + ag.zregrip(arg1) + ';');
+            ag.addl('regs.WZ = ' + ag.readreg(arg1) + ';');
             ag.read('regs.WZ', 'regs.TR');
             ag.addcycle();
             ag.write('regs.WZ', '((regs.TR << 4) & 0xF0) | (regs.A & 0x0F)');
@@ -1767,23 +1768,24 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.RR_irr:  //n16&
             ag.Q(1);
-            ag.read(ag.zregrip(arg1), 'regs.TR');
+            ag.read(ag.readreg(arg1), 'regs.TR');
             ag.RR('regs.TR', 'regs.TR');
-            ag.write(ag.zregrip(arg1), 'regs.TR');
+            ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.RR_irr_r:  //n16&, n8&
             ag.Q(1);
-            ag.read(ag.zregrip(arg1), 'regs.TR');
+            ag.read(ag.readreg(arg1), 'regs.TR');
             ag.RR('regs.TR', 'regs.TR');
-            ag.zregripw(arg2, 'regs.TR');
-            ag.write(ag.zregrip(arg1), 'regs.TR');
+            ag.writereg(arg2, 'regs.TR');
+            ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.RR_r:  //n8&
             ag.Q(1);
-            ag.RR(ag.zregrip(arg1), 'regs.TR');
-            ag.zregripw(arg1, 'regs.TR');
+            ag.RR(ag.readreg(arg1), 'regs.TR');
+            ag.writereg(arg1, 'regs.TR');
             break;
         case Z80_MN.RRA:  //
+            ag.Q(1);
             ag.addl('let c = regs.A & 1;');
             ag.addl('regs.A = (regs.F.C << 7) | (regs.A >>> 1);');
 
@@ -1793,21 +1795,21 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.RRC_irr:  //n16&
             ag.Q(1);
-            ag.read(ag.zregrip(arg1), 'regs.TR');
+            ag.read(ag.readreg(arg1), 'regs.TR');
             ag.RRC('regs.TR', 'regs.TR');
-            ag.write(ag.zregrip(arg1), 'regs.TR');
+            ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.RRC_irr_r:  //n16&, n8&
             ag.Q(1);
-            ag.read(ag.zregrip(arg1), 'regs.TR');
+            ag.read(ag.readreg(arg1), 'regs.TR');
             ag.RRC('regs.TR', 'regs.TR');
-            ag.zregripw(arg2, 'regs.TR');
-            ag.write(ag.zregrip(arg1), 'regs.TR');
+            ag.writereg(arg2, 'regs.TR');
+            ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.RRC_r:  //n8&
             ag.Q(1);
-            ag.RRC(ag.zregrip(arg1), 'regs.TR');
-            ag.zregripw(arg1, 'regs.TR');
+            ag.RRC(ag.readreg(arg1), 'regs.TR');
+            ag.writereg(arg1, 'regs.TR');
             break;
         case Z80_MN.RRCA:  //
             ag.Q(1);
@@ -1819,7 +1821,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.RRD:  //
             ag.Q(1)
-            ag.addl('regs.WZ = ' + ag.zregrip(arg1) +';');
+            ag.addl('regs.WZ = ' + ag.readreg(arg1) +';');
             ag.read('regs.WZ', 'regs.TR');
             ag.addcycle();
             ag.write('regs.WZ', '((regs.TR >>> 4) | (regs.A << 4)) & 0xFF');
@@ -1853,18 +1855,18 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.SBC_a_r:  //n8&
             ag.Q(1);
-            ag.SUB('regs.A', ag.zregrip(arg1), 'regs.F.C', 'regs.A');
+            ag.SUB('regs.A', ag.readreg(arg1), 'regs.F.C', 'regs.A');
             break;
         case Z80_MN.SBC_hl_rr:  //n16&
             ag.Q(1);
             ag.psaddl('let x, y, z, c;');
 
-            ag.addl('regs.TA = ' + ag.zregrip('HL') + ';');
+            ag.addl('regs.TA = ' + ag.readreg('HL') + ';');
             ag.addl('regs.WZ = (regs.TA + 1) & 0xFFFF;');
             ag.addcycles(4);
-            ag.SUB('regs.L', ag.zregripL(arg1), 'regs.F.C', 'regs.t[0]', false);
+            ag.SUB('regs.L', ag.readregL(arg1), 'regs.F.C', 'regs.t[0]', false);
             ag.addcycles(3);
-            ag.SUB('regs.H', ag.zregripH(arg1), 'regs.F.C', 'regs.t[1]', false);
+            ag.SUB('regs.H', ag.readregH(arg1), 'regs.F.C', 'regs.t[1]', false);
             ag.addl('regs.H = regs.t[1];');
             ag.addl('regs.L = regs.t[0];');
             ag.addl('regs.F.Z = +((regs.H === 0) && (regs.L === 0));');
@@ -1878,93 +1880,93 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.SET_o_irr:  //n3, n16&
             ag.Q(1);
-            ag.read(ag.zregrip(arg2), 'regs.TR');
+            ag.read(ag.readreg(arg2), 'regs.TR');
             ag.SET(arg1, 'regs.TR', 'regs.TR');
-            ag.write(ag.zregrip(arg2), 'regs.TR');
+            ag.write(ag.readreg(arg2), 'regs.TR');
             break;
         case Z80_MN.SET_o_irr_r:  //n3, n16&, n8&
             ag.Q(1);
-            ag.read(ag.zregrip(arg2), 'regs.TR');
+            ag.read(ag.readreg(arg2), 'regs.TR');
             ag.SET(arg1, 'regs.TR', 'regs.TR');
-            ag.zregripw(arg3, 'regs.TR');
-            ag.write(ag.zregrip(arg2), 'regs.TR');
+            ag.writereg(arg3, 'regs.TR');
+            ag.write(ag.readreg(arg2), 'regs.TR');
             break;
         case Z80_MN.SET_o_r:  //n3, n8&
             ag.Q(1);
-            ag.SET(arg1, ag.zregrip(arg2), 'regs.TR');
-            ag.zregripw(arg2, 'regs.TR');
+            ag.SET(arg1, ag.readreg(arg2), 'regs.TR');
+            ag.writereg(arg2, 'regs.TR');
             break;
         case Z80_MN.SLA_irr:  //n16&
             ag.Q(1);
-            ag.read(ag.zregrip(arg1), 'regs.TR');
+            ag.read(ag.readreg(arg1), 'regs.TR');
             ag.SLA('regs.TR', 'regs.TR');
-            ag.write(ag.zregrip(arg1), 'regs.TR');
+            ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.SLA_irr_r:  //n16&, n8&
             ag.Q(1);
-            ag.read(ag.zregrip(arg1), 'regs.TR');
+            ag.read(ag.readreg(arg1), 'regs.TR');
             ag.SLA('regs.TR', 'regs.TR');
-            ag.zregripw(arg2, 'regs.TR');
-            ag.write(ag.zregrip(arg1), 'regs.TR');
+            ag.writereg(arg2, 'regs.TR');
+            ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.SLA_r:  //n8&
             ag.Q(1);
-            ag.SLA(ag.zregrip(arg1), 'regs.TR');
-            ag.zregripw(arg1, 'regs.TR');
+            ag.SLA(ag.readreg(arg1), 'regs.TR');
+            ag.writereg(arg1, 'regs.TR');
             break;
         case Z80_MN.SLL_irr:  //n16&
             ag.Q(1);
-            ag.read(ag.zregrip(arg1), 'regs.TR');
+            ag.read(ag.readreg(arg1), 'regs.TR');
             ag.SLL('regs.TR', 'regs.TR');
-            ag.write(ag.zregrip(arg1), 'regs.TR');
+            ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.SLL_irr_r:  //n16&, n8&
             ag.Q(1);
-            ag.read(ag.zregrip(arg1), 'regs.TR');
+            ag.read(ag.readreg(arg1), 'regs.TR');
             ag.SLL('regs.TR', 'regs.TR');
-            ag.zregripw(arg2, 'regs.TR');
-            ag.write(ag.zregrip(arg1), 'regs.TR');
+            ag.writereg(arg2, 'regs.TR');
+            ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.SLL_r:  //n8&
             ag.Q(1);
-            ag.SLL(ag.zregrip(arg1), 'regs.TR');
-            ag.zregripw(arg1, 'regs.TR');
+            ag.SLL(ag.readreg(arg1), 'regs.TR');
+            ag.writereg(arg1, 'regs.TR');
             break;
         case Z80_MN.SRA_irr:  //n16&
             ag.Q(1);
-            ag.read(ag.zregrip(arg1), 'regs.TR');
+            ag.read(ag.readreg(arg1), 'regs.TR');
             ag.SRA('regs.TR', 'regs.TR');
-            ag.write(ag.zregrip(arg1), 'regs.TR');
+            ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.SRA_irr_r:  //n16&, n8&
             ag.Q(1);
-            ag.read(ag.zregrip(arg1), 'regs.TR');
+            ag.read(ag.readreg(arg1), 'regs.TR');
             ag.SRA('regs.TR', 'regs.TR');
-            ag.zregripw(arg2, 'regs.TR');
-            ag.write(ag.zregrip(arg1), 'regs.TR');
+            ag.writereg(arg2, 'regs.TR');
+            ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.SRA_r:  //n8&
             ag.Q(1);
-            ag.SRA(ag.zregrip(arg1), 'regs.TR');
-            ag.zregripw(arg1, 'regs.TR');
+            ag.SRA(ag.readreg(arg1), 'regs.TR');
+            ag.writereg(arg1, 'regs.TR');
             break;
         case Z80_MN.SRL_irr:  //n16&
             ag.Q(1);
-            ag.read(ag.zregrip(arg1), 'regs.TR');
+            ag.read(ag.readreg(arg1), 'regs.TR');
             ag.SRL('regs.TR', 'regs.TR');
-            ag.write(ag.zregrip(arg1), 'regs.TR');
+            ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.SRL_irr_r:  //n16&, n8&
             ag.Q(1);
-            ag.read(ag.zregrip(arg1), 'regs.TR');
+            ag.read(ag.readreg(arg1), 'regs.TR');
             ag.SRL('regs.TR', 'regs.TR');
-            ag.zregripw(arg2, 'regs.TR');
-            ag.write(ag.zregrip(arg1), 'regs.TR');
+            ag.writereg(arg2, 'regs.TR');
+            ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.SRL_r:  //n8&
             ag.Q(1);
-            ag.SRL(ag.zregrip(arg1), 'regs.TR');
-            ag.zregripw(arg1, 'regs.TR');
+            ag.SRL(ag.readreg(arg1), 'regs.TR');
+            ag.writereg(arg1, 'regs.TR');
             break;
         case Z80_MN.SUB_a_irr:  //n16&
             ag.Q(1);
@@ -1979,7 +1981,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.SUB_a_r:  //n8&
             ag.Q(1);
-            ag.SUB('regs.A', ag.zregrip(arg1), '0', 'regs.A');
+            ag.SUB('regs.A', ag.readreg(arg1), '0', 'regs.A');
             break;
         case Z80_MN.XOR_a_irr:  //n16&
             ag.Q(1);
@@ -1994,7 +1996,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.XOR_a_r:  //n8&
             ag.Q(1);
-            ag.XOR('regs.A', ag.zregrip(arg1), 'regs.A');
+            ag.XOR('regs.A', ag.readreg(arg1), 'regs.A');
             break;
     }
     return 'function(regs, pins) { //' + opcode_info.mnemonic + '\n' + ag.finished() + indent + '}';
