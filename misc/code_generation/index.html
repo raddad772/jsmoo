@@ -8,11 +8,13 @@
     <script type="text/javascript" src="/component/cpu/wdc65816/wdc65816_t.js"></script>
     <script type="text/javascript" src="/component/cpu/m6502/m6502_opcodes.js"></script>
     <script type="text/javascript" src="/component/cpu/z80/z80_opcodes.js"></script>
+    <script type="text/javascript" src="common_test_generation.js"></script>
     <script type="text/javascript" src="wdc65816_core_generator.js"></script>
     <script type="text/javascript" src="m68k_core_generator.js"></script>
     <script type="text/javascript" src="spc700_test_generator.js"></script>
     <script type="text/javascript" src="spc700_core_generator.js"></script>
     <script type="text/javascript" src="m6502_core_generator.js"></script>
+    <script type="text/javascript" src="z80_test_generator.js"></script>
     <script type="text/javascript" src="z80_core_generator.js"></script>
     <script type="text/javascript" src="generation.js"></script>
     <meta charset="utf-8">
@@ -21,10 +23,30 @@
 </head>
 
 <body>
-Seed to use for SPC700 tests:<input id="seed">
+<h2>General</h2>
+Seed to use for generating tests: <input id="seed">
+<br>Number of tests to generate per opcode: <input id="numtests">
 <br>
-<button type="button" id="generate" onclick="generate_spc_tests()">Generate and download SPC700 tests</button>
+<hr>
+<h2>SPC700 tests</h2>
+<button type="button" id="generatespc700tests" onclick="generate_spc_tests()">Generate and download SPC700 tests</button>
 <br>
+<hr>
+<h2>Z80 test generation</h2>
+<input type="checkbox" id="Z80cmos">CMOS variant
+<br>
+<input type="checkbox" id="Z80simplmem" checked>Use simplified memory access T-states. With this ON, MRQ/RD and MRQ/WR will only pulse for 1 T-state, whereas the docs have them pulse for 2. This simplifies emulator development and speeds up execution at no cost to accuracy.
+<br>
+<input type="checkbox" id="Z80refresh" checked>Put REFRESH values on address pins during opcode fetch
+<br>
+<br>
+When you click this button, check your JavaScript console for progress.
+<br>This will take a while, and use a lot of RAM.
+<br>
+<button type="button" id="generatez80tests" onclick="click_generate_z80_tests()">Generate and download Z80 tests</button>
+<br>
+<hr>
+<h2>Processor core generation</h2>
 <br>
 <button id="downloadjsWDC" type="button" onclick="generate_wdc65816_js()">Generate 65816</button>
 <button id="downloadjsSPC" type="button" onclick="generate_spc700_js()">Generate SPC</button>

@@ -24,13 +24,11 @@ class timing_worker_t {
     }
 
     set_fps_target(to) {
+        //console.log('FPS target set to', to);
         this.fps_target = to;
         this.frame_time_full = (1000 / this.fps_target);
         this.sleep_target = this.frame_time_full * .80; // Sleep 80% of the time
         this.frame_time_target = this.frame_time_full *.9; // Wait until 90% of the time
-        console.log('SLEEP TARGET', this.sleep_target)
-        console.log('FRAME TIME TARGET', this.frame_time_target)
-        console.log('FRAME TIEM FULL', this.frame_time_full);
     }
 
     onmessage(e) {
@@ -49,6 +47,9 @@ class timing_worker_t {
                 break;
             case timing_messages.pause_request:
                 this.pause_request();
+                break;
+            case timing_messages.set_fps_target:
+                this.set_fps_target(e.target);
                 break;
             default:
                 console.log('TIMING THREAD UNHANDLED MESSAGE');
@@ -108,7 +109,6 @@ class timing_worker_t {
     }
 
     reset() {
-        console.log('TIMING THREAD: reset');
         this.frames_since_reset = 0;
         this.update_sab();
     }

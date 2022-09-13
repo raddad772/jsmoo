@@ -1,4 +1,7 @@
 /roms
 /smw.smc
 /.idea
+*.txt
 /misc/tests/ProcessorTests
+/misc/tests/GeneratedTests/z80
+
