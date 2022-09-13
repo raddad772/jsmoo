@@ -295,10 +295,42 @@ async function test_pt_z80() {
     await dotest_pt_z80();
 }
 
+function Z80_get_name(iclass, ins) {
+    let hi = hex2(ins);
+    let ostr = '';
+    switch(iclass) {
+        case 0:
+            ostr = hi;
+            break;
+        case 0xDD:
+            ostr = 'DD ' + hi;
+            break;
+        case 0xFD:
+            ostr = 'FD ' + hi;
+            break;
+        case 0xCB:
+            ostr = 'CB ' + hi;
+            break;
+        case 0xED:
+            ostr = 'ED ' + hi;
+            break;
+        case 0xDDCB:
+            ostr = 'DD CB __ ' + hi;
+            break;
+        case 0xFDCB:
+            ostr = 'DD CB __ ' + hi;
+            break;
+        default:
+            console.log('WHAT!?', iclass);
+            break;
+    }
+    return ostr.toLowerCase();
+}
+
 async function test_pt_z80_ins(cpu, iclass, ins) {
-    let opc = hex2(ins).toLowerCase();
+    let opc = Z80_get_name(iclass, ins);
     let data = await getJSON(Z80local_server_url + opc + '.json');
-    console.log('TESTING', hex0x2(ins));
+    console.log('TESTING', opc);
     let result = Z80test_it_automated(cpu, data);
     if (!result.passed) {
         tconsole.addl(txf('{r}TEST FOR {/b}' + hex0x2(ins) + ' {/r*}FAILED!{/} See console for test deets'));
@@ -320,7 +352,7 @@ async function test_pt_z80_ins(cpu, iclass, ins) {
     if (!result.passed) {
         dbg.traces.draw(dconsole);
     }
-    cpu.pins.traces = [];
+    //cpu.pins.traces = [];
     /*
     .then(data => {
         console.log('GOT IT, TESTING')
@@ -351,7 +383,6 @@ async function dotest_pt_z80() {
     if (Z80_TEST_DO_TRACING) cpu.enable_tracing(read8);
     for (let mclass in test_classes) {
         let iclass = test_classes[mclass];
-        console.log(iclass);
         let opcode_table;
         switch(iclass) {
             case 0xDD:
