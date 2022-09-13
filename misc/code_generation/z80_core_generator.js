@@ -255,9 +255,10 @@ class Z80_switchgen {
         this.addl('pins.D = ' + from + ';');
 
         this.addcycle('OUT continues')
-        this.RWMIO(0, 1, 0, 1);
-        this.addcycle('WAIT STATE');
         this.RWMIO(0, 0, 0, 0);
+
+        this.addcycle('WAIT STATE');
+        this.RWMIO(0, 1, 0, 1);
 
         this.addcycle('OUT end');
     }
@@ -277,13 +278,14 @@ class Z80_switchgen {
         this.addl('pins.Addr = ' + addr + ';');
 
         this.addcycle('IN actual read');
-        this.RWMIO(1, 0, 0, 1);
+        //this.RWMIO(0, 0, 0, 1);
 
         this.addcycle('IN wait state');
-        this.RWMIO(0, 0, 0, 0);
+        this.RWMIO(1, 0, 0, 1);
 
 
         this.addcycle('IN end/latch');
+        this.RWMIO(0, 0, 0, 0);
         this.addl(to + ' = pins.D;');
     }
 
@@ -1674,7 +1676,6 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.RET:  //
             ag.Q(0);
-            ag.addcycle();
             ag.pop16rip('WZ');
             ag.addl('regs.PC = regs.WZ;');
             break;
