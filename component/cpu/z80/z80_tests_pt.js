@@ -71,10 +71,10 @@ function Z80_fmt_test(tst) {
 }
 
 class Z80test_return {
-    constructor(passed, ins, messages, addr_io_mismatches, length_mismatches, failed_test_struct) {
+    constructor(passed, mycycles, messages, addr_io_mismatches, length_mismatches, failed_test_struct) {
         this.passed = passed;
-        this.ins = ins;
-        this.hex_ins = hex0x2(ins);
+        this.mycycles = mycycles;
+        //this.hex_ins = hex0x2(ins);
         this.messages = messages;
         this.addr_io_mismatches = addr_io_mismatches;
         this.length_mismatches = length_mismatches;
@@ -102,6 +102,15 @@ const Z80_TEST_DO_TRACING = true;
 
 function faddr(addr) {
     return (addr & 0xFFFF);
+}
+
+function Z80cycle_pins(pins) {
+    let ostr = '';
+    ostr += pins.RD ? 'r' : '-';
+    ostr += pins.WR ? 'w' : '-';
+    ostr += pins.MRQ ? 'm' : '-';
+    ostr += pins.IO ? 'i' : '-';
+    return ostr;
 }
 
 /**
@@ -143,7 +152,7 @@ function Z80test_it_automated(cpu, tests) {
         cpu.regs.R = initial.r;
         cpu.regs.IX = initial.ix;
         cpu.regs.IY = initial.iy;
-        cpu.regs.AF_ = (initial.af_ & 0xFF00) >>> 8;
+        cpu.regs.AF_ = initial.af_;
         cpu.regs.BC_ = initial.bc_;
         cpu.regs.DE_ = initial.de_;
         cpu.regs.HL_ = initial.hl_;
@@ -156,6 +165,8 @@ function Z80test_it_automated(cpu, tests) {
         cpu.regs.IM = initial.im;
         cpu.regs.prefix = 0x00;
         cpu.regs.rprefix = Z80P.HL;
+
+        let my_cycles = [];
         for (let j in initial.ram) {
             Z80testRAM[faddr(initial.ram[j][0])] = initial.ram[j][1];
         }
@@ -163,7 +174,7 @@ function Z80test_it_automated(cpu, tests) {
         cpu.regs.IR = Z80_S_DECODE;
         cpu.regs.TR = 0;
         cpu.pins.Addr = cpu.regs.PC;
-        cpu.regs.TCU = 0;
+        cpu.regs.TCU = -1;
         let addr;
         let passed = true;
         for (let cyclei in tests[i].cycles)
@@ -177,6 +188,10 @@ function Z80test_it_automated(cpu, tests) {
             }
 
             cpu.cycle();
+            let soy = cpu.pins.D;
+            if (soy !== null) soy = hex2(soy)
+            addr = cpu.pins.Addr;
+            my_cycles.push([hex4(cpu.pins.Addr), soy, Z80cycle_pins(cpu.pins)]);
 
             let cycle = tests[i].cycles[cyclei];
 
@@ -210,7 +225,6 @@ function Z80test_it_automated(cpu, tests) {
             last_pc = cpu.regs.PC;
             if (parseInt(cyclei) === (tests[i].cycles.length-1)) {
                 if (cpu.regs.IR !== Z80_S_DECODE) {
-                    debugger;
                     length_mismatch++;
                 }
             }
@@ -223,9 +237,9 @@ function Z80test_it_automated(cpu, tests) {
             }
         }
         if (!passed) {
-            messages.push('FAILED TEST! ' + i + ' ' + Z80_PARSEP(cpu.regs.P.getbyte()));
+            messages.push('FAILED TEST! ' + i + ' ' + Z80_PARSEP(cpu.regs.F.getbyte()));
             cpu.cycle(); // for more trace
-            return new Z80test_return(passed, ins, messages, addr_io_mismatched, length_mismatch, Z80_fmt_test(tests[i]));
+            return new Z80test_return(passed, my_cycles, messages, addr_io_mismatched, length_mismatch, Z80_fmt_test(tests[i]));
         }
         let testregs = function(name, mine, theirs) {
             if (mine !== theirs) {
@@ -243,6 +257,7 @@ function Z80test_it_automated(cpu, tests) {
         if (JMP_INS.indexOf(ins) !== -1) {
             passed &= testregs('PC', (cpu.regs.PC - 1) & 0xFFFF, final.pc)
         } else passed &= testregs('PC', last_pc, final.pc);*/
+        cpu.cycle(); // for more trace
         passed &= testregs('PC', last_pc, final.pc);
         passed &= testregs('SP', cpu.regs.A, final.a);
         passed &= testregs('A', cpu.regs.A, final.a);
@@ -262,12 +277,16 @@ function Z80test_it_automated(cpu, tests) {
         passed &= testregs('DE_', cpu.regs.DE_, final.de_);
         passed &= testregs('HL_', cpu.regs.HL_, final.hl_);
         passed &= testregs('WZ', cpu.regs.WZ, final.wz);
-        passed &= testregs('Q', cpu.regs.Q, final.q);
-        passed &= testregs('P', cpu.regs.P, final.p);
-        passed &= testregs('EI', cpu.regs.EI, final.ei);
         passed &= testregs('IFF1', cpu.regs.IFF1, final.iff1);
         passed &= testregs('IFF2', cpu.regs.IFF2, final.iff2);
         passed &= testregs('IM', cpu.regs.IM, final.im);
+
+        if (passed) {
+            //cpu.cycle();
+            passed &= testregs('Q', cpu.regs.Q, final.q);
+            //passed &= testregs('P', cpu.regs.P, final.p);
+            //passed &= testregs('EI', cpu.regs.EI, final.ei);
+        }
 
         for (let j in final.ram) {
             if (Z80testRAM[faddr(final.ram[j][0])] !== final.ram[j][1]) {
@@ -280,7 +299,7 @@ function Z80test_it_automated(cpu, tests) {
             messages.push('FAILED AT ENDING!');
             cpu.cycle();
             //if (cpu.regs.P.D === 0)
-                return new Z80test_return(false, ins, messages, addr_io_mismatched, length_mismatch, Z80_fmt_test(tests[i]));
+                return new Z80test_return(false, my_cycles, messages, addr_io_mismatched, length_mismatch, Z80_fmt_test(tests[i]));
         }
         dbg.traces.clear();
 
@@ -335,6 +354,8 @@ async function test_pt_z80_ins(cpu, iclass, ins) {
     if (!result.passed) {
         tconsole.addl(txf('{r}TEST FOR {/b}' + hex0x2(ins) + ' {/r*}FAILED!{/} See console for test deets'));
         console.log(result.failed_test_struct);
+        console.log('THEIR CYCLES', result.failed_test_struct.cycles);
+        console.log('OUR CYCLES', result.mycycles);
     }
     if (result.messages.length !== 0) {
         tconsole.addl(null, '------Messages:');
@@ -376,7 +397,7 @@ async function dotest_pt_z80() {
         dbg.enable_tracing_for(D_RESOURCE_TYPES.Z80);
         dbg.enable_tracing();
     }
-    let start_test = 0;
+    let start_test = 8;
     let skip_tests = []; // Tests do not correctly set B after BRK
     //let test_classes = [0x00, 0xCB, 0xED, 0xDD, 0xFD, 0xDDCB, 0xFDCB]
     let test_classes = [0x00];

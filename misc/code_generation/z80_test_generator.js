@@ -127,6 +127,7 @@ let Z80_DO_MEM_REFRESHES = true; // Put I/R on address bus
  */
 
 let Z80_NUM_TO_GENERATE = 1000; // Generate 1 of each test
+let Z80_NULL_WAIT_STATES = false;
 const Z80_GEN_WAIT_HOW_LONG = 6; // 6 cycles of Wait are generated
 
 
@@ -217,6 +218,8 @@ class Z80_proc_test {
         this.cycles = new Z80_t_states();
 
         this.opcode_RAMs = {};
+
+        this.last_addr = null;
     }
 
     serializable() {
@@ -283,14 +286,18 @@ class Z80_proc_test {
     }
 
     add_port_in(addr, val) {
+        this.last_addr = addr;
         this.ports.push([addr, val, 'r']);
     }
 
     add_port_out(addr, val) {
+        this.last_addr = addr;
         this.ports.push([addr, val, 'w']);
     }
 
     add_cycle(addr, val, RD, WR, MRQ, IO, force_treat_as_read=false) {
+        if (!Z80_NULL_WAIT_STATES) if (addr === null) addr = this.last_addr;
+        this.last_addr = addr;
         this.cycles.add(addr, val, RD, WR, MRQ, IO, force_treat_as_read);
     }
 }
@@ -691,7 +698,7 @@ class Z80_test_generator {
 
     wait(howlong) {
         for (let i = 0; i < howlong; i++) {
-            this.test.add_cycle(this.regs.PC, null, 0, 0, 0, 0);
+            this.test.add_cycle(null, null, 0, 0, 0, 0);
         }
     }
 
@@ -817,7 +824,7 @@ class Z80_test_generator {
             case 'R':
                 this.regs.R = val & 0xFF;
                 break;
-            case 'AFs':
+            case 'AF_':
                 this.regs.AF_ = val;
                 break;
             default:
@@ -900,7 +907,7 @@ class Z80_test_generator {
                 return this.regs.I;
             case 'R':
                 return this.regs.R;
-            case 'AFs':
+            case 'AF_':
                 return this.regs.AF_;
             case '_':
                 return this.regs.junkvar;
@@ -2215,7 +2222,7 @@ class Z80_test_generator {
     generate_test(opcode_stream, number, osn) {
         let tests = [];
         for (let testnum = 0; testnum < number; testnum++) {
-            let opcode_stream_sum = 0;
+            let opcode_stream_sum = opcode_stream[0];
             for (let i in opcode_stream) {
                 opcode_stream_sum *= opcode_stream[i];
                 if (i>0) opcode_stream_sum += opcode_stream[i-1];
@@ -2318,6 +2325,7 @@ class Z80_test_generator {
 }
 
 function generate_Z80_tests(seed=null, CMOS) {
+    console.log('FULL MEMCYCLES?', Z80_DO_FULL_MEMCYCLES);
     if (seed !== null) rand_seed = seed;
     let os1 = new Uint8Array(1);
     let os2 = new Uint8Array(2);

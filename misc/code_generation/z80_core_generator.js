@@ -694,7 +694,7 @@ class Z80_switchgen {
     INC(x) {
         this.addl('regs.TR = ((' + x + ') + 1) & 0xFF;');
         this.addl('regs.F.N = 0;');
-        this.addl('regs.F.PV = +(regs.TR === 0);');
+        this.addl('regs.F.PV = +(regs.TR === 0x80);');
         this.setXY('regs.TR');
         this.addl('regs.F.H = +((regs.TR & 0x0F) === 0);');
         this.addl('regs.F.Z = +(regs.TR === 0);');
@@ -1418,7 +1418,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.zregripw(arg1, 'regs.TR');
             break;
         case Z80_MN.INC_rr:  //n16&
-            ag.Q(1);
+            ag.Q(0);
             ag.addcycles(2);
             ag.addl('regs.TR = ((' + ag.zregrip(arg1) + ' ) + 1) & 0xFFFF;');
             ag.zregripw(arg1, 'regs.TR');

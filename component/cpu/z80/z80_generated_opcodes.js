@@ -93,7 +93,7 @@ const z80_decoded_opcodes = Object.freeze({
         function(regs, pins) { //INC_rr BC
         switch(regs.TCU) {
             case 1: // Adding 2 cycles
-                regs.Q = 1;
+                regs.Q = 0;
                 break;
             case 2:
                 regs.TR = (((regs.B << 8) | regs.C ) + 1) & 0xFFFF;
@@ -120,7 +120,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.Q = 1;
                 regs.TR = ((regs.B) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.PV = +(regs.TR === 0);
+                regs.F.PV = +(regs.TR === 0x80);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);
@@ -218,7 +218,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x08: new Z80_opcode_functions(Z80_opcode_matrix[0x08], // 08
-        function(regs, pins) { //EX_rr_rr AF AFs
+        function(regs, pins) { //EX_rr_rr AF AF_
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 0;
@@ -355,7 +355,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.Q = 1;
                 regs.TR = ((regs.C) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.PV = +(regs.TR === 0);
+                regs.F.PV = +(regs.TR === 0x80);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);
@@ -572,7 +572,7 @@ const z80_decoded_opcodes = Object.freeze({
         function(regs, pins) { //INC_rr DE
         switch(regs.TCU) {
             case 1: // Adding 2 cycles
-                regs.Q = 1;
+                regs.Q = 0;
                 break;
             case 2:
                 regs.TR = (((regs.D << 8) | regs.E ) + 1) & 0xFFFF;
@@ -599,7 +599,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.Q = 1;
                 regs.TR = ((regs.D) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.PV = +(regs.TR === 0);
+                regs.F.PV = +(regs.TR === 0x80);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);
@@ -858,7 +858,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.Q = 1;
                 regs.TR = ((regs.E) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.PV = +(regs.TR === 0);
+                regs.F.PV = +(regs.TR === 0x80);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);
@@ -1103,7 +1103,7 @@ const z80_decoded_opcodes = Object.freeze({
         function(regs, pins) { //INC_rr HL
         switch(regs.TCU) {
             case 1: // Adding 2 cycles
-                regs.Q = 1;
+                regs.Q = 0;
                 break;
             case 2:
                 regs.TR = (((regs.H << 8) | regs.L ) + 1) & 0xFFFF;
@@ -1130,7 +1130,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.Q = 1;
                 regs.TR = ((regs.H) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.PV = +(regs.TR === 0);
+                regs.F.PV = +(regs.TR === 0x80);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);
@@ -1425,7 +1425,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.Q = 1;
                 regs.TR = ((regs.L) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.PV = +(regs.TR === 0);
+                regs.F.PV = +(regs.TR === 0x80);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);
@@ -1658,7 +1658,7 @@ const z80_decoded_opcodes = Object.freeze({
         function(regs, pins) { //INC_rr SP
         switch(regs.TCU) {
             case 1: // Adding 2 cycles
-                regs.Q = 1;
+                regs.Q = 0;
                 break;
             case 2:
                 regs.TR = ((regs.SP ) + 1) & 0xFFFF;
@@ -1695,7 +1695,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 4:
                 regs.TR = ((regs.TR) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.PV = +(regs.TR === 0);
+                regs.F.PV = +(regs.TR === 0x80);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);
@@ -2016,7 +2016,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.Q = 1;
                 regs.TR = ((regs.A) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.PV = +(regs.TR === 0);
+                regs.F.PV = +(regs.TR === 0x80);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);
@@ -14590,7 +14590,7 @@ const z80_decoded_opcodes = Object.freeze({
         function(regs, pins) { //INC_rr BC
         switch(regs.TCU) {
             case 1: // Adding 2 cycles
-                regs.Q = 1;
+                regs.Q = 0;
                 break;
             case 2:
                 regs.TR = (((regs.B << 8) | regs.C ) + 1) & 0xFFFF;
@@ -14617,7 +14617,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.Q = 1;
                 regs.TR = ((regs.B) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.PV = +(regs.TR === 0);
+                regs.F.PV = +(regs.TR === 0x80);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);
@@ -14715,7 +14715,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x20C: new Z80_opcode_functions(Z80_opcode_matrix[0x08], // DD 08
-        function(regs, pins) { //EX_rr_rr AF AFs
+        function(regs, pins) { //EX_rr_rr AF AF_
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 0;
@@ -14852,7 +14852,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.Q = 1;
                 regs.TR = ((regs.C) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.PV = +(regs.TR === 0);
+                regs.F.PV = +(regs.TR === 0x80);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);
@@ -15069,7 +15069,7 @@ const z80_decoded_opcodes = Object.freeze({
         function(regs, pins) { //INC_rr DE
         switch(regs.TCU) {
             case 1: // Adding 2 cycles
-                regs.Q = 1;
+                regs.Q = 0;
                 break;
             case 2:
                 regs.TR = (((regs.D << 8) | regs.E ) + 1) & 0xFFFF;
@@ -15096,7 +15096,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.Q = 1;
                 regs.TR = ((regs.D) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.PV = +(regs.TR === 0);
+                regs.F.PV = +(regs.TR === 0x80);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);
@@ -15355,7 +15355,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.Q = 1;
                 regs.TR = ((regs.E) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.PV = +(regs.TR === 0);
+                regs.F.PV = +(regs.TR === 0x80);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);
@@ -15599,7 +15599,7 @@ const z80_decoded_opcodes = Object.freeze({
         function(regs, pins) { //INC_rr HL
         switch(regs.TCU) {
             case 1: // Adding 2 cycles
-                regs.Q = 1;
+                regs.Q = 0;
                 break;
             case 2:
                 regs.TR = ((regs.IX ) + 1) & 0xFFFF;
@@ -15625,7 +15625,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.Q = 1;
                 regs.TR = ((regs.H) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.PV = +(regs.TR === 0);
+                regs.F.PV = +(regs.TR === 0x80);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);
@@ -15919,7 +15919,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.Q = 1;
                 regs.TR = ((regs.L) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.PV = +(regs.TR === 0);
+                regs.F.PV = +(regs.TR === 0x80);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);
@@ -16152,7 +16152,7 @@ const z80_decoded_opcodes = Object.freeze({
         function(regs, pins) { //INC_rr SP
         switch(regs.TCU) {
             case 1: // Adding 2 cycles
-                regs.Q = 1;
+                regs.Q = 0;
                 break;
             case 2:
                 regs.TR = ((regs.SP ) + 1) & 0xFFFF;
@@ -16211,7 +16211,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 12:
                 regs.TR = ((regs.TR) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.PV = +(regs.TR === 0);
+                regs.F.PV = +(regs.TR === 0x80);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);
@@ -16576,7 +16576,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.Q = 1;
                 regs.TR = ((regs.A) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.PV = +(regs.TR === 0);
+                regs.F.PV = +(regs.TR === 0x80);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);
@@ -29802,7 +29802,7 @@ const z80_decoded_opcodes = Object.freeze({
         function(regs, pins) { //INC_rr BC
         switch(regs.TCU) {
             case 1: // Adding 2 cycles
-                regs.Q = 1;
+                regs.Q = 0;
                 break;
             case 2:
                 regs.TR = (((regs.B << 8) | regs.C ) + 1) & 0xFFFF;
@@ -29829,7 +29829,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.Q = 1;
                 regs.TR = ((regs.B) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.PV = +(regs.TR === 0);
+                regs.F.PV = +(regs.TR === 0x80);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);
@@ -29927,7 +29927,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x410: new Z80_opcode_functions(Z80_opcode_matrix[0x08], // FD 08
-        function(regs, pins) { //EX_rr_rr AF AFs
+        function(regs, pins) { //EX_rr_rr AF AF_
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.Q = 0;
@@ -30064,7 +30064,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.Q = 1;
                 regs.TR = ((regs.C) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.PV = +(regs.TR === 0);
+                regs.F.PV = +(regs.TR === 0x80);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);
@@ -30281,7 +30281,7 @@ const z80_decoded_opcodes = Object.freeze({
         function(regs, pins) { //INC_rr DE
         switch(regs.TCU) {
             case 1: // Adding 2 cycles
-                regs.Q = 1;
+                regs.Q = 0;
                 break;
             case 2:
                 regs.TR = (((regs.D << 8) | regs.E ) + 1) & 0xFFFF;
@@ -30308,7 +30308,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.Q = 1;
                 regs.TR = ((regs.D) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.PV = +(regs.TR === 0);
+                regs.F.PV = +(regs.TR === 0x80);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);
@@ -30567,7 +30567,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.Q = 1;
                 regs.TR = ((regs.E) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.PV = +(regs.TR === 0);
+                regs.F.PV = +(regs.TR === 0x80);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);
@@ -30811,7 +30811,7 @@ const z80_decoded_opcodes = Object.freeze({
         function(regs, pins) { //INC_rr HL
         switch(regs.TCU) {
             case 1: // Adding 2 cycles
-                regs.Q = 1;
+                regs.Q = 0;
                 break;
             case 2:
                 regs.TR = ((regs.IY ) + 1) & 0xFFFF;
@@ -30837,7 +30837,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.Q = 1;
                 regs.TR = ((regs.H) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.PV = +(regs.TR === 0);
+                regs.F.PV = +(regs.TR === 0x80);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);
@@ -31131,7 +31131,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.Q = 1;
                 regs.TR = ((regs.L) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.PV = +(regs.TR === 0);
+                regs.F.PV = +(regs.TR === 0x80);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);
@@ -31364,7 +31364,7 @@ const z80_decoded_opcodes = Object.freeze({
         function(regs, pins) { //INC_rr SP
         switch(regs.TCU) {
             case 1: // Adding 2 cycles
-                regs.Q = 1;
+                regs.Q = 0;
                 break;
             case 2:
                 regs.TR = ((regs.SP ) + 1) & 0xFFFF;
@@ -31423,7 +31423,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 12:
                 regs.TR = ((regs.TR) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.PV = +(regs.TR === 0);
+                regs.F.PV = +(regs.TR === 0x80);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);
@@ -31788,7 +31788,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.Q = 1;
                 regs.TR = ((regs.A) + 1) & 0xFF;
                 regs.F.N = 0;
-                regs.F.PV = +(regs.TR === 0);
+                regs.F.PV = +(regs.TR === 0x80);
                 regs.F.X = ((regs.TR) & 8) >>> 3;
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.H = +((regs.TR & 0x0F) === 0);

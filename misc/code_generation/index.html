@@ -39,6 +39,7 @@ Seed to use for generating tests: <input id="seed">
 <br>
 <input type="checkbox" id="Z80refresh" checked>Put REFRESH values on address pins during opcode fetch
 <br>
+<input type="checkbox" id="Z80nullwait">Put "null" during wait state. On a real Z80, during "internal operations," the address pins are electrically disconnected from the processor. They may hold either the last value, or junk. If this is checked, we will use the last value; otherwise, we will use "null" to show that the address is unimportant.
 <br>
 When you click this button, check your JavaScript console for progress.
 <br>This will take a while, and use a lot of RAM.
