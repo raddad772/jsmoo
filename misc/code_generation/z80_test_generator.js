@@ -223,12 +223,15 @@ class Z80_proc_test {
     }
 
     serializable() {
-        return {
+        let r = {
             name: this.name,
             initial: this.initial,
             final: this.final,
             cycles: this.cycles.serializeable()
         }
+        if (this.ports.length > 0)
+            r.ports = this.ports;
+        return r;
     }
 
     finalize(regs, initial_PC, opcode_stream) {

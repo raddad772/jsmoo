@@ -376,7 +376,6 @@ class z80_t {
                 this.set_instruction(this.regs.t[0]);
                 break;
             case 13: // CB regular and ED regular starts here
-                this.regs.inc_R();
                 this.set_pins_opcode();
                 break;
             case 14:
@@ -384,11 +383,13 @@ class z80_t {
                 this.pins.RD = 1;
                 break;
             case 15:
+                this.pins.Addr = (this.regs.I << 8) | this.regs.R;
+                this.regs.inc_R();
                 this.regs.t[0] = this.pins.D;
                 this.set_pins_nothing();
                 break;
             case 16:
-                // execute from ED now
+                // execute from CB or ED now
                 this.set_instruction(this.regs.t[0]);
                 break;
             default:

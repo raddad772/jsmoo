@@ -186,8 +186,14 @@ function Z80test_it_automated(cpu, tests) {
                     dbg.traces.add(D_RESOURCE_TYPES.Z80, cpu.trace_cycles, trace_format_read('Z80', Z80_COLOR, cpu.trace_cycles, addr & 0xFFFF, cpu.pins.D));
                 }
             } else if (cpu.pins.RD && cpu.pins.IO) {
-                cpu.pins.D = Z80testRAM[addr];
+                for (let p in tests[i].ports) {
+                    if (tests[i].ports[p][0] === cpu.pins.Addr) {
+                        cpu.pins.D = tests[i].ports[p][1];
+                        break;
+                    }
+                }
             }
+
 
             cpu.cycle();
             let soy = cpu.pins.D;
@@ -404,11 +410,12 @@ async function dotest_pt_z80() {
         dbg.enable_tracing_for(D_RESOURCE_TYPES.Z80);
         dbg.enable_tracing();
     }
-    let start_test = 0xdb;
+    let start_test = 0x0;
     let skip_tests = [0x76 // HALT
     ];
     //let test_classes = [0x00, 0xCB, 0xED, 0xDD, 0xFD, 0xDDCB, 0xFDCB]
-    let test_classes = [0x00];
+    // PASSED CLASSES: 0x00
+    let test_classes = [0xCB];
     if (Z80_TEST_DO_TRACING) cpu.enable_tracing(read8);
     for (let mclass in test_classes) {
         let iclass = test_classes[mclass];
