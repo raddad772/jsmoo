@@ -185,6 +185,8 @@ function Z80test_it_automated(cpu, tests) {
                 if (Z80_TEST_DO_TRACING) {
                     dbg.traces.add(D_RESOURCE_TYPES.Z80, cpu.trace_cycles, trace_format_read('Z80', Z80_COLOR, cpu.trace_cycles, addr & 0xFFFF, cpu.pins.D));
                 }
+            } else if (cpu.pins.RD && cpu.pins.IO) {
+                cpu.pins.D = Z80testRAM[addr];
             }
 
             cpu.cycle();
@@ -202,7 +204,7 @@ function Z80test_it_automated(cpu, tests) {
             }
             if (cycle[1] !== null && (cycle[1] !== cpu.pins.D)) {
                 console.log(cyclei, cycle[1], cpu.pins.D);
-                //messages.push(cyclei.toString() + ' MISMATCH IN RAM AT ' + hex0x4(cycle[0]) + ' THEIRS: ' + hex0x2(cycle[1]) + ' OURS: ' + hex0x2(cpu.pins.D));
+                messages.push(cyclei.toString() + ' MISMATCH IN DATAPIN AT ' + hex0x4(cycle[0]) + ' THEIRS: ' + hex0x2(cycle[1]) + ' OURS: ' + hex0x2(cpu.pins.D));
                 passed = false;
             }
             // Check pins
@@ -242,15 +244,18 @@ function Z80test_it_automated(cpu, tests) {
             cpu.cycle(); // for more trace
             return new Z80test_return(passed, my_cycles, messages, addr_io_mismatched, length_mismatch, Z80_fmt_test(tests[i]));
         }
-        let testregs = function(name, mine, theirs) {
+        let testregs = function(name, mine, theirs, other_mine) {
             if (mine !== theirs) {
-                if (name === 'F') {
-                    messages.push('startF ' + Z80_PARSEP(tests[i].f))
-                    messages.push('ourF   ' + Z80_PARSEP(cpu.regs.F.getbyte()));
-                    messages.push('theirF ' + Z80_PARSEP(theirs));
+                if (name === 'PC' && (theirs !== other_mine)) {
+                    if (name === 'F') {
+                        messages.push('startF ' + Z80_PARSEP(tests[i].f))
+                        messages.push('ourF   ' + Z80_PARSEP(cpu.regs.F.getbyte()));
+                        messages.push('theirF ' + Z80_PARSEP(theirs));
+                    }
+                    //console.log(name);
+                    messages.push('reg ' + name + ' MISMATCH! MINE:' + hex0x2(mine) + ' THEIRS:' + hex0x2(theirs));
+                    return false;
                 }
-                messages.push('reg ' + name + ' MISMATCH! MINE:' + hex0x2(mine) + ' THEIRS:' + hex0x2(theirs));
-                return false;
             }
             return true;
         }
@@ -260,7 +265,7 @@ function Z80test_it_automated(cpu, tests) {
             passed &= testregs('PC', (cpu.regs.PC - 1) & 0xFFFF, final.pc)
         } else passed &= testregs('PC', last_pc, final.pc);*/
         cpu.cycle(); // for more trace
-        passed &= testregs('PC', last_pc, final.pc);
+        passed &= testregs('PC', last_pc, final.pc, cpu.pins.Addr);
         passed &= testregs('SP', cpu.regs.SP, final.sp);
         passed &= testregs('A', cpu.regs.A, final.a);
         passed &= testregs('B', cpu.regs.B, final.b);
@@ -399,7 +404,7 @@ async function dotest_pt_z80() {
         dbg.enable_tracing_for(D_RESOURCE_TYPES.Z80);
         dbg.enable_tracing();
     }
-    let start_test = 0x86;
+    let start_test = 0xdb;
     let skip_tests = [0x76 // HALT
     ];
     //let test_classes = [0x00, 0xCB, 0xED, 0xDD, 0xFD, 0xDDCB, 0xFDCB]

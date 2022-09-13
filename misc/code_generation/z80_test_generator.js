@@ -656,7 +656,7 @@ class Z80_test_generator {
         else {
             // For convenience, we only pulse on wait cycle here
             this.test.add_cycle(addr, null, 0, 0, 0, 0);
-            this.test.add_cycle(addr, null, 1, 0, 0, 1);
+            this.test.add_cycle(addr, null, 0, 0, 0, 0);
             this.test.add_cycle(addr, null, 1, 0, 0, 1);
             this.test.add_cycle(addr, inval, 0, 0, 0, 0);
         }
@@ -1797,7 +1797,7 @@ class Z80_test_generator {
     }
 
     PUSH_rr(x) {
-        this.Q();
+        this.Q(0);
         this.wait(1);
         this.push(this.readreg(x));
     }
