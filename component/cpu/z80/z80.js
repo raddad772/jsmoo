@@ -189,10 +189,10 @@ class z80_t {
     }
 
     enable_tracing(trace_peek) {
-        if (this.trace_on) return;
         this.trace_on = true;
         this.trace_cycles = 0;
-        this.trace_peek = trace_peek;
+        if (typeof trace_peek !== 'undefined')
+            this.trace_peek = trace_peek;
     }
 
     disable_tracing() {
@@ -270,6 +270,9 @@ class z80_t {
             // RD on T1
             // data latch T2
             case 0: // already handled by fetch of next instruction starting
+                this.set_pins_opcode();
+                this.regs.rprefix = Z80P.HL;
+                this.regs.prefix = 0;
                 break;
             case 1: // T1 MREQ, RD
                 if (this.regs.HALT) { this.regs.TCU = 0; break; }
@@ -295,20 +298,21 @@ class z80_t {
                 this.pins.RD = 1;
                 this.pins.MRQ = 1;
                 break;
-            case 2: // T2, RD/MRQ to 0 and data latch. REFRESH
+            case 2: // T2, RD to 0 and data latch, REFRESH and MRQ=1 for REFRESH
                 this.pins.RD = 0;
                 this.pins.MRQ = 0;
                 this.regs.t[0] = this.pins.D;
-                this.regs.inc_R();
                 this.pins.Addr = (this.regs.I << 8) | this.regs.R;
                 break;
             case 3: // T3 not much here
+                //this.pins.MRQ = 0;
                 // If we need to fetch another, start that and set TCU back to 1
-                if (this.regs.t[0] === 0xDD) { this.regs.prefix = 0xDD; this.regs.rprefix = Z80P.IX; this.set_pins_opcode(); this.regs.TCU = 0; break; }
-                if (this.regs.t[0] === 0xfD) { this.regs.prefix = 0xFD; this.regs.rprefix = Z80P.IY; this.set_pins_opcode(); this.regs.TCU = 0; break; }
+                if (this.regs.t[0] === 0xDD) { this.regs.prefix = 0xDD; this.regs.rprefix = Z80P.IX; this.regs.TCU = 0; break; }
+                if (this.regs.t[0] === 0xfD) { this.regs.prefix = 0xFD; this.regs.rprefix = Z80P.IY; this.regs.TCU = 0; break; }
                 // elsewise figure out what to do next
                 // this gets a little tricky
                 // 4, 5, 6, 7, 8, 9, 10, 11, 12 = rprefix != HL and is CB, execute CBd
+                this.regs.inc_R();
                 if ((this.regs.t[0] === 0xCB) && (this.regs.rprefix !== Z80P.HL)) {
                     this.regs.prefix = ((this.regs.prefix << 8) | 0xCB) & 0xFFFF;
                     break;
