@@ -416,12 +416,19 @@ async function dotest_pt_z80() {
         dbg.enable_tracing_for(D_RESOURCE_TYPES.Z80);
         dbg.enable_tracing();
     }
-    let start_test = 0x00;
-    let skip_tests = {0x00: [0x76],
-                        0xCB: [], }
+    let start_test = 0x0;
+    let skip_tests = {
+        0x00: [0x76], // HALT
+        0xCB: [],
+        0xDD: [],
+        0xFD: [],
+        0xED: [],
+        0xDDCB: [],
+        0xFDCB: []
+    }
     //let test_classes = [0x00, 0xCB, 0xED, 0xDD, 0xFD, 0xDDCB, 0xFDCB]
-    // PASSED CLASSES: 0x00
-    let test_classes = [0x00, 0xCB];
+    // PASSED CLASSES: 0x00, 0xCB
+    let test_classes = [0x00, 0xCB, 0xED];
     if (Z80_TEST_DO_TRACING) cpu.enable_tracing(read8);
     for (let mclass in test_classes) {
         let iclass = test_classes[mclass];

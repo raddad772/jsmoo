@@ -710,12 +710,13 @@ class Z80_switchgen {
         this.addl('regs.TA = ' + this.readreg('BC') + ';');
         this.in('regs.TA', 'regs.TR');
         this.addl('regs.B = (regs.B - 1) & 0xFF;');
-        this.write(this.readreg('HL'), 'regs.TR');
-        this.addl('regs.TA = (((regs.H << 8) | regs.L) - 1) & 0xFFFF;');
+        this.addl('regs.TA = (regs.H << 8) | regs.L;');
+        this.write('regs.TA', 'regs.TR');
+        this.addl('regs.TA = (regs.TA - 1) & 0xFFFF;');
         this.writereg('HL', 'regs.TA');
         this.addl('regs.F.C = ((((regs.C - 1) & 0xFF) + regs.TR) & 0x100) >>> 8;');
         this.addl('regs.F.N = (regs.TR & 0x80) >>> 7;');
-        this.addl('regs.TA = ((regs.C - 1) & 0xFF) + data & 7 ^ regs.B;');
+        this.addl('regs.TA = ((regs.C - 1) & 0xFF) + regs.TR & 7 ^ regs.B;');
         this.setP('regs.TA');
         this.setXY('regs.B');
         this.addl('regs.F.H = regs.F.C;');
@@ -1828,7 +1829,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.write('regs.WZ', '((regs.TR >>> 4) | (regs.A << 4)) & 0xFF');
             ag.addl('regs.WZ = (regs.WZ + 1) & 0xFFFF;');
             ag.addcycles(3);
-            ag.addl('regs.A = (A & 0xF0) | (regs.TR & 0x0F);');
+            ag.addl('regs.A = (regs.A & 0xF0) | (regs.TR & 0x0F);');
 
             ag.addl('regs.F.N = regs.F.H = 0;');
             ag.setP('regs.A');
