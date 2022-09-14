@@ -256,22 +256,24 @@ class Z80_proc_test {
             let val = cycle[1];
             let pins = cycle[2];
             if (addr !== null && val !== null) {
-                if (icycle.force_treat_as_read) {
+                if (icycle.force_treat_as_read) { // Add to initial RAM if this is a read
                     if (!initial_set.has(addr)) {
                         initial_set.add(addr);
                         initial_RAMs.push([addr, val]);
                     }
                 }
-                if (Z80T_pins_WRR(pins)) {
+                if (Z80T_pins_WRR(pins)) { // Write 0 to initial RAM if there isn't a value there
                     if (!initial_set.has(addr)) {
                         initial_set.add(addr);
                         initial_RAMs.push([addr, 0]);
                     }
                 }
-                if ((!final_set.has(addr)) && (icycle.force_treat_as_read || Z80T_pins_RDR(pins) || Z80T_pins_WRR(pins))) {
-                    final_set.add(addr);
-                    final_RAMs.push([addr, val]);
-                } else {
+                if ((!final_set.has(addr)) && (icycle.force_treat_as_read ||
+                    Z80T_pins_WRR(pins))) // If final set does npt have it and this is read or write
+                {
+                        final_set.add(addr);
+                        final_RAMs.push([addr, val]);
+                } else if (Z80T_pins_WRR(pins)) { // Else if this is a write (and final set already has it)
                     for (let j in final_RAMs) {
                         if (final_RAMs[j][0] === addr) {
                             final_RAMs[j][1] = val;
@@ -593,10 +595,10 @@ class Z80_test_generator {
         if (wherefrom in this.test.opcode_RAMs) {
             val = this.test.opcode_RAMs[wherefrom];
         }
-        if (wherefrom in this.already_done_addrs) {
+        else if (wherefrom in this.already_done_addrs) {
             val = this.already_done_addrs[wherefrom];
         }
-        else {
+        if (!(wherefrom in this.already_done_addrs)) {
             this.already_done_addrs[wherefrom] = val;
         }
         //this.test.add_cycle(wherefrom & 0xFFFF, val, 'read');
@@ -622,6 +624,7 @@ class Z80_test_generator {
         if (typeof addr !== 'number') {
             addr = this.readreg(addr);
         }
+        //if (addr === 0xCA5D) debugger;
         addr &= 0xFFFF;
         val &= 0xFF;
         if (addr in this.test.opcode_RAMs) {
@@ -2301,6 +2304,7 @@ class Z80_test_generator {
             else {
                 this.instruction(curd);
             }
+            //if ((opcode_stream[0] === 0xCB) && (opcode_stream[1] === 0x36) && (testnum === 763)) debugger;
             this.test.finalize(this.regs, ipc, opcode_stream);
             //let ns = osn + ' ' + ;
             /*let cbd = false;
