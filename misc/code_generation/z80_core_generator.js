@@ -939,7 +939,7 @@ class Z80_switchgen {
     SRA(x, out=null) {
         this.addl('let x = ' + x + ';');
         this.addl('let c = x & 1;');
-        this.addl('x = (x >> 1) & 0xFF;');
+        this.addl('x = (x & 0x80) | (x >>> 1);');
 
         this.addl('regs.F.C = c;');
         this.addl('regs.F.N = regs.F.H = 0;')

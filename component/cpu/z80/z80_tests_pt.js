@@ -43,6 +43,11 @@ function Z80_fmt_test(tst) {
         ro[0] = hex4(ro[0]);
         if (ro[1] !== null) ro[1] = hex2(ro[1]);
     }
+    for (let j in oute.final.ram) {
+        let ro = oute.final.ram[j]
+        ro[0] = hex4(ro[0]);
+        if (ro[1] !== null) ro[1] = hex2(ro[1]);
+    }
     for (let ci in oute.cycles) {
         let cycle = oute.cycles[ci];
         cycle[0] = hex4(cycle[0]);
@@ -242,6 +247,7 @@ function Z80test_it_automated(cpu, tests) {
                 if (Z80_TEST_DO_TRACING) {
                     dbg.traces.add(D_RESOURCE_TYPES.Z80, cpu.trace_cycles, trace_format_write('Z80', Z80_COLOR, cpu.trace_cycles, (addr & 0xFFFF), cpu.pins.D));
                 }
+                //console.log(i, 'WRITE', hex4(addr), hex2(cpu.pins.D));
                 Z80testRAM[addr] = cpu.pins.D;
             }
         }
@@ -410,16 +416,17 @@ async function dotest_pt_z80() {
         dbg.enable_tracing_for(D_RESOURCE_TYPES.Z80);
         dbg.enable_tracing();
     }
-    let start_test = 0x0;
-    let skip_tests = [0x76 // HALT
-    ];
+    let start_test = 0x00;
+    let skip_tests = {0x00: [0x76],
+                        0xCB: [], }
     //let test_classes = [0x00, 0xCB, 0xED, 0xDD, 0xFD, 0xDDCB, 0xFDCB]
     // PASSED CLASSES: 0x00
-    let test_classes = [0xCB];
+    let test_classes = [0x00, 0xCB];
     if (Z80_TEST_DO_TRACING) cpu.enable_tracing(read8);
     for (let mclass in test_classes) {
         let iclass = test_classes[mclass];
         let opcode_table;
+        let skip_table = skip_tests[iclass];
         switch(iclass) {
             case 0xDD:
             case 0xFD:
@@ -439,7 +446,7 @@ async function dotest_pt_z80() {
         }
         console.log('Testing instruction class', hex4(iclass));
         for (let i = start_test; i < 256; i++) {
-            if (skip_tests.indexOf(i) !== -1) {
+            if (skip_table.indexOf(i) !== -1) {
                 tconsole.addl(txf('Test for ' + hex0x2(i) + ' {b}skipped{/}!'));
                 continue;
             }
