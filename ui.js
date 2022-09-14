@@ -13,7 +13,7 @@ const SPECTRUM_STR = 'spectrum';
 const GENERICZ80_STR = 'genericz80'
 
 //const DEFAULT_SYSTEM = GENERICZ80_STR;
-const DEFAULT_SYSTEM = NES_STR;
+const DEFAULT_SYSTEM = SPECTRUM_STR;
 
 const DEFAULT_STEPS = {
 	master: 50,
@@ -628,7 +628,7 @@ async function main() {
 	dbg.init_done();
 }
 
-//after_js = main;
+after_js = main;
 function uie_input_focus() {
 	global_player.input_capture = false;
 }

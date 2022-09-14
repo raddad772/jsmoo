@@ -271,8 +271,8 @@ class z80_t {
             // data latch T2
             case 0: // already handled by fetch of next instruction starting
                 this.set_pins_opcode();
-                this.regs.rprefix = Z80P.HL;
-                this.regs.prefix = 0;
+                //this.regs.rprefix = Z80P.HL;
+                //this.regs.prefix = 0;
                 break;
             case 1: // T1 MREQ, RD
                 if (this.regs.HALT) { this.regs.TCU = 0; break; }
@@ -307,12 +307,12 @@ class z80_t {
             case 3: // T3 not much here
                 //this.pins.MRQ = 0;
                 // If we need to fetch another, start that and set TCU back to 1
-                if (this.regs.t[0] === 0xDD) { this.regs.prefix = 0xDD; this.regs.rprefix = Z80P.IX; this.regs.TCU = 0; break; }
-                if (this.regs.t[0] === 0xfD) { this.regs.prefix = 0xFD; this.regs.rprefix = Z80P.IY; this.regs.TCU = 0; break; }
+                this.regs.inc_R();
+                if (this.regs.t[0] === 0xDD) { this.regs.prefix = 0xDD; this.regs.rprefix = Z80P.IX; this.regs.TCU = -1; break; }
+                if (this.regs.t[0] === 0xfD) { this.regs.prefix = 0xFD; this.regs.rprefix = Z80P.IY; this.regs.TCU = -1; break; }
                 // elsewise figure out what to do next
                 // this gets a little tricky
                 // 4, 5, 6, 7, 8, 9, 10, 11, 12 = rprefix != HL and is CB, execute CBd
-                this.regs.inc_R();
                 if ((this.regs.t[0] === 0xCB) && (this.regs.rprefix !== Z80P.HL)) {
                     this.regs.prefix = ((this.regs.prefix << 8) | 0xCB) & 0xFFFF;
                     break;
@@ -330,7 +330,7 @@ class z80_t {
                     break;
                 }
                 else {
-                    this.regs.prefix = 0x00;
+                    //this.regs.prefix = 0x00;
                     this.set_instruction(this.regs.t[0]);
                     break;
                 }
@@ -349,11 +349,11 @@ class z80_t {
                 }
                 this.set_pins_opcode();
                 break;
-            case 5:
+            case 5: // operand() middle
                 this.pins.RD = 1;
                 this.pins.MRQ = 1;
                 break;
-            case 6: // last step of operand
+            case 6: // operand() end
                 this.regs.WZ = (this.regs.WZ + mksigned8(this.pins.D)) & 0xFFFF;
                 this.set_pins_nothing();
                 break;

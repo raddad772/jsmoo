@@ -208,13 +208,13 @@ class Z80_switchgen {
         }
     }
 
-    displace(withwhat, outto) {
+    displace(withwhat, outto, clocks_to_wait=5) {
         if ((withwhat !== 'IX') && (withwhat !== 'IY')) {
             this.addl(outto + ' = ' + this.readreg(withwhat));
             return;
         }
         this.operand8('regs.TR');
-        this.addcycles(5);
+        this.addcycles(clocks_to_wait);
         withwhat = this.readreg(withwhat);
         this.addl('regs.WZ = (' + withwhat + ' + mksigned8(regs.TR)) & 0xFFFF;');
         this.addl(outto + ' = regs.WZ;');
@@ -1500,7 +1500,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.LD_irr_n:  //n16&
             ag.Q(0);
-            ag.displace(arg1, 'regs.TA');
+            ag.displace(arg1, 'regs.TA', 2);
             ag.operand8('regs.TR');
             ag.write('regs.TA', 'regs.TR');
             break;

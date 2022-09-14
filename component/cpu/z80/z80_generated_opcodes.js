@@ -16328,41 +16328,35 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.RD = 0; pins.MRQ = 0;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
-            case 4: // Adding 5 cycles
+            case 4: // Adding 2 cycles
                 break;
             case 5:
-                break;
-            case 6:
-                break;
-            case 7:
-                break;
-            case 8:
                 regs.WZ = (regs.IX + mksigned8(regs.TR)) & 0xFFFF;
                 regs.TA = regs.WZ;
                 break;
-            case 9: // Start read
+            case 6: // Start read
                 pins.Addr = (regs.PC);
                 break;
-            case 10: // signal
+            case 7: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 11: // Read end/latch
+            case 8: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
-            case 12: // write begin
+            case 9: // write begin
                 pins.Addr = (regs.TA);
                 break;
-            case 13:
+            case 10:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 14: // write end
+            case 11: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 15: // cleanup_custom
+            case 12: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -31546,41 +31540,35 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.RD = 0; pins.MRQ = 0;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
-            case 4: // Adding 5 cycles
+            case 4: // Adding 2 cycles
                 break;
             case 5:
-                break;
-            case 6:
-                break;
-            case 7:
-                break;
-            case 8:
                 regs.WZ = (regs.IY + mksigned8(regs.TR)) & 0xFFFF;
                 regs.TA = regs.WZ;
                 break;
-            case 9: // Start read
+            case 6: // Start read
                 pins.Addr = (regs.PC);
                 break;
-            case 10: // signal
+            case 7: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 11: // Read end/latch
+            case 8: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
-            case 12: // write begin
+            case 9: // write begin
                 pins.Addr = (regs.TA);
                 break;
-            case 13:
+            case 10:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 14: // write end
+            case 11: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 15: // cleanup_custom
+            case 12: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;

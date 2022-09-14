@@ -40,6 +40,7 @@ class ZXSpectrum_ULA {
         this.screen_y = 0;
 
         this.bg_shift = 0;
+        this.next_bg_shift = 0;
         this.attr = {
             colors: [0, 0], // where 0 is bg, 1 is fg
             flash: 0
@@ -176,6 +177,7 @@ class ZXSpectrum_ULA {
         let dy = this.screen_y - 56;
         switch(dx & 7) {
             case 0: // Contention off
+                this.bg_shift = this.next_bg_shift;
                 this.clock.contended = false;
                 let brt = (this.next_attr & 0x40) ? 8 : 0;
                 this.attr.flash = ((this.next_attr & 0x80) >>> 7) & this.clock.flash.bit;
@@ -200,15 +202,15 @@ class ZXSpectrum_ULA {
                 let addr = 0x4000 | ((dy & 0xC0) << 5) | ((dy & 7) << 8) | ((dy & 0x38) << 2) | (dx >>> 3);
                 let val = this.bus.ula_read(addr, 0);
                 // Only 2 shifts left before we need this data
-                this.bg_shift |= (val << 2);
+                this.next_bg_shift = val;
                 break;
             case 7: // next next attr
                 this.next_attr = this.bus.ula_read(0x5800 + ((dy >>> 3) * 0x20) + (dx >>> 3));
                 break;
         }
 
-        let out_bit = (this.bg_shift & 1) ^ this.attr.flash;
-        this.bg_shift >>>= 1;
+        let out_bit = ((this.bg_shift & 0x80) >>> 7) ^ this.attr.flash;
+        this.bg_shift <<= 1;
         this.output[bo] = this.attr.colors[out_bit];
     }
 
@@ -279,13 +281,14 @@ class ZXSpectrum_ULA {
         let pattern_base = this.io.bg_pattern_table * 0x1000;
         let imgdata = ctx.getImageData(x_origin, y_origin, 256, 192);
         let addr = 0x3FFF;
+        let color;
         for (let sy = 0; sy < 192; sy++) {
             for (let sx = 0; sx < 256; sx++) {
                 let bmask = 1 << (sx & 7);
-                /*let addr = (((sy >>> 3) * 32) + (sx >>> 3)) + sy & 7;
-                let color = this.bus.ula_read(0x4000 | addr) & bmask;*/
-                if ((sx & 7) === 0) addr++;
-                let color = this.bus.ula_read(addr) & bmask;
+                let addr = (sy * 32) + (sx >>> 3);
+                color = this.bus.ula_read(0x4000 | addr) & bmask;
+                //if ((sx & 7) === 0) addr++;
+                //let color = this.bus.ula_read(addr) & bmask;
                 //console.log(hex4(addr));
                 //console.log(color);
                 color = +(color !== 0) * 255;
