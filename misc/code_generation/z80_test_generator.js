@@ -2243,9 +2243,9 @@ class Z80_test_generator {
             this.regs.EI = 0;
             this.regs.P = 0
             let ipc = this.regs.PC;
-            //for (let i =0; i < opcode_stream.length; i++) {
-            //    this.test.opcode_RAMs[(i+this.regs.PC) & 0xFFFF] = opcode_stream[i];
-            //}
+            for (let i =0; i < opcode_stream.length; i++) {
+                this.test.opcode_RAMs[(i+this.regs.PC) & 0xFFFF] = opcode_stream[i];
+            }
             let curd;
 
             this.rprefix = Z80T.HL;

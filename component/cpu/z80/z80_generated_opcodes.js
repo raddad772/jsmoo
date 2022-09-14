@@ -25809,7 +25809,7 @@ const z80_decoded_opcodes = Object.freeze({
             case 9:
                 break;
             case 10:
-                regs.A = (A & 0xF0) | (regs.TR & 0x0F);
+                regs.A = (regs.A & 0xF0) | (regs.TR & 0x0F);
                 regs.F.N = regs.F.H = 0;
                 regs.F.PV = Z80_parity(regs.A);
                 regs.F.X = ((regs.A) & 8) >>> 3;
@@ -27750,9 +27750,10 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.RD = 0; pins.IO = 0;
                 regs.TR = pins.D;
                 regs.B = (regs.B - 1) & 0xFF;
+                regs.TA = (regs.H << 8) | regs.L;
                 break;
             case 6: // write begin
-                pins.Addr = ((regs.H << 8) | regs.L);
+                pins.Addr = (regs.TA);
                 break;
             case 7:
                 pins.D = (regs.TR);
@@ -27760,12 +27761,12 @@ const z80_decoded_opcodes = Object.freeze({
                 break;
             case 8: // write end
                 pins.WR = 0; pins.MRQ = 0;
-                regs.TA = (((regs.H << 8) | regs.L) - 1) & 0xFFFF;
+                regs.TA = (regs.TA - 1) & 0xFFFF;
                 regs.H = ((regs.TA) & 0xFF00) >>> 8;
                 regs.L = (regs.TA) & 0xFF;
                 regs.F.C = ((((regs.C - 1) & 0xFF) + regs.TR) & 0x100) >>> 8;
                 regs.F.N = (regs.TR & 0x80) >>> 7;
-                regs.TA = ((regs.C - 1) & 0xFF) + data & 7 ^ regs.B;
+                regs.TA = ((regs.C - 1) & 0xFF) + regs.TR & 7 ^ regs.B;
                 regs.F.PV = Z80_parity(regs.TA);
                 regs.F.X = ((regs.B) & 8) >>> 3;
                 regs.F.Y = ((regs.B) & 0x20) >>> 5;
@@ -28407,9 +28408,10 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.RD = 0; pins.IO = 0;
                 regs.TR = pins.D;
                 regs.B = (regs.B - 1) & 0xFF;
+                regs.TA = (regs.H << 8) | regs.L;
                 break;
             case 6: // write begin
-                pins.Addr = ((regs.H << 8) | regs.L);
+                pins.Addr = (regs.TA);
                 break;
             case 7:
                 pins.D = (regs.TR);
@@ -28417,12 +28419,12 @@ const z80_decoded_opcodes = Object.freeze({
                 break;
             case 8: // write end
                 pins.WR = 0; pins.MRQ = 0;
-                regs.TA = (((regs.H << 8) | regs.L) - 1) & 0xFFFF;
+                regs.TA = (regs.TA - 1) & 0xFFFF;
                 regs.H = ((regs.TA) & 0xFF00) >>> 8;
                 regs.L = (regs.TA) & 0xFF;
                 regs.F.C = ((((regs.C - 1) & 0xFF) + regs.TR) & 0x100) >>> 8;
                 regs.F.N = (regs.TR & 0x80) >>> 7;
-                regs.TA = ((regs.C - 1) & 0xFF) + data & 7 ^ regs.B;
+                regs.TA = ((regs.C - 1) & 0xFF) + regs.TR & 7 ^ regs.B;
                 regs.F.PV = Z80_parity(regs.TA);
                 regs.F.X = ((regs.B) & 8) >>> 3;
                 regs.F.Y = ((regs.B) & 0x20) >>> 5;
