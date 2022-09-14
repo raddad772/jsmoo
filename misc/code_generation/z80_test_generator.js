@@ -242,6 +242,7 @@ class Z80_proc_test {
         let initial_set = new Set();
         let final_set = new Set();
         for (let i in opcode_stream) {
+            if (parseInt(i) === 2) continue; // skip null byte
             let addr = parseInt(initial_PC)+parseInt(i);
             initial_set.add(addr);
             final_set.add(addr);
@@ -562,7 +563,7 @@ class Z80_test_generator {
 
     displace(x, wclocks=5) {
         if (this.rprefix !== Z80T.HL) {
-            if ((x !== 'HL') && (x !== 'IX') && (x !== 'IY') && (z !== 'addr')) return this.readreg(x);
+            if ((x !== 'HL') && (x !== 'IX') && (x !== 'IY') && (x !== 'addr')) return this.readreg(x);
             let d = this.operand();
             this.wait(wclocks);
             this.regs.WZ = (this.readreg(x) + mksigned8(d)) & 0xFFFF;
@@ -708,13 +709,13 @@ class Z80_test_generator {
         }
     }
 
-    fetch_opcode(opcode_stream, i, less_one_cycle=false) {
+    fetch_opcode(opcode_stream, i, less_one_cycle=false, rfsh=true) {
         this.test.add_cycle(this.regs.PC, null, 0, 0, 0, 0);
         this.test.add_cycle(this.regs.PC, null, 1, 0, 1, 0);
         let s;
-        if (Z80_DO_MEM_REFRESHES) s = (this.regs.I << 8) | this.regs.R;
-        else s = this.regs.PC;
-        this.test.add_cycle(s, opcode_stream[i], 0, 0, Z80_DO_FULL_MEMCYCLES ? 1 : 0, 0);
+        if (Z80_DO_MEM_REFRESHES && rfsh) s = (this.regs.I << 8) | this.regs.R;
+        else s = null;
+        this.test.add_cycle(s, opcode_stream[i], 0, 0, (Z80_DO_FULL_MEMCYCLES && rfsh) ? 1 : 0, 0);
         if (!less_one_cycle) this.test.add_cycle(s, null, 0, 0, 0, 0);
         this.regs.PC = (this.regs.PC + 1) & 0xFFFF;
         return opcode_stream[i];
@@ -2230,8 +2231,10 @@ class Z80_test_generator {
         for (let testnum = 0; testnum < number; testnum++) {
             let opcode_stream_sum = opcode_stream[0];
             for (let i in opcode_stream) {
-                opcode_stream_sum *= opcode_stream[i];
-                if (i>0) opcode_stream_sum += opcode_stream[i-1];
+                let v = opcode_stream[i] + 1;
+                if (v === 0) v = 7;
+                opcode_stream_sum *= v;
+                if ((i>0) && (i<3)) opcode_stream_sum += opcode_stream[i-1];
             }
             let seed = cyrb128(rand_seed + opcode_stream_sum + hex4(testnum));
             rand_seeded = sfc32(seed[0], seed[1], seed[2], seed[3]);
@@ -2244,6 +2247,7 @@ class Z80_test_generator {
             this.regs.P = 0
             let ipc = this.regs.PC;
             for (let i =0; i < opcode_stream.length; i++) {
+                if (i === 2) continue;
                 this.test.opcode_RAMs[(i+this.regs.PC) & 0xFFFF] = opcode_stream[i];
             }
             let curd;
@@ -2262,11 +2266,13 @@ class Z80_test_generator {
                 if (curd === 0xDD) {
                     this.prefix = 0xDD;
                     this.rprefix = Z80T.IX;
+                    //this.regs.inc_PC();
                     continue;
                 }
                 if (curd === 0xFD) {
                     this.prefix = 0xFD;
                     this.rprefix = Z80T.IY;
+                    //this.regs.inc_PC();
                     continue;
                 }
                 break;
@@ -2282,7 +2288,7 @@ class Z80_test_generator {
                 this.regs.WZ = (yr + mksigned8(operand)) & 0xFFFF;
                 this.rprefix = Z80T.HL;
                 // fetch actual instruction now
-                curd = this.fetch_opcode(opcode_stream, i);
+                curd = this.fetch_opcode(opcode_stream, i, false, false);
                 i++;
                 this.instructionCBd(this.regs.WZ, curd);
             }
@@ -2334,13 +2340,23 @@ class Z80_test_generator {
 function generate_Z80_tests(seed=null, CMOS) {
     console.log('FULL MEMCYCLES?', Z80_DO_FULL_MEMCYCLES);
     if (seed !== null) rand_seed = seed;
+    rand_seed = 'yo';
     let os1 = new Uint8Array(1);
     let os2 = new Uint8Array(2);
-    let os3 = new Uint8Array(3);
     let os4 = new Uint8Array(4);
     let test_generator = new Z80_test_generator(CMOS);
 
+
     let tests = {};
+    /* To test a specific test
+    os4[0] = 0xDD;
+    os4[1] = 0xCB;
+    os4[2] = null;
+    os4[3] = 0;
+    let n = 'DD CB s__ ' + hex2(0);
+    tests[n] = test_generator.generate_test(os4, 1, n);
+    console.log(tests[n]);
+    return;*/
 
     let opc_table;
 
@@ -2388,7 +2404,7 @@ function generate_Z80_tests(seed=null, CMOS) {
         tests[n] = test_generator.generate_test(os2, Z80_NUM_TO_GENERATE, n);
     }
 
-    console.log('6/7 Generating DD CB opcodes...')
+    console.log('6/7 Generating DD CB __ nn opcodes...')
     opc_table = Z80_CBd_opcode_matrix;
     for (let i in opc_table) {
         os4[0] = 0xDD;

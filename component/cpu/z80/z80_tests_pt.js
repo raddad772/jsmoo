@@ -214,7 +214,7 @@ function Z80test_it_automated(cpu, tests) {
                 passed = false;
             }
             if (cycle[1] !== null && (cycle[1] !== cpu.pins.D)) {
-                console.log(cyclei, cycle[1], cpu.pins.D);
+                //console.log(cyclei, cycle[1], cpu.pins.D, my_cycles);
                 messages.push(cyclei.toString() + ' MISMATCH IN DATAPIN AT ' + hex0x4(cycle[0]) + ' THEIRS: ' + hex0x2(cycle[1]) + ' OURS: ' + hex0x2(cpu.pins.D));
                 passed = false;
             }
@@ -356,7 +356,7 @@ function Z80_get_name(iclass, ins) {
             ostr = 'DD CB __ ' + hi;
             break;
         case 0xFDCB:
-            ostr = 'DD CB __ ' + hi;
+            ostr = 'FD CB __ ' + hi;
             break;
         default:
             console.log('WHAT!?', iclass);
@@ -416,19 +416,20 @@ async function dotest_pt_z80() {
         dbg.enable_tracing_for(D_RESOURCE_TYPES.Z80);
         dbg.enable_tracing();
     }
-    let start_test = 0x0;
+    let start_test = 0;
     let skip_tests = {
         0x00: [0x76], // HALT
         0xCB: [],
-        0xDD: [],
-        0xFD: [],
+        0xDD: [0x76], // HALT
+        0xFD: [0x76], // HALT
         0xED: [],
         0xDDCB: [],
         0xFDCB: []
     }
     //let test_classes = [0x00, 0xCB, 0xED, 0xDD, 0xFD, 0xDDCB, 0xFDCB]
-    // PASSED CLASSES: 0x00, 0xCB
-    let test_classes = [0x00, 0xCB, 0xED];
+    // PASSED CLASSES: 0x00, 0xCB, 0xED, 0xDD, 0xFD, 0xDDCB
+    let test_classes = [0x00, 0xCB, 0xED, 0xDD, 0xFD, 0xDDCB, 0xFDCB];
+    //let test_classes = [0xFDCB];
     if (Z80_TEST_DO_TRACING) cpu.enable_tracing(read8);
     for (let mclass in test_classes) {
         let iclass = test_classes[mclass];
