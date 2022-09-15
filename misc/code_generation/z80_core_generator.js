@@ -147,6 +147,7 @@ class Z80_switchgen {
         this.addl('regs.prefix = 0x00;');
         this.addl('regs.rprefix = Z80P.HL;');
         this.addl('regs.IR = Z80_S_DECODE;');
+        this.addl('regs.poll_IRQ = true;');
         this.addl('break;');
     }
 
@@ -1128,7 +1129,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             // disables the maskable interrupt, selects interrupt mode 0, zeroes registers I & R and zeroes the program counter (PC)
             ag.addcycle();
             ag.RWMIO(0, 0, 0, 0);
-            ag.addl('regs.IFF0 = regs.IFF1 = 0; // disable interrupt')
+            ag.addl('regs.IFF1 = regs.IFF2 = 0; // disable interrupt')
             ag.addl('regs.IM = 0;');
             ag.addl('regs.I = 0;');
             ag.addl('regs.R = 0;');

@@ -15,6 +15,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57,6 +58,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -86,6 +88,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -110,6 +113,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -136,6 +140,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -162,6 +167,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -191,6 +197,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -214,6 +221,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -232,6 +240,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -291,6 +300,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -320,6 +330,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -345,6 +356,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -371,6 +383,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -397,6 +410,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -426,6 +440,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -449,6 +464,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -494,6 +510,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -536,6 +553,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -565,6 +583,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -589,6 +608,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -615,6 +635,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -641,6 +662,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -670,6 +692,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -693,6 +716,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -735,6 +759,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -794,6 +819,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -823,6 +849,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -848,6 +875,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -874,6 +902,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -900,6 +929,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -929,6 +959,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -952,6 +983,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -994,6 +1026,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -1036,6 +1069,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -1097,6 +1131,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -1121,6 +1156,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -1147,6 +1183,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -1173,6 +1210,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -1202,6 +1240,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -1228,6 +1267,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -1270,6 +1310,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -1329,6 +1370,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -1392,6 +1434,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -1417,6 +1460,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -1443,6 +1487,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -1469,6 +1514,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -1498,6 +1544,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -1519,6 +1566,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -1561,6 +1609,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -1602,6 +1651,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -1653,6 +1703,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -1676,6 +1727,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -1724,6 +1776,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -1772,6 +1825,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -1811,6 +1865,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -1832,6 +1887,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -1874,6 +1930,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -1933,6 +1990,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -1984,6 +2042,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2008,6 +2067,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2034,6 +2094,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2060,6 +2121,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2089,6 +2151,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2112,6 +2175,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2130,6 +2194,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2148,6 +2213,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2166,6 +2232,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2184,6 +2251,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2202,6 +2270,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2220,6 +2289,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2249,6 +2319,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2267,6 +2338,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2285,6 +2357,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2303,6 +2376,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2321,6 +2395,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2339,6 +2414,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2357,6 +2433,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2375,6 +2452,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2404,6 +2482,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2422,6 +2501,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2440,6 +2520,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2458,6 +2539,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2476,6 +2558,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2494,6 +2577,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2512,6 +2596,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2530,6 +2615,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2559,6 +2645,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2577,6 +2664,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2595,6 +2683,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2613,6 +2702,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2631,6 +2721,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2649,6 +2740,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2667,6 +2759,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2685,6 +2778,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2714,6 +2808,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2732,6 +2827,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2750,6 +2846,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2768,6 +2865,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2786,6 +2884,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2804,6 +2903,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2822,6 +2922,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2840,6 +2941,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2869,6 +2971,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2887,6 +2990,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2905,6 +3009,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2923,6 +3028,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2941,6 +3047,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2959,6 +3066,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2977,6 +3085,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -2995,6 +3104,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3024,6 +3134,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3042,6 +3153,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3070,6 +3182,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3098,6 +3211,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3126,6 +3240,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3154,6 +3269,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3182,6 +3298,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3210,6 +3327,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3228,6 +3346,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3256,6 +3375,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3274,6 +3394,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3292,6 +3413,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3310,6 +3432,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3328,6 +3451,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3346,6 +3470,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3364,6 +3489,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3393,6 +3519,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3411,6 +3538,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3440,6 +3568,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3469,6 +3598,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3498,6 +3628,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3527,6 +3658,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3556,6 +3688,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3585,6 +3718,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3625,6 +3759,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3654,6 +3789,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3683,6 +3819,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3712,6 +3849,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3741,6 +3879,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3770,6 +3909,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3799,6 +3939,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3828,6 +3969,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3868,6 +4010,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3897,6 +4040,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3927,6 +4071,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3957,6 +4102,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -3987,6 +4133,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4017,6 +4164,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4047,6 +4195,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4077,6 +4226,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4118,6 +4268,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4148,6 +4299,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4178,6 +4330,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4208,6 +4361,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4238,6 +4392,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4268,6 +4423,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4298,6 +4454,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4328,6 +4485,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4369,6 +4527,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4399,6 +4558,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4425,6 +4585,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4451,6 +4612,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4477,6 +4639,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4503,6 +4666,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4529,6 +4693,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4555,6 +4720,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4592,6 +4758,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4618,6 +4785,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4643,6 +4811,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4668,6 +4837,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4693,6 +4863,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4718,6 +4889,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4743,6 +4915,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4768,6 +4941,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4804,6 +4978,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4829,6 +5004,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4854,6 +5030,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4879,6 +5056,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4904,6 +5082,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4929,6 +5108,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4954,6 +5134,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -4979,6 +5160,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -5015,6 +5197,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -5040,6 +5223,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -5068,6 +5252,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -5096,6 +5281,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -5124,6 +5310,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -5152,6 +5339,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -5180,6 +5368,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -5208,6 +5397,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -5247,6 +5437,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -5275,6 +5466,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -5320,6 +5512,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -5362,6 +5555,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -5403,6 +5597,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -5444,6 +5639,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -5512,6 +5708,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -5553,6 +5750,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -5593,6 +5791,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -5636,6 +5835,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -5681,6 +5881,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -5723,6 +5924,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -5764,6 +5966,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -5781,6 +5984,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -5849,6 +6053,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -5914,6 +6119,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -5954,6 +6160,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -5997,6 +6204,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -6042,6 +6250,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -6084,6 +6293,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -6125,6 +6335,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -6167,6 +6378,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -6235,6 +6447,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -6276,6 +6489,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -6317,6 +6531,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -6360,6 +6575,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -6405,6 +6621,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -6423,6 +6640,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -6464,6 +6682,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -6506,6 +6725,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -6574,6 +6794,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -6591,6 +6812,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -6632,6 +6854,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -6675,6 +6898,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -6720,6 +6944,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -6762,6 +6987,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -6803,6 +7029,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -6865,6 +7092,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -6933,6 +7161,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -6974,6 +7203,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -7011,6 +7241,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -7054,6 +7285,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -7099,6 +7331,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -7117,6 +7350,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -7158,6 +7392,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -7176,6 +7411,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -7244,6 +7480,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -7261,6 +7498,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -7297,11 +7535,12 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
     0xEF: new Z80_opcode_functions(Z80_opcode_matrix[0xEF], // EF
-        function(regs, pins) { //5
+        function(regs, pins) { //RST 5
         switch(regs.TCU) {
             case 1:
                 regs.Q = 0;
@@ -7327,7 +7566,7 @@ const z80_decoded_opcodes = Object.freeze({
                 break;
             case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
-                regs.WZ = 0x00;
+                regs.WZ = 0x28;
                 regs.PC = regs.WZ;
                 // Following is auto-generated code for instruction finish
                 break;
@@ -7340,6 +7579,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -7385,6 +7625,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -7427,6 +7668,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -7468,6 +7710,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -7486,6 +7729,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -7554,6 +7798,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -7595,6 +7840,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -7631,6 +7877,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -7674,6 +7921,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -7719,6 +7967,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -7741,6 +7990,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -7782,6 +8032,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -7800,6 +8051,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -7868,6 +8120,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -7885,6 +8138,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -7924,6 +8178,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -7967,6 +8222,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8070,6 +8326,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8077,7 +8334,7 @@ const z80_decoded_opcodes = Object.freeze({
         function(regs, pins) { //RESET
         switch(regs.TCU) {
             case 1:
-                regs.IFF0 = regs.IFF1 = 0; // disable interrupt
+                regs.IFF1 = regs.IFF2 = 0; // disable interrupt
                 regs.IM = 0;
                 regs.I = 0;
                 regs.R = 0;
@@ -8093,6 +8350,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8121,6 +8379,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8149,6 +8408,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8177,6 +8437,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8205,6 +8466,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8233,6 +8495,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8261,6 +8524,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8308,6 +8572,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8336,6 +8601,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8364,6 +8630,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8392,6 +8659,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8420,6 +8688,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8448,6 +8717,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8476,6 +8746,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8504,6 +8775,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8551,6 +8823,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8579,6 +8852,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8608,6 +8882,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8637,6 +8912,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8666,6 +8942,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8695,6 +8972,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8724,6 +9002,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8753,6 +9032,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8801,6 +9081,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8830,6 +9111,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8859,6 +9141,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8888,6 +9171,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8917,6 +9201,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8946,6 +9231,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -8975,6 +9261,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9004,6 +9291,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9052,6 +9340,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9081,6 +9370,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9110,6 +9400,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9139,6 +9430,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9168,6 +9460,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9197,6 +9490,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9226,6 +9520,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9255,6 +9550,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9303,6 +9599,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9332,6 +9629,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9361,6 +9659,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9390,6 +9689,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9419,6 +9719,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9448,6 +9749,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9477,6 +9779,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9506,6 +9809,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9554,6 +9858,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9583,6 +9888,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9612,6 +9918,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9641,6 +9948,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9670,6 +9978,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9699,6 +10008,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9728,6 +10038,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9757,6 +10068,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9805,6 +10117,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9834,6 +10147,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9863,6 +10177,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9892,6 +10207,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9921,6 +10237,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9950,6 +10267,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -9979,6 +10297,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10008,6 +10327,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10056,6 +10376,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10085,6 +10406,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10110,6 +10432,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10135,6 +10458,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10160,6 +10484,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10185,6 +10510,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10210,6 +10536,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10235,6 +10562,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10272,6 +10600,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10297,6 +10626,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10322,6 +10652,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10347,6 +10678,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10372,6 +10704,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10397,6 +10730,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10422,6 +10756,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10447,6 +10782,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10484,6 +10820,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10509,6 +10846,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10534,6 +10872,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10559,6 +10898,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10584,6 +10924,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10609,6 +10950,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10634,6 +10976,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10659,6 +11002,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10696,6 +11040,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10721,6 +11066,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10746,6 +11092,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10771,6 +11118,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10796,6 +11144,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10821,6 +11170,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10846,6 +11196,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10871,6 +11222,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10908,6 +11260,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10933,6 +11286,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10958,6 +11312,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -10983,6 +11338,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11008,6 +11364,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11033,6 +11390,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11058,6 +11416,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11083,6 +11442,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11120,6 +11480,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11145,6 +11506,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11170,6 +11532,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11195,6 +11558,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11220,6 +11584,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11245,6 +11610,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11270,6 +11636,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11295,6 +11662,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11332,6 +11700,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11357,6 +11726,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11382,6 +11752,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11407,6 +11778,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11432,6 +11804,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11457,6 +11830,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11482,6 +11856,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11507,6 +11882,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11544,6 +11920,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11569,6 +11946,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11594,6 +11972,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11619,6 +11998,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11644,6 +12024,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11669,6 +12050,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11694,6 +12076,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11719,6 +12102,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11756,6 +12140,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11781,6 +12166,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11799,6 +12185,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11817,6 +12204,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11835,6 +12223,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11853,6 +12242,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11871,6 +12261,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11889,6 +12280,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11927,6 +12319,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11945,6 +12338,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11963,6 +12357,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11981,6 +12376,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -11999,6 +12395,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12017,6 +12414,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12035,6 +12433,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12053,6 +12452,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12091,6 +12491,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12109,6 +12510,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12127,6 +12529,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12145,6 +12548,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12163,6 +12567,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12181,6 +12586,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12199,6 +12605,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12217,6 +12624,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12255,6 +12663,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12273,6 +12682,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12291,6 +12701,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12309,6 +12720,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12327,6 +12739,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12345,6 +12758,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12363,6 +12777,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12381,6 +12796,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12419,6 +12835,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12437,6 +12854,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12455,6 +12873,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12473,6 +12892,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12491,6 +12911,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12509,6 +12930,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12527,6 +12949,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12545,6 +12968,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12583,6 +13007,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12601,6 +13026,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12619,6 +13045,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12637,6 +13064,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12655,6 +13083,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12673,6 +13102,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12691,6 +13121,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12709,6 +13140,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12747,6 +13179,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12765,6 +13198,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12783,6 +13217,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12801,6 +13236,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12819,6 +13255,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12837,6 +13274,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12855,6 +13293,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12873,6 +13312,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12911,6 +13351,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12929,6 +13370,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12947,6 +13389,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12965,6 +13408,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -12983,6 +13427,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13001,6 +13446,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13019,6 +13465,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13037,6 +13484,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13075,6 +13523,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13093,6 +13542,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13112,6 +13562,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13131,6 +13582,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13150,6 +13602,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13169,6 +13622,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13188,6 +13642,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13207,6 +13662,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13245,6 +13701,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13264,6 +13721,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13283,6 +13741,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13302,6 +13761,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13321,6 +13781,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13340,6 +13801,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13359,6 +13821,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13378,6 +13841,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13416,6 +13880,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13435,6 +13900,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13454,6 +13920,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13473,6 +13940,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13492,6 +13960,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13511,6 +13980,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13530,6 +14000,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13549,6 +14020,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13587,6 +14059,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13606,6 +14079,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13625,6 +14099,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13644,6 +14119,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13663,6 +14139,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13682,6 +14159,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13701,6 +14179,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13720,6 +14199,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13758,6 +14238,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13777,6 +14258,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13796,6 +14278,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13815,6 +14298,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13834,6 +14318,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13853,6 +14338,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13872,6 +14358,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13891,6 +14378,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13929,6 +14417,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13948,6 +14437,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13967,6 +14457,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -13986,6 +14477,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14005,6 +14497,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14024,6 +14517,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14043,6 +14537,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14062,6 +14557,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14100,6 +14596,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14119,6 +14616,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14138,6 +14636,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14157,6 +14656,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14176,6 +14676,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14195,6 +14696,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14214,6 +14716,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14233,6 +14736,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14271,6 +14775,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14290,6 +14795,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14309,6 +14815,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14328,6 +14835,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14347,6 +14855,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14366,6 +14875,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14385,6 +14895,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14404,6 +14915,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14442,6 +14954,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14461,6 +14974,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14478,6 +14992,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14495,6 +15010,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14512,6 +15028,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14554,6 +15071,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14583,6 +15101,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14607,6 +15126,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14633,6 +15153,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14659,6 +15180,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14688,6 +15210,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14711,6 +15234,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14729,6 +15253,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14788,6 +15313,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14817,6 +15343,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14842,6 +15369,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14868,6 +15396,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14894,6 +15423,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14923,6 +15453,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14946,6 +15477,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -14991,6 +15523,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15033,6 +15566,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15062,6 +15596,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15086,6 +15621,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15112,6 +15648,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15138,6 +15675,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15167,6 +15705,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15190,6 +15729,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15232,6 +15772,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15291,6 +15832,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15320,6 +15862,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15345,6 +15888,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15371,6 +15915,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15397,6 +15942,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15426,6 +15972,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15449,6 +15996,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15491,6 +16039,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15532,6 +16081,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15593,6 +16143,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15616,6 +16167,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15642,6 +16194,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15668,6 +16221,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15697,6 +16251,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15723,6 +16278,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15765,6 +16321,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15824,6 +16381,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15887,6 +16445,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15911,6 +16470,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15937,6 +16497,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15963,6 +16524,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -15992,6 +16554,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16013,6 +16576,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16055,6 +16619,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16096,6 +16661,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16147,6 +16713,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16170,6 +16737,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16240,6 +16808,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16310,6 +16879,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16365,6 +16935,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16386,6 +16957,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16428,6 +17000,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16487,6 +17060,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16538,6 +17112,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16562,6 +17137,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16588,6 +17164,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16614,6 +17191,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16643,6 +17221,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16666,6 +17245,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16684,6 +17264,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16702,6 +17283,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16720,6 +17302,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16738,6 +17321,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16756,6 +17340,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16774,6 +17359,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16825,6 +17411,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16843,6 +17430,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16861,6 +17449,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16879,6 +17468,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16897,6 +17487,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16915,6 +17506,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16933,6 +17525,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -16951,6 +17544,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17002,6 +17596,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17020,6 +17615,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17038,6 +17634,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17056,6 +17653,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17074,6 +17672,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17092,6 +17691,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17110,6 +17710,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17128,6 +17729,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17179,6 +17781,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17197,6 +17800,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17215,6 +17819,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17233,6 +17838,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17251,6 +17857,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17269,6 +17876,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17287,6 +17895,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17305,6 +17914,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17356,6 +17966,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17374,6 +17985,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17392,6 +18004,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17410,6 +18023,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17428,6 +18042,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17446,6 +18061,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17464,6 +18080,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17482,6 +18099,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17533,6 +18151,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17551,6 +18170,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17569,6 +18189,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17587,6 +18208,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17605,6 +18227,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17623,6 +18246,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17641,6 +18265,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17659,6 +18284,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17710,6 +18336,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17728,6 +18355,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17778,6 +18406,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17828,6 +18457,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17878,6 +18508,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17928,6 +18559,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -17978,6 +18610,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18028,6 +18661,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18046,6 +18680,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18096,6 +18731,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18114,6 +18750,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18132,6 +18769,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18150,6 +18788,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18168,6 +18807,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18186,6 +18826,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18204,6 +18845,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18255,6 +18897,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18273,6 +18916,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18302,6 +18946,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18331,6 +18976,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18360,6 +19006,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18389,6 +19036,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18418,6 +19066,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18447,6 +19096,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18509,6 +19159,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18538,6 +19189,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18567,6 +19219,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18596,6 +19249,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18625,6 +19279,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18654,6 +19309,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18683,6 +19339,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18712,6 +19369,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18774,6 +19432,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18803,6 +19462,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18833,6 +19493,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18863,6 +19524,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18893,6 +19555,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18923,6 +19586,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18953,6 +19617,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -18983,6 +19648,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19046,6 +19712,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19076,6 +19743,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19106,6 +19774,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19136,6 +19805,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19166,6 +19836,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19196,6 +19867,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19226,6 +19898,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19256,6 +19929,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19319,6 +19993,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19349,6 +20024,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19375,6 +20051,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19401,6 +20078,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19427,6 +20105,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19453,6 +20132,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19479,6 +20159,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19505,6 +20186,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19564,6 +20246,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19590,6 +20273,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19615,6 +20299,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19640,6 +20325,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19665,6 +20351,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19690,6 +20377,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19715,6 +20403,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19740,6 +20429,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19798,6 +20488,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19823,6 +20514,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19848,6 +20540,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19873,6 +20566,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19898,6 +20592,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19923,6 +20618,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19948,6 +20644,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -19973,6 +20670,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -20031,6 +20729,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -20056,6 +20755,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -20084,6 +20784,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -20112,6 +20813,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -20140,6 +20842,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -20168,6 +20871,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -20196,6 +20900,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -20224,6 +20929,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -20285,6 +20991,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -20313,6 +21020,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -20358,6 +21066,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -20400,6 +21109,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -20441,6 +21151,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -20482,6 +21193,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -20550,6 +21262,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -20591,6 +21304,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -20631,6 +21345,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -20674,6 +21389,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -20719,6 +21435,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -20761,6 +21478,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -20802,6 +21520,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -20819,6 +21538,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -20887,6 +21607,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -20952,6 +21673,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -20992,6 +21714,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -21035,6 +21758,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -21080,6 +21804,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -21122,6 +21847,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -21163,6 +21889,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -21205,6 +21932,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -21273,6 +22001,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -21314,6 +22043,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -21355,6 +22085,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -21398,6 +22129,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -21443,6 +22175,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -21461,6 +22194,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -21502,6 +22236,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -21544,6 +22279,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -21612,6 +22348,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -21629,6 +22366,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -21670,6 +22408,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -21713,6 +22452,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -21758,6 +22498,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -21799,6 +22540,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -21840,6 +22582,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -21901,6 +22644,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -21969,6 +22713,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -22010,6 +22755,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -22047,6 +22793,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -22090,6 +22837,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -22135,6 +22883,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -22153,6 +22902,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -22194,6 +22944,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -22212,6 +22963,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -22280,6 +23032,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -22297,6 +23050,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -22333,11 +23087,12 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
     0x2F3: new Z80_opcode_functions(Z80_opcode_matrix[0xEF], // DD EF
-        function(regs, pins) { //5
+        function(regs, pins) { //RST 5
         switch(regs.TCU) {
             case 1:
                 regs.Q = 0;
@@ -22363,7 +23118,7 @@ const z80_decoded_opcodes = Object.freeze({
                 break;
             case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
-                regs.WZ = 0x00;
+                regs.WZ = 0x28;
                 regs.PC = regs.WZ;
                 // Following is auto-generated code for instruction finish
                 break;
@@ -22376,6 +23131,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -22421,6 +23177,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -22463,6 +23220,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -22504,6 +23262,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -22522,6 +23281,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -22590,6 +23350,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -22631,6 +23392,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -22667,6 +23429,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -22710,6 +23473,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -22755,6 +23519,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -22777,6 +23542,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -22818,6 +23584,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -22836,6 +23603,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -22904,6 +23672,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -22921,6 +23690,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -22960,6 +23730,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23003,6 +23774,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23106,6 +23878,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23113,7 +23886,7 @@ const z80_decoded_opcodes = Object.freeze({
         function(regs, pins) { //RESET
         switch(regs.TCU) {
             case 1:
-                regs.IFF0 = regs.IFF1 = 0; // disable interrupt
+                regs.IFF1 = regs.IFF2 = 0; // disable interrupt
                 regs.IM = 0;
                 regs.I = 0;
                 regs.R = 0;
@@ -23129,6 +23902,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23146,6 +23920,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23163,6 +23938,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23180,6 +23956,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23197,6 +23974,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23214,6 +23992,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23231,6 +24010,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23248,6 +24028,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23265,6 +24046,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23282,6 +24064,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23299,6 +24082,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23316,6 +24100,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23333,6 +24118,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23350,6 +24136,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23367,6 +24154,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23384,6 +24172,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23401,6 +24190,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23418,6 +24208,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23435,6 +24226,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23452,6 +24244,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23469,6 +24262,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23486,6 +24280,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23503,6 +24298,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23520,6 +24316,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23537,6 +24334,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23554,6 +24352,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23571,6 +24370,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23588,6 +24388,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23605,6 +24406,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23622,6 +24424,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23639,6 +24442,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23656,6 +24460,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23673,6 +24478,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23690,6 +24496,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23707,6 +24514,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23724,6 +24532,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23741,6 +24550,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23758,6 +24568,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23775,6 +24586,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23792,6 +24604,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23809,6 +24622,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23826,6 +24640,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23843,6 +24658,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23860,6 +24676,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23877,6 +24694,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23894,6 +24712,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23911,6 +24730,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23928,6 +24748,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23945,6 +24766,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23962,6 +24784,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23979,6 +24802,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -23996,6 +24820,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24013,6 +24838,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24030,6 +24856,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24047,6 +24874,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24064,6 +24892,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24081,6 +24910,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24098,6 +24928,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24115,6 +24946,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24132,6 +24964,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24149,6 +24982,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24166,6 +25000,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24183,6 +25018,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24200,6 +25036,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24217,6 +25054,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24255,6 +25093,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24286,6 +25125,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24349,6 +25189,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24410,6 +25251,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24440,6 +25282,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24483,6 +25326,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24509,6 +25353,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24529,6 +25374,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24567,6 +25413,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24598,6 +25445,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24656,6 +25504,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24719,6 +25568,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24749,6 +25599,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24792,6 +25643,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24818,6 +25670,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24838,6 +25691,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24876,6 +25730,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24907,6 +25762,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -24970,6 +25826,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -25031,6 +25888,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -25061,6 +25919,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -25104,6 +25963,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -25130,6 +25990,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -25158,6 +26019,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -25196,6 +26058,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -25227,6 +26090,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -25285,6 +26149,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -25348,6 +26213,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -25378,6 +26244,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -25421,6 +26288,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -25447,6 +26315,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -25475,6 +26344,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -25513,6 +26383,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -25544,6 +26415,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -25607,6 +26479,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -25668,6 +26541,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -25698,6 +26572,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -25741,6 +26616,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -25767,6 +26643,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -25821,6 +26698,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -25859,6 +26737,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -25890,6 +26769,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -25948,6 +26828,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26011,6 +26892,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26041,6 +26923,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26084,6 +26967,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26110,6 +26994,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26164,6 +27049,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26201,6 +27087,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26231,6 +27118,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26294,6 +27182,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26355,6 +27244,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26385,6 +27275,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26428,6 +27319,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26454,6 +27346,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26471,6 +27364,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26509,6 +27403,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26540,6 +27435,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26598,6 +27494,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26661,6 +27558,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26691,6 +27589,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26734,6 +27633,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26760,6 +27660,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26777,6 +27678,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26794,6 +27696,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26811,6 +27714,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26828,6 +27732,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26845,6 +27750,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26862,6 +27768,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26879,6 +27786,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26896,6 +27804,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26913,6 +27822,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26930,6 +27840,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26947,6 +27858,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26964,6 +27876,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26981,6 +27894,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -26998,6 +27912,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27015,6 +27930,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27032,6 +27948,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27049,6 +27966,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27066,6 +27984,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27083,6 +28002,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27100,6 +28020,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27117,6 +28038,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27134,6 +28056,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27151,6 +28074,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27168,6 +28092,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27185,6 +28110,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27202,6 +28128,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27219,6 +28146,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27236,6 +28164,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27253,6 +28182,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27270,6 +28200,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27287,6 +28218,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27304,6 +28236,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27321,6 +28254,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27377,6 +28311,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27429,6 +28364,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27486,6 +28422,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27543,6 +28480,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27560,6 +28498,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27577,6 +28516,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27594,6 +28534,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27611,6 +28552,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27668,6 +28610,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27721,6 +28664,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27778,6 +28722,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27835,6 +28780,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27852,6 +28798,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27869,6 +28816,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27886,6 +28834,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27903,6 +28852,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -27972,6 +28922,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28037,6 +28988,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28106,6 +29058,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28175,6 +29128,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28192,6 +29146,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28209,6 +29164,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28226,6 +29182,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28243,6 +29200,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28313,6 +29271,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28379,6 +29338,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28448,6 +29408,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28517,6 +29478,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28534,6 +29496,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28551,6 +29514,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28568,6 +29532,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28585,6 +29550,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28602,6 +29568,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28619,6 +29586,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28636,6 +29604,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28653,6 +29622,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28670,6 +29640,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28687,6 +29658,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28704,6 +29676,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28721,6 +29694,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28738,6 +29712,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28755,6 +29730,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28772,6 +29748,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28789,6 +29766,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28806,6 +29784,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28823,6 +29802,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28840,6 +29820,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28857,6 +29838,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28874,6 +29856,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28891,6 +29874,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28908,6 +29892,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28925,6 +29910,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28942,6 +29928,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28959,6 +29946,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28976,6 +29964,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -28993,6 +29982,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29010,6 +30000,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29027,6 +30018,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29044,6 +30036,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29061,6 +30054,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29078,6 +30072,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29095,6 +30090,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29112,6 +30108,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29129,6 +30126,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29146,6 +30144,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29163,6 +30162,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29180,6 +30180,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29197,6 +30198,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29214,6 +30216,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29231,6 +30234,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29248,6 +30252,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29265,6 +30270,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29282,6 +30288,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29299,6 +30306,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29316,6 +30324,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29333,6 +30342,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29350,6 +30360,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29367,6 +30378,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29384,6 +30396,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29401,6 +30414,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29418,6 +30432,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29435,6 +30450,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29452,6 +30468,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29469,6 +30486,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29486,6 +30504,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29503,6 +30522,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29520,6 +30540,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29537,6 +30558,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29554,6 +30576,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29571,6 +30594,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29588,6 +30612,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29605,6 +30630,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29622,6 +30648,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29639,6 +30666,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29656,6 +30684,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29673,6 +30702,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29690,6 +30720,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29707,6 +30738,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29724,6 +30756,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29766,6 +30799,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29795,6 +30829,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29819,6 +30854,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29845,6 +30881,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29871,6 +30908,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29900,6 +30938,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29923,6 +30962,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -29941,6 +30981,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30000,6 +31041,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30029,6 +31071,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30054,6 +31097,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30080,6 +31124,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30106,6 +31151,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30135,6 +31181,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30158,6 +31205,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30203,6 +31251,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30245,6 +31294,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30274,6 +31324,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30298,6 +31349,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30324,6 +31376,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30350,6 +31403,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30379,6 +31433,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30402,6 +31457,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30444,6 +31500,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30503,6 +31560,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30532,6 +31590,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30557,6 +31616,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30583,6 +31643,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30609,6 +31670,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30638,6 +31700,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30661,6 +31724,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30703,6 +31767,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30744,6 +31809,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30805,6 +31871,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30828,6 +31895,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30854,6 +31922,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30880,6 +31949,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30909,6 +31979,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30935,6 +32006,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -30977,6 +32049,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31036,6 +32109,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31099,6 +32173,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31123,6 +32198,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31149,6 +32225,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31175,6 +32252,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31204,6 +32282,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31225,6 +32304,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31267,6 +32347,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31308,6 +32389,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31359,6 +32441,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31382,6 +32465,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31452,6 +32536,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31522,6 +32607,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31577,6 +32663,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31598,6 +32685,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31640,6 +32728,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31699,6 +32788,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31750,6 +32840,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31774,6 +32865,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31800,6 +32892,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31826,6 +32919,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31855,6 +32949,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31878,6 +32973,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31896,6 +32992,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31914,6 +33011,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31932,6 +33030,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31950,6 +33049,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31968,6 +33068,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -31986,6 +33087,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32037,6 +33139,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32055,6 +33158,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32073,6 +33177,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32091,6 +33196,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32109,6 +33215,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32127,6 +33234,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32145,6 +33253,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32163,6 +33272,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32214,6 +33324,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32232,6 +33343,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32250,6 +33362,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32268,6 +33381,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32286,6 +33400,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32304,6 +33419,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32322,6 +33438,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32340,6 +33457,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32391,6 +33509,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32409,6 +33528,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32427,6 +33547,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32445,6 +33566,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32463,6 +33585,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32481,6 +33604,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32499,6 +33623,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32517,6 +33642,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32568,6 +33694,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32586,6 +33713,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32604,6 +33732,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32622,6 +33751,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32640,6 +33770,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32658,6 +33789,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32676,6 +33808,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32694,6 +33827,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32745,6 +33879,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32763,6 +33898,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32781,6 +33917,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32799,6 +33936,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32817,6 +33955,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32835,6 +33974,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32853,6 +33993,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32871,6 +34012,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32922,6 +34064,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32940,6 +34083,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -32990,6 +34134,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33040,6 +34185,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33090,6 +34236,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33140,6 +34287,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33190,6 +34338,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33240,6 +34389,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33258,6 +34408,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33308,6 +34459,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33326,6 +34478,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33344,6 +34497,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33362,6 +34516,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33380,6 +34535,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33398,6 +34554,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33416,6 +34573,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33467,6 +34625,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33485,6 +34644,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33514,6 +34674,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33543,6 +34704,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33572,6 +34734,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33601,6 +34764,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33630,6 +34794,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33659,6 +34824,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33721,6 +34887,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33750,6 +34917,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33779,6 +34947,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33808,6 +34977,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33837,6 +35007,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33866,6 +35037,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33895,6 +35067,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33924,6 +35097,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -33986,6 +35160,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34015,6 +35190,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34045,6 +35221,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34075,6 +35252,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34105,6 +35283,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34135,6 +35314,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34165,6 +35345,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34195,6 +35376,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34258,6 +35440,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34288,6 +35471,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34318,6 +35502,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34348,6 +35533,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34378,6 +35564,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34408,6 +35595,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34438,6 +35626,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34468,6 +35657,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34531,6 +35721,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34561,6 +35752,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34587,6 +35779,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34613,6 +35806,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34639,6 +35833,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34665,6 +35860,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34691,6 +35887,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34717,6 +35914,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34776,6 +35974,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34802,6 +36001,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34827,6 +36027,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34852,6 +36053,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34877,6 +36079,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34902,6 +36105,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34927,6 +36131,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -34952,6 +36157,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35010,6 +36216,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35035,6 +36242,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35060,6 +36268,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35085,6 +36294,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35110,6 +36320,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35135,6 +36346,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35160,6 +36372,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35185,6 +36398,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35243,6 +36457,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35268,6 +36483,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35296,6 +36512,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35324,6 +36541,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35352,6 +36570,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35380,6 +36599,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35408,6 +36628,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35436,6 +36657,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35497,6 +36719,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35525,6 +36748,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35570,6 +36794,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35612,6 +36837,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35653,6 +36879,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35694,6 +36921,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35762,6 +36990,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35803,6 +37032,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35843,6 +37073,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35886,6 +37117,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35931,6 +37163,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -35973,6 +37206,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -36014,6 +37248,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -36031,6 +37266,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -36099,6 +37335,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -36164,6 +37401,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -36204,6 +37442,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -36247,6 +37486,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -36292,6 +37532,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -36334,6 +37575,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -36375,6 +37617,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -36417,6 +37660,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -36485,6 +37729,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -36526,6 +37771,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -36567,6 +37813,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -36610,6 +37857,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -36655,6 +37903,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -36673,6 +37922,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -36714,6 +37964,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -36756,6 +38007,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -36824,6 +38076,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -36841,6 +38094,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -36882,6 +38136,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -36925,6 +38180,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -36970,6 +38226,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -37011,6 +38268,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -37052,6 +38310,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -37113,6 +38372,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -37181,6 +38441,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -37222,6 +38483,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -37259,6 +38521,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -37302,6 +38565,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -37347,6 +38611,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -37365,6 +38630,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -37406,6 +38672,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -37424,6 +38691,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -37492,6 +38760,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -37509,6 +38778,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -37545,11 +38815,12 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
     0x4F7: new Z80_opcode_functions(Z80_opcode_matrix[0xEF], // FD EF
-        function(regs, pins) { //5
+        function(regs, pins) { //RST 5
         switch(regs.TCU) {
             case 1:
                 regs.Q = 0;
@@ -37575,7 +38846,7 @@ const z80_decoded_opcodes = Object.freeze({
                 break;
             case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
-                regs.WZ = 0x00;
+                regs.WZ = 0x28;
                 regs.PC = regs.WZ;
                 // Following is auto-generated code for instruction finish
                 break;
@@ -37588,6 +38859,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -37633,6 +38905,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -37675,6 +38948,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -37716,6 +38990,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -37734,6 +39009,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -37802,6 +39078,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -37843,6 +39120,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -37879,6 +39157,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -37922,6 +39201,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -37967,6 +39247,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -37989,6 +39270,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -38030,6 +39312,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -38048,6 +39331,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -38116,6 +39400,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -38133,6 +39418,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -38172,6 +39458,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -38215,6 +39502,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -38318,6 +39606,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -38325,7 +39614,7 @@ const z80_decoded_opcodes = Object.freeze({
         function(regs, pins) { //RESET
         switch(regs.TCU) {
             case 1:
-                regs.IFF0 = regs.IFF1 = 0; // disable interrupt
+                regs.IFF1 = regs.IFF2 = 0; // disable interrupt
                 regs.IM = 0;
                 regs.I = 0;
                 regs.R = 0;
@@ -38341,6 +39630,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -38389,6 +39679,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -38437,6 +39728,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -38485,6 +39777,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -38533,6 +39826,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -38581,6 +39875,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -38629,6 +39924,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -38677,6 +39973,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -38725,6 +40022,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -38773,6 +40071,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -38821,6 +40120,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -38869,6 +40169,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -38917,6 +40218,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -38965,6 +40267,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -39013,6 +40316,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -39061,6 +40365,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -39109,6 +40414,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -39158,6 +40464,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -39207,6 +40514,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -39256,6 +40564,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -39305,6 +40614,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -39354,6 +40664,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -39403,6 +40714,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -39452,6 +40764,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -39501,6 +40814,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -39550,6 +40864,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -39599,6 +40914,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -39648,6 +40964,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -39697,6 +41014,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -39746,6 +41064,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -39795,6 +41114,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -39844,6 +41164,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -39893,6 +41214,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -39942,6 +41264,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -39991,6 +41314,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -40040,6 +41364,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -40089,6 +41414,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -40138,6 +41464,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -40187,6 +41514,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -40236,6 +41564,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -40285,6 +41614,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -40334,6 +41664,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -40383,6 +41714,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -40432,6 +41764,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -40481,6 +41814,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -40530,6 +41864,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -40579,6 +41914,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -40628,6 +41964,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -40677,6 +42014,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -40726,6 +42064,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -40775,6 +42114,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -40824,6 +42164,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -40873,6 +42214,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -40922,6 +42264,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -40971,6 +42314,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -41020,6 +42364,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -41069,6 +42414,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -41118,6 +42464,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -41167,6 +42514,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -41216,6 +42564,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -41265,6 +42614,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -41314,6 +42664,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -41363,6 +42714,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -41412,6 +42764,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -41461,6 +42814,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -41499,6 +42853,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -41537,6 +42892,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -41575,6 +42931,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -41613,6 +42970,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -41651,6 +43009,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -41689,6 +43048,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -41727,6 +43087,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -41765,6 +43126,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -41803,6 +43165,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -41841,6 +43204,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -41879,6 +43243,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -41917,6 +43282,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -41955,6 +43321,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -41993,6 +43360,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -42031,6 +43399,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -42069,6 +43438,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -42107,6 +43477,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -42145,6 +43516,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -42183,6 +43555,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -42221,6 +43594,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -42259,6 +43633,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -42297,6 +43672,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -42335,6 +43711,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -42373,6 +43750,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -42411,6 +43789,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -42449,6 +43828,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -42487,6 +43867,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -42525,6 +43906,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -42563,6 +43945,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -42601,6 +43984,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -42639,6 +44023,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -42677,6 +44062,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -42715,6 +44101,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -42753,6 +44140,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -42791,6 +44179,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -42829,6 +44218,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -42867,6 +44257,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -42905,6 +44296,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -42943,6 +44335,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -42981,6 +44374,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -43019,6 +44413,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -43057,6 +44452,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -43095,6 +44491,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -43133,6 +44530,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -43171,6 +44569,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -43209,6 +44608,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -43247,6 +44647,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -43285,6 +44686,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -43323,6 +44725,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -43361,6 +44764,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -43399,6 +44803,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -43437,6 +44842,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -43475,6 +44881,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -43513,6 +44920,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -43551,6 +44959,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -43589,6 +44998,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -43627,6 +45037,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -43665,6 +45076,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -43703,6 +45115,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -43741,6 +45154,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -43779,6 +45193,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -43817,6 +45232,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -43855,6 +45271,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -43893,6 +45310,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -43932,6 +45350,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -43971,6 +45390,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -44010,6 +45430,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -44049,6 +45470,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -44088,6 +45510,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -44127,6 +45550,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -44166,6 +45590,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -44205,6 +45630,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -44244,6 +45670,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -44283,6 +45710,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -44322,6 +45750,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -44361,6 +45790,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -44400,6 +45830,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -44439,6 +45870,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -44478,6 +45910,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -44517,6 +45950,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -44556,6 +45990,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -44595,6 +46030,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -44634,6 +46070,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -44673,6 +46110,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -44712,6 +46150,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -44751,6 +46190,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -44790,6 +46230,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -44829,6 +46270,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -44868,6 +46310,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -44907,6 +46350,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -44946,6 +46390,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -44985,6 +46430,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -45024,6 +46470,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -45063,6 +46510,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -45102,6 +46550,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -45141,6 +46590,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -45180,6 +46630,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -45219,6 +46670,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -45258,6 +46710,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -45297,6 +46750,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -45336,6 +46790,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -45375,6 +46830,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -45414,6 +46870,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -45453,6 +46910,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -45492,6 +46950,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -45531,6 +46990,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -45570,6 +47030,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -45609,6 +47070,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -45648,6 +47110,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -45687,6 +47150,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -45726,6 +47190,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -45765,6 +47230,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -45804,6 +47270,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -45843,6 +47310,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -45882,6 +47350,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -45921,6 +47390,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -45960,6 +47430,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -45999,6 +47470,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -46038,6 +47510,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -46077,6 +47550,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -46116,6 +47590,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -46155,6 +47630,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -46194,6 +47670,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -46233,6 +47710,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -46272,6 +47750,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -46311,6 +47790,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -46350,6 +47830,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -46389,6 +47870,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -46428,6 +47910,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -46467,6 +47950,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -46506,6 +47990,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -46545,6 +48030,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -46584,6 +48070,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -46623,6 +48110,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -46662,6 +48150,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -46701,6 +48190,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -46740,6 +48230,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -46779,6 +48270,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -46818,6 +48310,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -46857,6 +48350,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -46896,6 +48390,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -46935,6 +48430,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -46974,6 +48470,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -47013,6 +48510,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -47052,6 +48550,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -47091,6 +48590,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -47130,6 +48630,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -47169,6 +48670,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -47208,6 +48710,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -47247,6 +48750,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -47286,6 +48790,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -47325,6 +48830,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -47364,6 +48870,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -47403,6 +48910,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -47442,6 +48950,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -47481,6 +48990,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -47520,6 +49030,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -47559,6 +49070,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -47598,6 +49110,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -47637,6 +49150,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -47676,6 +49190,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -47715,6 +49230,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -47754,6 +49270,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -47793,6 +49310,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -47832,6 +49350,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -47871,6 +49390,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -47910,6 +49430,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -47949,6 +49470,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -47988,6 +49510,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -48027,6 +49550,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -48066,6 +49590,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -48105,6 +49630,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -48144,6 +49670,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -48183,6 +49710,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -48222,6 +49750,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -48261,6 +49790,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -48300,6 +49830,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -48339,6 +49870,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -48378,6 +49910,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -48417,6 +49950,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -48456,6 +49990,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -48495,6 +50030,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -48534,6 +50070,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -48573,6 +50110,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -48612,6 +50150,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -48651,6 +50190,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -48690,6 +50230,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -48729,6 +50270,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -48768,6 +50310,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -48807,6 +50350,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -48846,6 +50390,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -48885,6 +50430,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -48902,6 +50448,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -48919,6 +50466,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -48967,6 +50515,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -49015,6 +50564,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -49063,6 +50613,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -49111,6 +50662,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -49159,6 +50711,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -49207,6 +50760,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -49255,6 +50809,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -49303,6 +50858,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -49351,6 +50907,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -49399,6 +50956,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -49447,6 +51005,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -49495,6 +51054,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -49543,6 +51103,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -49591,6 +51152,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -49639,6 +51201,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -49687,6 +51250,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -49736,6 +51300,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -49785,6 +51350,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -49834,6 +51400,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -49883,6 +51450,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -49932,6 +51500,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -49981,6 +51550,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -50030,6 +51600,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -50079,6 +51650,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -50128,6 +51700,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -50177,6 +51750,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -50226,6 +51800,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -50275,6 +51850,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -50324,6 +51900,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -50373,6 +51950,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -50422,6 +52000,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -50471,6 +52050,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -50520,6 +52100,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -50569,6 +52150,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -50618,6 +52200,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -50667,6 +52250,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -50716,6 +52300,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -50765,6 +52350,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -50814,6 +52400,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -50863,6 +52450,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -50912,6 +52500,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -50961,6 +52550,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -51010,6 +52600,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -51059,6 +52650,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -51108,6 +52700,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -51157,6 +52750,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -51206,6 +52800,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -51255,6 +52850,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -51304,6 +52900,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -51353,6 +52950,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -51402,6 +53000,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -51451,6 +53050,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -51500,6 +53100,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -51549,6 +53150,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -51598,6 +53200,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -51647,6 +53250,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -51696,6 +53300,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -51745,6 +53350,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -51794,6 +53400,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -51843,6 +53450,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -51892,6 +53500,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -51941,6 +53550,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -51990,6 +53600,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -52039,6 +53650,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -52077,6 +53689,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -52115,6 +53728,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -52153,6 +53767,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -52191,6 +53806,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -52229,6 +53845,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -52267,6 +53884,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -52305,6 +53923,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -52343,6 +53962,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -52381,6 +54001,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -52419,6 +54040,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -52457,6 +54079,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -52495,6 +54118,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -52533,6 +54157,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -52571,6 +54196,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -52609,6 +54235,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -52647,6 +54274,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -52685,6 +54313,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -52723,6 +54352,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -52761,6 +54391,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -52799,6 +54430,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -52837,6 +54469,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -52875,6 +54508,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -52913,6 +54547,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -52951,6 +54586,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -52989,6 +54625,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -53027,6 +54664,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -53065,6 +54703,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -53103,6 +54742,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -53141,6 +54781,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -53179,6 +54820,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -53217,6 +54859,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -53255,6 +54898,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -53293,6 +54937,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -53331,6 +54976,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -53369,6 +55015,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -53407,6 +55054,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -53445,6 +55093,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -53483,6 +55132,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -53521,6 +55171,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -53559,6 +55210,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -53597,6 +55249,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -53635,6 +55288,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -53673,6 +55327,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -53711,6 +55366,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -53749,6 +55405,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -53787,6 +55444,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -53825,6 +55483,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -53863,6 +55522,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -53901,6 +55561,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -53939,6 +55600,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -53977,6 +55639,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -54015,6 +55678,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -54053,6 +55717,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -54091,6 +55756,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -54129,6 +55795,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -54167,6 +55834,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -54205,6 +55873,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -54243,6 +55912,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -54281,6 +55951,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -54319,6 +55990,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -54357,6 +56029,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -54395,6 +56068,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -54433,6 +56107,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -54471,6 +56146,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -54510,6 +56186,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -54549,6 +56226,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -54588,6 +56266,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -54627,6 +56306,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -54666,6 +56346,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -54705,6 +56386,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -54744,6 +56426,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -54783,6 +56466,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -54822,6 +56506,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -54861,6 +56546,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -54900,6 +56586,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -54939,6 +56626,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -54978,6 +56666,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -55017,6 +56706,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -55056,6 +56746,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -55095,6 +56786,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -55134,6 +56826,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -55173,6 +56866,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -55212,6 +56906,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -55251,6 +56946,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -55290,6 +56986,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -55329,6 +57026,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -55368,6 +57066,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -55407,6 +57106,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -55446,6 +57146,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -55485,6 +57186,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -55524,6 +57226,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -55563,6 +57266,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -55602,6 +57306,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -55641,6 +57346,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -55680,6 +57386,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -55719,6 +57426,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -55758,6 +57466,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -55797,6 +57506,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -55836,6 +57546,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -55875,6 +57586,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -55914,6 +57626,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -55953,6 +57666,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -55992,6 +57706,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -56031,6 +57746,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -56070,6 +57786,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -56109,6 +57826,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -56148,6 +57866,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -56187,6 +57906,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -56226,6 +57946,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -56265,6 +57986,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -56304,6 +58026,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -56343,6 +58066,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -56382,6 +58106,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -56421,6 +58146,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -56460,6 +58186,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -56499,6 +58226,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -56538,6 +58266,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -56577,6 +58306,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -56616,6 +58346,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -56655,6 +58386,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -56694,6 +58426,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -56733,6 +58466,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -56772,6 +58506,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -56811,6 +58546,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -56850,6 +58586,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -56889,6 +58626,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -56928,6 +58666,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -56967,6 +58706,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57006,6 +58746,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57045,6 +58786,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57084,6 +58826,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57123,6 +58866,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57162,6 +58906,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57201,6 +58946,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57240,6 +58986,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57279,6 +59026,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57318,6 +59066,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57357,6 +59106,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57396,6 +59146,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57435,6 +59186,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57474,6 +59226,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57513,6 +59266,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57552,6 +59306,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57591,6 +59346,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57630,6 +59386,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57669,6 +59426,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57708,6 +59466,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57747,6 +59506,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57786,6 +59546,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57825,6 +59586,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57864,6 +59626,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57903,6 +59666,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57942,6 +59706,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -57981,6 +59746,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -58020,6 +59786,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -58059,6 +59826,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -58098,6 +59866,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -58137,6 +59906,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -58176,6 +59946,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -58215,6 +59986,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -58254,6 +60026,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -58293,6 +60066,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -58332,6 +60106,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -58371,6 +60146,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -58410,6 +60186,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -58449,6 +60226,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -58488,6 +60266,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -58527,6 +60306,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -58566,6 +60346,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -58605,6 +60386,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -58644,6 +60426,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -58683,6 +60466,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -58722,6 +60506,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -58761,6 +60546,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -58800,6 +60586,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -58839,6 +60626,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -58878,6 +60666,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -58917,6 +60706,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -58956,6 +60746,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -58995,6 +60786,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -59034,6 +60826,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -59073,6 +60866,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -59112,6 +60906,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -59151,6 +60946,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -59190,6 +60986,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -59229,6 +61026,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -59268,6 +61066,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -59307,6 +61106,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -59346,6 +61146,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -59385,6 +61186,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -59424,6 +61226,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -59463,6 +61266,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -59480,6 +61284,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     }),
@@ -59497,6 +61302,7 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.prefix = 0x00;
                 regs.rprefix = Z80P.HL;
                 regs.IR = Z80_S_DECODE;
+                regs.poll_IRQ = true;
                 break;
         }
     })
