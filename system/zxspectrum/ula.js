@@ -68,7 +68,7 @@ class ZXSpectrum_ULA {
             //let kp = 1; // no keys pressed ATM
             let kp = keyboard_input.keys[key];
             if (typeof kp === 'undefined') {
-                console.log('WHAT NO', key, i, row, row[i]);
+                //console.log('WHAT NO', key, i, row, row[i]);
                 kp = 0;
             }
             kp = +(!kp);

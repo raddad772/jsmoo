@@ -504,7 +504,8 @@ class keyboard_input_t {
 		this.keys_cared_about = [
 			'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f',
 			'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm',
-			'tab', 'up', 'down', 'left', 'right', 'enter', 'shift', 'alt', 'space'];
+			'1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+			'tab', 'up', 'down', 'left', 'right', 'Enter', 'shift', 'alt', 'Space'];
 
 		this.keys_cared_about_codes = [];
 		this.conversion = {
@@ -532,13 +533,23 @@ class keyboard_input_t {
 			'b': 'b',
 			'n': 'n',
 			'm': 'm',
-			'space': ' ',
+			'0': '0',
+			'1': '1',
+			'2': '2',
+			'3': '3',
+			'4': '4',
+			'5': '5',
+			'6': '6',
+			'7': '7',
+			'8': '8',
+			'9': '9',
+			' ': 'Space',
 			'shift': 'Shift',
 			'up': 'ArrowUp',
 			'down': 'ArrowDown',
 			'left': 'ArrowLeft',
 			'right': 'ArrowRight',
-			'enter': 'Enter',
+			'Enter': 'Enter',
 			'alt': 'Alt',
 			'tab': 'Tab'
 		}
@@ -559,6 +570,7 @@ class keyboard_input_t {
 	keydown(keycode, event) {
 		if (this.keys_cared_about_codes.indexOf(keycode) !== -1) {
 			this.keys[this.conversion_back[keycode]] = true;
+			console.log(this.keys[this.conversion_back[keycode]]);
 			if (global_player.input_capture) {
 				event.stopPropagation();
 				event.preventDefault();
@@ -580,6 +592,7 @@ class keyboard_input_t {
 var keyboard_input = new keyboard_input_t();
 
 window.addEventListener('keydown', function(ev) {
+	console.log(ev.key);
 	keyboard_input.keydown(ev.key, ev)
 });
 
