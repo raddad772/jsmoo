@@ -78,7 +78,7 @@ class SMSGG_bus {
         this.RAM = new Uint8Array(8192);
 
         /**
-         * @type {SMSGG_vdp}
+         * @type {SMSGG_VDP}
          */
         this.vdp = null;
 
@@ -89,19 +89,147 @@ class SMSGG_bus {
 
         this.notify_IRQ = function(level) { debugger; }
     }
+
+    cpu_in(addr, val, has_effect=true) {
+
+    }
+
+    cpu_out(addr, val, has_effect=true) {
+
+    }
+
+    cpu_read(addr, val, has_effect=true) {
+
+    }
+
+    cpu_write(addr, val, has_effect=true) {
+
+    }
 }
 
 class SMSGG {
     constructor(variant) {
         this.variant = variant;
+        this.clock = new SMSGG_clock(variant);
         this.bus = new SMSGG_bus(this.variant);
         this.cpu = new z80_t(false);
+        this.cpu.reset();
+
         this.bus.system = this;
         this.bus.notify_IRQ = this.notify_IRQ.bind(this);
+
+        this.vdp = new SMSGG_VDP(document.getElementById('snescanvas'), this.variant, this.clock, this.bus);
+        this.vdp.reset();
+
+        this.bus.vdp = this.vdp;
+
+        dbg.add_cpu(D_RESOURCE_TYPES.Z80, this);
+    }
+
+    killall() {
+        dbg.remove_cpu(D_RESOURCE_TYPES.Z80, this);
+    }
+
+    reset() {
+        this.cpu.reset();
+        this.vdp.reset();
+    }
+
+    trace_peek(addr) {
+        return this.bus.cpu_read(addr, 0, false);
+    }
+
+    enable_tracing() {
+        this.cpu.enable_tracing(this.trace_peek.bind(this));
+    }
+
+    disable_tracing() {
+        this.cpu.disable_tracing();
+    }
+
+    step_master(howmany) {
+        let todo = howmany;
+        for (let i = 0; i < todo; i++) {
+            this.clock.cpu_master_clock++;
+            this.clock.vdp_master_clock++;
+            if (this.clock.cpu_master_clock > this.clock.cpu_divisor) {
+                this.cpu_cycle();
+                this.clock.cpu_master_clock -= this.clock.cpu_divisor;
+            }
+            if (this.clock.vdp_master_clock > this.clock.vdp_divisor) {
+                this.vdp.cycle();
+                this.clock.vdp_master_clock -= this.clock.vdp_divisor;
+            }
+            if (dbg.do_break) return;
+        }
+    }
+
+    catch_up() { }
+
+    cpu_cycle() {
+        if (this.cpu.pins.RD) {
+            if (this.cpu.pins.MRQ) {// read ROM/RAM
+                this.cpu.pins.D = this.bus.cpu_read(this.cpu.pins.Addr);
+                if (this.cpu.trace_on) {
+                    dbg.traces.add(D_RESOURCE_TYPES.Z80, this.cpu.trace_cycles, trace_format_read('Z80', Z80_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D, null, this.cpu.regs.TCU));
+                }
+            } else if (this.cpu.pins.IO) { // read IO port
+                this.cpu.pins.D = this.bus.cpu_in(this.cpu.pins.Addr);
+            }
+        }
+        this.cpu.cycle();
+        if (this.cpu.pins.WR) {
+            if (this.cpu.pins.MRQ) { // write RAM
+                if (this.cpu.trace_on && (this.cpu.last_trace_cycle !== this.cpu.trace_cycles)) {
+                    dbg.traces.add(D_RESOURCE_TYPES.Z80, this.cpu.trace_cycles, trace_format_write('Z80', Z80_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
+                    this.cpu.last_trace_cycle = this.cpu.trace_cycles;
+                }
+                this.bus.cpu_write(this.cpu.pins.Addr, this.cpu.pins.D);
+            } else if (this.cpu.pins.IO) // write IO
+                this.bus.cpu_out(this.cpu.pins.Addr, this.cpu.pins.D);
+        }
+    }
+
+    get_description() {
+        let nm = 'Master System v1';
+        if (this.variant === SMSGG_variants.SMS2) nm = 'Master System v2';
+        if (this.variant === SMSGG_variants.GG) nm = 'GameGear';
+        let d = new machine_description(nm);
+        d.technical.standard = 'NTSC';
+        d.technical.fps = 60;
+        d.input_types = [INPUT_TYPES.SMS_CONTROLLER];
+        d.technical.x_resolution = 256;
+        d.technical.y_resolution = 240; // Max
+        return d;
+    }
+
+    run_frame() {
+        let current_frame = this.clock.master_frame;
+        while(current_frame === this.clock.master_frame) {
+            this.finish_scanline();
+            if (dbg.do_break) return;
+        }
+    }
+
+    finish_scanline() {
+        let cycles_left = 684 - (this.clock.hpos * 2);
+        this.step_master(cycles_left);
+    }
+
+    load_ROM_from_RAM(what) {
+        this.bus.load_ROM_from_RAM(what);
+    }
+
+    present() {
+        this.vdp.present();
     }
 
     notify_IRQ(level) {
         this.cpu.IRQ_pending = !!level;
         if (!this.cpu.IRQ_pending) this.cpu.IRQ_ack = false;
+    }
+
+    run_cycles(howmany) {
+
     }
 }

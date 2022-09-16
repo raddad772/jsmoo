@@ -24,13 +24,15 @@ class SMSGG_object {
     }
 }
 
-class SMSGG_vdp {
+class SMSGG_VDP {
     /**
+     * @param {HTMLElement} canvas
      * @param {Number} variant
      * @param {SMSGG_clock} clock
      * @param {SMSGG_bus} bus
      */
-    constructor(variant, clock, bus) {
+    constructor(canvas, variant, clock, bus) {
+        this.canvas = canvas;
         this.variant = variant;
         this.clock = clock;
         this.bus = bus;
@@ -94,7 +96,6 @@ class SMSGG_vdp {
         this.bg_priority = 0;
         this.bg_palette = 0;
         this.sprite_color = 0;
-        this.dac_color = 0;
 
         this.bg_gfx_vlines = 192;
         this.bg_gfx = function(){debugger;}
@@ -105,6 +106,37 @@ class SMSGG_vdp {
 
         this.scanline_cycle = this.scanline_visible.bind(this);
     }
+
+    present() {
+        let ctx = this.canvas.getContext('2d');
+        let imgdata = ctx.getImageData(0, 0, 256, 240);
+        for (let ry = 0; ry < this.clock.timing.rendered_lines; ry++) {
+            let y = ry;
+            for (let rx = 0; rx < 256; rx++) {
+                let x = rx;
+                let di = ((y * 256) + x) * 4;
+                let ulai = (y * 256) + x;
+
+                let color = this.output[ulai];
+                let r, g, b;
+                if (this.variant === SMSGG_variants.GG) {
+                    b = (((color >>> 8) & 0x0F) * 16) - 1;
+                    g = (((color >>> 4) & 0x0F) * 16) - 1;
+                    r = ((color & 0x0F) * 16) - 1;
+                } else {
+                    b = (((color >>> 4) & 7) * 32);
+                    g = (((color >>> 2) & 7) * 32);
+                    r = ((color & 7) * 32);
+                }
+
+                imgdata.data[di] = r;
+                imgdata.data[di+1] = g;
+                imgdata.data[di+2] = b;
+                imgdata.data[di+3] = 255;
+            }
+        }
+        ctx.putImageData(imgdata, 0, 0);
+}
 
     sprite_gfx2() {
         let hlimit = (8 << (this.io.sprite_zoom + this.io.sprite_size)) - 1;

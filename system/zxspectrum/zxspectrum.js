@@ -107,7 +107,7 @@ class ZXSpectrum {
     }
 
     killall() {
-
+        dbg.remove_cpu(D_RESOURCE_TYPES.Z80, this);
     }
 
     reset() {
