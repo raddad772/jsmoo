@@ -71,42 +71,6 @@ class SMSGG_clock {
     }
 }
 
-class SMSGG_bus {
-    constructor(variant) {
-        this.variant = variant;
-
-        this.RAM = new Uint8Array(8192);
-
-        /**
-         * @type {SMSGG_VDP}
-         */
-        this.vdp = null;
-
-        /**
-         * @type {SMSGG}
-         */
-        this.system = null;
-
-        this.notify_IRQ = function(level) { debugger; }
-    }
-
-    cpu_in(addr, val, has_effect=true) {
-
-    }
-
-    cpu_out(addr, val, has_effect=true) {
-
-    }
-
-    cpu_read(addr, val, has_effect=true) {
-
-    }
-
-    cpu_write(addr, val, has_effect=true) {
-
-    }
-}
-
 class SMSGG {
     constructor(variant) {
         this.variant = variant;
@@ -116,7 +80,8 @@ class SMSGG {
         this.cpu.reset();
 
         this.bus.system = this;
-        this.bus.notify_IRQ = this.notify_IRQ.bind(this);
+        this.bus.notify_IRQ = this.cpu.notify_IRQ.bind(this.cpu);
+        this.bus.notify_NMI = this.cpu.notify_NMI.bind(this.cpu);
 
         this.vdp = new SMSGG_VDP(document.getElementById('snescanvas'), this.variant, this.clock, this.bus);
         this.vdp.reset();
@@ -133,6 +98,7 @@ class SMSGG {
     reset() {
         this.cpu.reset();
         this.vdp.reset();
+        this.bus.reset();
     }
 
     trace_peek(addr) {
@@ -147,9 +113,23 @@ class SMSGG {
         this.cpu.disable_tracing();
     }
 
+    poll_pause() {
+        if (this.bus.pause_button.poll()) {
+            this.bus.notify_NMI(1);
+        }
+        else {
+            this.bus.notify_NMI(0);
+        }
+    }
+
     step_master(howmany) {
         let todo = howmany;
+        let last_frame = this.clock.master_frame;
         for (let i = 0; i < todo; i++) {
+            if (this.clock.master_frame !== last_frame) {
+                last_frame = this.clock.master_frame;
+                this.poll_pause();
+            }
             this.clock.cpu_master_clock++;
             this.clock.vdp_master_clock++;
             if (this.clock.cpu_master_clock > this.clock.cpu_divisor) {
@@ -160,6 +140,10 @@ class SMSGG {
                 this.vdp.cycle();
                 this.clock.vdp_master_clock -= this.clock.vdp_divisor;
             }
+            if (this.clock.master_frame !== last_frame) {
+                last_frame = this.clock.master_frame;
+                this.poll_pause();
+            }
             if (dbg.do_break) return;
         }
     }
@@ -169,12 +153,12 @@ class SMSGG {
     cpu_cycle() {
         if (this.cpu.pins.RD) {
             if (this.cpu.pins.MRQ) {// read ROM/RAM
-                this.cpu.pins.D = this.bus.cpu_read(this.cpu.pins.Addr);
+                this.cpu.pins.D = this.bus.cpu_read(this.cpu.pins.Addr, this.cpu.pins.D);
                 if (this.cpu.trace_on) {
                     dbg.traces.add(D_RESOURCE_TYPES.Z80, this.cpu.trace_cycles, trace_format_read('Z80', Z80_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D, null, this.cpu.regs.TCU));
                 }
             } else if (this.cpu.pins.IO) { // read IO port
-                this.cpu.pins.D = this.bus.cpu_in(this.cpu.pins.Addr);
+                this.cpu.pins.D = this.bus.cpu_in(this.cpu.pins.Addr, this.cpu.pins.D);
             }
         }
         this.cpu.cycle();
@@ -218,18 +202,14 @@ class SMSGG {
 
     load_ROM_from_RAM(what) {
         this.bus.load_ROM_from_RAM(what);
+        this.reset();
+    }
+
+    load_BIOS_from_RAM(what) {
+        this.bus.mapper.load_BIOS_from_RAM(what);
     }
 
     present() {
         this.vdp.present();
-    }
-
-    notify_IRQ(level) {
-        this.cpu.IRQ_pending = !!level;
-        if (!this.cpu.IRQ_pending) this.cpu.IRQ_ack = false;
-    }
-
-    run_cycles(howmany) {
-
     }
 }
