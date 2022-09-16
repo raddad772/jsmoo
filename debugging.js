@@ -357,6 +357,9 @@ class debugger_t {
                 break;
             case 'genericz80':
                 break;
+            case 'gg':
+            case 'sms':
+                break;
         }
         if (this.tracing) {
             this.traces.draw(dconsole);

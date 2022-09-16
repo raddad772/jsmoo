@@ -176,7 +176,7 @@ class z80_t {
         this.CMOS = CMOS;
 
         this.IRQ_pending = false;
-        this.IRQ_ack = false;
+        //this.IRQ_ack = false;
 
         this.NMI_pending = false;
         this.NMI_ack = false;
@@ -218,7 +218,8 @@ class z80_t {
         this.regs.As = this.regs.Fs = this.regs.Bs = this.regs.Cs = 0;
         this.regs.Ds = this.regs.Es = this.regs.Hs = this.regs.Ls = 0;
 
-        this.IRQ_pending = this.NMI_pending = this.IRQ_ack = this.NMI_ack = false;
+        this.IRQ_pending = this.NMI_pending = this.NMI_ack = false;
+        //this.IRQ_ack = false;
         this.regs.IRQ_vec = null;
 
         this.regs.IR = Z80_S_RESET;
@@ -226,14 +227,14 @@ class z80_t {
         this.regs.TCU = 0;
     }
 
-    notify_IRQ(){
-        this.irq();
+    notify_IRQ(level) {
+        this.IRQ_pending = !!level;
+        //if (!this.IRQ_pending) this.IRQ_ack = false;
     }
 
-    irq(irq_vec=0x0000) {
-        if (this.regs.IRQ_vec === null) this.regs.IRQ_vec = irq_vec;
-        this.IRQ_pending = true;
-        this.IRQ_ack = false;
+    notify_NMI(level) {
+        if (!level && this.NMI_ack) { this.NMI_ack = false; }// level 0, NMI already ack'd
+        this.NMI_pending ||= level;
     }
 
     set_pins_opcode() {
@@ -281,18 +282,25 @@ class z80_t {
                     // Make sure we only do this at start of an instruction
                     this.regs.poll_IRQ = false;
                     if (this.NMI_pending && !this.NMI_ack) {
-                        console.log('NMI not implemented yet')
+                        this.NMI_pending = false;
                         this.NMI_ack = true;
-                        if (dbg.brk_on_NMIRQ) dbg.break(D_RESOURCE_TYPES.Z80);
-                    } else if (this.IRQ_pending && !this.IRQ_ack) {
+                        this.regs.IRQ_vec = 0x66;
+                        this.pins.IRQ_maskable = false;
+                        this.set_instruction(Z80_S_IRQ);
+                        if (dbg.brk_on_NMIRQ) {
+                            console.log('NMI', this.trace_cycles);
+                            dbg.break(D_RESOURCE_TYPES.Z80);
+                        }
+                    } else if (this.IRQ_pending) {
                         if (this.pins.IRQ_maskable && ((!this.regs.IFF1) || this.regs.EI)) {
                             this.IRQ_pending = false;
                         } else {
-                            this.IRQ_ack = true;
+                            this.IRQ_pending = false;
                             this.pins.D = 0xFF;
                             this.regs.PC = (this.regs.PC - 1) & 0xFFFF;
                             this.pins.IRQ_maskable = true;
                             this.regs.IRQ_vec = 0x38;
+                            this.pins.D = 0xFF;
                             this.set_instruction(Z80_S_IRQ);
                             if (dbg.brk_on_NMIRQ) {
                                 console.log(this.trace_cycles);

@@ -13,7 +13,8 @@ const SPECTRUM_STR = 'spectrum';
 const GENERICZ80_STR = 'genericz80'
 
 //const DEFAULT_SYSTEM = GENERICZ80_STR;
-const DEFAULT_SYSTEM = SPECTRUM_STR;
+//const DEFAULT_SYSTEM = SPECTRUM_STR;
+const DEFAULT_SYSTEM = SMS_STR;
 
 const DEFAULT_STEPS = {
 	master: 50,
@@ -116,6 +117,14 @@ class global_player_t {
 			this.system = null;
 		}
 		switch(this.system_kind) {
+			case 'gg':
+				this.system = new SMSGG(SMSGG_variants.GG);
+				this.load_bios('/gg/roms/bios.gg');
+				break;
+			case 'sms':
+				this.system = new SMSGG(SMSGG_variants.SMS2);
+				this.load_bios('/sms/roms/bios13fx.sms');
+				break;
 			case 'snes':
 				this.system = new SNES();
 				break;
@@ -144,6 +153,10 @@ class global_player_t {
 	load_rom(what) {
 		this.system.load_ROM_from_RAM(what);
 	}
+
+	load_bios(what) {
+		this.system.load_BIOS_from_RAM(what);
+	}
 }
 
 const global_player = new global_player_t();
@@ -152,7 +165,7 @@ async function init_fs() {
 }
 
 async function load_sel_rom() {
-	load_selected_rom();
+	await load_selected_rom();
 }
 
 let default_system_options = {
@@ -207,6 +220,28 @@ async function load_selected_rom() {
 	}
 	f = str2ab(f);
 	global_player.load_rom(f);
+}
+
+async function load_bios(fn) {
+	if (!global_player.ready)
+		return;
+
+	let f = await bfs.read_file(fn);
+	if (!f) {
+		console.log('BIOS', fn, 'not found!');
+		return null;
+	}
+	function str2ab(str) {
+		let buf = new ArrayBuffer(str.length); // 2 bytes for each char
+		let bufView = new Uint8Array(buf);
+		for (let i = 0, strLen = str.length; i < strLen; i++) {
+			bufView[i] = str.charCodeAt(i);
+		}
+		return buf;
+	}
+	f = str2ab(f);
+	global_player.load_bios(f);
+
 }
 
 async function reload_roms(where) {
@@ -281,6 +316,10 @@ function click_bg_dump(which) {
 			console.log(hex4(snes.ppu.io.bg3.get_tile(snes.ppu.VRAM, snes.ppu.io, snes.ppu.io.bg3, 10*8, 5*8)))
 			snes.ppu.present();
 			break;
+		case 'sms':
+		case 'gg':
+			global_player.system.vdp.dump_bg();
+			break;
 		case 'nes':
 			console.log('DUMP IT!');
 			global_player.system.ppu.render_bgtables_from_memory(0, 260);
@@ -295,15 +334,21 @@ function click_bg_dump(which) {
 }
 
 function click_sprite_dump() {
-	global_player.system.ppu.render_sprites_from_memory(0, 520, false);
 	switch(global_player.system_kind) {
 		case 'snes':
+			global_player.system.ppu.render_sprites_from_memory(0, 520, false);
 			for (let y = 1; y < 224; y++) {
 				PPUF_render_objects(snes.ppu, snes.ppu.cachelines.lines[y], y, true);
 			}
 			break;
 		case 'nes':
+			global_player.system.ppu.render_sprites_from_memory(0, 520, false);
 			console.log('SPRITE, BG ENABLE:', global_player.system.ppu.io.sprite_enable, global_player.system.ppu.io.bg_enable)
+			break;
+		case 'sms':
+		case 'gg':
+			global_player.system.vdp.dump_sprites(0, 520);
+			console.log('DUMP SPRITES BRO');
 			break;
 	}
 	global_player.system.ppu.present();
@@ -381,6 +426,10 @@ function click_dump_ram() {
 				case 'nes':
 					rd = hex2(global_player.system.bus.CPU_read(baddr, 0, false));
 					break;
+				case 'sms':
+				case 'gg':
+					rd = hex2(global_player.system.bus.cpu_read(baddr, 0, false));
+					break;
 			}
 			ln += rd + ' ';
 		}
@@ -404,6 +453,10 @@ function click_dump_vram() {
 					break;
 				case 'nes':
 					rd = hex2(global_player.system.bus.PPU_read(baddr, 0, false));
+					break;
+				case 'gg':
+				case 'sms':
+					rd = hex2(global_player.system.vdp.RAM[baddr & 0x3FFF]);
 					break;
 			}
 			ln += rd + ' ';
@@ -629,6 +682,9 @@ async function main() {
 		case 'nes':
 			dbg.add_cpu(D_RESOURCE_TYPES.M6502, global_player.system.cpu);
 			break;
+		case 'gg':
+		case 'sms':
+			break;
 
 	}
 	//dbg.add_cpu(D_RESOURCE_TYPES.R5A22, snes.cpu);
@@ -698,6 +754,8 @@ async function init_ui() {
 				case 'genericz80':
 					dbg.enable_tracing_for(D_RESOURCE_TYPES.Z80);
 					break;
+				case 'gg':
+				case 'sms':
 				case 'spectrum':
 					dbg.enable_tracing_for(D_RESOURCE_TYPES.Z80);
 					break;
@@ -714,6 +772,8 @@ async function init_ui() {
 				case 'genericz80':
 					dbg.disable_tracing_for(D_RESOURCE_TYPES.Z80);
 					break;
+				case 'gg':
+				case 'sms':
 				case 'spectrum':
 					dbg.disable_tracing_for(D_RESOURCE_TYPES.Z80);
 					break;
