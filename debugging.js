@@ -285,6 +285,15 @@ class debugger_t {
         if (old === true)  this.cpu_refresh_tracing();
     }
 
+    remove_cpu(kind) {
+        if (kind in this.cpus) {
+            delete this.cpus[kind];
+        }
+        if (kind in this.tracing_for) {
+            delete this.tracing_for[kind];
+        }
+    }
+
     add_cpu(kind, cpu) {
         this.cpus[kind] = cpu;
         if (kind === D_RESOURCE_TYPES.R5A22) {
