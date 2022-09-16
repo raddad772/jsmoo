@@ -21,6 +21,7 @@ const SMSGG_variants = {
 
  alternating.
 
+c
  179,208 mclk per frame
  262 lines
  512mclk active display, 172mclk border area
@@ -42,6 +43,8 @@ class SMSGG_clock {
         this.cpu_master_clock = 0;
         this.vdp_master_clock = 0;
 
+        this.master_frame = 0;
+
         this.cpu_divisor = 3;
         this.vdp_divisor = 2;
 
@@ -59,8 +62,10 @@ class SMSGG_clock {
 
         this.timing = {
             fps: 60,
-            frame_lines: 262,
+            frame_lines: 262, // PAL 313
+            cc_line: 260, // PAL 311
             bottom_rendered_line: 191,
+            rendered_lines: 192,
             vblank_start: 192 // not sure?
         }
     }

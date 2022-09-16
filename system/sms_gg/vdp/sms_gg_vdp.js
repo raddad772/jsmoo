@@ -358,7 +358,12 @@ class SMSGG_vdp {
         this.doi++;
     }
 
-    // Do a cycle on scanlines 0-239
+    // Do a cycle on scanlines 192-, 224-, or 240-262 or 312
+    scanline_invisible() {
+        // Literally do nothing bro
+    }
+
+    // Do a cycle on scanlines 0-191, 223, or 239
     scanline_visible() {
         // Scanlines 0-191, or 223, or 239, depending.
         this.bg_color = this.bg_priority = this.bg_palette = 0;
@@ -375,7 +380,47 @@ class SMSGG_vdp {
             this.sprite_gfx();
             this.dac_gfx();
         }
-        if (this.clock.hpos === )
+    }
+
+    new_scanline() {
+        this.clock.hpos = 0;
+        this.clock.vpos++;
+        if (this.clock.vpos === this.clock.timing.frame_lines) {
+            this.new_frame();
+        }
+
+        if (this.clock.vpos < this.clock.timing.rendered_lines) {
+            if (this.clock.line_counter-- < 0) {
+                this.clock.line_counter = this.io.line_irq_reload;
+                this.io.irq_line_pending = 1;
+                this.update_irqs();
+            }
+            else {
+                this.clock.line_counter = this.io.line_irq_reload;
+            }
+
+            if (this.clock.vpos === this.clock.timing.vblank_start) {
+                this.io.irq_frame_pending = 1;
+                this.update_irqs();
+            }
+        }
+
+        switch(this.clock.vpos) {
+            case 0:
+                this.scanline_cycle = this.scanline_visible.bind(this);
+                break;
+            case this.clock.timing.rendered_lines:
+                this.scanline_cycle = this.scanline_invisible.bind(this);
+                break;
+        }
+
+        if (this.clock.vpos < this.clock.timing.cc_line)
+            this.io.ccounter = (this.io.ccounter + 1) & 0xFFF;
+    }
+
+    new_frame() {
+        this.clock.master_frame++;
+        this.clock.vpos = 0;
     }
 
     read_vcounter() {
@@ -494,8 +539,9 @@ class SMSGG_vdp {
             if (this.io.video_mode === 0x0E) bottom_row = 240;
         }
 
-        this.clock.timing.bottom = bottom_row - 1;
-        this.clock.vblank_start = bottom_row;
+        this.clock.timing.bottom_rendered_line = bottom_row - 1;
+        this.clock.timing.vblank_start = bottom_row+1;
+        this.clock.timing.rendered_lines = bottom_row;
 
 
         switch(this.io.video_mode) {
@@ -554,6 +600,14 @@ class SMSGG_vdp {
                 this.update_videomode();
                 return;
             case 1: // mode control thing, #2
+                this.io.sprite_zoom = val & 1;
+                this.io.sprite_size = (val & 2) >>> 1;
+                this.io.video_mode = (this.io.video_mode & 0x0A) | ((val & 8) >>> 1) | ((val & 0x10) >>> 4);
+                this.io.irq_frame_enabled = (val & 0x20) >>> 5;
+                this.io.display_enable = (val & 0x40) >>> 6;
+                this.io.irq_frame_pending &= this.io.irq_frame_enabled;
+                this.update_irqs();
+                this.update_videomode();
                 return;
             case 2: // name table base address
                 this.io.bg_name_table_address = val & 0x0F;
@@ -591,8 +645,15 @@ class SMSGG_vdp {
         this.clock.vpos = 0;
         this.clock.ccounter = 0;
         this.io.sprite_overflow_index = 0x1F;
+        this.scanline_cycle = this.scanline_visible.bind(this);
         for (let i = 0; i < 8; i++) {
             this.objects[i].y = 0xD0;
+        }
+        for (let i in this.VRAM) {
+            this.VRAM[i] = 0;
+        }
+        for (let i in this.CRAM) {
+            this.CRAM[i] = 0;
         }
     }
 
@@ -601,6 +662,6 @@ class SMSGG_vdp {
         this.scanline_cycle();
         this.clock.vdp_frame_cycle += this.clock.vdp_divisor;
         this.clock.hpos++;
+        if (this.clock.hpos === 342) this.new_scanline();
     }
-
 }
