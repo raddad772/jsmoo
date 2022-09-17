@@ -80,6 +80,7 @@ class global_player_t {
 		this.tech_specs = {};
 
 		this.input_capture = true;
+		this.input_can_capture = true;
 	}
 
 	set_fps_target(to) {
@@ -629,7 +630,7 @@ class keyboard_input_t {
 		if (this.keys_cared_about_codes.indexOf(keycode) !== -1) {
 			this.keys[this.conversion_back[keycode]] = true;
 			//console.log(this.keys[this.conversion_back[keycode]]);
-			if (global_player.input_capture) {
+			if (global_player.input_capture && global_player.input_can_capture) {
 				event.stopPropagation();
 				event.preventDefault();
 			}
@@ -639,7 +640,7 @@ class keyboard_input_t {
 	keyup(keycode, event) {
 		if (this.keys_cared_about_codes.indexOf(keycode) !== -1) {
 			this.keys[this.conversion_back[keycode]] = false;
-			if (global_player.input_capture) {
+			if (global_player.input_capture && global_player.input_can_capture) {
 				event.stopPropagation();
 				event.preventDefault();
 			}
@@ -710,6 +711,11 @@ function uie_input_focus() {
 function uie_input_blur() {
 	global_player.input_capture = true;
 }
+
+/**
+ * @type {input_config_t}
+ */
+var input_config;
 
 async function init_ui() {
 	for (let k in ui_el) {
@@ -824,19 +830,27 @@ async function init_ui() {
 	})
 
 	await init_fs();
+	input_config = new input_config_t();
 	await system_selected(DEFAULT_SYSTEM);
 	after_js();
 }
 
 function open_tab(tablname, tabgrp, evt, tab_name) {
-  let els = document.getElementsByClassName(tabgrp);
-  for (let i = 0; i < els.length; i++) {
-    els[i].style.display = "none";
-  }
-  let tablinks = document.getElementsByClassName(tablname);
-  for (let i = 0; i < els.length; i++) {
-    tablinks[i].className = tablinks[i].className.replace(" ui-bar-blue-grey", "");
-  }
-  document.getElementById(tab_name).style.display = "block";
-  evt.currentTarget.className += " ui-bar-blue-grey";
+	if (tabgrp === 'ui-tab-settings-input') {
+		if (input_config.current_tab !== tab_name) {
+			input_config.tab_change(tab_name);
+			input_config.current_tab = tab_name;
+		}
+	}
+	let els = document.getElementsByClassName(tabgrp);
+	for (let i = 0; i < els.length; i++) {
+		els[i].style.display = "none";
+	}
+	let tablinks = document.getElementsByClassName(tablname);
+	for (let i = 0; i < els.length; i++) {
+		tablinks[i].className = tablinks[i].className.replace(" ui-bar-blue-grey", "");
+	}
+	document.getElementById(tab_name).style.display = "block";
+	evt.currentTarget.className += " ui-bar-blue-grey";
+	global_player.input_can_capture = (tab_name === 'main_tab_main');
 }
