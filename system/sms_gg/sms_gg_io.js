@@ -125,7 +125,7 @@ class SMSGG_bus {
          */
         this.system = null;
 
-        this.mapper = new SMSGG_mapper_sega();
+        this.mapper = new SMSGG_mapper_sega(variant);
 
         this.notify_IRQ = function(level) { debugger; }
         this.notify_NMI = function(level) { debugger; }
@@ -154,6 +154,10 @@ class SMSGG_bus {
                 break;
         }
 
+    }
+
+    reset() {
+        this.mapper.reset();
     }
 
     // 0x3E memory control
@@ -206,6 +210,11 @@ class SMSGG_bus {
     }
 
     cpu_in_sms2(addr, val, has_effect=true) {
+        addr &= 0xFF;
+        console.log('IN', hex2(addr));
+        if ((dbg.watch_on) && (addr === 0xBF)) {
+            dbg.break();
+        }
         if (addr <= 0x3F) {
             // reads return last byte of the instruction which read the port
             return 0xFF;
@@ -226,6 +235,7 @@ class SMSGG_bus {
     }
 
     cpu_out_sms2(addr, val) {
+        addr &= 0xFF;
         if (addr <= 0x3F) {
             // even memory control
             // odd I/O control
@@ -248,6 +258,7 @@ class SMSGG_bus {
     }
 
     cpu_in_gg(addr, val, has_effect=true) {
+        addr &= 0xFF;
         if ((addr < 7) && (this.vdp.mode === SMSGG_vdp_modes.GG)) {
             // GameGear mode registers, start out at C0 7F FF 00 FF 00 FF
         }
@@ -270,6 +281,7 @@ class SMSGG_bus {
     }
 
     cpu_out_gg(addr, val) {
+        addr &= 0xFF;
         if ((addr < 7) && (this.vdp.mode === SMSGG_vdp_modes.GG)) {
             // GameGear mode registers, start out at C0 7F FF 00 FF 00 FF
         }
@@ -292,6 +304,7 @@ class SMSGG_bus {
     }
 
     cpu_in_sms1(addr, val, has_effect=true) {
+        addr &= 0xFF;
         if (addr <= 0x3F) {
             // reads return last byte of the instruction which read the port
             return val;
@@ -311,6 +324,7 @@ class SMSGG_bus {
     }
 
     cpu_out_sms1(addr, val, has_effect=true) {
+        addr &= 0xFF;
         if (addr <= 0x3F) {
             // even memory control
             // odd I/O control

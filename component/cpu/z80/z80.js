@@ -176,7 +176,7 @@ class z80_t {
         this.CMOS = CMOS;
 
         this.IRQ_pending = false;
-        //this.IRQ_ack = false;
+        this.IRQ_ack = false;
 
         this.NMI_pending = false;
         this.NMI_ack = false;
@@ -219,7 +219,7 @@ class z80_t {
         this.regs.Ds = this.regs.Es = this.regs.Hs = this.regs.Ls = 0;
 
         this.IRQ_pending = this.NMI_pending = this.NMI_ack = false;
-        //this.IRQ_ack = false;
+        this.IRQ_ack = false;
         this.regs.IRQ_vec = null;
 
         this.regs.IR = Z80_S_RESET;
@@ -229,7 +229,7 @@ class z80_t {
 
     notify_IRQ(level) {
         this.IRQ_pending = !!level;
-        //if (!this.IRQ_pending) this.IRQ_ack = false;
+        if (!this.IRQ_pending) this.IRQ_ack = false;
     }
 
     notify_NMI(level) {
@@ -254,9 +254,6 @@ class z80_t {
     set_instruction(to) {
         this.regs.IR = to;
         this.current_instruction = Z80_fetch_decoded(this.regs.IR, this.regs.prefix);
-        if (dbg.watch_on) {
-            console.log(hex4(this.PCO), 'prefix', hex2(this.regs.prefix), 'instruction', this.current_instruction)
-        }
         if (this.PCO === Z80_PC_BRK) dbg.break();
         this.regs.TCU = 0;
         this.regs.prefix = 0;
@@ -291,11 +288,13 @@ class z80_t {
                             console.log('NMI', this.trace_cycles);
                             dbg.break(D_RESOURCE_TYPES.Z80);
                         }
-                    } else if (this.IRQ_pending) {
+                    } else if (this.IRQ_pending && !this.IRQ_ack) {
                         if (this.pins.IRQ_maskable && ((!this.regs.IFF1) || this.regs.EI)) {
                             this.IRQ_pending = false;
                         } else {
                             this.IRQ_pending = false;
+                            this.IRQ_ack = false;
+                            console.log('IRQ!', this.regs.IM);
                             this.pins.D = 0xFF;
                             this.regs.PC = (this.regs.PC - 1) & 0xFFFF;
                             this.pins.IRQ_maskable = true;
@@ -307,7 +306,7 @@ class z80_t {
                                 dbg.break();
                             }
                             break;
-                        }
+                        }''
                     }
                 }
                 this.pins.RD = 1;
@@ -448,14 +447,10 @@ class z80_t {
         if (this.trace_cycles === Z80_TRACE_BRK) {
             console.log('TRACE BREAK')
             dbg.break();
-            //dbg.watch_on = true;
         }
         if (this.regs.IR === Z80_S_DECODE) {
             // Long logic to decode opcodes and decide what to do
             if ((this.regs.TCU === 1) && (this.regs.prefix === 0)) this.PCO = this.pins.Addr;
-            if (dbg.watch_on) {
-                console.log(hex4(this.pins.Addr), this.trace_cycles, this.regs.TCU)
-            }
             this.ins_cycles();
         } else {
             if (this.trace_on && this.regs.TCU === 1) {
