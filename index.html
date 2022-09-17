@@ -79,6 +79,23 @@
 </head>
 
 <body>
+
+<div class="ui-bar ui-bar-bg">
+  <button class="ui-bar-item ui-bar-button ui-bar-blue-grey tablink-main" onclick="open_tab('tablink-main', 'ui-tab-main', event, 'tab_main')">Main</button>
+  <button class="ui-bar-item ui-bar-button tablink-main" onclick="open_tab('tablink-main', 'ui-tab-main', event, 'tab_tools')">Tools</button>
+  <button class="ui-bar-item ui-bar-button tablink-main" onclick="open_tab('tablink-main', 'ui-tab-main', event, 'tab_settings')">Settings</button>
+</div>
+
+
+<div id="tab_tools" class="ui-tab-main" style="display:none;">
+    TOOLS! YAY!
+</div>
+
+<div id="tab_settings" class="ui-tab-main" style="display:none;">
+    SETTINGS!
+</div>
+
+<div id="tab_main" class="ui-tab-main">
   <canvas id="snescanvas" width="1000" height="380"></canvas>
 
 
@@ -215,6 +232,6 @@
     </div>
 
 </div>
-
+</div>
 </body>
 </html>
