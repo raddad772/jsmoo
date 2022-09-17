@@ -1,9 +1,10 @@
 "use strict";
 
 class SMSGG_mapper_sega {
-    constructor() {
+    constructor(variant) {
         this.ROM = new Uint8Array(1);
         this.RAM = new Uint8Array(16384)
+        this.variant = variant;
 
         /**
          * @type {Uint8Array|null}
@@ -14,7 +15,7 @@ class SMSGG_mapper_sega {
 
         this.enable_1k_BIOS = 0;
         this.enable_8k_BIOS = 0;
-        this.enable_cart = 0;
+        this.enable_cart = (this.variant === SMSGG_variants.GG) ? 1 : 0;
 
         this.io = {
             ram_80_enabled: 0,
@@ -33,6 +34,7 @@ class SMSGG_mapper_sega {
         this.io.rom_80_bank = 0x8000;
         this.io.ram_80_enabled = 0;
         this.io.ram_C0_enabled = false;
+        this.enable_cart = (this.variant === SMSGG_variants.GG) ? 1 : 0;
     }
 
     //  0 slot 0
@@ -90,6 +92,8 @@ class SMSGG_mapper_sega {
         }
         this.RAM[addr - 0xE000] = val;
         if (addr < 0xFFFC) return;
+
+        console.log('MAPPER REGS', hex4(addr), hex2(val));
 
         switch(addr) {
             case 0xFFFC: // RAM mapping and misc. functions

@@ -43,7 +43,7 @@ class SMSGG_clock {
         this.cpu_master_clock = 0;
         this.vdp_master_clock = 0;
 
-        this.master_frame = 0;
+        this.frames_since_restart = 0;
 
         this.cpu_divisor = 3;
         this.vdp_divisor = 2;
@@ -115,6 +115,7 @@ class SMSGG {
 
     poll_pause() {
         if (this.bus.pause_button.poll()) {
+            console.log('PAUSE!!!!');
             this.bus.notify_NMI(1);
         }
         else {
@@ -124,10 +125,10 @@ class SMSGG {
 
     step_master(howmany) {
         let todo = howmany;
-        let last_frame = this.clock.master_frame;
+        let last_frame = this.clock.frames_since_restart;
         for (let i = 0; i < todo; i++) {
-            if (this.clock.master_frame !== last_frame) {
-                last_frame = this.clock.master_frame;
+            if (this.clock.frames_since_restart !== last_frame) {
+                last_frame = this.clock.frames_since_restart;
                 this.poll_pause();
             }
             this.clock.cpu_master_clock++;
@@ -140,8 +141,8 @@ class SMSGG {
                 this.vdp.cycle();
                 this.clock.vdp_master_clock -= this.clock.vdp_divisor;
             }
-            if (this.clock.master_frame !== last_frame) {
-                last_frame = this.clock.master_frame;
+            if (this.clock.frames_since_restart !== last_frame) {
+                last_frame = this.clock.frames_since_restart;
                 this.poll_pause();
             }
             if (dbg.do_break) return;
@@ -188,8 +189,8 @@ class SMSGG {
     }
 
     run_frame() {
-        let current_frame = this.clock.master_frame;
-        while(current_frame === this.clock.master_frame) {
+        let current_frame = this.clock.frames_since_restart;
+        while(current_frame === this.clock.frames_since_restart) {
             this.finish_scanline();
             if (dbg.do_break) return;
         }

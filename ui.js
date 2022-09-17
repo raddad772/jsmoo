@@ -6,6 +6,7 @@ let after_js = function() {console.log('NO AFTER JS THING');};
 const SNES_STR = 'snes';
 const NES_STR = 'nes';
 const COMMODORE64_STR = 'c64';
+const GG_STR = 'gg';
 const SMS_STR = 'sms';
 const GENESIS_STR = 'megadrive';
 const GB_STR = 'gb';
@@ -13,8 +14,9 @@ const SPECTRUM_STR = 'spectrum';
 const GENERICZ80_STR = 'genericz80'
 
 //const DEFAULT_SYSTEM = GENERICZ80_STR;
-//const DEFAULT_SYSTEM = SPECTRUM_STR;
-const DEFAULT_SYSTEM = SMS_STR;
+const DEFAULT_SYSTEM = SPECTRUM_STR;
+//const DEFAULT_SYSTEM = SMS_STR;
+//const DEFAULT_SYSTEM = GG_STR;
 
 const DEFAULT_STEPS = {
 	master: 50,
@@ -119,11 +121,11 @@ class global_player_t {
 		switch(this.system_kind) {
 			case 'gg':
 				this.system = new SMSGG(SMSGG_variants.GG);
-				this.load_bios('/gg/roms/bios.gg');
+				//load_bios('/gg/roms/bios.gg');
 				break;
 			case 'sms':
 				this.system = new SMSGG(SMSGG_variants.SMS2);
-				this.load_bios('/sms/roms/bios13fx.sms');
+				load_bios('/sms/roms/bios13fx.sms');
 				break;
 			case 'snes':
 				this.system = new SNES();
@@ -223,9 +225,7 @@ async function load_selected_rom() {
 }
 
 async function load_bios(fn) {
-	if (!global_player.ready)
-		return;
-
+	console.log('GETTING FILE', fn);
 	let f = await bfs.read_file(fn);
 	if (!f) {
 		console.log('BIOS', fn, 'not found!');
@@ -241,7 +241,6 @@ async function load_bios(fn) {
 	}
 	f = str2ab(f);
 	global_player.load_bios(f);
-
 }
 
 async function reload_roms(where) {
@@ -456,7 +455,7 @@ function click_dump_vram() {
 					break;
 				case 'gg':
 				case 'sms':
-					rd = hex2(global_player.system.vdp.RAM[baddr & 0x3FFF]);
+					rd = hex2(global_player.system.vdp.VRAM[baddr & 0x3FFF]);
 					break;
 			}
 			ln += rd + ' ';

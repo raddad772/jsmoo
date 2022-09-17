@@ -100,7 +100,6 @@ class SMSGG_VDP {
         this.bg_gfx_vlines = 192;
         this.bg_gfx = function(){debugger;}
         this.sprite_gfx = function(){debugger;}
-        this.dac_gfx = function(){debugger;}
 
         this.doi = 0;
 
@@ -431,10 +430,12 @@ class SMSGG_VDP {
                 this.clock.line_counter = this.io.line_irq_reload;
             }
 
-            if (this.clock.vpos === this.clock.timing.vblank_start) {
-                this.io.irq_frame_pending = 1;
-                this.update_irqs();
-            }
+        }
+
+        if (this.clock.vpos === this.clock.timing.vblank_start) {
+            console.log('SET IRQ FRAME PENDING 1');
+            this.io.irq_frame_pending = 1;
+            this.update_irqs();
         }
 
         switch(this.clock.vpos) {
@@ -451,7 +452,7 @@ class SMSGG_VDP {
     }
 
     new_frame() {
-        this.clock.master_frame++;
+        this.clock.frames_since_restart++;
         this.clock.vpos = 0;
     }
 
@@ -498,10 +499,11 @@ class SMSGG_VDP {
     }
 
     write_data(val) {
+        //console.log('WRITE!', this.io.code, hex4(this.io.address), hex0x2(val));
         this.latch.control = 0;
         this.latch.vram = val;
         if (this.io.code <= 2) {
-            this.VRAM[this.io.address] = data;
+            this.VRAM[this.io.address] = val;
         }
         else {
             if (this.mode === SMSGG_vdp_modes.GG) {
@@ -530,6 +532,7 @@ class SMSGG_VDP {
         this.latch.control = 0;
         this.io.address = ((val & 0x3F) << 8) | (this.io.address & 0xFF);
         this.io.code = (val & 0xC0) >>> 6;
+        console.log('SET IO CODE', this.io.code);
 
         if (this.io.code === 0) {
             this.latch.vram = this.VRAM[this.io.address];
@@ -542,16 +545,16 @@ class SMSGG_VDP {
     }
 
     update_irqs() {
-        if (this.io.irq_frame_pending && this.io.irq_frame_enabled) this.bus.notify_IRQ(1);
-        if (this.io.irq_line_pending && this.io.irq_line_enabled) this.bus.notify_IRQ(1);
-        this.bus.notify_IRQ(0);
+        let level = 0;
+        if (this.io.irq_frame_pending && this.io.irq_frame_enabled) level = 1;
+        if (this.io.irq_line_pending && this.io.irq_line_enabled) level = 1;
+        this.bus.notify_IRQ(level);
     }
 
     read_status() {
         this.latch.control = 0;
 
-        let val = this.io.sprite_overflow_index | (this.io.sprite_collision << 5) || (this.io.sprite_overflow << 6) | (this.io.irq_frame_pending);
-
+        let val = this.io.sprite_overflow_index | (this.io.sprite_collision << 5) | (this.io.sprite_overflow << 6) | (this.io.irq_frame_pending << 7);
 
         this.io.sprite_overflow_index = 0x1F;
         this.io.sprite_collision = 0;
@@ -564,6 +567,7 @@ class SMSGG_VDP {
     }
 
     update_videomode() {
+        console.log('VIDEO MODE', this.io.video_mode);
         let bottom_row = 192;
         if (this.clock.variant === SMSGG_variants.SMS1) bottom_row = 192;
         else {
@@ -636,6 +640,7 @@ class SMSGG_VDP {
                 this.io.sprite_size = (val & 2) >>> 1;
                 this.io.video_mode = (this.io.video_mode & 0x0A) | ((val & 8) >>> 1) | ((val & 0x10) >>> 4);
                 this.io.irq_frame_enabled = (val & 0x20) >>> 5;
+                console.log('WRITE IRQ FRAME ENABLED', this.io.irq_frame_enabled);
                 this.io.display_enable = (val & 0x40) >>> 6;
                 this.io.irq_frame_pending &= this.io.irq_frame_enabled;
                 this.update_irqs();
@@ -687,6 +692,7 @@ class SMSGG_VDP {
         for (let i in this.CRAM) {
             this.CRAM[i] = 0;
         }
+        this.update_videomode()
     }
 
     // Run a cycle yo
