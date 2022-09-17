@@ -111,10 +111,12 @@ class controller_input_config_t {
         this.el.addEventListener('click', this.click.bind(this));
         this.savedict = savedict;
 
-        this.changed = false;
-
         this.buttons = {};
+        this.latched = {}; // Latched data
 
+        this.arrow_exclude = false;
+
+        this.connected = false;
         switch(this.kind) {
             case CONTROLLERS.NES:
                 this.setup_nes();
@@ -125,6 +127,14 @@ class controller_input_config_t {
             case CONTROLLERS.SMS:
                 this.setup_sms();
                 break;
+        }
+        this.setup_latches();
+    }
+
+    setup_latches() {
+        this.latched = {};
+        for (let button_name in this.buttons) {
+            this.latched[this.buttons[button_name].name] = 0;
         }
     }
 
@@ -148,6 +158,7 @@ class controller_input_config_t {
                     break;
             }
         }
+        this.arrow_exclude = true;
         let c = this.savedict[this.id];
         this.buttons.up = new controller_button_t(c,'up', 30, 30, 41, 45);
         this.buttons.left = new controller_button_t(c,'left', 15, 45, 30, 59);
@@ -171,6 +182,7 @@ class controller_input_config_t {
                     break;
             }
         }
+        this.arrow_exclude = true;
         let c = this.savedict[this.id];
 
         this.buttons.up = new controller_button_t(c,'up', 63, 58, 79, 73);
@@ -188,14 +200,6 @@ class controller_input_config_t {
     }
 
     setup_sms() {
-        /*
-        up
-        left
-        down
-        right
-        b1
-        b2
-         */
         if (typeof this.savedict[this.id] === 'undefined') {
             this.changed = true;
             switch(this.id) {
@@ -207,6 +211,7 @@ class controller_input_config_t {
                     break;
             }
         }
+        this.arrow_exclude = true;
         let c = this.savedict[this.id];
         this.buttons.up = new controller_button_t(c,'up', 73, 35, 112, 61);
         this.buttons.left = new controller_button_t(c,'left', 55, 57, 81, 82);
@@ -230,6 +235,61 @@ class controller_input_config_t {
             }
         }
         console.log('CLICKED?', clicked_button)
+    }
+
+    // Return input states
+    latch() {
+        let upout = 0;
+        let downout = 0;
+        let leftout = 0;
+        let rightout = 0;
+        if (this.arrow_exclude) {
+            let up = keyboard_input.keys[this.buttons.up.keycode];
+            let down = keyboard_input.keys[this.buttons.down.keycode];
+            let left = keyboard_input.keys[this.buttons.left.keycode];
+            let right = keyboard_input.keys[this.buttons.right.keycode];
+            if (up && down) {
+                // If up was held down before
+                if (this.latched[this.buttons.up.name]) {
+                    upout = 1;
+                }
+                else { // Favor down
+                    downout = 1;
+                }
+                if (this.latched[this.buttons.left.name]) {
+                    leftout = 1;
+                }
+                else {
+                    rightout = 1;
+                }
+            }
+            this.latched[this.buttons.up.name] = upout;
+            this.latched[this.buttons.down.name] = downout;
+            this.latched[this.buttons.left.name] = leftout;
+            this.latched[this.buttons.right.name] = rightout;
+            for (let button_name in this.buttons) {
+                if ((button_name === 'up') || (button_name === 'down') || (button_name === 'left') || (button_name === 'right')) continue;
+                let button = this.buttons[button_name];
+                this.latched[button.name] = keyboard_input.keys[button.keycode];
+            }
+            return this.latched;
+        }
+    }
+
+    register() {
+        for (let button_name in this.buttons) {
+            let button = this.buttons[button_name];
+            button.pressed = 0;
+            keyboard_input.register_key(button.keycode);
+        }
+    }
+
+    deregister() {
+        for (let button_name in this.buttons) {
+            let button = this.buttons[button_name];
+            button.pressed = 0;
+            keyboard_input.deregister_key(button.keycode);
+        }
     }
 }
 
@@ -259,6 +319,19 @@ class input_config_t {
         this.update_selected();
 
         this.current_tab = 'settings_tab_input_nes';
+    }
+
+    connect_controller(which) {
+        if (this.controller_els[which].connected) return;
+        this.controller_els[which].register();
+        this.controller_els[which].connected = true;
+    }
+
+    disconnect_controller(which) {
+        if (!this.controller_els[which].connected) return;
+        this.controller_els[which].deregister();
+        this.controller_els[which].connected = false;
+
     }
 
     tab_change(name) {

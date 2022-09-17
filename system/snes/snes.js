@@ -43,9 +43,11 @@ class SNES {
 		this.cpu.reset();
 		dbg.watch.wdc = this.cpu;
 		dbg.watch.spc = this.apu;
+        input_config.connect_controller('snes1');
 	}
 
 	killall() {
+        input_config.connect_controller('snes1');
 		alert('Thread kill not implemented for SNES yet');
 	}
 

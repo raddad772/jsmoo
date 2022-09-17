@@ -15,7 +15,7 @@ const GENERICZ80_STR = 'genericz80'
 
 //const DEFAULT_SYSTEM = GENERICZ80_STR;
 //const DEFAULT_SYSTEM = SPECTRUM_STR;
-const DEFAULT_SYSTEM = SMS_STR;
+const DEFAULT_SYSTEM = NES_STR;
 //const DEFAULT_SYSTEM = GG_STR;
 
 const DEFAULT_STEPS = {
@@ -558,105 +558,13 @@ function click_pause() {
 	stop_fps_count();
 }
 
-class keyboard_input_t {
-	constructor() {
-		this.keys_cared_about = [
-			'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'a', 's', 'd', 'f',
-			'g', 'h', 'j', 'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm',
-			'1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
-			'tab', 'up', 'down', 'left', 'right', 'Enter', 'shift', 'alt', 'Space'];
-
-		this.keys_cared_about_codes = [];
-		this.conversion = {
-			'q': 'q',
-			'w': 'w',
-			'e': 'e',
-			'r': 'r',
-			't': 't',
-			'y': 'y',
-			'u': 'u',
-			'i': 'i',
-			'o': 'o',
-			'p': 'p',
-			'a': 'a',
-			's': 's',
-			'd': 'd',
-			'f': 'f',
-			'g': 'g',
-			'h': 'h',
-			'j': 'j',
-			'k': 'k',
-			'z': 'z',
-			'x': 'x',
-			'v': 'v',
-			'b': 'b',
-			'n': 'n',
-			'm': 'm',
-			'0': '0',
-			'1': '1',
-			'2': '2',
-			'3': '3',
-			'4': '4',
-			'5': '5',
-			'6': '6',
-			'7': '7',
-			'8': '8',
-			'9': '9',
-			' ': 'Space',
-			'shift': 'Shift',
-			'up': 'ArrowUp',
-			'down': 'ArrowDown',
-			'left': 'ArrowLeft',
-			'right': 'ArrowRight',
-			'Enter': 'Enter',
-			'alt': 'Alt',
-			'tab': 'Tab'
-		}
-		this.conversion_back = {}
-		for (let i in this.conversion) {
-			this.conversion_back[this.conversion[i]] = i;
-		}
-		for (let i in this.keys_cared_about) {
-			this.keys_cared_about_codes.push(this.conversion[this.keys_cared_about[i]]);
-		}
-
-		this.keys = {};
-		for (let i in this.keys_cared_about) {
-			this.keys[this.keys_cared_about[i]] = false;
-		}
-	}
-
-	keydown(keycode, event) {
-		if (this.keys_cared_about_codes.indexOf(keycode) !== -1) {
-			this.keys[this.conversion_back[keycode]] = true;
-			//console.log(this.keys[this.conversion_back[keycode]]);
-			if (global_player.input_capture && global_player.input_can_capture) {
-				event.stopPropagation();
-				event.preventDefault();
-			}
-		}
-	}
-
-	keyup(keycode, event) {
-		if (this.keys_cared_about_codes.indexOf(keycode) !== -1) {
-			this.keys[this.conversion_back[keycode]] = false;
-			if (global_player.input_capture && global_player.input_can_capture) {
-				event.stopPropagation();
-				event.preventDefault();
-			}
-		}
-	}
-}
-
-var keyboard_input = new keyboard_input_t();
-
 window.addEventListener('keydown', function(ev) {
 	//console.log(ev.key);
-	keyboard_input.keydown(ev.key, ev)
+	keyboard_input.keydown(ev.keyCode, ev)
 });
 
 window.addEventListener('keyup', function(ev) {
-	keyboard_input.keyup(ev.key, ev);
+	keyboard_input.keyup(ev.keyCode, ev);
 });
 
 
@@ -705,11 +613,11 @@ async function main() {
 
 after_js = main;
 function uie_input_focus() {
-	global_player.input_capture = false;
+	keyboard_input.input_capture = false;
 }
 
 function uie_input_blur() {
-	global_player.input_capture = true;
+	keyboard_input.input_capture = true;
 }
 
 /**
@@ -852,5 +760,5 @@ function open_tab(tablname, tabgrp, evt, tab_name) {
 	}
 	document.getElementById(tab_name).style.display = "block";
 	evt.currentTarget.className += " ui-bar-blue-grey";
-	global_player.input_can_capture = (tab_name === 'main_tab_main');
+	keyboard_input.input_can_capture = (tab_name === 'main_tab_main');
 }
