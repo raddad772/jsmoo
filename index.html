@@ -7,7 +7,8 @@
     <script type="text/javascript" src="helpers.js"></script>
     <script type="text/javascript" src="debugging.js"></script>
     <script type="text/javascript" src="helpers/timing/timing_header.js"></script>
-    <script type="text/javascript" src="ui.js"></script>
+    <script type="text/javascript" src="ui/ui.js"></script>
+    <script type="text/javascript" src="ui/input.js"></script>
     <script type="text/javascript" src="rom_upload.js"></script>
     <script type="text/javascript" src="helpers/machine_description.js"></script>
 <!-- SNES -->
@@ -81,21 +82,79 @@
 <body>
 
 <div class="ui-bar ui-bar-bg">
-  <button class="ui-bar-item ui-bar-button ui-bar-blue-grey tablink-main" onclick="open_tab('tablink-main', 'ui-tab-main', event, 'tab_main')">Main</button>
-  <button class="ui-bar-item ui-bar-button tablink-main" onclick="open_tab('tablink-main', 'ui-tab-main', event, 'tab_tools')">Tools</button>
-  <button class="ui-bar-item ui-bar-button tablink-main" onclick="open_tab('tablink-main', 'ui-tab-main', event, 'tab_settings')">Settings</button>
+  <button class="ui-bar-item ui-bar-button ui-bar-blue-grey tablink-main" onclick="open_tab('tablink-main', 'ui-tab-main', event, 'main_tab_main')">Main</button>
+  <button class="ui-bar-item ui-bar-button tablink-main" onclick="open_tab('tablink-main', 'ui-tab-main', event, 'main_tab_tools')">Tools</button>
+  <button class="ui-bar-item ui-bar-button tablink-main" onclick="open_tab('tablink-main', 'ui-tab-main', event, 'main_tab_settings')">Settings</button>
 </div>
 
 
-<div id="tab_tools" class="ui-tab-main" style="display:none;">
+<div id="main_tab_tools" class="ui-tab-main" style="display:none;">
     TOOLS! YAY!
 </div>
 
-<div id="tab_settings" class="ui-tab-main" style="display:none;">
-    SETTINGS!
+
+
+<div id="main_tab_settings" class="ui-tab-main" style="display:none;">
+    <div class="ui-bar ui-bar-bg">
+      <button class="ui-bar-item ui-bar-button ui-bar-blue-grey tablink-settings-input" onclick="open_tab('tablink-settings-input', 'ui-tab-settings-input', event, 'settings_tab_input_nes')">NES pads</button>
+      <button class="ui-bar-item ui-bar-button tablink-settings-input" onclick="open_tab('tablink-settings-input', 'ui-tab-settings-input', event, 'settings_tab_input_snes')">SNES pads</button>
+      <button class="ui-bar-item ui-bar-button tablink-settings-input" onclick="open_tab('tablink-settings-input', 'ui-tab-settings-input', event, 'settings_tab_input_sms')">SMS pads</button>
+      <button class="ui-bar-item ui-bar-button tablink-settings-input" onclick="open_tab('tablink-settings-input', 'ui-tab-settings-input', event, 'settings_tab_input_spectrum')">ZX Spectrum</button>
+    </div>
+
+    <div id="settings_tab_input_nes" class="ui-tab-settings-input">
+        Click a button to assign key
+        <div style="padding-top: 10px; padding-left: 10px;">
+            <div style="width: 220px; float: left;">
+                Player 1
+                <img src="/img/nes-controller.svg" id="nes1cfg" alt="NES player 1" width="220px"/>
+            </div>
+            <div style="width: 220px; margin-left:280px;">
+                Player 2
+                <img src="/img/nes-controller.svg" id="nes2cfg" alt="NES player 2" width="220px"/>
+            </div>
+        </div>
+    </div>
+    <div id="settings_tab_input_snes" class="ui-tab-settings-input" style="display:none">
+        Click a button to assign key
+        <div style="padding-top: 10px; padding-left: 10px;">
+            <div style="width: 320px; float: left;">
+                Player 1
+                <img src="/img/320px-SNES-Controller-Flat.jpg" width="320" id="snes1cfg" alt="SNES player 1"/>
+            </div>
+            <div style="width: 320px; margin-left:360px;">
+                Player 2
+                <img src="/img/320px-SNES-Controller-Flat.jpg" width="320" id="snes2cfg" alt="SNES player 2"/>
+            </div>
+        </div>
+    </div>
+    <div id="settings_tab_input_sms" class="ui-tab-settings-input" style="display:none">
+        Click a button to assign key
+        <div style="padding-top: 10px; padding-left: 10px;">
+            <div style="width: 394px; float: left;">
+                Player 1
+                <img src="/img/394px_Sega_Master_System_Controller_Diagram.svg" width="394px" id="sms1cfg" alt="SMS player 1"/>
+            </div>
+            <div style="width: 394px; margin-left:420px;">
+                Player 2
+                <img src="/img/394px_Sega_Master_System_Controller_Diagram.svg" width="394px" id="sms2cfg" alt="SMS player 2"/>
+            </div>
+        </div>
+    </div>
+    <div id="settings_tab_input_spectrum" class="ui-tab-settings-input" style="display:none">
+        ZX Spectrum
+    </div>
+
+    <div>
+        Button setting
+        <br><span id="input-cfg-controller">null</span>
+        <br><span id="input-cfg-label">null</span>: <input id="input-cfg-input" value="null">
+    </div>
+
+
 </div>
 
-<div id="tab_main" class="ui-tab-main">
+<div id="main_tab_main" class="ui-tab-main">
   <canvas id="snescanvas" width="1000" height="380"></canvas>
 
 
