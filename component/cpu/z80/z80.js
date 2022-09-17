@@ -294,7 +294,7 @@ class z80_t {
                         } else {
                             this.IRQ_pending = false;
                             this.IRQ_ack = false;
-                            console.log('IRQ!', this.regs.IM);
+                            //console.log('IRQ!', this.regs.IM);
                             this.pins.D = 0xFF;
                             this.regs.PC = (this.regs.PC - 1) & 0xFFFF;
                             this.pins.IRQ_maskable = true;

@@ -306,6 +306,24 @@ class SMSGG_VDP {
         this.bg_palette = palette;
     }
 
+    pprint_sprites() {
+        console.log('PPRINT!');
+        for (let i = 0; i < 64; i++) {
+            let attr_addr = (this.io.sprite_attr_table_address & 0x7E) << 7;
+            for (let index = 0; index < 64; index++) {
+                let y = this.VRAM[attr_addr + index];
+                if ((this.bg_gfx_vlines === 192) && (y === 0xD0)) break;
+                if (y >= 0xF0) y = (y - 0xFF) & 0x1FF;
+
+                let x = this.VRAM[attr_addr + 0x80 + (index << 1)];
+                let pattern = this.VRAM[attr_addr + 0x81 + (index << 1)];
+
+                if (this.io.sprite_shift) x = (x - 8) & 0xFF;
+                console.log('SPRITE #', i, 'X/Y', x, y, 'PATTERN', hex2(pattern));
+            }
+        }
+    }
+
     sprite_setup() {
         let valid = 0;
         let vlimit = (8 << (this.io.sprite_zoom + this.io.sprite_size)) - 1;
@@ -433,7 +451,7 @@ class SMSGG_VDP {
         }
 
         if (this.clock.vpos === this.clock.timing.vblank_start) {
-            console.log('SET IRQ FRAME PENDING 1');
+            //console.log('SET IRQ FRAME PENDING 1', this.clock.vpos, this.clock.hpos);;
             this.io.irq_frame_pending = 1;
             this.update_irqs();
         }
@@ -454,6 +472,7 @@ class SMSGG_VDP {
     new_frame() {
         this.clock.frames_since_restart++;
         this.clock.vpos = 0;
+        this.clock.vdp_frame_cycle = 0;
     }
 
     read_vcounter() {
@@ -499,7 +518,10 @@ class SMSGG_VDP {
     }
 
     write_data(val) {
-        //console.log('WRITE!', this.io.code, hex4(this.io.address), hex0x2(val));
+        //if (val !== 0) console.log('WRITE!', this.io.code, hex4(this.io.address), hex0x2(val));
+        /*if (this.io.address === 0x3FFF) {
+            dbg.break();
+        }*/
         this.latch.control = 0;
         this.latch.vram = val;
         if (this.io.code <= 2) {
@@ -532,7 +554,7 @@ class SMSGG_VDP {
         this.latch.control = 0;
         this.io.address = ((val & 0x3F) << 8) | (this.io.address & 0xFF);
         this.io.code = (val & 0xC0) >>> 6;
-        console.log('SET IO CODE', this.io.code);
+        //console.log('SET IO CODE', this.io.code);
 
         if (this.io.code === 0) {
             this.latch.vram = this.VRAM[this.io.address];
@@ -682,6 +704,7 @@ class SMSGG_VDP {
         this.clock.vpos = 0;
         this.clock.ccounter = 0;
         this.io.sprite_overflow_index = 0x1F;
+        this.clock.frames_since_restart = 0;
         this.scanline_cycle = this.scanline_visible.bind(this);
         for (let i = 0; i < 8; i++) {
             this.objects[i].y = 0xD0;

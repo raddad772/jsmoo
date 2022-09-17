@@ -173,6 +173,7 @@ class SMSGG {
             } else if (this.cpu.pins.IO) // write IO
                 this.bus.cpu_out(this.cpu.pins.Addr, this.cpu.pins.D);
         }
+        this.clock.cpu_frame_cycle += this.clock.cpu_divisor;
     }
 
     get_description() {
@@ -190,7 +191,10 @@ class SMSGG {
 
     run_frame() {
         let current_frame = this.clock.frames_since_restart;
+        let scanlines_done = 0;
+        this.clock.cpu_frame_cycle = 0;
         while(current_frame === this.clock.frames_since_restart) {
+            scanlines_done++;
             this.finish_scanline();
             if (dbg.do_break) return;
         }

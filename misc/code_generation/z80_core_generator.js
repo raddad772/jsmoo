@@ -44,7 +44,6 @@ class Z80_switchgen {
         this.added_lines = 0;
         this.has_footer = false;
         this.no_addr_at_end = false;
-        this.no_RW_at_end = false;
         this.outstr = this.indent1 + 'switch(regs.TCU) {\n';
         this.has_cycle = false;
         this.on_cycle = [];
@@ -139,8 +138,7 @@ class Z80_switchgen {
         }
         if (!this.no_addr_at_end)
             this.addr_to_PC_then_inc();
-        if (!this.no_RW_at_end)
-            this.RWMIO(0, 0, 0, 0);
+        this.RWMIO(0, 0, 0, 0);
         this.addl('regs.TCU = 0;');
         this.addl('regs.EI = 0;');
         this.addl('regs.P = 0;');
@@ -262,6 +260,7 @@ class Z80_switchgen {
         this.RWMIO(0, 1, 0, 1);
 
         this.addcycle('OUT end');
+        this.RWMIO(0, 0, 0, 0);
     }
 
     in(addr, to) {
