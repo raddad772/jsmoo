@@ -14,8 +14,8 @@ const SPECTRUM_STR = 'spectrum';
 const GENERICZ80_STR = 'genericz80'
 
 //const DEFAULT_SYSTEM = GENERICZ80_STR;
-const DEFAULT_SYSTEM = SPECTRUM_STR;
-//const DEFAULT_SYSTEM = SMS_STR;
+//const DEFAULT_SYSTEM = SPECTRUM_STR;
+const DEFAULT_SYSTEM = SMS_STR;
 //const DEFAULT_SYSTEM = GG_STR;
 
 const DEFAULT_STEPS = {
@@ -547,6 +547,12 @@ function stop_fps_count() {
 function click_pause() {
 	//global_player.system.jsanimator.pause();
 	//global_player.system.cart.mapper.pprint();
+	switch(global_player.system_kind) {
+		case 'gg':
+		case 'sms':
+			global_player.system.vdp.pprint_sprites();
+			break;
+	}
 	global_player.pause();
 	stop_fps_count();
 }
@@ -622,7 +628,7 @@ class keyboard_input_t {
 	keydown(keycode, event) {
 		if (this.keys_cared_about_codes.indexOf(keycode) !== -1) {
 			this.keys[this.conversion_back[keycode]] = true;
-			console.log(this.keys[this.conversion_back[keycode]]);
+			//console.log(this.keys[this.conversion_back[keycode]]);
 			if (global_player.input_capture) {
 				event.stopPropagation();
 				event.preventDefault();
@@ -644,7 +650,7 @@ class keyboard_input_t {
 var keyboard_input = new keyboard_input_t();
 
 window.addEventListener('keydown', function(ev) {
-	console.log(ev.key);
+	//console.log(ev.key);
 	keyboard_input.keydown(ev.key, ev)
 });
 

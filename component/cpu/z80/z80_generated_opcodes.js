@@ -6365,13 +6365,13 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.WR = 1; pins.IO = 1;
                 break;
             case 7: // OUT end
+                pins.WR = 0; pins.IO = 0;
                 regs.WZ = ((regs.WZ + 1) & 0xFF) | (regs.WZ & 0xFF00);
                 // Following is auto-generated code for instruction finish
                 break;
             case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.WR = 0; pins.IO = 0;
                 regs.TCU = 0;
                 regs.EI = 0;
                 regs.P = 0;
@@ -21919,13 +21919,13 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.WR = 1; pins.IO = 1;
                 break;
             case 7: // OUT end
+                pins.WR = 0; pins.IO = 0;
                 regs.WZ = ((regs.WZ + 1) & 0xFF) | (regs.WZ & 0xFF00);
                 // Following is auto-generated code for instruction finish
                 break;
             case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.WR = 0; pins.IO = 0;
                 regs.TCU = 0;
                 regs.EI = 0;
                 regs.P = 0;
@@ -25112,13 +25112,13 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.WR = 1; pins.IO = 1;
                 break;
             case 4: // OUT end
+                pins.WR = 0; pins.IO = 0;
                 regs.WZ = (regs.TA + 1) & 0xFFFF;
                 // Following is auto-generated code for instruction finish
                 break;
             case 5: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.WR = 0; pins.IO = 0;
                 regs.TCU = 0;
                 regs.EI = 0;
                 regs.P = 0;
@@ -25432,13 +25432,13 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.WR = 1; pins.IO = 1;
                 break;
             case 4: // OUT end
+                pins.WR = 0; pins.IO = 0;
                 regs.WZ = (regs.TA + 1) & 0xFFFF;
                 // Following is auto-generated code for instruction finish
                 break;
             case 5: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.WR = 0; pins.IO = 0;
                 regs.TCU = 0;
                 regs.EI = 0;
                 regs.P = 0;
@@ -25749,13 +25749,13 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.WR = 1; pins.IO = 1;
                 break;
             case 4: // OUT end
+                pins.WR = 0; pins.IO = 0;
                 regs.WZ = (regs.TA + 1) & 0xFFFF;
                 // Following is auto-generated code for instruction finish
                 break;
             case 5: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.WR = 0; pins.IO = 0;
                 regs.TCU = 0;
                 regs.EI = 0;
                 regs.P = 0;
@@ -26077,13 +26077,13 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.WR = 1; pins.IO = 1;
                 break;
             case 4: // OUT end
+                pins.WR = 0; pins.IO = 0;
                 regs.WZ = (regs.TA + 1) & 0xFFFF;
                 // Following is auto-generated code for instruction finish
                 break;
             case 5: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.WR = 0; pins.IO = 0;
                 regs.TCU = 0;
                 regs.EI = 0;
                 regs.P = 0;
@@ -26402,13 +26402,13 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.WR = 1; pins.IO = 1;
                 break;
             case 4: // OUT end
+                pins.WR = 0; pins.IO = 0;
                 regs.WZ = (regs.TA + 1) & 0xFFFF;
                 // Following is auto-generated code for instruction finish
                 break;
             case 5: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.WR = 0; pins.IO = 0;
                 regs.TCU = 0;
                 regs.EI = 0;
                 regs.P = 0;
@@ -26756,13 +26756,13 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.WR = 1; pins.IO = 1;
                 break;
             case 4: // OUT end
+                pins.WR = 0; pins.IO = 0;
                 regs.WZ = (regs.TA + 1) & 0xFFFF;
                 // Following is auto-generated code for instruction finish
                 break;
             case 5: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.WR = 0; pins.IO = 0;
                 regs.TCU = 0;
                 regs.EI = 0;
                 regs.P = 0;
@@ -27106,12 +27106,12 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.WR = 1; pins.IO = 1;
                 break;
             case 4: // OUT end
+                pins.WR = 0; pins.IO = 0;
                 // Following is auto-generated code for instruction finish
                 break;
             case 5: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.WR = 0; pins.IO = 0;
                 regs.TCU = 0;
                 regs.EI = 0;
                 regs.P = 0;
@@ -27422,13 +27422,13 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.WR = 1; pins.IO = 1;
                 break;
             case 4: // OUT end
+                pins.WR = 0; pins.IO = 0;
                 regs.WZ = (regs.TA + 1) & 0xFFFF;
                 // Following is auto-generated code for instruction finish
                 break;
             case 5: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.WR = 0; pins.IO = 0;
                 regs.TCU = 0;
                 regs.EI = 0;
                 regs.P = 0;
@@ -28458,6 +28458,7 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.WR = 1; pins.IO = 1;
                 break;
             case 8: // OUT end
+                pins.WR = 0; pins.IO = 0;
                 regs.WZ = (regs.TA + 1) & 0xFFFF;
                 regs.F.C = ((regs.L + regs.TR) & 0x100) >>> 8;
                 regs.F.N = (regs.TR & 0x80) >>> 7;
@@ -28473,7 +28474,6 @@ const z80_decoded_opcodes = Object.freeze({
             case 9: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.WR = 0; pins.IO = 0;
                 regs.TCU = 0;
                 regs.EI = 0;
                 regs.P = 0;
@@ -28758,6 +28758,7 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.WR = 1; pins.IO = 1;
                 break;
             case 8: // OUT end
+                pins.WR = 0; pins.IO = 0;
                 regs.WZ = (regs.TA - 1) & 0xFFFF;
                 regs.F.C = ((regs.L + regs.TR) & 0x100) >>> 8;
                 regs.F.N = (regs.TR & 0x80) >>> 7;
@@ -28773,7 +28774,6 @@ const z80_decoded_opcodes = Object.freeze({
             case 9: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.WR = 0; pins.IO = 0;
                 regs.TCU = 0;
                 regs.EI = 0;
                 regs.P = 0;
@@ -29066,6 +29066,7 @@ const z80_decoded_opcodes = Object.freeze({
         function(regs, pins) { //OTIR
         switch(regs.TCU) {
             case 1:
+                //if (regs.PC === 0x59) dbg.break();
                 regs.Q = 1;
                 regs.TA = (regs.H << 8) | regs.L;
                 break;
@@ -29094,6 +29095,7 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.WR = 1; pins.IO = 1;
                 break;
             case 8: // OUT end
+                pins.WR = 0; pins.IO = 0;
                 regs.WZ = (regs.TA + 1) & 0xFFFF;
                 regs.F.C = ((regs.L + regs.TR) & 0x100) >>> 8;
                 regs.F.N = (regs.TR & 0x80) >>> 7;
@@ -29106,7 +29108,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.S = ((regs.B) & 0x80) >>> 7;
                 if (regs.B === 0) { regs.TCU += 5; break; }
                 regs.PC = (regs.PC - 2) & 0xFFFF;
-                pins.WR = 0; pins.IO = 0;
                 break;
             case 9: // Adding 5 cycles
                 break;
@@ -29444,6 +29445,7 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.WR = 1; pins.IO = 1;
                 break;
             case 8: // OUT end
+                pins.WR = 0; pins.IO = 0;
                 regs.WZ = (regs.TA - 1) & 0xFFFF;
                 regs.F.C = ((regs.L + regs.TR) & 0x100) >>> 8;
                 regs.F.N = (regs.TR & 0x80) >>> 7;
@@ -29456,7 +29458,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.S = ((regs.B) & 0x80) >>> 7;
                 if (regs.B === 0) { regs.TCU += 5; break; }
                 regs.PC = (regs.PC - 2) & 0xFFFF;
-                pins.WR = 0; pins.IO = 0;
                 break;
             case 9: // Adding 5 cycles
                 break;
@@ -37647,13 +37648,13 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.WR = 1; pins.IO = 1;
                 break;
             case 7: // OUT end
+                pins.WR = 0; pins.IO = 0;
                 regs.WZ = ((regs.WZ + 1) & 0xFF) | (regs.WZ & 0xFF00);
                 // Following is auto-generated code for instruction finish
                 break;
             case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.WR = 0; pins.IO = 0;
                 regs.TCU = 0;
                 regs.EI = 0;
                 regs.P = 0;
