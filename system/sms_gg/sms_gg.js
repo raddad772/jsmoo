@@ -89,10 +89,12 @@ class SMSGG {
         this.bus.vdp = this.vdp;
 
         dbg.add_cpu(D_RESOURCE_TYPES.Z80, this);
+        input_config.connect_controller('sms1');
     }
 
     killall() {
         dbg.remove_cpu(D_RESOURCE_TYPES.Z80, this);
+        input_config.disconnect_controller('sms1');
     }
 
     reset() {
