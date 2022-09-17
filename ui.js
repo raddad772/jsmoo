@@ -827,3 +827,16 @@ async function init_ui() {
 	await system_selected(DEFAULT_SYSTEM);
 	after_js();
 }
+
+function open_tab(tablname, tabgrp, evt, tab_name) {
+  let els = document.getElementsByClassName(tabgrp);
+  for (let i = 0; i < els.length; i++) {
+    els[i].style.display = "none";
+  }
+  let tablinks = document.getElementsByClassName(tablname);
+  for (let i = 0; i < els.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" ui-bar-blue-grey", "");
+  }
+  document.getElementById(tab_name).style.display = "block";
+  evt.currentTarget.className += " ui-bar-blue-grey";
+}

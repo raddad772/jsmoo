@@ -11,3 +11,31 @@
     margin: 10px 0;
     padding: 6px;
 }
+
+.ui-bar{
+    width:100%;
+    overflow:hidden;
+}
+
+.ui-bar .ui-bar-item{
+    padding:8px 16px;
+    float:left;
+    width:auto;
+    border:none;
+    display:block;
+    outline:0;
+}
+
+.ui-bar .ui-bar-button{
+    white-space:normal;
+}
+
+.ui-bar-bg,.ui-bar-hover-bg:hover  {
+    color: #fff !important;
+    background-color: #000 !important;
+}
+
+.ui-bar-blue-grey, .ui-bar-hover-blue-grey:hover {
+    background-color: #606080 !important;
+    color:#fff!important;
+}
