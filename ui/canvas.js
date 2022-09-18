@@ -46,5 +46,10 @@ class canvas_manager_t {
     put_imgdata(data) {
         this.get_context();
         this.context.putImageData(data, 0, 0);
+        if (this.scale !== 1) {
+            this.context.globalCompositeOperation = 'copy';
+            this.context.drawImage(this.el, 0, 0, this.width, this.height, 0, 0, this.width*this.scale, this.height*this.scale);
+            //this.context.scale(this.scale, this.scale);
+        }
     }
 }
