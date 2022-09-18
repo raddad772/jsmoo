@@ -276,6 +276,10 @@ class SNES_slow_1st_PPU {
 		}
 	}
 
+	kill_threads() {
+		this.cachelines.kill_workers();
+	}
+
 	OAM_write(addr, val) {
 		if (!this.clock.scanline.vblank && !this.clock.scanline.fblank) {
 			console.log('SKIP OAM');

@@ -198,9 +198,15 @@ class PPU_multithreaded_cache {
 				this.workers[w].onmessage = this.on_worker_message.bind(this);
 			}
 		}
+    }
 
-
-
+    kill_workers() {
+        if (PPU_USE_WORKERS) {
+            for (let w = 0; w < PPU_NUM_WORKERS; w++) {
+                this.workers[w].terminate();
+                this.workers[w] = null;
+            }
+        }
     }
 
 	on_worker_message(e) {
