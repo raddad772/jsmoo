@@ -252,16 +252,25 @@ class controller_input_config_t {
                 // If up was held down before
                 if (this.latched[this.buttons.up.name]) {
                     upout = 1;
-                }
-                else { // Favor down
+                } else { // Favor down
                     downout = 1;
                 }
+            }
+            else {
+                upout = up;
+                downout = down;
+            }
+            if (left && right) {
                 if (this.latched[this.buttons.left.name]) {
                     leftout = 1;
                 }
                 else {
                     rightout = 1;
                 }
+            }
+            else {
+                leftout = left;
+                rightout = right;
             }
             this.latched[this.buttons.up.name] = upout;
             this.latched[this.buttons.down.name] = downout;
