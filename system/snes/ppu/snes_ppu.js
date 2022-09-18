@@ -9,16 +9,18 @@ const PPU_USE_BLOBWORKERS = true;
 
 class SNES_slow_1st_PPU {
 	/**
-	 * @param {*} version
+	 * @param {canvas_manager_t} canvas_manager
+	 * @param {number} version
 	 * @param {snes_memmap} mem_map
 	 * @param {SNES_clock} clock
-	 * @param {HTMLElement} canvas
 	 */
-	constructor(canvas, version, mem_map, clock) {
-		this.canvas = canvas;
+	constructor(canvas_manager, version, mem_map, clock) {
+		this.canvas_manager = canvas_manager;
 		this.version = version;
 		this.mem_map = mem_map;
 		this.clock = clock;
+
+		this.display_enabled = true;
 
 		mem_map.read_ppu = this.reg_read.bind(this);
 		mem_map.write_ppu = this.reg_write.bind(this);
@@ -111,26 +113,30 @@ class SNES_slow_1st_PPU {
 		this.cache = this.cachelines.getl();
 	}
 
+	enable_display(to) {
+        if (to !== this.display_enabled) {
+            this.display_enabled = to;
+        }
+	}
+
 	present(buf=null) {
-		if (buf === null) debugger;
-		if (buf === null) buf = this.output;
-		let ctx = this.canvas.getContext('2d');
-		let imgdata = ctx.getImageData(0, 0, 256, 224);
-		for (let y = 0; y < 224; y++) {
-			for (let x = 0; x < 256; x++) {
-				let di = (y * 256 * 4) + (x * 4);
-				let ppui = (y * 256) + x;
-				let ppuo = buf[ppui];
-				/*if (ppuo !== 0) {
-					console.log('NOn-ZERO PPUO AT', x, y, ppuo);
-				}*/
-				imgdata.data[di] = (ppuo & 0x7C00) >>> 7;
-				imgdata.data[di+1] = (ppuo & 0x3E0) >>> 2;
-				imgdata.data[di+2] = (ppuo & 0x1F) << 3;
-				imgdata.data[di+3] = 255;
+		if (this.display_enabled) {
+			if (buf === null) buf = this.output;
+			this.canvas_manager.set_size(256, 224);
+			let imgdata = this.canvas_manager.get_imgdata();
+			for (let y = 0; y < 224; y++) {
+				for (let x = 0; x < 256; x++) {
+					let di = (y * 256 * 4) + (x * 4);
+					let ppui = (y * 256) + x;
+					let ppuo = buf[ppui];
+					imgdata.data[di] = (ppuo & 0x7C00) >>> 7;
+					imgdata.data[di + 1] = (ppuo & 0x3E0) >>> 2;
+					imgdata.data[di + 2] = (ppuo & 0x1F) << 3;
+					imgdata.data[di + 3] = 255;
+				}
 			}
+			this.canvas_manager.put_imgdata(imgdata);
 		}
-		ctx.putImageData(imgdata, 0, 0);
 	}
 
 	get_addr_by_map() {
