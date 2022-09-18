@@ -739,6 +739,7 @@ async function init_ui() {
 
 	await init_fs();
 	input_config = new input_config_t();
+	await input_config.load();
 	await system_selected(DEFAULT_SYSTEM);
 	after_js();
 }
