@@ -12,6 +12,8 @@ class SNES_joypad {
         if (this.joynum === 1) this.joymap = input_config.controller_els.snes1;
         else this.joymap = input_config.controller_els.snes2;
 
+        this.button_b = this.joymap.buttons.b;
+
         this.input_buffer = {
             'a': 0,
             'b': 0,
@@ -34,7 +36,6 @@ class SNES_joypad {
         this.counter = 0;
         if (this.latched === 0) {
             this.input_buffer = this.joymap.latch();
-            console.log(this.input_buffer);
         }
     }
 
@@ -59,10 +60,6 @@ class SNES_joypad {
         ostr += ostr_add('l', 'l');
         ostr += ostr_add('r', 'r');
         return ostr;
-    }
-
-    pprint() {
-        console.log(this.textrep());
     }
 
     data() {
@@ -98,6 +95,6 @@ class SNES_joypad {
     update_b() {
         let key = this.joymap['b'];
         if (key === null) { this.input_buffer['b'] = 0; return; }
-        this.input_buffer['b'] = +keyboard_input.keys[key];
+        this.input_buffer['b'] = this.button_b.read();
     }
 }

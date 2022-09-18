@@ -61,8 +61,8 @@ class ricoh2A03 {
         this.controller_port1 = new NES_controllerport();
         this.controller_port2 = new NES_controllerport();
 
-		this.joypad1 = new SNES_joypad(1);
-		this.joypad2 = new SNES_joypad(2);
+		this.joypad1 = new NES_joypad(1);
+		this.joypad2 = new NES_joypad(2);
 		this.controller_port1.device = this.joypad1;
 		this.controller_port2.device = this.joypad2;
 

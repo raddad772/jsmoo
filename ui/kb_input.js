@@ -19,6 +19,7 @@ class keyboard_input_t {
 
     keydown(keycode, event) {
 		if (keycode in this.keys) {
+			//console.log(keycode);
 			this.keys[keycode] = 1;
 			if (keyboard_input.input_capture && keyboard_input.input_can_capture) {
 				event.stopPropagation();

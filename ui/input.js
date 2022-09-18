@@ -8,8 +8,8 @@ const DEFAULT_NES1 = {
     'right': ['arrowRight', 39],
     'start': ['f', 70],
     'select': ['Tab', 9],
-    'b': ['z', 90],
-    'a': ['x', 88]
+    'a': ['x', 88],
+    'b': ['z', 90]
 }
 
 const DEFAULT_NES2 = {
@@ -94,6 +94,10 @@ class controller_button_t {
         this.y2 = y2;
 
         this.pressed = 0;
+    }
+
+    read() {
+        return keyboard_input.keys[this.keycode];
     }
 
     test_click(x, y) {
@@ -255,34 +259,36 @@ class controller_input_config_t {
                 } else { // Favor down
                     downout = 1;
                 }
-            }
-            else {
+            } else {
                 upout = up;
                 downout = down;
             }
             if (left && right) {
                 if (this.latched[this.buttons.left.name]) {
                     leftout = 1;
-                }
-                else {
+                } else {
                     rightout = 1;
                 }
-            }
-            else {
+            } else {
                 leftout = left;
                 rightout = right;
             }
-            this.latched[this.buttons.up.name] = upout;
-            this.latched[this.buttons.down.name] = downout;
-            this.latched[this.buttons.left.name] = leftout;
-            this.latched[this.buttons.right.name] = rightout;
-            for (let button_name in this.buttons) {
-                if ((button_name === 'up') || (button_name === 'down') || (button_name === 'left') || (button_name === 'right')) continue;
-                let button = this.buttons[button_name];
-                this.latched[button.name] = keyboard_input.keys[button.keycode];
-            }
-            return this.latched;
+        } else {
+            upout = up;
+            downout = down;
+            leftout = left;
+            rightout = right;
         }
+        this.latched[this.buttons.up.name] = upout;
+        this.latched[this.buttons.down.name] = downout;
+        this.latched[this.buttons.left.name] = leftout;
+        this.latched[this.buttons.right.name] = rightout;
+        for (let button_name in this.buttons) {
+            if ((button_name === 'up') || (button_name === 'down') || (button_name === 'left') || (button_name === 'right')) continue;
+            let button = this.buttons[button_name];
+            this.latched[button.name] = keyboard_input.keys[button.keycode];
+        }
+        return this.latched;
     }
 
     register() {
