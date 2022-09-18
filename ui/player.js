@@ -105,6 +105,7 @@ class global_player_t {
         }
         this.system.enable_display(true);
         this.system.present();
+		this.after_step();
     }
 
     after_step() {

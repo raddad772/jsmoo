@@ -25,12 +25,12 @@ const ZXSpectrum_keyboard_halfrows = Object.freeze({
 
 class ZXSpectrum_ULA {
     /**
-     * @param {HTMLElement} canvas
+     * @param {canvas_manager_t} canvas_manager
      * @param {ZXSpectrum_clock} clock
      * @param {ZXSpectrum_bus} bus
      */
-    constructor(canvas, clock, bus) {
-        this.canvas = canvas;
+    constructor(canvas_manager, clock, bus) {
+        this.canvas_manager = canvas_manager;
         this.clock = clock;
         this.bus = bus;
         this.scanline_func = this.scanline_vblank.bind(this);
@@ -253,8 +253,8 @@ class ZXSpectrum_ULA {
 
     present(buf=null) {
         // 352x304
-        let ctx = this.canvas.getContext('2d');
-        let imgdata = ctx.getImageData(0, 0, 352, 304);
+        this.canvas_manager.set_size(352, 304);
+        let imgdata = this.canvas_manager.get_imgdata();
         for (let ry = 0; ry < 304; ry++) {
             let y = ry;
             for (let rx = 0; rx < 352; rx++) {
@@ -272,7 +272,7 @@ class ZXSpectrum_ULA {
                 imgdata.data[di+3] = 255;
             }
         }
-        ctx.putImageData(imgdata, 0, 0);
+        this.canvas_manager.put_imgdata(imgdata);
         //this.dump_bg(0, 370);
     }
 

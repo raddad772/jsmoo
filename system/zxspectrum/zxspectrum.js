@@ -1,44 +1,8 @@
 "use strict";
 
 class ZXSpectrum_clock {
-    // 70908 CPU cycles per frame
-    // 50 frames
-    // 3545400 Hz
-
-    // 2 pixels per CPU clock
-    // 448 pixel clocks per scanline
-
-    /*
-    each scanline is 448 pixels wide.
-    96 pixels of nothing
-    48 pixels of border
-    256 pixels of draw (read pattern bg, attrib, bg+1, attrib, none, none, none, none)
-    48 pixels of border
-
-    each frame is
-
-    312 scanlines long
-
-    8 scanlines of vblank
-    56 upper border
-    192 drawing scanlines
-    56 lower border
-
-    vblank happens at scanline 0-7
-    IRQ happens at scanline 0 t-state #16//PPU pixel #32
-    contention happens scanlines 64-256, pixel #144-400
-    contention pauses CPU for 6 out of 8 cycles if address bus is 0x4000-0x7FFF
-
-    */
-
     constructor() {
-        this.master_clock_speed = 6988800; // ~7Mhz. We do 50FPS instead of the 50.04FPS or whatever of a real one
-        this.cpu_divider = 2; // ~3.5MHz
-        this.ula_divider = 1; // ~7MHz
-
         this.frames_since_restart = 0;
-
-        this.frame_master_clock = 0;
 
         this.master_clocks_per_line = 448;
 
@@ -46,7 +10,6 @@ class ZXSpectrum_clock {
         this.ula_y = 0;
         this.ula_frame_cycle = 0;
 
-        this.frame_bottom_rendered_line = 192;
         this.irq_ula_cycle = 113144
         this.irq_cpu_cycle = 56572
 
@@ -92,7 +55,10 @@ class ZXSpectrum_bus {
 }
 
 class ZXSpectrum {
-    constructor() {
+    /**
+     * @param {canvas_manager_t} canvas_manager
+     */
+    constructor(canvas_manager) {
         this.clock = new ZXSpectrum_clock();
 
         this.cpu = new z80_t();
@@ -101,12 +67,26 @@ class ZXSpectrum {
         this.bus = new ZXSpectrum_bus(this.clock, 48);
 
         this.bus.notify_IRQ = this.cpu.notify_IRQ.bind(this.cpu);
-        this.ula = new ZXSpectrum_ULA(document.getElementById('emucanvas'), this.clock, this.bus);
+        this.ula = new ZXSpectrum_ULA(canvas_manager, this.clock, this.bus);
 
+        this.display_enabled = true;
+        dbg.add_cpu(D_RESOURCE_TYPES.Z80, this.cpu);
+    }
+
+    update_status(current_frame, current_scanline, current_x) {
+        current_frame.innerHTML = this.clock.frames_since_restart;
+        current_scanline.innerHTML = this.clock.ula_y;
+        current_x.innerHTML = this.clock.ula_x;
+    }
+
+    enable_display(to) {
+        if (to !== this.display_enabled) {
+            this.display_enabled = to;
+        }
     }
 
     killall() {
-        dbg.remove_cpu(D_RESOURCE_TYPES.Z80, this);
+        dbg.remove_cpu(D_RESOURCE_TYPES.Z80);
     }
 
     reset() {
@@ -199,6 +179,13 @@ class ZXSpectrum {
         return d;
     }
 
+    step_scanlines(howmany) {
+        for (let i = 0; i < howmany; i++) {
+            this.finish_scanline();
+            if (dbg.do_break) break;
+        }
+    }
+
     run_frame() {
         let current_frame = this.clock.frames_since_restart;
         while(current_frame === this.clock.frames_since_restart) {
@@ -208,9 +195,9 @@ class ZXSpectrum {
     }
 
     finish_scanline() {
-        let cycles_left = this.clock.master_clocks_per_line - this.clock.ula_x;
+        let current_y = this.clock.ula_y;
 
-        for (let cycle = 0; cycle < cycles_left; cycle++) {
+        while(current_y === this.clock.ula_y) {
             this.cpu_cycle();
             this.ula.cycle();
             this.ula.cycle();
@@ -223,6 +210,38 @@ class ZXSpectrum {
     }
 
     present() {
-        this.ula.present();
+        if (this.display_enabled)
+            this.ula.present();
     }
 }
+
+
+    // 70908 CPU cycles per frame
+    // 50 frames
+    // 3545400 Hz
+
+    // 2 pixels per CPU clock
+    // 448 pixel clocks per scanline
+
+    /*
+    each scanline is 448 pixels wide.
+    96 pixels of nothing
+    48 pixels of border
+    256 pixels of draw (read pattern bg, attrib, bg+1, attrib, none, none, none, none)
+    48 pixels of border
+
+    each frame is
+
+    312 scanlines long
+
+    8 scanlines of vblank
+    56 upper border
+    192 drawing scanlines
+    56 lower border
+
+    vblank happens at scanline 0-7
+    IRQ happens at scanline 0 t-state #16//PPU pixel #32
+    contention happens scanlines 64-256, pixel #144-400
+    contention pauses CPU for 6 out of 8 cycles if address bus is 0x4000-0x7FFF
+
+    */
