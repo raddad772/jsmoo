@@ -104,23 +104,25 @@ Because we use SharedArrayBuffers and need high-precision timers, we need to inc
 
 I've included a simple Python script that will serve it to \[::1\]:8000, which is the IPv6 equivalent of localhost. Just run the simple_py_server.py, and navigate to \[::1\]:8000 in Chrome, and you're set!
 
-...sort of. The UI is absolutely awful right now.
+The UI has seen drastic improvements recently. Switching between systems now works ("SYSTEM SELECT"), and controls can be remapped under the "Settings" tab.
 
-As of this commit, it is set to NES. To change NES to SNES requires a little code tweaking. The UI is terrible.
-To "upload" a ROM, scroll down some to the file select, choose a .nes ROM, and click "Go". You may now scroll to the top where the "ROM SELECT" dropdown should contain this ROM. Click "load ROM" and you're good to go.
-The ROMS and which one you've chosen is persistent. You can upload multiple ROMs (no deleting yet). It will keep track of the last one you had loaded, and automatically load it on refresh.
-Right now, the NES is using an SNES gamepad, mapped poorly. Part of the UI overhaul will be fixing this, but for now, the keys as the NES sees them are:
+To upload a ROM, make sure you have the correct system selected. Then scroll down, on the right, there is a place that will say (Choose file) No File Chosen (Go) (Download). Choose a ROM and hit Go, it's now uploaded!
 
- - Arrow keys for d-pad
- - a/z for b/a
- - f for start
- - tab for select
+However, SMS and ZX Spectrum require BIOSes. The SMS will at least pop up an alert telling you what to do. The ZX Spectrum needs a 48k one called "48.rom" uploaded to work.
+
+Note: As of this commit, SMS is not fully working yet. It's just getting to a mutilated SEGA logo.
+
+Also, as of this commit, keyboard input on the Spectrum is temporarily broken, as I have been re-writing the input system to support easily re-assignable controls and have only re-implemented joypads thus far.
+
+As for game, etc. compatability, check COMPATABILITY.TXT for a info.
 
 ### Prerequisites
 
 If you want to serve it locally using the script I included, you need Python3.
 
 If you want it to run fast, you need Chrome. Sorry. I believe in the importance of Firefox, but finding information about how to optimize for SpiderMonkey is not easy. If you have experience here I'd be super happy to hear from you!
+
+You need any applicable BIOSes for any systems that require them (currently SMS and ZX Spectrum).
 
 ### Installation
 
