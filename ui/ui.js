@@ -111,13 +111,17 @@ class global_player_t {
 
 	set_system(to) {
 		this.timing_thread.pause();
-		///if (this.system_kind === to) {
-		//	console.log('Already using that one bro')
-		//	return;
-		//}
 		if (this.system !== null) {
 			this.system.killall();
+			delete this.system;
 			this.system = null;
+		}
+		if (to === null) {
+			this.system_kind = ui_el.system_select.value;
+			console.log('SETTING SYSTEM KIND', this.system_kind);
+		}
+		else if (typeof to !== 'undefined') {
+			this.system_kind = to;
 		}
 		switch(this.system_kind) {
 			case 'gg':
@@ -202,7 +206,6 @@ async function load_selected_rom() {
 	if (!global_player.ready) {
 		return;
 	}
-	global_player.power_down();
 	if (ui_el.rom_select.value === '') {
 		//alert('No ROM selected');
 		return;
@@ -245,7 +248,7 @@ async function load_bios(fn) {
 }
 
 async function reload_roms(where) {
-	console.log('realoding ROMs')
+	console.log('realoding ROMs for', where)
 	let fs = new basic_fs();
 	let allfiles = await fs._get_files();
 	let outfiles = [];
@@ -269,7 +272,6 @@ async function reload_roms(where) {
 async function system_selected(where) {
 	ui_el.system_select.value = where;
 	await reload_roms(where);
-
 }
 
 function click_enable_tracing() {
@@ -569,40 +571,7 @@ window.addEventListener('keyup', function(ev) {
 
 
 async function main() {
-	//let ROM_to_get;
-	//ROM_to_get = 'roms/snes-test-roms/PeterLemon/SNES-CPUTest-CPU/ADC/CPUADC.sfc';
-
-	//ROM_to_get = 'roms/snes-test-roms/PeterLemon/SNES-CPUTest-CPU/BIT/CPUBIT.sfc';
-	//ROM_to_get = 'roms/blargg/controller_strobebehavior.smc';
-	//ROM_to_get = 'roms/commercial/smw.smc';
-	//ROM_to_get = 'roms/commercial/metroid.sfc';
-	//ROM_to_get = 'roms/commercial/zelda.smc';
-	//ROM_to_get = 'roms/commercial/fzero.sfc';
-	//ROM_to_get = 'roms/commercial/snestest.sfc';
-
-	//let rtg = await getBinary(local_server_url + ROM_to_get);
-	//snes = new SNES(jsa);
-	console.log('DOIN IT HERE!');
 	global_player.set_system(DEFAULT_SYSTEM);
-	switch(global_player.system_kind) {
-		case 'spectrum':
-			//dbg.add_cpu(D_RESOURCE_TYPES.Z80, global_player.system.cpu);
-			//console.log('ADDED CPU')
-			break;
-		case 'snes':
-			dbg.add_cpu(D_RESOURCE_TYPES.R5A22, global_player.system.cpu);
-			dbg.add_cpu(D_RESOURCE_TYPES.SPC700, global_player.system.apu)
-			break;
-		case 'nes':
-			dbg.add_cpu(D_RESOURCE_TYPES.M6502, global_player.system.cpu);
-			break;
-		case 'gg':
-		case 'sms':
-			break;
-
-	}
-	//dbg.add_cpu(D_RESOURCE_TYPES.R5A22, snes.cpu);
-	//dbg.add_cpu(D_RESOURCE_TYPES.SPC700, snes.apu)
 	if (!init_gl()) {
 		return;
 	}
@@ -644,10 +613,6 @@ async function init_ui() {
 		}
 	}
 
-	/*ui_el.tracing_checkbox.addEventListener('change', (event) => {
-		if (event.currentTarget.checked) click_enable_tracing();
-		else click_disable_tracing();
-	});*/
 	ui_el.log_hdma_checkbox.addEventListener('change', (event) => {
 		dbg.log_HDMA = !!event.currentTarget.checked;
 	});
@@ -733,8 +698,11 @@ async function init_ui() {
 		dbg.render_windows = !!event.currentTarget.checked;
 	})
 
-	ui_el.system_select.addEventListener('change', (event) => {
-		console.log(event);
+	ui_el.system_select.addEventListener('change', async (event) => {
+		console.log('CHANGING SYSTEM...');
+		global_player.set_system(ui_el.system_select.value);
+		await reload_roms(ui_el.system_select.value);
+		await load_selected_rom();
 	})
 
 	await init_fs();

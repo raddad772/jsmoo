@@ -41,13 +41,19 @@ class SNES {
 		this.ppu = new SNES_slow_1st_PPU(document.getElementById('snescanvas'), this.version, this.mem_map, this.clock);
 		this.apu = new spc700(this.mem_map, this.clock);
 		this.cpu.reset();
+
 		dbg.watch.wdc = this.cpu;
 		dbg.watch.spc = this.apu;
+		dbg.add_cpu(D_RESOURCE_TYPES.R5A22, this.cpu);
+		dbg.add_cpu(D_RESOURCE_TYPES.SPC700, this.apu)
         input_config.connect_controller('snes1');
 	}
 
 	killall() {
-        input_config.connect_controller('snes1');
+        input_config.disconnect_controller('snes1');
+		dbg.remove_cpu(D_RESOURCE_TYPES.R5A22);
+		dbg.add_cpu(D_RESOURCE_TYPES.SPC700);
+
 		this.ppu.kill_threads();
 	}
 

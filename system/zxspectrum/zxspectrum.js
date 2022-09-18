@@ -103,7 +103,6 @@ class ZXSpectrum {
         this.bus.notify_IRQ = this.cpu.notify_IRQ.bind(this.cpu);
         this.ula = new ZXSpectrum_ULA(document.getElementById('snescanvas'), this.clock, this.bus);
 
-        dbg.add_cpu(D_RESOURCE_TYPES.Z80, this);
     }
 
     killall() {
