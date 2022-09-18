@@ -742,13 +742,13 @@ class ricoh5A22 {
 /*							if (this.mode === 3) {
 								debugger; // WRAM refresh in middle of WRAM refresh!?
 							}*/
-							console.log('WRAM REFRESH SPLIT');
+							//console.log('WRAM REFRESH SPLIT');
 							this.old_mode = this.mode;
 							this.mode = RMODES.WRAM_REFRESH;
 						}
 						this.clock.advance_steps_from_cpu(can_do);
 						if (can_do < 40) {
-							console.log('WRAM REFRESH RETURN');
+							//console.log('WRAM REFRESH RETURN');
 							return;
 						}
 						break;
@@ -835,7 +835,7 @@ class ricoh5A22 {
 		}
 	}
 
-	// Called from inside do_steps() when an IRQ is to be triggered and ONLY THEN
+	// Called from inside run_cycles() when an IRQ is to be triggered and ONLY THEN
 	eval_hvirqs() {
 		console.log('IRQ TRIGGERED!');
 		if (this.status.irq_line) {

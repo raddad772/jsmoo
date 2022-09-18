@@ -397,12 +397,10 @@ function click_play() {
 		dbg.do_break = false;
 		start_fps_count();
 		global_player.play();
-		ui_el.play_button.innerHTML = "Pause";
 	} else {
 		global_player.pause();
 		global_player.update_status();
 		stop_fps_count();
-		ui_el.play_button.innerHTML = "Play";
 	}
 }
 

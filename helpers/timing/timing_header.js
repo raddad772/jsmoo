@@ -59,7 +59,7 @@ class timing_thread_t {
             dbg.frames_til_pause = ftp - 1;
             ui_el.frames_til_pause.value = dbg.frames_til_pause;
             if (dbg.frames_til_pause === 0) {
-                this.pause();
+                global_player.pause();
                 stop_fps_count();
             }
         }

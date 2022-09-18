@@ -29,9 +29,6 @@ class global_player_t {
 		 * @type {canvas_manager_t}
 		 */
 		this.canvas_manager = null;
-
-		this.input_capture = true;
-		this.input_can_capture = true;
 	}
 
 	set_fps_target(to) {
@@ -75,12 +72,14 @@ class global_player_t {
 		this.playing = false;
 		this.timing_thread.pause();
 		ui_el.system_select.disabled = false;
+		ui_el.play_button.innerHTML = "Play";
 	}
 
 	play() {
 		this.playing = true;
 		this.timing_thread.play();
 		ui_el.system_select.disabled = true;
+		ui_el.play_button.innerHTML = "Pause";
 	}
 
     step_master(howmany) {
@@ -118,8 +117,6 @@ class global_player_t {
 		    dbg.console_DMA_logs();
 	    }
     }
-
-
 
 	on_timing_message(e) {
 		switch(e.kind) {
@@ -184,10 +181,6 @@ class global_player_t {
 		this.tech_specs = this.system.get_description();
 		this.set_fps_target(this.tech_specs.technical.fps);
 		this.ready = true;
-	}
-
-	power_down() {
-		//click_pause();
 	}
 
 	load_rom(what) {

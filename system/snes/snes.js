@@ -31,40 +31,71 @@ cycles in scanline
 
 
 class SNES {
-	constructor() {
+	/**
+	 * @param {canvas_manager_t} canvas_manager
+	 */
+	constructor(canvas_manager) {
 		this.cart = new snes_cart();
 		this.version = {rev: 0, nstc: true, pal: false}
+
+		this.canvas_manager = canvas_manager;
 
 		this.clock = new SNES_clock(this.version);
 		this.mem_map = new snes_memmap();
 		this.cpu = new ricoh5A22(this.version, this.mem_map, this.clock);
-		this.ppu = new SNES_slow_1st_PPU(document.getElementById('emucanvas'), this.version, this.mem_map, this.clock);
+		this.ppu = new SNES_slow_1st_PPU(canvas_manager, this.version, this.mem_map, this.clock);
 		this.apu = new spc700(this.mem_map, this.clock);
 		this.cpu.reset();
+
+		this.display_enabled = true;
 
 		dbg.watch.wdc = this.cpu;
 		dbg.watch.spc = this.apu;
 		dbg.add_cpu(D_RESOURCE_TYPES.R5A22, this.cpu);
 		dbg.add_cpu(D_RESOURCE_TYPES.SPC700, this.apu)
-        input_config.connect_controller('snes1');
+		input_config.connect_controller('snes1');
+	}
+
+	enable_display(to) {
+        if (to !== this.display_enabled) {
+            this.display_enabled = to;
+			this.ppu.enable_display(to);
+        }
+	}
+
+	update_status(current_frame, current_scanline, current_x) {
+		current_frame.innerHTML = this.clock.frames_since_restart;
+        current_scanline.innerHTML = this.clock.scanline.ppu_y;
+        current_x.innerHTML = this.clock.cycles_since_scanline_start;
 	}
 
 	killall() {
-        input_config.disconnect_controller('snes1');
+		input_config.disconnect_controller('snes1');
 		dbg.remove_cpu(D_RESOURCE_TYPES.R5A22);
 		dbg.remove_cpu(D_RESOURCE_TYPES.SPC700);
 
 		this.ppu.kill_threads();
 	}
 
+    step_scanlines(howmany) {
+        for (let i = 0; i < howmany; i++) {
+            this.finish_scanline();
+            if (dbg.do_break) break;
+        }
+    }
+
+	step_master(howmany) {
+        this.run_cycles(howmany);
+    }
+
 	get_description() {
-        let d = new machine_description('SNES');
-        d.technical.standard = 'NTSC';
-        d.technical.fps = 60;
-        d.input_types = [INPUT_TYPES.SNES_CONTROLLER];
+		let d = new machine_description('SNES');
+		d.technical.standard = 'NTSC';
+		d.technical.fps = 60;
+		d.input_types = [INPUT_TYPES.SNES_CONTROLLER];
 		d.technical.x_resolution = 256;
 		d.technical.y_resolution = 240;
-        return d;
+		return d;
 	}
 
 	do_display(force) {
@@ -75,7 +106,7 @@ class SNES {
 	}
 
 	present() {
-		if (!PPU_USE_WORKERS)
+		if ((!PPU_USE_WORKERS) && this.display_enabled)
 			this.ppu.present();
 	}
 
@@ -86,8 +117,7 @@ class SNES {
 		this.mem_map.cart_inserted(this.cart);
 	}
 
-	do_steps(steps) {
-		//debugger;
+	run_cycles(steps) {
 		this.cpu.do_steps(steps);
 	}
 
@@ -98,110 +128,22 @@ class SNES {
 	}
 
 	run_frame(elapsed) {
-		this.step(0, 0, 1, 0);
+		let current_frame = this.clock.frames_since_restart;
+		while (current_frame === this.clock.frames_since_restart) {
+			this.finish_scanline();
+			if (dbg.do_break) break;
+		}
 	}
 
-	step(master_clocks, scanlines, frames, seconds) {
-		//debugger;
-		/*if (scanlines < 0) {
-			let de = Math.ceil(Math.abs(scanlines / 262));
-			console.log('DE', de);
-			frames -= de;
-			scanlines += (262 * de);
-			if (frames < 0) {
-				de = Math.ceil(Math.abs(frames / 60));
-				console.log('DE2', de);
-				seconds -= de;
-				frames += (de * 60);
-				if (seconds < 0) seconds = 0;
-			}
-		}
-
-		frames += (seconds * 60);*/
-
-		if (!this.clock.start_of_scanline) {
+	finish_scanline() {
+		let current_scanline = this.clock.scanline.ppu_y;
+		while (current_scanline === this.clock.scanline.ppu_y) {
 			let cycles_to_finish = this.clock.scanline.cycles - this.clock.cycles_since_scanline_start;
-			if ((cycles_to_finish > master_clocks) && (scanlines === 0) && (frames === 0) && (seconds === 0)) {
-				this.do_steps(master_clocks);
-				return;
-			}
-			this.do_steps(cycles_to_finish);
-			master_clocks -= cycles_to_finish;
-			if (dbg.do_break) {
-				dbg.do_break = false;
-				this.do_display(true);
-				return;
-			}
+			this.run_cycles(cycles_to_finish);
+			if (dbg.do_break) break;
 		}
-
-		frames += (seconds * 60);
-		if (scanlines === 0 && frames > 0) {
-			scanlines += this.clock.scanline.frame_lines - this.clock.scanline.ppu_y;
-			frames--;
-		}
-		let framenum = this.clock.scanline.frame;
-		//console.log('DOIN SCANLINES', scanlines)
-		while (scanlines > 0) {
-			this.do_steps(this.clock.scanline.cycles);
-			if (framenum !== this.clock.scanline.frame) {
-				framenum = this.clock.scanline.frame;
-				if (frames > 0) {
-					frames--;
-					scanlines += this.clock.scanline.frame_lines;
-				}
-			}
-			scanlines--;
-			if (scanlines < 1) {
-				if (frames < 1)
-					break;
-				console.log('SCANLINES BEFORE', scanlines)
-				scanlines = this.clock.scanline.frame_lines - this.clock.scanline.ppu_y;
-				console.log('SCANLIENS AFTER', scanlines)
-				frames--;
-			}
-			if (dbg.do_break) {
-				dbg.do_break = false;
-				this.do_display(true);
-				return;
-			}
-		}
-		if (master_clocks > 0) {
-			console.log('Cleaning up', master_clocks);
-			this.do_steps(master_clocks);
-			this.do_display(false);
-		}
-		dbg.do_break = false;
-		/*let excess_scanlines = 0;
-		let discharged = false;
-		while(true) {
-			this.do_steps(this.clock.scanline.cycles);
-			// Check if we're the start of a frame
-			if (this.clock.scanline.ppu_y === 0 && !discharged) {
-				if (scanlines < this.clock.scanline.frame_lines) {
-	 				excess_scanlines = scanlines;
-					scanlines = 0;
-				}
-			}
-			scanlines--;
-			if (scanlines === 0) {
-				if (frames === 0)
-					break;
-				frames--;
-				scanlines += this.clock.scanline.frame_lines;
-			}
-		}
-
-		console.log('STEP...', master_clocks, scanlines, frames, seconds);
-		// First, we want to finish out our current scanline IF WE CAN,
-		// Then finish out our current frame IF WE CAN,
-		// Then emulate any remaining frames
-		// Then emulate any remaining scanlines
-		// Then emulate any remaining master_clocks
-		*/
 	}
 }
-
-let canvas;
 
 //after_js = test_pt_z80;
 //after_js = test_65c816;
