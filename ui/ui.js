@@ -232,6 +232,9 @@ async function load_bios(fn) {
 	console.log('GETTING FILE', fn);
 	let f = await bfs.read_file(fn);
 	if (!f) {
+		if (fn === '/sms/roms/bios13fx.sms') {
+			alert('Please upload Master System 1.3 BIOS named bios13fx.sms as ROM');
+		}
 		console.log('BIOS', fn, 'not found!');
 		return null;
 	}
@@ -302,21 +305,21 @@ function click_bg_dump(which) {
 		case 'snes':
 			switch(which) {
 				case 1:
-					bg = snes.ppu.io.bg1;
+					bg = global_player.system.ppu.io.bg1;
 					break;
 				case 2:
-					bg = snes.ppu.io.bg2;
+					bg = global_player.system.ppu.io.bg2;
 					break;
 				case 3:
-					bg = snes.ppu.io.bg3;
+					bg = global_player.system.ppu.io.bg3;
 					break;
 				case 4:
-					bg = snes.ppu.io.bg4;
+					bg = global_player.system.ppu.io.bg4;
 					break;
 			}
-			//snes.ppu.render_bg1_from_memory(0, 260, bg);
-			console.log(hex4(snes.ppu.io.bg3.get_tile(snes.ppu.VRAM, snes.ppu.io, snes.ppu.io.bg3, 10*8, 5*8)))
-			snes.ppu.present();
+			//global_player.system.ppu.render_bg1_from_memory(0, 260, bg);
+			console.log(hex4(global_player.system.ppu.io.bg3.get_tile(global_player.system.ppu.VRAM, global_player.system.ppu.io, global_player.system.ppu.io.bg3, 10*8, 5*8)))
+			global_player.system.ppu.present();
 			break;
 		case 'sms':
 		case 'gg':
@@ -340,7 +343,7 @@ function click_sprite_dump() {
 		case 'snes':
 			global_player.system.ppu.render_sprites_from_memory(0, 520, false);
 			for (let y = 1; y < 224; y++) {
-				PPUF_render_objects(snes.ppu, snes.ppu.cachelines.lines[y], y, true);
+				PPUF_render_objects(global_player.system.ppu, global_player.system.ppu.cachelines.lines[y], y, true);
 			}
 			break;
 		case 'nes':
@@ -357,13 +360,13 @@ function click_sprite_dump() {
 }
 
 function click_render_scr() {
-	let old_scanline = snes.clock.scanline.ppu_y;
+	let old_scanline = global_player.system.clock.scanline.ppu_y;
 	for (let y = 1; y < 240; y++) {
-		snes.clock.scanline.ppu_y = y;
-		snes.ppu.render_scanline(true)
+		global_player.system.clock.scanline.ppu_y = y;
+		global_player.system.ppu.render_scanline(true)
 	}
-	snes.clock.scanline.ppu_y = old_scanline;
-	//snes.ppu.present();
+	global_player.system.clock.scanline.ppu_y = old_scanline;
+	//global_player.system.ppu.present();
 }
 
 let dc = 0;
@@ -378,7 +381,7 @@ function click_step_all() {
 	let scanlines = parseInt(ui_el.scanline_input.value);
 	let frames = parseInt(ui_el.frame_input.value);
 	let seconds = parseInt(ui_el.seconds_input.value);
-	snes.step(0, scanlines, frames, seconds);
+	global_player.system.step(0, scanlines, frames, seconds);
 
 	after_step();
 }
@@ -387,15 +390,15 @@ function after_step() {
 	if (dbg.tracing) {
 		dbg.traces.draw(dconsole);
 		//dbg.traces.clear();
-		//scanline_dot_output.innerHTML = Math.floor(snes.clock.scanline.cycles_since_reset / 4);
-		//console.log(snes.clock.cycles_since_scanline_start);
+		//scanline_dot_output.innerHTML = Math.floor(global_player.system.clock.scanline.cycles_since_reset / 4);
+		//console.log(global_player.system.clock.cycles_since_scanline_start);
 
-		//ui_el.ppu_y_output.innerHTML = Math.floor(snes.clock.cycles_since_scanline_start / 4) + ', ' + snes.clock.scanline.ppu_y;
+		//ui_el.ppu_y_output.innerHTML = Math.floor(global_player.system.clock.cycles_since_scanline_start / 4) + ', ' + global_player.system.clock.scanline.ppu_y;
 		ui_el.frame_count_output.innerHTML = global_player.system.clock.frames_since_restart;
 
-		//console.log('PPU', snes.ppu.io);
-		//console.log('CGRAM', snes.ppu.CRAM);
-		//console.log('CPU', snes.cpu.io, snes.cpu.status);
+		//console.log('PPU', global_player.system.ppu.io);
+		//console.log('CGRAM', global_player.system.ppu.CRAM);
+		//console.log('CPU', global_player.system.cpu.io, global_player.system.cpu.status);
 	}
 	if (WDC_LOG_DMAs) {
 		dbg.console_DMA_logs();
@@ -423,7 +426,7 @@ function click_dump_ram() {
 					rd = hex2(global_player.system.RAM[baddr]);
 					break;
 				case 'snes':
-					rd = hex2(snes.mem_map.dispatch_read(baddr, 0, false));
+					rd = hex2(global_player.system.mem_map.dispatch_read(baddr, 0, false));
 					break;
 				case 'nes':
 					rd = hex2(global_player.system.bus.CPU_read(baddr, 0, false));
@@ -451,7 +454,7 @@ function click_dump_vram() {
 			let rd;
 			switch(global_player.system_kind) {
 				case 'snes':
-					rd = hex2(snes.mem_map.dispatch_read(baddr, 0, false));
+					rd = hex2(global_player.system.mem_map.dispatch_read(baddr, 0, false));
 					break;
 				case 'nes':
 					rd = hex2(global_player.system.bus.PPU_read(baddr, 0, false));
@@ -572,9 +575,6 @@ window.addEventListener('keyup', function(ev) {
 
 async function main() {
 	global_player.set_system(DEFAULT_SYSTEM);
-	if (!init_gl()) {
-		return;
-	}
 	await load_selected_rom();
 
 	dbg.init_done();

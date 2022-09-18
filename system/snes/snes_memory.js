@@ -127,7 +127,7 @@ class snes_memmap {
 		//if (addr === 0x2104) console.log('2104 HERE!', mkind, outaddr, this.writemap[b].offset, data);
 
 		/*if (((addr & 0xFFFF) >= 0x04A0) && ((addr & 0xFFFF) <= 0x04A3)) {
-			console.log('Frame ', snes.clock.frames_since_restart, ' line', snes.clock.scanline.ppu_y, ' addr ', hex4(addr & 0xFFFF), ' val ', hex2(data));
+			console.log('Frame ', global_player.system.clock.frames_since_restart, ' line', global_player.system.clock.scanline.ppu_y, ' addr ', hex4(addr & 0xFFFF), ' val ', hex2(data));
 		}*/
 		switch(mkind) {
 			case MAP_TI.OPEN_BUS:

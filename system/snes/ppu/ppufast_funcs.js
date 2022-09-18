@@ -266,11 +266,11 @@ function PPUF_window_render_layer_mask(window, mask, output, io) {
 
 function PPUF_window_render_layer(window, enable, output, io, extended_log=false) {
 	if (!enable || (!window.one_enable && !window.two_enable)) {
-		if (dbg.log_windows) console.log(snes.clock.scanline.ppu_y, dbg.cur_bg, 'FILL 0')
+		if (dbg.log_windows) console.log(global_player.system.clock.scanline.ppu_y, dbg.cur_bg, 'FILL 0')
 		output.fill(0);
 		return;
 	}
-	if (dbg.log_windows) console.log(snes.clock.scanline.ppu_y, dbg.cur_bg, io.window.one_left, io.window.one_right, window.one_invert, window.one_enable, window.two_enable)
+	if (dbg.log_windows) console.log(global_player.system.clock.scanline.ppu_y, dbg.cur_bg, io.window.one_left, io.window.one_right, window.one_invert, window.one_enable, window.two_enable)
 
 	if (window.one_enable && !window.two_enable) {
 		let set = 1 ^ window.one_invert;
@@ -328,7 +328,7 @@ function PPUF_render_objects(self, cache, ppu_y, above, below)
 	PPUF_window_render_layer(obj.window, obj.window.above_enable, PPUF_window_above, cache);
 	PPUF_window_render_layer(obj.window, obj.window.below_enable, PPUF_window_below, cache);
 	//if (dbg.log_windows) console.log(obj.window);
-	//if (dbg.log_windows) console.log(snes.clock.scanline.ppu_y, PPUF_window_above, PPUF_window_below);
+	//if (dbg.log_windows) console.log(global_player.system.clock.scanline.ppu_y, PPUF_window_above, PPUF_window_below);
 	let item_count = 0;
 	let tile_count = 0;
 	for (let n = 0; n < PPU_ITEM_LIMIT; n++) {
