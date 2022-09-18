@@ -10,9 +10,11 @@ class NES {
         this.cycles_left = 0;
         this.here = 0;
         input_config.connect_controller('nes1');
+        dbg.add_cpu(D_RESOURCE_TYPES.M6502, this.cpu);
     }
 
     killall() {
+        dbg.remove_cpu(D_RESOURCE_TYPES.M6502);
         input_config.disconnect_controller('nes1');
     }
 
