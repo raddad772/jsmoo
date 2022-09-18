@@ -58,8 +58,6 @@ const DEFAULT_SMS1 = {
     'down': ['arrowDown', 40],
     'left': ['arrowLeft', 37],
     'right': ['arrowRight', 39],
-    'start': ['f', 70],
-    'select': ['Tab', 9],
     'b1': ['z', 90],
     'b2': ['x', 88],
 }
@@ -69,8 +67,6 @@ const DEFAULT_SMS2 = {
     'down': [null, null],
     'left': [null, null],
     'right': [null, null],
-    'start': [null, null],
-    'select': [null, null],
     'b1': [null, null],
     'b2': [null, null],
 }
@@ -133,6 +129,24 @@ class controller_input_config_t {
                 break;
         }
         this.setup_latches();
+    }
+
+    load(sd) {
+        for (let button_name in sd) {
+            let mbutton = this.buttons[button_name];
+            if(typeof mbutton === 'undefined') {
+                delete sd[button_name];
+                continue;
+            }
+            if ((mbutton.keycode !== null) && (this.connected)) {
+                keyboard_input.deregister_key(mbutton.keycode);
+            }
+            mbutton.key = sd[button_name][0];
+            mbutton.keycode = sd[button_name][1];
+            if ((mbutton.keycode !== null) && (this.connected)) {
+                keyboard_input.register_key(mbutton.keycode);
+            }
+        }
     }
 
     setup_latches() {
@@ -334,6 +348,23 @@ class input_config_t {
         this.update_selected();
 
         this.current_tab = 'settings_tab_input_nes';
+    }
+
+    async load() {
+        let r = await bfs.read_file('/config/input.json');
+        if (r === null) {
+            await this.save();
+            return;
+        }
+        this.savedict = r;
+        for (let cname in this.savedict) {
+            let nname = cname.replace('cfg', '');
+            this.controller_els[nname].load(this.savedict[cname]);
+        }
+    }
+
+    async save() {
+        await bfs.write_file('/config/input.json', this.savedict);
     }
 
     connect_controller(which) {
