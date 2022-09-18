@@ -79,6 +79,10 @@ class SMSGG {
         this.cpu = new z80_t(false);
         this.cpu.reset();
 
+        this.display_enabled = true;
+
+        this.last_frame = 0;
+
         this.bus.system = this;
         this.bus.notify_IRQ = this.cpu.notify_IRQ.bind(this.cpu);
         this.bus.notify_NMI = this.cpu.notify_NMI.bind(this.cpu);
@@ -107,10 +111,17 @@ class SMSGG {
         }
     }
 
+    enable_display(to) {
+        if (to !== this.display_enabled) {
+            this.display_enabled = to;
+        }
+    }
+
     reset() {
         this.cpu.reset();
         this.vdp.reset();
         this.bus.reset();
+        this.last_frame = 0;
     }
 
     trace_peek(addr) {
@@ -136,11 +147,9 @@ class SMSGG {
     }
 
     step_master(howmany) {
-        let todo = howmany;
-        let last_frame = this.clock.frames_since_restart;
-        for (let i = 0; i < todo; i++) {
-            if (this.clock.frames_since_restart !== last_frame) {
-                last_frame = this.clock.frames_since_restart;
+        for (let i = 0; i < howmany; i++) {
+            if (this.clock.frames_since_restart !== this.last_frame) {
+                this.last_frame = this.clock.frames_since_restart;
                 this.poll_pause();
             }
             this.clock.cpu_master_clock++;
@@ -153,8 +162,8 @@ class SMSGG {
                 this.vdp.cycle();
                 this.clock.vdp_master_clock -= this.clock.vdp_divisor;
             }
-            if (this.clock.frames_since_restart !== last_frame) {
-                last_frame = this.clock.frames_since_restart;
+            if (this.clock.frames_since_restart !== this.last_frame) {
+                this.last_frame = this.clock.frames_since_restart;
                 this.poll_pause();
             }
             if (dbg.do_break) return;
@@ -201,6 +210,19 @@ class SMSGG {
         return d;
     }
 
+    step_scanlines(howmany) {
+        for (let i = 0; i < howmany; i++) {
+            this.finish_scanline();
+            if (dbg.do_break) break;
+        }
+    }
+
+    update_status(current_frame, current_scanline, current_x) {
+        current_frame.innerHTML = this.clock.frames_since_restart;
+        current_scanline.innerHTML = this.clock.vpos;
+        current_x.innerHTML = this.clock.hpos;
+    }
+
     run_frame() {
         let current_frame = this.clock.frames_since_restart;
         let scanlines_done = 0;
@@ -227,6 +249,7 @@ class SMSGG {
     }
 
     present() {
-        this.vdp.present();
+        if (this.display_enabled)
+            this.vdp.present();
     }
 }
