@@ -9,11 +9,11 @@ class NES {
         this.ppu = new NES_ppu(document.getElementById('snescanvas'), this.clock, this.bus);
         this.cycles_left = 0;
         this.here = 0;
-        input_config.connect_controller('nes1');
+        input_config.connect_controller('snes1');
     }
 
     killall() {
-        input_config.disconnect_controller('nes1');
+        input_config.disconnect_controller('snes1');
     }
 
 	get_description() {
