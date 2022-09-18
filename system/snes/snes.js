@@ -48,7 +48,7 @@ class SNES {
 
 	killall() {
         input_config.connect_controller('snes1');
-		alert('Thread kill not implemented for SNES yet');
+		this.ppu.kill_threads();
 	}
 
 	get_description() {

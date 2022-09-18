@@ -242,7 +242,7 @@ class controller_input_config_t {
     click(event) {
         let x = event.pageX - event.target.offsetLeft;
         let y = event.pageY - event.target.offsetTop;
-        console.log(x, y);
+        //console.log(x, y);
         let clicked_button = null;
         for (let button_name in this.buttons) {
             let button = this.buttons[button_name];
@@ -252,7 +252,7 @@ class controller_input_config_t {
                 break;
             }
         }
-        console.log('CLICKED?', clicked_button)
+        //console.log('CLICKED?', clicked_button)
     }
 
     // Return input states
@@ -381,7 +381,6 @@ class input_config_t {
     }
 
     tab_change(name) {
-        console.log(name);
         switch(name) {
             case 'settings_tab_input_nes':
                 this.selected_controller = this.controller_els.nes1;
@@ -400,6 +399,7 @@ class input_config_t {
                 this.selected_button = null;
                 break;
         }
+        this.update_selected();
     }
 
     select_button(controller, button) {
