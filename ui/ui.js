@@ -2,28 +2,17 @@
 
 let after_js = function() {console.log('NO AFTER JS THING');};
 
-
-const SNES_STR = 'snes';
-const NES_STR = 'nes';
-const COMMODORE64_STR = 'c64';
-const GG_STR = 'gg';
-const SMS_STR = 'sms';
-const GENESIS_STR = 'megadrive';
-const GB_STR = 'gb';
-const SPECTRUM_STR = 'spectrum';
-const GENERICZ80_STR = 'genericz80'
-
-//const DEFAULT_SYSTEM = GENERICZ80_STR;
-//const DEFAULT_SYSTEM = SPECTRUM_STR;
-const DEFAULT_SYSTEM = NES_STR;
-//const DEFAULT_SYSTEM = GG_STR;
-
 const DEFAULT_STEPS = {
 	master: 50,
 	scanlines: 1,
 	frames: 0,
-	seconds: 0,
+	seconds: 1,
 }
+
+/**
+ * @type {canvas_manager_t}
+ */
+let emu_canvas;
 
 // Things should have 'checkbox' in their name if they are a checkbox
 //   and have a default value.
@@ -37,7 +26,6 @@ let ui_el = {
 	watching_checkbox: ['checkbox', 'watchpt', null],
 	mc_input: ['input', 'masterclocksteps', DEFAULT_STEPS.master],
 	scanline_input: ['input', 'scanlinesteps', DEFAULT_STEPS.scanlines],
-	frame_input: ['input', 'framesteps', DEFAULT_STEPS.frames],
 	seconds_input: ['input', 'secondsteps', DEFAULT_STEPS.seconds],
 	brknmirq_checkbox: ['checkbox', 'brknmirq', null],
 	memaddr_input: ['input', 'memaddr', null],
@@ -56,6 +44,9 @@ let ui_el = {
 	fps: ['output', 'fps', 0],
 	system_select: ['select', 'systemselect', null],
 	rom_select: ['select', 'romselect', null],
+	current_frame: ['output', 'curframe', 0],
+	current_scanline: ['output', 'curline', 0],
+	current_x: ['output', 'curx', 0],
 }
 
 
@@ -69,104 +60,6 @@ let ui_el = {
 
 //window.onload = test_pathstuff
 window.onload = init_ui;
-
-class global_player_t {
-	constructor() {
-		this.system_kind = DEFAULT_SYSTEM;
-		this.state = 'paused';
-		this.system = null;
-		this.timing_thread = new timing_thread_t(this.on_timing_message.bind(this));
-		this.ready = false;
-		this.tech_specs = {};
-
-		this.input_capture = true;
-		this.input_can_capture = true;
-	}
-
-	set_fps_target(to) {
-		to = parseInt(to);
-		this.timing_thread.set_fps_target(to);
-	}
-
-	pause() {
-		this.timing_thread.pause();
-		//this.system.ppu.scanline_timer.analyze();
-		//this.system.ppu.scanline_timer.reset();
-	}
-
-	play() {
-		this.timing_thread.play();
-		//this.system.cpu.apu.start();
-	}
-
-	on_timing_message(e) {
-		switch(e.kind) {
-			case timing_messages.frame_request:
-				this.system.run_frame();
-				this.timing_thread.frame_done();
-				this.system.present();
-				break;
-		}
-	}
-
-	set_system(to) {
-		this.timing_thread.pause();
-		if (this.system !== null) {
-			this.system.killall();
-			delete this.system;
-			this.system = null;
-		}
-		if (to === null) {
-			this.system_kind = ui_el.system_select.value;
-			console.log('SETTING SYSTEM KIND', this.system_kind);
-		}
-		else if (typeof to !== 'undefined') {
-			this.system_kind = to;
-		}
-		switch(this.system_kind) {
-			case 'gg':
-				this.system = new SMSGG(SMSGG_variants.GG);
-				//load_bios('/gg/roms/bios.gg');
-				break;
-			case 'sms':
-				this.system = new SMSGG(SMSGG_variants.SMS2);
-				load_bios('/sms/roms/bios13fx.sms');
-				break;
-			case 'snes':
-				this.system = new SNES();
-				break;
-			case 'nes':
-				this.system = new NES();
-				break;
-			case 'spectrum':
-				this.system = new ZXSpectrum();
-				break;
-			case 'genericz80':
-				this.system = new generic_z80_computer();
-				break;
-			default:
-				alert('system not found');
-				return;
-		}
-		this.tech_specs = this.system.get_description();
-		this.set_fps_target(this.tech_specs.technical.fps);
-		this.ready = true;
-	}
-
-	power_down() {
-		//click_pause();
-	}
-
-	load_rom(what) {
-		this.system.load_ROM_from_RAM(what);
-	}
-
-	load_bios(what) {
-		this.system.load_BIOS_from_RAM(what);
-	}
-}
-
-const global_player = new global_player_t();
 
 async function init_fs() {
 }
@@ -285,18 +178,33 @@ function click_disable_tracing() {
 	dbg.disable_tracing();
 }
 
+function click_step_scanlines() {
+	let scanlines = parseInt(ui_el.scanline_input.value);
+	if (scanlines > (200 * 20)) {
+		console.log('SCANLINE STEP START');
+	}
+
+	global_player.step_scanlines(scanlines);
+
+	if (scanlines > (200 * 20)) {
+		console.log('SCANLINE STEP END')
+	}
+}
+
 function click_step_clock() {
 	let steps = parseInt(ui_el.mc_input.value);
 	if (steps > 100000) console.log('STEP START');
-	dbg.do_break = false;
-	global_player.system.step_master(steps);
-	global_player.system.catch_up();
+	global_player.step_master(steps);
 	if (steps > 100000) console.log('STEP FINISH');
-	//console.log('PPU X, Y', global_player.system.ppu.line_cycle, global_player.system.clock.ppu_y)
-	//console.log('NMI ENABLED', global_player.system.ppu.io.nmi_enable);
-	//global_player.system.ppu.print_current_scroll();
+}
 
-	after_step();
+function click_step_seconds() {
+	let seconds = parseInt(ui_el.seconds_input.value);
+	if (seconds > 5) console.log('SECONDS STEP START');
+	global_player.step_seconds(seconds);
+
+	if (seconds > 5) console.log('SECONDS STEP DONE');
+
 }
 
 function click_bg_dump(which) {
@@ -367,43 +275,6 @@ function click_render_scr() {
 	}
 	global_player.system.clock.scanline.ppu_y = old_scanline;
 	//global_player.system.ppu.present();
-}
-
-let dc = 0;
-function click_step_all() {
-	/*dconsole.addl(dc, tc.toString() + 'YARRR', null, true);
-	tconsole.addl(tc, dc.toString() + 'YOLOOO', null, true);
-	tc++;
-	dc++;
-	dconsole.draw();
-	tconsole.draw();
-	return;*/
-	let scanlines = parseInt(ui_el.scanline_input.value);
-	let frames = parseInt(ui_el.frame_input.value);
-	let seconds = parseInt(ui_el.seconds_input.value);
-	global_player.system.step(0, scanlines, frames, seconds);
-
-	after_step();
-}
-
-function after_step() {
-	if (dbg.tracing) {
-		dbg.traces.draw(dconsole);
-		//dbg.traces.clear();
-		//scanline_dot_output.innerHTML = Math.floor(global_player.system.clock.scanline.cycles_since_reset / 4);
-		//console.log(global_player.system.clock.cycles_since_scanline_start);
-
-		//ui_el.ppu_y_output.innerHTML = Math.floor(global_player.system.clock.cycles_since_scanline_start / 4) + ', ' + global_player.system.clock.scanline.ppu_y;
-		ui_el.frame_count_output.innerHTML = global_player.system.clock.frames_since_restart;
-
-		//console.log('PPU', global_player.system.ppu.io);
-		//console.log('CGRAM', global_player.system.ppu.CRAM);
-		//console.log('CPU', global_player.system.cpu.io, global_player.system.cpu.status);
-	}
-	if (WDC_LOG_DMAs) {
-		dbg.console_DMA_logs();
-	}
-	//ui_el.scanline_input.value = 1;
 }
 
 function get_addr_from_dump_box() {
@@ -520,14 +391,19 @@ var fps_old_frames = 0;
 var fps_interval = null;
 
 function click_play() {
-	if (ui_el.frames_til_pause.value === '') dbg.frames_til_pause = 0;
-	else dbg.frames_til_pause = parseInt(ui_el.frames_til_pause.value);
-	dbg.do_break = false;
-	/*fps_old_frames = global_player.system.clock.frames_since_restart;
-	start_fps_count();
-	global_player.system.jsanimator.play();*/
-	start_fps_count();
-	global_player.play();
+	if (!global_player.playing) {
+		if (ui_el.frames_til_pause.value === '') dbg.frames_til_pause = 0;
+		else dbg.frames_til_pause = parseInt(ui_el.frames_til_pause.value);
+		dbg.do_break = false;
+		start_fps_count();
+		global_player.play();
+		ui_el.play_button.innerHTML = "Pause";
+	} else {
+		global_player.pause();
+		global_player.update_status();
+		stop_fps_count();
+		ui_el.play_button.innerHTML = "Play";
+	}
 }
 
 let animations_called = 0;
@@ -550,19 +426,6 @@ function stop_fps_count() {
 	fps_interval = null;
 }
 
-function click_pause() {
-	//global_player.system.jsanimator.pause();
-	//global_player.system.cart.mapper.pprint();
-	switch(global_player.system_kind) {
-		case 'gg':
-		case 'sms':
-			global_player.system.vdp.pprint_sprites();
-			break;
-	}
-	global_player.pause();
-	stop_fps_count();
-}
-
 window.addEventListener('keydown', function(ev) {
 	//console.log(ev.key);
 	keyboard_input.keydown(ev.keyCode, ev)
@@ -574,6 +437,9 @@ window.addEventListener('keyup', function(ev) {
 
 
 async function main() {
+	emu_canvas = new canvas_manager_t('emucanvas')
+	global_player.set_canvas_manager(emu_canvas);
+
 	global_player.set_system(DEFAULT_SYSTEM);
 	await load_selected_rom();
 
@@ -710,6 +576,19 @@ async function init_ui() {
 	await input_config.load();
 	await system_selected(DEFAULT_SYSTEM);
 	after_js();
+}
+
+function open_tab_side(tablname, tabgrp, evt, tab_name) {
+	let els = document.getElementsByClassName(tabgrp);
+	for (let i = 0; i < els.length; i++) {
+		els[i].style.display = "none";
+	}
+	let tablinks = document.getElementsByClassName(tablname);
+	for (let i = 0; i < els.length; i++) {
+		tablinks[i].className = tablinks[i].className.replace(" ui-bar-blue-grey", "");
+	}
+	document.getElementById(tab_name).style.display = "block";
+	evt.currentTarget.className += " ui-bar-blue-grey";
 }
 
 function open_tab(tablname, tabgrp, evt, tab_name) {

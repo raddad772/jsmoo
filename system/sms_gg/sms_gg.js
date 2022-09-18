@@ -83,7 +83,7 @@ class SMSGG {
         this.bus.notify_IRQ = this.cpu.notify_IRQ.bind(this.cpu);
         this.bus.notify_NMI = this.cpu.notify_NMI.bind(this.cpu);
 
-        this.vdp = new SMSGG_VDP(document.getElementById('snescanvas'), this.variant, this.clock, this.bus);
+        this.vdp = new SMSGG_VDP(document.getElementById('emucanvas'), this.variant, this.clock, this.bus);
         this.vdp.reset();
 
         this.bus.vdp = this.vdp;
