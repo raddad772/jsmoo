@@ -49,7 +49,6 @@ class canvas_manager_t {
         if (this.scale !== 1) {
             this.context.globalCompositeOperation = 'copy';
             this.context.drawImage(this.el, 0, 0, this.width, this.height, 0, 0, this.width*this.scale, this.height*this.scale);
-            //this.context.scale(this.scale, this.scale);
         }
     }
 }

@@ -2,6 +2,11 @@
     margin-top: 40px;
 }
 
+.sidebar-grid-container {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    grid-gap: 20px;
+}
 
 .grid-container {
     display: grid;
@@ -87,7 +92,7 @@
     height: 100%;
     width: 180px;
     background-color: #fff;
-    position: fixed !important;
+    /*position: fixed !important;*/
     z-index: 1;
     overflow: auto;
 }

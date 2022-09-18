@@ -166,6 +166,8 @@
     <div class="grid-child" style="border: 1px solid black; padding: 5px;">
         <canvas id="emucanvas" width="200" height="200"></canvas>
     </div>
+
+    <!-- right-hand helper-->
     <div class="grid-child" style="border: 1px solid black; padding: 4px; margin-left: auto; margin-right: 0; min-width: 200px;">
         <span>SYSTEM SELECT<br><select id="systemselect" name="systemselect">
             <option value="snes">SNES</option>
@@ -184,21 +186,20 @@
         <br>
         <button id="loadrom" onclick="load_sel_rom()">Load ROM</button>
         <hr>
-        <button id="loadstate">Load state</button>
-        <br>
-        <button id="savestate">Save state</button>
+        <button id="loadstate">Load state</button>&nbsp;<button id="savestate">Save state</button>
         <hr>
 
         <button id="playbutton" style="width: 60px;" onclick="click_play()">Play</button>
         <input id="framestilpause" style="width: 50px;"/> frames (0=∞)
         <br>FPS: <input id="fps" style="width: 50px;" disabled/>
+
         <br>
         <hr>
-        <button id="stepclock" type="button" onclick="click_step_clock()">Step</button><input id="masterclocksteps" style="width: 50px;"/> master clocks
+        <button id="stepclock" type="button" onclick="click_step_clock()">Step</button><input id="masterclocksteps" style="width: 50px; text-align: right;"/> master clocks
         <br>
-        <button id="linestep" type="button" onclick="click_step_scanlines()">Step</button><input id="scanlinesteps" style="width: 30px;" value="1"/> scanlines
+        <button id="linestep" type="button" onclick="click_step_scanlines()">Step</button><input id="scanlinesteps" style="width: 30px; text-align: right;" value="1"/> scanlines
         <br>
-        <button id="secondstep" type="button" onclick="click_step_seconds()">Step</button><input id="secondsteps" style="width: 30px;" value="1"/> seconds
+        <button id="secondstep" type="button" onclick="click_step_seconds()">Step</button><input id="secondsteps" style="width: 30px; text-align: right;" value="1"/> seconds
         <hr>
         Current
         <div class="grid-container">
@@ -213,22 +214,29 @@
             </div>
     </div>
 </div>
-
-
 </div>
-    <div class="grid-container">
-    <!-- memory listing/disassembly -->
+    <hr>
+<!--<div class="ui-sidebar ui-bar-block ui-bar-black ui-card" style="width:130px">-->
+<div class="sidebar-grid-container">
+    <div class="grid-child ui-bar-black" style="width: 130px">
+        <button class="w3-bar-item ui-sidebar-button tablink-sidebar ui-bar-blue-grey" onclick="open_tab_side('tablink-sidebar', 'main-sidebar', event, 'main-sidebar-trace')">Trace Output</button>
+        <button class="w3-bar-item ui-sidebar-button tablink-sidebar" onclick="open_tab_side('tablink-sidebar', 'main-sidebar', event, 'main-sidebar-dbg-opt')">Debug Options</button>
+        <button class="w3-bar-item ui-sidebar-button tablink-sidebar" onclick="open_tab_side('tablink-sidebar', 'main-sidebar', event, 'main-sidebar-gfx')">Graphics View</button>
+        <button class="w3-bar-item ui-sidebar-button tablink-sidebar" onclick="open_tab_side('tablink-sidebar', 'main-sidebar', event, 'main-sidebar-mem')">Memory View</button>
+        <button class="w3-bar-item ui-sidebar-button tablink-sidebar" onclick="open_tab_side('tablink-sidebar', 'main-sidebar', event, 'main-sidebar-upload')">Upload</button>
+        <button class="w3-bar-item ui-sidebar-button tablink-sidebar" onclick="open_tab_side('tablink-sidebar', 'main-sidebar', event, 'main-sidebar-console')">Console</button>
+    </div>
     <div class="grid-child">
+      <div id="main-sidebar-trace" class="ui-container main-sidebar">
         <div id="disassemblycontainer" class="disassembly">
         <pre>
             <code id="disassembly">
             </code>
         </pre>
         </div>
-    </div>
+      </div>
 
-    <!-- a few controls -->
-    <div class="grid-child">
+      <div id="main-sidebar-dbg-opt" class="ui-container main-sidebar" style="display:none">
         <section>
             <input type="checkbox" id="bg1on"/><label for="bg1on">BG1 on</label>
             <input type="checkbox" id="bg2on"/><label for="bg2on">BG2 on</label>
@@ -254,47 +262,51 @@
             <input type="checkbox" id="watchpt"/><label for="watchpt">Watching</label>
             <br>
             <input type="checkbox" id="brknmirq"><label for="brknmirq">Break on NMI/IRQ</label>
-            <br>
-            PPU output: <span id="ppu_y_output"></span>
-            <br>
-            Frame #<span id="frame_count_output"></span>
             <hr>
             <hr>
             <br>
         </section>
-    </div>
+      </div>
 
-    <!-- message console -->
-    <div class="grid-child">
-        <div id="textconsolecontainer" class="disassembly" style="height: 100px; overflow: auto;">
-            <pre><code id="textconsole"></code></pre>
-        </div>
+      <div id="main-sidebar-gfx" class="ui-container main-sidebar" style="display:none">
+        <h2>GFX</h2>
+      </div>
 
-    </div>
-    <div class="grid-child">
-        <section>
-            <input id="fileUpload" name="fileUpload" type="file"/>
-            <button id="upload" type="button" onclick="uploadFile('test');">Go</button>
-            <button id="download" type="button" onclick="downloadFile('test');">Download</button>
-        </section>
-    </div>
 
-    <div class="grid-child">
-        <div id="memdumpcontainer" class="disassembly" style="height: 100px; overflow: auto;">
-            <pre><code id="memdumpconsole"></code></pre>
-        </div>
-
-    </div>
-
-    <div class="grid-child">
+      <div id="main-sidebar-mem" class="ui-container main-sidebar" style="display:none">
+        <div class="grid-child">
         <section>
             <button id="dumpram" type="button" onclick="click_dump_ram()">Dump RAM</button>
             <button id="dumpvram" type="button" onclick="click_dump_vram()">Dump VRAM</button>
             <input id="memaddr" type="text">
         </section>
+        <div id="memdumpcontainer" class="disassembly" style="height: 100px; overflow: auto;">
+            <pre><code id="memdumpconsole"></code></pre>
+        </div>
+
+        </div>
+      </div>
+
+      <div id="main-sidebar-console" class="ui-container main-sidebar" style="display:none">
+        <div id="textconsolecontainer" class="disassembly" style="height: 100px; overflow: auto;">
+            <pre><code id="textconsole"></code></pre>
+        </div>
+      </div>
+
+
+        <div id="main-sidebar-upload" class="ui-container main-sidebar" style="display:none">
+        <h2>Upload ROM or BIOS</h2>
+        <section>
+            <input id="fileUpload" name="fileUpload" type="file"/>
+            <button id="upload" type="button" onclick="uploadFile('test');">Go</button>
+        </section>
+      </div>
+
     </div>
+</div>
+
 
 </div>
-</div>
+
 </body>
 </html>
