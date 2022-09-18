@@ -112,16 +112,8 @@ class SNES_slow_1st_PPU {
 	}
 
 	present(buf=null) {
-		//console.log('present!', buf === null);
 		if (buf === null) debugger;
 		if (buf === null) buf = this.output;
-		//this.workers[0].postMessage({worker_num: 0, say: 'hi'});
-		//console.log('PRESENTING!!!!');
-		/*for (let i in this.output) {
-			if (this.output[i] !== 0) {
-				console.log('NONZERO OUTPUT AT', (i % 256), Math.floor(i / 256));
-			}
-		}*/
 		let ctx = this.canvas.getContext('2d');
 		let imgdata = ctx.getImageData(0, 0, 256, 224);
 		for (let y = 0; y < 224; y++) {
@@ -176,7 +168,7 @@ class SNES_slow_1st_PPU {
 				result = this.mode7_mul();
 				return (result >> 16) & 0xFF;
 			case 0x2137: // SLHV?
-				if (snes.cpu.io.pio & 0x80) snes.cpu.latch_ppu_counters();
+				if (global_player.system.cpu.io.pio & 0x80) global_player.system.cpu.latch_ppu_counters();
 				return val;
 			case 0x2138: // OAMDATAREAD
 				let data = this.OAM_read(this.cache.oam_addr);
@@ -214,7 +206,7 @@ class SNES_slow_1st_PPU {
 				this.latch.vcounter = 0;
 				this.latch.ppu2.mdr &= 32;
 				this.latch.ppu2.mdr |= 0x03 | (this.clock.scanline.frame << 7);
-				if (!(snes.cpu.io.pio & 0x80)) {
+				if (!(global_player.system.cpu.io.pio & 0x80)) {
 					this.latch.ppu2.mdr |= 1 << 6;
 				} else {
 					this.latch.ppu2.mdr |= this.latch.counters << 6;

@@ -137,7 +137,6 @@ class PPU_multithreaded_cache {
     constructor(ppu_present_func) {
         this.ppu_present_func = ppu_present_func;
 
-
         // Actual data that gets sent to threads
         this.data = {
             VRAM_buffer: new SharedArrayBuffer(0x8001 * 2),
@@ -243,7 +242,7 @@ class PPU_multithreaded_cache {
             this.serialize_cache_lines(this.last_y, this.last_y+this.lines_per_worker);
             this.workers[this.current_worker_number].postMessage({
                 worker_num: this.current_worker_number,
-                bottom_line: snes.clock.scanline.bottom_scanline,
+                bottom_line: global_player.system.clock.scanline.bottom_scanline,
                 y_start: this.last_y,
                 y_end: this.last_y+this.lines_per_worker,
                 cache: this.data,
