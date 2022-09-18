@@ -52,7 +52,7 @@ class SNES {
 	killall() {
         input_config.disconnect_controller('snes1');
 		dbg.remove_cpu(D_RESOURCE_TYPES.R5A22);
-		dbg.add_cpu(D_RESOURCE_TYPES.SPC700);
+		dbg.remove_cpu(D_RESOURCE_TYPES.SPC700);
 
 		this.ppu.kill_threads();
 	}
