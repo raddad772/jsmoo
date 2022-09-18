@@ -1,16 +1,24 @@
 "use strict";
 
 class NES {
-    constructor() {
+    constructor(canvas_manager) {
         this.bus = new NES_bus();
         this.clock = new NES_clock();
         this.cart = new NES_cart(this.clock, this.bus);
         this.cpu = new ricoh2A03(this.clock, this.bus);
-        this.ppu = new NES_ppu(document.getElementById('snescanvas'), this.clock, this.bus);
+        this.ppu = new NES_ppu(canvas_manager, this.clock, this.bus);
         this.cycles_left = 0;
         this.here = 0;
+
+        this.display_enabled = true;
         input_config.connect_controller('nes1');
         dbg.add_cpu(D_RESOURCE_TYPES.M6502, this.cpu);
+    }
+
+    enable_display(to) {
+        if (to !== this.display_enabled) {
+            this.display_enabled = to;
+        }
     }
 
     killall() {
@@ -28,18 +36,23 @@ class NES {
         return d;
 	}
 
+    update_status(current_frame, current_scanline, current_x) {
+        current_frame.innerHTML = this.clock.frames_since_restart;
+        current_scanline.innerHTML = this.clock.ppu_y;
+        current_x.innerHTML = this.ppu.line_cycle;
+    }
+
     present() {
-        this.ppu.present();
+        if (this.display_enabled)
+            this.ppu.present();
     }
 
     run_frame() {
         let current_frame = this.clock.master_frame;
         while (this.clock.master_frame === current_frame) {
-            this.run_scanline();
+            this.finish_scanline();
             if (dbg.do_break) break;
         }
-        //this.ppu.render_bgtables_from_memory(0, 260, true);
-        //this.ppu.render_chr_tables_from_memory(0, 260*3);
     }
 
     catch_up() {}
@@ -48,7 +61,14 @@ class NES {
         this.run_cycles(howmany);
     }
 
-    run_scanline() {
+    step_scanlines(howmany) {
+        for (let i = 0; i < howmany; i++) {
+            this.finish_scanline();
+            if (dbg.do_break) break;
+        }
+    }
+
+    finish_scanline() {
         let cpu_step = this.clock.timing.cpu_divisor;
         let ppu_step = this.clock.timing.ppu_divisor;
         let done = 0>>>0;

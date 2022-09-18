@@ -8,6 +8,8 @@
     <script type="text/javascript" src="debugging.js"></script>
     <script type="text/javascript" src="helpers/timing/timing_header.js"></script>
     <script type="text/javascript" src="ui/kb_input.js"></script>
+    <script type="text/javascript" src="ui/player.js"></script>
+    <script type="text/javascript" src="ui/canvas.js"></script>
     <script type="text/javascript" src="ui/ui.js"></script>
     <script type="text/javascript" src="ui/input.js"></script>
     <script type="text/javascript" src="rom_upload.js"></script>
@@ -83,19 +85,18 @@
 
 <body>
 
-<div class="ui-bar ui-bar-bg">
+<div class="ui-bar ui-bar-bg" style="position:fixed; top:0; width:100%">
   <button class="ui-bar-item ui-bar-button ui-bar-blue-grey tablink-main" onclick="open_tab('tablink-main', 'ui-tab-main', event, 'main_tab_main')">Main</button>
   <button class="ui-bar-item ui-bar-button tablink-main" onclick="open_tab('tablink-main', 'ui-tab-main', event, 'main_tab_tools')">Tools</button>
   <button class="ui-bar-item ui-bar-button tablink-main" onclick="open_tab('tablink-main', 'ui-tab-main', event, 'main_tab_settings')">Settings</button>
 </div>
 
 
+<!-- TOOLS TAB -->
 <div id="main_tab_tools" class="ui-tab-main" style="display:none;">
-    TOOLS! YAY!
+
 </div>
-
-
-
+<!-- SETTINGS TAB -->
 <div id="main_tab_settings" class="ui-tab-main" style="display:none;">
     <div class="ui-bar ui-bar-bg">
       <button class="ui-bar-item ui-bar-button ui-bar-blue-grey tablink-settings-input" onclick="open_tab('tablink-settings-input', 'ui-tab-settings-input', event, 'settings_tab_input_nes')">NES pads</button>
@@ -157,48 +158,65 @@
 
 </div>
 
+
+<!-- MAIN EMULATION TAB -->
 <div id="main_tab_main" class="ui-tab-main">
-  <canvas id="snescanvas" width="1000" height="380"></canvas>
 
+<div class="grid-container" style="width: 100%">
+    <div class="grid-child" style="border: 1px solid black; padding: 5px;">
+        <canvas id="emucanvas" width="200" height="200"></canvas>
+    </div>
+    <div class="grid-child" style="border: 1px solid black; padding: 4px; margin-left: auto; margin-right: 0; min-width: 200px;">
+        <span>SYSTEM SELECT<br><select id="systemselect" name="systemselect">
+            <option value="snes">SNES</option>
+            <option value="nes">NES</option>
+            <option value="spectrum">ZX Spectrum 48</option>
+            <option value="sms">Sega Master System v2</option>
+            <!--<option value="gg">GameGear</option>-->
+            <!--<option value="genericz80">Generic Z80</option>-->
+            <!--<option value="genesis">Sega Genesis</option>
+            <option value="c64">Commodore64</option>
+            <option value="sms">SMS</option>-->
+        </select></span>
 
-<div class="grid-container">
-    <!-- -->
-    <div class="grid-child">
+        <hr>
+        ROM SELECT<br><select id="romselect" name="romselect"></select>
+        <br>
+        <button id="loadrom" onclick="load_sel_rom()">Load ROM</button>
+        <hr>
+        <button id="loadstate">Load state</button>
+        <br>
+        <button id="savestate">Save state</button>
+        <hr>
+
+        <button id="playbutton" style="width: 60px;" onclick="click_play()">Play</button>
+        <input id="framestilpause" style="width: 50px;"/> frames (0=∞)
+        <br>FPS: <input id="fps" style="width: 50px;" disabled/>
+        <br>
+        <hr>
+        <button id="stepclock" type="button" onclick="click_step_clock()">Step</button><input id="masterclocksteps" style="width: 50px;"/> master clocks
+        <br>
+        <button id="linestep" type="button" onclick="click_step_scanlines()">Step</button><input id="scanlinesteps" style="width: 30px;" value="1"/> scanlines
+        <br>
+        <button id="secondstep" type="button" onclick="click_step_seconds()">Step</button><input id="secondsteps" style="width: 30px;" value="1"/> seconds
+        <hr>
+        Current
         <div class="grid-container">
             <div class="grid-child">
-                <span>SYSTEM SELECT<select id="systemselect" name="systemselect">
-                    <option value="snes">SNES</option>
-                    <option value="nes">NES</option>
-                    <option value="spectrum">ZX Spectrum 48</option>
-                    <option value="sms">SMS 2</option>
-                    <!--<option value="gg">GameGear</option>-->
-                    <!--<option value="genericz80">Generic Z80</option>-->
-                    <!--<option value="genesis">Genesis</option>
-                    <option value="c64">Commodore64</option>
-                    <option value="sms">SMS</option>-->
-                </select>
-                </span>
+                Frame: <span id="curframe">0</span>
             </div>
-            <div class="grid-child">ROM SELECT <select id="romselect" name="romselect">
-            </select>
-            </div>
-
             <div class="grid-child">
-                <button id="loadstate">Loadstate</button>
-                <button id="savestate">Savestate</button>
-                &nbsp; &nbsp; &nbsp;
-                <button id="loadrom" onclick="load_sel_rom()">Load ROM</button>
+                Scanline: <span id="curline">0</span>
             </div>
-        </div>
-
-        </span>
-        <hr>
+            <div class="grid-child">
+                X: <span id="curx">0</span>
+            </div>
     </div>
-    <div class="grid-child">
-        <button id="reboot">Reboot</button>
-    <hr>
-    </div>
+</div>
 
+
+</div>
+    <div class="grid-container">
     <!-- memory listing/disassembly -->
     <div class="grid-child">
         <div id="disassemblycontainer" class="disassembly">
@@ -212,23 +230,6 @@
     <!-- a few controls -->
     <div class="grid-child">
         <section>
-            <br>
-            <button id="playbutton" onclick="click_play()">Play</button>
-            <button id="pausebutton" onclick="click_pause()">Pause</button>
-            <input id="framestilpause"/>
-            FPS:<input id="fps"/>
-            <br>
-            Master clock steps: <input id="masterclocksteps"/><button id="stepclock" type="button" onclick="click_step_clock()">Step</button>
-            <br>
-            <hr>
-            Scanlines to step: <input id="scanlinesteps"/>
-            <br>
-            Frames to step: <input id="framesteps"/>
-            <br>
-            Seconds to step: <input id="secondsteps"/>
-            <br>
-            <button id="stepall" type="button" onclick="click_step_all()">Step</button>
-            <br>
             <input type="checkbox" id="bg1on"/><label for="bg1on">BG1 on</label>
             <input type="checkbox" id="bg2on"/><label for="bg2on">BG2 on</label>
             <input type="checkbox" id="bg3on"/><label for="bg3on">BG3 on</label>

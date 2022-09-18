@@ -337,30 +337,7 @@ class debugger_t {
         this.do_break = true;
         let overflow = 0;
         global_player.pause();
-        switch(global_player.system_kind) {
-            case 'nes':
-                global_player.system.cycles_left = 0;
-                break;
-            case 'snes':
-                overflow = global_player.system.clock.cpu_deficit;
-                console.log('BREAK AT PPU Y', global_player.system.clock.scanline.ppu_y);
-                global_player.system.clock.cpu_deficit = 0;
-                if (whodidit === D_RESOURCE_TYPES.SPC700) {
-                    global_player.system.ppu.catch_up();
-                } else {
-                    global_player.system.apu.catch_up();
-                    global_player.system.ppu.catch_up();
-                }
-                console.log('AFTER BREAK deficits', global_player.system.clock.cpu_deficit, global_player.system.clock.apu_deficit, global_player.system.clock.ppu_deficit)
-                break;
-            case 'spectrum':
-                break;
-            case 'genericz80':
-                break;
-            case 'gg':
-            case 'sms':
-                break;
-        }
+        global_player.after_break(whodidit);
         if (this.tracing) {
             this.traces.draw(dconsole);
         }

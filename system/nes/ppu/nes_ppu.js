@@ -106,12 +106,12 @@ const NES_palette = Object.freeze({
 
 class NES_ppu {
     /**
-     * @param {HTMLElement} canvas
+     * @param {canvas_manager_t} canvas_manager
      * @param {NES_clock} clock
      * @param {NES_bus} bus
      */
-    constructor(canvas, clock, bus) {
-        this.canvas = canvas;
+    constructor(canvas_manager, clock, bus) {
+        this.canvas_manager = canvas_manager;
         this.clock = clock;
         this.bus = bus;
 
@@ -193,17 +193,20 @@ class NES_ppu {
     }
 
     present(buf=null) {
-        let ctx = this.canvas.getContext('2d');
         let TOP_OVERSCAN = 8;
         let BOTTOM_OVERSCAN = 240;
         let LEFT_OVERSCAN = 8;
         let RIGHT_OVERSCAN = 248;
-        let imgdata = ctx.getImageData(0, 0, 256, 240 - ((240 - BOTTOM_OVERSCAN) + TOP_OVERSCAN));
+        let out_width = 256 - (LEFT_OVERSCAN + (256 - RIGHT_OVERSCAN));
+        let out_height = 240 - (TOP_OVERSCAN + (240 - BOTTOM_OVERSCAN));
+        this.canvas_manager.set_size(out_width, out_height);
+        let imgdata = this.canvas_manager.get_imgdata();
         for (let ry = TOP_OVERSCAN; ry < BOTTOM_OVERSCAN; ry++) {
             let y = ry - TOP_OVERSCAN;
-            for (let x = LEFT_OVERSCAN; x < RIGHT_OVERSCAN; x++) {
-                let di = (y * 256 * 4) + (x * 4);
-                let ppui = (y * 256) + x;
+            for (let rx = LEFT_OVERSCAN; rx < RIGHT_OVERSCAN; rx++) {
+                let x = rx - LEFT_OVERSCAN;
+                let di = ((y * out_width) + x) * 4;
+                let ppui = (ry * 256) + rx;
                 let r, g, b;
                 let o = this.output[ppui];
                 if (o === 0) r = g = b = 0; //o = 4;//FIX: TODO: BG_COLOR();
@@ -220,7 +223,7 @@ class NES_ppu {
                 imgdata.data[di+3] = 255;
             }
         }
-        ctx.putImageData(imgdata, 0, 0);
+        this.canvas_manager.put_imgdata(imgdata);
     }
 
     reset() {

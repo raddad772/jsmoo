@@ -38,7 +38,7 @@ class SNES {
 		this.clock = new SNES_clock(this.version);
 		this.mem_map = new snes_memmap();
 		this.cpu = new ricoh5A22(this.version, this.mem_map, this.clock);
-		this.ppu = new SNES_slow_1st_PPU(document.getElementById('snescanvas'), this.version, this.mem_map, this.clock);
+		this.ppu = new SNES_slow_1st_PPU(document.getElementById('emucanvas'), this.version, this.mem_map, this.clock);
 		this.apu = new spc700(this.mem_map, this.clock);
 		this.cpu.reset();
 

@@ -101,7 +101,7 @@ class ZXSpectrum {
         this.bus = new ZXSpectrum_bus(this.clock, 48);
 
         this.bus.notify_IRQ = this.cpu.notify_IRQ.bind(this.cpu);
-        this.ula = new ZXSpectrum_ULA(document.getElementById('snescanvas'), this.clock, this.bus);
+        this.ula = new ZXSpectrum_ULA(document.getElementById('emucanvas'), this.clock, this.bus);
 
     }
 
