@@ -1,6 +1,9 @@
 "use strict";
 
 class NES {
+    /**
+     * @param {canvas_manager_t} canvas_manager
+     */
     constructor(canvas_manager) {
         this.bus = new NES_bus();
         this.clock = new NES_clock();
