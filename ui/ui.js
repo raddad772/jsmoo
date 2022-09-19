@@ -12,7 +12,7 @@ const DEFAULT_STEPS = {
 /**
  * @type {canvas_manager_t}
  */
-let emu_canvas;
+let emu_canvas, sprite_canvas, tile_canvas, bg_canvas;
 
 // Things should have 'checkbox' in their name if they are a checkbox
 //   and have a default value.
@@ -210,6 +210,10 @@ function click_step_seconds() {
 function click_bg_dump(which) {
 	let bg;
 	switch(global_player.system_kind) {
+		case 'sms':
+		case 'gg':
+			global_player.system.vdp.dump_bg(bg_canvas);
+			break;
 		case 'snes':
 			switch(which) {
 				case 1:
@@ -234,7 +238,6 @@ function click_bg_dump(which) {
 			global_player.system.vdp.dump_bg();
 			break;
 		case 'nes':
-			console.log('DUMP IT!');
 			global_player.system.ppu.render_bgtables_from_memory(0, 260);
 			break;
 		case 'spectrum':
@@ -242,6 +245,15 @@ function click_bg_dump(which) {
 			break;
 		default:
 			console.log('HUH?', global_player.system_kind);
+			break;
+	}
+}
+
+function click_tile_dump() {
+	switch(global_player.system_kind) {
+		case 'gg':
+		case 'sms':
+			global_player.system.vdp.dump_tiles(tile_canvas);
 			break;
 	}
 }
@@ -436,6 +448,9 @@ window.addEventListener('keyup', function(ev) {
 
 async function main() {
 	emu_canvas = new canvas_manager_t('emucanvas')
+	sprite_canvas = new canvas_manager_t('spritecanvas')
+	bg_canvas = new canvas_manager_t('bgcanvas')
+	tile_canvas = new canvas_manager_t('tilecanvas')
 	global_player.set_canvas_manager(emu_canvas);
 
 	global_player.set_system(DEFAULT_SYSTEM);

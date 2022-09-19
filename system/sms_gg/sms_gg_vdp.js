@@ -24,15 +24,20 @@ class SMSGG_object {
     }
 }
 
+function COLOR_CONV(i) {
+    if (i === 0) return 0;
+    return 0;
+}
+
 class SMSGG_VDP {
     /**
-     * @param {HTMLElement} canvas
+     * @param {canvas_manager_t} canvas_manager
      * @param {Number} variant
      * @param {SMSGG_clock} clock
      * @param {SMSGG_bus} bus
      */
-    constructor(canvas, variant, clock, bus) {
-        this.canvas = canvas;
+    constructor(canvas_manager, variant, clock, bus) {
+        this.canvas_manager = canvas_manager;
         this.variant = variant;
         this.clock = clock;
         this.bus = bus;
@@ -107,8 +112,8 @@ class SMSGG_VDP {
     }
 
     present() {
-        let ctx = this.canvas.getContext('2d');
-        let imgdata = ctx.getImageData(0, 0, 256, 240);
+        this.canvas_manager.set_size(256, this.clock.timing.rendered_lines+1);
+        let imgdata = this.canvas_manager.get_imgdata();
         for (let ry = 0; ry < this.clock.timing.rendered_lines; ry++) {
             let y = ry;
             for (let rx = 0; rx < 256; rx++) {
@@ -134,8 +139,8 @@ class SMSGG_VDP {
                 imgdata.data[di+3] = 255;
             }
         }
-        ctx.putImageData(imgdata, 0, 0);
-}
+        this.canvas_manager.put_imgdata(imgdata);
+    }
 
     sprite_gfx2() {
         let hlimit = (8 << (this.io.sprite_zoom + this.io.sprite_size)) - 1;
@@ -291,11 +296,11 @@ class SMSGG_VDP {
         let priority = (pattern & 0x1000) >>> 12;
 
         let pta = (vpos & 7) << 2;
-        pta |= pattern << 5;
+        pta |= (pattern & 0x1FF) << 5;
 
-        let index = hpos ^ 7;
+        let index = (hpos & 7) ^ 7;
         let bmask = (1 << index);
-        let color = (this.VRAM[pta] & bmask) >>> index;
+        let color = (this.VRAM[pta] & bmask) ? 1 : 0;
         color += (this.VRAM[pta | 1] & bmask) ? 2 : 0;
         color += (this.VRAM[pta | 2] & bmask) ? 4 : 0;
         color += (this.VRAM[pta | 3] & bmask) ? 8 : 0;
@@ -424,7 +429,7 @@ class SMSGG_VDP {
             this.sprite_setup();
             this.doi = (((240-this.bg_gfx_vlines)/2) + this.clock.vpos) * 256;
         }
-        if (this.clock.hpos < 256) {
+        if ((this.clock.hpos < 256) && (this.clock.vpos < this.clock.timing.frame_lines)) {
             this.bg_gfx();
             this.sprite_gfx();
             this.dac_gfx();
@@ -531,10 +536,10 @@ class SMSGG_VDP {
             if (this.mode === SMSGG_vdp_modes.GG) {
                 // even writes store 8-bit data into latch
                 // odd writes store 12-bits into CRAM
-                if (this.io.address & 1)
+                if (!(this.io.address & 1))
                     this.latch.cram = val;
                 else
-                    this.CRAM[this.io.address >> 1] = ((val & 0x0F) << 8) | this.latch.cram;
+                    this.CRAM[this.io.address >>> 1] = ((val & 0x0F) << 8) | this.latch.cram;
             }
             else {
                 // 6 bits for SMS
@@ -552,7 +557,7 @@ class SMSGG_VDP {
         }
 
         this.latch.control = 0;
-        this.io.address = ((val & 0x3F) << 8) | (this.io.address & 0xFF);
+        this.io.address = ((val & 0x3F) << 8) | (this.io.address & 0xC0FF);
         this.io.code = (val & 0xC0) >>> 6;
         //console.log('SET IO CODE', this.io.code);
 
@@ -586,6 +591,135 @@ class SMSGG_VDP {
 
         this.update_irqs();
         return val;
+    }
+
+    /**
+     * @param {canvas_manager_t} canvas
+     * @param {number} palatte
+     */
+    dump_tiles(canvas, palatte=0) {
+        canvas.set_size(32 * 8, 16 * 8);
+        let imgdata = canvas.get_imgdata();
+        let r, g, b;
+        for (let sy = 0; sy < 112; sy++) {
+            for (let sx = 0; sx < 256; sx += 8) {
+                let tile_num = (sx >>> 3) + ((sy >> 3) << 5);
+                let tile_addr = (tile_num * 32);
+                let line_in_tile = sy & 7;
+                tile_addr += (line_in_tile * 4);
+                if (tile_addr >= 0x3800) {
+                    console.log('SKIP', sx, sy, hex4(tile_addr));
+                    continue;
+                }
+                let bp0 = this.VRAM[tile_addr];
+                let bp1 = this.VRAM[tile_addr+1];
+                let bp2 = this.VRAM[tile_addr+2];
+                let bp3 = this.VRAM[tile_addr+3]
+                for (let x = sx; x < (sx+8); x++) {
+                    let color = ((bp0 & 0x80) >>> 7) | ((bp1 & 0x80) >>> 6) | ((bp2 & 0x80) >>> 5) | ((bp3 & 0x80) >>> 4);
+                    bp0 <<= 1;
+                    bp1 <<= 1;
+                    bp2 <<= 1;
+                    bp3 <<= 1;
+                    //color = this.CRAM[color];
+                    color = this.dac_palette(color);
+                    if (this.variant === SMSGG_variants.gg) {
+                        b = (((color >>> 8) & 0x0F) * 16) - 1;
+                        g = (((color >>> 4) & 0x0F) * 16) - 1;
+                        r = ((color & 0x0F) * 16) - 1;
+                    } else {
+                        b = (((color >>> 4) & 7) * 64) - 1;
+                        g = (((color >>> 2) & 7) * 64) - 1;
+                        r = ((color & 7) * 64) - 1;
+                    }
+
+                    let di = ((sy * 256) + x) * 4;
+
+                    imgdata.data[di] = r;
+                    imgdata.data[di+1] = g;
+                    imgdata.data[di+2] = b;
+                    imgdata.data[di+3] = 255;
+                }
+            }
+        }
+        canvas.put_imgdata(imgdata);
+    }
+
+    /**
+     * @param {canvas_manager_t} canvas
+     */
+    dump_bg(canvas) {
+        let mode4 = (this.io.video_mode >= 8);
+        let bottom_line = 192;
+        if (this.io.video_mode === 11) bottom_line = 224;
+        if (this.io.video_mode === 14) bottom_line = 240;
+
+        let nt_base_addr = this.io.bg_pattern_table_address;
+
+        console.log(this.io.hscroll, this.io.vscroll, this.bg_gfx_vlines);
+
+        if (this.bg_gfx_vlines === 192) {
+            nt_base_addr &= 0x0E;
+            nt_base_addr <<= 10;
+            console.log('NM4', this.io.video_mode, hex4(nt_base_addr));
+        } else {
+            nt_base_addr &= 0x0C;
+            nt_base_addr <<= 10;
+            nt_base_addr |= 0x700;
+            console.log('M4', this.io.video_mode, hex4(nt_base_addr));
+        }
+
+        if (bottom_line > 192) bottom_line = 256;
+        let r, g, b;
+
+        // if bottom lines is 192, 32x28. else 32x32. doesn't make a difference to our program
+        canvas.set_size(256, bottom_line);
+        let imgdata = canvas.get_imgdata();
+        for (let sy = 0; sy < bottom_line; sy++) {
+            let nt_y = (sy >>> 3);
+            for (let sx = 0; sx < 256; sx++) {
+                let nt_x = (sx >>> 3);
+                let nt_addr = nt_base_addr + ((nt_y * 64) + (nt_x * 2));
+                let tilenum = this.VRAM[nt_addr];
+                let tileattr = this.VRAM[nt_addr|1];
+                tilenum |= (tileattr & 1) << 8;
+                let palette = (tileattr & 8) >>> 3;
+                let vflip = (tileattr & 4) >>> 2;
+                let hflip = (tileattr & 2) >>> 1;
+                let tile_y = sy & 7;
+                let tile_x = sx & 7;
+                if (vflip) tile_y ^= 7;
+                if (hflip) tile_x ^= 7;
+                let tile_addr = ((tilenum * 32) + (tile_y * 4));
+                tile_x ^= 7;
+                let bmask = 1 << tile_x;
+                let bp0 = (this.VRAM[tile_addr] & bmask) >>> tile_x;
+                let bp1 = (this.VRAM[tile_addr+1] & bmask) >>> tile_x;
+                let bp2 = (this.VRAM[tile_addr+2] & bmask) >>> tile_x;
+                let bp3 = (this.VRAM[tile_addr+3] & bmask) >>> tile_x;
+                let color = ((bp0 & 1) | ((bp1 & 1) << 1) | ((bp2 & 1) << 3) | ((bp3 & 1) << 4));
+                color = this.dac_palette(color);
+
+                if (this.variant === SMSGG_variants.gg) {
+                    b = (((color >>> 8) & 0x0F) * 16) - 1;
+                    g = (((color >>> 4) & 0x0F) * 16) - 1;
+                    r = ((color & 0x0F) * 16) - 1;
+                } else {
+                    b = (((color >>> 4) & 7) * 64) - 1;
+                    g = (((color >>> 2) & 7) * 64) - 1;
+                    r = ((color & 7) * 64) - 1;
+                }
+
+                let di = ((sy * 256) + sx) * 4;
+
+                imgdata.data[di] = r;
+                imgdata.data[di+1] = g;
+                imgdata.data[di+2] = b;
+                imgdata.data[di+3] = 255;
+            }
+        }
+
+        canvas.put_imgdata(imgdata);
     }
 
     update_videomode() {

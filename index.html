@@ -247,14 +247,6 @@
             <input type="checkbox" id="render_windows"/><label for="render_windows">Render windows</label>
             <input type="checkbox" id="log_windows"/><label for="log_windows">Log windows</label>
             <br>
-            <button id="dumpbg1" type="button" onclick="click_bg_dump(1)">Dump BG1</button>
-            <button id="dumpbg2" type="button" onclick="click_bg_dump(2)">Dump BG2</button>
-            <button id="dumpbg3" type="button" onclick="click_bg_dump(3)">Dump BG3</button>
-            <button id="dumpbg4" type="button" onclick="click_bg_dump(4)">Dump BG4</button>
-            <br>
-            <button id="dumsprites" type="button" onclick="click_sprite_dump()">Dump Sprites</button>
-            <button id="renderscr" type="button" onclick="click_render_scr">Render Screen</button>
-            <br>
             <input type="checkbox" id="loghdma"/><label for="loghdma">Log HDMAs</label>
             <br>
             <input type="checkbox" id="tracingCPU"/><label for="tracingCPU">Trace CPU</label>
@@ -269,7 +261,16 @@
       </div>
 
       <div id="main-sidebar-gfx" class="ui-container main-sidebar" style="display:none">
-        <h2>GFX</h2>
+            <button id="dumpbg1" type="button" onclick="click_bg_dump(1)">Dump BG1</button>
+            <button id="dumpbg2" type="button" onclick="click_bg_dump(2)">Dump BG2</button>
+            <button id="dumpbg3" type="button" onclick="click_bg_dump(3)">Dump BG3</button>
+            <button id="dumpbg4" type="button" onclick="click_bg_dump(4)">Dump BG4</button>
+            <button id="dumptiles" type="button" onclick="click_tile_dump()">Dump tiles</button>
+            <br>
+            <button id="dumsprites" type="button" onclick="click_sprite_dump()">Dump Sprites</button>
+            <button id="renderscr" type="button" onclick="click_render_scr()">Render Screen</button>
+          <br>
+          <canvas id="tilecanvas" width="5" height="5"></canvas> <canvas id="spritecanvas" width="5" height="5"></canvas> <canvas id="bgcanvas" width="5" height="5"></canvas>
       </div>
 
 

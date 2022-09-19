@@ -72,7 +72,12 @@ class SMSGG_clock {
 }
 
 class SMSGG {
-    constructor(variant) {
+    /**
+     * @param {canvas_manager_t} canvas_manager
+     * @param {number} variant
+     */
+    constructor(canvas_manager, variant) {
+        this.canvas_manager = canvas_manager;
         this.variant = variant;
         this.clock = new SMSGG_clock(variant);
         this.bus = new SMSGG_bus(this.variant);
@@ -87,7 +92,7 @@ class SMSGG {
         this.bus.notify_IRQ = this.cpu.notify_IRQ.bind(this.cpu);
         this.bus.notify_NMI = this.cpu.notify_NMI.bind(this.cpu);
 
-        this.vdp = new SMSGG_VDP(document.getElementById('emucanvas'), this.variant, this.clock, this.bus);
+        this.vdp = new SMSGG_VDP(canvas_manager, this.variant, this.clock, this.bus);
         this.vdp.reset();
 
         this.bus.vdp = this.vdp;
