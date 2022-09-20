@@ -427,7 +427,8 @@ class SMSGG_VDP {
             this.latch.vscroll = this.io.vscroll;
 
             this.sprite_setup();
-            this.doi = (((240-this.bg_gfx_vlines)/2) + this.clock.vpos) * 256;
+            //this.doi = (((240-this.bg_gfx_vlines)/2) + this.clock.vpos) * 256;
+            this.doi = (this.clock.vpos * 256);
         }
         if ((this.clock.hpos < 256) && (this.clock.vpos < this.clock.timing.frame_lines)) {
             this.bg_gfx();
