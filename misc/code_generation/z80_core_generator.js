@@ -1357,8 +1357,11 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.addl('regs.TA = (regs.TA + 1) & 0xFFFF;');
             ag.read('regs.TA', 'regs.TR');
             ag.addl('regs.WZ |= (regs.TR << 8);');
+            ag.addcycle('wait');
             ag.write(ag.readreg(arg1), ag.readregL(arg2));
             ag.write('regs.TA', ag.readregH(arg2));
+            ag.addcycle('wait');
+            ag.addcycle('wait');
             ag.writereg(arg2, 'regs.WZ');
             break;
         case Z80_MN.EX_rr_rr:  //n16&, n16&

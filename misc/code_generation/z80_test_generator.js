@@ -143,6 +143,12 @@ const Z80T = Object.freeze({
 });
 
 
+function ckrange(what, low, hi) {
+    if (what < low) return false;
+    if (what > hi) return false;
+    return true;
+}
+
 class Z80_cycle {
     constructor(addr, val, RD, WR, MRQ, IO, force_treat_as_read) {
         this.addr = addr;
@@ -408,6 +414,36 @@ class Z80T_state {
             this.Q = from.q;
         }
         this.junkvar = 0;
+    }
+
+    test_bounds() {
+        if (!ckrange(this.PC, 0, 65535)) return false;
+        if (!ckrange(this.SP, 0, 65535)) return false;
+        if (!ckrange(this.IX, 0, 65535)) return false;
+        if (!ckrange(this.WZ, 0, 65535)) return false;
+        if (!ckrange(this.IY, 0, 65535)) return false;
+        if (!ckrange(this.AF_, 0, 65535)) return false;
+        if (!ckrange(this.BC_, 0, 65535)) return false;
+        if (!ckrange(this.DE_, 0, 65535)) return false;
+        if (!ckrange(this.HL_, 0, 65535)) return false;
+        if (!ckrange(this.A, 0, 255)) return false;
+        if (!ckrange(this.B, 0, 255)) return false;
+        if (!ckrange(this.C, 0, 255)) return false;
+        if (!ckrange(this.D, 0, 255)) return false;
+        if (!ckrange(this.E, 0, 255)) return false;
+        if (!ckrange(this.H, 0, 255)) return false;
+        if (!ckrange(this.L, 0, 255)) return false;
+        if (!ckrange(this.I, 0, 255)) return false;
+        if (!ckrange(this.R, 0, 255)) return false;
+        if (!ckrange(this.F.S, 0, 1)) return false;
+        if (!ckrange(this.F.Z, 0, 1)) return false;
+        if (!ckrange(this.F.Y, 0, 1)) return false;
+        if (!ckrange(this.F.H, 0, 1)) return false;
+        if (!ckrange(this.F.X, 0, 1)) return false;
+        if (!ckrange(this.F.PV, 0, 1)) return false;
+        if (!ckrange(this.F.N, 0, 1)) return false;
+        if (!ckrange(this.F.C, 0, 1)) return false;
+        return true;
     }
 
     setXY(z) {
@@ -1400,8 +1436,10 @@ class Z80_test_generator {
         let WZL = this.read(x)
         let WZH = this.read((x+1) & 0xFFFF);
         this.writereg('WZ', (WZH << 8) | WZL);
+        this.wait(1);
         this.write(x, this.readreg(y) & 0xFF);
         this.write((x+1) & 0xFFFF, (this.readreg(y) & 0xFF00) >>> 8);
+        this.wait(2);
         this.writereg(y, this.regs.WZ);
     }
 
@@ -2241,6 +2279,7 @@ class Z80_test_generator {
             this.test = new Z80_proc_test();
             Z80_generate_registers(this.test.initial);
             this.regs = new Z80T_state(this.test.initial);
+            this.regs.
             // Set EI and P to 0 so they are that way in the end
             // Unless an instruction sets them...
             this.regs.EI = 0;
