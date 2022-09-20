@@ -8558,18 +8558,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.S = ((x) & 0x80) >>> 7;
                 regs.TR = x;
                 break;
-            case 4: // write begin
+            case 4: // wait
+                break;
+            case 5: // write begin
                 pins.Addr = ((regs.H << 8) | regs.L);
                 break;
-            case 5:
+            case 6:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -25345,18 +25347,10 @@ const z80_decoded_opcodes = Object.freeze({
     0x34C: new Z80_opcode_functions(Z80_ED_opcode_matrix[0x46], // ED 46
         function(regs, pins) { //IM_o 0
         switch(regs.TCU) {
-            case 1: // Adding 4 cycles
+            case 1: // cleanup_custom
                 regs.Q = 0;
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            case 4:
                 regs.IM = 0;
                 // Following is auto-generated code for instruction finish
-                break;
-            case 5: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -25662,18 +25656,10 @@ const z80_decoded_opcodes = Object.freeze({
     0x354: new Z80_opcode_functions(Z80_ED_opcode_matrix[0x4E], // ED 4E
         function(regs, pins) { //IM_o 0
         switch(regs.TCU) {
-            case 1: // Adding 4 cycles
+            case 1: // cleanup_custom
                 regs.Q = 0;
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            case 4:
                 regs.IM = 0;
                 // Following is auto-generated code for instruction finish
-                break;
-            case 5: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -25982,18 +25968,10 @@ const z80_decoded_opcodes = Object.freeze({
     0x35C: new Z80_opcode_functions(Z80_ED_opcode_matrix[0x56], // ED 56
         function(regs, pins) { //IM_o 1
         switch(regs.TCU) {
-            case 1: // Adding 4 cycles
+            case 1: // cleanup_custom
                 regs.Q = 0;
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            case 4:
                 regs.IM = 1;
                 // Following is auto-generated code for instruction finish
-                break;
-            case 5: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -26307,18 +26285,10 @@ const z80_decoded_opcodes = Object.freeze({
     0x364: new Z80_opcode_functions(Z80_ED_opcode_matrix[0x5E], // ED 5E
         function(regs, pins) { //IM_o 2
         switch(regs.TCU) {
-            case 1: // Adding 4 cycles
+            case 1: // cleanup_custom
                 regs.Q = 0;
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            case 4:
                 regs.IM = 2;
                 // Following is auto-generated code for instruction finish
-                break;
-            case 5: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -26635,18 +26605,10 @@ const z80_decoded_opcodes = Object.freeze({
     0x36C: new Z80_opcode_functions(Z80_ED_opcode_matrix[0x66], // ED 66
         function(regs, pins) { //IM_o 0
         switch(regs.TCU) {
-            case 1: // Adding 4 cycles
+            case 1: // cleanup_custom
                 regs.Q = 0;
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            case 4:
                 regs.IM = 0;
                 // Following is auto-generated code for instruction finish
-                break;
-            case 5: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -26986,18 +26948,10 @@ const z80_decoded_opcodes = Object.freeze({
     0x374: new Z80_opcode_functions(Z80_ED_opcode_matrix[0x6E], // ED 6E
         function(regs, pins) { //IM_o 0
         switch(regs.TCU) {
-            case 1: // Adding 4 cycles
+            case 1: // cleanup_custom
                 regs.Q = 0;
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            case 4:
                 regs.IM = 0;
                 // Following is auto-generated code for instruction finish
-                break;
-            case 5: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -27338,18 +27292,10 @@ const z80_decoded_opcodes = Object.freeze({
     0x37C: new Z80_opcode_functions(Z80_ED_opcode_matrix[0x76], // ED 76
         function(regs, pins) { //IM_o 1
         switch(regs.TCU) {
-            case 1: // Adding 4 cycles
+            case 1: // cleanup_custom
                 regs.Q = 0;
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            case 4:
                 regs.IM = 1;
                 // Following is auto-generated code for instruction finish
-                break;
-            case 5: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -27652,18 +27598,10 @@ const z80_decoded_opcodes = Object.freeze({
     0x384: new Z80_opcode_functions(Z80_ED_opcode_matrix[0x7E], // ED 7E
         function(regs, pins) { //IM_o 2
         switch(regs.TCU) {
-            case 1: // Adding 4 cycles
+            case 1: // cleanup_custom
                 regs.Q = 0;
-                break;
-            case 2:
-                break;
-            case 3:
-                break;
-            case 4:
                 regs.IM = 2;
                 // Following is auto-generated code for instruction finish
-                break;
-            case 5: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -42857,7 +42795,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -42896,7 +42833,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -42935,7 +42871,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -42974,7 +42909,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -43013,7 +42947,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -43052,7 +42985,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -43091,7 +43023,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -43130,7 +43061,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -43169,7 +43099,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -43208,7 +43137,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -43247,7 +43175,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -43286,7 +43213,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -43325,7 +43251,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -43364,7 +43289,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -43403,7 +43327,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -43442,7 +43365,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -43481,7 +43403,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -43520,7 +43441,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -43559,7 +43479,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -43598,7 +43517,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -43637,7 +43555,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -43676,7 +43593,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -43715,7 +43631,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -43754,7 +43669,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -43793,7 +43707,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -43832,7 +43745,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -43871,7 +43783,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -43910,7 +43821,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -43949,7 +43859,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -43988,7 +43897,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -44027,7 +43935,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -44066,7 +43973,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -44105,7 +44011,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -44144,7 +44049,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -44183,7 +44087,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -44222,7 +44125,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -44261,7 +44163,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -44300,7 +44201,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -44339,7 +44239,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -44378,7 +44277,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -44417,7 +44315,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -44456,7 +44353,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -44495,7 +44391,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -44534,7 +44429,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -44573,7 +44467,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -44612,7 +44505,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -44651,7 +44543,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -44690,7 +44581,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -44729,7 +44619,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -44768,7 +44657,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -44807,7 +44695,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -44846,7 +44733,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -44885,7 +44771,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -44924,7 +44809,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -44963,7 +44847,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -45002,7 +44885,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -45041,7 +44923,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -45080,7 +44961,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -45119,7 +44999,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -45158,7 +45037,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -45197,7 +45075,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -45236,7 +45113,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -45275,7 +45151,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -45314,7 +45189,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -53693,7 +53567,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -53732,7 +53605,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -53771,7 +53643,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -53810,7 +53681,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -53849,7 +53719,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -53888,7 +53757,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -53927,7 +53795,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -53966,7 +53833,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -54005,7 +53871,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -54044,7 +53909,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -54083,7 +53947,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -54122,7 +53985,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -54161,7 +54023,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -54200,7 +54061,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -54239,7 +54099,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -54278,7 +54137,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -54317,7 +54175,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -54356,7 +54213,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -54395,7 +54251,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -54434,7 +54289,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -54473,7 +54327,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -54512,7 +54365,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -54551,7 +54403,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -54590,7 +54441,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -54629,7 +54479,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -54668,7 +54517,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -54707,7 +54555,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -54746,7 +54593,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -54785,7 +54631,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -54824,7 +54669,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -54863,7 +54707,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -54902,7 +54745,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -54941,7 +54783,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -54980,7 +54821,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -55019,7 +54859,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -55058,7 +54897,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -55097,7 +54935,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -55136,7 +54973,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -55175,7 +55011,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -55214,7 +55049,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -55253,7 +55087,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -55292,7 +55125,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -55331,7 +55163,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -55370,7 +55201,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -55409,7 +55239,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -55448,7 +55277,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -55487,7 +55315,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -55526,7 +55353,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -55565,7 +55391,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -55604,7 +55429,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -55643,7 +55467,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -55682,7 +55505,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -55721,7 +55543,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -55760,7 +55581,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -55799,7 +55619,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -55838,7 +55657,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -55877,7 +55695,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.B = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -55916,7 +55733,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.C = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -55955,7 +55771,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.D = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -55994,7 +55809,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.E = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -56033,7 +55847,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.H = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -56072,7 +55885,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.L = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -56111,7 +55923,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                // JUNKVAR set here to regs.TR
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish
@@ -56150,7 +55961,6 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.Y = ((regs.TR) & 0x20) >>> 5;
                 regs.F.Z = +((z) === 0);
                 regs.F.S = ((z) & 0x80) >>> 7;
-                regs.A = regs.TR;
                 regs.F.X = (((regs.WZ >>> 8)) & 8) >>> 3;
                 regs.F.Y = (((regs.WZ >>> 8)) & 0x20) >>> 5;
                 // Following is auto-generated code for instruction finish

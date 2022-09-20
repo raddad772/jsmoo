@@ -401,6 +401,7 @@ async function test_pt_z80_ins(cpu, iclass, ins) {
         in_testing = false;
     });
      */
+    //if (!result.passed) debugger;
     return result.passed;
 }
 
@@ -410,6 +411,7 @@ async function dotest_pt_z80() {
         return Z80testRAM[addr];
     }
 
+    let total_fail = false;
     let cpu = new z80_t(false);
     dbg.add_cpu(D_RESOURCE_TYPES.Z80, cpu);
     if (Z80_TEST_DO_TRACING) {
@@ -463,9 +465,13 @@ async function dotest_pt_z80() {
                 continue;
             }
             let result = await test_pt_z80_ins(cpu, iclass, i);
-            if (!result) break;
+            if (!result) {
+                total_fail = true;
+                break;
+            }
             tconsole.addl(null, 'Test for ' + hex0x2(i) + ' passed!');
         }
         if (Z80_io_mismatches.length > 0) console.log('IO mismatches occured for', Z80_io_mismatches);
+        if (total_fail) break;
     }
 }
