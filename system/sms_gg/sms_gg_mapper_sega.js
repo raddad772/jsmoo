@@ -60,7 +60,7 @@ class SMSGG_mapper_sega {
             return this.ROM[addr];
         } // 0000-03FF is not paged
         if ((this.enable_8k_BIOS) && (addr < 0x2000)) return this.BIOS[addr];
-        if ((!this.enable_cart) && (addr < 0xC000)) return val; // No cartridge enabled
+        if ((!this.enable_cart) && (addr < 0xC000)) { return val; } // No cartridge enabled
         if (addr < 0x4000) return this.ROM[addr + this.io.rom_00_bank]; // 0400-3FFF
         if (addr < 0x8000) return this.ROM[(addr - 0x4000) + this.io.rom_40_bank]; // 4000-7FFF
         if (addr < 0xC000) { // 8000-BFFF

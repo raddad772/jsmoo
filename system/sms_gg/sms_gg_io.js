@@ -188,6 +188,7 @@ class SMSGG_bus {
         let pinsA = this.portA.read_pins();
         let pinsB = this.portB.read_pins();
         let r = (pinsA.up) | (pinsA.down << 1) | (pinsA.left << 2) | (pinsA.right << 3) | (pinsA.tl << 4) | (pinsA.tr << 5) | 0x20 | (pinsB.up << 6) | (pinsB.down << 7);
+        console.log('RETURNING', hex2(r))
         return r;
     }
 
@@ -213,9 +214,6 @@ class SMSGG_bus {
     cpu_in_sms2(addr, val, has_effect=true) {
         addr &= 0xFF;
         //console.log('IN', hex2(addr));
-        if ((dbg.watch_on) && (addr === 0xBF)) {
-            dbg.break();
-        }
         if (addr <= 0x3F) {
             // reads return last byte of the instruction which read the port
             return 0xFF;

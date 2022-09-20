@@ -1215,7 +1215,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.Q(1);
             ag.read(ag.readreg(arg2), 'regs.TR');
             ag.BIT(arg1, 'regs.TR', 'regs.TR');
-            ag.writereg(arg3, 'regs.TR');
+            //ag.writereg(arg3, 'regs.TR');
             ag.setXY('(regs.WZ >>> 8)');
             break;
         case Z80_MN.BIT_o_r:  //n3, n8&
@@ -1385,7 +1385,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.IM_o:  //n2
             ag.Q(0);
-            ag.addcycles(4);
+            //ag.addcycles(4);
             ag.addl('regs.IM = ' + arg1 + ';');
             break;
         case Z80_MN.IN_a_in:  //
@@ -1732,6 +1732,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.Q(1);
             ag.read(ag.readreg(arg1), 'regs.TR');
             ag.RLC('regs.TR', 'regs.TR');
+            ag.addcycle('wait');
             ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.RLC_irr_r:  //n16&, n8&
