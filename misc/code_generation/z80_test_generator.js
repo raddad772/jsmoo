@@ -249,7 +249,7 @@ class Z80_proc_test {
         let final_set = new Set();
         for (let i in opcode_stream) {
             if (parseInt(i) === 2) continue; // skip null byte
-            let addr = parseInt(initial_PC)+parseInt(i);
+            let addr = (parseInt(initial_PC)+parseInt(i)) & 0xFFFF;
             initial_set.add(addr);
             final_set.add(addr);
             initial_RAMs.push([addr, opcode_stream[i]]);
