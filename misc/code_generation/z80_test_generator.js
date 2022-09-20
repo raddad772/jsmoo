@@ -539,7 +539,7 @@ class Z80T_state {
 
         this.BC_ = BCt;
         this.DE_ = DEt;
-        this.HL = HLt;
+        this.HL_ = HLt;
     }
 
     shadow_swap_af() {
