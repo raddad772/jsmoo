@@ -7060,30 +7060,36 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.RD = 0; pins.MRQ = 0;
                 regs.WZ |= (regs.TR << 8);
                 break;
-            case 7: // write begin
+            case 7: // wait
+                break;
+            case 8: // write begin
                 pins.Addr = (regs.SP);
                 break;
-            case 8:
+            case 9:
                 pins.D = (regs.L);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 9: // write end
+            case 10: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 break;
-            case 10: // write begin
+            case 11: // write begin
                 pins.Addr = (regs.TA);
                 break;
-            case 11:
+            case 12:
                 pins.D = (regs.H);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 12: // write end
+            case 13: // write end
                 pins.WR = 0; pins.MRQ = 0;
+                break;
+            case 14: // wait
+                break;
+            case 15: // wait
                 regs.H = ((regs.WZ) & 0xFF00) >>> 8;
                 regs.L = (regs.WZ) & 0xFF;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 13: // cleanup_custom
+            case 16: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -22613,29 +22619,35 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.RD = 0; pins.MRQ = 0;
                 regs.WZ |= (regs.TR << 8);
                 break;
-            case 7: // write begin
+            case 7: // wait
+                break;
+            case 8: // write begin
                 pins.Addr = (regs.SP);
                 break;
-            case 8:
+            case 9:
                 pins.D = ((regs.IX & 0xFF));
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 9: // write end
+            case 10: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 break;
-            case 10: // write begin
+            case 11: // write begin
                 pins.Addr = (regs.TA);
                 break;
-            case 11:
+            case 12:
                 pins.D = (((regs.IX & 0xFF00) >>> 8));
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 12: // write end
+            case 13: // write end
                 pins.WR = 0; pins.MRQ = 0;
+                break;
+            case 14: // wait
+                break;
+            case 15: // wait
                 regs.IX = regs.WZ;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 13: // cleanup_custom
+            case 16: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -29066,7 +29078,6 @@ const z80_decoded_opcodes = Object.freeze({
         function(regs, pins) { //OTIR
         switch(regs.TCU) {
             case 1:
-                //if (regs.PC === 0x59) dbg.break();
                 regs.Q = 1;
                 regs.TA = (regs.H << 8) | regs.L;
                 break;
@@ -38342,29 +38353,35 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.RD = 0; pins.MRQ = 0;
                 regs.WZ |= (regs.TR << 8);
                 break;
-            case 7: // write begin
+            case 7: // wait
+                break;
+            case 8: // write begin
                 pins.Addr = (regs.SP);
                 break;
-            case 8:
+            case 9:
                 pins.D = ((regs.IY & 0xFF));
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 9: // write end
+            case 10: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 break;
-            case 10: // write begin
+            case 11: // write begin
                 pins.Addr = (regs.TA);
                 break;
-            case 11:
+            case 12:
                 pins.D = (((regs.IY & 0xFF00) >>> 8));
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 12: // write end
+            case 13: // write end
                 pins.WR = 0; pins.MRQ = 0;
+                break;
+            case 14: // wait
+                break;
+            case 15: // wait
                 regs.IY = regs.WZ;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 13: // cleanup_custom
+            case 16: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
