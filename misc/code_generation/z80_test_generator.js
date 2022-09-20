@@ -1261,7 +1261,7 @@ class Z80_test_generator {
     BIT_o_irr_r(bit, addr, x) {
         this.Q(1);
         let r = this.BIT(bit, this.read(addr));
-        this.writereg(x, r);
+        //this.writereg(x, r);
         this.regs.setXY(this.readreg('WZH'));
     }
 
@@ -1462,7 +1462,7 @@ class Z80_test_generator {
 
     IM_o(code) {
         this.Q(0);
-        this.wait(4);
+        //this.wait(4);
         this.IM = parseInt(code);
     }
 
@@ -1920,7 +1920,9 @@ class Z80_test_generator {
 
     RLC_irr(addr) {
         this.Q(1);
-        this.write(addr, this.RLC(this.read(addr)));
+        let r = this.read(addr);
+        this.wait(1);
+        this.write(addr, this.RLC(r));
     }
 
     RLC_irr_r(addr, x) {
