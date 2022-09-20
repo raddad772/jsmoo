@@ -372,7 +372,7 @@ class SMSGG_VDP {
             attr_addr = (this.io.sprite_attr_table_address & 0x7E) << 7;
 
             for (let index = 0; index < 64; index++) {
-                let y = this.VRAM[attr_addr + index];
+                let y = this.VRAM[attr_addr + index] + 1;
                 if ((this.bg_gfx_vlines === 192) && (y === 0xD0)) break;
                 if (y >= 0xF0) y = (y - 0xFF) & 0x1FF;
                 if ((vpos < y) || (vpos > (y + vlimit))) continue;

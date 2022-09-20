@@ -2279,7 +2279,6 @@ class Z80_test_generator {
             this.test = new Z80_proc_test();
             Z80_generate_registers(this.test.initial);
             this.regs = new Z80T_state(this.test.initial);
-            this.regs.
             // Set EI and P to 0 so they are that way in the end
             // Unless an instruction sets them...
             this.regs.EI = 0;
