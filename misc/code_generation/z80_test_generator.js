@@ -1462,8 +1462,7 @@ class Z80_test_generator {
 
     IM_o(code) {
         this.Q(0);
-        //this.wait(4);
-        this.IM = parseInt(code);
+        this.regs.IM = parseInt(code);
     }
 
     IN_a_in() {
@@ -1686,7 +1685,7 @@ class Z80_test_generator {
         ta = this.readreg('DE');
         this.write(ta, data);
         ta = (ta - 1) & 0xFFFF;
-        this.writereg('DE', data);
+        this.writereg('DE', ta);
         this.wait(2);
         this.regs.F.N = this.regs.F.H = 0;
         ta = this.readreg('BC');
@@ -1715,7 +1714,7 @@ class Z80_test_generator {
         ta = this.readreg('DE');
         this.write(ta, data);
         ta = (ta + 1) & 0xFFFF;
-        this.writereg('DE', data);
+        this.writereg('DE', ta);
         this.wait(2);
         this.regs.F.N = this.regs.F.H = 0;
         ta = this.readreg('BC');
@@ -1957,7 +1956,7 @@ class Z80_test_generator {
         this.wait(3);
         this.regs.A = (this.regs.A & 0xF0) | (data >>> 4);
 
-        this.regs.N = this.regs.H = 0;
+        this.regs.F.N = this.regs.F.H = 0;
         this.regs.parity(this.regs.A);
         this.regs.setXYSZ(this.regs.A);
     }
@@ -2388,15 +2387,13 @@ function generate_Z80_tests(seed=null, CMOS) {
 
 
     let tests = {};
-    /* To test a specific test
-    os4[0] = 0xDD;
-    os4[1] = 0xCB;
-    os4[2] = null;
-    os4[3] = 0;
-    let n = 'DD CB s__ ' + hex2(0);
-    tests[n] = test_generator.generate_test(os4, 1, n);
+     //To test a specific test
+    os2[0] = 0xED;
+    os2[1] = 0x56;
+    let n = 'ED 56';
+    tests[n] = test_generator.generate_test(os2, 1, n);
     console.log(tests[n]);
-    return;*/
+    return;
 
     let opc_table;
 
