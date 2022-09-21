@@ -1478,7 +1478,6 @@ class Z80_test_generator {
         this.Q(1);
         this.writereg(x, this.IN(this.in(this.readreg('BC'))));
         this.regs.WZ = (this.readreg('BC') + 1) & 0xFFFF;
-
     }
 
     IN_ic() {
@@ -1516,7 +1515,7 @@ class Z80_test_generator {
         this.write(ta, data);
         ta = (ta - 1) & 0xFFFF;
         this.writereg('_HL', ta);
-        this.regs.F.C = +(((this.regs.C - 1) + data) > 0xFF);
+        this.regs.F.C = ((((this.regs.C - 1) & 0xFF) + data) & 0x100) >>> 8;
         this.regs.F.N = (data & 0x80) >>> 7;
         this.regs.parity((((this.regs.C - 1) & 0xFF) + data & 7 ^ this.regs.B) & 0xFF);
         this.regs.setXYSZ(this.regs.B);
@@ -1810,7 +1809,7 @@ class Z80_test_generator {
         this.regs.WZ = (ta - 1) & 0xFFFF;
 
         this.regs.F.C = ((this.regs.L + data) & 0x100) >>> 8;
-        this.regs.N = (data & 0x80) >>> 7;
+        this.regs.F.N = (data & 0x80) >>> 7;
         this.regs.parity((this.regs.L + data & 7 ^ this.regs.B) & 0xFF);
         this.regs.setXYSZ(this.regs.B);
         this.regs.F.H = this.regs.F.C;
@@ -1829,7 +1828,7 @@ class Z80_test_generator {
         this.regs.WZ = (ta + 1) & 0xFFFF;
 
         this.regs.F.C = ((this.regs.L + data) & 0x100) >>> 8;
-        this.regs.N = (data & 0x80) >>> 7;
+        this.regs.F.N = (data & 0x80) >>> 7;
         this.regs.parity((this.regs.L + data & 7 ^ this.regs.B) & 0xFF);
         this.regs.setXYSZ(this.regs.B);
         this.regs.F.H = this.regs.F.C;

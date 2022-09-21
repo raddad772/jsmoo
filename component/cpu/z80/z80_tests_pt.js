@@ -13,7 +13,7 @@ if (!getJSON) {
     }
 }
 let Z80local_server_url;
-
+let Z80_TEST_ONE = false;
 
 let Z80testRAM = new Uint8Array(65536);
 
@@ -123,7 +123,7 @@ function Z80cycle_pins(pins) {
  * @param tests
  * @returns {Z80test_return}
  */
-function Z80test_it_automated(cpu, tests) {
+function Z80test_it_automated(cpu, tests, is_call = false) {
     let padl = function(what, howmuch) {
         while(what.length < howmuch) {
             what = ' ' + what;
@@ -258,16 +258,25 @@ function Z80test_it_automated(cpu, tests) {
         }
         let testregs = function(name, mine, theirs, other_mine) {
             if (mine !== theirs) {
-                if (name === 'PC' && (theirs !== other_mine)) {
-                    if (name === 'F') {
-                        messages.push('startF ' + Z80_PARSEP(tests[i].f))
-                        messages.push('ourF   ' + Z80_PARSEP(cpu.regs.F.getbyte()));
-                        messages.push('theirF ' + Z80_PARSEP(theirs));
-                    }
-                    //console.log(name);
-                    messages.push('reg ' + name + ' MISMATCH! MINE:' + hex0x2(mine) + ' THEIRS:' + hex0x2(theirs));
-                    return false;
+                //console.log(mine, theirs);
+                if (name === 'F') {
+                    messages.push('startF ' + Z80_PARSEP(tests[i].f))
+                    messages.push('ourF   ' + Z80_PARSEP(cpu.regs.F.getbyte()));
+                    messages.push('theirF ' + Z80_PARSEP(theirs));
                 }
+                if (name === 'PC') {
+                    if (((cpu.regs.PC - 1) & 0xFFFF) === theirs) {
+                        if (is_call) return true;
+                        console.log('HMM WHAT? OFF BY 1');
+                    }
+                    /*messages.push('its the PC. Testing...');
+                    console.log('LETS SEE1', hex4(cpu.regs.PC), hex4(last_pc));
+                    cpu.cycle();
+                    console.log('LETS SEE', hex4(cpu.regs.PC));*/
+                }
+                console.log(name + ' MISMATCH!');;
+                messages.push('reg ' + name + ' MISMATCH! MINE:' + hex0x2(mine) + ' THEIRS:' + hex0x2(theirs));
+                return false;
             }
             return true;
         }
@@ -321,7 +330,7 @@ function Z80test_it_automated(cpu, tests) {
                 return new Z80test_return(false, my_cycles, messages, addr_io_mismatched, length_mismatch, Z80_fmt_test(tests[i]));
         }
         dbg.traces.clear();
-
+        if (Z80_TEST_ONE) break;
     }
     return new Z80test_return(true, ins, messages, addr_io_mismatched, length_mismatch, null);
 }
@@ -365,11 +374,11 @@ function Z80_get_name(iclass, ins) {
     return ostr.toLowerCase();
 }
 
-async function test_pt_z80_ins(cpu, iclass, ins) {
+async function test_pt_z80_ins(cpu, iclass, ins, is_call=false) {
     let opc = Z80_get_name(iclass, ins);
     let data = await getJSON(Z80local_server_url + opc + '.json');
     console.log('TESTING', opc);
-    let result = Z80test_it_automated(cpu, data);
+    let result = Z80test_it_automated(cpu, data, is_call);
     if (!result.passed) {
         tconsole.addl(txf('{r}TEST FOR {/b}' + hex0x2(ins) + ' {/r*}FAILED!{/} See console for test deets'));
         console.log(result.failed_test_struct);
@@ -428,10 +437,19 @@ async function dotest_pt_z80() {
         0xDDCB: [],
         0xFDCB: []
     }
+    let is_call = {
+        0x00: [0xCD, 0xE9],
+        0xCB: [],
+        0xDD: [0xCD, 0xE9],
+        0xFD: [0xCD, 0xE9],
+        0xED: [0xB1],
+        0xDDCB: [],
+        0xFDCB: []
+    }
     //let test_classes = [0x00, 0xCB, 0xED, 0xDD, 0xFD, 0xDDCB, 0xFDCB]
     // PASSED CLASSES: 0x00, 0xCB, 0xED, 0xDD, 0xFD, 0xDDCB
-    let test_classes = [0x00, 0xCB, 0xED, 0xDD, 0xFD, 0xDDCB, 0xFDCB];
-    //let test_classes = [0xFDCB];
+    let test_classes = [/*0x00, 0xCB, 0xED, */ 0xDD, 0xFD, 0xDDCB, 0xFDCB];
+    //let test_classes = [0xED];
     if (Z80_TEST_DO_TRACING) cpu.enable_tracing(read8);
     for (let mclass in test_classes) {
         let iclass = test_classes[mclass];
@@ -464,12 +482,14 @@ async function dotest_pt_z80() {
                 console.log('Skipping empty instruction', hex0x2(i));
                 continue;
             }
-            let result = await test_pt_z80_ins(cpu, iclass, i);
+            let icall = (is_call[iclass].indexOf(i) !== -1);
+            let result = await test_pt_z80_ins(cpu, iclass, i, icall);
             if (!result) {
                 total_fail = true;
                 break;
             }
             tconsole.addl(null, 'Test for ' + hex0x2(i) + ' passed!');
+            if (Z80_TEST_ONE) {total_fail = true; break; }
         }
         if (Z80_io_mismatches.length > 0) console.log('IO mismatches occured for', Z80_io_mismatches);
         if (total_fail) break;
