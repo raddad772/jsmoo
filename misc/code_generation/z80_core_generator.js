@@ -12,6 +12,34 @@ class Z80_get_opc_by_prefix_ret {
     }
 }
 
+function Z80hacksub(arg, sub) {
+    if (arg === 'HL') {
+        switch(sub) {
+            case 'IX':
+                return 'IX';
+            case 'IY':
+                return 'IY';
+        }
+    }
+    if (arg === 'H') {
+        switch(sub) {
+            case 'IX':
+                return 'IXH';
+            case 'IY':
+                return 'IYH';
+        }
+    }
+    if (arg === 'L') {
+        switch(sub) {
+            case 'IX':
+                return 'IXL';
+            case 'IY':
+                return 'IYL';
+        }
+    }
+    return arg;
+}
+
 function Z80_get_opc_by_prefix(prfx, i) {
     switch(prfx) {
         case 0:
@@ -432,6 +460,14 @@ class Z80_switchgen {
                 return 'regs.AFs';
             case 'SP':
                 return 'regs.SP';
+            case 'IXH':
+                return ('((regs.IX & 0xFF00) >>> 8)');
+            case 'IXL':
+                return ('(regs.IX & 0xFF)');
+            case 'IYH':
+                return ('((regs.IY & 0xFF00) >>> 8)');
+            case 'IYL':
+                return ('(regs.IY & 0xFF)');
             default:
                 if (typeof r === 'undefined') debugger;
                 console.log('UNDONE ZREGRIP', r);
@@ -511,6 +547,18 @@ class Z80_switchgen {
             case 'AFs':
                 this.addl('regs.As = (' + val + ' & 0xFF00) >>> 8;');
                 this.addl('regs.Fs = (' + val + ' & 0xFF);');
+                break;
+            case 'IXH':
+                this.addl('regs.IX = ((' + val + ') << 8) | (regs.IX & 0xFF);');
+                break;
+            case 'IXL':
+                this.addl('regs.IX = (regs.IX & 0xFF00) | ((' + val + ') & 0xFF);');
+                break;
+            case 'IYH':
+                this.addl('regs.IY = ((' + val + ') << 8) | (regs.IY & 0xFF);');
+                break;
+            case 'IYL':
+                this.addl('regs.IY = (regs.IY & 0xFF00) | ((' + val + ') & 0xFF);');
                 break;
             default:
                 console.log('UNDONE ZREGRIPW', r);
@@ -1077,6 +1125,8 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
     arg2 = Z80_replace_arg(arg2, sub);
     arg3 = Z80_replace_arg(arg3, sub);
     let argH, argL;
+    let HLH, HLL;
+    let replaced;
     switch(opcode_info.ins) {
         case Z80_MN.IRQ: // process IRQ
             ag.addcycle();
@@ -1152,7 +1202,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
         case Z80_MN.ADC_a_r:  //n8&
             ag.Q(1);
             ag.cleanup();
-            ag.ADD('regs.A', ag.readreg(arg1), 'regs.F.C', 'regs.A')
+            ag.ADD('regs.A', ag.readreg(Z80hacksub(arg1, sub)), 'regs.F.C', 'regs.A')
             break;
         case Z80_MN.ADC_hl_rr:  //n16&
             argL = ag.readregL(arg1);
@@ -1179,20 +1229,49 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.ADD_a_r:  //n8&
             ag.Q(1);
-            ag.ADD('regs.A', ag.readreg(arg1), '0', 'regs.A');
+            ag.ADD('regs.A', ag.readreg(Z80hacksub(arg1, sub)), '0', 'regs.A');
             break;
         case Z80_MN.ADD_hl_rr:  //n16&
             argH = ag.readregH(arg1);
             argL = ag.readregL(arg1);
+            ag.addl('// SUB was ' + sub);
             ag.Q(1);
             ag.psaddl('let x, y, z;');
-            ag.addl('regs.WZ = (((regs.H << 8) | regs.L) + 1) & 0xFFFF;');
+            switch(sub) {
+                case 'IX':
+                    HLH = '((regs.IX & 0xFF00) >>> 8)';
+                    HLL = '(regs.IX & 0xFF)'
+                    ag.addl('regs.WZ = (regs.IX + 1) & 0xFFFF;');
+                    break;
+                case 'IY':
+                    HLH = '((regs.IY & 0xFF00) >>> 8)';
+                    HLL = '(regs.IY & 0xFF)'
+                    ag.addl('regs.WZ = (regs.IY + 1) & 0xFFFF;');
+                    break;
+                default:
+                    HLH = 'regs.H';
+                    HLL = 'regs.L'
+                    ag.addl('regs.WZ = (((regs.H << 8) | regs.L) + 1) & 0xFFFF;');
+                    break;
+            }
             ag.addl('regs.t[0] = regs.F.PV; regs.t[1] = regs.F.Z; regs.t[2] = regs.F.S;');
             ag.addcycles(4);
-            ag.ADD('regs.L', argL, '0', 'regs.L', false);
+            ag.ADD(HLL, argL, '0', 'regs.t[4]', false);
             ag.addcycles(3);
-            ag.ADD('regs.H', argH, 'regs.F.C', 'regs.H', false);
+            ag.ADD(HLH, argH, 'regs.F.C', 'regs.t[5]', false);
             ag.addl('regs.F.PV = regs.t[0]; regs.F.Z = regs.t[1]; regs.F.S = regs.t[2];');
+            switch(sub) {
+                case 'IX':
+                    ag.addl('regs.IX = (regs.t[5] << 8) | regs.t[4];');
+                    break;
+                case 'IY':
+                    ag.addl('regs.IY = (regs.t[5] << 8) | regs.t[4];');
+                    break;
+                default:
+                    ag.addl('regs.H = regs.t[5];');
+                    ag.addl('regs.L = regs.t[4];');
+                    break;
+            }
             break;
         case Z80_MN.AND_a_irr:  //n16&
             ag.Q(1);
@@ -1207,7 +1286,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.AND_a_r:  //n8&
             ag.Q(1);
-            ag.AND('regs.A', ag.readreg(arg1), 'regs.A');
+            ag.AND('regs.A', ag.readreg(Z80hacksub(arg1, sub)), 'regs.A');
             break;
         case Z80_MN.BIT_o_irr:  //n3, n16&
             ag.Q(1);
@@ -1268,7 +1347,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.CP_a_r:  //n8& x
             ag.Q(1);
-            ag.CP('regs.A', ag.readreg(arg1));
+            ag.CP('regs.A', ag.readreg(Z80hacksub(arg1, sub)));
             break;
         case Z80_MN.CPD:  //
             ag.Q(1);
@@ -1322,8 +1401,38 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.DEC_r:  //n8&
             ag.Q(1);
-            ag.DEC(ag.readreg(arg1));
-            ag.writereg(arg1, 'regs.TR');
+            replaced = false;
+            if (arg1 === 'H')  {
+                switch(sub) {
+                    case 'IX':
+                        ag.DEC('(regs.IX & 0xFF00) >>> 8');
+                        ag.addl('regs.IX = (regs.TR << 8) | (regs.IX & 0xFF)');
+                        replaced = true;
+                        break;
+                    case 'IY':
+                        ag.DEC('(regs.IY & 0xFF00) >>> 8');
+                        ag.addl('regs.IY = (regs.TR << 8) | (regs.IY & 0xFF)');
+                        replaced = true;
+                        break;
+                }
+            } else if (arg1 === 'L') {
+                switch(sub) {
+                    case 'IX':
+                        ag.DEC('regs.IX & 0xFF');
+                        ag.addl('regs.IX = (regs.IX & 0xFF00) | regs.TR;');
+                        replaced = true;
+                        break;
+                    case 'IY':
+                        ag.DEC('regs.IY & 0xFF');
+                        ag.addl('regs.IY = (regs.IY & 0xFF00) | regs.TR;');
+                        replaced = true;
+                        break;
+                }
+            }
+            if (!replaced) {
+                ag.DEC(ag.readreg(arg1));
+                ag.writereg(arg1, 'regs.TR');
+            }
             break;
         case Z80_MN.DEC_rr:  //n16&
             ag.Q(0);
@@ -1425,8 +1534,38 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.INC_r:  //n8&
             ag.Q(1);
-            ag.INC(ag.readreg(arg1));
-            ag.writereg(arg1, 'regs.TR');
+            replaced = false;
+            if (arg1 === 'H')  {
+                switch(sub) {
+                    case 'IX':
+                        ag.INC('(regs.IX & 0xFF00) >>> 8');
+                        ag.addl('regs.IX = (regs.TR << 8) | (regs.IX & 0xFF)');
+                        replaced = true;
+                        break;
+                    case 'IY':
+                        ag.INC('(regs.IY & 0xFF00) >>> 8');
+                        ag.addl('regs.IY = (regs.TR << 8) | (regs.IY & 0xFF)');
+                        replaced = true;
+                        break;
+                }
+            } else if (arg1 === 'L') {
+                switch(sub) {
+                    case 'IX':
+                        ag.INC('regs.IX & 0xFF');
+                        ag.addl('regs.IX = (regs.IX & 0xFF00) | regs.TR;');
+                        replaced = true;
+                        break;
+                    case 'IY':
+                        ag.INC('regs.IY & 0xFF');
+                        ag.addl('regs.IY = (regs.IY & 0xFF00) | regs.TR;');
+                        replaced = true;
+                        break;
+                }
+            }
+            if (!replaced) {
+                ag.INC(ag.readreg(arg1));
+                ag.writereg(arg1, 'regs.TR');
+            }
             break;
         case Z80_MN.INC_rr:  //n16&
             ag.Q(0);
@@ -1520,17 +1659,19 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
         case Z80_MN.LD_r_n:  //n8&
             ag.Q(0);
             ag.operand8('regs.TR');
+            arg1 = Z80hacksub(arg1, sub);
             ag.writereg(arg1, 'regs.TR');
             break;
         case Z80_MN.LD_r_irr:  //n8&, n16&
             ag.Q(0);
             ag.displace(arg2, 'regs.TA');
             ag.read('regs.TA', 'regs.TR');
+            arg1 = Z80hacksub(arg1, sub);
             ag.writereg(arg1, 'regs.TR');
             break;
         case Z80_MN.LD_r_r:  //n8&, n8&
             ag.Q(0);
-            ag.writereg(arg1, ag.readreg(arg2));
+            ag.writereg(Z80hacksub(arg1, sub), ag.readreg(Z80hacksub(arg2, sub)));
             break;
         case Z80_MN.LD_r_r1:  //n8&, n8&
             ag.Q(0);
@@ -1614,7 +1755,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.OR_a_r:  //n8&
             ag.Q(1);
-            ag.OR('regs.A', ag.readreg(arg1), 'regs.A');
+            ag.OR('regs.A', ag.readreg(Z80hacksub(arg1, sub)), 'regs.A');
             break;
         case Z80_MN.OTDR:  //
             ag.Q(1);
@@ -1866,7 +2007,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.SBC_a_r:  //n8&
             ag.Q(1);
-            ag.SUB('regs.A', ag.readreg(arg1), 'regs.F.C', 'regs.A');
+            ag.SUB('regs.A', ag.readreg(Z80hacksub(arg1, sub)), 'regs.F.C', 'regs.A');
             break;
         case Z80_MN.SBC_hl_rr:  //n16&
             ag.Q(1);
@@ -1992,7 +2133,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.SUB_a_r:  //n8&
             ag.Q(1);
-            ag.SUB('regs.A', ag.readreg(arg1), '0', 'regs.A');
+            ag.SUB('regs.A', ag.readreg(Z80hacksub(arg1, sub)), '0', 'regs.A');
             break;
         case Z80_MN.XOR_a_irr:  //n16&
             ag.Q(1);
@@ -2007,7 +2148,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.XOR_a_r:  //n8&
             ag.Q(1);
-            ag.XOR('regs.A', ag.readreg(arg1), 'regs.A');
+            ag.XOR('regs.A', ag.readreg(Z80hacksub(arg1, sub)), 'regs.A');
             break;
     }
     return 'function(regs, pins) { //' + opcode_info.mnemonic + '\n' + ag.finished() + indent + '}';
