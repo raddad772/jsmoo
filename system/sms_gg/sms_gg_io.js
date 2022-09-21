@@ -162,7 +162,7 @@ class SMSGG_bus {
 
     // 0x3E memory control
     write_reg_memory_ctrl(val) {
-        this.mapper.set_bios(!(val & 8)); // 1 = disabled, 0 = enabled
+        this.mapper.set_bios(+(!(val & 8))); // 1 = disabled, 0 = enabled
         this.mapper.enable_cart = +(!(val & 0x20));
         this.io.disable = (val & 4) >>> 2;
     }
