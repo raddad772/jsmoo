@@ -2388,12 +2388,12 @@ function generate_Z80_tests(seed=null, CMOS) {
 
     let tests = {};
      //To test a specific test
-    os2[0] = 0xED;
+    /*os2[0] = 0xED;
     os2[1] = 0x56;
     let n = 'ED 56';
     tests[n] = test_generator.generate_test(os2, 1, n);
     console.log(tests[n]);
-    return;
+    return;*/
 
     let opc_table;
 
