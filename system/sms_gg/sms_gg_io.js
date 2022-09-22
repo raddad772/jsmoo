@@ -164,6 +164,7 @@ class SMSGG_bus {
     write_reg_memory_ctrl(val) {
         this.mapper.set_bios(+(!(val & 8))); // 1 = disabled, 0 = enabled
         this.mapper.enable_cart = +(!(val & 0x20));
+        console.log('SET BIOS, CART ENABLE TO', this.mapper.enable_bios, this.mapper.enable_cart);
         this.io.disable = (val & 4) >>> 2;
     }
 
@@ -183,12 +184,12 @@ class SMSGG_bus {
          D1 : Port A DOWN pin input
          D0 : Port A UP pin input
          */
-                this.portA.latch();
+        this.portA.latch();
         this.portB.latch();
         let pinsA = this.portA.read_pins();
         let pinsB = this.portB.read_pins();
         let r = (pinsA.up) | (pinsA.down << 1) | (pinsA.left << 2) | (pinsA.right << 3) | (pinsA.tl << 4) | (pinsA.tr << 5) | 0x20 | (pinsB.up << 6) | (pinsB.down << 7);
-        console.log('RETURNING', hex2(r))
+        //console.log('RETURNING', hex2(r))
         return r;
     }
 

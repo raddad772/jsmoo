@@ -192,7 +192,7 @@ class z80_t {
 
     enable_tracing(trace_peek) {
         this.trace_on = true;
-        this.trace_cycles = 0;
+        //this.trace_cycles = 0;
         if (typeof trace_peek !== 'undefined')
             this.trace_peek = trace_peek;
     }

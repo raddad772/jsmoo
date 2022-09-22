@@ -97,6 +97,8 @@ class SMSGG {
 
         this.bus.vdp = this.vdp;
 
+        this.bus.mapper.cpu = this.cpu;
+
         dbg.add_cpu(D_RESOURCE_TYPES.Z80, this);
         if (variant === SMSGG_variants.GG) {
             input_config.connect_controller('gg');
