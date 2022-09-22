@@ -12,6 +12,7 @@ class SMSGG_gamepad {
             left: 1,
             right: 1
         }
+        this.num = num;
         if (num === 1) this.joymap = input_config.controller_els.sms1;
         else this.joymap = input_config.controller_els.sms2;
     }

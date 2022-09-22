@@ -332,6 +332,7 @@ class debugger_t {
 
     break(whodidit, why=false) {
         // CASUE BREAK
+        debugger;
         console.log('DOING BREAK');
         this.state = DBG_STATES.PAUSE;
         this.do_break = true;

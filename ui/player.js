@@ -192,6 +192,15 @@ class global_player_t {
 	load_bios(what) {
 		this.system.load_BIOS_from_RAM(what);
 	}
+
+	set_zoom(to) {
+		if (!to) {
+			emu_canvas.set_scale(1);
+		}
+		else {
+			emu_canvas.set_scale(2);
+		}
+	}
 }
 
 const global_player = new global_player_t();

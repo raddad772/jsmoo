@@ -91,8 +91,10 @@ class SMSGG_bus {
         this.notify_IRQ = function(level) { debugger; }
         this.notify_NMI = function(level) { debugger; }
 
-        this.portA = new SMSGG_controller_port('A');
-        this.portB = new SMSGG_controller_port('B');
+        this.controllerA = new SMSGG_gamepad(variant, 1);
+        this.portA = new SMSGG_controller_port(variant,'A');
+        this.portB = new SMSGG_controller_port(variant, 'B');
+        this.portA.attached_device = this.controllerA;
         this.reset_button = new SMSGG_reset_button(variant);
         this.pause_button = new SMSGG_pause_button(variant);
 
@@ -165,11 +167,10 @@ class SMSGG_bus {
         let pinsA = this.portA.read();
         let pinsB = this.portB.read();
         let r = (pinsA & 0x3F);
-        r = (pinsB & 3) << 6;
+        r |= (pinsB & 3) << 6;
         if (this.portA.TR_direction === 0) {
             r = (r & 0xDF) | (this.portA.TR_level << 5);
         }
-        //console.log('RETURNING', hex2(r))
         return r;
     }
 
