@@ -36,8 +36,9 @@ c
  */
 
 class SMSGG_clock {
-    constructor(variant) {
+    constructor(variant, region) {
         this.variant = variant;
+        this.region = region;
         this.master_clock_speed = 10738580 // 10.73858MHz
 
         this.cpu_master_clock = 0;
@@ -66,6 +67,7 @@ class SMSGG_clock {
             cc_line: 260, // PAL 311
             bottom_rendered_line: 191,
             rendered_lines: 192,
+            region: REGION.NTSC,
             vblank_start: 192 // not sure?
         }
     }
@@ -75,12 +77,14 @@ class SMSGG {
     /**
      * @param {canvas_manager_t} canvas_manager
      * @param {number} variant
+     * @param {number} region
      */
-    constructor(canvas_manager, variant) {
+    constructor(canvas_manager, variant, region) {
         this.canvas_manager = canvas_manager;
         this.variant = variant;
-        this.clock = new SMSGG_clock(variant);
-        this.bus = new SMSGG_bus(this.variant);
+        this.region = region
+        this.clock = new SMSGG_clock(variant, region);
+        this.bus = new SMSGG_bus(variant, region);
         this.cpu = new z80_t(false);
         this.cpu.reset();
 

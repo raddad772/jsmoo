@@ -1,55 +1,14 @@
 "use strict";
 
-class SMSGG_gamepad {
-    constructor(variant) {
-        this.variant = variant;
-        this.pins = {
-            tr: 1, // button 2
-            th: 1,
-            tl: 1, // button 1
-            up: 1,
-            down: 1,
-            left: 1,
-            right: 1
-        }
-
-        this.io = {
-            tr_direction: 0,
-            tr_out_level: 0,
-            th_direction: 0,
-            th_out_level: 0
-        }
-    }
-
-    set_pins(tr_direction, tr_out_level, th_direction, th_out_level) {
-        // US, european, etc. will return the same data written
-        // Japanese will return different data
-        this.pins.tr = tr_out_level;
-        this.pins.th = th_out_level;
-    }
-
-    latch() {
-        // Set our pins based on current input. 1 is high
-        this.pins.up = 1;
-        this.pins.down = 1;
-        this.pins.left = 1;
-        this.pins.right = 1;
-        this.pins.tl = 1;
-        this.pins.tr = 1;
-    }
-}
-
 class SMSGG_controller_port {
     constructor(variant, which) {
         this.variant = variant;
         this.which = which;
 
-        this.TR_input = 0;
-        this.TH_input = 0;
-
-        this.TR_output = 0;
-        this.TH_output = 0;
-
+        this.TR_level = 1;
+        this.TH_level = 1;
+        this.TR_direction = 1;
+        this.TH_direction = 1;
         this.empty_pins = {
             tr: 1, // button 2
             th: 1,
@@ -67,19 +26,19 @@ class SMSGG_controller_port {
 
     }
 
-    set_pins(tr_direction, tr_out_level, th_direction, th_out_level) {
-        if (this.attached_device === null) return;
-        this.attached_device.set_pins(tr_direction, tr_out_level, th_direction, th_out_level);
+    write() {
     }
 
-    latch() {
-        if (this.attached_device === null) return;
-        this.attached_device.latch();
+    read() {
+        if (this.attached_device === null) return 0x7f;
+        return this.attached_device.read();
     }
 
-    read_pins() {
-        if (this.attached_device === null) return this.empty_pins;
-        else return this.attached_device.pins;
+    reset() {
+        this.TR_level = 1;
+        this.TH_level = 1;
+        this.TR_direction = 1;
+        this.TH_direction = 1;
     }
 }
 
@@ -99,6 +58,7 @@ class SMSGG_reset_button {
     read() {
         return this.value;
     }
+
 }
 
 class SMSGG_pause_button {
@@ -113,8 +73,9 @@ class SMSGG_pause_button {
 }
 
 class SMSGG_bus {
-    constructor(variant) {
+    constructor(variant, region) {
         this.variant = variant;
+        this.region = region;
         /**
          * @type {SMSGG_VDP}
          */
@@ -162,15 +123,32 @@ class SMSGG_bus {
 
     // 0x3E memory control
     write_reg_memory_ctrl(val) {
-        this.mapper.set_bios(+(!(val & 8))); // 1 = disabled, 0 = enabled
-        this.mapper.enable_cart = +(!(val & 0x20));
+        this.mapper.set_bios(((val & 8) >>> 3) ^ 1); // 1 = disabled, 0 = enabled
+        this.mapper.enable_cart = ((val & 0x40) >>> 6) ^ 1;
         console.log('SET BIOS, CART ENABLE TO', this.mapper.enable_bios, this.mapper.enable_cart);
         this.io.disable = (val & 4) >>> 2;
     }
 
     write_reg_io_ctrl(val) {
-        this.portA.set_pins(val & 1, (val & 0x10) >>> 4, (val & 2) >>> 1, (val & 0x20) >>> 5);
-        this.portB.set_pins((val & 4) >>> 2, (val & 0x40) >>> 6, (val & 8) >>> 3, (val & 0x80) >>> 7)
+        let thl1 = this.portA.TH_level;
+        let thl2 = this.portB.TH_level;
+
+        this.portA.TR_direction = val & 1;
+        this.portA.TH_direction = (val & 2) >>> 1;
+        this.portB.TR_direction = (val & 4) >>> 2;
+        this.portB.TH_direction = (val & 8) >>> 3;
+
+        if (this.region === REGION.NTSCJ) {
+            // Japanese sets level to direction
+            this.portA.TH_level = this.portA.TH_direction;
+            this.portB.TH_level = this.portB.TH_direction;
+        } else {
+            // others allow us to just set stuff directly I guess
+            this.portA.TR_level = (val & 0x10) >>> 4;
+            this.portA.TH_level = (val & 0x20) >>> 5;
+            this.portB.TR_level = (val & 0x40) >>> 6;
+            this.portB.TH_level = (val & 0x80) >>> 7;
+        }
     }
 
     read_reg_ioport1(val) {
@@ -184,11 +162,13 @@ class SMSGG_bus {
          D1 : Port A DOWN pin input
          D0 : Port A UP pin input
          */
-        this.portA.latch();
-        this.portB.latch();
-        let pinsA = this.portA.read_pins();
-        let pinsB = this.portB.read_pins();
-        let r = (pinsA.up) | (pinsA.down << 1) | (pinsA.left << 2) | (pinsA.right << 3) | (pinsA.tl << 4) | (pinsA.tr << 5) | 0x20 | (pinsB.up << 6) | (pinsB.down << 7);
+        let pinsA = this.portA.read();
+        let pinsB = this.portB.read();
+        let r = (pinsA & 0x3F);
+        r = (pinsB & 3) << 6;
+        if (this.portA.TR_direction === 0) {
+            r = (r & 0xDF) | (this.portA.TR_level << 5);
+        }
         //console.log('RETURNING', hex2(r))
         return r;
     }
@@ -204,12 +184,18 @@ class SMSGG_bus {
          D1 : Port B RIGHT pin input
          D0 : Port B LEFT pin input
          */
-        this.portA.latch();
-        this.portB.latch();
-        let pinsA = this.portA.read_pins();
-        let pinsB = this.portB.read_pins();
+        let pinsA = this.portA.read();
+        let pinsB = this.portB.read();
         this.reset_button.latch();
-        return (pinsB.left) | (pinsB.right << 1) | (pinsB.tl << 2) | (pinsB.tr << 3) | (this.reset_button.read() << 4) | (pinsA.th << 6) | (pinsB.th << 7);
+        let r = (pinsB >>> 2) & 0x0F;
+        r |= this.reset_button.value << 4;
+        r |= 0x20;
+        r |= (pinsA & 0x40);
+        r |= (pinsB & 0x40) << 1;
+        if (this.portB.TR_direction === 0) r = (r & 0xF7) | (this.portB.TR_level << 3);
+        if (this.portA.TH_direction === 0) r = (r & 0xBF) | (this.portA.TH_level << 6);
+        if (this.portB.TH_direction === 0) r = (r & 0x7F) | (this.portB.TH_level << 7);
+        return r;
     }
 
     cpu_in_sms2(addr, val, has_effect=true) {

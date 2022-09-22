@@ -164,7 +164,7 @@ function Z80_disassemble(PC, IR, peek_func) {
                                         ostr = "EX AF, AF'";
                                         break;
                                     case 2:
-                                        ostr = 'DJNZ ' + read8();
+                                        ostr = 'DJNZ ' + sread8();
                                         break;
                                     case 3:
                                         ostr = 'JR ' + sread8();

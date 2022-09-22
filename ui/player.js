@@ -157,11 +157,11 @@ class global_player_t {
 		}
 		switch(this.system_kind) {
 			case 'gg':
-				this.system = new SMSGG(this.canvas_manager, SMSGG_variants.GG);
+				this.system = new SMSGG(this.canvas_manager, SMSGG_variants.GG, REGION.NTSC);
 				//load_bios('/gg/roms/bios.gg');
 				break;
 			case 'sms':
-				this.system = new SMSGG(this.canvas_manager, SMSGG_variants.SMS2);
+				this.system = new SMSGG(this.canvas_manager, SMSGG_variants.SMS2, REGION.NTSC);
 				load_bios('/sms/roms/bios13fx.sms');
 				break;
 			case 'snes':

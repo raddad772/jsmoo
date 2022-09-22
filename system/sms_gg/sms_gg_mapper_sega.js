@@ -138,8 +138,8 @@ class SMSGG_mapper_sega {
                 this.cart.rom_40_bank = (val % this.cart.num_banks) << 14;
                 return;
             case 0xFFFF: // ROM 0x8000-0xBFFF
-                console.log('CART PAGE', this.cpu.trace_cycles, val % this.cart.num_banks, hex4((val % this.cart.num_banks) << 14));
-                if (val === 15) dbg.break();
+                //console.log('CART PAGE', this.cpu.trace_cycles, val % this.cart.num_banks, hex4((val % this.cart.num_banks) << 14));
+                //if (val === 15) dbg.break();
                 this.cart.rom_80_bank = (val % this.cart.num_banks) << 14;
                 return;
         }
