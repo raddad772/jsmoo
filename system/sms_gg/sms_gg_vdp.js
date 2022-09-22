@@ -1,10 +1,5 @@
 "use strict";
 
-const SMSGG_REGIONS = {
-    NTSC: 0,
-    PAL: 1
-}
-
 const SMSGG_PALETTE = [
     0x00, 0x00, 0x08, 0x0C, 0x10, 0x30, 0x01, 0x3C,
     0x02, 0x03, 0x05, 0x0F, 0x04, 0x33, 0x15, 0x3F
@@ -482,7 +477,7 @@ class SMSGG_VDP {
     }
 
     read_vcounter() {
-        if (this.clock.timing.region === SMSGG_REGIONS.NTSC) {
+        if (this.clock.timing.region === REGION.NTSC) {
             switch(this.io.video_mode) {
                 case 0x0B: // 1011 256x224
                     return (this.clock.vpos <= 234) ? this.clock.vpos : this.clock.vpos - 6;

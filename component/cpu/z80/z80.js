@@ -1,11 +1,11 @@
 "use strict";
 
-//let Z80_TRACE_BRK = 1659300;
+let Z80_TRACE_BRK = 37451979;
 //let Z80_TRACE_BRK = -1;
 //let Z80_PC_BRK = 0x0EDF; //0x0C0A;
 
-let Z80_TRACE_BRK = -1; //5713457;
-let Z80_PC_BRK = -1;
+//let Z80_TRACE_BRK = -1; //5713457;
+let Z80_PC_BRK = 0x082A;
 
 const Z80P = Object.freeze({
     HL: 0,

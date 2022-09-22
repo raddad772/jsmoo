@@ -69,6 +69,12 @@
  *
  */
 
+const REGION = {
+    NTSC: 0,
+    NTSCJ: 1,
+    PAL: 2
+}
+
 class perf_split_t {
     constructor(name, order) {
         this.name = name;
