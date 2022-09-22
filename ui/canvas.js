@@ -22,8 +22,8 @@ class canvas_manager_t {
 
     set_scale(scale) {
         if (scale !== this.scale) {
-            this.el.height = height * scale;
-            this.el.width = width * scale;
+            this.el.height = this.height * scale;
+            this.el.width = this.width * scale;
         }
         this.scale = scale;
     }

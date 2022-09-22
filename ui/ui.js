@@ -23,6 +23,7 @@ let ui_el = {
 	log_hdma_checkbox: ['checkbox', 'loghdma', false],
 	tracing_CPU_checkbox: ['checkbox', 'tracingCPU', CPU_DO_TRACING_AT_START],
 	tracing_APU_checkbox: ['checkbox', 'tracingAPU', APU_DO_TRACING_AT_START],
+	zoom_video_checkbox: ['checkbox','zoom_checkbox', false],
 	watching_checkbox: ['checkbox', 'watchpt', null],
 	mc_input: ['input', 'masterclocksteps', DEFAULT_STEPS.master],
 	scanline_input: ['input', 'scanlinesteps', DEFAULT_STEPS.scanlines],
@@ -503,6 +504,10 @@ async function init_ui() {
 	ui_el.brknmirq_checkbox.addEventListener('change', (event) => {
 		dbg.brk_on_NMIRQ = !!event.currentTarget.checked;
 	});
+
+	ui_el.zoom_video_checkbox.addEventListener('change', (event) => {
+		global_player.set_zoom(!!event.currentTarget.checked);
+	})
 
 
 	ui_el.tracing_CPU_checkbox.addEventListener('change', (event) => {
