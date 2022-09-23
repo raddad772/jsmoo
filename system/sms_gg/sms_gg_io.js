@@ -127,7 +127,6 @@ class SMSGG_bus {
     write_reg_memory_ctrl(val) {
         this.mapper.set_bios(((val & 8) >>> 3) ^ 1); // 1 = disabled, 0 = enabled
         this.mapper.enable_cart = ((val & 0x40) >>> 6) ^ 1;
-        console.log('SET BIOS, CART ENABLE TO', this.mapper.enable_bios, this.mapper.enable_cart);
         this.io.disable = (val & 4) >>> 2;
     }
 

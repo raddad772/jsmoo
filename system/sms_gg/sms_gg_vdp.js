@@ -123,9 +123,9 @@ class SMSGG_VDP {
                     g = (((color >>> 4) & 0x0F) * 16) - 1;
                     r = ((color & 0x0F) * 16) - 1;
                 } else {
-                    b = (((color >>> 4) & 7) * 32);
-                    g = (((color >>> 2) & 7) * 32);
-                    r = ((color & 7) * 32);
+                    b = ((color >>> 4) & 3) * 0x55;
+                    g = ((color >>> 2) & 3) * 0x55;
+                    r = (color & 3) * 0x55;
                 }
 
                 imgdata.data[di] = r;
@@ -191,7 +191,7 @@ class SMSGG_VDP {
 
     dac_palette(index) {
         if (this.variant !== SMSGG_variants.GG) {
-            if (!(this.io.video_mode & 8)) return SMSGG_PALETTE[index & 0x0F];
+            //if (!(this.io.video_mode & 8)) return SMSGG_PALETTE[index & 0x0F];
             return this.CRAM[index] & 0x3F;
         }
         if (this.mode === SMSGG_vdp_modes.SMS) {
@@ -440,19 +440,18 @@ class SMSGG_VDP {
         }
 
         if (this.clock.vpos < this.clock.timing.rendered_lines) {
-            if (this.clock.line_counter-- < 0) {
+            this.clock.line_counter = (this.clock.line_counter - 1);
+            if (this.clock.line_counter <= 0) {
                 this.clock.line_counter = this.io.line_irq_reload;
                 this.io.irq_line_pending = 1;
                 this.update_irqs();
             }
-            else {
-                this.clock.line_counter = this.io.line_irq_reload;
-            }
-
+        }
+        else {
+            this.clock.line_counter = this.io.line_irq_reload;
         }
 
         if (this.clock.vpos === this.clock.timing.vblank_start) {
-            //console.log('SET IRQ FRAME PENDING 1', this.clock.vpos, this.clock.hpos);;
             this.io.irq_frame_pending = 1;
             this.update_irqs();
         }
@@ -570,7 +569,10 @@ class SMSGG_VDP {
     update_irqs() {
         let level = 0;
         if (this.io.irq_frame_pending && this.io.irq_frame_enabled) level = 1;
-        if (this.io.irq_line_pending && this.io.irq_line_enabled) level = 1;
+        if (this.io.irq_line_pending && this.io.irq_line_enabled) {
+            level = 1;
+            this.io.irq_line_pending = 0;
+        }
         this.bus.notify_IRQ(level);
     }
 
@@ -719,7 +721,6 @@ class SMSGG_VDP {
     }
 
     update_videomode() {
-        console.log('VIDEO MODE', this.io.video_mode);
         let bottom_row = 192;
         if (this.clock.variant === SMSGG_variants.SMS1) bottom_row = 192;
         else {
@@ -792,7 +793,6 @@ class SMSGG_VDP {
                 this.io.sprite_size = (val & 2) >>> 1;
                 this.io.video_mode = (this.io.video_mode & 0x0A) | ((val & 8) >>> 1) | ((val & 0x10) >>> 4);
                 this.io.irq_frame_enabled = (val & 0x20) >>> 5;
-                console.log('WRITE IRQ FRAME ENABLED', this.io.irq_frame_enabled);
                 this.io.display_enable = (val & 0x40) >>> 6;
                 this.io.irq_frame_pending &= this.io.irq_frame_enabled;
                 this.update_irqs();
@@ -823,7 +823,7 @@ class SMSGG_VDP {
                 this.io.vscroll = val;
                 return;
             case 10:
-                this.io.irq_reload = val;
+                this.io.line_irq_reload = val;
                 return;
         }
     }
