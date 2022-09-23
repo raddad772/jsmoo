@@ -1258,13 +1258,6 @@ class Z80_test_generator {
         this.regs.setXY(this.readreg('WZH'));
     }
 
-    BIT_o_irr_r(bit, addr, x) {
-        this.Q(1);
-        let r = this.BIT(bit, this.read(addr));
-        //this.writereg(x, r);
-        this.regs.setXY(this.readreg('WZH'));
-    }
-
     BIT_o_r(bit, x) {
         this.Q(1);
         this.BIT(bit, this.readreg(x));
@@ -1847,13 +1840,18 @@ class Z80_test_generator {
 
     RES_o_irr(bit, addr) {
         this.Q(1);
-        this.write(addr, this.RES(bit, this.read(addr)))
+        let x = this.RES(bit, this.read(addr));
+        this.wait(1);
+        this.write(addr, x);
     }
 
     RES_o_irr_r(bit, addr, x) {
         this.Q(1);
-        this.writereg(x, this.RES(bit, this.read(addr)));
-        this.write(addr, this.readreg(x));
+        this.wait(2);
+        let tv = this.RES(bit, this.read(addr));
+        this.wait(1);
+        this.writereg(x, tv);
+        this.write(addr, tv);
     }
 
     RES_o_r(bit, x) {
@@ -1891,11 +1889,14 @@ class Z80_test_generator {
 
     RL_irr(addr) {
         this.Q(1);
-        this.write(addr, this.RL(this.read(addr)));
+        let x = this.RL(this.read(addr));
+        this.wait(1);
+        this.write(addr, x);
     }
 
     RL_irr_r(addr, x) {
         this.Q(1);
+        this.wait(2);
         let tv = this.RL(this.read(addr));
         this.writereg(x, tv);
         this.write(addr, tv);
@@ -1925,7 +1926,9 @@ class Z80_test_generator {
 
     RLC_irr_r(addr, x) {
         this.Q(1);
+        this.wait(2);
         let tv = this.RLC(this.read(addr));
+        this.wait(1);
         this.writereg(x, tv);
         this.write(addr, tv);
     }
@@ -1962,11 +1965,14 @@ class Z80_test_generator {
 
     RR_irr(addr) {
         this.Q(1);
-        this.write(addr, this.RR(this.read(addr)));
+        let x = this.RR(this.read(addr));
+        this.wait(1);
+        this.write(addr, x);
     }
 
     RR_irr_r(addr, x) {
         this.Q(1);
+        this.wait(2);
         let tv = this.RR(this.read(addr));
         this.writereg(x, tv);
         this.write(addr, tv);
@@ -1989,11 +1995,14 @@ class Z80_test_generator {
 
     RRC_irr(addr) {
         this.Q(1);
-        this.write(addr, this.RRC(this.read(addr)));
+        let x = this.RRC(this.read(addr));
+        this.wait(1);
+        this.write(addr, x)
     }
 
     RRC_irr_r(addr, x) {
         this.Q(1);
+        this.wait(2);
         let tv = this.RRC(this.read(addr));
         this.writereg(x, tv);
         this.write(addr, tv);
@@ -2075,12 +2084,16 @@ class Z80_test_generator {
 
     SET_o_irr(bit, addr) {
         this.Q(1);
-        this.write(addr, this.SET(bit, this.read(addr)));
+        let x = this.SET(bit, this.read(addr));
+        this.wait(1);
+        this.write(addr, x);
     }
 
     SET_o_irr_r(bit, addr, x) {
         this.Q(1);
+        this.wait(2);
         let tv = this.SET(bit, this.read(addr));
+        this.wait(1);
         this.writereg(x, tv);
         this.write(addr, tv);
     }
@@ -2092,11 +2105,14 @@ class Z80_test_generator {
 
     SLA_irr(addr) {
         this.Q(1);
-        this.write(addr, this.SLA(this.read(addr)));
+        let x = this.SLA(this.read(addr));
+        this.wait(1);
+        this.write(addr, x);
     }
 
     SLA_irr_r(addr, x) {
         this.Q(1);
+        this.wait(2);
         let tv = this.SLA(this.read(addr));
         this.writereg(x, tv);
         this.write(addr, tv);
@@ -2109,11 +2125,14 @@ class Z80_test_generator {
 
     SLL_irr(addr) {
         this.Q(1);
-        this.write(addr, this.SLL(this.read(addr)));
+        let x = this.SLL(this.read(addr));
+        this.wait(1);
+        this.write(addr, x);
     }
 
     SLL_irr_r(addr, x) {
         this.Q(1);
+        this.wait(2);
         let tv = this.SLL(this.read(addr));
         this.writereg(x, tv);
         this.write(addr, tv);
@@ -2126,11 +2145,14 @@ class Z80_test_generator {
 
     SRA_irr(addr) {
         this.Q(1);
-        this.write(addr, this.SRA(this.read(addr)));
+        let x = this.SRA(this.read(addr));
+        this.wait(1);
+        this.write(addr, x);
     }
 
     SRA_irr_r(addr, x) {
         this.Q(1);
+        this.wait(2);
         let tv = this.SRA(this.read(addr));
         this.writereg(x, tv);
         this.write(addr, tv);
@@ -2143,11 +2165,14 @@ class Z80_test_generator {
 
     SRL_irr(addr) {
         this.Q(1);
-        this.write(addr, this.SRL(this.read(addr)));
+        let x = this.SRL(this.read(addr));
+        this.wait(1);
+        this.write(addr, x);
     }
 
     SRL_irr_r(addr, x) {
         this.Q(1);
+        this.wait(2);
         let tv = this.SRL(this.read(addr));
         this.writereg(x, tv);
         this.write(addr, tv);

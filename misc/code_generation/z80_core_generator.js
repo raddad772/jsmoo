@@ -560,6 +560,8 @@ class Z80_switchgen {
             case 'IYL':
                 this.addl('regs.IY = (regs.IY & 0xFF00) | ((' + val + ') & 0xFF);');
                 break;
+            case '_':
+                break;
             default:
                 console.log('UNDONE ZREGRIPW', r);
                 break;
@@ -1294,13 +1296,6 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.BIT(arg1, 'regs.TR');
             ag.setXY('(regs.WZ >>> 8)');
             break;
-        case Z80_MN.BIT_o_irr_r:  //n3, n16&, n8&
-            ag.Q(1);
-            ag.read(ag.readreg(arg2), 'regs.TR');
-            ag.BIT(arg1, 'regs.TR', 'regs.TR');
-            //ag.writereg(arg3, 'regs.TR');
-            ag.setXY('(regs.WZ >>> 8)');
-            break;
         case Z80_MN.BIT_o_r:  //n3, n8&
             ag.Q(1);
             ag.BIT(arg1, ag.readreg(arg2));
@@ -1810,12 +1805,16 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
         case Z80_MN.RES_o_irr:  //n3, n16&
             ag.Q(1);
             ag.read(ag.readreg(arg2), 'regs.TR');
+            ag.addcycle('wait');
             ag.RES(arg1, 'regs.TR', 'regs.TR');
             ag.write(ag.readreg(arg2), 'regs.TR');
             break;
         case Z80_MN.RES_o_irr_r:  //n3, n16&, n8&
             ag.Q(1);
+            ag.addcycle('wait');
+            ag.addcycle('wait');
             ag.read(ag.readreg(arg2), 'regs.TR');
+            ag.addcycle('wait');
             ag.RES(arg1, 'regs.TR', 'regs.TR');
             ag.writereg(arg3, 'regs.TR');
             ag.write(ag.readreg(arg2), 'regs.TR');
@@ -1852,13 +1851,17 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.Q(1);
             ag.read(ag.readreg(arg1), 'regs.TR');
             ag.RL('regs.TR', 'regs.TR');
+            ag.addcycle('wait');
             ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.RL_irr_r:  //n16&, n8&
             ag.Q(1);
+            ag.addcycle('wait');
+            ag.addcycle('wait');
             ag.read(ag.readreg(arg1), 'regs.TR');
             ag.RL('regs.TR', 'regs.TR');
             ag.writereg(arg2, 'regs.TR');
+            ag.addcycle('wait');
             ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.RL_r:  //n8&
@@ -1883,9 +1886,12 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.RLC_irr_r:  //n16&, n8&
             ag.Q(1);
+            ag.addcycle('wait');
+            ag.addcycle('wait');
             ag.read(ag.readreg(arg1), 'regs.TR');
             ag.RLC('regs.TR', 'regs.TR');
             ag.writereg(arg2, 'regs.TR');
+            ag.addcycle('wait');
             ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.RLC_r:  //n8&
@@ -1922,13 +1928,17 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.Q(1);
             ag.read(ag.readreg(arg1), 'regs.TR');
             ag.RR('regs.TR', 'regs.TR');
+            ag.addcycle('wait');
             ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.RR_irr_r:  //n16&, n8&
             ag.Q(1);
+            ag.addcycle('wait');
+            ag.addcycle('wait');
             ag.read(ag.readreg(arg1), 'regs.TR');
             ag.RR('regs.TR', 'regs.TR');
             ag.writereg(arg2, 'regs.TR');
+            ag.addcycle('wait');
             ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.RR_r:  //n8&
@@ -1949,13 +1959,17 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.Q(1);
             ag.read(ag.readreg(arg1), 'regs.TR');
             ag.RRC('regs.TR', 'regs.TR');
+            ag.addcycle('wait');
             ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.RRC_irr_r:  //n16&, n8&
             ag.Q(1);
+            ag.addcycle('wait');
+            ag.addcycle('wait');
             ag.read(ag.readreg(arg1), 'regs.TR');
             ag.RRC('regs.TR', 'regs.TR');
             ag.writereg(arg2, 'regs.TR');
+            ag.addcycle('wait');
             ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.RRC_r:  //n8&
@@ -2034,12 +2048,16 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.Q(1);
             ag.read(ag.readreg(arg2), 'regs.TR');
             ag.SET(arg1, 'regs.TR', 'regs.TR');
+            ag.addcycle('wait');
             ag.write(ag.readreg(arg2), 'regs.TR');
             break;
         case Z80_MN.SET_o_irr_r:  //n3, n16&, n8&
             ag.Q(1);
+            ag.addcycle('wait');
+            ag.addcycle('wait');
             ag.read(ag.readreg(arg2), 'regs.TR');
             ag.SET(arg1, 'regs.TR', 'regs.TR');
+            ag.addcycle('wait');
             ag.writereg(arg3, 'regs.TR');
             ag.write(ag.readreg(arg2), 'regs.TR');
             break;
@@ -2052,13 +2070,17 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.Q(1);
             ag.read(ag.readreg(arg1), 'regs.TR');
             ag.SLA('regs.TR', 'regs.TR');
+            ag.addcycle('wait');
             ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.SLA_irr_r:  //n16&, n8&
             ag.Q(1);
+            ag.addcycle('wait');
+            ag.addcycle('wait');
             ag.read(ag.readreg(arg1), 'regs.TR');
             ag.SLA('regs.TR', 'regs.TR');
             ag.writereg(arg2, 'regs.TR');
+            ag.addcycle('wait');
             ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.SLA_r:  //n8&
@@ -2069,14 +2091,18 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
         case Z80_MN.SLL_irr:  //n16&
             ag.Q(1);
             ag.read(ag.readreg(arg1), 'regs.TR');
+            ag.addcycle('wait');
             ag.SLL('regs.TR', 'regs.TR');
             ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.SLL_irr_r:  //n16&, n8&
             ag.Q(1);
+            ag.addcycle('wait');
+            ag.addcycle('wait');
             ag.read(ag.readreg(arg1), 'regs.TR');
             ag.SLL('regs.TR', 'regs.TR');
             ag.writereg(arg2, 'regs.TR');
+            ag.addcycle('wait');
             ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.SLL_r:  //n8&
@@ -2088,13 +2114,17 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.Q(1);
             ag.read(ag.readreg(arg1), 'regs.TR');
             ag.SRA('regs.TR', 'regs.TR');
+            ag.addcycle('wait');
             ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.SRA_irr_r:  //n16&, n8&
             ag.Q(1);
+            ag.addcycle('wait');
+            ag.addcycle('wait');
             ag.read(ag.readreg(arg1), 'regs.TR');
             ag.SRA('regs.TR', 'regs.TR');
             ag.writereg(arg2, 'regs.TR');
+            ag.addcycle('wait');
             ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.SRA_r:  //n8&
@@ -2106,13 +2136,17 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.Q(1);
             ag.read(ag.readreg(arg1), 'regs.TR');
             ag.SRL('regs.TR', 'regs.TR');
+            ag.addcycle('wait');
             ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.SRL_irr_r:  //n16&, n8&
             ag.Q(1);
+            ag.addcycle('wait');
+            ag.addcycle('wait');
             ag.read(ag.readreg(arg1), 'regs.TR');
             ag.SRL('regs.TR', 'regs.TR');
             ag.writereg(arg2, 'regs.TR');
+            ag.addcycle('wait');
             ag.write(ag.readreg(arg1), 'regs.TR');
             break;
         case Z80_MN.SRL_r:  //n8&

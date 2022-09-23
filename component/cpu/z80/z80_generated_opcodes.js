@@ -8823,18 +8823,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.S = ((x) & 0x80) >>> 7;
                 regs.TR = x;
                 break;
-            case 4: // write begin
+            case 4: // wait
+                break;
+            case 5: // write begin
                 pins.Addr = ((regs.H << 8) | regs.L);
                 break;
-            case 5:
+            case 6:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -9081,18 +9083,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.S = ((x) & 0x80) >>> 7;
                 regs.TR = x;
                 break;
-            case 4: // write begin
+            case 4: // wait
+                break;
+            case 5: // write begin
                 pins.Addr = ((regs.H << 8) | regs.L);
                 break;
-            case 5:
+            case 6:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -9340,18 +9344,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.S = ((x) & 0x80) >>> 7;
                 regs.TR = x;
                 break;
-            case 4: // write begin
+            case 4: // wait
+                break;
+            case 5: // write begin
                 pins.Addr = ((regs.H << 8) | regs.L);
                 break;
-            case 5:
+            case 6:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -9599,18 +9605,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.S = ((x) & 0x80) >>> 7;
                 regs.TR = x;
                 break;
-            case 4: // write begin
+            case 4: // wait
+                break;
+            case 5: // write begin
                 pins.Addr = ((regs.H << 8) | regs.L);
                 break;
-            case 5:
+            case 6:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -9858,18 +9866,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.S = ((x) & 0x80) >>> 7;
                 regs.TR = x;
                 break;
-            case 4: // write begin
+            case 4: // wait
+                break;
+            case 5: // write begin
                 pins.Addr = ((regs.H << 8) | regs.L);
                 break;
-            case 5:
+            case 6:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -10105,6 +10115,8 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 4: // wait
                 let x = regs.TR;
                 let c = (x & 0x80) >>> 7;
                 x = ((x << 1) | 1) & 0xFF;
@@ -10117,18 +10129,18 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.S = ((x) & 0x80) >>> 7;
                 regs.TR = x;
                 break;
-            case 4: // write begin
+            case 5: // write begin
                 pins.Addr = ((regs.H << 8) | regs.L);
                 break;
-            case 5:
+            case 6:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -10376,18 +10388,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.F.S = ((x) & 0x80) >>> 7;
                 regs.TR = x;
                 break;
-            case 4: // write begin
+            case 4: // wait
+                break;
+            case 5: // write begin
                 pins.Addr = ((regs.H << 8) | regs.L);
                 break;
-            case 5:
+            case 6:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -12317,20 +12331,22 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 4: // wait
                 regs.TR = regs.TR & ((1 << 0) ^ 0xFF);
                 break;
-            case 4: // write begin
+            case 5: // write begin
                 pins.Addr = ((regs.H << 8) | regs.L);
                 break;
-            case 5:
+            case 6:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -12489,20 +12505,22 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 4: // wait
                 regs.TR = regs.TR & ((1 << 1) ^ 0xFF);
                 break;
-            case 4: // write begin
+            case 5: // write begin
                 pins.Addr = ((regs.H << 8) | regs.L);
                 break;
-            case 5:
+            case 6:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -12661,20 +12679,22 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 4: // wait
                 regs.TR = regs.TR & ((1 << 2) ^ 0xFF);
                 break;
-            case 4: // write begin
+            case 5: // write begin
                 pins.Addr = ((regs.H << 8) | regs.L);
                 break;
-            case 5:
+            case 6:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -12833,20 +12853,22 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 4: // wait
                 regs.TR = regs.TR & ((1 << 3) ^ 0xFF);
                 break;
-            case 4: // write begin
+            case 5: // write begin
                 pins.Addr = ((regs.H << 8) | regs.L);
                 break;
-            case 5:
+            case 6:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -13005,20 +13027,22 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 4: // wait
                 regs.TR = regs.TR & ((1 << 4) ^ 0xFF);
                 break;
-            case 4: // write begin
+            case 5: // write begin
                 pins.Addr = ((regs.H << 8) | regs.L);
                 break;
-            case 5:
+            case 6:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -13177,20 +13201,22 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 4: // wait
                 regs.TR = regs.TR & ((1 << 5) ^ 0xFF);
                 break;
-            case 4: // write begin
+            case 5: // write begin
                 pins.Addr = ((regs.H << 8) | regs.L);
                 break;
-            case 5:
+            case 6:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -13349,20 +13375,22 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 4: // wait
                 regs.TR = regs.TR & ((1 << 6) ^ 0xFF);
                 break;
-            case 4: // write begin
+            case 5: // write begin
                 pins.Addr = ((regs.H << 8) | regs.L);
                 break;
-            case 5:
+            case 6:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -13521,20 +13549,22 @@ const z80_decoded_opcodes = Object.freeze({
             case 3: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 4: // wait
                 regs.TR = regs.TR & ((1 << 7) ^ 0xFF);
                 break;
-            case 4: // write begin
+            case 5: // write begin
                 pins.Addr = ((regs.H << 8) | regs.L);
                 break;
-            case 5:
+            case 6:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -13701,18 +13731,20 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 0);
                 break;
-            case 4: // write begin
+            case 4: // wait
+                break;
+            case 5: // write begin
                 pins.Addr = ((regs.H << 8) | regs.L);
                 break;
-            case 5:
+            case 6:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -13880,18 +13912,20 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 1);
                 break;
-            case 4: // write begin
+            case 4: // wait
+                break;
+            case 5: // write begin
                 pins.Addr = ((regs.H << 8) | regs.L);
                 break;
-            case 5:
+            case 6:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -14059,18 +14093,20 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 2);
                 break;
-            case 4: // write begin
+            case 4: // wait
+                break;
+            case 5: // write begin
                 pins.Addr = ((regs.H << 8) | regs.L);
                 break;
-            case 5:
+            case 6:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -14238,18 +14274,20 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 3);
                 break;
-            case 4: // write begin
+            case 4: // wait
+                break;
+            case 5: // write begin
                 pins.Addr = ((regs.H << 8) | regs.L);
                 break;
-            case 5:
+            case 6:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -14417,18 +14455,20 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 4);
                 break;
-            case 4: // write begin
+            case 4: // wait
+                break;
+            case 5: // write begin
                 pins.Addr = ((regs.H << 8) | regs.L);
                 break;
-            case 5:
+            case 6:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -14596,18 +14636,20 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 5);
                 break;
-            case 4: // write begin
+            case 4: // wait
+                break;
+            case 5: // write begin
                 pins.Addr = ((regs.H << 8) | regs.L);
                 break;
-            case 5:
+            case 6:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -14775,18 +14817,20 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 6);
                 break;
-            case 4: // write begin
+            case 4: // wait
+                break;
+            case 5: // write begin
                 pins.Addr = ((regs.H << 8) | regs.L);
                 break;
-            case 5:
+            case 6:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -14954,18 +14998,20 @@ const z80_decoded_opcodes = Object.freeze({
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 7);
                 break;
-            case 4: // write begin
+            case 4: // wait
+                break;
+            case 5: // write begin
                 pins.Addr = ((regs.H << 8) | regs.L);
                 break;
-            case 5:
+            case 6:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 7: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 8: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -39629,14 +39675,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x50A: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x00], // CB DD 00
         function(regs, pins) { //RLC_irr_r addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -39651,18 +39701,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -39678,14 +39730,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x50B: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x01], // CB DD 01
         function(regs, pins) { //RLC_irr_r addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -39700,18 +39756,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -39727,14 +39785,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x50C: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x02], // CB DD 02
         function(regs, pins) { //RLC_irr_r addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -39749,18 +39811,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -39776,14 +39840,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x50D: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x03], // CB DD 03
         function(regs, pins) { //RLC_irr_r addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -39798,18 +39866,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -39825,14 +39895,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x50E: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x04], // CB DD 04
         function(regs, pins) { //RLC_irr_r addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -39847,18 +39921,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -39874,14 +39950,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x50F: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x05], // CB DD 05
         function(regs, pins) { //RLC_irr_r addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -39896,18 +39976,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -39923,14 +40005,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x510: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x06], // CB DD 06
         function(regs, pins) { //RLC_irr_r addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -39945,18 +40031,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -39972,14 +40060,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x511: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x07], // CB DD 07
         function(regs, pins) { //RLC_irr_r addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -39994,18 +40086,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -40021,14 +40115,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x512: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x08], // CB DD 08
         function(regs, pins) { //RRC_irr_r addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -40043,18 +40141,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -40070,14 +40170,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x513: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x09], // CB DD 09
         function(regs, pins) { //RRC_irr_r addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -40092,18 +40196,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -40119,14 +40225,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x514: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x0A], // CB DD 0A
         function(regs, pins) { //RRC_irr_r addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -40141,18 +40251,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -40168,14 +40280,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x515: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x0B], // CB DD 0B
         function(regs, pins) { //RRC_irr_r addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -40190,18 +40306,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -40217,14 +40335,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x516: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x0C], // CB DD 0C
         function(regs, pins) { //RRC_irr_r addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -40239,18 +40361,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -40266,14 +40390,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x517: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x0D], // CB DD 0D
         function(regs, pins) { //RRC_irr_r addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -40288,18 +40416,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -40315,14 +40445,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x518: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x0E], // CB DD 0E
         function(regs, pins) { //RRC_irr_r addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -40337,18 +40471,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -40364,14 +40500,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x519: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x0F], // CB DD 0F
         function(regs, pins) { //RRC_irr_r addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -40386,18 +40526,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -40413,14 +40555,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x51A: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x10], // CB DD 10
         function(regs, pins) { //RL_irr_r addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -40436,18 +40582,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -40463,14 +40611,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x51B: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x11], // CB DD 11
         function(regs, pins) { //RL_irr_r addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -40486,18 +40638,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -40513,14 +40667,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x51C: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x12], // CB DD 12
         function(regs, pins) { //RL_irr_r addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -40536,18 +40694,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -40563,14 +40723,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x51D: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x13], // CB DD 13
         function(regs, pins) { //RL_irr_r addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -40586,18 +40750,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -40613,14 +40779,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x51E: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x14], // CB DD 14
         function(regs, pins) { //RL_irr_r addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -40636,18 +40806,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -40663,14 +40835,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x51F: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x15], // CB DD 15
         function(regs, pins) { //RL_irr_r addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -40686,18 +40862,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -40713,14 +40891,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x520: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x16], // CB DD 16
         function(regs, pins) { //RL_irr_r addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -40736,18 +40918,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -40763,14 +40947,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x521: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x17], // CB DD 17
         function(regs, pins) { //RL_irr_r addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -40786,18 +40974,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -40813,14 +41003,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x522: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x18], // CB DD 18
         function(regs, pins) { //RR_irr_r addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -40836,18 +41030,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -40863,14 +41059,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x523: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x19], // CB DD 19
         function(regs, pins) { //RR_irr_r addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -40886,18 +41086,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -40913,14 +41115,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x524: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x1A], // CB DD 1A
         function(regs, pins) { //RR_irr_r addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -40936,18 +41142,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -40963,14 +41171,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x525: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x1B], // CB DD 1B
         function(regs, pins) { //RR_irr_r addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -40986,18 +41198,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -41013,14 +41227,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x526: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x1C], // CB DD 1C
         function(regs, pins) { //RR_irr_r addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -41036,18 +41254,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -41063,14 +41283,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x527: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x1D], // CB DD 1D
         function(regs, pins) { //RR_irr_r addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -41086,18 +41310,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -41113,14 +41339,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x528: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x1E], // CB DD 1E
         function(regs, pins) { //RR_irr_r addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -41136,18 +41366,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -41163,14 +41395,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x529: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x1F], // CB DD 1F
         function(regs, pins) { //RR_irr_r addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -41186,18 +41422,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -41213,14 +41451,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x52A: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x20], // CB DD 20
         function(regs, pins) { //SLA_irr_r addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -41236,18 +41478,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -41263,14 +41507,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x52B: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x21], // CB DD 21
         function(regs, pins) { //SLA_irr_r addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -41286,18 +41534,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -41313,14 +41563,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x52C: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x22], // CB DD 22
         function(regs, pins) { //SLA_irr_r addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -41336,18 +41590,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -41363,14 +41619,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x52D: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x23], // CB DD 23
         function(regs, pins) { //SLA_irr_r addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -41386,18 +41646,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -41413,14 +41675,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x52E: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x24], // CB DD 24
         function(regs, pins) { //SLA_irr_r addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -41436,18 +41702,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -41463,14 +41731,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x52F: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x25], // CB DD 25
         function(regs, pins) { //SLA_irr_r addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -41486,18 +41758,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -41513,14 +41787,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x530: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x26], // CB DD 26
         function(regs, pins) { //SLA_irr_r addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -41536,18 +41814,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -41563,14 +41843,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x531: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x27], // CB DD 27
         function(regs, pins) { //SLA_irr_r addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -41586,18 +41870,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -41613,14 +41899,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x532: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x28], // CB DD 28
         function(regs, pins) { //SRA_irr_r addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -41636,18 +41926,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -41663,14 +41955,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x533: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x29], // CB DD 29
         function(regs, pins) { //SRA_irr_r addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -41686,18 +41982,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -41713,14 +42011,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x534: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x2A], // CB DD 2A
         function(regs, pins) { //SRA_irr_r addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -41736,18 +42038,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -41763,14 +42067,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x535: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x2B], // CB DD 2B
         function(regs, pins) { //SRA_irr_r addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -41786,18 +42094,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -41813,14 +42123,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x536: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x2C], // CB DD 2C
         function(regs, pins) { //SRA_irr_r addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -41836,18 +42150,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -41863,14 +42179,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x537: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x2D], // CB DD 2D
         function(regs, pins) { //SRA_irr_r addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -41886,18 +42206,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -41913,14 +42235,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x538: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x2E], // CB DD 2E
         function(regs, pins) { //SRA_irr_r addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -41936,18 +42262,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -41963,14 +42291,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x539: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x2F], // CB DD 2F
         function(regs, pins) { //SRA_irr_r addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -41986,18 +42318,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -42013,14 +42347,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x53A: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x30], // CB DD 30
         function(regs, pins) { //SLL_irr_r addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -42036,18 +42374,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -42063,14 +42403,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x53B: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x31], // CB DD 31
         function(regs, pins) { //SLL_irr_r addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -42086,18 +42430,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -42113,14 +42459,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x53C: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x32], // CB DD 32
         function(regs, pins) { //SLL_irr_r addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -42136,18 +42486,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -42163,14 +42515,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x53D: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x33], // CB DD 33
         function(regs, pins) { //SLL_irr_r addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -42186,18 +42542,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -42213,14 +42571,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x53E: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x34], // CB DD 34
         function(regs, pins) { //SLL_irr_r addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -42236,18 +42598,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -42263,14 +42627,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x53F: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x35], // CB DD 35
         function(regs, pins) { //SLL_irr_r addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -42286,18 +42654,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -42313,14 +42683,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x540: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x36], // CB DD 36
         function(regs, pins) { //SLL_irr_r addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -42336,18 +42710,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -42363,14 +42739,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x541: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x37], // CB DD 37
         function(regs, pins) { //SLL_irr_r addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -42386,18 +42766,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -42413,14 +42795,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x542: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x38], // CB DD 38
         function(regs, pins) { //SRL_irr_r addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -42436,18 +42822,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -42463,14 +42851,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x543: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x39], // CB DD 39
         function(regs, pins) { //SRL_irr_r addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -42486,18 +42878,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -42513,14 +42907,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x544: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x3A], // CB DD 3A
         function(regs, pins) { //SRL_irr_r addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -42536,18 +42934,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -42563,14 +42963,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x545: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x3B], // CB DD 3B
         function(regs, pins) { //SRL_irr_r addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -42586,18 +42990,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -42613,14 +43019,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x546: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x3C], // CB DD 3C
         function(regs, pins) { //SRL_irr_r addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -42636,18 +43046,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -42663,14 +43075,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x547: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x3D], // CB DD 3D
         function(regs, pins) { //SRL_irr_r addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -42686,18 +43102,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -42713,14 +43131,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x548: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x3E], // CB DD 3E
         function(regs, pins) { //SRL_irr_r addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -42736,18 +43158,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -42763,14 +43187,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x549: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x3F], // CB DD 3F
         function(regs, pins) { //SRL_irr_r addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -42786,18 +43214,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -42811,7 +43241,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x54A: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x40], // CB DD 40
-        function(regs, pins) { //BIT_o_irr_r 0 addr B
+        function(regs, pins) { //BIT_o_irr 0 addr B
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -42849,7 +43279,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x54B: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x41], // CB DD 41
-        function(regs, pins) { //BIT_o_irr_r 0 addr C
+        function(regs, pins) { //BIT_o_irr 0 addr C
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -42887,7 +43317,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x54C: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x42], // CB DD 42
-        function(regs, pins) { //BIT_o_irr_r 0 addr D
+        function(regs, pins) { //BIT_o_irr 0 addr D
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -42925,7 +43355,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x54D: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x43], // CB DD 43
-        function(regs, pins) { //BIT_o_irr_r 0 addr E
+        function(regs, pins) { //BIT_o_irr 0 addr E
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -42963,7 +43393,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x54E: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x44], // CB DD 44
-        function(regs, pins) { //BIT_o_irr_r 0 addr H
+        function(regs, pins) { //BIT_o_irr 0 addr H
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43001,7 +43431,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x54F: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x45], // CB DD 45
-        function(regs, pins) { //BIT_o_irr_r 0 addr L
+        function(regs, pins) { //BIT_o_irr 0 addr L
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43039,7 +43469,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x550: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x46], // CB DD 46
-        function(regs, pins) { //BIT_o_irr_r 0 addr _
+        function(regs, pins) { //BIT_o_irr 0 addr _
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43077,7 +43507,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x551: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x47], // CB DD 47
-        function(regs, pins) { //BIT_o_irr_r 0 addr A
+        function(regs, pins) { //BIT_o_irr 0 addr A
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43115,7 +43545,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x552: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x48], // CB DD 48
-        function(regs, pins) { //BIT_o_irr_r 1 addr B
+        function(regs, pins) { //BIT_o_irr 1 addr B
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43153,7 +43583,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x553: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x49], // CB DD 49
-        function(regs, pins) { //BIT_o_irr_r 1 addr C
+        function(regs, pins) { //BIT_o_irr 1 addr C
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43191,7 +43621,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x554: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x4A], // CB DD 4A
-        function(regs, pins) { //BIT_o_irr_r 1 addr D
+        function(regs, pins) { //BIT_o_irr 1 addr D
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43229,7 +43659,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x555: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x4B], // CB DD 4B
-        function(regs, pins) { //BIT_o_irr_r 1 addr E
+        function(regs, pins) { //BIT_o_irr 1 addr E
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43267,7 +43697,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x556: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x4C], // CB DD 4C
-        function(regs, pins) { //BIT_o_irr_r 1 addr H
+        function(regs, pins) { //BIT_o_irr 1 addr H
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43305,7 +43735,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x557: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x4D], // CB DD 4D
-        function(regs, pins) { //BIT_o_irr_r 1 addr L
+        function(regs, pins) { //BIT_o_irr 1 addr L
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43343,7 +43773,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x558: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x4E], // CB DD 4E
-        function(regs, pins) { //BIT_o_irr_r 1 addr _
+        function(regs, pins) { //BIT_o_irr 1 addr _
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43381,7 +43811,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x559: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x4F], // CB DD 4F
-        function(regs, pins) { //BIT_o_irr_r 1 addr A
+        function(regs, pins) { //BIT_o_irr 1 addr A
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43419,7 +43849,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x55A: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x50], // CB DD 50
-        function(regs, pins) { //BIT_o_irr_r 2 addr B
+        function(regs, pins) { //BIT_o_irr 2 addr B
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43457,7 +43887,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x55B: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x51], // CB DD 51
-        function(regs, pins) { //BIT_o_irr_r 2 addr C
+        function(regs, pins) { //BIT_o_irr 2 addr C
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43495,7 +43925,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x55C: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x52], // CB DD 52
-        function(regs, pins) { //BIT_o_irr_r 2 addr D
+        function(regs, pins) { //BIT_o_irr 2 addr D
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43533,7 +43963,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x55D: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x53], // CB DD 53
-        function(regs, pins) { //BIT_o_irr_r 2 addr E
+        function(regs, pins) { //BIT_o_irr 2 addr E
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43571,7 +44001,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x55E: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x54], // CB DD 54
-        function(regs, pins) { //BIT_o_irr_r 2 addr H
+        function(regs, pins) { //BIT_o_irr 2 addr H
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43609,7 +44039,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x55F: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x55], // CB DD 55
-        function(regs, pins) { //BIT_o_irr_r 2 addr L
+        function(regs, pins) { //BIT_o_irr 2 addr L
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43647,7 +44077,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x560: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x56], // CB DD 56
-        function(regs, pins) { //BIT_o_irr_r 2 addr _
+        function(regs, pins) { //BIT_o_irr 2 addr _
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43685,7 +44115,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x561: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x57], // CB DD 57
-        function(regs, pins) { //BIT_o_irr_r 2 addr A
+        function(regs, pins) { //BIT_o_irr 2 addr A
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43723,7 +44153,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x562: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x58], // CB DD 58
-        function(regs, pins) { //BIT_o_irr_r 3 addr B
+        function(regs, pins) { //BIT_o_irr 3 addr B
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43761,7 +44191,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x563: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x59], // CB DD 59
-        function(regs, pins) { //BIT_o_irr_r 3 addr C
+        function(regs, pins) { //BIT_o_irr 3 addr C
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43799,7 +44229,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x564: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x5A], // CB DD 5A
-        function(regs, pins) { //BIT_o_irr_r 3 addr D
+        function(regs, pins) { //BIT_o_irr 3 addr D
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43837,7 +44267,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x565: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x5B], // CB DD 5B
-        function(regs, pins) { //BIT_o_irr_r 3 addr E
+        function(regs, pins) { //BIT_o_irr 3 addr E
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43875,7 +44305,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x566: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x5C], // CB DD 5C
-        function(regs, pins) { //BIT_o_irr_r 3 addr H
+        function(regs, pins) { //BIT_o_irr 3 addr H
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43913,7 +44343,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x567: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x5D], // CB DD 5D
-        function(regs, pins) { //BIT_o_irr_r 3 addr L
+        function(regs, pins) { //BIT_o_irr 3 addr L
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43951,7 +44381,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x568: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x5E], // CB DD 5E
-        function(regs, pins) { //BIT_o_irr_r 3 addr _
+        function(regs, pins) { //BIT_o_irr 3 addr _
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -43989,7 +44419,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x569: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x5F], // CB DD 5F
-        function(regs, pins) { //BIT_o_irr_r 3 addr A
+        function(regs, pins) { //BIT_o_irr 3 addr A
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -44027,7 +44457,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x56A: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x60], // CB DD 60
-        function(regs, pins) { //BIT_o_irr_r 4 addr B
+        function(regs, pins) { //BIT_o_irr 4 addr B
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -44065,7 +44495,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x56B: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x61], // CB DD 61
-        function(regs, pins) { //BIT_o_irr_r 4 addr C
+        function(regs, pins) { //BIT_o_irr 4 addr C
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -44103,7 +44533,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x56C: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x62], // CB DD 62
-        function(regs, pins) { //BIT_o_irr_r 4 addr D
+        function(regs, pins) { //BIT_o_irr 4 addr D
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -44141,7 +44571,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x56D: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x63], // CB DD 63
-        function(regs, pins) { //BIT_o_irr_r 4 addr E
+        function(regs, pins) { //BIT_o_irr 4 addr E
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -44179,7 +44609,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x56E: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x64], // CB DD 64
-        function(regs, pins) { //BIT_o_irr_r 4 addr H
+        function(regs, pins) { //BIT_o_irr 4 addr H
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -44217,7 +44647,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x56F: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x65], // CB DD 65
-        function(regs, pins) { //BIT_o_irr_r 4 addr L
+        function(regs, pins) { //BIT_o_irr 4 addr L
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -44255,7 +44685,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x570: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x66], // CB DD 66
-        function(regs, pins) { //BIT_o_irr_r 4 addr _
+        function(regs, pins) { //BIT_o_irr 4 addr _
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -44293,7 +44723,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x571: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x67], // CB DD 67
-        function(regs, pins) { //BIT_o_irr_r 4 addr A
+        function(regs, pins) { //BIT_o_irr 4 addr A
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -44331,7 +44761,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x572: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x68], // CB DD 68
-        function(regs, pins) { //BIT_o_irr_r 5 addr B
+        function(regs, pins) { //BIT_o_irr 5 addr B
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -44369,7 +44799,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x573: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x69], // CB DD 69
-        function(regs, pins) { //BIT_o_irr_r 5 addr C
+        function(regs, pins) { //BIT_o_irr 5 addr C
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -44407,7 +44837,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x574: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x6A], // CB DD 6A
-        function(regs, pins) { //BIT_o_irr_r 5 addr D
+        function(regs, pins) { //BIT_o_irr 5 addr D
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -44445,7 +44875,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x575: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x6B], // CB DD 6B
-        function(regs, pins) { //BIT_o_irr_r 5 addr E
+        function(regs, pins) { //BIT_o_irr 5 addr E
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -44483,7 +44913,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x576: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x6C], // CB DD 6C
-        function(regs, pins) { //BIT_o_irr_r 5 addr H
+        function(regs, pins) { //BIT_o_irr 5 addr H
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -44521,7 +44951,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x577: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x6D], // CB DD 6D
-        function(regs, pins) { //BIT_o_irr_r 5 addr L
+        function(regs, pins) { //BIT_o_irr 5 addr L
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -44559,7 +44989,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x578: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x6E], // CB DD 6E
-        function(regs, pins) { //BIT_o_irr_r 5 addr _
+        function(regs, pins) { //BIT_o_irr 5 addr _
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -44597,7 +45027,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x579: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x6F], // CB DD 6F
-        function(regs, pins) { //BIT_o_irr_r 5 addr A
+        function(regs, pins) { //BIT_o_irr 5 addr A
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -44635,7 +45065,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x57A: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x70], // CB DD 70
-        function(regs, pins) { //BIT_o_irr_r 6 addr B
+        function(regs, pins) { //BIT_o_irr 6 addr B
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -44673,7 +45103,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x57B: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x71], // CB DD 71
-        function(regs, pins) { //BIT_o_irr_r 6 addr C
+        function(regs, pins) { //BIT_o_irr 6 addr C
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -44711,7 +45141,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x57C: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x72], // CB DD 72
-        function(regs, pins) { //BIT_o_irr_r 6 addr D
+        function(regs, pins) { //BIT_o_irr 6 addr D
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -44749,7 +45179,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x57D: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x73], // CB DD 73
-        function(regs, pins) { //BIT_o_irr_r 6 addr E
+        function(regs, pins) { //BIT_o_irr 6 addr E
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -44787,7 +45217,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x57E: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x74], // CB DD 74
-        function(regs, pins) { //BIT_o_irr_r 6 addr H
+        function(regs, pins) { //BIT_o_irr 6 addr H
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -44825,7 +45255,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x57F: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x75], // CB DD 75
-        function(regs, pins) { //BIT_o_irr_r 6 addr L
+        function(regs, pins) { //BIT_o_irr 6 addr L
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -44863,7 +45293,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x580: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x76], // CB DD 76
-        function(regs, pins) { //BIT_o_irr_r 6 addr _
+        function(regs, pins) { //BIT_o_irr 6 addr _
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -44901,7 +45331,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x581: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x77], // CB DD 77
-        function(regs, pins) { //BIT_o_irr_r 6 addr A
+        function(regs, pins) { //BIT_o_irr 6 addr A
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -44939,7 +45369,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x582: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x78], // CB DD 78
-        function(regs, pins) { //BIT_o_irr_r 7 addr B
+        function(regs, pins) { //BIT_o_irr 7 addr B
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -44977,7 +45407,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x583: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x79], // CB DD 79
-        function(regs, pins) { //BIT_o_irr_r 7 addr C
+        function(regs, pins) { //BIT_o_irr 7 addr C
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -45015,7 +45445,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x584: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x7A], // CB DD 7A
-        function(regs, pins) { //BIT_o_irr_r 7 addr D
+        function(regs, pins) { //BIT_o_irr 7 addr D
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -45053,7 +45483,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x585: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x7B], // CB DD 7B
-        function(regs, pins) { //BIT_o_irr_r 7 addr E
+        function(regs, pins) { //BIT_o_irr 7 addr E
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -45091,7 +45521,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x586: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x7C], // CB DD 7C
-        function(regs, pins) { //BIT_o_irr_r 7 addr H
+        function(regs, pins) { //BIT_o_irr 7 addr H
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -45129,7 +45559,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x587: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x7D], // CB DD 7D
-        function(regs, pins) { //BIT_o_irr_r 7 addr L
+        function(regs, pins) { //BIT_o_irr 7 addr L
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -45167,7 +45597,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x588: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x7E], // CB DD 7E
-        function(regs, pins) { //BIT_o_irr_r 7 addr _
+        function(regs, pins) { //BIT_o_irr 7 addr _
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -45205,7 +45635,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x589: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x7F], // CB DD 7F
-        function(regs, pins) { //BIT_o_irr_r 7 addr A
+        function(regs, pins) { //BIT_o_irr 7 addr A
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -45245,31 +45675,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x58A: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x80], // CB DD 80
         function(regs, pins) { //RES_o_irr_r 0 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 0) ^ 0xFF);
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -45285,31 +45721,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x58B: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x81], // CB DD 81
         function(regs, pins) { //RES_o_irr_r 0 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 0) ^ 0xFF);
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -45325,31 +45767,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x58C: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x82], // CB DD 82
         function(regs, pins) { //RES_o_irr_r 0 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 0) ^ 0xFF);
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -45365,31 +45813,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x58D: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x83], // CB DD 83
         function(regs, pins) { //RES_o_irr_r 0 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 0) ^ 0xFF);
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -45405,31 +45859,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x58E: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x84], // CB DD 84
         function(regs, pins) { //RES_o_irr_r 0 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 0) ^ 0xFF);
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -45445,31 +45905,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x58F: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x85], // CB DD 85
         function(regs, pins) { //RES_o_irr_r 0 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 0) ^ 0xFF);
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -45485,31 +45951,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x590: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x86], // CB DD 86
         function(regs, pins) { //RES_o_irr_r 0 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 0) ^ 0xFF);
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -45525,31 +45997,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x591: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x87], // CB DD 87
         function(regs, pins) { //RES_o_irr_r 0 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 0) ^ 0xFF);
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -45565,31 +46043,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x592: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x88], // CB DD 88
         function(regs, pins) { //RES_o_irr_r 1 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 1) ^ 0xFF);
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -45605,31 +46089,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x593: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x89], // CB DD 89
         function(regs, pins) { //RES_o_irr_r 1 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 1) ^ 0xFF);
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -45645,31 +46135,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x594: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x8A], // CB DD 8A
         function(regs, pins) { //RES_o_irr_r 1 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 1) ^ 0xFF);
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -45685,31 +46181,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x595: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x8B], // CB DD 8B
         function(regs, pins) { //RES_o_irr_r 1 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 1) ^ 0xFF);
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -45725,31 +46227,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x596: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x8C], // CB DD 8C
         function(regs, pins) { //RES_o_irr_r 1 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 1) ^ 0xFF);
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -45765,31 +46273,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x597: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x8D], // CB DD 8D
         function(regs, pins) { //RES_o_irr_r 1 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 1) ^ 0xFF);
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -45805,31 +46319,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x598: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x8E], // CB DD 8E
         function(regs, pins) { //RES_o_irr_r 1 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 1) ^ 0xFF);
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -45845,31 +46365,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x599: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x8F], // CB DD 8F
         function(regs, pins) { //RES_o_irr_r 1 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 1) ^ 0xFF);
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -45885,31 +46411,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x59A: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x90], // CB DD 90
         function(regs, pins) { //RES_o_irr_r 2 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 2) ^ 0xFF);
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -45925,31 +46457,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x59B: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x91], // CB DD 91
         function(regs, pins) { //RES_o_irr_r 2 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 2) ^ 0xFF);
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -45965,31 +46503,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x59C: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x92], // CB DD 92
         function(regs, pins) { //RES_o_irr_r 2 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 2) ^ 0xFF);
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -46005,31 +46549,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x59D: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x93], // CB DD 93
         function(regs, pins) { //RES_o_irr_r 2 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 2) ^ 0xFF);
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -46045,31 +46595,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x59E: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x94], // CB DD 94
         function(regs, pins) { //RES_o_irr_r 2 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 2) ^ 0xFF);
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -46085,31 +46641,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x59F: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x95], // CB DD 95
         function(regs, pins) { //RES_o_irr_r 2 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 2) ^ 0xFF);
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -46125,31 +46687,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5A0: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x96], // CB DD 96
         function(regs, pins) { //RES_o_irr_r 2 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 2) ^ 0xFF);
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -46165,31 +46733,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5A1: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x97], // CB DD 97
         function(regs, pins) { //RES_o_irr_r 2 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 2) ^ 0xFF);
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -46205,31 +46779,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5A2: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x98], // CB DD 98
         function(regs, pins) { //RES_o_irr_r 3 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 3) ^ 0xFF);
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -46245,31 +46825,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5A3: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x99], // CB DD 99
         function(regs, pins) { //RES_o_irr_r 3 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 3) ^ 0xFF);
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -46285,31 +46871,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5A4: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x9A], // CB DD 9A
         function(regs, pins) { //RES_o_irr_r 3 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 3) ^ 0xFF);
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -46325,31 +46917,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5A5: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x9B], // CB DD 9B
         function(regs, pins) { //RES_o_irr_r 3 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 3) ^ 0xFF);
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -46365,31 +46963,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5A6: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x9C], // CB DD 9C
         function(regs, pins) { //RES_o_irr_r 3 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 3) ^ 0xFF);
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -46405,31 +47009,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5A7: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x9D], // CB DD 9D
         function(regs, pins) { //RES_o_irr_r 3 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 3) ^ 0xFF);
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -46445,31 +47055,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5A8: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x9E], // CB DD 9E
         function(regs, pins) { //RES_o_irr_r 3 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 3) ^ 0xFF);
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -46485,31 +47101,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5A9: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x9F], // CB DD 9F
         function(regs, pins) { //RES_o_irr_r 3 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 3) ^ 0xFF);
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -46525,31 +47147,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5AA: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xA0], // CB DD A0
         function(regs, pins) { //RES_o_irr_r 4 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 4) ^ 0xFF);
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -46565,31 +47193,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5AB: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xA1], // CB DD A1
         function(regs, pins) { //RES_o_irr_r 4 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 4) ^ 0xFF);
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -46605,31 +47239,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5AC: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xA2], // CB DD A2
         function(regs, pins) { //RES_o_irr_r 4 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 4) ^ 0xFF);
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -46645,31 +47285,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5AD: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xA3], // CB DD A3
         function(regs, pins) { //RES_o_irr_r 4 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 4) ^ 0xFF);
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -46685,31 +47331,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5AE: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xA4], // CB DD A4
         function(regs, pins) { //RES_o_irr_r 4 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 4) ^ 0xFF);
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -46725,31 +47377,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5AF: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xA5], // CB DD A5
         function(regs, pins) { //RES_o_irr_r 4 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 4) ^ 0xFF);
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -46765,31 +47423,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5B0: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xA6], // CB DD A6
         function(regs, pins) { //RES_o_irr_r 4 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 4) ^ 0xFF);
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -46805,31 +47469,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5B1: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xA7], // CB DD A7
         function(regs, pins) { //RES_o_irr_r 4 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 4) ^ 0xFF);
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -46845,31 +47515,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5B2: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xA8], // CB DD A8
         function(regs, pins) { //RES_o_irr_r 5 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 5) ^ 0xFF);
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -46885,31 +47561,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5B3: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xA9], // CB DD A9
         function(regs, pins) { //RES_o_irr_r 5 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 5) ^ 0xFF);
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -46925,31 +47607,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5B4: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xAA], // CB DD AA
         function(regs, pins) { //RES_o_irr_r 5 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 5) ^ 0xFF);
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -46965,31 +47653,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5B5: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xAB], // CB DD AB
         function(regs, pins) { //RES_o_irr_r 5 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 5) ^ 0xFF);
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -47005,31 +47699,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5B6: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xAC], // CB DD AC
         function(regs, pins) { //RES_o_irr_r 5 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 5) ^ 0xFF);
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -47045,31 +47745,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5B7: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xAD], // CB DD AD
         function(regs, pins) { //RES_o_irr_r 5 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 5) ^ 0xFF);
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -47085,31 +47791,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5B8: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xAE], // CB DD AE
         function(regs, pins) { //RES_o_irr_r 5 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 5) ^ 0xFF);
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -47125,31 +47837,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5B9: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xAF], // CB DD AF
         function(regs, pins) { //RES_o_irr_r 5 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 5) ^ 0xFF);
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -47165,31 +47883,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5BA: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xB0], // CB DD B0
         function(regs, pins) { //RES_o_irr_r 6 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 6) ^ 0xFF);
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -47205,31 +47929,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5BB: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xB1], // CB DD B1
         function(regs, pins) { //RES_o_irr_r 6 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 6) ^ 0xFF);
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -47245,31 +47975,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5BC: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xB2], // CB DD B2
         function(regs, pins) { //RES_o_irr_r 6 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 6) ^ 0xFF);
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -47285,31 +48021,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5BD: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xB3], // CB DD B3
         function(regs, pins) { //RES_o_irr_r 6 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 6) ^ 0xFF);
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -47325,31 +48067,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5BE: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xB4], // CB DD B4
         function(regs, pins) { //RES_o_irr_r 6 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 6) ^ 0xFF);
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -47365,31 +48113,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5BF: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xB5], // CB DD B5
         function(regs, pins) { //RES_o_irr_r 6 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 6) ^ 0xFF);
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -47405,31 +48159,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5C0: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xB6], // CB DD B6
         function(regs, pins) { //RES_o_irr_r 6 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 6) ^ 0xFF);
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -47445,31 +48205,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5C1: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xB7], // CB DD B7
         function(regs, pins) { //RES_o_irr_r 6 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 6) ^ 0xFF);
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -47485,31 +48251,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5C2: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xB8], // CB DD B8
         function(regs, pins) { //RES_o_irr_r 7 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 7) ^ 0xFF);
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -47525,31 +48297,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5C3: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xB9], // CB DD B9
         function(regs, pins) { //RES_o_irr_r 7 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 7) ^ 0xFF);
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -47565,31 +48343,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5C4: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xBA], // CB DD BA
         function(regs, pins) { //RES_o_irr_r 7 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 7) ^ 0xFF);
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -47605,31 +48389,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5C5: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xBB], // CB DD BB
         function(regs, pins) { //RES_o_irr_r 7 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 7) ^ 0xFF);
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -47645,31 +48435,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5C6: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xBC], // CB DD BC
         function(regs, pins) { //RES_o_irr_r 7 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 7) ^ 0xFF);
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -47685,31 +48481,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5C7: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xBD], // CB DD BD
         function(regs, pins) { //RES_o_irr_r 7 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 7) ^ 0xFF);
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -47725,31 +48527,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5C8: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xBE], // CB DD BE
         function(regs, pins) { //RES_o_irr_r 7 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 7) ^ 0xFF);
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -47765,31 +48573,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5C9: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xBF], // CB DD BF
         function(regs, pins) { //RES_o_irr_r 7 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 7) ^ 0xFF);
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -47805,31 +48619,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5CA: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xC0], // CB DD C0
         function(regs, pins) { //SET_o_irr_r 0 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 0);
+                break;
+            case 6: // wait
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -47845,31 +48665,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5CB: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xC1], // CB DD C1
         function(regs, pins) { //SET_o_irr_r 0 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 0);
+                break;
+            case 6: // wait
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -47885,31 +48711,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5CC: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xC2], // CB DD C2
         function(regs, pins) { //SET_o_irr_r 0 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 0);
+                break;
+            case 6: // wait
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -47925,31 +48757,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5CD: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xC3], // CB DD C3
         function(regs, pins) { //SET_o_irr_r 0 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 0);
+                break;
+            case 6: // wait
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -47965,31 +48803,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5CE: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xC4], // CB DD C4
         function(regs, pins) { //SET_o_irr_r 0 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 0);
+                break;
+            case 6: // wait
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -48005,31 +48849,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5CF: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xC5], // CB DD C5
         function(regs, pins) { //SET_o_irr_r 0 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 0);
+                break;
+            case 6: // wait
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -48045,31 +48895,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5D0: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xC6], // CB DD C6
         function(regs, pins) { //SET_o_irr_r 0 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 0);
+                break;
+            case 6: // wait
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -48085,31 +48941,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5D1: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xC7], // CB DD C7
         function(regs, pins) { //SET_o_irr_r 0 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 0);
+                break;
+            case 6: // wait
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -48125,31 +48987,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5D2: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xC8], // CB DD C8
         function(regs, pins) { //SET_o_irr_r 1 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 1);
+                break;
+            case 6: // wait
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -48165,31 +49033,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5D3: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xC9], // CB DD C9
         function(regs, pins) { //SET_o_irr_r 1 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 1);
+                break;
+            case 6: // wait
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -48205,31 +49079,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5D4: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xCA], // CB DD CA
         function(regs, pins) { //SET_o_irr_r 1 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 1);
+                break;
+            case 6: // wait
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -48245,31 +49125,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5D5: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xCB], // CB DD CB
         function(regs, pins) { //SET_o_irr_r 1 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 1);
+                break;
+            case 6: // wait
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -48285,31 +49171,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5D6: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xCC], // CB DD CC
         function(regs, pins) { //SET_o_irr_r 1 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 1);
+                break;
+            case 6: // wait
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -48325,31 +49217,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5D7: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xCD], // CB DD CD
         function(regs, pins) { //SET_o_irr_r 1 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 1);
+                break;
+            case 6: // wait
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -48365,31 +49263,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5D8: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xCE], // CB DD CE
         function(regs, pins) { //SET_o_irr_r 1 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 1);
+                break;
+            case 6: // wait
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -48405,31 +49309,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5D9: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xCF], // CB DD CF
         function(regs, pins) { //SET_o_irr_r 1 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 1);
+                break;
+            case 6: // wait
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -48445,31 +49355,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5DA: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xD0], // CB DD D0
         function(regs, pins) { //SET_o_irr_r 2 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 2);
+                break;
+            case 6: // wait
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -48485,31 +49401,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5DB: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xD1], // CB DD D1
         function(regs, pins) { //SET_o_irr_r 2 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 2);
+                break;
+            case 6: // wait
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -48525,31 +49447,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5DC: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xD2], // CB DD D2
         function(regs, pins) { //SET_o_irr_r 2 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 2);
+                break;
+            case 6: // wait
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -48565,31 +49493,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5DD: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xD3], // CB DD D3
         function(regs, pins) { //SET_o_irr_r 2 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 2);
+                break;
+            case 6: // wait
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -48605,31 +49539,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5DE: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xD4], // CB DD D4
         function(regs, pins) { //SET_o_irr_r 2 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 2);
+                break;
+            case 6: // wait
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -48645,31 +49585,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5DF: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xD5], // CB DD D5
         function(regs, pins) { //SET_o_irr_r 2 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 2);
+                break;
+            case 6: // wait
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -48685,31 +49631,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5E0: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xD6], // CB DD D6
         function(regs, pins) { //SET_o_irr_r 2 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 2);
+                break;
+            case 6: // wait
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -48725,31 +49677,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5E1: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xD7], // CB DD D7
         function(regs, pins) { //SET_o_irr_r 2 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 2);
+                break;
+            case 6: // wait
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -48765,31 +49723,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5E2: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xD8], // CB DD D8
         function(regs, pins) { //SET_o_irr_r 3 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 3);
+                break;
+            case 6: // wait
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -48805,31 +49769,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5E3: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xD9], // CB DD D9
         function(regs, pins) { //SET_o_irr_r 3 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 3);
+                break;
+            case 6: // wait
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -48845,31 +49815,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5E4: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xDA], // CB DD DA
         function(regs, pins) { //SET_o_irr_r 3 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 3);
+                break;
+            case 6: // wait
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -48885,31 +49861,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5E5: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xDB], // CB DD DB
         function(regs, pins) { //SET_o_irr_r 3 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 3);
+                break;
+            case 6: // wait
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -48925,31 +49907,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5E6: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xDC], // CB DD DC
         function(regs, pins) { //SET_o_irr_r 3 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 3);
+                break;
+            case 6: // wait
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -48965,31 +49953,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5E7: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xDD], // CB DD DD
         function(regs, pins) { //SET_o_irr_r 3 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 3);
+                break;
+            case 6: // wait
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -49005,31 +49999,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5E8: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xDE], // CB DD DE
         function(regs, pins) { //SET_o_irr_r 3 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 3);
+                break;
+            case 6: // wait
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -49045,31 +50045,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5E9: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xDF], // CB DD DF
         function(regs, pins) { //SET_o_irr_r 3 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 3);
+                break;
+            case 6: // wait
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -49085,31 +50091,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5EA: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xE0], // CB DD E0
         function(regs, pins) { //SET_o_irr_r 4 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 4);
+                break;
+            case 6: // wait
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -49125,31 +50137,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5EB: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xE1], // CB DD E1
         function(regs, pins) { //SET_o_irr_r 4 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 4);
+                break;
+            case 6: // wait
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -49165,31 +50183,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5EC: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xE2], // CB DD E2
         function(regs, pins) { //SET_o_irr_r 4 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 4);
+                break;
+            case 6: // wait
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -49205,31 +50229,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5ED: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xE3], // CB DD E3
         function(regs, pins) { //SET_o_irr_r 4 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 4);
+                break;
+            case 6: // wait
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -49245,31 +50275,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5EE: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xE4], // CB DD E4
         function(regs, pins) { //SET_o_irr_r 4 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 4);
+                break;
+            case 6: // wait
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -49285,31 +50321,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5EF: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xE5], // CB DD E5
         function(regs, pins) { //SET_o_irr_r 4 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 4);
+                break;
+            case 6: // wait
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -49325,31 +50367,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5F0: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xE6], // CB DD E6
         function(regs, pins) { //SET_o_irr_r 4 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 4);
+                break;
+            case 6: // wait
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -49365,31 +50413,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5F1: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xE7], // CB DD E7
         function(regs, pins) { //SET_o_irr_r 4 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 4);
+                break;
+            case 6: // wait
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -49405,31 +50459,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5F2: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xE8], // CB DD E8
         function(regs, pins) { //SET_o_irr_r 5 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 5);
+                break;
+            case 6: // wait
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -49445,31 +50505,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5F3: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xE9], // CB DD E9
         function(regs, pins) { //SET_o_irr_r 5 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 5);
+                break;
+            case 6: // wait
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -49485,31 +50551,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5F4: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xEA], // CB DD EA
         function(regs, pins) { //SET_o_irr_r 5 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 5);
+                break;
+            case 6: // wait
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -49525,31 +50597,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5F5: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xEB], // CB DD EB
         function(regs, pins) { //SET_o_irr_r 5 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 5);
+                break;
+            case 6: // wait
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -49565,31 +50643,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5F6: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xEC], // CB DD EC
         function(regs, pins) { //SET_o_irr_r 5 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 5);
+                break;
+            case 6: // wait
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -49605,31 +50689,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5F7: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xED], // CB DD ED
         function(regs, pins) { //SET_o_irr_r 5 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 5);
+                break;
+            case 6: // wait
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -49645,31 +50735,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5F8: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xEE], // CB DD EE
         function(regs, pins) { //SET_o_irr_r 5 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 5);
+                break;
+            case 6: // wait
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -49685,31 +50781,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5F9: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xEF], // CB DD EF
         function(regs, pins) { //SET_o_irr_r 5 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 5);
+                break;
+            case 6: // wait
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -49725,31 +50827,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5FA: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xF0], // CB DD F0
         function(regs, pins) { //SET_o_irr_r 6 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 6);
+                break;
+            case 6: // wait
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -49765,31 +50873,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5FB: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xF1], // CB DD F1
         function(regs, pins) { //SET_o_irr_r 6 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 6);
+                break;
+            case 6: // wait
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -49805,31 +50919,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5FC: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xF2], // CB DD F2
         function(regs, pins) { //SET_o_irr_r 6 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 6);
+                break;
+            case 6: // wait
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -49845,31 +50965,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5FD: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xF3], // CB DD F3
         function(regs, pins) { //SET_o_irr_r 6 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 6);
+                break;
+            case 6: // wait
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -49885,31 +51011,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5FE: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xF4], // CB DD F4
         function(regs, pins) { //SET_o_irr_r 6 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 6);
+                break;
+            case 6: // wait
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -49925,31 +51057,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x5FF: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xF5], // CB DD F5
         function(regs, pins) { //SET_o_irr_r 6 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 6);
+                break;
+            case 6: // wait
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -49965,31 +51103,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x600: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xF6], // CB DD F6
         function(regs, pins) { //SET_o_irr_r 6 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 6);
+                break;
+            case 6: // wait
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -50005,31 +51149,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x601: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xF7], // CB DD F7
         function(regs, pins) { //SET_o_irr_r 6 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 6);
+                break;
+            case 6: // wait
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -50045,31 +51195,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x602: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xF8], // CB DD F8
         function(regs, pins) { //SET_o_irr_r 7 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 7);
+                break;
+            case 6: // wait
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -50085,31 +51241,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x603: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xF9], // CB DD F9
         function(regs, pins) { //SET_o_irr_r 7 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 7);
+                break;
+            case 6: // wait
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -50125,31 +51287,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x604: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xFA], // CB DD FA
         function(regs, pins) { //SET_o_irr_r 7 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 7);
+                break;
+            case 6: // wait
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -50165,31 +51333,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x605: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xFB], // CB DD FB
         function(regs, pins) { //SET_o_irr_r 7 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 7);
+                break;
+            case 6: // wait
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -50205,31 +51379,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x606: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xFC], // CB DD FC
         function(regs, pins) { //SET_o_irr_r 7 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 7);
+                break;
+            case 6: // wait
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -50245,31 +51425,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x607: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xFD], // CB DD FD
         function(regs, pins) { //SET_o_irr_r 7 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 7);
+                break;
+            case 6: // wait
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -50285,31 +51471,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x608: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xFE], // CB DD FE
         function(regs, pins) { //SET_o_irr_r 7 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 7);
+                break;
+            case 6: // wait
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -50325,31 +51517,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x609: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xFF], // CB DD FF
         function(regs, pins) { //SET_o_irr_r 7 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 7);
+                break;
+            case 6: // wait
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -50401,14 +51599,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x60C: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x00], // CB FD 00
         function(regs, pins) { //RLC_irr_r addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -50423,18 +51625,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -50450,14 +51654,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x60D: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x01], // CB FD 01
         function(regs, pins) { //RLC_irr_r addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -50472,18 +51680,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -50499,14 +51709,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x60E: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x02], // CB FD 02
         function(regs, pins) { //RLC_irr_r addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -50521,18 +51735,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -50548,14 +51764,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x60F: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x03], // CB FD 03
         function(regs, pins) { //RLC_irr_r addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -50570,18 +51790,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -50597,14 +51819,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x610: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x04], // CB FD 04
         function(regs, pins) { //RLC_irr_r addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -50619,18 +51845,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -50646,14 +51874,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x611: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x05], // CB FD 05
         function(regs, pins) { //RLC_irr_r addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -50668,18 +51900,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -50695,14 +51929,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x612: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x06], // CB FD 06
         function(regs, pins) { //RLC_irr_r addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -50717,18 +51955,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -50744,14 +51984,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x613: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x07], // CB FD 07
         function(regs, pins) { //RLC_irr_r addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -50766,18 +52010,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -50793,14 +52039,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x614: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x08], // CB FD 08
         function(regs, pins) { //RRC_irr_r addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -50815,18 +52065,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -50842,14 +52094,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x615: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x09], // CB FD 09
         function(regs, pins) { //RRC_irr_r addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -50864,18 +52120,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -50891,14 +52149,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x616: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x0A], // CB FD 0A
         function(regs, pins) { //RRC_irr_r addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -50913,18 +52175,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -50940,14 +52204,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x617: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x0B], // CB FD 0B
         function(regs, pins) { //RRC_irr_r addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -50962,18 +52230,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -50989,14 +52259,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x618: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x0C], // CB FD 0C
         function(regs, pins) { //RRC_irr_r addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -51011,18 +52285,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -51038,14 +52314,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x619: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x0D], // CB FD 0D
         function(regs, pins) { //RRC_irr_r addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -51060,18 +52340,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -51087,14 +52369,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x61A: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x0E], // CB FD 0E
         function(regs, pins) { //RRC_irr_r addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -51109,18 +52395,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -51136,14 +52424,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x61B: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x0F], // CB FD 0F
         function(regs, pins) { //RRC_irr_r addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -51158,18 +52450,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -51185,14 +52479,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x61C: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x10], // CB FD 10
         function(regs, pins) { //RL_irr_r addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -51208,18 +52506,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -51235,14 +52535,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x61D: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x11], // CB FD 11
         function(regs, pins) { //RL_irr_r addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -51258,18 +52562,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -51285,14 +52591,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x61E: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x12], // CB FD 12
         function(regs, pins) { //RL_irr_r addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -51308,18 +52618,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -51335,14 +52647,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x61F: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x13], // CB FD 13
         function(regs, pins) { //RL_irr_r addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -51358,18 +52674,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -51385,14 +52703,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x620: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x14], // CB FD 14
         function(regs, pins) { //RL_irr_r addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -51408,18 +52730,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -51435,14 +52759,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x621: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x15], // CB FD 15
         function(regs, pins) { //RL_irr_r addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -51458,18 +52786,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -51485,14 +52815,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x622: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x16], // CB FD 16
         function(regs, pins) { //RL_irr_r addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -51508,18 +52842,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -51535,14 +52871,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x623: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x17], // CB FD 17
         function(regs, pins) { //RL_irr_r addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -51558,18 +52898,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -51585,14 +52927,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x624: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x18], // CB FD 18
         function(regs, pins) { //RR_irr_r addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -51608,18 +52954,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -51635,14 +52983,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x625: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x19], // CB FD 19
         function(regs, pins) { //RR_irr_r addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -51658,18 +53010,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -51685,14 +53039,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x626: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x1A], // CB FD 1A
         function(regs, pins) { //RR_irr_r addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -51708,18 +53066,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -51735,14 +53095,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x627: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x1B], // CB FD 1B
         function(regs, pins) { //RR_irr_r addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -51758,18 +53122,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -51785,14 +53151,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x628: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x1C], // CB FD 1C
         function(regs, pins) { //RR_irr_r addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -51808,18 +53178,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -51835,14 +53207,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x629: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x1D], // CB FD 1D
         function(regs, pins) { //RR_irr_r addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -51858,18 +53234,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -51885,14 +53263,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x62A: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x1E], // CB FD 1E
         function(regs, pins) { //RR_irr_r addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -51908,18 +53290,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -51935,14 +53319,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x62B: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x1F], // CB FD 1F
         function(regs, pins) { //RR_irr_r addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -51958,18 +53346,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -51985,14 +53375,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x62C: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x20], // CB FD 20
         function(regs, pins) { //SLA_irr_r addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -52008,18 +53402,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -52035,14 +53431,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x62D: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x21], // CB FD 21
         function(regs, pins) { //SLA_irr_r addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -52058,18 +53458,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -52085,14 +53487,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x62E: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x22], // CB FD 22
         function(regs, pins) { //SLA_irr_r addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -52108,18 +53514,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -52135,14 +53543,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x62F: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x23], // CB FD 23
         function(regs, pins) { //SLA_irr_r addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -52158,18 +53570,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -52185,14 +53599,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x630: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x24], // CB FD 24
         function(regs, pins) { //SLA_irr_r addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -52208,18 +53626,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -52235,14 +53655,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x631: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x25], // CB FD 25
         function(regs, pins) { //SLA_irr_r addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -52258,18 +53682,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -52285,14 +53711,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x632: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x26], // CB FD 26
         function(regs, pins) { //SLA_irr_r addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -52308,18 +53738,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -52335,14 +53767,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x633: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x27], // CB FD 27
         function(regs, pins) { //SLA_irr_r addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -52358,18 +53794,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -52385,14 +53823,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x634: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x28], // CB FD 28
         function(regs, pins) { //SRA_irr_r addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -52408,18 +53850,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -52435,14 +53879,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x635: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x29], // CB FD 29
         function(regs, pins) { //SRA_irr_r addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -52458,18 +53906,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -52485,14 +53935,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x636: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x2A], // CB FD 2A
         function(regs, pins) { //SRA_irr_r addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -52508,18 +53962,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -52535,14 +53991,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x637: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x2B], // CB FD 2B
         function(regs, pins) { //SRA_irr_r addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -52558,18 +54018,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -52585,14 +54047,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x638: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x2C], // CB FD 2C
         function(regs, pins) { //SRA_irr_r addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -52608,18 +54074,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -52635,14 +54103,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x639: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x2D], // CB FD 2D
         function(regs, pins) { //SRA_irr_r addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -52658,18 +54130,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -52685,14 +54159,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x63A: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x2E], // CB FD 2E
         function(regs, pins) { //SRA_irr_r addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -52708,18 +54186,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -52735,14 +54215,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x63B: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x2F], // CB FD 2F
         function(regs, pins) { //SRA_irr_r addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -52758,18 +54242,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -52785,14 +54271,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x63C: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x30], // CB FD 30
         function(regs, pins) { //SLL_irr_r addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -52808,18 +54298,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -52835,14 +54327,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x63D: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x31], // CB FD 31
         function(regs, pins) { //SLL_irr_r addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -52858,18 +54354,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -52885,14 +54383,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x63E: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x32], // CB FD 32
         function(regs, pins) { //SLL_irr_r addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -52908,18 +54410,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -52935,14 +54439,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x63F: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x33], // CB FD 33
         function(regs, pins) { //SLL_irr_r addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -52958,18 +54466,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -52985,14 +54495,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x640: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x34], // CB FD 34
         function(regs, pins) { //SLL_irr_r addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -53008,18 +54522,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -53035,14 +54551,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x641: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x35], // CB FD 35
         function(regs, pins) { //SLL_irr_r addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -53058,18 +54578,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -53085,14 +54607,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x642: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x36], // CB FD 36
         function(regs, pins) { //SLL_irr_r addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -53108,18 +54634,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -53135,14 +54663,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x643: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x37], // CB FD 37
         function(regs, pins) { //SLL_irr_r addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -53158,18 +54690,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -53185,14 +54719,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x644: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x38], // CB FD 38
         function(regs, pins) { //SRL_irr_r addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -53208,18 +54746,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -53235,14 +54775,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x645: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x39], // CB FD 39
         function(regs, pins) { //SRL_irr_r addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -53258,18 +54802,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -53285,14 +54831,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x646: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x3A], // CB FD 3A
         function(regs, pins) { //SRL_irr_r addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -53308,18 +54858,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -53335,14 +54887,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x647: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x3B], // CB FD 3B
         function(regs, pins) { //SRL_irr_r addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -53358,18 +54914,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -53385,14 +54943,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x648: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x3C], // CB FD 3C
         function(regs, pins) { //SRL_irr_r addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -53408,18 +54970,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -53435,14 +54999,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x649: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x3D], // CB FD 3D
         function(regs, pins) { //SRL_irr_r addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -53458,18 +55026,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -53485,14 +55055,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x64A: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x3E], // CB FD 3E
         function(regs, pins) { //SRL_irr_r addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -53508,18 +55082,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -53535,14 +55111,18 @@ const z80_decoded_opcodes = Object.freeze({
     0x64B: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x3F], // CB FD 3F
         function(regs, pins) { //SRL_irr_r addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 let x = regs.TR;
@@ -53558,18 +55138,20 @@ const z80_decoded_opcodes = Object.freeze({
                 regs.TR = x;
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 6: // wait
+                break;
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -53583,7 +55165,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x64C: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x40], // CB FD 40
-        function(regs, pins) { //BIT_o_irr_r 0 addr B
+        function(regs, pins) { //BIT_o_irr 0 addr B
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -53621,7 +55203,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x64D: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x41], // CB FD 41
-        function(regs, pins) { //BIT_o_irr_r 0 addr C
+        function(regs, pins) { //BIT_o_irr 0 addr C
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -53659,7 +55241,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x64E: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x42], // CB FD 42
-        function(regs, pins) { //BIT_o_irr_r 0 addr D
+        function(regs, pins) { //BIT_o_irr 0 addr D
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -53697,7 +55279,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x64F: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x43], // CB FD 43
-        function(regs, pins) { //BIT_o_irr_r 0 addr E
+        function(regs, pins) { //BIT_o_irr 0 addr E
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -53735,7 +55317,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x650: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x44], // CB FD 44
-        function(regs, pins) { //BIT_o_irr_r 0 addr H
+        function(regs, pins) { //BIT_o_irr 0 addr H
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -53773,7 +55355,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x651: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x45], // CB FD 45
-        function(regs, pins) { //BIT_o_irr_r 0 addr L
+        function(regs, pins) { //BIT_o_irr 0 addr L
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -53811,7 +55393,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x652: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x46], // CB FD 46
-        function(regs, pins) { //BIT_o_irr_r 0 addr _
+        function(regs, pins) { //BIT_o_irr 0 addr _
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -53849,7 +55431,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x653: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x47], // CB FD 47
-        function(regs, pins) { //BIT_o_irr_r 0 addr A
+        function(regs, pins) { //BIT_o_irr 0 addr A
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -53887,7 +55469,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x654: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x48], // CB FD 48
-        function(regs, pins) { //BIT_o_irr_r 1 addr B
+        function(regs, pins) { //BIT_o_irr 1 addr B
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -53925,7 +55507,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x655: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x49], // CB FD 49
-        function(regs, pins) { //BIT_o_irr_r 1 addr C
+        function(regs, pins) { //BIT_o_irr 1 addr C
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -53963,7 +55545,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x656: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x4A], // CB FD 4A
-        function(regs, pins) { //BIT_o_irr_r 1 addr D
+        function(regs, pins) { //BIT_o_irr 1 addr D
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54001,7 +55583,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x657: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x4B], // CB FD 4B
-        function(regs, pins) { //BIT_o_irr_r 1 addr E
+        function(regs, pins) { //BIT_o_irr 1 addr E
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54039,7 +55621,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x658: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x4C], // CB FD 4C
-        function(regs, pins) { //BIT_o_irr_r 1 addr H
+        function(regs, pins) { //BIT_o_irr 1 addr H
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54077,7 +55659,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x659: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x4D], // CB FD 4D
-        function(regs, pins) { //BIT_o_irr_r 1 addr L
+        function(regs, pins) { //BIT_o_irr 1 addr L
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54115,7 +55697,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x65A: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x4E], // CB FD 4E
-        function(regs, pins) { //BIT_o_irr_r 1 addr _
+        function(regs, pins) { //BIT_o_irr 1 addr _
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54153,7 +55735,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x65B: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x4F], // CB FD 4F
-        function(regs, pins) { //BIT_o_irr_r 1 addr A
+        function(regs, pins) { //BIT_o_irr 1 addr A
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54191,7 +55773,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x65C: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x50], // CB FD 50
-        function(regs, pins) { //BIT_o_irr_r 2 addr B
+        function(regs, pins) { //BIT_o_irr 2 addr B
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54229,7 +55811,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x65D: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x51], // CB FD 51
-        function(regs, pins) { //BIT_o_irr_r 2 addr C
+        function(regs, pins) { //BIT_o_irr 2 addr C
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54267,7 +55849,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x65E: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x52], // CB FD 52
-        function(regs, pins) { //BIT_o_irr_r 2 addr D
+        function(regs, pins) { //BIT_o_irr 2 addr D
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54305,7 +55887,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x65F: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x53], // CB FD 53
-        function(regs, pins) { //BIT_o_irr_r 2 addr E
+        function(regs, pins) { //BIT_o_irr 2 addr E
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54343,7 +55925,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x660: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x54], // CB FD 54
-        function(regs, pins) { //BIT_o_irr_r 2 addr H
+        function(regs, pins) { //BIT_o_irr 2 addr H
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54381,7 +55963,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x661: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x55], // CB FD 55
-        function(regs, pins) { //BIT_o_irr_r 2 addr L
+        function(regs, pins) { //BIT_o_irr 2 addr L
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54419,7 +56001,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x662: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x56], // CB FD 56
-        function(regs, pins) { //BIT_o_irr_r 2 addr _
+        function(regs, pins) { //BIT_o_irr 2 addr _
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54457,7 +56039,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x663: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x57], // CB FD 57
-        function(regs, pins) { //BIT_o_irr_r 2 addr A
+        function(regs, pins) { //BIT_o_irr 2 addr A
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54495,7 +56077,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x664: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x58], // CB FD 58
-        function(regs, pins) { //BIT_o_irr_r 3 addr B
+        function(regs, pins) { //BIT_o_irr 3 addr B
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54533,7 +56115,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x665: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x59], // CB FD 59
-        function(regs, pins) { //BIT_o_irr_r 3 addr C
+        function(regs, pins) { //BIT_o_irr 3 addr C
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54571,7 +56153,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x666: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x5A], // CB FD 5A
-        function(regs, pins) { //BIT_o_irr_r 3 addr D
+        function(regs, pins) { //BIT_o_irr 3 addr D
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54609,7 +56191,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x667: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x5B], // CB FD 5B
-        function(regs, pins) { //BIT_o_irr_r 3 addr E
+        function(regs, pins) { //BIT_o_irr 3 addr E
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54647,7 +56229,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x668: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x5C], // CB FD 5C
-        function(regs, pins) { //BIT_o_irr_r 3 addr H
+        function(regs, pins) { //BIT_o_irr 3 addr H
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54685,7 +56267,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x669: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x5D], // CB FD 5D
-        function(regs, pins) { //BIT_o_irr_r 3 addr L
+        function(regs, pins) { //BIT_o_irr 3 addr L
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54723,7 +56305,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x66A: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x5E], // CB FD 5E
-        function(regs, pins) { //BIT_o_irr_r 3 addr _
+        function(regs, pins) { //BIT_o_irr 3 addr _
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54761,7 +56343,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x66B: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x5F], // CB FD 5F
-        function(regs, pins) { //BIT_o_irr_r 3 addr A
+        function(regs, pins) { //BIT_o_irr 3 addr A
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54799,7 +56381,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x66C: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x60], // CB FD 60
-        function(regs, pins) { //BIT_o_irr_r 4 addr B
+        function(regs, pins) { //BIT_o_irr 4 addr B
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54837,7 +56419,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x66D: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x61], // CB FD 61
-        function(regs, pins) { //BIT_o_irr_r 4 addr C
+        function(regs, pins) { //BIT_o_irr 4 addr C
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54875,7 +56457,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x66E: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x62], // CB FD 62
-        function(regs, pins) { //BIT_o_irr_r 4 addr D
+        function(regs, pins) { //BIT_o_irr 4 addr D
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54913,7 +56495,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x66F: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x63], // CB FD 63
-        function(regs, pins) { //BIT_o_irr_r 4 addr E
+        function(regs, pins) { //BIT_o_irr 4 addr E
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54951,7 +56533,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x670: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x64], // CB FD 64
-        function(regs, pins) { //BIT_o_irr_r 4 addr H
+        function(regs, pins) { //BIT_o_irr 4 addr H
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -54989,7 +56571,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x671: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x65], // CB FD 65
-        function(regs, pins) { //BIT_o_irr_r 4 addr L
+        function(regs, pins) { //BIT_o_irr 4 addr L
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -55027,7 +56609,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x672: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x66], // CB FD 66
-        function(regs, pins) { //BIT_o_irr_r 4 addr _
+        function(regs, pins) { //BIT_o_irr 4 addr _
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -55065,7 +56647,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x673: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x67], // CB FD 67
-        function(regs, pins) { //BIT_o_irr_r 4 addr A
+        function(regs, pins) { //BIT_o_irr 4 addr A
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -55103,7 +56685,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x674: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x68], // CB FD 68
-        function(regs, pins) { //BIT_o_irr_r 5 addr B
+        function(regs, pins) { //BIT_o_irr 5 addr B
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -55141,7 +56723,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x675: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x69], // CB FD 69
-        function(regs, pins) { //BIT_o_irr_r 5 addr C
+        function(regs, pins) { //BIT_o_irr 5 addr C
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -55179,7 +56761,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x676: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x6A], // CB FD 6A
-        function(regs, pins) { //BIT_o_irr_r 5 addr D
+        function(regs, pins) { //BIT_o_irr 5 addr D
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -55217,7 +56799,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x677: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x6B], // CB FD 6B
-        function(regs, pins) { //BIT_o_irr_r 5 addr E
+        function(regs, pins) { //BIT_o_irr 5 addr E
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -55255,7 +56837,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x678: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x6C], // CB FD 6C
-        function(regs, pins) { //BIT_o_irr_r 5 addr H
+        function(regs, pins) { //BIT_o_irr 5 addr H
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -55293,7 +56875,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x679: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x6D], // CB FD 6D
-        function(regs, pins) { //BIT_o_irr_r 5 addr L
+        function(regs, pins) { //BIT_o_irr 5 addr L
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -55331,7 +56913,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x67A: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x6E], // CB FD 6E
-        function(regs, pins) { //BIT_o_irr_r 5 addr _
+        function(regs, pins) { //BIT_o_irr 5 addr _
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -55369,7 +56951,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x67B: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x6F], // CB FD 6F
-        function(regs, pins) { //BIT_o_irr_r 5 addr A
+        function(regs, pins) { //BIT_o_irr 5 addr A
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -55407,7 +56989,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x67C: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x70], // CB FD 70
-        function(regs, pins) { //BIT_o_irr_r 6 addr B
+        function(regs, pins) { //BIT_o_irr 6 addr B
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -55445,7 +57027,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x67D: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x71], // CB FD 71
-        function(regs, pins) { //BIT_o_irr_r 6 addr C
+        function(regs, pins) { //BIT_o_irr 6 addr C
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -55483,7 +57065,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x67E: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x72], // CB FD 72
-        function(regs, pins) { //BIT_o_irr_r 6 addr D
+        function(regs, pins) { //BIT_o_irr 6 addr D
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -55521,7 +57103,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x67F: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x73], // CB FD 73
-        function(regs, pins) { //BIT_o_irr_r 6 addr E
+        function(regs, pins) { //BIT_o_irr 6 addr E
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -55559,7 +57141,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x680: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x74], // CB FD 74
-        function(regs, pins) { //BIT_o_irr_r 6 addr H
+        function(regs, pins) { //BIT_o_irr 6 addr H
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -55597,7 +57179,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x681: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x75], // CB FD 75
-        function(regs, pins) { //BIT_o_irr_r 6 addr L
+        function(regs, pins) { //BIT_o_irr 6 addr L
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -55635,7 +57217,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x682: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x76], // CB FD 76
-        function(regs, pins) { //BIT_o_irr_r 6 addr _
+        function(regs, pins) { //BIT_o_irr 6 addr _
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -55673,7 +57255,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x683: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x77], // CB FD 77
-        function(regs, pins) { //BIT_o_irr_r 6 addr A
+        function(regs, pins) { //BIT_o_irr 6 addr A
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -55711,7 +57293,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x684: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x78], // CB FD 78
-        function(regs, pins) { //BIT_o_irr_r 7 addr B
+        function(regs, pins) { //BIT_o_irr 7 addr B
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -55749,7 +57331,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x685: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x79], // CB FD 79
-        function(regs, pins) { //BIT_o_irr_r 7 addr C
+        function(regs, pins) { //BIT_o_irr 7 addr C
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -55787,7 +57369,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x686: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x7A], // CB FD 7A
-        function(regs, pins) { //BIT_o_irr_r 7 addr D
+        function(regs, pins) { //BIT_o_irr 7 addr D
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -55825,7 +57407,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x687: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x7B], // CB FD 7B
-        function(regs, pins) { //BIT_o_irr_r 7 addr E
+        function(regs, pins) { //BIT_o_irr 7 addr E
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -55863,7 +57445,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x688: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x7C], // CB FD 7C
-        function(regs, pins) { //BIT_o_irr_r 7 addr H
+        function(regs, pins) { //BIT_o_irr 7 addr H
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -55901,7 +57483,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x689: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x7D], // CB FD 7D
-        function(regs, pins) { //BIT_o_irr_r 7 addr L
+        function(regs, pins) { //BIT_o_irr 7 addr L
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -55939,7 +57521,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x68A: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x7E], // CB FD 7E
-        function(regs, pins) { //BIT_o_irr_r 7 addr _
+        function(regs, pins) { //BIT_o_irr 7 addr _
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -55977,7 +57559,7 @@ const z80_decoded_opcodes = Object.freeze({
         }
     }),
     0x68B: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x7F], // CB FD 7F
-        function(regs, pins) { //BIT_o_irr_r 7 addr A
+        function(regs, pins) { //BIT_o_irr 7 addr A
         switch(regs.TCU) {
             case 1: // Start read
                 regs.Q = 1;
@@ -56017,31 +57599,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x68C: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x80], // CB FD 80
         function(regs, pins) { //RES_o_irr_r 0 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 0) ^ 0xFF);
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -56057,31 +57645,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x68D: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x81], // CB FD 81
         function(regs, pins) { //RES_o_irr_r 0 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 0) ^ 0xFF);
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -56097,31 +57691,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x68E: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x82], // CB FD 82
         function(regs, pins) { //RES_o_irr_r 0 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 0) ^ 0xFF);
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -56137,31 +57737,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x68F: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x83], // CB FD 83
         function(regs, pins) { //RES_o_irr_r 0 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 0) ^ 0xFF);
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -56177,31 +57783,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x690: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x84], // CB FD 84
         function(regs, pins) { //RES_o_irr_r 0 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 0) ^ 0xFF);
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -56217,31 +57829,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x691: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x85], // CB FD 85
         function(regs, pins) { //RES_o_irr_r 0 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 0) ^ 0xFF);
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -56257,31 +57875,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x692: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x86], // CB FD 86
         function(regs, pins) { //RES_o_irr_r 0 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 0) ^ 0xFF);
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -56297,31 +57921,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x693: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x87], // CB FD 87
         function(regs, pins) { //RES_o_irr_r 0 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 0) ^ 0xFF);
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -56337,31 +57967,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x694: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x88], // CB FD 88
         function(regs, pins) { //RES_o_irr_r 1 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 1) ^ 0xFF);
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -56377,31 +58013,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x695: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x89], // CB FD 89
         function(regs, pins) { //RES_o_irr_r 1 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 1) ^ 0xFF);
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -56417,31 +58059,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x696: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x8A], // CB FD 8A
         function(regs, pins) { //RES_o_irr_r 1 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 1) ^ 0xFF);
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -56457,31 +58105,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x697: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x8B], // CB FD 8B
         function(regs, pins) { //RES_o_irr_r 1 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 1) ^ 0xFF);
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -56497,31 +58151,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x698: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x8C], // CB FD 8C
         function(regs, pins) { //RES_o_irr_r 1 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 1) ^ 0xFF);
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -56537,31 +58197,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x699: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x8D], // CB FD 8D
         function(regs, pins) { //RES_o_irr_r 1 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 1) ^ 0xFF);
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -56577,31 +58243,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x69A: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x8E], // CB FD 8E
         function(regs, pins) { //RES_o_irr_r 1 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 1) ^ 0xFF);
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -56617,31 +58289,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x69B: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x8F], // CB FD 8F
         function(regs, pins) { //RES_o_irr_r 1 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 1) ^ 0xFF);
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -56657,31 +58335,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x69C: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x90], // CB FD 90
         function(regs, pins) { //RES_o_irr_r 2 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 2) ^ 0xFF);
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -56697,31 +58381,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x69D: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x91], // CB FD 91
         function(regs, pins) { //RES_o_irr_r 2 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 2) ^ 0xFF);
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -56737,31 +58427,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x69E: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x92], // CB FD 92
         function(regs, pins) { //RES_o_irr_r 2 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 2) ^ 0xFF);
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -56777,31 +58473,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x69F: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x93], // CB FD 93
         function(regs, pins) { //RES_o_irr_r 2 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 2) ^ 0xFF);
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -56817,31 +58519,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6A0: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x94], // CB FD 94
         function(regs, pins) { //RES_o_irr_r 2 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 2) ^ 0xFF);
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -56857,31 +58565,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6A1: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x95], // CB FD 95
         function(regs, pins) { //RES_o_irr_r 2 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 2) ^ 0xFF);
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -56897,31 +58611,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6A2: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x96], // CB FD 96
         function(regs, pins) { //RES_o_irr_r 2 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 2) ^ 0xFF);
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -56937,31 +58657,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6A3: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x97], // CB FD 97
         function(regs, pins) { //RES_o_irr_r 2 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 2) ^ 0xFF);
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -56977,31 +58703,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6A4: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x98], // CB FD 98
         function(regs, pins) { //RES_o_irr_r 3 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 3) ^ 0xFF);
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -57017,31 +58749,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6A5: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x99], // CB FD 99
         function(regs, pins) { //RES_o_irr_r 3 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 3) ^ 0xFF);
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -57057,31 +58795,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6A6: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x9A], // CB FD 9A
         function(regs, pins) { //RES_o_irr_r 3 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 3) ^ 0xFF);
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -57097,31 +58841,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6A7: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x9B], // CB FD 9B
         function(regs, pins) { //RES_o_irr_r 3 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 3) ^ 0xFF);
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -57137,31 +58887,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6A8: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x9C], // CB FD 9C
         function(regs, pins) { //RES_o_irr_r 3 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 3) ^ 0xFF);
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -57177,31 +58933,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6A9: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x9D], // CB FD 9D
         function(regs, pins) { //RES_o_irr_r 3 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 3) ^ 0xFF);
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -57217,31 +58979,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6AA: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x9E], // CB FD 9E
         function(regs, pins) { //RES_o_irr_r 3 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 3) ^ 0xFF);
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -57257,31 +59025,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6AB: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0x9F], // CB FD 9F
         function(regs, pins) { //RES_o_irr_r 3 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 3) ^ 0xFF);
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -57297,31 +59071,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6AC: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xA0], // CB FD A0
         function(regs, pins) { //RES_o_irr_r 4 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 4) ^ 0xFF);
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -57337,31 +59117,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6AD: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xA1], // CB FD A1
         function(regs, pins) { //RES_o_irr_r 4 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 4) ^ 0xFF);
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -57377,31 +59163,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6AE: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xA2], // CB FD A2
         function(regs, pins) { //RES_o_irr_r 4 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 4) ^ 0xFF);
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -57417,31 +59209,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6AF: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xA3], // CB FD A3
         function(regs, pins) { //RES_o_irr_r 4 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 4) ^ 0xFF);
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -57457,31 +59255,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6B0: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xA4], // CB FD A4
         function(regs, pins) { //RES_o_irr_r 4 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 4) ^ 0xFF);
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -57497,31 +59301,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6B1: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xA5], // CB FD A5
         function(regs, pins) { //RES_o_irr_r 4 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 4) ^ 0xFF);
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -57537,31 +59347,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6B2: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xA6], // CB FD A6
         function(regs, pins) { //RES_o_irr_r 4 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 4) ^ 0xFF);
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -57577,31 +59393,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6B3: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xA7], // CB FD A7
         function(regs, pins) { //RES_o_irr_r 4 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 4) ^ 0xFF);
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -57617,31 +59439,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6B4: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xA8], // CB FD A8
         function(regs, pins) { //RES_o_irr_r 5 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 5) ^ 0xFF);
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -57657,31 +59485,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6B5: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xA9], // CB FD A9
         function(regs, pins) { //RES_o_irr_r 5 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 5) ^ 0xFF);
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -57697,31 +59531,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6B6: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xAA], // CB FD AA
         function(regs, pins) { //RES_o_irr_r 5 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 5) ^ 0xFF);
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -57737,31 +59577,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6B7: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xAB], // CB FD AB
         function(regs, pins) { //RES_o_irr_r 5 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 5) ^ 0xFF);
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -57777,31 +59623,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6B8: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xAC], // CB FD AC
         function(regs, pins) { //RES_o_irr_r 5 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 5) ^ 0xFF);
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -57817,31 +59669,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6B9: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xAD], // CB FD AD
         function(regs, pins) { //RES_o_irr_r 5 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 5) ^ 0xFF);
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -57857,31 +59715,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6BA: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xAE], // CB FD AE
         function(regs, pins) { //RES_o_irr_r 5 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 5) ^ 0xFF);
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -57897,31 +59761,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6BB: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xAF], // CB FD AF
         function(regs, pins) { //RES_o_irr_r 5 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 5) ^ 0xFF);
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -57937,31 +59807,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6BC: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xB0], // CB FD B0
         function(regs, pins) { //RES_o_irr_r 6 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 6) ^ 0xFF);
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -57977,31 +59853,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6BD: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xB1], // CB FD B1
         function(regs, pins) { //RES_o_irr_r 6 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 6) ^ 0xFF);
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -58017,31 +59899,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6BE: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xB2], // CB FD B2
         function(regs, pins) { //RES_o_irr_r 6 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 6) ^ 0xFF);
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -58057,31 +59945,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6BF: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xB3], // CB FD B3
         function(regs, pins) { //RES_o_irr_r 6 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 6) ^ 0xFF);
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -58097,31 +59991,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6C0: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xB4], // CB FD B4
         function(regs, pins) { //RES_o_irr_r 6 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 6) ^ 0xFF);
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -58137,31 +60037,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6C1: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xB5], // CB FD B5
         function(regs, pins) { //RES_o_irr_r 6 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 6) ^ 0xFF);
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -58177,31 +60083,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6C2: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xB6], // CB FD B6
         function(regs, pins) { //RES_o_irr_r 6 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 6) ^ 0xFF);
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -58217,31 +60129,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6C3: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xB7], // CB FD B7
         function(regs, pins) { //RES_o_irr_r 6 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 6) ^ 0xFF);
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -58257,31 +60175,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6C4: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xB8], // CB FD B8
         function(regs, pins) { //RES_o_irr_r 7 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 7) ^ 0xFF);
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -58297,31 +60221,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6C5: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xB9], // CB FD B9
         function(regs, pins) { //RES_o_irr_r 7 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 7) ^ 0xFF);
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -58337,31 +60267,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6C6: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xBA], // CB FD BA
         function(regs, pins) { //RES_o_irr_r 7 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 7) ^ 0xFF);
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -58377,31 +60313,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6C7: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xBB], // CB FD BB
         function(regs, pins) { //RES_o_irr_r 7 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 7) ^ 0xFF);
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -58417,31 +60359,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6C8: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xBC], // CB FD BC
         function(regs, pins) { //RES_o_irr_r 7 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 7) ^ 0xFF);
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -58457,31 +60405,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6C9: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xBD], // CB FD BD
         function(regs, pins) { //RES_o_irr_r 7 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 7) ^ 0xFF);
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -58497,31 +60451,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6CA: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xBE], // CB FD BE
         function(regs, pins) { //RES_o_irr_r 7 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 7) ^ 0xFF);
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -58537,31 +60497,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6CB: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xBF], // CB FD BF
         function(regs, pins) { //RES_o_irr_r 7 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 6: // wait
                 regs.TR = regs.TR & ((1 << 7) ^ 0xFF);
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -58577,31 +60543,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6CC: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xC0], // CB FD C0
         function(regs, pins) { //SET_o_irr_r 0 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 0);
+                break;
+            case 6: // wait
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -58617,31 +60589,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6CD: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xC1], // CB FD C1
         function(regs, pins) { //SET_o_irr_r 0 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 0);
+                break;
+            case 6: // wait
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -58657,31 +60635,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6CE: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xC2], // CB FD C2
         function(regs, pins) { //SET_o_irr_r 0 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 0);
+                break;
+            case 6: // wait
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -58697,31 +60681,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6CF: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xC3], // CB FD C3
         function(regs, pins) { //SET_o_irr_r 0 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 0);
+                break;
+            case 6: // wait
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -58737,31 +60727,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6D0: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xC4], // CB FD C4
         function(regs, pins) { //SET_o_irr_r 0 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 0);
+                break;
+            case 6: // wait
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -58777,31 +60773,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6D1: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xC5], // CB FD C5
         function(regs, pins) { //SET_o_irr_r 0 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 0);
+                break;
+            case 6: // wait
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -58817,31 +60819,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6D2: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xC6], // CB FD C6
         function(regs, pins) { //SET_o_irr_r 0 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 0);
+                break;
+            case 6: // wait
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -58857,31 +60865,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6D3: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xC7], // CB FD C7
         function(regs, pins) { //SET_o_irr_r 0 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 0);
+                break;
+            case 6: // wait
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -58897,31 +60911,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6D4: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xC8], // CB FD C8
         function(regs, pins) { //SET_o_irr_r 1 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 1);
+                break;
+            case 6: // wait
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -58937,31 +60957,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6D5: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xC9], // CB FD C9
         function(regs, pins) { //SET_o_irr_r 1 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 1);
+                break;
+            case 6: // wait
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -58977,31 +61003,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6D6: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xCA], // CB FD CA
         function(regs, pins) { //SET_o_irr_r 1 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 1);
+                break;
+            case 6: // wait
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -59017,31 +61049,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6D7: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xCB], // CB FD CB
         function(regs, pins) { //SET_o_irr_r 1 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 1);
+                break;
+            case 6: // wait
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -59057,31 +61095,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6D8: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xCC], // CB FD CC
         function(regs, pins) { //SET_o_irr_r 1 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 1);
+                break;
+            case 6: // wait
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -59097,31 +61141,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6D9: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xCD], // CB FD CD
         function(regs, pins) { //SET_o_irr_r 1 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 1);
+                break;
+            case 6: // wait
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -59137,31 +61187,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6DA: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xCE], // CB FD CE
         function(regs, pins) { //SET_o_irr_r 1 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 1);
+                break;
+            case 6: // wait
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -59177,31 +61233,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6DB: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xCF], // CB FD CF
         function(regs, pins) { //SET_o_irr_r 1 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 1);
+                break;
+            case 6: // wait
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -59217,31 +61279,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6DC: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xD0], // CB FD D0
         function(regs, pins) { //SET_o_irr_r 2 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 2);
+                break;
+            case 6: // wait
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -59257,31 +61325,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6DD: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xD1], // CB FD D1
         function(regs, pins) { //SET_o_irr_r 2 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 2);
+                break;
+            case 6: // wait
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -59297,31 +61371,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6DE: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xD2], // CB FD D2
         function(regs, pins) { //SET_o_irr_r 2 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 2);
+                break;
+            case 6: // wait
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -59337,31 +61417,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6DF: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xD3], // CB FD D3
         function(regs, pins) { //SET_o_irr_r 2 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 2);
+                break;
+            case 6: // wait
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -59377,31 +61463,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6E0: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xD4], // CB FD D4
         function(regs, pins) { //SET_o_irr_r 2 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 2);
+                break;
+            case 6: // wait
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -59417,31 +61509,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6E1: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xD5], // CB FD D5
         function(regs, pins) { //SET_o_irr_r 2 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 2);
+                break;
+            case 6: // wait
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -59457,31 +61555,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6E2: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xD6], // CB FD D6
         function(regs, pins) { //SET_o_irr_r 2 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 2);
+                break;
+            case 6: // wait
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -59497,31 +61601,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6E3: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xD7], // CB FD D7
         function(regs, pins) { //SET_o_irr_r 2 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 2);
+                break;
+            case 6: // wait
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -59537,31 +61647,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6E4: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xD8], // CB FD D8
         function(regs, pins) { //SET_o_irr_r 3 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 3);
+                break;
+            case 6: // wait
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -59577,31 +61693,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6E5: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xD9], // CB FD D9
         function(regs, pins) { //SET_o_irr_r 3 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 3);
+                break;
+            case 6: // wait
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -59617,31 +61739,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6E6: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xDA], // CB FD DA
         function(regs, pins) { //SET_o_irr_r 3 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 3);
+                break;
+            case 6: // wait
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -59657,31 +61785,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6E7: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xDB], // CB FD DB
         function(regs, pins) { //SET_o_irr_r 3 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 3);
+                break;
+            case 6: // wait
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -59697,31 +61831,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6E8: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xDC], // CB FD DC
         function(regs, pins) { //SET_o_irr_r 3 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 3);
+                break;
+            case 6: // wait
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -59737,31 +61877,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6E9: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xDD], // CB FD DD
         function(regs, pins) { //SET_o_irr_r 3 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 3);
+                break;
+            case 6: // wait
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -59777,31 +61923,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6EA: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xDE], // CB FD DE
         function(regs, pins) { //SET_o_irr_r 3 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 3);
+                break;
+            case 6: // wait
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -59817,31 +61969,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6EB: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xDF], // CB FD DF
         function(regs, pins) { //SET_o_irr_r 3 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 3);
+                break;
+            case 6: // wait
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -59857,31 +62015,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6EC: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xE0], // CB FD E0
         function(regs, pins) { //SET_o_irr_r 4 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 4);
+                break;
+            case 6: // wait
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -59897,31 +62061,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6ED: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xE1], // CB FD E1
         function(regs, pins) { //SET_o_irr_r 4 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 4);
+                break;
+            case 6: // wait
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -59937,31 +62107,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6EE: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xE2], // CB FD E2
         function(regs, pins) { //SET_o_irr_r 4 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 4);
+                break;
+            case 6: // wait
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -59977,31 +62153,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6EF: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xE3], // CB FD E3
         function(regs, pins) { //SET_o_irr_r 4 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 4);
+                break;
+            case 6: // wait
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -60017,31 +62199,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6F0: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xE4], // CB FD E4
         function(regs, pins) { //SET_o_irr_r 4 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 4);
+                break;
+            case 6: // wait
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -60057,31 +62245,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6F1: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xE5], // CB FD E5
         function(regs, pins) { //SET_o_irr_r 4 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 4);
+                break;
+            case 6: // wait
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -60097,31 +62291,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6F2: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xE6], // CB FD E6
         function(regs, pins) { //SET_o_irr_r 4 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 4);
+                break;
+            case 6: // wait
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -60137,31 +62337,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6F3: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xE7], // CB FD E7
         function(regs, pins) { //SET_o_irr_r 4 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 4);
+                break;
+            case 6: // wait
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -60177,31 +62383,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6F4: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xE8], // CB FD E8
         function(regs, pins) { //SET_o_irr_r 5 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 5);
+                break;
+            case 6: // wait
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -60217,31 +62429,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6F5: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xE9], // CB FD E9
         function(regs, pins) { //SET_o_irr_r 5 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 5);
+                break;
+            case 6: // wait
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -60257,31 +62475,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6F6: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xEA], // CB FD EA
         function(regs, pins) { //SET_o_irr_r 5 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 5);
+                break;
+            case 6: // wait
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -60297,31 +62521,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6F7: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xEB], // CB FD EB
         function(regs, pins) { //SET_o_irr_r 5 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 5);
+                break;
+            case 6: // wait
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -60337,31 +62567,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6F8: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xEC], // CB FD EC
         function(regs, pins) { //SET_o_irr_r 5 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 5);
+                break;
+            case 6: // wait
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -60377,31 +62613,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6F9: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xED], // CB FD ED
         function(regs, pins) { //SET_o_irr_r 5 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 5);
+                break;
+            case 6: // wait
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -60417,31 +62659,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6FA: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xEE], // CB FD EE
         function(regs, pins) { //SET_o_irr_r 5 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 5);
+                break;
+            case 6: // wait
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -60457,31 +62705,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6FB: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xEF], // CB FD EF
         function(regs, pins) { //SET_o_irr_r 5 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 5);
+                break;
+            case 6: // wait
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -60497,31 +62751,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6FC: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xF0], // CB FD F0
         function(regs, pins) { //SET_o_irr_r 6 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 6);
+                break;
+            case 6: // wait
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -60537,31 +62797,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6FD: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xF1], // CB FD F1
         function(regs, pins) { //SET_o_irr_r 6 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 6);
+                break;
+            case 6: // wait
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -60577,31 +62843,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6FE: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xF2], // CB FD F2
         function(regs, pins) { //SET_o_irr_r 6 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 6);
+                break;
+            case 6: // wait
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -60617,31 +62889,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x6FF: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xF3], // CB FD F3
         function(regs, pins) { //SET_o_irr_r 6 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 6);
+                break;
+            case 6: // wait
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -60657,31 +62935,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x700: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xF4], // CB FD F4
         function(regs, pins) { //SET_o_irr_r 6 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 6);
+                break;
+            case 6: // wait
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -60697,31 +62981,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x701: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xF5], // CB FD F5
         function(regs, pins) { //SET_o_irr_r 6 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 6);
+                break;
+            case 6: // wait
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -60737,31 +63027,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x702: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xF6], // CB FD F6
         function(regs, pins) { //SET_o_irr_r 6 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 6);
+                break;
+            case 6: // wait
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -60777,31 +63073,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x703: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xF7], // CB FD F7
         function(regs, pins) { //SET_o_irr_r 6 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 6);
+                break;
+            case 6: // wait
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -60817,31 +63119,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x704: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xF8], // CB FD F8
         function(regs, pins) { //SET_o_irr_r 7 addr B
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 7);
+                break;
+            case 6: // wait
                 regs.B = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -60857,31 +63165,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x705: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xF9], // CB FD F9
         function(regs, pins) { //SET_o_irr_r 7 addr C
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 7);
+                break;
+            case 6: // wait
                 regs.C = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -60897,31 +63211,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x706: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xFA], // CB FD FA
         function(regs, pins) { //SET_o_irr_r 7 addr D
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 7);
+                break;
+            case 6: // wait
                 regs.D = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -60937,31 +63257,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x707: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xFB], // CB FD FB
         function(regs, pins) { //SET_o_irr_r 7 addr E
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 7);
+                break;
+            case 6: // wait
                 regs.E = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -60977,31 +63303,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x708: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xFC], // CB FD FC
         function(regs, pins) { //SET_o_irr_r 7 addr H
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 7);
+                break;
+            case 6: // wait
                 regs.H = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -61017,31 +63349,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x709: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xFD], // CB FD FD
         function(regs, pins) { //SET_o_irr_r 7 addr L
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 7);
+                break;
+            case 6: // wait
                 regs.L = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -61057,31 +63395,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x70A: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xFE], // CB FD FE
         function(regs, pins) { //SET_o_irr_r 7 addr _
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 7);
+                break;
+            case 6: // wait
                 // JUNKVAR set here to regs.TR
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -61097,31 +63441,37 @@ const z80_decoded_opcodes = Object.freeze({
     0x70B: new Z80_opcode_functions(Z80_CBd_opcode_matrix[0xFF], // CB FD FF
         function(regs, pins) { //SET_o_irr_r 7 addr A
         switch(regs.TCU) {
-            case 1: // Start read
+            case 1: // wait
                 regs.Q = 1;
+                break;
+            case 2: // wait
+                break;
+            case 3: // Start read
                 pins.Addr = (regs.WZ);
                 break;
-            case 2: // signal
+            case 4: // signal
                 pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Read end/latch
+            case 5: // Read end/latch
                 regs.TR = pins.D;
                 pins.RD = 0; pins.MRQ = 0;
                 regs.TR = regs.TR | (1 << 7);
+                break;
+            case 6: // wait
                 regs.A = regs.TR;
                 break;
-            case 4: // write begin
+            case 7: // write begin
                 pins.Addr = (regs.WZ);
                 break;
-            case 5:
+            case 8:
                 pins.D = (regs.TR);
                 pins.WR = 1; pins.MRQ = 1;
                 break;
-            case 6: // write end
+            case 9: // write end
                 pins.WR = 0; pins.MRQ = 0;
                 // Following is auto-generated code for instruction finish
                 break;
-            case 7: // cleanup_custom
+            case 10: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;

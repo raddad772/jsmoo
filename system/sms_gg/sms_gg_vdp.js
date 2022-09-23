@@ -371,7 +371,7 @@ class SMSGG_VDP {
             for (let index = 0; index < 64; index++) {
                 let y = this.VRAM[attr_addr + index] + 1;
                 if ((this.bg_gfx_vlines === 192) && (y === 0xD1)) break;
-                if (y >= 0xF0) y = (y - 0xFF) & 0x1FF;
+                if (y >= 0xF1) y = (y - 0xFF) & 0x1FF;
                 if ((vpos < y) || (vpos > (y + vlimit))) continue;
 
                 let x = this.VRAM[attr_addr + 0x80 + (index << 1)];
