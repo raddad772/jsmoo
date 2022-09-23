@@ -325,6 +325,9 @@ class SMSGG_VDP {
     }
 
     sprite_setup() {
+        for (let i = 0; i < 8; i++) {
+            this.objects[i].y = 0xFF;
+        }
         let valid = 0;
         let vlimit = (8 << (this.io.sprite_zoom + this.io.sprite_size)) - 1;
         for (let i = 0; i < 8; i++) this.objects[i].y = 0xD0;
@@ -365,10 +368,9 @@ class SMSGG_VDP {
             }
         } else {
             attr_addr = (this.io.sprite_attr_table_address & 0x7E) << 7;
-
             for (let index = 0; index < 64; index++) {
                 let y = this.VRAM[attr_addr + index] + 1;
-                if ((this.bg_gfx_vlines === 192) && (y === 0xD0)) break;
+                if ((this.bg_gfx_vlines === 192) && (y === 0xD1)) break;
                 if (y >= 0xF0) y = (y - 0xFF) & 0x1FF;
                 if ((vpos < y) || (vpos > (y + vlimit))) continue;
 
