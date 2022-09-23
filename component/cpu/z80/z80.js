@@ -370,6 +370,7 @@ class z80_t {
             case 6: // operand() end
                 this.regs.WZ = (this.regs.WZ + mksigned8(this.pins.D)) & 0xFFFF;
                 this.set_pins_nothing();
+                this.regs.TCU += 2;
                 break;
             case 7: // wait a cycle
                 break;
@@ -385,9 +386,10 @@ class z80_t {
             case 11: // cycle 3 of opcode tech
                 this.set_pins_nothing();
                 this.regs.t[0] = this.pins.D;
+                this.set_instruction(this.regs.t[0]);
                 break;
             case 12: // cycle 4 of opcode fetch. execute instruction!
-                this.set_instruction(this.regs.t[0]);
+                //this.set_instruction(this.regs.t[0]);
                 break;
             case 13: // CB regular and ED regular starts here
                 this.set_pins_opcode();

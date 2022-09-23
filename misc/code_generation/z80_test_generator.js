@@ -1907,6 +1907,7 @@ class Z80_test_generator {
         this.wait(2);
         let tv = this.RL(this.read(addr));
         this.writereg(x, tv);
+        this.wait(1);
         this.write(addr, tv);
     }
 
@@ -1983,6 +1984,7 @@ class Z80_test_generator {
         this.wait(2);
         let tv = this.RR(this.read(addr));
         this.writereg(x, tv);
+        this.wait(1);
         this.write(addr, tv);
     }
 
@@ -2013,6 +2015,7 @@ class Z80_test_generator {
         this.wait(2);
         let tv = this.RRC(this.read(addr));
         this.writereg(x, tv);
+        this.wait(1);
         this.write(addr, tv);
     }
 
@@ -2123,6 +2126,7 @@ class Z80_test_generator {
         this.wait(2);
         let tv = this.SLA(this.read(addr));
         this.writereg(x, tv);
+        this.wait(1);
         this.write(addr, tv);
     }
 
@@ -2143,6 +2147,7 @@ class Z80_test_generator {
         this.wait(2);
         let tv = this.SLL(this.read(addr));
         this.writereg(x, tv);
+        this.wait(1);
         this.write(addr, tv);
     }
 
@@ -2163,6 +2168,7 @@ class Z80_test_generator {
         this.wait(2);
         let tv = this.SRA(this.read(addr));
         this.writereg(x, tv);
+        this.wait(1);
         this.write(addr, tv);
     }
 
@@ -2183,6 +2189,7 @@ class Z80_test_generator {
         this.wait(2);
         let tv = this.SRL(this.read(addr));
         this.writereg(x, tv);
+        this.wait(1);
         this.write(addr, tv);
     }
 
