@@ -1258,6 +1258,13 @@ class Z80_test_generator {
         this.regs.setXY(this.readreg('WZH'));
     }
 
+    BIT_o_irr_r(bit, addr, dontcare) {
+        this.Q(1);
+        this.wait(2);
+        this.BIT(bit, this.read(addr));
+        this.regs.setXY(this.readreg('WZH'));
+    }
+
     BIT_o_r(bit, x) {
         this.Q(1);
         this.BIT(bit, this.readreg(x));
@@ -2343,15 +2350,18 @@ class Z80_test_generator {
             let operand;
 
             if ((curd === 0xCB) && (this.rprefix !== Z80T.HL)) {
+                // already have 8 cycles wait
                 this.prefix = ((this.prefix << 8) | 0xCB) & 0xFFFF;
                 let yr = (this.rprefix === Z80T.IX) ? this.regs.IX : this.regs.IY;
-                operand = this.operand();
+                operand = this.operand(); // +3 = 11
                 i++;
-                this.wait(2);
                 this.regs.WZ = (yr + mksigned8(operand)) & 0xFFFF;
                 this.rprefix = Z80T.HL;
                 // fetch actual instruction now
-                curd = this.fetch_opcode(opcode_stream, i, false, false);
+                //this.wait(2); // + 2 = 13
+                curd = this.fetch_opcode(opcode_stream, i, true, false);
+                // +3 = 14
+                // Now we're at 14 cycles
                 i++;
                 this.instructionCBd(this.regs.WZ, curd);
             }
