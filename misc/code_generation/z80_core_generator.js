@@ -1296,6 +1296,14 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.BIT(arg1, 'regs.TR');
             ag.setXY('(regs.WZ >>> 8)');
             break;
+        case Z80_MN.BIT_o_irr_r:  //n3, n16&
+            ag.Q(1);
+            ag.addcycle('wait');
+            ag.addcycle('wait');
+            ag.read(ag.readreg(arg2), 'regs.TR');
+            ag.BIT(arg1, 'regs.TR');
+            ag.setXY('(regs.WZ >>> 8)');
+            break;
         case Z80_MN.BIT_o_r:  //n3, n8&
             ag.Q(1);
             ag.BIT(arg1, ag.readreg(arg2));
