@@ -121,6 +121,7 @@ class NES_mapper_MMC1 {
     }
 
     ppu_write(addr, val) {
+        addr &= 0x3FFF;
         if (addr < 0x2000) {
             if (this.has_chr_ram) this.CHR_RAM[addr] = val;
             return;
@@ -129,9 +130,10 @@ class NES_mapper_MMC1 {
     }
 
     ppu_read(addr, val, has_effect=true) {
+        addr &= 0x3FFF;
         if (addr < 0x2000) {
             if (this.has_chr_ram) return this.CHR_RAM[addr];
-            return this.CHR_map[addr >>> 10].read(addr, val, has_effect);
+            return this.CHR_map[addr >>> 12].read(addr, val, has_effect);
         }
         return this.CIRAM[this.mirror_ppu_addr(addr)];
     }
