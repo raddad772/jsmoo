@@ -328,6 +328,27 @@ function click_dump_ram() {
 	mconsole.draw();
 }
 
+function click_dump_chrom() {
+	let iaddr = get_addr_from_dump_box();
+	let MDUMP_COLS = 16;
+	let NUM_BYTES = 256;
+	for (let addr = iaddr; addr < (iaddr + NUM_BYTES); addr += MDUMP_COLS) {
+		let ln = hex6(addr) + ' ';
+		for (let baddr = addr; baddr < (addr + MDUMP_COLS); baddr++) {
+			let rd;
+			switch(global_player.system_kind) {
+				case 'nes':
+					rd = hex2(global_player.system.cart.mapper.CHR_ROM[baddr]);
+					break;
+			}
+			ln += rd + ' ';
+		}
+		mconsole.addl(ln);
+		console.log(ln);
+	}
+	mconsole.draw();
+}
+
 function click_dump_vram() {
 	let iaddr = get_addr_from_dump_box();
 	let MDUMP_COLS = 16;
