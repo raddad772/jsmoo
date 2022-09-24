@@ -37,19 +37,12 @@ class MMC3b_map {
     }
 
     read(addr, val, has_effect=true) {
-        if (addr === 0) {
-            console.log(addr, this.addr, this.offset, addr >>> 10);
-        }
-        let r = this.data[(addr - this.addr) + this.offset];
-        if (typeof r === 'undefined') {
-            console.log(hex4(addr), hex4(this.addr), this.offset);
-        }
-        return r;
+        return this.data[(addr - this.addr) + this.offset];
     }
 }
 
 class a12_watcher {
-    /** 
+    /**
      * @param {NES_clock} clock
      */
     constructor(clock) {
@@ -273,27 +266,20 @@ class NES_mapper_MMC3b {
     }
 
     mirror_ppu_addr(addr) {
-        addr &= 0x3FFF;
         if (this.ppu_mirror === -1) {  // 4-way mirror
             return addr;
         }
-        if (addr > 0x3000) addr -= 0x1000;
-        if (this.ppu_mirror === 1) {
-            if ((addr >= 0x2400) && (addr < 0x2800)) return addr - 0x400;
-            if ((addr >= 0x2C00)) return addr - 0x400;
-        } else {
-            if (addr >= 0x2800) return addr - 0x800;
-        }
-        return addr;
+        if (this.ppu_mirror === 1)
+            return (addr >>> 1 & 0x0400) | (addr & 0x03ff);
+        else
+            return (addr & 0x0400) | (addr & 0x03ff);
     }
 
     ppu_write(addr, val) {
         this.a12_watch(addr);
-        addr = this.mirror_ppu_addr(addr);
-        if (addr < 0x2000) {
+        if (addr < 0x2000) // can't write ROM
             return;
-        } // can't write ROM
-        this.CIRAM[addr-0x2000] = val;
+        this.CIRAM[this.mirror_ppu_addr(addr)] = val;
     }
 
     ppu_read(addr, val, has_effect=true) {
@@ -301,7 +287,7 @@ class NES_mapper_MMC3b {
         if (addr < 0x2000) {
             return this.CHR_map[addr >>> 10].read(addr, val, has_effect);
         }
-        return this.CIRAM[this.mirror_ppu_addr(addr)-0x2000];
+        return this.CIRAM[this.mirror_ppu_addr(addr)];
     }
 
     cpu_write(addr, val) {
