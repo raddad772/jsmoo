@@ -357,6 +357,9 @@ class NES_ppu {
                     output = this.latch.VRAM_read;
                     this.latch.VRAM_read = this.bus.PPU_read(this.io.v & 0x3FFF);
                 }
+                if (typeof output === 'undefined') {
+                    console.log('READ ADDR', hex4(this.io.v));
+                }
                 this.io.v = (this.io.v + this.io.vram_increment) & 0x7FFF;
                 break;
             default:

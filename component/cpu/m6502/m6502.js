@@ -182,12 +182,20 @@ class m6502_t {
                 this.regs.IR = M6502_OP_IRQ;
             }
             this.regs.old_I = this.regs.P.I;
+            if (typeof this.regs.IR === 'undefined') {
+                dbg.break();
+                return;
+            }
 			this.current_instruction = this.opcode_table[this.regs.IR];
             if (this.current_instruction.addr_mode === M6502_AM.NONE) {
                 console.log('INVALID OPCODE');
                 dbg.break();
             }
             if (this.trace_on) {
+                if (typeof this.regs.A === 'undefined') {
+                    dbg.break();
+                    return;
+                }
                 dbg.traces.add(TRACERS.M6502, this.clock.trace_cycles-1, this.trace_format(this.disassemble(), this.PCO));
             }
         }

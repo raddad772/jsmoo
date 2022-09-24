@@ -117,6 +117,10 @@ class NES_cart {
 			case 4: // MMC3
 				this.mapper = new NES_mapper_MMC3b(this.clock, this.bus);
 				break;
+			case 23: // VRC2c
+				this.mapper = new NES_mapper_VRC2B_4E_4F(this.clock, this.bus);
+				this.mapper.is_vrc4 = true;
+				break;
 			default:
 				console.log('Unknown mapper number', this.header.mapper_number);
 				break;

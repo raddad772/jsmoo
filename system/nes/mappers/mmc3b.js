@@ -37,12 +37,19 @@ class MMC3b_map {
     }
 
     read(addr, val, has_effect=true) {
-        return this.data[(addr - this.addr) + this.offset];
+        if (addr === 0) {
+            console.log(addr, this.addr, this.offset, addr >>> 10);
+        }
+        let r = this.data[(addr - this.addr) + this.offset];
+        if (typeof r === 'undefined') {
+            console.log(hex4(addr), hex4(this.addr), this.offset);
+        }
+        return r;
     }
 }
 
 class a12_watcher {
-    /**
+    /** 
      * @param {NES_clock} clock
      */
     constructor(clock) {
@@ -107,14 +114,7 @@ class NES_mapper_MMC3b {
         this.bus.PPU_write = this.ppu_write.bind(this);
 
         this.regs = {
-            r8000: 0,
-            r8001: 0,
-            rA000: 0,
-            rA001: 0,
             rC000: 0,
-            rC001: 0,
-            rE000: 0,
-            rE001: 0,
             bank_select: 0,
             bank: new Uint8Array(8),
         }
@@ -151,6 +151,8 @@ class NES_mapper_MMC3b {
         this.num_CHR_banks = 0;
 
     }
+
+    cycle() {}
 
     a12_watch(addr) {
         if (this.a12_watcher.update(addr) === this.a12_watcher.rise) {
@@ -272,10 +274,10 @@ class NES_mapper_MMC3b {
 
     mirror_ppu_addr(addr) {
         addr &= 0x3FFF;
-        if (addr > 0x3000) addr -= 0x1000;
         if (this.ppu_mirror === -1) {  // 4-way mirror
             return addr;
         }
+        if (addr > 0x3000) addr -= 0x1000;
         if (this.ppu_mirror === 1) {
             if ((addr >= 0x2400) && (addr < 0x2800)) return addr - 0x400;
             if ((addr >= 0x2C00)) return addr - 0x400;
@@ -289,8 +291,6 @@ class NES_mapper_MMC3b {
         this.a12_watch(addr);
         addr = this.mirror_ppu_addr(addr);
         if (addr < 0x2000) {
-            console.log('CANT WRITE CHR!', hex4(addr));
-            dbg.break(D_RESOURCE_TYPES.M6502);
             return;
         } // can't write ROM
         this.CIRAM[addr-0x2000] = val;
@@ -299,7 +299,7 @@ class NES_mapper_MMC3b {
     ppu_read(addr, val, has_effect=true) {
         if (has_effect) this.a12_watch(addr);
         if (addr < 0x2000) {
-            return this.CHR_map[addr >>> 10].read(addr, val, has_effect)
+            return this.CHR_map[addr >>> 10].read(addr, val, has_effect);
         }
         return this.CIRAM[this.mirror_ppu_addr(addr)-0x2000];
     }
@@ -308,12 +308,11 @@ class NES_mapper_MMC3b {
         // Conventional CPU map
         // 0x0000-0x1FFF 4 mirrors of 2KB banks
         if (addr < 0x2000) {
-            addr &= 0x7FF;
-            this.CPU_RAM[addr] = val;
+            this.CPU_RAM[addr & 0x7FF] = val;
             return;
         }
         // 0x2000-0x3FFF mirrored PPU registers
-        if (addr < 0x3FFF) {
+        if (addr <= 0x3FFF) {
             this.bus.PPU_reg_write(addr, val);
             return;
         }
@@ -331,7 +330,6 @@ class NES_mapper_MMC3b {
 
         switch(addr & 0xE001) {
             case 0x8000: // Bank select
-                this.regs.r8000 = val;
                 this.regs.bank_select = (val & 7);
                 this.status.PRG_mode = (val & 0x40) >>> 6;
                 this.status.CHR_mode = (val & 0x80) >>> 7;
@@ -364,11 +362,9 @@ class NES_mapper_MMC3b {
     }
 
     cpu_read(addr, val, has_effect=true) {
-        if (addr < 0x2000) {
-            addr &= 0x7FF;
-            return this.CPU_RAM[addr];
-        }
-        if (addr < 0x3FFF)
+        if (addr < 0x2000)
+            return this.CPU_RAM[addr & 0x7FF];
+        if (addr < 0x4000)
             return this.bus.PPU_reg_read(addr, val, has_effect);
         if (addr < 0x4020)
             return this.bus.CPU_reg_read(addr, val, has_effect);
@@ -392,6 +388,8 @@ class NES_mapper_MMC3b {
         console.log('MMC3 PRG RAM SIZE', cart.header.prg_ram_size);
         if (this.prg_ram_size !== 0) {
             this.PRG_RAM = new Uint8Array(this.prg_ram_size);
+        } else {
+            this.PRG_RAM = 0;
         }
 
         this.ppu_mirror = cart.header.mirroring;
