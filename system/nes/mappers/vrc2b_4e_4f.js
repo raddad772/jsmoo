@@ -48,7 +48,7 @@ class NES_mapper_VRC2B_4E_4F {
             enable_after_ack: 0,
             reload: 0,
             prescaler: 341,
-            counter: 255,
+            counter: 0,
         }
 
         this.io = {
@@ -70,19 +70,15 @@ class NES_mapper_VRC2B_4E_4F {
     cycle() {
         if (!this.is_vrc4) return;
         if (this.irq.enable) {
-            if (this.irq.counter === 0xFF) {
-                this.irq.counter = this.irq.reload;
-                this.bus.CPU_notify_IRQ(1);
-            }
-            else if (this.irq.cycle_mode) {
-                this.irq.counter = (this.irq.counter + 1) & 0xFF;
-            }
-            else {
-                this.irq.prescaler -= 3;
-                if (this.irq.prescaler <= 0) {
-                    this.irq.prescaler += 341;
-                    this.irq.counter = (this.irq.counter + 1) & 0xFF;
+            this.irq.prescaler -= 3;
+            if (this.irq.cycle_mode || ((this.irq.prescaler <= 0) && !this.irq.cycle_mode)) {
+                if (this.irq.counter === 0xFF) {
+                    this.irq.counter = this.irq.reload;
+                    this.bus.CPU_notify_IRQ(1);
+                } else {
+                    this.irq.counter++;
                 }
+                this.irq.prescaler += 341;
             }
         }
     }
@@ -122,7 +118,6 @@ class NES_mapper_VRC2B_4E_4F {
             this.set_PRG_ROM(0xA000, this.io.cpu.banka0);
             this.set_PRG_ROM(0xC000, this.num_PRG_banks - 2);
         }
-        console.log('REMAP', this.io.ppu.banks);
         this.set_CHR_ROM_1k(0, this.io.ppu.banks[0]);
         this.set_CHR_ROM_1k(1, this.io.ppu.banks[1]);
         this.set_CHR_ROM_1k(2, this.io.ppu.banks[2]);
@@ -189,6 +184,17 @@ class NES_mapper_VRC2B_4E_4F {
         this.remap();
     }
 
+    mess_up_addr(addr) {
+        // Thanks Mesen! NESdev is not correct!
+        let A0 = addr & 0x01;
+        let A1 = (addr >>> 1) & 0x01;
+
+        //VRC4e
+        A0 |= (addr >> 2) & 0x01;
+        A1 |= (addr >> 3) & 0x01;
+        return (addr & 0xFF00) | (A1 << 1) | A0;
+    }
+
     cpu_write(addr, val) {
         // Conventional CPU map
         if (addr < 0x2000) { // 0x0000-0x1FFF 4 mirrors of 2KB banks
@@ -215,11 +221,15 @@ class NES_mapper_VRC2B_4E_4F {
             }
         }
 
+        addr = this.mess_up_addr(addr) & 0xF00F;
         switch(addr) {
             case 0x8000:
             case 0x8001:
             case 0x8002:
             case 0x8003:
+            case 0x8004:
+            case 0x8005:
+            case 0x8006:
                 this.io.cpu.bank80 = val & 0x1F;
                 this.remap();
                 return;
@@ -227,6 +237,9 @@ class NES_mapper_VRC2B_4E_4F {
             case 0x9001:
             case 0x9002:
             case 0x9003:
+            case 0x9004:
+            case 0x9005:
+            case 0x9006:
                 if (this.is_vrc4 && (addr === 0x9002)) {
                     console.log('a1');
                     // wram control
@@ -245,56 +258,11 @@ class NES_mapper_VRC2B_4E_4F {
             case 0xA001:
             case 0xA002:
             case 0xA003:
+            case 0xA004:
+            case 0xA005:
+            case 0xA006:
                 this.io.cpu.banka0 = val & 0x1F;
                 this.remap();
-                return;
-            case 0xB000:
-                this.set_ppu_lo(0, val);
-                return;
-            case 0xB001:
-                this.set_ppu_hi(0, val);
-                return;
-            case 0xB002:
-                this.set_ppu_lo(1, val);
-                return;
-            case 0xB003:
-                this.set_ppu_hi(1, val);
-                return;
-            case 0xC000:
-                this.set_ppu_lo(2, val);
-                return;
-            case 0xC001:
-                this.set_ppu_hi(2, val);
-                return;
-            case 0xC002:
-                this.set_ppu_lo(3, val);
-                return;
-            case 0xC003:
-                this.set_ppu_hi(3, val);
-                return;
-            case 0xD000:
-                this.set_ppu_lo(4, val);
-                return;
-            case 0xD001:
-                this.set_ppu_hi(4, val);
-                return;
-            case 0xD002:
-                this.set_ppu_lo(5, val);
-                return;
-            case 0xD003:
-                this.set_ppu_hi(5, val);
-                return;
-            case 0xE000:
-                this.set_ppu_lo(6, val);
-                return;
-            case 0xE001:
-                this.set_ppu_hi(6, val);
-                return;
-            case 0xE002:
-                this.set_ppu_lo(7, val);
-                return;
-            case 0xE003:
-                this.set_ppu_hi(7, val);
                 return;
             case 0xF000: // IRQ latch low 4
                 if (!this.is_vrc4) return;
@@ -317,6 +285,21 @@ class NES_mapper_VRC2B_4E_4F {
                 this.irq.enable = this.irq.enable_after_ack;
                 return;
         }
+        // Thanks Messen! NESdev wiki was wrong here...
+        if ((addr >= 0xB000) && (addr <= 0xE006)) {
+            let rn = ((((addr >>> 12) & 0x07) - 3) << 1) + ((addr >>> 1) & 0x01);
+            let lowBits = (addr & 0x01) === 0;
+            if (lowBits) {
+                //The other reg contains the low 4 bits
+                this.set_ppu_lo(rn, val)
+                //_loCHRRegs[regNumber] = value & 0x0F;
+            } else {
+                //One reg contains the high 5 bits
+                //_hiCHRRegs[regNumber] = value & 0x1F;
+                this.set_ppu_hi(rn, val);
+            }
+        }
+
     }
 
     cpu_read(addr, val, has_effect=true) {
@@ -358,10 +341,6 @@ class NES_mapper_VRC2B_4E_4F {
 
         this.num_PRG_banks = (this.PRG_ROM.byteLength / 8192);
         this.num_CHR_banks = (this.CHR_ROM.byteLength / 1024);
-        for (let i = 0; i < 8; i++) {
-            this.PRG_map[i].data = this.PRG_ROM;
-            this.CHR_map[i].data = this.CHR_ROM;
-        }
         console.log('Num PRG banks', this.num_PRG_banks);
         console.log('Num CHR banks', this.num_CHR_banks);
         this.remap(true);
