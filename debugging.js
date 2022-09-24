@@ -331,12 +331,9 @@ class debugger_t {
     }
 
     break(whodidit, why=false) {
-        // CASUE BREAK
-        debugger;
         console.log('DOING BREAK');
         this.state = DBG_STATES.PAUSE;
         this.do_break = true;
-        let overflow = 0;
         global_player.pause();
         global_player.after_break(whodidit);
         if (this.tracing) {

@@ -24,6 +24,8 @@ class NES_mapper_none {
                              // 1= RAM at 0x2000 and 0x2400; 0x2800 and 0x2C00 are mirrors
     }
 
+    cycle() {};
+
     mirror_ppu_addr(addr) {
         if (addr > 0x3000) addr -= 0x1000;
         if (this.ppu_mirror === 0) {
