@@ -30,6 +30,17 @@ class global_player_t {
 		 * @type {canvas_manager_t}
 		 */
 		this.canvas_manager = null;
+
+		this.ss = {};
+	}
+
+	save_state(num) {
+		this.ss = this.system.serialize();
+		console.log(this.ss);
+	}
+
+	load_state(num) {
+		this.system.deserialize(this.ss);
 	}
 
 	set_fps_target(to) {

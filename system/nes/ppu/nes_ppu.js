@@ -821,7 +821,7 @@ class NES_ppu {
             this.clock.vblank = 0;
             this.update_nmi();
         }
-        set_scanline(this.clock.ppu_y);
+        this.set_scanline(this.clock.ppu_y);
         this.line_cycle = -1; // This will immediately get
     }
 

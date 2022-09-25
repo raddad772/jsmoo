@@ -50,10 +50,12 @@ class m6502_P {
     }
 
     serialize() {
+        console.log('SER!');
         return this.getbyte();
     }
 
     deserialize(from) {
+        console.log('DESER', from);
         this.setbyte(from);
         return true;
     }
@@ -120,6 +122,7 @@ class m6502_pins_t {
     serialize() {
         let o = {version: 1};
         serialization_helper(o, this, SER_6502_PIN);
+        return o;
     }
 
     deserialize(from) {
@@ -139,7 +142,7 @@ class m6502_t {
      */
     constructor(opcode_table, clock=null) {
         this.regs = new m6502_registers_t();
-        this.pins = new m6502_pins_t;
+        this.pins = new m6502_pins_t();
         this.opcode_table = opcode_table;
         this.PCO = 0;
         this.clock = clock;

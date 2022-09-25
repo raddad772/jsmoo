@@ -328,6 +328,14 @@ function click_dump_ram() {
 	mconsole.draw();
 }
 
+function click_save_state() {
+	global_player.save_state(1);
+}
+
+function click_load_state() {
+	global_player.load_state(1);
+}
+
 function click_dump_chrom() {
 	let iaddr = get_addr_from_dump_box();
 	let MDUMP_COLS = 16;

@@ -22,7 +22,9 @@ class NES {
 
     serialize() {
         let o = {
-            version: 1
+            version: 1,
+            system: 'NES',
+            rom_name: ''
         }
         serialization_helper(o, this, SER_NES);
         return o;
@@ -31,6 +33,10 @@ class NES {
     deserialize(from) {
         if (from.version !== 1) {
             console.log('BAD NES VERSION!');
+            return false;
+        }
+        if (from.system !== 'NES') {
+            console.log('WRONG SYSTEM!');
             return false;
         }
         return deserialization_helper(this, from, SER_NES);
