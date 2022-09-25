@@ -77,7 +77,7 @@ function getBase64Code(charCode) {
 	return code;
 }
 
-export function bytesToBase64(bytes) {
+function bytesToBase64(bytes) {
 	let result = '', i, l = bytes.length;
 	for (i = 2; i < l; i += 3) {
 		result += base64abc[bytes[i - 2] >> 2];
@@ -99,7 +99,7 @@ export function bytesToBase64(bytes) {
 	return result;
 }
 
-export function base64ToBytes(str) {
+function base64ToBytes(str) {
 	if (str.length % 4 !== 0) {
 		throw new Error("Unable to parse base64 string.");
 	}
@@ -124,11 +124,10 @@ export function base64ToBytes(str) {
 	return result.subarray(0, result.length - missingOctets);
 }
 
-export function base64encode(str, encoder = new TextEncoder()) {
+function base64encode(str, encoder = new TextEncoder()) {
 	return bytesToBase64(encoder.encode(str));
 }
 
-export function base64decode(str, decoder = new TextDecoder()) {
+function base64decode(str, decoder = new TextDecoder()) {
 	return decoder.decode(base64ToBytes(str));
-
 }

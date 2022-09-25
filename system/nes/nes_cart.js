@@ -105,7 +105,7 @@ class NES_cart {
 			console.log('BAD VERSION NES CART');
 			return false;
 		}
-		if (SER_SUPPORTED_MAPPERS.indexOf(o.mapper_number) === -1) {
+		if (SER_SUPPORTED_MAPPERS.indexOf(from.mapper_number) === -1) {
 			console.log('UNSUPPORTED MAPPER VERSION');
 			return false;
 		}

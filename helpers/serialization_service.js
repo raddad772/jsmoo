@@ -15,7 +15,7 @@ function SER_evaluate(what, prop) {
             console.log(prop, 'SAVE AS BYTES');
             return {bpe: what.BYTES_PER_ELEMENT, byteLength: what.byteLength, data: bytesToBase64(what) }
         }
-        else if (what.hasOwnProperty('serialize')) {
+        else if (typeof what.serialize === 'function') {
             return what.serialize();
         }
         else {
@@ -48,7 +48,11 @@ class DESER_eval_return {
  * @returns {DESER_eval_return}
  */
 function DESER_evaluate(what, prop, to) {
-    if (typeof what === 'object') {
+    /*if (prop === 'P') {
+        console.log(what, prop, to);
+        debugger;
+    }*/
+    if (typeof to === 'object') {
         if (typeof what.ars === 'number') {
             console.log('UNPACK LIST OFs', prop);
             let good = true;
@@ -64,7 +68,7 @@ function DESER_evaluate(what, prop, to) {
             console.log(prop, 'RESTORE AS BYTES');
             return new DESER_eval_return(true, true, base64ToBytes(what.data));
         }
-        else if (to[prop].hasOwnProperty('deserialize')) {
+        else if (typeof to.deserialize === 'function') {
             let r = to.deserialize(what);
             return new DESER_eval_return(r, false, null);
         }
