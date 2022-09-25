@@ -14,7 +14,7 @@ PPU $1800-$1BFF (or $0800-$0BFF): 1 KB switchable CHR bank
 PPU $1C00-$1FFF (or $0C00-$0FFF): 1 KB switchable CHR bank
  */
 
-
+const SER_NES_MMC3b_map = ['addr', 'offset', 'ROM', 'RAM'];
 class MMC3b_map {
     constructor() {
         this.addr = 0
@@ -22,6 +22,20 @@ class MMC3b_map {
         this.ROM = false;
         this.RAM = false;
         this.data = null;
+    }
+
+    serialize() {
+        let o = {version: 1};
+        serialization_helper(o, this, SER_NES_MMC3b_map);
+        return o;
+    }
+
+    deserialize(from) {
+        if (from.version !== 1) {
+            console.log('BAD MMC3b map version');
+            return false;
+        }
+        return deserialization_helper(this, from, SER_NES_MMC3b_map);
     }
 
     set(addr, offset, ROM, RAM) {
@@ -41,6 +55,9 @@ class MMC3b_map {
     }
 }
 
+const SER_NES_a12_watcher = [
+    'cycles_down', 'last_cycle', 'delay',
+    'nothing', 'rise', 'fall'];
 class a12_watcher {
     /**
      * @param {NES_clock} clock
@@ -54,6 +71,20 @@ class a12_watcher {
         this.nothing = 0;
         this.rise = 1;
         this.fall = 2;
+    }
+
+    serialize() {
+        let o = {version:1};
+        serialization_helper(o, this, SER_NES_a12_watcher);
+        return o;
+    }
+
+    deserialize(from) {
+        if (from.version !== 1) {
+            console.log('BAD NES A12 WATCHER VERSION');
+            return false;
+        }
+        return deserialization_helper(this, from, SER_NES_a12_watcher);
     }
 
     update(addr) {
@@ -84,6 +115,13 @@ class a12_watcher {
     }
 }
 
+const SER_NES_MMC3b = [
+    'CHR_ROM', 'PRG_ROM', 'CIRAM', 'CPU_RAM', 'PRG_RAM',
+    'a12_watcher', 'regs', 'PRG_map', 'CHR_map',
+    'irq_enable', 'irq_counter', 'irq_reload',
+    'status', 'ppu_mirror', 'num_PRG_banks', 'num_CHR_banks'
+]
+
 class NES_mapper_MMC3b {
     /**
      * @param {NES_clock} clock
@@ -109,7 +147,7 @@ class NES_mapper_MMC3b {
         this.regs = {
             rC000: 0,
             bank_select: 0,
-            bank: new Uint8Array(8),
+            bank: [0, 0, 0, 0, 0, 0, 0, 0]
         }
 
         this.irq_enable = 0; // IRQs start disabled
@@ -143,6 +181,11 @@ class NES_mapper_MMC3b {
         this.num_PRG_banks = 0;
         this.num_CHR_banks = 0;
 
+    }
+
+    serialize() {
+        let o = {version: 1}
+        serialization_helper(o, this, SER_NES_MMC3b);
     }
 
     cycle() {}

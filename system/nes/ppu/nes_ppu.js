@@ -1,15 +1,6 @@
-// TODO:
-//  * sprite/bg priority
-//  * fix rendering_enabled
-//  * fix attribute selection
-//  * fix other stuff
-//  * add nametable display
-//  * verify all timings vis a vis sprite0 hit, etc.
-//  * make sure sprite0 hit works with background properly
-//  * fix vblank to happen at correct dot
 "use strict";
 
-var NES_palette_str = "\
+const NES_palette_str = "\
  84  84  84    0  30 116    8  16 144   48   0 136   68   0 100   92   0  48   84   4   0   60  24   0   32  42   0    8  58   0    0  64   0    0  60   0    0  50  60    0   0   0  0 0 0  0 0 0 \
 152 150 152    8  76 196   48  50 236   92  30 228  136  20 176  160  20 100  152  34  32  120  60   0   84  90   0   40 114   0    8 124   0    0 118  40    0 102 120    0   0   0  0 0 0  0 0 0 \
 236 238 236   76 154 236  120 124 236  176  98 236  228  84 236  236  88 180  236 106 100  212 136  32  160 170   0  116 196   0   76 208  32   56 204 108   56 180 204   60  60  60  0 0 0  0 0 0 \
@@ -104,6 +95,19 @@ const NES_palette = Object.freeze({
     63: [0x00, 0x00, 0x00],
 });
 
+const SER_NES_ppu = [
+    'line_cycle', 'OAM', 'secondary_OAM',
+    'secondary_OAM_index', 'secondary_OAM_sprite_index',
+    'secondary_OAM_sprite_total', 'secondary_OAM_lock',
+    'OAM_transfer_latch', 'OAM_eval_index',
+    'OAM_eval_done', 'sprite0_on_next_line',
+    'sprite0_on_this_line', 'CGRAM', 'output',
+    'bg_fetches', 'bg_shifter', 'bg_palette_shifter',
+    'bg_tile_fetch_addr', 'bg_tile_fetch_buffer',
+    'sprite_pattern_shifters', 'sprite_attribute_latches',
+    'sprite_x_counters', 'sprite_y_lines', 'io',
+    'dbg', 'status', 'latch'
+]
 class NES_ppu {
     /**
      * @param {canvas_manager_t} canvas_manager
@@ -139,15 +143,15 @@ class NES_ppu {
 
         this.output = new Uint8Array(256*240);
 
-        this.bg_fetches = new Uint8Array(4); // Memory fetch buffer
+        this.bg_fetches = [0, 0, 0, 0]; // Memory fetch buffer
         this.bg_shifter = 0;                       // Holds 32 bits (2 tiles) of 2bpp 8-wide background tiles
         this.bg_palette_shifter = 0;                     // Holds current background attribute
         this.bg_tile_fetch_addr = 0;               // Holds BG tile addr to fetch
         this.bg_tile_fetch_buffer = 0 >>> 0;       // Holds tile data to put into fetches 2 & 3
-        this.sprite_pattern_shifters = new Uint16Array(8); // Keeps pattern data for sprites
-        this.sprite_attribute_latches = new Uint8Array(8); // Keeps sprite attribute bytes
-        this.sprite_x_counters = new Int16Array(8); // Counts down to 0, when sprite should display
-        this.sprite_y_lines = new Uint8Array(8); // Keeps track of what our Y coord inside the sprite is
+        this.sprite_pattern_shifters = [0, 0, 0, 0, 0, 0, 0, 0]; // Keeps pattern data for sprites
+        this.sprite_attribute_latches = [0, 0, 0, 0, 0, 0, 0, 0]; // Keeps sprite attribute bytes
+        this.sprite_x_counters = [0, 0, 0, 0, 0, 0, 0, 0]; // Counts down to 0, when sprite should display
+        this.sprite_y_lines = [0, 0, 0, 0, 0, 0, 0, 0]; // Keeps track of what our Y coord inside the sprite is
 
         this.io = {
             nmi_enable: 0,
@@ -190,6 +194,26 @@ class NES_ppu {
         this.scanline_timer = new perf_timer_t('scanline timer', 60*240, ['startup', 'startup2', 'maint', 'bgcolor', 'sprite_eval', 'color_out']);
         /*this.scanline_timer.add_split('startup');
         this.scanline_timer.add_split('')*/
+    }
+
+    serialize() {
+        let o = {version: 1, clock_ppu_y: this.clock.ppu_y,
+        clock_timing_post_render_ppu_idle: this.clock.timing.post_render_ppu_idle,
+        clock_timing_ppu_pre_render: this.clock.timing.ppu_pre_render};
+        serialization_helper(o, this, SER_NES_ppu);
+        return o;
+    }
+
+    deserialize(from) {
+        if (from.version !== 1) {
+            console.log('WRONG NES PPU VERSION');
+            return false;
+        }
+        let r = deserialization_helper(this, from, SER_NES_ppu);
+        this.clock.timing.post_render_ppu_idle = from.clock_timing_post_render_ppu_idle;
+        this.clock.timing.ppu_pre_render = from.clock_timing_ppu_pre_render;
+        this.set_scanline(from.clock_ppu_y);
+        return r;
     }
 
     present(buf=null) {
@@ -797,7 +821,12 @@ class NES_ppu {
             this.clock.vblank = 0;
             this.update_nmi();
         }
-        switch(this.clock.ppu_y) {
+        set_scanline(this.clock.ppu_y);
+        this.line_cycle = -1; // This will immediately get
+    }
+
+    set_scanline(to) {
+        switch(to) {
             case 0:
                 this.render_cycle = this.scanline_visible;
                 break;
@@ -808,7 +837,6 @@ class NES_ppu {
                 this.render_cycle = this.scanline_prerender;
                 break;
         }
-        this.line_cycle = -1; // This will immediately get
     }
 
     cycle(howmany) {

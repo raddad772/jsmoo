@@ -1,5 +1,12 @@
 "use strict";
 
+const SER_NES_mapper_MMC1 = [
+    'CHR_ROM', 'PRG_ROM', 'CIRAM', 'CPU_RAM',
+    'PRG_RAM', 'CHR_RAM', 'has_chr_ram', 'has_prg_ram',
+    'prg_ram_size', 'chr_ram_size', 'last_cycle_write',
+    'io', 'ppu_mirror', 'PRG_map', 'CHR_map',
+    'num_PRG_banks', 'num_CHR_banks'
+]
 class NES_mapper_MMC1 {
     /**
      * @param {NES_clock} clock
@@ -58,6 +65,20 @@ class NES_mapper_MMC1 {
         }
         this.num_PRG_banks = 0;
         this.num_CHR_banks = 0;
+    }
+
+    serialize() {
+        let o = {version: 1}
+        serialization_helper(o, this, SER_NES_mapper_MMC1);
+        return o;
+    }
+
+    deserialize(from) {
+        if (from.version !== 1) {
+            console.log('WRONG NES MAPPER MMC1 VERSION');
+            return false;
+        }
+        return deserialization_helper(this, from, SER_NES_mapper_MMC1);
     }
 
     cycle() {}

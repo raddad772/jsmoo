@@ -1,5 +1,7 @@
 "use strict";
 
+const SER_NES = ['clock', 'cart', 'cpu', 'ppu', 'cycles_left']
+
 class NES {
     /**
      * @param {canvas_manager_t} canvas_manager
@@ -11,11 +13,27 @@ class NES {
         this.cpu = new ricoh2A03(this.clock, this.bus);
         this.ppu = new NES_ppu(canvas_manager, this.clock, this.bus);
         this.cycles_left = 0;
-        this.here = 0;
 
         this.display_enabled = true;
         input_config.connect_controller('nes1');
         dbg.add_cpu(D_RESOURCE_TYPES.M6502, this.cpu);
+
+    }
+
+    serialize() {
+        let o = {
+            version: 1
+        }
+        serialization_helper(o, this, SER_NES);
+        return o;
+    }
+
+    deserialize(from) {
+        if (from.version !== 1) {
+            console.log('BAD NES VERSION!');
+            return false;
+        }
+        return deserialization_helper(this, from, SER_NES);
     }
 
     enable_display(to) {
@@ -82,7 +100,6 @@ class NES {
             this.cart.mapper.cycle();
             this.clock.cpu_frame_cycle++;
             this.clock.cpu_master_clock += cpu_step;
-            this.clock.clocks_this_line += cpu_step;
             let ppu_left = this.clock.master_clock - this.clock.ppu_master_clock;
             done = 0;
             while (ppu_left >= ppu_step) {
@@ -106,7 +123,6 @@ class NES {
             this.cpu.run_cycle();
             this.clock.cpu_frame_cycle++;
             this.clock.cpu_master_clock += cpu_step;
-            this.clock.clocks_this_line += cpu_step;
             let ppu_left = this.clock.master_clock - this.clock.ppu_master_clock;
             done = 0;
             while (ppu_left >= ppu_step) {

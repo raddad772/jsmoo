@@ -48,15 +48,24 @@ class m6502_P {
         this.V = (val & 0x40) >>> 6;
         this.N = (val & 0x80) >>> 7;
     }
+
+    serialize() {
+        return this.getbyte();
+    }
+
+    deserialize(from) {
+        this.setbyte(from);
+        return true;
+    }
 }
 
+const SER_6502_REG = ['TCU', 'IR', 'TA', 'TR', 'skipped_cycle', 'HLT', 'A', 'X', 'Y', 'P', 'PC', 'S', 'IRQ_pending', 'NMI_pending', 'old_I', 'STP', 'WAIT'];
 // register file
 class m6502_registers_t {
     constructor() {
         // Control internal cycle states
         this.TCU = 0; // Timing Control Unit
         this.IR = 0; // Instruction Regiser
-        this.MDR = 0; // Memory Data Register
         this.TA = 0;
         this.TR = 0;
         this.skipped_cycle = false;
@@ -77,8 +86,25 @@ class m6502_registers_t {
         this.STP = false;
         this.WAI = false;
     }
+
+    serialize() {
+        let o = {
+            version: 1,
+        }
+        serialization_helper(o, this, SER_6502_REG);
+        return o;
+    }
+
+    deserialize(from) {
+        if (from.version !== 1) {
+            console.log('Wrong m6502 version!');
+            return false;
+        }
+        return deserialization_helper(this, from, SER_6502_REG);
+    }
 }
 
+const SER_6502_PIN = ['Addr', 'D', 'RW', 'IRQ', 'NMI', 'RST'];
 class m6502_pins_t {
     constructor() {
         // NOT a lot of pins to care about
@@ -90,8 +116,22 @@ class m6502_pins_t {
         this.NMI = 0;
         this.RST = 0;
     }
+
+    serialize() {
+        let o = {version: 1};
+        serialization_helper(o, this, SER_6502_PIN);
+    }
+
+    deserialize(from) {
+        if (from.version !== 1) {
+            console.log('WRONG M6502 PIN VER');
+            return false;
+        }
+        return deserialization_helper(this, from, SER_6502_PIN);
+    }
 }
 
+const SER_6502 = ['PCO', 'NMI_old', 'NMI_ack', 'IRQ_ack', 'IRQ_count', 'first_reset', 'pins', 'regs']
 class m6502_t {
     /**
      * @param opcode_table
@@ -117,6 +157,26 @@ class m6502_t {
         this.IRQ_count = 0;
 
         this.first_reset = true;
+
+        this.current_instruction = function(pins,addr) {};
+    }
+
+    serialize() {
+        let o = {
+            version: 1
+        }
+        serialization_helper(o, this, SER_6502);
+        return o;
+    }
+
+    deserialize(from) {
+        if (from.version !== 1) {
+            console.log('WRONG M6502 VERSION');
+            return false;
+        }
+        let r = deserialization_helper(this, from, SER_6502);
+        this.current_instruction = this.opcode_table[this.regs.IR];
+        return r;
     }
 
     cycle() {

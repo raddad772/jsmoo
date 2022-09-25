@@ -20,7 +20,6 @@ class timing_worker_t {
 
         this.fps_counter = 0;
         this.fps = 0;
-        this.here = 0;
     }
 
     set_fps_target(to) {

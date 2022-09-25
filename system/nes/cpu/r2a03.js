@@ -8,11 +8,23 @@
     * Some memory-mapped registers (SOME DONE! SOME NOT!)
  */
 
+
 class NES_controllerport {
 	constructor() {
 		this.device = null;
-		this.mdata = 0;
 	}
+
+    serialize() {
+        return {version: 1}
+    }
+
+    deserialize(from) {
+        if (from.version !== 1) {
+            console.log('WRONG NES_controllerport version!');
+            return false;
+        }
+        return true;
+    }
 
 	data() {
 		if (this.device) return this.device.data() & 3;
@@ -25,6 +37,7 @@ class NES_controllerport {
 }
 
 
+const SER_R2A03 = ['cpu', 'apu', 'io', 'controller_port1', 'controller_port2', 'joypad1', 'joypad2']
 class ricoh2A03 {
     /**
      * @param {NES_clock} clock
@@ -35,9 +48,6 @@ class ricoh2A03 {
         this.bus = bus;
         this.clock = clock;
 
-        this.write_apu = function(addr, val) {};
-        this.read_apu = function(addr, val) {};
-
         this.apu = new rp2a03(clock, bus, this);
 
         this.tracing = false;
@@ -47,8 +57,6 @@ class ricoh2A03 {
         this.bus.CPU_notify_NMI = this.notify_NMI.bind(this);
         this.bus.CPU_notify_IRQ = this.notify_IRQ.bind(this);
         this.cpu.reset();
-
-        this.cycles_left = 0;
 
         this.io = {
             dma: {
@@ -66,6 +74,22 @@ class ricoh2A03 {
 		this.controller_port1.device = this.joypad1;
 		this.controller_port2.device = this.joypad2;
 
+    }
+
+    serialize() {
+        let o = {
+            version: 1,
+        }
+        serialization_helper(o, this, SER_R2A03);
+        return o;
+    }
+
+    deserialize(from) {
+        if (from.version !== 1) {
+            console.log('BAD NES R2A03 VERSION');
+            return false;
+        }
+        return deserialization_helper(this, from, SER_R2A03);
     }
 
     enable_tracing() {

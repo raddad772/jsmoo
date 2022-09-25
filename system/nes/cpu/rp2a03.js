@@ -203,6 +203,18 @@ class rp2a03 {
 
     }
 
+    serialize() {
+        return {version: 1}
+    }
+
+    deserialize(from) {
+        if (from.version !== 1) {
+            console.log('WRONG NES APU VERSION');
+            return false;
+        }
+        return true;
+    }
+
     mix() {
         /*
         output = pulse_out + tnd_out

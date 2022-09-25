@@ -4,6 +4,7 @@
 Joypad register emulation classes and functions.
  */
 
+const SER_NES_joypad = ['counter', 'latched', 'joynum', 'button_a', 'input_buffer'];
 class NES_joypad {
     constructor(joynum) {
         this.counter = 0;
@@ -24,6 +25,22 @@ class NES_joypad {
             'start': 0,
             'select': 0
         }
+    }
+
+    serialize() {
+        let o = {
+            version: 1
+        }
+        serialization_helper(o, this, SER_NES_joypad);
+        return o;
+    }
+
+    deserialize(from) {
+        if (from.version !== 1) {
+            console.log('BAD NES JOYPAD VERSION');
+            return false;
+        }
+        return deserialization_helper(this, from, SER_NES_joypad);
     }
 
     latch(what) {

@@ -1,5 +1,10 @@
 "use strict";
 
+const SER_NES_mapper_VRC2B_4E_4F = [
+    'CHR_ROM', 'PRG_ROM', 'CIRAM', 'CPU_RAM', 'PRG_map', 'CHR_map',
+    'num_PRG_banks', 'num_CHR_banks', 'is_vrc4', 'is_vrc2a',
+    'ppu_mirror', 'irq', 'io'
+]
 class NES_mapper_VRC2B_4E_4F {
     /**
      * @param {NES_clock} clock
@@ -11,9 +16,6 @@ class NES_mapper_VRC2B_4E_4F {
         this.CIRAM = new Uint8Array(0x2000); // Standard PPU RAM
 
         this.CPU_RAM = new Uint8Array(8192);
-
-        this.PRG_map = [];
-        this.CHR_map = [];
 
         /**
          * @type {MMC3b_map[]}
@@ -58,13 +60,27 @@ class NES_mapper_VRC2B_4E_4F {
                 banks_swapped: 0,
             },
             ppu: {
-                banks: new Uint32Array(8)
+                banks: [0, 0, 0, 0, 0, 0, 0, 0]
             },
             cpu: {
                 bank80: 0,
                 banka0: 0,
             }
         }
+    }
+
+    serialize() {
+        let o = {version: 1};
+        serialization_helper(o, this, SER_NES_mapper_VRC2B_4E_4F);
+        return o;
+    }
+
+    deserialize(from) {
+        if (from.version !== 1) {
+            console.log('WRONG VERSION NES MAPPER VRC2B 4E 4F');
+            return false;
+        }
+        return deserialization_helper(self, from, SER_NES_mapper_VRC2B_4E_4F);
     }
 
     cycle() {
