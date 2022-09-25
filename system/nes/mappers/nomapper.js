@@ -1,5 +1,7 @@
 "use strict";
 
+
+const SER_NES_mapper_none = ['CHR_ROM', 'PRG_ROM', 'CIRAM', 'CPU_RAM', 'ppu_mirror']
 class NES_mapper_none {
     /**
      * @param {NES_clock} clock
@@ -22,6 +24,20 @@ class NES_mapper_none {
 
         this.ppu_mirror = 0; // 0= RAM at 0x2000 and 0x2800; 0x2400 and 0x2C00 are mirrors.
                              // 1= RAM at 0x2000 and 0x2400; 0x2800 and 0x2C00 are mirrors
+    }
+
+    serialize() {
+        let o = {version: 1};
+        serialization_helper(o, this, SER_NES_mapper_none);
+        return o;
+    }
+
+    deserialize(from) {
+        if (from.version !== 1) {
+            console.log('WRONG VERSION NES NOMAPPER');
+            return false;
+        }
+        return deserialization_helper(this, from, SER_NES_mapper_none);
     }
 
     cycle() {};

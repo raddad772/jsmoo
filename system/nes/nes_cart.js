@@ -56,6 +56,9 @@ const NES_DEFAULT_IO_DEVICES = Object.freeze({
 	GOLDEN_NUGGET_CASINO: 52
 })
 
+const SER_NES_cart = ['valid', 'trainer', 'CHR_ROM', 'PRG_ROM', 'header'];
+const SER_SUPPORTED_MAPPERS = [0, 1, 4, 23]
+
 class NES_cart {
 	/**
 	 * @param {NES_clock} clock
@@ -88,6 +91,27 @@ class NES_cart {
 		this.mapper = null;
 	}
 
+	serialize() {
+		let o = {
+			version:1,
+			mapper_number: this.header.mapper_number
+		};
+		serialization_helper(o, this, SER_NES_cart);
+		return o;
+	}
+
+	deserialize(from) {
+		if (from.version !== 1) {
+			console.log('BAD VERSION NES CART');
+			return false;
+		}
+		if (SER_SUPPORTED_MAPPERS.indexOf(o.mapper_number) === -1) {
+			console.log('UNSUPPORTED MAPPER VERSION');
+			return false;
+		}
+		return deserialization_helper(this, from, SER_NES_cart);
+	}
+
 	load_cart_from_RAM(inp) {
 		let fil = new Uint8Array(inp);
 		if ((fil[0] !== 0x4E) || (fil[1] !== 0x45) ||
@@ -114,7 +138,7 @@ class NES_cart {
 			case 0: // no mapper
 				this.mapper = new NES_mapper_none(this.clock, this.bus);
 				break;
-			case 1: // MMC3
+			case 1: // MMC1
 				this.mapper = new NES_mapper_MMC1(this.clock, this.bus);
 				break;
 			case 4: // MMC3

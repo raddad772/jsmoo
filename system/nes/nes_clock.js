@@ -12,13 +12,17 @@ const NES_TIMINGS = Object.freeze({
 });
 
 
-
+const SER_NES_clock = [
+    'master_clock', 'master_frame', 'frames_since_restart',
+    'cpu_master_clock', 'sound_master_clock', 'ppu_master_clock',
+    'trace_cycles', 'nmi', 'cpu_frame_cycle', 'ppu_frame_cycle',
+    'timing', 'ppu_y', 'frame_odd'
+]
 class NES_clock {
     constructor() {
         // "Master" positions
         this.master_clock = 0;
         this.master_frame = 0;
-        this.clocks_this_line = 0;
 
         this.frames_since_restart = 0;
 
@@ -27,9 +31,6 @@ class NES_clock {
         this.ppu_master_clock = 0;
         this.trace_cycles = 0;
         this.ppu = null;
-
-        // Does the PPU have a frame ready?
-        this.ppu_frame_ready = false;
 
         // Are we in nmi-time?
         this.nmi = 0;
@@ -51,10 +52,25 @@ class NES_clock {
             pixels_per_scanline: 280 // 277 for PAL
         };
 
-
         // PPU timing info
         this.ppu_y = 0;
         this.frame_odd = 0; // 0 for odd, 1 for even
+    }
+
+    serialize() {
+        let o = {
+            version: 1
+        }
+        serialization_helper(o, this, SER_NES_clock);
+        return o;
+    }
+
+    deserialize(from) {
+        if (from.version !== 1) {
+            console.log('BAD NES CLOCK VERSION!');
+            return false;
+        }
+        return deserialization_helper(this, from, SER_NES_clock);
     }
 
     reset() {
@@ -64,8 +80,6 @@ class NES_clock {
         this.cpu_master_clock = 0;
         this.ppu_master_clock = 0;
         this.sound_master_clock = 0;
-        this.clocks_this_line = 0;
-        this.ppu_frame_ready = false;
         this.vblank = 0;
         this.ppu_y = 0;
         this.frame_odd = 0;
@@ -110,14 +124,10 @@ class NES_clock {
         this.frames_since_restart++;
         this.frame_odd = +(!this.frame_odd);
         this.master_frame++;
-        this.ppu_frame_ready = true;
         this.cpu_frame_cycle = 0;
-
-        this.clocks_this_line = 0;
     }
 
     advance_scanline() {
-        this.clocks_this_line = 0;
         this.ppu_y++;
     }
 }
