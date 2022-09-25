@@ -4,7 +4,6 @@
 function SER_evaluate(what, prop) {
     if (typeof what === 'object') {
         if (Array.isArray(what)) {
-            console.log(prop, 'SAVE AS ARRAY');
             let data = [];
             for (let j in what) {
                 data.push(SER_evaluate(what[j]));
@@ -12,14 +11,12 @@ function SER_evaluate(what, prop) {
             return {ars: true, data: data};
         }
         else if (typeof what.BYTES_PER_ELEMENT === 'number') {
-            console.log(prop, 'SAVE AS BYTES');
             return {bpe: what.BYTES_PER_ELEMENT, byteLength: what.byteLength, data: bytesToBase64(what) }
         }
         else if (typeof what.serialize === 'function') {
             return what.serialize();
         }
         else {
-            console.log(prop, 'SAVE STRUCTURED CLONE');
             return structuredClone(what);
         }
     }
@@ -48,16 +45,12 @@ class DESER_eval_return {
  * @returns {DESER_eval_return}
  */
 function DESER_evaluate(what, prop, to) {
-    /*if (prop === 'P') {
-        console.log(what, prop, to);
-        debugger;
-    }*/
     if (typeof to === 'object') {
-        if (typeof what.ars === 'number') {
-            console.log('UNPACK LIST OFs', prop);
+        if (typeof what.ars === 'boolean') {
             let good = true;
-            for (let i in what.data) {
-                let item = what.data[i];
+            for (let c in what.data) {
+                let i = parseInt(c);
+                let item = what.data[c];
                 let y = DESER_evaluate(item, prop, to[i]);
                 if (y.set) to[i] = y.value;
                 if (!y.ok) good = false;
@@ -65,7 +58,6 @@ function DESER_evaluate(what, prop, to) {
             return new DESER_eval_return(good, false, null);
         }
         else if ((typeof what.bpe === 'number') && (typeof what.byteLength === 'number')) {
-            console.log(prop, 'RESTORE AS BYTES');
             return new DESER_eval_return(true, true, base64ToBytes(what.data));
         }
         else if (typeof to.deserialize === 'function') {

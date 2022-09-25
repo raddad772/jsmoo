@@ -56,7 +56,7 @@ const NES_DEFAULT_IO_DEVICES = Object.freeze({
 	GOLDEN_NUGGET_CASINO: 52
 })
 
-const SER_NES_cart = ['valid', 'trainer', 'CHR_ROM', 'PRG_ROM', 'header'];
+const SER_NES_cart = ['valid', 'trainer', 'CHR_ROM', 'PRG_ROM', 'header', 'mapper'];
 const SER_SUPPORTED_MAPPERS = [0, 1, 4, 23]
 
 class NES_cart {
