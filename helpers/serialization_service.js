@@ -3,6 +3,9 @@
 //import {base64ToBytes, bytesToBase64} from "./base64codec";
 function SER_evaluate(what, prop) {
     if (typeof what === 'object') {
+        if (what === null) {
+            return null
+        }
         if (Array.isArray(what)) {
             let data = [];
             for (let j in what) {

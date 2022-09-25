@@ -10,6 +10,10 @@ const SMSGG_vdp_modes = {
     GG: 1
 }
 
+const SER_SMSGG_object = [
+    'x', 'y', 'pattern', 'color'
+];
+
 class SMSGG_object {
     constructor() {
         this.x = 0;
@@ -17,12 +21,24 @@ class SMSGG_object {
         this.pattern = 0;
         this.color = 0;
     }
+
+    serialize() {
+        let o = {version: 1};
+        serialization_helper(o, this, SER_SMSGG_object);
+        return o;
+    }
+
+    deserialize(from) {
+        return deserialization_helper(this, from, SER_SMSGG_object);
+    }
 }
 
-function COLOR_CONV(i) {
-    if (i === 0) return 0;
-    return 0;
-}
+const SER_SMSGG_VDP = [
+    // CRAM custom
+    'variant', 'VRAM', 'mode', 'output', 'objects',
+    'io', 'latch', 'bg_color', 'bg_priority', 'bg_palette',
+    'sprite_color', 'bg_gfx_vlines', 'doi'
+]
 
 class SMSGG_VDP {
     /**
@@ -46,7 +62,7 @@ class SMSGG_VDP {
 
         this.output = new Uint8Array(256*240);
 
-        this.objects = new Array(8);
+        this.objects = [];
 
         for (let i = 0; i < 8; i++) {
             this.objects[i] = new SMSGG_object();
@@ -104,6 +120,29 @@ class SMSGG_VDP {
         this.doi = 0;
 
         this.scanline_cycle = this.scanline_visible.bind(this);
+    }
+
+    serialize() {
+        let o = {version: 1, CRAM: [], clock_vpos: this.clock.vpos};
+        serialization_helper(o, this, SER_SMSGG_VDP);
+        for (let i = 0; i < 32; i++) {
+            o.CRAM[i] = this.CRAM[i];
+        }
+        return o;
+    }
+
+    deserialize(from) {
+        if (from.version !== 1) {
+            console.log('WRONG SMSGG VDP VER!');
+            return false;
+        }
+        let r =deserialization_helper(this, from, SER_SMSGG_VDP);
+        for (let i = 0; i < 32; i++) {
+            this.CRAM[i] = from.CRAM[i];
+        }
+        this.update_videomode();
+        this.set_scanline_kind(from.clock_vpos);
+        return r;
     }
 
     present() {
@@ -458,7 +497,14 @@ class SMSGG_VDP {
             this.update_irqs();
         }
 
-        switch(this.clock.vpos) {
+        this.set_scanline_kind(this.clock.vpos);
+
+        if (this.clock.vpos < this.clock.timing.cc_line)
+            this.io.ccounter = (this.io.ccounter + 1) & 0xFFF;
+    }
+
+    set_scanline_kind(vpos) {
+        switch(vpos) {
             case 0:
                 this.scanline_cycle = this.scanline_visible.bind(this);
                 break;
@@ -466,9 +512,6 @@ class SMSGG_VDP {
                 this.scanline_cycle = this.scanline_invisible.bind(this);
                 break;
         }
-
-        if (this.clock.vpos < this.clock.timing.cc_line)
-            this.io.ccounter = (this.io.ccounter + 1) & 0xFFF;
     }
 
     new_frame() {

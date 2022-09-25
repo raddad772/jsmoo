@@ -15,7 +15,7 @@ const GENERICZ80_STR = 'genericz80'
 //const DEFAULT_SYSTEM = SPECTRUM_STR;
 //const DEFAULT_SYSTEM = GG_STR;
 //const DEFAULT_SYSTEM = SMS_STR;
-const DEFAULT_SYSTEM = NES_STR;
+const DEFAULT_SYSTEM = SMS_STR;
 
 class global_player_t {
 	constructor() {
@@ -25,6 +25,8 @@ class global_player_t {
 		this.timing_thread = new timing_thread_t(this.on_timing_message.bind(this));
 		this.ready = false;
 		this.tech_specs = {};
+		this.queued_save_state = -1;
+		this.queued_load_state = -1;
 
 		/**
 		 * @type {canvas_manager_t}
@@ -35,12 +37,15 @@ class global_player_t {
 	}
 
 	save_state(num) {
-		this.ss = this.system.serialize();
-		console.log(this.ss);
+		this.queued_save_state = num;
+		if (!this.playing)
+			this.do_save_state();
 	}
 
 	load_state(num) {
-		this.system.deserialize(this.ss);
+		this.queued_load_state = num;
+		if (!this.playing)
+			this.do_load_state();
 	}
 
 	set_fps_target(to) {
@@ -131,12 +136,28 @@ class global_player_t {
 	    }
     }
 
+	do_save_state() {
+		if (this.queued_save_state === -1) return;
+		this.ss = this.system.serialize();
+		this.queued_save_state = -1;
+	}
+
+	do_load_state() {
+		if (this.queued_load_state === -1) return;
+		this.system.deserialize(this.ss);
+		this.queued_load_state = -1;
+	}
+
 	on_timing_message(e) {
 		switch(e.kind) {
 			case timing_messages.frame_request:
 				if (this.playing) {
 					this.system.run_frame();
 					this.timing_thread.frame_done();
+					if (this.queued_save_state !== -1)
+						this.do_save_state();
+					if (this.queued_load_state !== -1)
+						this.do_load_state();
 					this.system.present();
 					this.update_status();
 				}

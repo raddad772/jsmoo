@@ -35,6 +35,12 @@ c
   This is 3 mclks before the rising edge of /HSYNC which starts the next scanline
  */
 
+const SER_SMSGG_clock = [
+    'variant', 'region', 'cpu_master_clock', 'vdp_master_clock',
+    'frames_since_restart', 'cpu_divisor', 'vdp_divisor',
+    'cpu_frame_cycle', 'ccounter', 'hpos', 'vpos',
+    'line_counter', 'timing'
+];
 class SMSGG_clock {
     constructor(variant, region) {
         this.variant = variant;
@@ -51,7 +57,6 @@ class SMSGG_clock {
 
         this.trace_cycles = 0;
 
-        this.vdp_frame_ready = false;
 
         this.cpu_frame_cycle = 0;
         this.vdp_frame_cycle = 0;
@@ -71,8 +76,26 @@ class SMSGG_clock {
             vblank_start: 192 // not sure?
         }
     }
+
+    serialize() {
+        let o = {version: 1}
+        serialization_helper(o, this, SER_SMSGG_clock);
+        return o;
+    }
+
+    deserialize(from) {
+        if (from.version !== 1) {
+            console.log('BAD SMSGG CLOCK VERSION');
+            return false;
+        }
+        return deserialization_helper(this, from, SER_SMSGG_clock);
+    }
 }
 
+const SER_SMSGG = [
+    'variant', 'region', 'clock', 'bus', 'cpu',
+    'last_frame', 'vdp'
+];
 class SMSGG {
     /**
      * @param {canvas_manager_t} canvas_manager
@@ -110,6 +133,20 @@ class SMSGG {
         else {
             input_config.connect_controller('sms1');
         }
+    }
+
+    serialize() {
+        let o = {version: 1};
+        serialization_helper(o, this, SER_SMSGG);
+        return o;
+    }
+
+    deserialize(from) {
+        if (from.version !== 1) {
+            console.log('BAD SMSGG VER');
+            return false;
+        }
+        return deserialization_helper(this, from, SER_SMSGG);
     }
 
     killall() {

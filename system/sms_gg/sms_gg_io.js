@@ -1,5 +1,9 @@
 "use strict";
 
+const SER_SMSGG_controller_port = [
+    'variant', 'which', 'TR_level',
+    'TH_level', 'TR_direction', 'TH_direction'
+]
 class SMSGG_controller_port {
     constructor(variant, which) {
         this.variant = variant;
@@ -9,21 +13,25 @@ class SMSGG_controller_port {
         this.TH_level = 1;
         this.TR_direction = 1;
         this.TH_direction = 1;
-        this.empty_pins = {
-            tr: 1, // button 2
-            th: 1,
-            tl: 1, // button 1
-            up: 1,
-            down: 1,
-            left: 1,
-            right: 1
-        }
 
         /**
          * @type {SMSGG_gamepad | null}
          */
         this.attached_device = null;
+    }
 
+    serialize() {
+        let o = {version: 1};
+        serialization_helper(o, this, SER_SMSGG_controller_port);
+        return o;
+    }
+
+    deserialize(from) {
+        if (from.version !== 1) {
+            console.log('WRONG SMSGG_controller_port version!');
+            return false;
+        }
+        return deserialization_helper(this, from, SER_SMSGG_controller_port);
     }
 
     write() {
@@ -42,10 +50,23 @@ class SMSGG_controller_port {
     }
 }
 
+const SER_SMSGG_reset_button = [
+    'value', 'variant'
+]
 class SMSGG_reset_button {
     constructor(variant) {
         this.value = 1;
         this.variant = variant;
+    }
+
+    serialize() {
+        let o = {version: 1};
+        serialization_helper(o, this, SER_SMSGG_reset_button);
+        return o;
+    }
+
+    deserialize(from) {
+        deserialization_helper(this, from, SER_SMSGG_reset_button);
     }
 
     latch() {
@@ -61,9 +82,22 @@ class SMSGG_reset_button {
 
 }
 
+const SER_SMSGG_pause_button = [
+    'value'
+]
 class SMSGG_pause_button {
     constructor(variant) {
         this.value = 0;
+    }
+
+    serialize() {
+        let o = {version: 1};
+        serialization_helper(o, this, SER_SMSGG_pause_button);
+        return o;
+    }
+
+    deserialize(from) {
+        deserialization_helper(this, from, SER_SMSGG_pause_button);
     }
 
     poll() {
@@ -72,6 +106,12 @@ class SMSGG_pause_button {
     }
 }
 
+const SER_SMSGG_bus = [
+    'variant', 'region', 'mapper',
+    'controllerA',
+    'portA', 'portB', 'reset_button', 'pause_button',
+    'io'
+];
 class SMSGG_bus {
     constructor(variant, region) {
         this.variant = variant;
@@ -116,7 +156,20 @@ class SMSGG_bus {
                 this.cpu_out = this.cpu_out_gg.bind(this);
                 break;
         }
+    }
 
+    serialize() {
+        let o = {version: 1};
+        serialization_helper(o, this, SER_SMSGG_bus);
+        return o;
+    }
+
+    deserialize(from) {
+        if (from.version !== 1) {
+            console.log('WRONG SMSGG_bus version!');
+            return false;
+        }
+        return deserialization_helper(this, from, SER_SMSGG_bus);
     }
 
     reset() {

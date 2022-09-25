@@ -1,5 +1,10 @@
 "use strict";
 
+const SER_SMSGG_mapper_sega = [
+    'ROM', 'RAM', 'variant', 'BIOS',
+    'enable_RAM', 'enable_bios', 'enable_cart',
+    'cart', 'bios'
+]
 class SMSGG_mapper_sega {
     constructor(variant) {
         this.ROM = new Uint8Array(1);
@@ -35,6 +40,20 @@ class SMSGG_mapper_sega {
             rom_80_bank: 0x8000,
             num_banks: 1
         }
+    }
+
+    serialize() {
+        let o = {version: 1};
+        serialization_helper(o, this, SER_SMSGG_mapper_sega);
+        return o;
+    }
+
+    deserialize(from) {
+        if (from.version !== 1) {
+            console.log('WRONG SMSGG_mapper_sega version');
+            return false;
+        }
+        return deserialization_helper(this, from, SER_SMSGG_mapper_sega);
     }
 
     reset() {
