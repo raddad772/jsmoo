@@ -13,7 +13,6 @@ const Z80P = Object.freeze({
     IY: 2
 });
 
-
 class z80_register_F_t {
     constructor() {
         this.S = 0;
@@ -24,6 +23,15 @@ class z80_register_F_t {
         this.PV = 0;
         this.N = 0;
         this.C = 0;
+    }
+
+    serialize() {
+        return this.getbyte();
+    }
+
+    deserialize(from) {
+        this.setbyte(from);
+        return true;
     }
 
     getbyte() {
@@ -55,6 +63,14 @@ class z80_register_F_t {
     }
 }
 
+const SER_z80_registers_t = [
+    'IR', 'TCU', 'A', 'B', 'C', 'D', 'E', 'F', 'H', 'L',
+    'I', 'R', 'AF_', 'BC_', 'DE_', 'HL_', 'junkvar',
+    'AFt', 'BCt', 'DEt', 'HLt', 'Ht', 'Lt',
+    'PC', 'SP', 'IX', 'IY',
+    't', 'WZ', 'EI', 'P', 'Q', 'IFF1', 'IFF2', 'IM', 'HALT',
+    'IRQ_vec', 'rprefix', 'prefix', 'poll_IRQ'
+]
 class z80_registers_t {
     constructor() {
         this.IR = 0;
@@ -94,7 +110,7 @@ class z80_registers_t {
         this.IX = 0;
         this.IY = 0;
 
-        this.t = new Int32Array(10);
+        this.t = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         this.WZ = 0; // ?
         this.EI = 0; //"ei" executed last
         this.P = 0; //"ld a,i" or "ld a,r executed last
@@ -110,6 +126,20 @@ class z80_registers_t {
         this.prefix = 0x00;
 
         this.poll_IRQ = false;
+    }
+
+    serialize() {
+        let o = {version: 1};
+        serialization_helper(o, this, SER_z80_registers_t);
+        return o;
+    }
+
+    deserialize(from) {
+        if (from.version !== 1) {
+            console.log('WRONG Z80 VERSION');
+            return false;
+        }
+        return deserialization_helper(this, from, SER_z80_registers_t);
     }
 
     inc_R() {
@@ -152,6 +182,11 @@ class z80_registers_t {
     }
 }
 
+const SER_z80_pins_t = [
+    'RES', 'NMI', 'IRQ', 'Addr', 'D',
+    'IRQ_maskable', 'RD', 'WR', 'IO', 'MRQ'
+];
+
 class z80_pins_t {
     constructor() {
         this.RES = 0; // RESET
@@ -167,13 +202,34 @@ class z80_pins_t {
         this.IO = 0; // IO request
         this.MRQ = 0; // Memory request
     }
+
+    serialize() {
+        let o = {version: 1};
+        serialization_helper(o, this, SER_z80_pins_t);
+        return o;
+    }
+
+    deserialize(from) {
+        if (from.version !== 1) {
+            console.log('WRONG Z80 PINS VERSION');
+            return false;
+        }
+        return deserialization_helper(this, from, SER_z80_pins_t);
+    }
 }
+
+const SER_z80_t = [
+    'regs', 'pins', 'CMOS', 'IRQ_pending', 'IRQ_ack',
+    'NMI_pending', 'NMI_ack', 'PCO', 'prefix_was'
+];
 
 class z80_t {
     constructor(CMOS) {
         this.regs = new z80_registers_t();
         this.pins = new z80_pins_t();
         this.CMOS = CMOS;
+
+        this.prefix_was = 0; // For serial
 
         this.IRQ_pending = false;
         this.IRQ_ack = false;
@@ -185,9 +241,28 @@ class z80_t {
         this.trace_cycles = 0;
         this.last_trace_cycle = 0;
 
+        this.current_instruction = null;
+
         this.trace_peek = function(addr, val, has_effect) { return 0xCD; }
         this.PCO = 0;
-        this.decode_start_addr = 0;
+    }
+
+    serialize() {
+        let o = {version: 1};
+        serialization_helper(o, this, SER_z80_t);
+        return o;
+    }
+
+    deserialize(from) {
+        if (from.version !== 1) {
+            console.log('WRONG Z80 version');
+            return false;
+        }
+        let r = deserialization_helper(this, from, SER_z80_pins_t);
+        if (this.regs.IR !== Z80_S_DECODE) {
+            this.current_instruction = Z80_fetch_decoded(this.regs.IR, this.prefix_was);
+        }
+        return r;
     }
 
     enable_tracing(trace_peek) {
@@ -254,6 +329,7 @@ class z80_t {
     set_instruction(to) {
         this.regs.IR = to;
         this.current_instruction = Z80_fetch_decoded(this.regs.IR, this.regs.prefix);
+        this.prefix_was = this.regs.prefix;
         if (this.PCO === Z80_PC_BRK) dbg.break();
         this.regs.TCU = 0;
         this.regs.prefix = 0;

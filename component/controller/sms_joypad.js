@@ -1,5 +1,8 @@
 "use strict";
 
+const SER_SMSGG_gamepad = [
+    'variant', 'pins', 'num'
+]
 class SMSGG_gamepad {
     constructor(variant, num) {
         this.variant = variant;
@@ -15,6 +18,20 @@ class SMSGG_gamepad {
         this.num = num;
         if (num === 1) this.joymap = input_config.controller_els.sms1;
         else this.joymap = input_config.controller_els.sms2;
+    }
+
+    serialize() {
+        let o = {version: 1};
+        serialization_helper(o, this, SER_SMSGG_gamepad);
+        return o;
+    }
+
+    deserialize(from) {
+        if (from.version !== 1) {
+            console.log('WRONG SMSGG_GAMEPAD VERSION');
+            return false;
+        }
+        return deserialization_helper(this, from, SER_SMSGG_gamepad);
     }
 
     read() {

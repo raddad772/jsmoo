@@ -50,12 +50,10 @@ class m6502_P {
     }
 
     serialize() {
-        console.log('SER!');
         return this.getbyte();
     }
 
     deserialize(from) {
-        console.log('DESER', from);
         this.setbyte(from);
         return true;
     }
