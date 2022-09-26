@@ -25,11 +25,19 @@ function initDb(func) {
 }
 
 const bfs = new basic_fs();
+
 async function uploadFile(fileId) {
-    let fileIn = document.getElementById('fileUpload');
+    let path = '/' + global_player.system_kind + '/roms/';
+    let el = document.getElementById('fileUpload');
+    do_upload_file('test', el, path)
+    await reload_roms(global_player.system_kind);
+}
+
+async function do_upload_file(fileId, el, path) {
+    let fileIn = el;
     if (fileIn.files && fileIn.files[0]) {
         let file_name = fileIn.files[0].name;
-        var reader = new FileReader();
+        let reader = new FileReader();
         reader.onload = async function (e) {
 
             let bits = e.target.result;
@@ -39,21 +47,13 @@ async function uploadFile(fileId) {
                 name: fileIn.files[0].name,
                 data: bits
             };
-
-            await bfs.write_file(basic_fs_join('/' + global_player.system_kind + '/roms/', file_name), e.target.result);
-            await reload_roms(global_player.system_kind);
-            /*let trans = db.transaction(['files'], 'readwrite');
-            let addReq = trans.objectStore('files').put(ob);
-
-            addReq.onerror = function(e) {
-                console.log('error storing data');
-                console.error(e);
+            path = path + file_name;
+            if (await bfs.file_exists(path)) {
+                alert('File already exists!');
+                return;
             }
 
-            trans.oncomplete = function(e) {
-				//main3(e.result)
-                console.log('data stored');
-            }*/
+            await bfs.write_file(path, e.target.result);
         };
         reader.readAsBinaryString(fileIn.files[0])
     }

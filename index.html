@@ -9,6 +9,7 @@
     <script type="text/javascript" src="helpers.js"></script>
     <script type="text/javascript" src="debugging.js"></script>
     <script type="text/javascript" src="helpers/timing/timing_header.js"></script>
+    <script type="text/javascript" src="ui/bios_manager.js"></script>
     <script type="text/javascript" src="ui/kb_input.js"></script>
     <script type="text/javascript" src="ui/player.js"></script>
     <script type="text/javascript" src="ui/canvas.js"></script>
@@ -99,18 +100,39 @@
 
 <!-- TOOLS TAB -->
 <div id="main_tab_tools" class="ui-tab-main" style="display:none;">
+    <div class="ui-bar ui-bar-bg">
+      <button class="ui-bar-item ui-bar-button ui-bar-blue-grey tablink-tools" onclick="open_tab('tablink-tools', 'ui-tab-tools', event, 'tools_tab_bios')">BIOSes</button>
+      <button class="ui-bar-item ui-bar-button tablink-tools" onclick="open_tab('tablink-tools', 'ui-tab-tools', event, 'settings_tab_rom_management')">ROM management</button>
+    </div>
+
+    <div id="tools_tab_bios" class="ui-tab-tools">
+        <div id="bios-container"></div>
+        <br><hr>Upload a BIOS for
+        <select id="bios_upload_select" name="bios_upload_select"></select>
+        <br>
+        <section>
+            <input id="bios_fileUpload" name="bios_fileUpload" type="file"/>
+            <button id="bios_upload" type="button" onclick="global_player.bios_manager.upload_file();">Go</button>
+        </section>
+
+    </div>
 
 </div>
 <!-- SETTINGS TAB -->
 <div id="main_tab_settings" class="ui-tab-main" style="display:none;">
     <div class="ui-bar ui-bar-bg">
-      <button class="ui-bar-item ui-bar-button ui-bar-blue-grey tablink-settings-input" onclick="open_tab('tablink-settings-input', 'ui-tab-settings-input', event, 'settings_tab_input_nes')">NES pads</button>
+      <button class="ui-bar-item ui-bar-button ui-bar-blue-grey tablink-settings-input" onclick="open_tab('tablink-settings-input', 'ui-tab-settings-input', event, 'settings_tab_input_emu')">General</button>
+      <button class="ui-bar-item ui-bar-button tablink-settings-input" onclick="open_tab('tablink-settings-input', 'ui-tab-settings-input', event, 'settings_tab_input_nes')">NES pads</button>
       <button class="ui-bar-item ui-bar-button tablink-settings-input" onclick="open_tab('tablink-settings-input', 'ui-tab-settings-input', event, 'settings_tab_input_snes')">SNES pads</button>
       <button class="ui-bar-item ui-bar-button tablink-settings-input" onclick="open_tab('tablink-settings-input', 'ui-tab-settings-input', event, 'settings_tab_input_sms')">SMS pads</button>
       <button class="ui-bar-item ui-bar-button tablink-settings-input" onclick="open_tab('tablink-settings-input', 'ui-tab-settings-input', event, 'settings_tab_input_spectrum')">ZX Spectrum</button>
     </div>
 
-    <div id="settings_tab_input_nes" class="ui-tab-settings-input">
+    <div id="settings_tab_input_emu" class="ui-tab-settings-input">
+        Click a button to assign a key
+        <br><div id="emubuttonsforconfig"></div>
+    </div>
+    <div id="settings_tab_input_nes" class="ui-tab-settings-input" style="display:none">
         Click a button to assign key
         <div style="padding-top: 10px; padding-left: 10px;">
             <div style="width: 220px; float: left;">

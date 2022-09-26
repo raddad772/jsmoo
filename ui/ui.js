@@ -96,6 +96,16 @@ async function set_last_rom(whichone) {
 	await set_ui_system_options(g);
 }
 
+function str2ab(str) {
+	let buf = new ArrayBuffer(str.length); // 2 bytes for each char
+	let bufView = new Uint8Array(buf);
+	for (let i = 0, strLen = str.length; i < strLen; i++) {
+		bufView[i] = str.charCodeAt(i);
+	}
+	return buf;
+}
+
+
 async function load_selected_rom() {
 	if (!global_player.ready) {
 		return;
@@ -110,38 +120,8 @@ async function load_selected_rom() {
 		return null;
 	}
 	await set_last_rom(ui_el.rom_select.value);
-	function str2ab(str) {
-		let buf = new ArrayBuffer(str.length); // 2 bytes for each char
-		let bufView = new Uint8Array(buf);
-		for (let i = 0, strLen = str.length; i < strLen; i++) {
-			bufView[i] = str.charCodeAt(i);
-		}
-		return buf;
-	}
 	f = str2ab(f);
 	global_player.load_rom(f);
-}
-
-async function load_bios(fn) {
-	console.log('GETTING FILE', fn);
-	let f = await bfs.read_file(fn);
-	if (!f) {
-		if (fn === '/sms/roms/bios13fx.sms') {
-			alert('Please upload Master System 1.3 BIOS named bios13fx.sms as ROM');
-		}
-		console.log('BIOS', fn, 'not found!');
-		return null;
-	}
-	function str2ab(str) {
-		let buf = new ArrayBuffer(str.length); // 2 bytes for each char
-		let bufView = new Uint8Array(buf);
-		for (let i = 0, strLen = str.length; i < strLen; i++) {
-			bufView[i] = str.charCodeAt(i);
-		}
-		return buf;
-	}
-	f = str2ab(f);
-	global_player.load_bios(f);
 }
 
 async function reload_roms(where) {
@@ -482,6 +462,7 @@ async function main() {
 	bg_canvas = new canvas_manager_t('bgcanvas')
 	tile_canvas = new canvas_manager_t('tilecanvas')
 	global_player.set_canvas_manager(emu_canvas);
+	await global_player.onload();
 
 	global_player.set_system(DEFAULT_SYSTEM);
 	await load_selected_rom();

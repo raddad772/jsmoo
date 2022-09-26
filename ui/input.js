@@ -1,5 +1,12 @@
 "use strict";
 
+const DEFAULT_EMU_INPUT = {
+    'save_state': 'k',
+    'load_state': 'l',
+    'reboot': 'r',
+    'playpause': 'p',
+    'step_master': 'f8'
+}
 
 const DEFAULT_NES1 = {
     'up': ['arrowUp', 38],
@@ -78,6 +85,25 @@ const CONTROLLERS = {
     SNES: 1,
     SMS: 2
 }
+
+class emu_input_t {
+    constructor(savedict) {
+        this.key_array = {};
+        this.savedict = savedict;
+        this.el = document.getElementById('emubuttonsforconfig');
+        for (let i in DEFAULT_EMU_INPUT) {
+            console.log(i);
+        }
+    }
+
+    load(sd) {
+        for (let key_name in sd) {
+
+        }
+    }
+}
+
+
 
 class controller_button_t {
     constructor(config, name, x1, y1, x2, y2) {
@@ -327,7 +353,6 @@ class input_config_t {
         this.changes = false;
         this.savedict = {
         }
-        this.before_dict = {};
         this.controller_els = {
             nes1: new controller_input_config_t('NES player 1', 'nes1cfg', this.savedict, CONTROLLERS.NES),
             nes2: new controller_input_config_t('NES player 2', 'nes2cfg', this.savedict, CONTROLLERS.NES),
@@ -342,6 +367,7 @@ class input_config_t {
             key: document.getElementById('input-cfg-input')
         }
         this.ui_els.key.addEventListener("keydown", this.keydown.bind(this));
+        this.emu_input = new emu_input_t(this.savedict);
 
         this.selected_controller = this.controller_els.nes1;
         this.selected_button = this.selected_controller.buttons.a;
@@ -361,6 +387,7 @@ class input_config_t {
             let nname = cname.replace('cfg', '');
             this.controller_els[nname].load(this.savedict[cname]);
         }
+        this.emu_input.load(this.savedict['emu_input']);
     }
 
     async save() {
