@@ -48,7 +48,7 @@ class ZXSpectrum_bus {
         this.RAM[addr - 0x4000] = val;
     }
 
-    load_ROM_from_RAM(what) {
+    load_BIOS_from_RAM(what) {
         this.ROM = new Uint8Array(what);
         console.log('LOADED', this.ROM.length, 'bytes');
     }
@@ -57,9 +57,11 @@ class ZXSpectrum_bus {
 class ZXSpectrum {
     /**
      * @param {canvas_manager_t} canvas_manager
+     * @param {bios_t} bios
      */
-    constructor(canvas_manager) {
+    constructor(canvas_manager, bios) {
         this.clock = new ZXSpectrum_clock();
+        this.bios = bios;
 
         this.cpu = new z80_t();
         this.cpu.reset();
@@ -71,6 +73,15 @@ class ZXSpectrum {
 
         this.display_enabled = true;
         dbg.add_cpu(D_RESOURCE_TYPES.Z80, this.cpu);
+        this.load_bios();
+    }
+
+    load_bios() {
+        if (!this.bios.loaded) {
+            alert('Please upload or select a ZX Spectrum 48K BIOS under Tools/Bios');
+            return;
+        }
+        this.bus.load_BIOS_from_RAM(this.bios.BIOS);
     }
 
     update_status(current_frame, current_scanline, current_x) {
@@ -206,7 +217,7 @@ class ZXSpectrum {
     }
 
     load_ROM_from_RAM(what) {
-        this.bus.load_ROM_from_RAM(what);
+        // Oops!
     }
 
     present() {

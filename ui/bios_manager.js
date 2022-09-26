@@ -6,6 +6,8 @@ const SYSTEMS_WITH_BIOS = [
 ]
 
 
+const SER_BIOS_t = ['kind', 'loaded', 'BIOS', 'selected_bios_filename'];
+
 class bios_t {
     constructor(kind, name) {
         this.kind = kind;
@@ -21,6 +23,20 @@ class bios_t {
         this.BIOS = new Uint8Array(0);
     }
 
+    serialize() {
+        let o = {version: 1};
+        serialization_helper(o, this, SER_BIOS_t);
+        return o;
+    }
+
+    deserialize(from) {
+        if (from.version !== 1) {
+            console.log('BAD BIOS VERSION');
+            return false;
+        }
+        return deserialization_helper(this, from, SER_BIOS_t);
+    }
+
     async load_selected_bios() {
         let el = document.getElementById(this.select_el_name);
         if (el.value !== this.selected_bios_filename) {
@@ -31,33 +47,33 @@ class bios_t {
     async load_bios(fn) {
         this.config.last_bios_file = fn;
         await this.save_config();
-        // Load the BIOS in
         this.selected_bios_filename = fn;
-        //console.log('LOADING BIOS', fn);
         let r = await bfs.read_file(this.selected_bios_filename);
-        //this.BIOS = new Uint8Array(r.length);
-        //this.BIOS.set(r);
         this.BIOS = str2ab(r);
-        //console.log();
         this.loaded = true;
-        //console.log('LOADED!');
     }
 
     async save_config() {
-        await bfs.write_file('/config/bios.json', this.config);
+        let g = await bfs.read_file('/config/bios.json');
+        if (!g) {
+            g = {version: 1}
+        }
+        g[this.kind] = this.config;
+        await bfs.write_file('/config/bios.json', g);
     }
 
     async onload() {
         let fs = new basic_fs();
         let g = await fs.read_file('/config/bios.json');
         if (g === null) {
-            this.config = {
-                'version': 1,
-                'last_bios_file': null
-            }
+            await this.save_config();
         }
         else {
-            this.config = g;
+            if (typeof g[this.kind] === 'undefined') {
+                g[this.kind] = {version: 1, file: null};
+                await this.save_config();
+            }
+            this.config = g[this.kind];
         }
         await this.refresh_options();
         for (let i in this.options) {

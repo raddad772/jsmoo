@@ -106,13 +106,11 @@ I've included a simple Python script that will serve it to \[::1\]:8000, which i
 
 The UI has seen drastic improvements recently. Switching between systems now works ("SYSTEM SELECT"), and controls can be remapped under the "Settings" tab.
 
-To upload a ROM, make sure you have the correct system selected. Then scroll down, on the right, there is a place that will say (Choose file) No File Chosen (Go) (Download). Choose a ROM and hit Go, it's now uploaded!
+To upload a ROM, make sure you have the correct system selected. Then scroll down, on the left, is a nav button named 'Upload'. Click it, then select and upload a file.
 
-However, SMS and ZX Spectrum require BIOSes. The SMS will at least pop up an alert telling you what to do. The ZX Spectrum needs a 48k one called "48.rom" uploaded to work.
+However, SMS and ZX Spectrum require BIOSes. These can be uploaded under Settings/BIOS.
 
-Note: As of this commit, SMS is not fully working yet. It's just getting to a mutilated SEGA logo.
-
-Also, as of this commit, keyboard input on the Spectrum is temporarily broken, as I have been re-writing the input system to support easily re-assignable controls and have only re-implemented joypads thus far.
+As of this commit, keyboard input on the Spectrum is temporarily broken, as I have been re-writing the input system to support easily re-assignable controls and have only re-implemented joypads thus far.
 
 As for game, etc. compatability, check COMPATABILITY.TXT for a info.
 
