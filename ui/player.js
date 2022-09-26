@@ -27,6 +27,10 @@ class global_player_t {
 		this.tech_specs = {};
 		this.queued_save_state = -1;
 		this.queued_load_state = -1;
+		/**
+		 * @type {bios_manager_t}
+		 */
+		this.bios_manager = null;
 
 		/**
 		 * @type {canvas_manager_t}
@@ -34,6 +38,12 @@ class global_player_t {
 		this.canvas_manager = null;
 
 		this.ss = {};
+	}
+
+	async onload() {
+		this.bios_manager = new bios_manager_t();
+		console.log('CALLING BIOS MANAGER LOAD');
+		await this.bios_manager.onload();
 	}
 
 	save_state(num) {
@@ -174,7 +184,7 @@ class global_player_t {
 	}
 
 	set_system(to) {
-		this.timing_thread.pause();
+		this.pause();
 		if (this.system !== null) {
 			this.system.killall();
 			delete this.system;
@@ -189,12 +199,11 @@ class global_player_t {
 		}
 		switch(this.system_kind) {
 			case 'gg':
-				this.system = new SMSGG(this.canvas_manager, SMSGG_variants.GG, REGION.NTSC);
+				this.system = new SMSGG(this.canvas_manager, this.bios_manager.bioses['gg'], SMSGG_variants.GG, REGION.NTSC);
 				//load_bios('/gg/roms/bios.gg');
 				break;
 			case 'sms':
-				this.system = new SMSGG(this.canvas_manager, SMSGG_variants.SMS2, REGION.NTSC);
-				load_bios('/sms/roms/bios13fx.sms');
+				this.system = new SMSGG(this.canvas_manager, this.bios_manager.bioses['sms'], SMSGG_variants.SMS2, REGION.NTSC);
 				break;
 			case 'snes':
 				this.system = new SNES(this.canvas_manager);
@@ -203,7 +212,7 @@ class global_player_t {
 				this.system = new NES(this.canvas_manager);
 				break;
 			case 'spectrum':
-				this.system = new ZXSpectrum(this.canvas_manager);
+				this.system = new ZXSpectrum(this.canvas_manager, this.bios_manager.bioses['spectrum']);
 				break;
 			case 'genericz80':
 				this.system = new generic_z80_computer();

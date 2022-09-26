@@ -99,10 +99,11 @@ const SER_SMSGG = [
 class SMSGG {
     /**
      * @param {canvas_manager_t} canvas_manager
+     * @param {bios_t} bios
      * @param {number} variant
      * @param {number} region
      */
-    constructor(canvas_manager, variant, region) {
+    constructor(canvas_manager, bios, variant, region) {
         this.canvas_manager = canvas_manager;
         this.variant = variant;
         this.region = region
@@ -110,6 +111,7 @@ class SMSGG {
         this.bus = new SMSGG_bus(variant, region);
         this.cpu = new z80_t(false);
         this.cpu.reset();
+        this.bios = bios;
 
         this.display_enabled = true;
 
@@ -133,6 +135,7 @@ class SMSGG {
         else {
             input_config.connect_controller('sms1');
         }
+        this.load_bios();
     }
 
     serialize() {
@@ -292,9 +295,14 @@ class SMSGG {
         this.reset();
     }
 
-    load_BIOS_from_RAM(what) {
-        this.bus.mapper.load_BIOS_from_RAM(what);
+    load_bios() {
+        if (!this.bios.loaded) {
+            alert('Please upload or select a Master System BIOS under Tools/Bios');
+            return;
+        }
+        this.bus.mapper.load_BIOS_from_RAM(this.bios.BIOS);
     }
+
 
     present() {
         if (this.display_enabled)

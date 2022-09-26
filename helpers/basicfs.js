@@ -76,8 +76,34 @@ class basic_fs {
         return md;
     }
 
+    async file_exists(path) {
+        let allfiles = await this._get_files();
+        return allfiles.indexOf(path) !== -1;
+    }
+
     async _set_metadata(md) {
         localforage.setItem(BFS_METADATA, md)
+    }
+
+    get_path_from(what) {
+        let fn = this.get_filename_from(what);
+        return what.slice(0, what.indexOf(fn));
+    }
+
+    get_filename_from(what) {
+        return what.replace(/^.*[\\\/]/, '');
+    }
+
+    async get_files_in_path(path) {
+        if (path.at(path.length-1) !== '/')
+            path += '/';
+        let allfiles = await this._get_files();
+        let outlist = [];
+        for (let i = 0; i < allfiles.length; i++) {
+            let mpath = this.get_path_from(allfiles[i]);
+            if (path === mpath) outlist.push(allfiles[i]);
+        }
+        return outlist;
     }
 
     async _get_files() {
