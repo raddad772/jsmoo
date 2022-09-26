@@ -39,7 +39,7 @@ const SER_SMSGG_clock = [
     'variant', 'region', 'cpu_master_clock', 'vdp_master_clock',
     'frames_since_restart', 'cpu_divisor', 'vdp_divisor',
     'cpu_frame_cycle', 'ccounter', 'hpos', 'vpos',
-    'line_counter', 'timing'
+    'line_counter', 'timing', 'bios'
 ];
 class SMSGG_clock {
     constructor(variant, region) {
@@ -135,7 +135,8 @@ class SMSGG {
         else {
             input_config.connect_controller('sms1');
         }
-        this.load_bios();
+        if (variant !== SMSGG_variants.GG)
+            this.load_bios();
     }
 
     serialize() {
