@@ -447,7 +447,7 @@ function stop_fps_count() {
 }
 
 window.addEventListener('keydown', function(ev) {
-	//console.log(ev.key);
+	console.log(ev.keyCode);
 	keyboard_input.keydown(ev.keyCode, ev)
 });
 
@@ -463,6 +463,7 @@ async function main() {
 	tile_canvas = new canvas_manager_t('tilecanvas')
 	global_player.set_canvas_manager(emu_canvas);
 	await global_player.onload();
+	await input_config.onload();
 
 	global_player.set_system(DEFAULT_SYSTEM);
 	await load_selected_rom();

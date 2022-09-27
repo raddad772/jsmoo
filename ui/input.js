@@ -1,11 +1,12 @@
 "use strict";
 
 const DEFAULT_EMU_INPUT = {
-    'save_state': 'k',
-    'load_state': 'l',
-    'reboot': 'r',
-    'playpause': 'p',
-    'step_master': 'f8'
+    'save_state': ['k', 75],
+    'load_state': ['l', 76],
+    'reboot': ['1', 82],
+    'playpause': ['p', 80],
+    'step_master': ['8', 56],
+    'fastforward': ['~', 192]
 }
 
 const DEFAULT_NES1 = {
@@ -87,23 +88,114 @@ const CONTROLLERS = {
 }
 
 class emu_input_t {
-    constructor(savedict) {
-        this.key_array = {};
-        this.savedict = savedict;
+    constructor() {
+        this.config = null;
         this.el = document.getElementById('emubuttonsforconfig');
         for (let i in DEFAULT_EMU_INPUT) {
             console.log(i);
         }
+        this.binding = {};
+
+        this.queued_inputs = [];
+        this.name = 'General emulator input';
     }
 
-    load(sd) {
-        for (let key_name in sd) {
+    async onload() {
+        await this.load_cfg();
+        this.register_keys();
+    }
 
+    play() {
+
+    }
+
+    between_frames() {
+        if (this.queued_inputs.length > 0) {
+            for (let i in this.queued_inputs) {
+                let qi = this.queued_inputs[i];
+                console.log(qi);
+                this.key_callback(qi[0], qi[1],true);
+            }
+            this.queued_inputs = [];
         }
     }
+
+    pause() {
+        this.between_frames();
+    }
+
+    key_callback(keycode, direction, force=false) {
+        if (global_player.playing && (!force)) {
+            this.queued_inputs.push([keycode, direction]);
+        }
+        else {
+            // Process the key press
+            for (let i in this.config.keys) {
+                let key = this.config.keys[i];
+                if (key[1] === keycode) {
+                    switch(i) {
+                        case 'playpause':
+                            if (direction === 'down') {
+                                if (global_player.playing)
+                                    global_player.pause()
+                                else
+                                    global_player.play();
+                            }
+                            break;
+                        case 'save_state':
+                            if (direction === 'down') global_player.save_state();
+                            break;
+                        case 'load_state':
+                            if (direction === 'down') global_player.load_state();
+                            break;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    register_keys() {
+        for (let i in this.config.keys) {
+            let key = this.config.keys[i];
+            keyboard_input.register_key(key[1], key[0], this.key_callback.bind(this), true);
+        }
+    }
+
+    async load_cfg() {
+        this.config = await bfs.read_file('/config/emu_input.json');
+        if (!this.config) {
+            this.config = {version: 1, keys: DEFAULT_EMU_INPUT};
+            await this.save_cfg();
+        }
+    }
+
+    async save_cfg() {
+        await bfs.write_file('/config/emu_input.json', this.config);
+    }
+
+    // Get HTML that will help with configuration
+    getHTML() {
+        let ostr = '';
+        for (let i in this.config.keys) {
+            console.log('"' + i + '"');
+            ostr += '<button onclick="input_config.emu_input.clickb(\'' + i + '\')">' + i + '</button><br>';
+        }
+        return ostr;
+    }
+
+    clickb(what) {
+        this.binding = {name: what, key: this.config.keys[what][0], keycode: this.config.keys[what][1]}
+        input_config.select_button(this, this.binding);
+    }
+
+    save_to_dict() {
+        console.log('STD CALLED!');
+        let n = this.binding.name;
+        this.config.keys[n] = [this.binding.key, this.binding.keycode];
+        this.save_cfg();
+    }
 }
-
-
 
 class controller_button_t {
     constructor(config, name, x1, y1, x2, y2) {
@@ -119,7 +211,7 @@ class controller_button_t {
     }
 
     read() {
-        return keyboard_input.keys[this.keycode];
+        return keyboard_input.keys[this.keycode].value;
     }
 
     test_click(x, y) {
@@ -183,7 +275,6 @@ class controller_input_config_t {
     }
 
     save_to_dict() {
-        console.log(this.savedict[this.id]);
         for (let button_name in this.buttons) {
             let button = this.buttons[button_name];
             this.savedict[this.id][button.name] = [button.key, button.keycode];
@@ -288,10 +379,10 @@ class controller_input_config_t {
         let leftout = 0;
         let rightout = 0;
         if (this.arrow_exclude) {
-            let up = keyboard_input.keys[this.buttons.up.keycode];
-            let down = keyboard_input.keys[this.buttons.down.keycode];
-            let left = keyboard_input.keys[this.buttons.left.keycode];
-            let right = keyboard_input.keys[this.buttons.right.keycode];
+            let up = keyboard_input.keys[this.buttons.up.keycode].value;
+            let down = keyboard_input.keys[this.buttons.down.keycode].value;
+            let left = keyboard_input.keys[this.buttons.left.keycode].value;
+            let right = keyboard_input.keys[this.buttons.right.keycode].value;
             if (up && down) {
                 // If up was held down before
                 if (this.latched[this.buttons.up.name]) {
@@ -326,7 +417,7 @@ class controller_input_config_t {
         for (let button_name in this.buttons) {
             if ((button_name === 'up') || (button_name === 'down') || (button_name === 'left') || (button_name === 'right')) continue;
             let button = this.buttons[button_name];
-            this.latched[button.name] = keyboard_input.keys[button.keycode];
+            this.latched[button.name] = keyboard_input.keys[button.keycode].value;
         }
         return this.latched;
     }
@@ -335,7 +426,7 @@ class controller_input_config_t {
         for (let button_name in this.buttons) {
             let button = this.buttons[button_name];
             button.pressed = 0;
-            keyboard_input.register_key(button.keycode);
+            keyboard_input.register_key(button.keycode, button.key);
         }
     }
 
@@ -367,13 +458,20 @@ class input_config_t {
             key: document.getElementById('input-cfg-input')
         }
         this.ui_els.key.addEventListener("keydown", this.keydown.bind(this));
-        this.emu_input = new emu_input_t(this.savedict);
+        this.emu_input = new emu_input_t();
 
         this.selected_controller = this.controller_els.nes1;
         this.selected_button = this.selected_controller.buttons.a;
         this.update_selected();
 
         this.current_tab = 'settings_tab_input_nes';
+    }
+
+    async onload() {
+        await this.emu_input.onload();
+        let kstr = this.emu_input.getHTML();
+        let el = document.getElementById('emubuttonsforconfig');
+        el.innerHTML = kstr;
     }
 
     async load() {
@@ -387,7 +485,6 @@ class input_config_t {
             let nname = cname.replace('cfg', '');
             this.controller_els[nname].load(this.savedict[cname]);
         }
-        this.emu_input.load(this.savedict['emu_input']);
     }
 
     async save() {
@@ -470,7 +567,6 @@ class input_config_t {
         this.selected_controller.save_to_dict();
         this.ui_els.key.value = this.selected_button.key;
         event.target.blur();
-        console.log(input_config.savedict);
     }
 }
 

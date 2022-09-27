@@ -100,6 +100,7 @@ class global_player_t {
 		this.timing_thread.pause();
 		ui_el.system_select.disabled = false;
 		ui_el.play_button.innerHTML = "Play";
+		input_config.emu_input.between_frames();
 	}
 
 	play() {
@@ -149,6 +150,7 @@ class global_player_t {
 	do_save_state() {
 		if (this.queued_save_state === -1) return;
 		this.ss = this.system.serialize();
+		console.log(this.ss);
 		this.queued_save_state = -1;
 	}
 
@@ -170,10 +172,12 @@ class global_player_t {
 						this.do_load_state();
 					this.system.present();
 					this.update_status();
+					input_config.emu_input.between_frames();
 				}
 				else {
 					this.timing_thread.pause();
 					this.timing_thread.frame_done();
+					input_config.emu_input.between_frames();
 				}
 				break;
 		}
