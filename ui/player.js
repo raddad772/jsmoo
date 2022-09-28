@@ -216,7 +216,7 @@ class global_player_t {
 				this.system = new NES(this.canvas_manager);
 				break;
 			case 'spectrum':
-				this.system = new ZXSpectrum(this.canvas_manager, this.bios_manager.bioses['spectrum']);
+				this.system = new ZXSpectrum(this.canvas_manager, this.bios_manager.bioses['spectrum'], ZXSpectrum_variants.s48k);
 				break;
 			case 'genericz80':
 				this.system = new generic_z80_computer();

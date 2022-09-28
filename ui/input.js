@@ -87,6 +87,120 @@ const CONTROLLERS = {
     SMS: 2
 }
 
+const QWERTYVALS = [
+    [81, 'q'],
+    [87, 'w'],
+    [69, 'e'],
+    [82, 'r'],
+    [84, 't'],
+    [89, 'y'],
+    [85, 'u'],
+    [73, 'i'],
+    [79, 'o'],
+    [80, 'p'],
+    [65, 'a'],
+    [83, 's'],
+    [68, 'd'],
+    [70, 'f'],
+    [71, 'g'],
+    [72, 'h'],
+    [74, 'j'],
+    [75, 'k'],
+    [76, 'l'],
+    [90, 'z'],
+    [88, 'x'],
+    [67, 'c'],
+    [86, 'v'],
+    [66, 'b'],
+    [78, 'n'],
+    [77, 'm'],
+]
+
+const KBKINDS = {
+    none: 0,
+    spectrum48: 1
+}
+
+class emu_kb_input_key_t {
+    constructor(name, key, keycode, customizable) {
+        this.name = name;
+        this.key = key;
+        this.keycode = keycode;
+        this.customizable = customizable;
+        this.value = 0;
+    }
+}
+
+const DEFAULT_SPECTRUM48 = {
+    space: [32, ' '],
+    shift: [16, 'Shift'],
+    caps: [20, 'CapsLock'],
+    enter: [13, 'Enter']
+}
+
+// Class to register & get input for multiple keyboard styles
+class emu_kb_input_t {
+    constructor() {
+        this.connected = false;
+        this.kind = KBKINDS.none;
+        this.keys = {};
+    }
+
+    disconnect() {
+        this.deregister_keys();
+        this.connected = false;
+    }
+
+    connect(kind) {
+        this.keys = {};
+        switch(kind) {
+            case KBKINDS.spectrum48:
+                this.add_qwerty();
+                this.add_key('shift', false);
+                this.add_key('enter', false);
+                this.add_key('caps', false);
+                this.add_key('space', false);
+                break;
+        }
+        this.register_keys();
+        this.connected = true;
+    }
+
+    get_state(keyname) {
+        return keyboard_input.keys[this.keys[keyname].keycode].value;
+    }
+
+    register_keys() {
+        for (let i in this.keys) {
+            keyboard_input.register_key(this.keys[i].keycode, this.keys[i].key);
+        }
+    }
+
+    deregister_keys() {
+        for (let i in this.keys) {
+            keyboard_input.deregister_key(this.keys[i].keycode);
+        }
+    }
+
+    add_key(key_name, customizable) {
+        if (!customizable) {
+            let key = DEFAULT_SPECTRUM48[key_name];
+            this.keys[key_name] = new emu_kb_input_key_t(key_name, key[0], key[1], false);
+        }
+        else {
+            alert('NOT IMPLEMENT YET');
+            // Idea here is we will load from config
+        }
+    }
+
+    add_qwerty() {
+        for (let i in QWERTYVALS) {
+            let key = QWERTYVALS[i]; // code, letter
+            this.keys[key[1]] = new emu_kb_input_key_t(key[1], key[1], key[0], false);
+        }
+    }
+}
+
 class emu_input_t {
     constructor() {
         this.config = null;
@@ -103,17 +217,24 @@ class emu_input_t {
     async onload() {
         await this.load_cfg();
         this.register_keys();
+        this.bind_default();
+        input_config.select_button(this, this.binding);
     }
 
-    play() {
+    bind_default() {
+        this.bind_key(Object.keys(this.config.keys)[0]);
+    }
 
+    bind_key(what) {
+        this.binding.name = what;
+        this.binding.key = this.config.keys[what][0]
+        this.binding.keycode = this.config.keys[what][1]
     }
 
     between_frames() {
         if (this.queued_inputs.length > 0) {
             for (let i in this.queued_inputs) {
                 let qi = this.queued_inputs[i];
-                console.log(qi);
                 this.key_callback(qi[0], qi[1],true);
             }
             this.queued_inputs = [];
@@ -178,19 +299,17 @@ class emu_input_t {
     getHTML() {
         let ostr = '';
         for (let i in this.config.keys) {
-            console.log('"' + i + '"');
             ostr += '<button onclick="input_config.emu_input.clickb(\'' + i + '\')">' + i + '</button><br>';
         }
         return ostr;
     }
 
     clickb(what) {
-        this.binding = {name: what, key: this.config.keys[what][0], keycode: this.config.keys[what][1]}
+        this.bind_key(what);
         input_config.select_button(this, this.binding);
     }
 
     save_to_dict() {
-        console.log('STD CALLED!');
         let n = this.binding.name;
         this.config.keys[n] = [this.binding.key, this.binding.keycode];
         this.save_cfg();
@@ -459,9 +578,10 @@ class input_config_t {
         }
         this.ui_els.key.addEventListener("keydown", this.keydown.bind(this));
         this.emu_input = new emu_input_t();
+        this.emu_kb_input = new emu_kb_input_t();
 
-        this.selected_controller = this.controller_els.nes1;
-        this.selected_button = this.selected_controller.buttons.a;
+        this.selected_controller = this.emu_input;
+        this.selected_button = this.emu_input.binding;
         this.update_selected();
 
         this.current_tab = 'settings_tab_input_nes';
@@ -518,7 +638,13 @@ class input_config_t {
                 this.selected_controller = this.controller_els.sms1;
                 this.selected_button = this.selected_controller.buttons.b1;
                 break;
+            case 'settings_tab_input_emu':
+                this.selected_controller = this.emu_input;
+                this.emu_input.bind_default();
+                this.selected_button = this.emu_input.binding;
+                break;
             default:
+                console.log ('TABCHANGE!', name);
                 this.selected_controller = null;
                 this.selected_button = null;
                 break;

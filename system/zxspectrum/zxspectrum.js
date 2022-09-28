@@ -54,14 +54,24 @@ class ZXSpectrum_bus {
     }
 }
 
+const ZXSpectrum_variants = {
+    s48k: 0,
+    s16k: 1,
+    s128k: 2,
+    plus2: 3,
+    plus3: 4
+}
+
 class ZXSpectrum {
     /**
      * @param {canvas_manager_t} canvas_manager
      * @param {bios_t} bios
+     * @param {number} variant
      */
-    constructor(canvas_manager, bios) {
+    constructor(canvas_manager, bios, variant) {
         this.clock = new ZXSpectrum_clock();
         this.bios = bios;
+        this.tape_deck = new ZXSpectrum_tape_deck();
 
         this.cpu = new z80_t();
         this.cpu.reset();
@@ -73,6 +83,15 @@ class ZXSpectrum {
 
         this.display_enabled = true;
         dbg.add_cpu(D_RESOURCE_TYPES.Z80, this.cpu);
+
+        switch(variant) {
+            case ZXSpectrum_variants.s48k:
+                input_config.emu_kb_input.connect(KBKINDS.spectrum48);
+                break;
+            default:
+                console.log('unknown keyboard for spectrum variant');
+                break;
+        }
         this.load_bios();
     }
 
@@ -98,6 +117,7 @@ class ZXSpectrum {
 
     killall() {
         dbg.remove_cpu(D_RESOURCE_TYPES.Z80);
+        input_config.emu_kb_input.disconnect();
     }
 
     reset() {

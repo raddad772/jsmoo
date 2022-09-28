@@ -447,7 +447,7 @@ function stop_fps_count() {
 }
 
 window.addEventListener('keydown', function(ev) {
-	console.log(ev.keyCode);
+	console.log(ev.keyCode, ev.key);
 	keyboard_input.keydown(ev.keyCode, ev)
 });
 
