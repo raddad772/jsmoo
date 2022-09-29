@@ -58,7 +58,7 @@ class keyboard_input_t {
 		}
     }
 
-    deregister_key(keyCode, input_mode=0) {
+    deregister_key(keyCode, input_mode=INPUT_MODES.joypads) {
 		if (input_mode === INPUT_MODES.fullqwerty) {
 			if (keyCode in this.keys_fullqwerty) {
 				delete this.keys_fullqwerty[keyCode];
