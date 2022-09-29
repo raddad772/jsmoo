@@ -238,6 +238,7 @@ class ZXSpectrum {
 
     load_ROM_from_RAM(what) {
         // Oops!
+        this.tape_deck.load_ROM_from_RAM(what);
     }
 
     present() {

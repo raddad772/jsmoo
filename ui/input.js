@@ -181,12 +181,14 @@ class emu_kb_input_t {
     }
 
     get_state(keyname) {
-        return keyboard_input.keys_fullqwerty[this.keys[keyname].keycode].value;
+        let r = keyboard_input.keys_fullqwerty[this.keys[keyname].keycode].value;
+        if (keyname === 'enter') console.log(r);
+        return r;
     }
 
     register_keys() {
         for (let i in this.keys) {
-            keyboard_input.register_key(this.keys[i].keycode, this.keys[i].key, null, null, INPUT_MODES.fullqwerty);
+            keyboard_input.register_key(this.keys[i].keycode, this.keys[i].key, null, true, INPUT_MODES.fullqwerty);
         }
     }
 
@@ -199,7 +201,8 @@ class emu_kb_input_t {
     add_key(key_name, customizable) {
         if (!customizable) {
             let key = DEFAULT_SPECTRUM48[key_name];
-            this.keys[key_name] = new emu_kb_input_key_t(key_name, key[0], key[1], false);
+            this.keys[key_name] = new emu_kb_input_key_t(key_name, key[1], key[0], false);
+
         }
         else {
             alert('NOT IMPLEMENT YET');

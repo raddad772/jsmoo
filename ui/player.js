@@ -12,10 +12,10 @@ const SPECTRUM_STR = 'spectrum';
 const GENERICZ80_STR = 'genericz80'
 
 //const DEFAULT_SYSTEM = GENERICZ80_STR;
-//const DEFAULT_SYSTEM = SPECTRUM_STR;
+const DEFAULT_SYSTEM = SPECTRUM_STR;
 //const DEFAULT_SYSTEM = GG_STR;
 //const DEFAULT_SYSTEM = SMS_STR;
-const DEFAULT_SYSTEM = SMS_STR;
+//const DEFAULT_SYSTEM = SMS_STR;
 
 class global_player_t {
 	constructor() {
