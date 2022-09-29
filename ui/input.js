@@ -114,6 +114,16 @@ const QWERTYVALS = [
     [66, 'b'],
     [78, 'n'],
     [77, 'm'],
+    [48, '0'],
+    [49, '1'],
+    [50, '2'],
+    [51, '3'],
+    [52, '4'],
+    [53, '5'],
+    [54, '6'],
+    [55, '7'],
+    [56, '8'],
+    [57, '9'],
 ]
 
 const KBKINDS = {
@@ -152,6 +162,10 @@ class emu_kb_input_t {
     }
 
     connect(kind) {
+        if (this.connected) {
+            console.log('ALREADY CONNECTED')
+            return;
+        }
         this.keys = {};
         switch(kind) {
             case KBKINDS.spectrum48:
@@ -167,18 +181,18 @@ class emu_kb_input_t {
     }
 
     get_state(keyname) {
-        return keyboard_input.keys[this.keys[keyname].keycode].value;
+        return keyboard_input.keys_fullqwerty[this.keys[keyname].keycode].value;
     }
 
     register_keys() {
         for (let i in this.keys) {
-            keyboard_input.register_key(this.keys[i].keycode, this.keys[i].key);
+            keyboard_input.register_key(this.keys[i].keycode, this.keys[i].key, null, null, INPUT_MODES.fullqwerty);
         }
     }
 
     deregister_keys() {
         for (let i in this.keys) {
-            keyboard_input.deregister_key(this.keys[i].keycode);
+            keyboard_input.deregister_key(this.keys[i].keycode, INPUT_MODES.fullqwerty);
         }
     }
 

@@ -18,9 +18,9 @@ const ZXSpectrum_keyboard_halfrows = Object.freeze({
     0xFB: ['q', 'w', 'e', 'r', 't'],
     0xDF: ['p', 'o', 'i', 'u', 'y'],
     0xFD: ['a', 's', 'd', 'f', 'g'],
-    0xBF: ['Enter', 'l', 'k', 'j', 'h'],
-    0xFE: ['Caps', 'z', 'x', 'c', 'v'],
-    0x7F: ['Space', 'Sym', 'm', 'n', 'b']
+    0xBF: ['enter', 'l', 'k', 'j', 'h'],
+    0xFE: ['caps', 'z', 'x', 'c', 'v'],
+    0x7F: ['space', 'shift', 'm', 'n', 'b']
 });
 
 class ZXSpectrum_ULA {
@@ -66,9 +66,10 @@ class ZXSpectrum_ULA {
             let key = row[i];
             //let kp = +(!CHECK_KEY_PRESSED(key));
             //let kp = 1; // no keys pressed ATM
-            let kp = keyboard_input.keys[key].value;
+            //let kp = keyboard_input.keys[key].value;
+            let kp = input_config.emu_kb_input.get_state(key);
             if (typeof kp === 'undefined') {
-                //console.log('WHAT NO', key, i, row, row[i]);
+                console.log('WHAT NO', key, i, row, row[i]);
                 kp = 0;
             }
             kp = +(!kp);
