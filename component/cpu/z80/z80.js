@@ -243,7 +243,7 @@ class z80_t {
 
         this.current_instruction = null;
 
-        this.trace_peek = function(addr, val, has_effect) { return 0xCD; }
+        this.trace_peek = function(addr, val, has_effect) { debugger; return 0xCD;}
         this.PCO = 0;
     }
 
@@ -265,10 +265,10 @@ class z80_t {
         return r;
     }
 
-    enable_tracing(trace_peek) {
+    enable_tracing(trace_peek=null) {
         this.trace_on = true;
         //this.trace_cycles = 0;
-        if (typeof trace_peek !== 'undefined')
+        if (trace_peek !== null)
             this.trace_peek = trace_peek;
     }
 

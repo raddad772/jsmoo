@@ -182,7 +182,7 @@ class emu_kb_input_t {
 
     get_state(keyname) {
         let r = keyboard_input.keys_fullqwerty[this.keys[keyname].keycode].value;
-        if (keyname === 'enter') console.log(r);
+        //if ((keyname === 'enter') && (r === 1)) dbg.break();
         return r;
     }
 

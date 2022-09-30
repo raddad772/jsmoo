@@ -82,7 +82,8 @@ class ZXSpectrum_tape_deck {
         cpu.regs.H ^= cpu.regs.L;
         this.head_pos++;
         if (this.head_pos >= this.TAPE.byteLength) this.head_pos = 0;
-       if ((A ^ cpu.regs.H) !== 0) { // Early-return
+        if ((A ^ cpu.regs.H) !== 0) { // Early-return
+            console.log('EARLY RETURN!', A, cpu.regs.H);
             return;
         }
         let DE = (cpu.regs.D << 8) | cpu.regs.E;
@@ -107,5 +108,6 @@ class ZXSpectrum_tape_deck {
         cpu.regs.IX = IX;
         cpu.regs.A = cpu.regs.H;
         cpu.regs.F.C = +(cpu.regs.A === 0);
+        console.log('Fast load finish!');
     }
 }

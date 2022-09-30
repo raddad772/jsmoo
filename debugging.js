@@ -256,8 +256,9 @@ class debugger_t {
                 this.cpus[k].disable_tracing();
                 continue;
             }
-            if (this.tracing_for[k])
+            if (this.tracing_for[k]) {
                 this.cpus[k].enable_tracing();
+            }
             else
                 this.cpus[k].disable_tracing();
         }
