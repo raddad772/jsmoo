@@ -790,7 +790,7 @@ class Z80_switchgen {
         this.addl('regs.H = (regs.TA & 0xFF00) >>> 8;');
         this.addl('regs.L = regs.TA & 0xFF;');
 
-        this.addl('regs.F.C = (((regs.C + 1) + regs.TR) & 0x100) >>> 8;');
+        this.addl('regs.F.C = ((((regs.C + 1) & 0xFF) + regs.TR) & 0x100) >>> 8;');
         this.addl('regs.F.N = (regs.TR & 0x80) >>> 7;');
         this.addl('regs.TA = ((regs.C + 1) & 0xFF) + regs.TR & 7 ^ regs.B;');
         this.setP('regs.TA');
