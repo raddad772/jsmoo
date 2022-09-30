@@ -112,7 +112,7 @@ class ZXSpectrum_ULA {
     reg_write(addr, val) {
         if ((addr & 1) === 1) {
             console.log('UHOH OUT TO', hex4(addr));
-            debugger;
+            //debugger;
             return;
         }
         this.io.border_color = val & 7;

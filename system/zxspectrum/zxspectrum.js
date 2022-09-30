@@ -74,6 +74,7 @@ class ZXSpectrum {
         this.tape_deck = new ZXSpectrum_tape_deck();
 
         this.cpu = new z80_t();
+        this.cpu.trace_peek = this.trace_peek.bind(this);
         this.cpu.reset();
 
         this.bus = new ZXSpectrum_bus(this.clock, 48);
@@ -126,11 +127,11 @@ class ZXSpectrum {
     }
 
     trace_peek(addr) {
-        return this.bus.cpu_read(addr, 0, false);
+        let r = this.bus.cpu_read(addr, 0, false);
+        return r;
     }
 
     enable_tracing() {
-        console.log('ENABLING TRACE');
         this.cpu.enable_tracing(this.trace_peek.bind(this));
     }
 
@@ -163,6 +164,13 @@ class ZXSpectrum {
         if (this.cpu.pins.RD) {
             if (this.cpu.pins.MRQ) {// read ROM/RAM
                 this.cpu.pins.D = this.bus.cpu_read(this.cpu.pins.Addr);
+                if (this.cpu.regs.PC === 0x056C) { // Fast tape load hack time!
+                    console.log('quick LOAD trigger');
+                    // return RET
+                    this.cpu.pins.D = 0xC9;
+                    // do quickload
+                    this.tape_deck.fast_load(this.cpu, this.bus.cpu_write.bind(this.bus));
+                }
                 if (this.cpu.trace_on) {
                     dbg.traces.add(D_RESOURCE_TYPES.Z80, this.cpu.trace_cycles, trace_format_read('Z80', Z80_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D, null, this.cpu.regs.TCU));
                 }
