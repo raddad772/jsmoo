@@ -164,7 +164,7 @@ class ZXSpectrum {
         if (this.cpu.pins.RD) {
             if (this.cpu.pins.MRQ) {// read ROM/RAM
                 this.cpu.pins.D = this.bus.cpu_read(this.cpu.pins.Addr);
-                if (this.cpu.regs.PC === 0x056C) { // Fast tape load hack time!
+                if ((this.cpu.pins.Addr === 0x056B) && (this.cpu.regs.PC === 0x056C)) { // Fast tape load hack time!
                     console.log('quick LOAD trigger');
                     // return RET
                     this.cpu.pins.D = 0xC9;
