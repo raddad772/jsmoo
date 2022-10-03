@@ -222,7 +222,7 @@ function SPC_generate_registers(where) {
     where.x = pt_rnd8();
     where.y = pt_rnd8();
     where.sp = pt_rnd8();
-    where.psw = pt_rnd8() & 0xF7; // Break flag
+    where.psw = pt_rnd8();
 }
 
 function _isbset(val, bit) {
@@ -1752,9 +1752,6 @@ class SPC_test_generator {
                 case 0xFF:
                     this.Stop();
                     break;
-            }
-            if (opcode === 0x9D && testnum === 0) {
-                console.log('REGS!', this.regs);
             }
             this.test.finalize(this.regs);
             this.test.name = hex2(opcode) + ' ' + hex4(testnum)
