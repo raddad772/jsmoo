@@ -22,7 +22,7 @@ function getJSONP(url, success) {
 //let tt = 'ProcessorTests/65816/v1/00.e.json'
 //let tt = 'https://github.com/TomHarte/ProcessorTests/raw/main/65816/v1/00.e.json'
 //let tt = 'http://127.0.0.1:8000/00.e.json'
-let local_server_url = 'http://[::1]:8000/'
+let WDClocal_server_url = 'http://[::1]:8000/'
 
 function PARSEP(w, E) {
     let outstr;
@@ -311,7 +311,7 @@ let WDC_io_mismatches = [];
 
 async function test_pt_65c816_ins(cpu, ins) {
     let opc = hex2(ins).toLowerCase() + '.n';
-    let data = await getJSON(local_server_url + opc + '.json');
+    let data = await getJSON(WDClocal_server_url + opc + '.json');
     let result = test_it_automated(cpu, data);
     if (!result.passed) {
         tconsole.addl(txf('{r}TEST FOR {/b}' + hex0x2(ins) + ' {/r*}FAILED!{/} See console for test deets'));

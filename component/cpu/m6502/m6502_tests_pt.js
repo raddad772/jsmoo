@@ -1,16 +1,18 @@
 "use strict";
 
-const getJSON = async url => {
-    const response = await fetch(url);
-    if (!response.ok) { // check if response worked (no 404 errors etc...)
-        console.log(response);
+if (!getJSON) {
+    const getJSON = async url => {
+        const response = await fetch(url);
+        if (!response.ok) { // check if response worked (no 404 errors etc...)
+            console.log(response);
         }
-    //throw new Error(response.statusText);
+        //throw new Error(response.statusText);
 
-  const data = response.json(); // get JSON from the response
-  return data; // returns a promise, which resolves to this data value
+        const data = response.json(); // get JSON from the response
+        return data; // returns a promise, which resolves to this data value
+    }
 }
-let local_server_url;
+let M6502local_server_url;
 
 
 let M6502testRAM = new Uint8Array(65536);
@@ -42,7 +44,7 @@ function fmt_test(tst) {
     return oute;
 }
 
-class test_return {
+class M6502test_return {
     constructor(passed, ins, messages, addr_io_mismatches, length_mismatches, failed_test_struct) {
         this.passed = passed;
         this.ins = ins;
@@ -84,7 +86,7 @@ function M65C02_IS_ADCSBC(ins) {
 /**
  * @param {m6502_t} cpu
  * @param tests
- * @returns {test_return}
+ * @returns {M6502test_return}
  */
 function test_it_automated(cpu, tests) {
     let padl = function(what, howmuch) {
@@ -184,7 +186,7 @@ function test_it_automated(cpu, tests) {
         if (!passed) {
             messages.push('FAILED TEST! ' + i + ' ' + M6502_PARSEP(cpu.regs.P.getbyte()));
             cpu.cycle(); // for more trace
-            return new test_return(passed, ins, messages, addr_io_mismatched, length_mismatch, fmt_test(tests[i]));
+            return new M6502test_return(passed, ins, messages, addr_io_mismatched, length_mismatch, fmt_test(tests[i]));
         }
         let testregs = function(name, mine, theirs) {
             if (mine !== theirs) {
@@ -232,29 +234,29 @@ function test_it_automated(cpu, tests) {
             messages.push('FAILED AT ENDING!');
             cpu.cycle();
             //if (cpu.regs.P.D === 0)
-                return new test_return(false, ins, messages, addr_io_mismatched, length_mismatch, fmt_test(tests[i]));
+                return new M6502test_return(false, ins, messages, addr_io_mismatched, length_mismatch, fmt_test(tests[i]));
         }
         dbg.traces.clear();
 
     }
-    return new test_return(true, ins, messages, addr_io_mismatched, length_mismatch, null);
+    return new M6502test_return(true, ins, messages, addr_io_mismatched, length_mismatch, null);
 }
 
 let M6502_io_mismatches = [];
 
 async function test_pt_nesm6502() {
-    local_server_url = 'http://[::1]:8000/misc/tests/ProcessorTests/nes6502/v1/'
+    M6502local_server_url = 'http://[::1]:8000/misc/tests/ProcessorTests/nes6502/v1/'
     await test_pt_m6502(nesm6502_opcodes_decoded);
 }
 
 async function test_pt_m65c02() {
-    local_server_url = 'http://[::1]:8000/misc/tests/ProcessorTests/wdc65c02/v1/'
+    M6502local_server_url = 'http://[::1]:8000/misc/tests/ProcessorTests/wdc65c02/v1/'
     await test_pt_m6502(m65c02_opcodes_decoded, true);
 }
 
 async function test_pt_m6502_ins(cpu, ins) {
     let opc = hex2(ins).toLowerCase();
-    let data = await getJSON(local_server_url + opc + '.json');
+    let data = await getJSON(M6502local_server_url + opc + '.json');
     console.log('TESTING', hex0x2(ins));
     let result = test_it_automated(cpu, data);
     if (!result.passed) {

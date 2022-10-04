@@ -122,9 +122,11 @@ function test_spc700_automated(cpu, tests) {
     return new test_return(true, ins, messages, addr_io_mismatched, length_mismatch, null);
 }
 
+const SPClocal_server_url = '[::1]:8000/misc/tests/GeneratedTests/spc700/v1/'
+
 async function test_pt_spc700_ins(cpu, ins) {
     let opc = hex2(ins).toLowerCase();
-    let data = await getJSON(local_server_url + opc + '.json');
+    let data = await getJSON(SPClocal_server_url + opc + '.json');
     let result = test_spc700_automated(cpu, data);
     if (!result.passed) {
         tconsole.addl(null, 'TEST FOR ' + hex2(ins) + ' FAILED! ');
@@ -149,6 +151,7 @@ async function test_pt_spc700_ins(cpu, ins) {
 }
 
 async function test_pt_spc700() {
+    console.log('TESTIN?');
     dconsole.addl(null, 'Workin on tests...')
     let read8 = function(addr) {
         return M6502testRAM[addr];
@@ -167,7 +170,7 @@ async function test_pt_spc700() {
     let end_test = 0xFF; // 255
 
     cpu.enable_test_mode();
-    if (WDC_TEST_DO_TRACING) cpu.enable_tracing();
+    if (DO_PT_SPC700_TRACING) cpu.enable_tracing();
     for (let opcode = start_test; opcode <= end_test; opcode++) {
         if (skip_tests.indexOf(opcode) !== -1) {
             tconsole.addl(null, 'Text for ' + hex2(opcode) + ' skipped!');
