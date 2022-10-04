@@ -125,7 +125,7 @@ async function load_selected_rom() {
 }
 
 async function reload_roms(where) {
-	console.log('realoding ROMs for', where)
+	console.log('reloading ROMs for', where)
 	let fs = new basic_fs();
 	let allfiles = await fs._get_files();
 	let outfiles = [];
