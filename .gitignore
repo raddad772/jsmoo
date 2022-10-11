@@ -3,3 +3,5 @@
 /.idea
 /misc/tests/ProcessorTests
 SMS TROUBLESHOOT.txt
+assemblyscript/package-lock.json
+assemblyscript/node_modules/
