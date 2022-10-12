@@ -1,7 +1,7 @@
 import {machine_description, MD_STANDARD, MD_TIMING, systemEmulator} from "../interface.ts"
 import {m6502} from "../../component/cpu/m6502/m6502"
 import {NES_clock, NES_bus, NES_VARIANTS} from "./nes_common"
-//import {NES_ppu} from "./nes_ppu";
+import {NES_ppu} from "./nes_ppu";
 
 class NES_cart {
     clock: NES_clock
@@ -18,7 +18,7 @@ class NES_cart {
 
 export class NES implements systemEmulator {
     cpu: m6502
-    //ppu: NES_ppu
+    ppu: NES_ppu
     variant: NES_VARIANTS
     cart: NES_cart
     bus: NES_bus
