@@ -44,3 +44,8 @@ export interface systemEmulator {
     load_ROM(): void;
     load_BIOS(): void;
 }
+
+export interface systemEmulatorStandardClock {
+    frames_since_restart: u64
+    trace_cycles: u64
+}

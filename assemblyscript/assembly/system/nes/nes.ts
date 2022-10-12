@@ -1,10 +1,38 @@
 import {machine_description, MD_STANDARD, MD_TIMING, systemEmulator} from "../interface.ts"
 import {m6502} from "../../component/cpu/m6502/m6502"
+import {NES_clock, NES_bus, NES_VARIANTS} from "./nes_common"
+//import {NES_ppu} from "./nes_ppu";
+
+class NES_cart {
+    clock: NES_clock
+    bus: NES_bus
+    constructor(clock: NES_clock, bus: NES_bus) {
+        this.clock = clock;
+        this.bus = bus;
+    }
+
+    reset(): void {
+
+    }
+}
 
 export class NES implements systemEmulator {
     cpu: m6502
-    constructor() {
+    //ppu: NES_ppu
+    variant: NES_VARIANTS
+    cart: NES_cart
+    bus: NES_bus
+    clock: NES_clock
+    cycles_left: i32
+
+    constructor(variant) {
+        this.variant = variant
         this.cpu = new m6502();
+        //this.ppu = new NES_ppu(variant, this.clock, this.bus)
+        this.clock = new NES_clock(variant);
+        this.bus = new NES_bus();
+        this.cart = new NES_cart(this.clock, this.bus);
+        this.cycles_left = 0;
     }
 
     get_description(): machine_description {
@@ -28,10 +56,36 @@ export class NES implements systemEmulator {
     }
 
     finish_frame(): void {
+        let current_frame: u32 = this.clock.master_frame;
+        while (this.clock.master_frame === current_frame) {
+            this.finish_scanline();
+            //if (dbg.do_break) break;
+        }
 
     }
 
     finish_scanline(): void {
+        let cpu_step: u32 = this.clock.timing.cpu_divisor;
+        let ppu_step: u32 = this.clock.timing.ppu_divisor;
+        let done: u32 = 0;
+        let start_y: u32 = this.clock.ppu_y;
+        while (this.clock.ppu_y === start_y) {
+            this.clock.master_clock += cpu_step;
+            this.cpu.run_cycle();
+            //this.cart.mapper.cycle();
+            this.clock.cpu_frame_cycle++;
+            this.clock.cpu_master_clock += cpu_step;
+            let ppu_left = this.clock.master_clock - this.clock.ppu_master_clock;
+            done = 0;
+            while (ppu_left >= ppu_step) {
+                ppu_left -= ppu_step;
+                done += ppu_step;
+            }
+            //this.ppu.cycle(done / ppu_step);
+            this.clock.ppu_master_clock += done;
+            this.cycles_left -= cpu_step;
+            //if (dbg.do_break) break;
+        }
     }
 
     step_master(cycles: u32): void {
@@ -39,7 +93,10 @@ export class NES implements systemEmulator {
     }
 
     reset(): void {
-
+        this.cpu.reset();
+        //this.ppu.reset();
+        this.clock.reset();
+        this.cart.reset();
     }
 
     // NES has no BIOS
@@ -49,5 +106,4 @@ export class NES implements systemEmulator {
     load_ROM(): void {
 
     }
-
 }
