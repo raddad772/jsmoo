@@ -1,3 +1,4 @@
+
 class m6502_P {
   C: bool
   Z: bool
@@ -60,8 +61,18 @@ class m6502_pins {
 }
 
 export class m6502 {
-  regs: m6502_regs
-  constructor() {
-    this.regs = new m6502_regs();
-  }
+    regs: m6502_regs
+    pins: m6502_pins
+    constructor() {
+        this.regs = new m6502_regs();
+        this.pins = new m6502_pins();
+    }
+
+    reset(): void {
+
+    }
+
+    run_cycle(): void {
+
+    }
 }

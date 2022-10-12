@@ -17,7 +17,6 @@ class NES {
         this.display_enabled = true;
         input_config.connect_controller('nes1');
         dbg.add_cpu(D_RESOURCE_TYPES.M6502, this.cpu);
-
     }
 
     serialize() {

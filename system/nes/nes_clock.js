@@ -37,8 +37,8 @@ class NES_clock {
         this.cpu_frame_cycle = 0;
         this.ppu_frame_cycle = 0;
         this.timing = { // NTSC defaults
-            clocks_per_line: 1364, // All scanlines except one get this on NTSC
-            frame_lines: 262, // 312 for PAL
+            //clocks_per_line: 1364, // All scanlines except one get this on NTSC
+            //frame_lines: 262, // 312 for PAL
             fps: 60,
             apu_counter_rate: 60,
             cpu_divisor: 12,
