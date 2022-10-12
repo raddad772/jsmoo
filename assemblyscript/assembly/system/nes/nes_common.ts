@@ -1,37 +1,82 @@
 import {systemEmulatorStandardClock} from "../interface";
+import {NES_ppu} from "./nes_ppu"
+import {NES_a12_watcher_t, NES_mapper} from "./mappers/interface";
+import {NES_cart} from "./nes_cart";
+import {ricoh2A03} from "./cpu/r2a03";
+
+export enum NES_TIMINGS {
+    NTSC = 0,
+    PAL,
+    DENDY
+}
 
 export enum NES_VARIANTS {
     NTSCU = 0,
     NTSCJ,
-    PAL
+    PAL,
+    DENDY
 }
 
 export class NES_bus {
-    PPU_read: funcref;
-    PPU_write: funcref;
+    PPU_read(addr: u32, val: u32, has_effect: u32 = 1): u32 {
+        return this.mapper.PPU_read(addr, val, has_effect);
+    }
 
-    CPU_read: funcref;
-    CPU_write: funcref;
+    PPU_write(addr: u32, val: u32): void {
+        this.mapper.PPU_write(addr, val);
+    }
 
-    PPU_reg_read: funcref;
-    PPU_reg_write: funcref;
-    CPU_reg_read: funcref;
-    CPU_reg_write: funcref;
+    CPU_read(addr: u32, val: u32, has_effect: u32 = 1): u32 {
+        return this.mapper.CPU_read(addr, val, has_effect);
+    }
 
-    CPU_notify_NMI: funcref;
-    CPU_notify_IRQ: funcref;
+    CPU_write(addr: u32, val: u32): void {
+        this.mapper.CPU_write(addr, val);
+    }
+
+    PPU_reg_read(addr: u32, val: u32, has_effect: u32 = 1): u32 {
+        return this.ppu.reg_read(addr, val, has_effect);
+    }
+
+    PPU_reg_write(addr: u32, val: u32): void {
+        this.ppu.reg_write(addr, val);
+    }
+
+    CPU_reg_read(addr: u32, val: u32, has_effect: u32 = 1): u32 {
+        return this.cpu.reg_read(addr, val, has_effect);
+    }
+
+    CPU_reg_write(addr: u32, val: u32): void {
+        this.cpu.reg_write(addr, val);
+    }
+
+    CPU_notify_NMI(level: u32): void {
+        this.cpu.notify_NMI(level);
+    }
+
+    CPU_notify_IRQ(level: u32): void {
+        this.cpu.notify_IRQ(level);
+    }
+
+
+    mapper!: NES_mapper
+    ppu!: NES_ppu
+    cpu!: ricoh2A03
+
+    constructor() {
+    }
 }
 
 class NES_timing {
     variant: NES_VARIANTS
-    frame_lines: u32
-    cpu_divisor: u32
-    ppu_divisor: u32
-    bottom_rendered_line: u32
-    post_render_ppu_idle: u32
-    vblank_start: u32
-    vblank_end: u32
-    ppu_pre_render: u32
+    frame_lines: u32 = 262  // NTSC defaults values
+    cpu_divisor: u32 = 12
+    ppu_divisor: u32 = 4
+    bottom_rendered_line: u32 = 239
+    post_render_ppu_idle: u32 = 240
+    vblank_start: u32 = 241
+    vblank_end: u32 = 261
+    ppu_pre_render: u32 = 261
 
     constructor(variant: NES_VARIANTS) {
         this.variant = variant;
@@ -62,19 +107,19 @@ class NES_timing {
 }
 
 export class NES_clock implements systemEmulatorStandardClock {
-    master_clock: u64     // Master clock cycles since restart
-    master_frame: u64
-    cpu_master_clock: u64 // CPU's clock
-    ppu_master_clock: u64 // PPU's clock
-    trace_cycles: u64
-    frames_since_restart: u64
+    master_clock: u64 = 0     // Master clock cycles since restart
+    master_frame: u64 = 0
+    cpu_master_clock: u64 = 0 // CPU's clock
+    ppu_master_clock: u64 = 0 // PPU's clock
+    trace_cycles: u64 = 0
+    frames_since_restart: u64 = 0
 
-    cpu_frame_cycle: u32
-    ppu_frame_cycle: u32
+    cpu_frame_cycle: u32 = 0
+    ppu_frame_cycle: u32 = 0
     timing: NES_timing
     variant: NES_VARIANTS
-    ppu_y: u32
-    frame_odd: u32
+    ppu_y: u32 = 0
+    frame_odd: u32 = 0
 
     constructor(variant: NES_VARIANTS) {
         this.variant = variant;

@@ -1,23 +1,12 @@
-import {machine_description, MD_STANDARD, MD_TIMING, systemEmulator} from "../interface.ts"
+import {machine_description, MD_STANDARD, MD_TIMING, systemEmulator} from "../interface"
 import {m6502} from "../../component/cpu/m6502/m6502"
 import {NES_clock, NES_bus, NES_VARIANTS} from "./nes_common"
 import {NES_ppu} from "./nes_ppu";
-
-class NES_cart {
-    clock: NES_clock
-    bus: NES_bus
-    constructor(clock: NES_clock, bus: NES_bus) {
-        this.clock = clock;
-        this.bus = bus;
-    }
-
-    reset(): void {
-
-    }
-}
+import {NES_cart} from "./nes_cart";
+import {ricoh2A03} from "./cpu/r2a03";
 
 export class NES implements systemEmulator {
-    cpu: m6502
+    cpu: ricoh2A03
     ppu: NES_ppu
     variant: NES_VARIANTS
     cart: NES_cart
@@ -25,13 +14,15 @@ export class NES implements systemEmulator {
     clock: NES_clock
     cycles_left: i32
 
-    constructor(variant) {
+    constructor(variant: NES_VARIANTS) {
         this.variant = variant
-        this.cpu = new m6502();
-        //this.ppu = new NES_ppu(variant, this.clock, this.bus)
         this.clock = new NES_clock(variant);
         this.bus = new NES_bus();
+        this.cpu = new ricoh2A03(this.clock, this.bus);
+        this.ppu = new NES_ppu(variant, this.clock, this.bus)
         this.cart = new NES_cart(this.clock, this.bus);
+        this.bus.ppu = this.ppu;
+        this.bus.cpu = this.cpu;
         this.cycles_left = 0;
     }
 

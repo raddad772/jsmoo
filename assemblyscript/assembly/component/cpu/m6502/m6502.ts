@@ -63,6 +63,8 @@ class m6502_pins {
 export class m6502 {
     regs: m6502_regs
     pins: m6502_pins
+
+    IRQ_ack: bool = false
     constructor() {
         this.regs = new m6502_regs();
         this.pins = new m6502_pins();
@@ -72,7 +74,7 @@ export class m6502 {
 
     }
 
-    run_cycle(): void {
+    cycle(): void {
 
     }
 }

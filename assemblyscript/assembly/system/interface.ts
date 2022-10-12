@@ -16,15 +16,15 @@ export enum SCREENVAR_FIELDS {
 }
 
 class machine_description_technical {
-    timing: MD_TIMING
-    standard: MD_STANDARD
-    fps: u32
-    x_resolution: u32
-    y_resolution: u32
+    timing: MD_TIMING = MD_TIMING.frame
+    standard: MD_STANDARD = MD_STANDARD.NSTC
+    fps: u32 = 60
+    x_resolution: u32 = 256
+    y_resolution: u32 = 256
 }
 
 export class machine_description {
-    name: String
+    name: String = '';
     technical: machine_description_technical
     constructor() {
         this.technical = new machine_description_technical();
