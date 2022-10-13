@@ -13,24 +13,45 @@ List of differences between original NMOS 6502 and CMOS version
     yes           RMW absolute indexed in same page. NMOS = 7 cycles, CMOS = 6
  */
 
+//let GENTARGET = 'js'; // JavaScript
+let GENTARGET = 'as'; // AssemblyScript
+let GENEQO = (GENTARGET === 'as') ? '==' : '===';
+
 function M65C02_TEST_ABS_Xm(ins) {
     return ((ins === M6502_MN.DEC) || (ins === M6502_MN.INC));
 }
 
 function str_m6502_ocode_matrix(opc, variant) {
     let opc2 = hex0x2(opc);
-    switch(M6502_VARIANTS_R[variant]) {
-        case 'stock':
-            return 'M6502_stock_matrix[' + opc2 + ']';
-        case 'stock_undocumented':
-            return 'M6502_undocumented_matrix[' + opc2 + ']';
-        case 'cmos':
-            return 'M6502_cmos_matrix[' + opc2 + ']';
-        case 'invalid':
-            return 'M6502_invalid_matrix[' + opc2 + ']';
-        default:
-            console.log('UNKNOWN !? ', opc, variant);
-            return 'WHAT';
+    if (GENTARGET === 'js') {
+        switch (M6502_VARIANTS_R[variant]) {
+            case 'stock':
+                return 'M6502_stock_matrix[' + opc2 + ']';
+            case 'stock_undocumented':
+                return 'M6502_undocumented_matrix[' + opc2 + ']';
+            case 'cmos':
+                return 'M6502_cmos_matrix[' + opc2 + ']';
+            case 'invalid':
+                return 'M6502_invalid_matrix[' + opc2 + ']';
+            default:
+                console.log('UNKNOWN !? ', opc, variant);
+                return 'WHAT';
+        }
+    } else {
+        switch (M6502_VARIANTS_R[variant]) {
+            case 'stock':
+                return 'M6502_stock_matrix.get(' + opc2 + ')';
+            case 'stock_undocumented':
+                return 'M6502_undocumented_matrix.get(' + opc2 + ')';
+            case 'cmos':
+                return 'M6502_cmos_matrix.get(' + opc2 + ')';
+            case 'invalid':
+                return 'M6502_invalid_matrix.get(' + opc2 + ')';
+            default:
+                console.log('UNKNOWN !? ', opc, variant);
+                return 'WHAT';
+        }
+
     }
 }
 
@@ -193,7 +214,7 @@ class m6502_switchgen {
     }
 
     setz(what) {
-        this.addl('regs.P.Z = +((' + what + ') === 0);');
+        this.addl('regs.P.Z = +((' + what + ') ' + GENEQO + ' 0);');
     }
 
     setn(what) {
@@ -450,8 +471,14 @@ class m6502_switchgen {
     }
 
     ADC(what='regs.TR') {
-        this.addl('let o;');
-        this.addl('let i = ' + what + ';');
+        if (GENTARGET === 'as') {
+            this.addl('let o: i32;');
+            this.addl('let i: i32 = ' + what + ';');
+        }
+        else {
+            this.addl('let o;');
+            this.addl('let i = ' + what + ';');
+        }
         if (this.BCD_support) {
             this.addl('if (regs.P.D) {');
             this.addl('    o = (regs.A & 0x0F) + (i & 0x0F) + (regs.P.C);');
@@ -497,7 +524,8 @@ class m6502_switchgen {
     }
 
     CMP(what, from='regs.TR') { // CPX, CPY too
-        this.addl('let o = ' + what + ' - ' + from + ';');
+        if (GENTARGET === 'as') this.addl('let o: i32 = ' + what + ' - ' + from + ';');
+        else this.addl('let o = ' + what + ' - ' + from + ';');
         this.addl('regs.P.C = +(!((o & 0x100) >>> 8));');
         this.setz('o & 0xFF');
         this.setn('o');
@@ -541,7 +569,8 @@ class m6502_switchgen {
     }
 
     ROL(what='regs.TR') {
-        this.addl('let c = regs.P.C;');
+        if (GENTARGET === 'as') this.addl('let c: u32 = regs.P.C;');
+        else this.addl('let c = regs.P.C;');
         this.addl('regs.P.C = (' + what + ' & 0x80) >>> 7;');
         this.addl(what + ' = ((' + what + ' << 1) | c) & 0xFF;');
         this.setz(what);
@@ -549,7 +578,8 @@ class m6502_switchgen {
     }
 
     ROR(what='regs.TR') {
-        this.addl('let c = regs.P.C;');
+        if (GENTARGET === 'as') this.addl('let c: u32 = regs.P.C;');
+        else this.addl('let c = regs.P.C;');
         this.addl('regs.P.C = ' + what + ' & 1;');
         this.addl(what + ' = (c << 7) | (' + what + ' >>> 1);');
         this.setz(what);
@@ -573,7 +603,7 @@ class m6502_switchgen {
         this.addcycle();
         this.addl('regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;');
         this.addl('pins.Addr = regs.PC;');
-        this.addl('if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page');
+        this.addl('if ((regs.TA & 0xFF00) ' + GENEQO + ' (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page');
 
         this.addcycle('extra idle on page cross');
         this.addl('pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);');
@@ -601,7 +631,7 @@ class m6502_switchgen {
         this.addcycle(5);
         this.addl('regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;');
         this.addl('pins.Addr = regs.PC;');
-        this.addl('if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page');
+        this.addl('if ((regs.TA & 0xFF00) ' + GENEQO + ' (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page');
 
         this.addcycle('6 extra idle on page cross');
         this.addl('pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);');
@@ -622,7 +652,7 @@ class m6502_switchgen {
         this.addcycle();
         this.addl('regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;');
         this.addl('pins.Addr = regs.PC;');
-        this.addl('if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page');
+        this.addl('if ((regs.TA & 0xFF00) ' + GENEQO + ' (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page');
 
         this.addcycle('extra idle on page cross');
         this.addl('pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);');
@@ -632,8 +662,14 @@ class m6502_switchgen {
     }
 
     SBC(what='regs.TR') {
-        this.addl('let o;');
-        this.addl('let i = ' + what + ' ^ 0xFF;');
+        if (GENTARGET === 'as') {
+            this.addl('let o: i32;');
+            this.addl('let i: i32 = ' + what + ' ^ 0xFF;');
+        }
+        else {
+            this.addl('let o;');
+            this.addl('let i = ' + what + ' ^ 0xFF;');
+        }
 
         if (this.BCD_support) {
             this.addl('if (regs.P.D) {');
@@ -1113,14 +1149,14 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
             // Check if we have crossed a page
             ag.addl('regs.TA = (pins.Addr + ' + r + ') & 0xFFFF;');
             if (!CMOS) {
-                ag.addl('if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }');
+                ag.addl('if ((regs.TA & 0xFF00) ' + GENEQO + ' (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }');
                 ag.addl('pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);');
             }
             else {
                 if (is_ADCSBA)
-                    ag.addl('if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU += (regs.P.D) ? 1 : 2; pins.Addr = regs.TA; break; }');
+                    ag.addl('if ((regs.TA & 0xFF00) ' + GENEQO + ' (pins.Addr & 0xFF00)) { regs.TCU += (regs.P.D) ? 1 : 2; pins.Addr = regs.TA; break; }');
                 else
-                    ag.addl('if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }');
+                    ag.addl('if ((regs.TA & 0xFF00) ' + GENEQO + ' (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }');
 
                 ag.addl('pins.Addr = (regs.PC - 1) & 0xFFFF;');
             }
@@ -1211,7 +1247,7 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
                 ag.addcycle();
                 ag.addl('regs.TA |= pins.D << 8;');
                 ag.addl('regs.TR = (regs.TA + ' + r + ') & 0xFFFF;');
-                ag.addl('if ((regs.TA & 0xFF00) === (regs.TR & 0xFF00)) { pins.Addr = regs.TR;  regs.TCU++; break; }');
+                ag.addl('if ((regs.TA & 0xFF00) ' + GENEQO + ' (regs.TR & 0xFF00)) { pins.Addr = regs.TR;  regs.TCU++; break; }');
                 ag.addl('pins.Addr = (regs.PC - 1) & 0xFFFF;');
 
                 ag.addcycle()
@@ -1433,14 +1469,14 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
             ag.addl('regs.TA = (regs.TA + (pins.D << 8)) & 0xFFFF;'); // after
 
             if (!CMOS) {
-                ag.addl('if ((regs.TR & 0xFF00) === (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }');
+                ag.addl('if ((regs.TR & 0xFF00) ' + GENEQO + ' (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }');
                 ag.addl('pins.Addr = (regs.TR & 0xFF00) | (regs.TA & 0xFF);');
             }
             else {
                 if (is_ADCSBA)
-                    ag.addl('if ((regs.TR & 0xFF00) === (regs.TA & 0xFF00)) { regs.TCU += (regs.P.D) ? 1 : 2; pins.Addr = regs.TA; break; }');
+                    ag.addl('if ((regs.TR & 0xFF00) ' + GENEQO + ' (regs.TA & 0xFF00)) { regs.TCU += (regs.P.D) ? 1 : 2; pins.Addr = regs.TA; break; }');
                 else
-                    ag.addl('if ((regs.TR & 0xFF00) === (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }');
+                    ag.addl('if ((regs.TR & 0xFF00) ' + GENEQO + ' (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }');
                 ag.addl('pins.Addr = (regs.PC - 1) & 0xFFFF;');
             }
 
@@ -1516,28 +1552,28 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
             // 4 if branch taken, different page
             switch(opcode_info.ins) {
                 case M6502_MN.BPL:
-                    r = 'regs.P.N === 0';
+                    r = 'regs.P.N ' + GENEQO + ' 0';
                     break;
                 case M6502_MN.BMI:
-                    r = 'regs.P.N === 1';
+                    r = 'regs.P.N ' + GENEQO + ' 1';
                     break;
                 case M6502_MN.BVC:
-                    r = 'regs.P.V === 0';
+                    r = 'regs.P.V ' + GENEQO + ' 0';
                     break;
                 case M6502_MN.BVS:
-                    r = 'regs.P.V === 1';
+                    r = 'regs.P.V ' + GENEQO + ' 1';
                     break;
                 case M6502_MN.BCC:
-                    r = 'regs.P.C === 0';
+                    r = 'regs.P.C ' + GENEQO + ' 0';
                     break;
                 case M6502_MN.BCS:
-                    r = 'regs.P.C === 1';
+                    r = 'regs.P.C ' + GENEQO + ' 1';
                     break;
                 case M6502_MN.BNE:
-                    r = 'regs.P.Z === 0';
+                    r = 'regs.P.Z ' + GENEQO + ' 0';
                     break;
                 case M6502_MN.BEQ:
-                    r = 'regs.P.Z === 1';
+                    r = 'regs.P.Z ' + GENEQO + ' 1';
                     break;
                 case M6502_MN.BRA:
                     ag.BRAA();
@@ -1557,7 +1593,11 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
             console.log('M6502 unknown address mode', opcode_info.addr_mode, 'on opcode', opcode_info);
             break;
     }
-    return 'function(regs, pins) { //' + opcode_info.mnemonic + '\n' + ag.finished() + indent + '}';
+    if (GENTARGET === 'js')
+        return 'function(regs, pins) { //' + opcode_info.mnemonic + '\n' + ag.finished() + indent + '}';
+    else {
+        return 'function(regs: m6502_regs, pins: m6502_pins): void { //' + opcode_info.mnemonic + '\n' + ag.finished() + indent + '}';
+    }
 }
 
 function generate_6502_core(variant_list, final_variant, output_name, BCD_SUPPORT, INVALID_OP) {
@@ -1578,6 +1618,41 @@ function generate_6502_core(variant_list, final_variant, output_name, BCD_SUPPOR
     }
     outstr += '\n});';
     return outstr;
+}
+
+function generate_6502_core_as(variant_list, final_variant, output_name, BCD_SUPPORT, INVALID_OP) {
+    let opc_matrix = final_m6502_opcode_matrix(variant_list);
+    let outstr = 'import {M6502_opcode_functions, M6502_stock_matrix, M6502_invalid_matrix, M6502_MAX_OPCODE} from "../../../component/cpu/m6502/m6502_opcodes";\n' +
+        'import {m6502_pins, m6502_regs} from "../../../component/cpu/m6502/m6502";\n'
+    outstr += 'import {mksigned8} from "../../../helpers/helpers"\n'
+    outstr += '\nexport var ' + output_name + ': Array<M6502_opcode_functions> = new Array<M6502_opcode_functions>(M6502_MAX_OPCODE+1);';
+    outstr += '\n\nfunction nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {';
+    outstr += '\n    switch(opcode) {\n'
+    let indent = '        ';
+    let firstin = false;
+    for (let i = 0; i <= M6502_MAX_OPCODE; i++) {
+    //for (let i = 0; i <= 5; i++) {
+        let mystr = indent + 'case ' + hex0x2(i) + ': return new M6502_opcode_functions(';
+        let opc = opc_matrix[i];
+        mystr += str_m6502_ocode_matrix(opc.opcode, opc.variant) + ',\n';
+        let r = m6502_generate_instruction_function(indent, opc_matrix[i], BCD_SUPPORT, INVALID_OP, final_variant);
+        mystr += '            ' + r + ');';
+        if (firstin)
+            outstr += '\n';
+        firstin = true;
+        outstr += mystr;
+    }
+    outstr += '\n    }';
+    outstr += "\n    return new M6502_opcode_functions(M6502_invalid_matrix.get(opcode), function(regs: m6502_regs, pins: m6502_pins): void { console.log('INVALID OPCODE');});";
+    outstr += '\n}'
+    outstr += '\n\nfor (let i = 0; i <= M6502_MAX_OPCODE; i++) {';
+    outstr += '\n    ' + output_name + '[i] = nesm6502_get_opcode_function(i);';
+    outstr += '\n}\n'
+    return outstr;
+}
+
+function generate_nes6502_core_as() {
+    return generate_6502_core_as([M6502_VARIANTS.STOCK], M6502_VARIANTS.STOCK, 'nesm6502_opcodes_decoded', false, '');
 }
 
 function generate_nes6502_core() {

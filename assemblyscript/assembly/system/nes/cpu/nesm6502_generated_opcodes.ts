@@ -73,7 +73,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 6: // cleanup_custom
                         regs.A |= pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -103,7 +103,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 3: // cleanup_custom
                         regs.A |= pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -128,7 +128,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 4: // real write
                         regs.P.C = (pins.D & 0x80) >>> 7;
                         pins.D = (pins.D << 1) & 0xFF;
-                        regs.P.Z = +((pins.D) === 0);
+                        regs.P.Z = +((pins.D) == 0);
                         regs.P.N = ((pins.D) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         break;
@@ -173,7 +173,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 2: // cleanup_custom
                         regs.A |= pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -189,7 +189,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         pins.Addr = regs.PC;
                         regs.P.C = (regs.A & 0x80) >>> 7;
                         regs.A = (regs.A << 1) & 0xFF;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         break;
@@ -223,7 +223,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 4: // cleanup_custom
                         regs.A |= pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -253,7 +253,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 5:
                         regs.P.C = (pins.D & 0x80) >>> 7;
                         pins.D = (pins.D << 1) & 0xFF;
-                        regs.P.Z = +((pins.D) === 0);
+                        regs.P.Z = +((pins.D) == 0);
                         regs.P.N = ((pins.D) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         break;
@@ -272,7 +272,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
             function(regs: m6502_regs, pins: m6502_pins): void { //BPL r
                 switch(regs.TCU) {
                     case 1:
-                        regs.TR = +(regs.P.N === 0);
+                        regs.TR = +(regs.P.N == 0);
                         pins.Addr = regs.PC;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
@@ -280,7 +280,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 2:
                         regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
                         pins.Addr = regs.PC;
-                        if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
+                        if ((regs.TA & 0xFF00) == (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                         break;
                     case 3: // extra idle on page cross
                         pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
@@ -312,7 +312,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 4: // idle if crossed
                         regs.TR = (regs.TR + (pins.D << 8)) & 0xFFFF;
                         regs.TA = (regs.TA + (pins.D << 8)) & 0xFFFF;
-                        if ((regs.TR & 0xFF00) === (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                        if ((regs.TR & 0xFF00) == (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
                         pins.Addr = (regs.TR & 0xFF00) | (regs.TA & 0xFF);
                         break;
                     case 5:
@@ -320,7 +320,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 6: // cleanup_custom
                         regs.A |= pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -354,7 +354,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 4: // cleanup_custom
                         regs.A |= pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -382,7 +382,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         pins.RW = 1;
                         regs.P.C = (regs.TR & 0x80) >>> 7;
                         regs.TR = (regs.TR << 1) & 0xFF;
-                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.Z = +((regs.TR) == 0);
                         regs.P.N = ((regs.TR) & 0x80) >>> 7;
                         break;
                     case 5:
@@ -430,7 +430,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 3:
                         pins.Addr = regs.TA | (pins.D << 8);
                         regs.TA = (pins.Addr + regs.Y) & 0xFFFF;
-                        if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                        if ((regs.TA & 0xFF00) == (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
                         pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                         break;
                     case 4: // optional
@@ -438,7 +438,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 5: // cleanup_custom
                         regs.A |= pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -471,7 +471,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 3:
                         pins.Addr = regs.TA | (pins.D << 8);
                         regs.TA = (pins.Addr + regs.X) & 0xFFFF;
-                        if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                        if ((regs.TA & 0xFF00) == (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
                         pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                         break;
                     case 4: // optional
@@ -479,7 +479,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 5: // cleanup_custom
                         regs.A |= pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -514,7 +514,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 6:
                         regs.P.C = (regs.TR & 0x80) >>> 7;
                         regs.TR = (regs.TR << 1) & 0xFF;
-                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.Z = +((regs.TR) == 0);
                         regs.P.N = ((regs.TR) & 0x80) >>> 7;
                         pins.D = regs.TR;
                         // Following is auto-generated code for instruction finish
@@ -588,7 +588,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 6: // cleanup_custom
                         regs.A &= pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -614,7 +614,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         pins.Addr = pins.D;
                         break;
                     case 3: // cleanup_custom
-                        regs.P.Z = +((regs.A & pins.D) === 0);
+                        regs.P.Z = +((regs.A & pins.D) == 0);
                         regs.P.N = ((pins.D) & 0x80) >>> 7;
                         regs.P.V = (pins.D & 0x40) >>> 6;
                         // Following is auto-generated code for instruction finish
@@ -636,7 +636,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 3: // cleanup_custom
                         regs.A &= pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -662,7 +662,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         let c: u32 = regs.P.C;
                         regs.P.C = (pins.D & 0x80) >>> 7;
                         pins.D = ((pins.D << 1) | c) & 0xFF;
-                        regs.P.Z = +((pins.D) === 0);
+                        regs.P.Z = +((pins.D) == 0);
                         regs.P.N = ((pins.D) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         break;
@@ -708,7 +708,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 2: // cleanup_custom
                         regs.A &= pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -725,7 +725,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         let c: u32 = regs.P.C;
                         regs.P.C = (regs.A & 0x80) >>> 7;
                         regs.A = ((regs.A << 1) | c) & 0xFF;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         break;
@@ -755,7 +755,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         pins.Addr = regs.TA | (pins.D << 8);
                         break;
                     case 4: // cleanup_custom
-                        regs.P.Z = +((regs.A & pins.D) === 0);
+                        regs.P.Z = +((regs.A & pins.D) == 0);
                         regs.P.N = ((pins.D) & 0x80) >>> 7;
                         regs.P.V = (pins.D & 0x40) >>> 6;
                         // Following is auto-generated code for instruction finish
@@ -782,7 +782,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 4: // cleanup_custom
                         regs.A &= pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -813,7 +813,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         let c: u32 = regs.P.C;
                         regs.P.C = (pins.D & 0x80) >>> 7;
                         pins.D = ((pins.D << 1) | c) & 0xFF;
-                        regs.P.Z = +((pins.D) === 0);
+                        regs.P.Z = +((pins.D) == 0);
                         regs.P.N = ((pins.D) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         break;
@@ -832,7 +832,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
             function(regs: m6502_regs, pins: m6502_pins): void { //BMI r
                 switch(regs.TCU) {
                     case 1:
-                        regs.TR = +(regs.P.N === 1);
+                        regs.TR = +(regs.P.N == 1);
                         pins.Addr = regs.PC;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
@@ -840,7 +840,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 2:
                         regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
                         pins.Addr = regs.PC;
-                        if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
+                        if ((regs.TA & 0xFF00) == (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                         break;
                     case 3: // extra idle on page cross
                         pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
@@ -872,7 +872,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 4: // idle if crossed
                         regs.TR = (regs.TR + (pins.D << 8)) & 0xFFFF;
                         regs.TA = (regs.TA + (pins.D << 8)) & 0xFFFF;
-                        if ((regs.TR & 0xFF00) === (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                        if ((regs.TR & 0xFF00) == (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
                         pins.Addr = (regs.TR & 0xFF00) | (regs.TA & 0xFF);
                         break;
                     case 5:
@@ -880,7 +880,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 6: // cleanup_custom
                         regs.A &= pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -914,7 +914,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 4: // cleanup_custom
                         regs.A &= pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -943,7 +943,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         let c: u32 = regs.P.C;
                         regs.P.C = (regs.TR & 0x80) >>> 7;
                         regs.TR = ((regs.TR << 1) | c) & 0xFF;
-                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.Z = +((regs.TR) == 0);
                         regs.P.N = ((regs.TR) & 0x80) >>> 7;
                         break;
                     case 5:
@@ -991,7 +991,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 3:
                         pins.Addr = regs.TA | (pins.D << 8);
                         regs.TA = (pins.Addr + regs.Y) & 0xFFFF;
-                        if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                        if ((regs.TA & 0xFF00) == (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
                         pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                         break;
                     case 4: // optional
@@ -999,7 +999,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 5: // cleanup_custom
                         regs.A &= pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -1032,7 +1032,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 3:
                         pins.Addr = regs.TA | (pins.D << 8);
                         regs.TA = (pins.Addr + regs.X) & 0xFFFF;
-                        if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                        if ((regs.TA & 0xFF00) == (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
                         pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                         break;
                     case 4: // optional
@@ -1040,7 +1040,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 5: // cleanup_custom
                         regs.A &= pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -1076,7 +1076,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         let c: u32 = regs.P.C;
                         regs.P.C = (regs.TR & 0x80) >>> 7;
                         regs.TR = ((regs.TR << 1) | c) & 0xFF;
-                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.Z = +((regs.TR) == 0);
                         regs.P.N = ((regs.TR) & 0x80) >>> 7;
                         pins.D = regs.TR;
                         // Following is auto-generated code for instruction finish
@@ -1148,7 +1148,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 6: // cleanup_custom
                         regs.A ^= pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -1178,7 +1178,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 3: // cleanup_custom
                         regs.A ^= pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -1203,7 +1203,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 4: // real write
                         regs.P.C = pins.D & 1;
                         pins.D >>>= 1;
-                        regs.P.Z = +((pins.D) === 0);
+                        regs.P.Z = +((pins.D) == 0);
                         regs.P.N = 0;
                         // Following is auto-generated code for instruction finish
                         break;
@@ -1248,7 +1248,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 2: // cleanup_custom
                         regs.A ^= pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -1264,7 +1264,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         pins.Addr = regs.PC;
                         regs.P.C = regs.A & 1;
                         regs.A >>>= 1;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = 0;
                         // Following is auto-generated code for instruction finish
                         break;
@@ -1316,7 +1316,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 4: // cleanup_custom
                         regs.A ^= pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -1346,7 +1346,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 5:
                         regs.P.C = pins.D & 1;
                         pins.D >>>= 1;
-                        regs.P.Z = +((pins.D) === 0);
+                        regs.P.Z = +((pins.D) == 0);
                         regs.P.N = 0;
                         // Following is auto-generated code for instruction finish
                         break;
@@ -1365,7 +1365,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
             function(regs: m6502_regs, pins: m6502_pins): void { //BVC r
                 switch(regs.TCU) {
                     case 1:
-                        regs.TR = +(regs.P.V === 0);
+                        regs.TR = +(regs.P.V == 0);
                         pins.Addr = regs.PC;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
@@ -1373,7 +1373,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 2:
                         regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
                         pins.Addr = regs.PC;
-                        if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
+                        if ((regs.TA & 0xFF00) == (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                         break;
                     case 3: // extra idle on page cross
                         pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
@@ -1405,7 +1405,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 4: // idle if crossed
                         regs.TR = (regs.TR + (pins.D << 8)) & 0xFFFF;
                         regs.TA = (regs.TA + (pins.D << 8)) & 0xFFFF;
-                        if ((regs.TR & 0xFF00) === (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                        if ((regs.TR & 0xFF00) == (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
                         pins.Addr = (regs.TR & 0xFF00) | (regs.TA & 0xFF);
                         break;
                     case 5:
@@ -1413,7 +1413,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 6: // cleanup_custom
                         regs.A ^= pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -1447,7 +1447,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 4: // cleanup_custom
                         regs.A ^= pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -1475,7 +1475,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         pins.RW = 1;
                         regs.P.C = regs.TR & 1;
                         regs.TR >>>= 1;
-                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.Z = +((regs.TR) == 0);
                         regs.P.N = 0;
                         break;
                     case 5:
@@ -1523,7 +1523,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 3:
                         pins.Addr = regs.TA | (pins.D << 8);
                         regs.TA = (pins.Addr + regs.Y) & 0xFFFF;
-                        if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                        if ((regs.TA & 0xFF00) == (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
                         pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                         break;
                     case 4: // optional
@@ -1531,7 +1531,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 5: // cleanup_custom
                         regs.A ^= pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -1564,7 +1564,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 3:
                         pins.Addr = regs.TA | (pins.D << 8);
                         regs.TA = (pins.Addr + regs.X) & 0xFFFF;
-                        if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                        if ((regs.TA & 0xFF00) == (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
                         pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                         break;
                     case 4: // optional
@@ -1572,7 +1572,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 5: // cleanup_custom
                         regs.A ^= pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -1607,7 +1607,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 6:
                         regs.P.C = regs.TR & 1;
                         regs.TR >>>= 1;
-                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.Z = +((regs.TR) == 0);
                         regs.P.N = 0;
                         pins.D = regs.TR;
                         // Following is auto-generated code for instruction finish
@@ -1683,7 +1683,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                         regs.P.C = +(o > 0xFF);
                         regs.A = o & 0xFF;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -1718,7 +1718,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                         regs.P.C = +(o > 0xFF);
                         regs.A = o & 0xFF;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -1744,7 +1744,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         let c: u32 = regs.P.C;
                         regs.P.C = pins.D & 1;
                         pins.D = (c << 7) | (pins.D >>> 1);
-                        regs.P.Z = +((pins.D) === 0);
+                        regs.P.Z = +((pins.D) == 0);
                         regs.P.N = ((pins.D) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         break;
@@ -1774,7 +1774,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 4: // cleanup_custom
                         regs.A = pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -1797,7 +1797,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                         regs.P.C = +(o > 0xFF);
                         regs.A = o & 0xFF;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -1814,7 +1814,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         let c: u32 = regs.P.C;
                         regs.P.C = regs.A & 1;
                         regs.A = (c << 7) | (regs.A >>> 1);
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         break;
@@ -1878,7 +1878,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                         regs.P.C = +(o > 0xFF);
                         regs.A = o & 0xFF;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -1909,7 +1909,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         let c: u32 = regs.P.C;
                         regs.P.C = pins.D & 1;
                         pins.D = (c << 7) | (pins.D >>> 1);
-                        regs.P.Z = +((pins.D) === 0);
+                        regs.P.Z = +((pins.D) == 0);
                         regs.P.N = ((pins.D) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         break;
@@ -1928,7 +1928,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
             function(regs: m6502_regs, pins: m6502_pins): void { //BVS r
                 switch(regs.TCU) {
                     case 1:
-                        regs.TR = +(regs.P.V === 1);
+                        regs.TR = +(regs.P.V == 1);
                         pins.Addr = regs.PC;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
@@ -1936,7 +1936,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 2:
                         regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
                         pins.Addr = regs.PC;
-                        if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
+                        if ((regs.TA & 0xFF00) == (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                         break;
                     case 3: // extra idle on page cross
                         pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
@@ -1968,7 +1968,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 4: // idle if crossed
                         regs.TR = (regs.TR + (pins.D << 8)) & 0xFFFF;
                         regs.TA = (regs.TA + (pins.D << 8)) & 0xFFFF;
-                        if ((regs.TR & 0xFF00) === (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                        if ((regs.TR & 0xFF00) == (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
                         pins.Addr = (regs.TR & 0xFF00) | (regs.TA & 0xFF);
                         break;
                     case 5:
@@ -1981,7 +1981,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                         regs.P.C = +(o > 0xFF);
                         regs.A = o & 0xFF;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -2020,7 +2020,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                         regs.P.C = +(o > 0xFF);
                         regs.A = o & 0xFF;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -2049,7 +2049,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         let c: u32 = regs.P.C;
                         regs.P.C = regs.TR & 1;
                         regs.TR = (c << 7) | (regs.TR >>> 1);
-                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.Z = +((regs.TR) == 0);
                         regs.P.N = ((regs.TR) & 0x80) >>> 7;
                         break;
                     case 5:
@@ -2097,7 +2097,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 3:
                         pins.Addr = regs.TA | (pins.D << 8);
                         regs.TA = (pins.Addr + regs.Y) & 0xFFFF;
-                        if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                        if ((regs.TA & 0xFF00) == (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
                         pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                         break;
                     case 4: // optional
@@ -2110,7 +2110,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                         regs.P.C = +(o > 0xFF);
                         regs.A = o & 0xFF;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -2143,7 +2143,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 3:
                         pins.Addr = regs.TA | (pins.D << 8);
                         regs.TA = (pins.Addr + regs.X) & 0xFFFF;
-                        if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                        if ((regs.TA & 0xFF00) == (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
                         pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                         break;
                     case 4: // optional
@@ -2156,7 +2156,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                         regs.P.C = +(o > 0xFF);
                         regs.A = o & 0xFF;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -2192,7 +2192,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         let c: u32 = regs.P.C;
                         regs.P.C = regs.TR & 1;
                         regs.TR = (c << 7) | (regs.TR >>> 1);
-                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.Z = +((regs.TR) == 0);
                         regs.P.N = ((regs.TR) & 0x80) >>> 7;
                         pins.D = regs.TR;
                         // Following is auto-generated code for instruction finish
@@ -2321,7 +2321,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 1:
                         pins.Addr = regs.PC;
                         regs.Y = (regs.Y - 1) & 0xFF;
-                        regs.P.Z = +((regs.Y) === 0);
+                        regs.P.Z = +((regs.Y) == 0);
                         regs.P.N = ((regs.Y) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         break;
@@ -2341,7 +2341,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 1:
                         pins.Addr = regs.PC;
                         regs.A = regs.X;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         break;
@@ -2440,7 +2440,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
             function(regs: m6502_regs, pins: m6502_pins): void { //BCC
                 switch(regs.TCU) {
                     case 1:
-                        regs.TR = +(regs.P.C === 0);
+                        regs.TR = +(regs.P.C == 0);
                         pins.Addr = regs.PC;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
@@ -2448,7 +2448,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 2:
                         regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
                         pins.Addr = regs.PC;
-                        if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
+                        if ((regs.TA & 0xFF00) == (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                         break;
                     case 3: // extra idle on page cross
                         pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
@@ -2582,7 +2582,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 1:
                         pins.Addr = regs.PC;
                         regs.A = regs.Y;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         break;
@@ -2689,7 +2689,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 2: // cleanup_custom
                         regs.Y = pins.D;
-                        regs.P.Z = +((regs.Y) === 0);
+                        regs.P.Z = +((regs.Y) == 0);
                         regs.P.N = ((regs.Y) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -2721,7 +2721,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 6: // cleanup_custom
                         regs.A = pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -2739,7 +2739,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 2: // cleanup_custom
                         regs.X = pins.D;
-                        regs.P.Z = +((regs.X) === 0);
+                        regs.P.Z = +((regs.X) == 0);
                         regs.P.N = ((regs.X) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -2763,7 +2763,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 3: // cleanup_custom
                         regs.Y = pins.D;
-                        regs.P.Z = +((regs.Y) === 0);
+                        regs.P.Z = +((regs.Y) == 0);
                         regs.P.N = ((regs.Y) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -2784,7 +2784,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 3: // cleanup_custom
                         regs.A = pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -2805,7 +2805,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 3: // cleanup_custom
                         regs.X = pins.D;
-                        regs.P.Z = +((regs.X) === 0);
+                        regs.P.Z = +((regs.X) == 0);
                         regs.P.N = ((regs.X) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -2823,7 +2823,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 1:
                         pins.Addr = regs.PC;
                         regs.Y = regs.A;
-                        regs.P.Z = +((regs.Y) === 0);
+                        regs.P.Z = +((regs.Y) == 0);
                         regs.P.N = ((regs.Y) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         break;
@@ -2843,7 +2843,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 2: // cleanup_custom
                         regs.A = pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -2858,7 +2858,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 1:
                         pins.Addr = regs.PC;
                         regs.X = regs.A;
-                        regs.P.Z = +((regs.X) === 0);
+                        regs.P.Z = +((regs.X) == 0);
                         regs.P.N = ((regs.X) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         break;
@@ -2889,7 +2889,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 4: // cleanup_custom
                         regs.Y = pins.D;
-                        regs.P.Z = +((regs.Y) === 0);
+                        regs.P.Z = +((regs.Y) == 0);
                         regs.P.N = ((regs.Y) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -2915,7 +2915,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 4: // cleanup_custom
                         regs.A = pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -2941,7 +2941,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 4: // cleanup_custom
                         regs.X = pins.D;
-                        regs.P.Z = +((regs.X) === 0);
+                        regs.P.Z = +((regs.X) == 0);
                         regs.P.N = ((regs.X) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -2957,7 +2957,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
             function(regs: m6502_regs, pins: m6502_pins): void { //BCS r
                 switch(regs.TCU) {
                     case 1:
-                        regs.TR = +(regs.P.C === 1);
+                        regs.TR = +(regs.P.C == 1);
                         pins.Addr = regs.PC;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
@@ -2965,7 +2965,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 2:
                         regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
                         pins.Addr = regs.PC;
-                        if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
+                        if ((regs.TA & 0xFF00) == (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                         break;
                     case 3: // extra idle on page cross
                         pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
@@ -2997,7 +2997,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 4: // idle if crossed
                         regs.TR = (regs.TR + (pins.D << 8)) & 0xFFFF;
                         regs.TA = (regs.TA + (pins.D << 8)) & 0xFFFF;
-                        if ((regs.TR & 0xFF00) === (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                        if ((regs.TR & 0xFF00) == (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
                         pins.Addr = (regs.TR & 0xFF00) | (regs.TA & 0xFF);
                         break;
                     case 5:
@@ -3005,7 +3005,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 6: // cleanup_custom
                         regs.A = pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -3036,7 +3036,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 4: // cleanup_custom
                         regs.Y = pins.D;
-                        regs.P.Z = +((regs.Y) === 0);
+                        regs.P.Z = +((regs.Y) == 0);
                         regs.P.N = ((regs.Y) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -3061,7 +3061,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 4: // cleanup_custom
                         regs.A = pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -3086,7 +3086,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 4: // cleanup_custom
                         regs.X = pins.D;
-                        regs.P.Z = +((regs.X) === 0);
+                        regs.P.Z = +((regs.X) == 0);
                         regs.P.N = ((regs.X) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -3128,7 +3128,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 3:
                         pins.Addr = regs.TA | (pins.D << 8);
                         regs.TA = (pins.Addr + regs.Y) & 0xFFFF;
-                        if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                        if ((regs.TA & 0xFF00) == (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
                         pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                         break;
                     case 4: // optional
@@ -3136,7 +3136,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 5: // cleanup_custom
                         regs.A = pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -3151,7 +3151,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 1:
                         pins.Addr = regs.PC;
                         regs.X = regs.S;
-                        regs.P.Z = +((regs.X) === 0);
+                        regs.P.Z = +((regs.X) == 0);
                         regs.P.N = ((regs.X) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         break;
@@ -3180,7 +3180,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 3:
                         pins.Addr = regs.TA | (pins.D << 8);
                         regs.TA = (pins.Addr + regs.X) & 0xFFFF;
-                        if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                        if ((regs.TA & 0xFF00) == (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
                         pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                         break;
                     case 4: // optional
@@ -3188,7 +3188,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 5: // cleanup_custom
                         regs.Y = pins.D;
-                        regs.P.Z = +((regs.Y) === 0);
+                        regs.P.Z = +((regs.Y) == 0);
                         regs.P.N = ((regs.Y) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -3212,7 +3212,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 3:
                         pins.Addr = regs.TA | (pins.D << 8);
                         regs.TA = (pins.Addr + regs.X) & 0xFFFF;
-                        if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                        if ((regs.TA & 0xFF00) == (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
                         pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                         break;
                     case 4: // optional
@@ -3220,7 +3220,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 5: // cleanup_custom
                         regs.A = pins.D;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -3244,7 +3244,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 3:
                         pins.Addr = regs.TA | (pins.D << 8);
                         regs.TA = (pins.Addr + regs.Y) & 0xFFFF;
-                        if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                        if ((regs.TA & 0xFF00) == (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
                         pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                         break;
                     case 4: // optional
@@ -3252,7 +3252,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 5: // cleanup_custom
                         regs.X = pins.D;
-                        regs.P.Z = +((regs.X) === 0);
+                        regs.P.Z = +((regs.X) == 0);
                         regs.P.N = ((regs.X) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -3274,7 +3274,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 2: // cleanup_custom
                         let o: i32 = regs.Y - pins.D;
                         regs.P.C = +(!((o & 0x100) >>> 8));
-                        regs.P.Z = +((o & 0xFF) === 0);
+                        regs.P.Z = +((o & 0xFF) == 0);
                         regs.P.N = ((o) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -3307,7 +3307,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 6: // cleanup_custom
                         let o: i32 = regs.A - pins.D;
                         regs.P.C = +(!((o & 0x100) >>> 8));
-                        regs.P.Z = +((o & 0xFF) === 0);
+                        regs.P.Z = +((o & 0xFF) == 0);
                         regs.P.N = ((o) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -3335,7 +3335,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 3: // cleanup_custom
                         let o: i32 = regs.Y - pins.D;
                         regs.P.C = +(!((o & 0x100) >>> 8));
-                        regs.P.Z = +((o & 0xFF) === 0);
+                        regs.P.Z = +((o & 0xFF) == 0);
                         regs.P.N = ((o) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -3357,7 +3357,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 3: // cleanup_custom
                         let o: i32 = regs.A - pins.D;
                         regs.P.C = +(!((o & 0x100) >>> 8));
-                        regs.P.Z = +((o & 0xFF) === 0);
+                        regs.P.Z = +((o & 0xFF) == 0);
                         regs.P.N = ((o) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -3381,7 +3381,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 4: // real write
                         pins.D = (pins.D - 1) & 0xFF;
-                        regs.P.Z = +((pins.D) === 0);
+                        regs.P.Z = +((pins.D) == 0);
                         regs.P.N = ((pins.D) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         break;
@@ -3402,7 +3402,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 1:
                         pins.Addr = regs.PC;
                         regs.Y = (regs.Y + 1) & 0xFF;
-                        regs.P.Z = +((regs.Y) === 0);
+                        regs.P.Z = +((regs.Y) == 0);
                         regs.P.N = ((regs.Y) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         break;
@@ -3423,7 +3423,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 2: // cleanup_custom
                         let o: i32 = regs.A - pins.D;
                         regs.P.C = +(!((o & 0x100) >>> 8));
-                        regs.P.Z = +((o & 0xFF) === 0);
+                        regs.P.Z = +((o & 0xFF) == 0);
                         regs.P.N = ((o) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -3438,7 +3438,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 1:
                         pins.Addr = regs.PC;
                         regs.X = (regs.X - 1) & 0xFF;
-                        regs.P.Z = +((regs.X) === 0);
+                        regs.P.Z = +((regs.X) == 0);
                         regs.P.N = ((regs.X) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         break;
@@ -3470,7 +3470,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 4: // cleanup_custom
                         let o: i32 = regs.Y - pins.D;
                         regs.P.C = +(!((o & 0x100) >>> 8));
-                        regs.P.Z = +((o & 0xFF) === 0);
+                        regs.P.Z = +((o & 0xFF) == 0);
                         regs.P.N = ((o) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -3497,7 +3497,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 4: // cleanup_custom
                         let o: i32 = regs.A - pins.D;
                         regs.P.C = +(!((o & 0x100) >>> 8));
-                        regs.P.Z = +((o & 0xFF) === 0);
+                        regs.P.Z = +((o & 0xFF) == 0);
                         regs.P.N = ((o) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -3526,7 +3526,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 5:
                         pins.D = (pins.D - 1) & 0xFF;
-                        regs.P.Z = +((pins.D) === 0);
+                        regs.P.Z = +((pins.D) == 0);
                         regs.P.N = ((pins.D) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         break;
@@ -3545,7 +3545,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
             function(regs: m6502_regs, pins: m6502_pins): void { //BNE r
                 switch(regs.TCU) {
                     case 1:
-                        regs.TR = +(regs.P.Z === 0);
+                        regs.TR = +(regs.P.Z == 0);
                         pins.Addr = regs.PC;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
@@ -3553,7 +3553,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 2:
                         regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
                         pins.Addr = regs.PC;
-                        if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
+                        if ((regs.TA & 0xFF00) == (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                         break;
                     case 3: // extra idle on page cross
                         pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
@@ -3585,7 +3585,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 4: // idle if crossed
                         regs.TR = (regs.TR + (pins.D << 8)) & 0xFFFF;
                         regs.TA = (regs.TA + (pins.D << 8)) & 0xFFFF;
-                        if ((regs.TR & 0xFF00) === (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                        if ((regs.TR & 0xFF00) == (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
                         pins.Addr = (regs.TR & 0xFF00) | (regs.TA & 0xFF);
                         break;
                     case 5:
@@ -3594,7 +3594,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 6: // cleanup_custom
                         let o: i32 = regs.A - pins.D;
                         regs.P.C = +(!((o & 0x100) >>> 8));
-                        regs.P.Z = +((o & 0xFF) === 0);
+                        regs.P.Z = +((o & 0xFF) == 0);
                         regs.P.N = ((o) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -3629,7 +3629,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 4: // cleanup_custom
                         let o: i32 = regs.A - pins.D;
                         regs.P.C = +(!((o & 0x100) >>> 8));
-                        regs.P.Z = +((o & 0xFF) === 0);
+                        regs.P.Z = +((o & 0xFF) == 0);
                         regs.P.N = ((o) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -3656,7 +3656,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         regs.TR = pins.D;
                         pins.RW = 1;
                         regs.TR = (regs.TR - 1) & 0xFF;
-                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.Z = +((regs.TR) == 0);
                         regs.P.N = ((regs.TR) & 0x80) >>> 7;
                         break;
                     case 5:
@@ -3704,7 +3704,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 3:
                         pins.Addr = regs.TA | (pins.D << 8);
                         regs.TA = (pins.Addr + regs.Y) & 0xFFFF;
-                        if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                        if ((regs.TA & 0xFF00) == (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
                         pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                         break;
                     case 4: // optional
@@ -3713,7 +3713,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 5: // cleanup_custom
                         let o: i32 = regs.A - pins.D;
                         regs.P.C = +(!((o & 0x100) >>> 8));
-                        regs.P.Z = +((o & 0xFF) === 0);
+                        regs.P.Z = +((o & 0xFF) == 0);
                         regs.P.N = ((o) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -3746,7 +3746,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 3:
                         pins.Addr = regs.TA | (pins.D << 8);
                         regs.TA = (pins.Addr + regs.X) & 0xFFFF;
-                        if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                        if ((regs.TA & 0xFF00) == (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
                         pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                         break;
                     case 4: // optional
@@ -3755,7 +3755,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 5: // cleanup_custom
                         let o: i32 = regs.A - pins.D;
                         regs.P.C = +(!((o & 0x100) >>> 8));
-                        regs.P.Z = +((o & 0xFF) === 0);
+                        regs.P.Z = +((o & 0xFF) == 0);
                         regs.P.N = ((o) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -3789,7 +3789,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 6:
                         regs.TR = (regs.TR - 1) & 0xFF;
-                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.Z = +((regs.TR) == 0);
                         regs.P.N = ((regs.TR) & 0x80) >>> 7;
                         pins.D = regs.TR;
                         // Following is auto-generated code for instruction finish
@@ -3815,7 +3815,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 2: // cleanup_custom
                         let o: i32 = regs.X - pins.D;
                         regs.P.C = +(!((o & 0x100) >>> 8));
-                        regs.P.Z = +((o & 0xFF) === 0);
+                        regs.P.Z = +((o & 0xFF) == 0);
                         regs.P.N = ((o) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -3852,7 +3852,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                         regs.P.C = +(o > 0xFF);
                         regs.A = o & 0xFF;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -3880,7 +3880,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 3: // cleanup_custom
                         let o: i32 = regs.X - pins.D;
                         regs.P.C = +(!((o & 0x100) >>> 8));
-                        regs.P.Z = +((o & 0xFF) === 0);
+                        regs.P.Z = +((o & 0xFF) == 0);
                         regs.P.N = ((o) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -3906,7 +3906,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                         regs.P.C = +(o > 0xFF);
                         regs.A = o & 0xFF;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -3930,7 +3930,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 4: // real write
                         pins.D = (pins.D + 1) & 0xFF;
-                        regs.P.Z = +((pins.D) === 0);
+                        regs.P.Z = +((pins.D) == 0);
                         regs.P.N = ((pins.D) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         break;
@@ -3951,7 +3951,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 1:
                         pins.Addr = regs.PC;
                         regs.X = (regs.X + 1) & 0xFF;
-                        regs.P.Z = +((regs.X) === 0);
+                        regs.P.Z = +((regs.X) == 0);
                         regs.P.N = ((regs.X) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         break;
@@ -3976,7 +3976,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                         regs.P.C = +(o > 0xFF);
                         regs.A = o & 0xFF;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -4020,7 +4020,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 4: // cleanup_custom
                         let o: i32 = regs.X - pins.D;
                         regs.P.C = +(!((o & 0x100) >>> 8));
-                        regs.P.Z = +((o & 0xFF) === 0);
+                        regs.P.Z = +((o & 0xFF) == 0);
                         regs.P.N = ((o) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -4051,7 +4051,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                         regs.P.C = +(o > 0xFF);
                         regs.A = o & 0xFF;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -4080,7 +4080,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 5:
                         pins.D = (pins.D + 1) & 0xFF;
-                        regs.P.Z = +((pins.D) === 0);
+                        regs.P.Z = +((pins.D) == 0);
                         regs.P.N = ((pins.D) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         break;
@@ -4099,7 +4099,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
             function(regs: m6502_regs, pins: m6502_pins): void { //BEQ r
                 switch(regs.TCU) {
                     case 1:
-                        regs.TR = +(regs.P.Z === 1);
+                        regs.TR = +(regs.P.Z == 1);
                         pins.Addr = regs.PC;
                         regs.PC = (regs.PC + 1) & 0xFFFF;
                         if (!regs.TR) { regs.TA = regs.PC; regs.TCU += 2; break; }
@@ -4107,7 +4107,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 2:
                         regs.TA = (regs.PC + mksigned8(pins.D)) & 0xFFFF;
                         pins.Addr = regs.PC;
-                        if ((regs.TA & 0xFF00) === (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
+                        if ((regs.TA & 0xFF00) == (regs.PC & 0xFF00)) { regs.TCU++; break; } // Skip to end if same page
                         break;
                     case 3: // extra idle on page cross
                         pins.Addr = (regs.PC & 0xFF00) | (regs.TA & 0xFF);
@@ -4139,7 +4139,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 4: // idle if crossed
                         regs.TR = (regs.TR + (pins.D << 8)) & 0xFFFF;
                         regs.TA = (regs.TA + (pins.D << 8)) & 0xFFFF;
-                        if ((regs.TR & 0xFF00) === (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                        if ((regs.TR & 0xFF00) == (regs.TA & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
                         pins.Addr = (regs.TR & 0xFF00) | (regs.TA & 0xFF);
                         break;
                     case 5:
@@ -4152,7 +4152,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                         regs.P.C = +(o > 0xFF);
                         regs.A = o & 0xFF;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -4191,7 +4191,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                         regs.P.C = +(o > 0xFF);
                         regs.A = o & 0xFF;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -4218,7 +4218,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         regs.TR = pins.D;
                         pins.RW = 1;
                         regs.TR = (regs.TR + 1) & 0xFF;
-                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.Z = +((regs.TR) == 0);
                         regs.P.N = ((regs.TR) & 0x80) >>> 7;
                         break;
                     case 5:
@@ -4266,7 +4266,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 3:
                         pins.Addr = regs.TA | (pins.D << 8);
                         regs.TA = (pins.Addr + regs.Y) & 0xFFFF;
-                        if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                        if ((regs.TA & 0xFF00) == (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
                         pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                         break;
                     case 4: // optional
@@ -4279,7 +4279,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                         regs.P.C = +(o > 0xFF);
                         regs.A = o & 0xFF;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -4312,7 +4312,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                     case 3:
                         pins.Addr = regs.TA | (pins.D << 8);
                         regs.TA = (pins.Addr + regs.X) & 0xFFFF;
-                        if ((regs.TA & 0xFF00) === (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
+                        if ((regs.TA & 0xFF00) == (pins.Addr & 0xFF00)) { regs.TCU++; pins.Addr = regs.TA; break; }
                         pins.Addr = (pins.D << 8) | (regs.TA & 0xFF);
                         break;
                     case 4: // optional
@@ -4325,7 +4325,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         regs.P.V = ((~(regs.A ^ i)) & (regs.A ^ o) & 0x80) >>> 7;
                         regs.P.C = +(o > 0xFF);
                         regs.A = o & 0xFF;
-                        regs.P.Z = +((regs.A) === 0);
+                        regs.P.Z = +((regs.A) == 0);
                         regs.P.N = ((regs.A) & 0x80) >>> 7;
                         // Following is auto-generated code for instruction finish
                         pins.Addr = regs.PC;
@@ -4359,7 +4359,7 @@ function nesm6502_get_opcode_function(opcode: u32): M6502_opcode_functions {
                         break;
                     case 6:
                         regs.TR = (regs.TR + 1) & 0xFF;
-                        regs.P.Z = +((regs.TR) === 0);
+                        regs.P.Z = +((regs.TR) == 0);
                         regs.P.N = ((regs.TR) & 0x80) >>> 7;
                         pins.D = regs.TR;
                         // Following is auto-generated code for instruction finish

@@ -1,8 +1,8 @@
 import {m6502_pins, m6502_regs} from "./m6502";
 
-const M6502_OP_RESET = 0x100;
-const M6502_OP_NMI = 0x101;
-const M6502_OP_IRQ = 0x102;
+export const M6502_OP_RESET = 0x100;
+export const M6502_OP_NMI = 0x101;
+export const M6502_OP_IRQ = 0x102;
 
 export const M6502_MAX_OPCODE = 0x102;
 
@@ -71,6 +71,7 @@ export class M6502_opcode_functions {
 
 export var M6502_stock_matrix: Map<u32, M6502_opcode_info> = new Map<u32, M6502_opcode_info>();
 export var M6502_invalid_matrix: Map<u32, M6502_opcode_info> = new Map<u32, M6502_opcode_info>();
+
 for (let i = 0; i < 0x100; i++) {
     M6502_invalid_matrix.set(i, new M6502_opcode_info(i, M6502_MN.NONE, M6502_AM.NONE, '', M6502_VARIANTS.INVALID));
 }
@@ -254,6 +255,6 @@ function M6502_get_stock_matrix_item(i: u32): M6502_opcode_info {
     return y;
 }
 
-for (let i = 0; i < M6502_MAX_OPCODE; i++) {
+for (let i = 0; i <= M6502_MAX_OPCODE; i++) {
     M6502_stock_matrix.set(i, M6502_get_stock_matrix_item(i));
 }
