@@ -42,6 +42,7 @@ class threaded_emulator_t {
     }
 
     send_set_system(kind) {
+        console.log('MT: SET SYSTEM')
         this.thread.postMessage({kind: emulator_messages.change_system, kind_str: kind});
     }
 
@@ -49,10 +50,11 @@ class threaded_emulator_t {
      * @param {Uint8Array} ROM
      */
     send_load_ROM(ROM) {
-        this.thread.postMessage({kind: emulator_messages.frame_requested, ROM: ROM});
+        this.thread.postMessage({kind: emulator_messages.load_rom, ROM: ROM});
     }
 
     send_request_frame() {
+        console.log('MT: REQUEST FRAME');
         this.thread.postMessage({kind: emulator_messages.frame_requested});
     }
 

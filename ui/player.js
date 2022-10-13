@@ -249,7 +249,8 @@ class global_player_t {
 	}
 
 	load_rom(what) {
-		this.system.load_ROM_from_RAM(what);
+		//this.system.load_ROM_from_RAM(what);
+		this.player_thread.send_load_ROM(new Uint8Array(what));
 	}
 
 	load_bios(what) {

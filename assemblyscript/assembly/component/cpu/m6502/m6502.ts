@@ -1,4 +1,5 @@
 import {M6502_AM, M6502_OP_IRQ, M6502_OP_NMI, M6502_OP_RESET, M6502_opcode_functions} from "./m6502_opcodes";
+import {dbg} from "../../../helpers/debug";
 
 class m6502_P {
     C: u32
@@ -138,9 +139,8 @@ export class m6502 {
             if (this.regs.NMI_pending && !this.NMI_ack) {
                 this.NMI_ack = true;
                 this.regs.NMI_pending = 0;
-                //console.log('NMI1!', this.clock.master_frame, this.clock.ppu_y);
                 this.regs.IR = M6502_OP_NMI;
-                //if (dbg.brk_on_NMIRQ) dbg.break(D_RESOURCE_TYPES.M6502);
+                if (dbg.brk_on_NMIRQ) dbg.break();
             } else if (this.regs.IRQ_pending && !this.IRQ_ack && !this.regs.old_I) {
                 this.IRQ_ack = true;
                 this.regs.IRQ_pending = 0;
@@ -150,13 +150,9 @@ export class m6502 {
 			this.current_instruction = this.opcode_set[this.regs.IR];
             if (this.current_instruction.addr_mode == M6502_AM.NONE) {
                 console.log('INVALID OPCODE');
-                //dbg.break();
+                dbg.break();
             }
             /*if (this.trace_on) {
-                if (typeof this.regs.A === 'undefined') {
-                    dbg.break();
-                    return;
-                }
                 dbg.traces.add(TRACERS.M6502, this.clock.trace_cycles-1, this.trace_format(this.disassemble(), this.PCO));
             }*/
         }

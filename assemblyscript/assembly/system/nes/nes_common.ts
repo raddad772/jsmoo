@@ -120,6 +120,7 @@ export class NES_clock implements systemEmulatorStandardClock {
     variant: NES_VARIANTS
     ppu_y: u32 = 0
     frame_odd: u32 = 0
+    vblank: u32 = 0
 
     constructor(variant: NES_VARIANTS) {
         this.variant = variant;
@@ -139,5 +140,17 @@ export class NES_clock implements systemEmulatorStandardClock {
         this.ppu_frame_cycle = 0;
         this.ppu_y = 0;
         this.frame_odd = 0;
+    }
+
+    advance_frame(): void {
+        this.ppu_y = 0;
+        this.frames_since_restart++;
+        this.frame_odd = (this.frame_odd + 1) & 1;
+        this.master_frame++;
+        this.cpu_frame_cycle = 0;
+    }
+
+    advance_scanline(): void {
+        this.ppu_y++;
     }
 }
