@@ -52,7 +52,7 @@ class threaded_emulator_worker_t {
                 return;
             case emulator_messages.frame_requested:
                 console.log('ET: running frame...');
-                gp_run_frame(this.global_player);
+                //gp_run_frame(this.global_player);
                 return;
             case emulator_messages.change_system:
                 console.log('ET: setting system to', e.kind_str);

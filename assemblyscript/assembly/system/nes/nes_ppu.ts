@@ -120,7 +120,7 @@ export class NES_ppu {
     bus: NES_bus
     variant: NES_VARIANTS
 
-    line_cycle: u32 = 0;
+    line_cycle: i32 = 0;
     OAM: Uint8Array = new Uint8Array(256);
     secondary_OAM: Uint8Array = new Uint8Array(32);
     secondary_OAM_index: u32 = 0;
@@ -130,7 +130,7 @@ export class NES_ppu {
 
     OAM_transfer_latch: u32 = 0;
     OAM_eval_index: u32 = 0;
-    OAM_eval_done: bool = false;
+    OAM_eval_done: u32 = 0;
 
     sprite0_on_next_line: bool = false;
     sprite0_on_this_line: bool = false;
@@ -138,8 +138,8 @@ export class NES_ppu {
     CGRAM: Uint8Array = new Uint8Array(32);
     output: Uint8Array = new Uint8Array(256*240);
 
-    bg_fetches: Uint64Array = new Uint64Array(4);
-    bg_shifter: u64 = 0;
+    bg_fetches: Uint32Array = new Uint32Array(4);
+    bg_shifter: u32 = 0;
     bg_palette_shifter: u32 = 0;
     bg_tile_fetch_addr: u32 = 0;
     bg_tile_fetch_buffer: u32 = 0;
@@ -187,8 +187,433 @@ export class NES_ppu {
         return this.io.bg_enable || this.io.sprite_enable;
     }
 
-    cycle(howmany: u32): void {
+    new_scanline(): void {
+        if (this.clock.ppu_y === this.clock.timing.ppu_pre_render)
+            this.clock.advance_frame();
+        else
+            this.clock.advance_scanline();
 
+        if (this.clock.ppu_y == this.clock.timing.vblank_start) {
+            this.clock.vblank = 1;
+            this.update_nmi();
+        }
+        else if (this.clock.ppu_y == this.clock.timing.vblank_end) {
+            this.clock.vblank = 0;
+            this.update_nmi();
+        }
+        this.line_cycle = -1;
+    }
+
+
+    fetch_chr_line(table: u32, tile: u32, line: u32, has_effect: u32 = 1): u32 {
+        let r: u32 = (0x1000 * table) + (tile * 16) + line;
+        let low: u32 = this.bus.PPU_read(r, 0, has_effect);
+        let high: u32 = this.bus.PPU_read(r + 8, 0, has_effect);
+        let output: u32 = 0;
+        for (let i = 0; i < 8; i++) {
+            output <<= 2;
+            output |= (low & 1) | ((high & 1) << 1);
+            low >>>= 1;
+            high >>>= 1;
+        }
+        return output;
+    }
+
+    fetch_chr_addr(table: u32, tile: u32, line: u32): u32 {
+        return (0x1000 * table) + (tile * 16) + line;
+    }
+
+    fetch_chr_line_low(addr: u32): u32 {
+        let low: u32 = this.bus.PPU_read(addr, 0);
+        let output: u32 = 0;
+        for (let i: u32 = 0; i < 8; i++) {
+            output <<= 2;
+            output |= (low & 1);
+            low >>>= 1;
+        }
+        return output;
+    }
+
+    fetch_chr_line_high(addr: u32, o: u32): u32 {
+        let high: u32 = this.bus.PPU_read(addr + 8, 0);
+        let output: u32 = 0;
+        for (let i: u32 = 0; i < 8; i++) {
+            output <<= 2;
+            output |= ((high & 1) << 1);
+            high >>>= 1;
+        }
+        return output | o;
+    }
+
+    perform_bg_fetches(): void { // Only called from prerender and visible scanlines
+        let in_tile_y: u32 = (this.io.v >>> 12) & 7; // Y position inside tile
+
+        if (((this.line_cycle > 0) && (this.line_cycle <= 257)) || (this.line_cycle > 320)) {
+            // Do memory accesses and shifters
+            switch (this.line_cycle & 7) {
+                case 1: // nametable, tile #
+                    this.bg_fetches[0] = this.bus.PPU_read(0x2000 | (this.io.v & 0xFFF), 0);
+                    this.bg_tile_fetch_addr = this.fetch_chr_addr(this.io.bg_pattern_table, this.bg_fetches[0], in_tile_y);
+                    this.bg_tile_fetch_buffer = 0;
+                    // Reload shifters if needed
+                    if (this.line_cycle !== 1) { // reload shifter at interval #9 9....257
+                        this.bg_shifter = (this.bg_shifter >>> 16) | (this.bg_fetches[2] << 16) | (this.bg_fetches[3] << 24);
+                        this.bg_palette_shifter = ((this.bg_palette_shifter << 2) | this.bg_fetches[1]) & 0x0F; //(this.bg_palette_shifter >>> 8) | (this.bg_fetches[1] << 8);
+                    }
+                    break;
+                case 3: // attribute table
+                    let attrib_addr = 0x23C0 | (this.io.v & 0x0C00) | ((this.io.v >>> 4) & 0x38) | ((this.io.v >>> 2) & 7);
+                    let shift = ((this.io.v >>> 4) & 0x04) | (this.io.v & 0x02);
+                    this.bg_fetches[1] = (this.bus.PPU_read(attrib_addr, 0) >>> shift) & 3;
+                    break;
+                case 5: // low buffer
+                    this.bg_tile_fetch_buffer = this.fetch_chr_line_low(this.bg_tile_fetch_addr);
+                    break;
+                case 7: // high buffer
+                    this.bg_tile_fetch_buffer = this.fetch_chr_line_high(this.bg_tile_fetch_addr, this.bg_tile_fetch_buffer);
+                    this.bg_fetches[2] = this.bg_tile_fetch_buffer & 0xFF;
+                    this.bg_fetches[3] = (this.bg_tile_fetch_buffer >>> 8);
+                    break;
+            }
+        }
+    }
+
+    // Do evaluation of next line of sprites
+    oam_evaluate_slow(): void {
+        let odd: u32 = this.line_cycle & 1;
+        let eval_y: u32 = this.clock.ppu_y;
+        if (this.line_cycle < 65) {
+            if (this.line_cycle === 1) {
+                for (let n = 0; n < 32; n++) {
+                    this.secondary_OAM[n] = 0xFF;
+                    this.secondary_OAM_sprite_total = 0;
+                    this.secondary_OAM_index = 0;
+                    this.OAM_eval_index = 0;
+                    this.secondary_OAM_lock = false;
+                    this.OAM_eval_done = 0;
+                    this.sprite0_on_next_line = false;
+                }
+            }
+            return;
+        }
+        if (this.line_cycle <= 256) { // and >= 65...
+            if (this.OAM_eval_done) return;
+            if (!odd) {
+                this.OAM_transfer_latch = this.OAM[this.OAM_eval_index];
+                if (!this.secondary_OAM_lock) {
+                    this.secondary_OAM[this.secondary_OAM_index] = this.OAM_transfer_latch;
+                    if ((eval_y >= this.OAM_transfer_latch) && (eval_y < (this.OAM_transfer_latch + this.status.sprite_height))) {
+                        if (this.OAM_eval_index === 0) this.sprite0_on_next_line = true;
+                        this.secondary_OAM[this.secondary_OAM_index + 1] = this.OAM[this.OAM_eval_index + 1];
+                        this.secondary_OAM[this.secondary_OAM_index + 2] = this.OAM[this.OAM_eval_index + 2];
+                        this.secondary_OAM[this.secondary_OAM_index + 3] = this.OAM[this.OAM_eval_index + 3];
+                        this.secondary_OAM_index += 4;
+                        this.secondary_OAM_sprite_total++;
+                        //this.secondary_OAM_lock = this.secondary_OAM_index >= 32;
+                        this.OAM_eval_done |= +(this.secondary_OAM_index >= 32);
+                    }
+                }
+                this.OAM_eval_index += 4;
+                if (this.OAM_eval_index >= 256) {
+                    this.OAM_eval_index = 0;
+                    this.secondary_OAM_lock = true;
+                    this.OAM_eval_done = 1;
+                }
+            }
+            return;
+        }
+
+        if ((this.line_cycle >= 257) && (this.line_cycle <= 320)) { // Sprite tile fetches
+            if (this.line_cycle === 257) { // Do some housekeeping on cycle 257
+                this.secondary_OAM_index = 0;
+                this.secondary_OAM_sprite_index = 0;
+                if (!this.io.sprite_overflow) {
+                    // Perform weird sprite overflow glitch
+                    let n: u32 = 0;
+                    let m: u32 = 0;
+                    let f: u32 = 0;
+                    while (n < 64) {
+                        let e: u32 = this.OAM[(n * 4) + m];
+                        // If value is in range....
+                        if ((eval_y >= e) && (eval_y < (e + this.status.sprite_height))) {
+                            // Set overflow flag if needed
+                            f++;
+                            if (f > 8) {
+                                this.io.sprite_overflow = 1;
+                                break;
+                            }
+                            m = (m + 4) & 0x03;
+                            n++;
+                        }
+                        // Value is not in range...
+                        else {
+                            n++;
+                            m = (m + 4) & 0x03; // Here is the hardware bug. This should be set to 0 instead!
+                        }
+                    }
+                }
+            }
+
+            // Sprite data fetches into shift registers
+            if (this.secondary_OAM_sprite_index >= 8) return;
+            this.sprite0_on_this_line = this.sprite0_on_next_line;
+            let sub_cycle = (this.line_cycle - 257) & 0x07;
+            switch (sub_cycle) {
+                case 0: // Read Y coordinate.  257
+                    let syl: i32 = eval_y - this.secondary_OAM[this.secondary_OAM_index];
+                    if (syl < 0) syl = 0;
+                    if (syl > <i32>(this.status.sprite_height - 1)) syl = this.status.sprite_height - 1;
+                    this.sprite_y_lines[this.secondary_OAM_sprite_index] = syl;
+                    this.secondary_OAM_index++;
+                    break;
+                case 1: // Read tile number 258
+                    this.sprite_pattern_shifters[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index];
+                    this.secondary_OAM_index++;
+                    break;
+                case 2: // Read attributes 259
+                    this.sprite_attribute_latches[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index];
+                    this.secondary_OAM_index++;
+                    break;
+                case 3: // Read X-coordinate 260
+                    this.sprite_x_counters[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index];
+                    this.secondary_OAM_index++;
+                    break;
+                case 4: // Fetch tiles for the shifters 261
+                    let tn = this.sprite_pattern_shifters[this.secondary_OAM_sprite_index];
+                    let sy = this.sprite_y_lines[this.secondary_OAM_sprite_index];
+                    let table = this.io.sprite_pattern_table;
+                    let attr = this.sprite_attribute_latches[this.secondary_OAM_sprite_index];
+                    // Vertical flip....
+                    if (attr & 0x80) sy = (this.status.sprite_height - 1) - sy;
+                    if (this.status.sprite_height === 16) {
+                        table = tn & 1;
+                        tn &= 0xFE;
+                    }
+                    if (sy > 7) {
+                        sy -= 8;
+                        tn += 1;
+                    }
+                    this.sprite_pattern_shifters[this.secondary_OAM_sprite_index] = this.fetch_chr_line(table, tn, sy);
+                    break;
+                case 5:
+                case 6: // 263
+                    break;
+                case 7:
+                    this.secondary_OAM_sprite_index++;
+                    break;
+            }
+        }
+    }
+
+    // Do sprite counters & memory address updates
+    cycle_scanline_addr(): void {
+        if (this.clock.ppu_y < this.clock.timing.bottom_rendered_line) {
+            // Sprites
+            if ((this.line_cycle > 0) && (this.line_cycle < 257)) {
+                this.sprite_x_counters[0]--;
+                this.sprite_x_counters[1]--;
+                this.sprite_x_counters[2]--;
+                this.sprite_x_counters[3]--;
+                this.sprite_x_counters[4]--;
+                this.sprite_x_counters[5]--;
+                this.sprite_x_counters[6]--;
+                this.sprite_x_counters[7]--;
+            }
+        }
+        if (!this.rendering_enabled() || (this.line_cycle === 0)) return;
+        // Cycle # 8, 16,...248, and 328, 336. BUT NOT 0
+        if (((this.line_cycle & 7) == 0) && ((this.line_cycle >= 328) || (this.line_cycle < 256))) {
+            // INCREMENT HORIZONTAL SCROLL IN v
+            if ((this.io.v & 0x1F) == 0x1F) // If X scroll is 31...
+                this.io.v = (this.io.v & 0xFFE0) ^ 0x0400; // clear x scroll to 0 (& FFE0) and swap nametable (^ 0x400)
+            else
+                this.io.v++;  // just increment the X scroll
+            return;
+        }
+        // INCREMENT VERTICAL SCROLL IN v
+        if (this.line_cycle == 256) {
+            if ((this.io.v & 0x7000) !== 0x7000) { // if fine y !== 7
+                this.io.v += 0x1000;               // add 1 to fine y
+            }
+            else {                                   // else it is overflow so
+                this.io.v &= 0x8FFF;                 // clear fine y to 0
+                let y: u32 = (this.io.v & 0x03E0) >>> 5;  // get coarse y
+                if (y == 29) {                      // y overflows 30->0 with vertical nametable swap
+                    y = 0;
+                    this.io.v ^= 0x0800;             // Change vertical nametable
+                } else if (y == 31) {               // y also overflows at 31 but without nametable swap
+                    y = 0;
+                }
+                else                                 // just add to coarse scroll
+                    y += 1;
+                this.io.v = (this.io.v & 0xFC1F) | (y << 5); // put scroll back in
+            }
+            return;
+        }
+        // Cycles 257...320, copy parts of T to V over and over...
+        if ((this.line_cycle >= 257) && (this.line_cycle <= 320)) {
+            this.io.v = (this.io.v & 0xFBE0) | (this.io.t & 0x41F);
+        }
+    }
+
+    cycle_visible(): void {
+        if (!this.rendering_enabled()) {
+            if (this.line_cycle === 340) {
+                this.new_scanline();
+                if (this.clock.ppu_y >= 240) return;
+            }
+            return;
+        }
+
+        if ((this.line_cycle < 1) && (this.clock.ppu_y === 0)) {
+            this.clock.ppu_frame_cycle = 0;
+        }
+        if (this.line_cycle < 1) {
+            // Do nothing on pixel 0
+            return;
+        }
+
+        /*if ((this.line_cycle === 1) && (this.clock.ppu_y === 32)) { // Capture scroll info for display
+            this.dbg.v = this.io.v;
+            this.dbg.t = this.io.t;
+            this.dbg.x = this.io.x;
+            this.dbg.w = this.io.w;
+        }*/
+        //this.scanline_timer.record_split('startup');
+        let sx: i32 = this.line_cycle-1;
+        let sy: i32 = this.clock.ppu_y;
+        let bo: u32 = (sy * 256) + sx;
+        if (this.line_cycle === 340) {
+            this.new_scanline();
+            // Quit out if we've stumbled past the last rendered line
+            if (this.clock.ppu_y >= 240) {
+                return;
+            }
+        }
+        //this.scanline_timer.record_split('startup2');
+
+        this.cycle_scanline_addr();
+        this.oam_evaluate_slow();
+        this.perform_bg_fetches();
+
+        //this.scanline_timer.record_split('maint');
+
+        // Shift out some bits for backgrounds
+        let bg_shift: u32, bg_color: u32 = 0;
+        let bg_has_pixel: bool = false;
+        if (this.io.bg_enable) {
+            bg_shift = (((sx & 7) + this.io.x) & 15) * 2;
+            bg_color = (this.bg_shifter >>> bg_shift) & 3;
+            bg_has_pixel = bg_color !== 0;
+        }
+        let sprite_has_pixel = false;
+        if (bg_has_pixel) {
+            let agb = this.bg_palette_shifter;
+            if (this.io.x + (sx & 0x07) < 8) agb >>>= 2;
+            bg_color = this.CGRAM[bg_color | ((agb & 3) << 2)];
+        }
+        else bg_color = this.CGRAM[0];
+
+        //this.scanline_timer.record_split('bgcolor')
+
+        let sprite_priority = 0;
+        let sprite_color = 0;
+
+        // Check if any sprites need drawing
+        //for (let m = 0; m < 8; m++) {
+        for (let m: u32 = 7; m >= 0; m--) {
+            if ((this.sprite_x_counters[m] >= -8) && (this.sprite_x_counters[m] <= -1) && this.line_cycle < 256) {
+                let s_x_flip: u32 = (this.sprite_attribute_latches[m] & 0x40) >>> 6;
+                let my_color: u32 = 0;
+                if (s_x_flip) {
+                    my_color = (this.sprite_pattern_shifters[m] & 0xC000) >>> 14;
+                    this.sprite_pattern_shifters[m] <<= 2;
+                } else {
+                    my_color = (this.sprite_pattern_shifters[m] & 3);
+                    this.sprite_pattern_shifters[m] >>>= 2;
+                }
+                if (my_color !== 0) {
+                    sprite_has_pixel = true;
+                    my_color |= (this.sprite_attribute_latches[m] & 3) << 2;
+                    sprite_priority = (this.sprite_attribute_latches[m] & 0x20) >>> 5;
+                    sprite_color = this.CGRAM[0x10 + my_color];
+                    if ((!this.io.sprite0_hit) && (this.sprite0_on_this_line) && (m === 0) && bg_has_pixel && (this.line_cycle < 256)) {
+                        this.io.sprite0_hit = 1;
+                    }
+                }
+            }
+        }
+        //this.scanline_timer.record_split('sprite_eval');
+
+        // Decide background or sprite
+        let out_color: u32 = bg_color;
+        if (this.io.sprite_enable) {
+            if (sprite_color !== 0) {
+                if (!bg_has_pixel) {
+                    out_color = sprite_color;
+                } else {
+                    if (!sprite_priority) out_color = sprite_color;
+                    else out_color = bg_color;
+                }
+            }
+        }
+
+        this.output[bo] = out_color;
+    }
+
+    cycle_postrender(): void {
+        // 240, (also 241-260)
+        // LITERALLY DO NOTHING
+        if ((this.clock.ppu_y === this.clock.timing.vblank_start) && (this.line_cycle === 1)) {
+            this.status.nmi_out = 1;
+            this.update_nmi();
+        }
+        if (this.line_cycle === 340) this.new_scanline();
+    }
+
+    // Get tile info into shifters using screen X, Y coordinates
+    cycle_prerender(): void {
+        if ((this.clock.frame_odd) && (this.line_cycle === 0)) this.line_cycle++;
+        if (this.line_cycle === 1) {
+            this.io.sprite0_hit = 0;
+            this.io.sprite_overflow = 0;
+            this.status.nmi_out = 0;
+            this.update_nmi();
+        }
+        if (this.rendering_enabled()) {
+            if (this.line_cycle === 304) {
+                // Reload horizontal scroll
+                this.io.v = (this.io.v & 0x041F) | (this.io.t & 0x7BE0);
+            }
+            //this.oam_evaluate_slow();
+        }
+        if (this.io.sprite_enable && (this.line_cycle >= 257)) {
+            this.oam_evaluate_slow();
+        }
+        if (this.line_cycle === 340) {
+            this.new_scanline();
+        }
+    }
+
+    render_cycle(): void {
+        if (this.clock.ppu_y < this.clock.timing.post_render_ppu_idle) {
+            this.cycle_visible();
+            return;
+        }
+        else if (this.clock.ppu_y < this.clock.timing.ppu_pre_render) {
+            this.cycle_postrender();
+            return;
+        }
+        this.cycle_prerender();
+    }
+
+    cycle(howmany: u32): u32 {
+        for (let i: u32 = 0; i < howmany; i++) {
+            this.line_cycle++;
+            this.clock.ppu_frame_cycle++;
+            this.render_cycle();
+        }
+        return howmany
     }
 
     update_nmi(): void {

@@ -4,6 +4,7 @@ import {NES_clock, NES_bus, NES_VARIANTS} from "./nes_common"
 import {NES_ppu} from "./nes_ppu";
 import {NES_cart} from "./nes_cart";
 import {ricoh2A03} from "./cpu/r2a03";
+import {dbg} from "../../helpers/debug";
 
 export class NES implements systemEmulator {
     cpu: ricoh2A03
@@ -54,7 +55,7 @@ export class NES implements systemEmulator {
         let current_frame: u64 = this.clock.master_frame;
         while (this.clock.master_frame === current_frame) {
             this.finish_scanline();
-            //if (dbg.do_break) break;
+            if (dbg.do_break) break;
         }
 
     }
@@ -76,10 +77,10 @@ export class NES implements systemEmulator {
                 ppu_left -= ppu_step;
                 done += ppu_step;
             }
-            //this.ppu.cycle(done / ppu_step);
+            this.ppu.cycle(done / ppu_step);
             this.clock.ppu_master_clock += done;
             this.cycles_left -= cpu_step;
-            //if (dbg.do_break) break;
+            if (dbg.do_break) break;
         }
     }
 
