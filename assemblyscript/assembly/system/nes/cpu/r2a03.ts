@@ -1,6 +1,7 @@
 import {NES_bus, NES_clock} from "../nes_common";
 import {m6502} from "../../../component/cpu/m6502/m6502";
 import {NES_controllerport} from "./controller_port";
+import {nesm6502_opcodes_decoded} from "./nesm6502_generated_opcodes";
 
 
 
@@ -22,7 +23,7 @@ export class ricoh2A03 {
     controller_port1: NES_controllerport = new NES_controllerport();
     controller_port2: NES_controllerport = new NES_controllerport();
     constructor(clock: NES_clock, bus: NES_bus) {
-        this.cpu = new m6502();
+        this.cpu = new m6502(nesm6502_opcodes_decoded);
         this.bus = bus;
         this.clock = clock;
         this.bus.cpu = this;

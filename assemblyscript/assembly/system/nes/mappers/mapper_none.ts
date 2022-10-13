@@ -84,7 +84,7 @@ export class NES_mapper_none implements NES_mapper {
         this.CHR_ROM.set(cart.CHR_ROM);
         this.PRG_ROM = new Uint8Array(cart.PRG_ROM.byteLength);
         this.PRG_ROM.set(cart.PRG_ROM);
-        this.PRG_ROM_size = cart.header.PRG_ROM_size;
+        this.PRG_ROM_size = cart.header.prg_rom_size;
 
         this.ppu_mirror = cart.header.mirroring;
     }

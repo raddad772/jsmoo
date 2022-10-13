@@ -16,5 +16,6 @@ export class NES_controllerport {
 
 	latch(what: u32): u32 {
 		if (this.device) return this.device.latch(what);
+		return 0;
 	}
 }
