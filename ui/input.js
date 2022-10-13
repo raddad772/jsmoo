@@ -222,9 +222,9 @@ class emu_input_t {
     constructor() {
         this.config = null;
         this.el = document.getElementById('emubuttonsforconfig');
-        for (let i in DEFAULT_EMU_INPUT) {
+        /*for (let i in DEFAULT_EMU_INPUT) {
             console.log(i);
-        }
+        }*/
         this.binding = {};
 
         this.queued_inputs = [];

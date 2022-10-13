@@ -10,12 +10,12 @@ export class NES_controllerport {
 	}
 
 	data(): u32 {
-		if (this.device) return this.device.data() & 3;
+		if (this.device !== null) return this.device!.data() & 3;
 		return 0;
 	}
 
 	latch(what: u32): u32 {
-		if (this.device) return this.device.latch(what);
+		if (this.device !== null) return this.device!.latch(what);
 		return 0;
 	}
 }

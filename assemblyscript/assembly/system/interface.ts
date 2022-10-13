@@ -15,20 +15,13 @@ export enum SCREENVAR_FIELDS {
     current_x = 2
 }
 
-class machine_description_technical {
+export class machine_description {
+    name: String = '';
     timing: MD_TIMING = MD_TIMING.frame
     standard: MD_STANDARD = MD_STANDARD.NSTC
     fps: u32 = 60
     x_resolution: u32 = 256
     y_resolution: u32 = 256
-}
-
-export class machine_description {
-    name: String = '';
-    technical: machine_description_technical
-    constructor() {
-        this.technical = new machine_description_technical();
-    }
 }
 
 export interface systemEmulator {
@@ -41,8 +34,9 @@ export interface systemEmulator {
     update_inputs(): void;
     step_master(cycles: u32): void;
     reset(): void;
-    load_ROM(): void;
+    load_ROM(what: Uint8Array): void;
     load_BIOS(): void;
+    killall(): void;
 }
 
 export interface systemEmulatorStandardClock {

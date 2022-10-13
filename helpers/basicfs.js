@@ -137,7 +137,7 @@ class basic_fs {
     }
 
     async read_file(path) {
-        console.log('READING', path);
+        //console.log('READING', path);
         return await localforage.getItem(path);
     }
 }

@@ -12,8 +12,9 @@ const SPECTRUM_STR = 'spectrum';
 const GENERICZ80_STR = 'genericz80'
 
 //const DEFAULT_SYSTEM = GENERICZ80_STR;
-const DEFAULT_SYSTEM = SPECTRUM_STR;
+//const DEFAULT_SYSTEM = SPECTRUM_STR;
 //const DEFAULT_SYSTEM = GG_STR;
+const DEFAULT_SYSTEM = NES_STR;
 //const DEFAULT_SYSTEM = SMS_STR;
 //const DEFAULT_SYSTEM = SMS_STR;
 
@@ -23,10 +24,12 @@ class global_player_t {
 		this.playing = false;
 		this.system = null;
 		this.timing_thread = new timing_thread_t(this.on_timing_message.bind(this));
+		this.player_thread = new threaded_emulator_t(this.on_player_message.bind(this));
 		this.ready = false;
 		this.tech_specs = {};
 		this.queued_save_state = -1;
 		this.queued_load_state = -1;
+
 		/**
 		 * @type {bios_manager_t}
 		 */
@@ -42,8 +45,8 @@ class global_player_t {
 
 	async onload() {
 		this.bios_manager = new bios_manager_t();
-		console.log('CALLING BIOS MANAGER LOAD');
 		await this.bios_manager.onload();
+		this.player_thread.onload();
 	}
 
 	save_state(num) {
@@ -160,17 +163,32 @@ class global_player_t {
 		this.queued_load_state = -1;
 	}
 
+	on_player_message(e) {
+		console.log('MESSAGE FROM PLAYER THREAD', e);
+	}
+
+	run_frame() {
+		//this.system.run_frame();
+		this.player_thread.send_request_frame();
+	}
+
+	present() {
+		//this.system.present();
+	}
+
 	on_timing_message(e) {
 		switch(e.kind) {
 			case timing_messages.frame_request:
 				if (this.playing) {
-					this.system.run_frame();
+					this.run_frame();
+					//this.system.run_frame();
 					this.timing_thread.frame_done();
 					if (this.queued_save_state !== -1)
 						this.do_save_state();
 					if (this.queued_load_state !== -1)
 						this.do_load_state();
-					this.system.present();
+					//this.system.present();
+					this.present();
 					this.update_status();
 					input_config.emu_input.between_frames();
 				}

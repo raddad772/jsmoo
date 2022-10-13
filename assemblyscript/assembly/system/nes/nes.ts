@@ -29,12 +29,16 @@ export class NES implements systemEmulator {
     get_description(): machine_description {
         let md = new machine_description();
         md.name = 'Nintendo Entertainment System';
-        md.technical.fps = 60;
-        md.technical.timing = MD_TIMING.frame;
-        md.technical.standard = MD_STANDARD.NSTC;
-        md.technical.x_resolution = 256;
-        md.technical.y_resolution = 224;
+        md.fps = 60;
+        md.timing = MD_TIMING.frame;
+        md.standard = MD_STANDARD.NSTC;
+        md.x_resolution = 256;
+        md.y_resolution = 224;
         return md;
+    }
+
+    killall(): void {
+
     }
 
     get_screenvars(): Uint32Array {
@@ -47,7 +51,7 @@ export class NES implements systemEmulator {
     }
 
     finish_frame(): void {
-        let current_frame: u32 = this.clock.master_frame;
+        let current_frame: u64 = this.clock.master_frame;
         while (this.clock.master_frame === current_frame) {
             this.finish_scanline();
             //if (dbg.do_break) break;
@@ -94,7 +98,8 @@ export class NES implements systemEmulator {
     load_BIOS(): void {
     }
 
-    load_ROM(): void {
-
+    load_ROM(what: Uint8Array): void {
+        this.cart.load_cart_from_RAM(what);
+        this.reset();
     }
 }

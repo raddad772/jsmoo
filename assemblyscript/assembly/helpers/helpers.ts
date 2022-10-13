@@ -13,7 +13,7 @@ export function mksigned16(what: u32): i32 {
 
 export function hex2(val: u32): String {
     let outstr: String = val.toString(16);
-    if (outstr.length === 1) outstr = '0' + outstr;
+    if (outstr.length == 1) outstr = '0' + outstr;
     return outstr.toUpperCase();
 }
 
