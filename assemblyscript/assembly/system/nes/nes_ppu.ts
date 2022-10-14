@@ -12,7 +12,7 @@ class RGBval {
     }
 }
 
-export const NES_palette = new Uint32Array(64);
+export const NES_palette = new StaticArray<u32>(64);
 function NES_get_RGB(i: u32): RGBval {
     switch(i) {
         case 0: return new RGBval(0x54, 0x54, 0x54);
@@ -125,8 +125,8 @@ export class NES_ppu {
     variant: NES_VARIANTS
 
     line_cycle: i32 = 0;
-    OAM: Uint8Array = new Uint8Array(256);
-    secondary_OAM: Uint8Array = new Uint8Array(32);
+    OAM: StaticArray<u32> = new StaticArray<u32>(256);
+    secondary_OAM: StaticArray<u32> = new StaticArray<u32>(32);
     secondary_OAM_index: u32 = 0;
     secondary_OAM_sprite_index: u32 = 0;
     secondary_OAM_sprite_total: u32 = 0;
@@ -139,18 +139,21 @@ export class NES_ppu {
     sprite0_on_next_line: bool = false;
     sprite0_on_this_line: bool = false;
 
-    CGRAM: Uint8Array = new Uint8Array(32);
-    output: Uint8Array = new Uint8Array(256*256);
+    CGRAM: StaticArray<u32> = new StaticArray<u32>(32);
+    output: StaticArray<u8> = new StaticArray<u8>(256*256);
 
-    bg_fetches: Uint32Array = new Uint32Array(4);
+    bg_fetches0: u32 = 0
+    bg_fetches1: u32 = 0
+    bg_fetches2: u32 = 0
+    bg_fetches3: u32 = 0
     bg_shifter: u32 = 0;
     bg_palette_shifter: u32 = 0;
     bg_tile_fetch_addr: u32 = 0;
     bg_tile_fetch_buffer: u32 = 0;
-    sprite_pattern_shifters: Uint32Array = new Uint32Array(8);
-    sprite_attribute_latches: Uint32Array = new Uint32Array(8);
-    sprite_x_counters: Int32Array = new Int32Array(8);
-    sprite_y_lines: Int32Array = new Int32Array(8);
+    sprite_pattern_shifters: StaticArray<u32> = new StaticArray<u32>(8);
+    sprite_attribute_latches: StaticArray<u32> = new StaticArray<u32>(8);
+    sprite_x_counters: StaticArray<i32> = new StaticArray<i32>(8);
+    sprite_y_lines: StaticArray<i32> = new StaticArray<i32>(8);
 
     io: NES_PPU_io = new NES_PPU_io();
     status: NES_PPU_status = new NES_PPU_status();
@@ -179,7 +182,7 @@ export class NES_ppu {
             for (let rx = 0; rx < 256; rx++) {
                 //let ap: usize = (y * 256) + (rx - LEFT_OVERSCAN);
                 let ap: usize = (y * 256) + rx;
-                store<u32>(ab+(ap*4), NES_palette[this.output[<u32>ap]]);
+                store<u32>(ab+(ap*4), unchecked(NES_palette[unchecked(this.output[<u32>ap])]));
             }
         }
     }
@@ -191,12 +194,12 @@ export class NES_ppu {
 
     write_cgram(addr: u32, val: u32): void {
         if ((addr & 0x13) === 0x10) addr &= 0xEF;
-        this.CGRAM[addr & 0x1F] = val & 0x3F;
+        unchecked(this.CGRAM[addr & 0x1F] = val & 0x3F);
     }
 
     read_cgram(addr: u32): u32 {
       if((addr & 0x13) === 0x10) addr &= 0xEF;
-      let data: u32 = this.CGRAM[addr & 0x1F];
+      let data: u32 = unchecked(this.CGRAM[addr & 0x1F]);
       if(this.io.greyscale) data &= 0x30;
       return data;
     }
@@ -275,28 +278,28 @@ export class NES_ppu {
             // Do memory accesses and shifters
             switch (this.line_cycle & 7) {
                 case 1: // nametable, tile #
-                    this.bg_fetches[0] = this.bus.PPU_read(0x2000 | (this.io.v & 0xFFF), 0);
-                    this.bg_tile_fetch_addr = this.fetch_chr_addr(this.io.bg_pattern_table, this.bg_fetches[0], in_tile_y);
+                    this.bg_fetches0 = this.bus.PPU_read(0x2000 | (this.io.v & 0xFFF), 0);
+                    this.bg_tile_fetch_addr = this.fetch_chr_addr(this.io.bg_pattern_table, this.bg_fetches0, in_tile_y);
                     this.bg_tile_fetch_buffer = 0;
                     // Reload shifters if needed
                     if (this.line_cycle !== 1) { // reload shifter at interval #9 9....257
-                        this.bg_shifter = (this.bg_shifter >>> 16) | (this.bg_fetches[2] << 16) | (this.bg_fetches[3] << 24);
-                        this.bg_palette_shifter = ((this.bg_palette_shifter << 2) | this.bg_fetches[1]) & 0x0F; //(this.bg_palette_shifter >>> 8) | (this.bg_fetches[1] << 8);
+                        this.bg_shifter = (this.bg_shifter >>> 16) | (this.bg_fetches2 << 16) | (this.bg_fetches3 << 24);
+                        this.bg_palette_shifter = ((this.bg_palette_shifter << 2) | this.bg_fetches1) & 0x0F; //(this.bg_palette_shifter >>> 8) | (this.bg_fetches1 << 8);
                     }
-                    break;
+                    return;
                 case 3: // attribute table
-                    let attrib_addr = 0x23C0 | (this.io.v & 0x0C00) | ((this.io.v >>> 4) & 0x38) | ((this.io.v >>> 2) & 7);
-                    let shift = ((this.io.v >>> 4) & 0x04) | (this.io.v & 0x02);
-                    this.bg_fetches[1] = (this.bus.PPU_read(attrib_addr, 0) >>> shift) & 3;
-                    break;
+                    let attrib_addr: u32 = 0x23C0 | (this.io.v & 0x0C00) | ((this.io.v >>> 4) & 0x38) | ((this.io.v >>> 2) & 7);
+                    let shift: u32 = ((this.io.v >>> 4) & 0x04) | (this.io.v & 0x02);
+                    this.bg_fetches1 = (this.bus.PPU_read(attrib_addr, 0) >>> shift) & 3;
+                    return;
                 case 5: // low buffer
                     this.bg_tile_fetch_buffer = this.fetch_chr_line_low(this.bg_tile_fetch_addr);
-                    break;
+                    return;
                 case 7: // high buffer
                     this.bg_tile_fetch_buffer = this.fetch_chr_line_high(this.bg_tile_fetch_addr, this.bg_tile_fetch_buffer);
-                    this.bg_fetches[2] = this.bg_tile_fetch_buffer & 0xFF;
-                    this.bg_fetches[3] = (this.bg_tile_fetch_buffer >>> 8);
-                    break;
+                    this.bg_fetches2 = this.bg_tile_fetch_buffer & 0xFF;
+                    this.bg_fetches3 = this.bg_tile_fetch_buffer >>> 8;
+                    return;
             }
         }
     }
@@ -308,7 +311,7 @@ export class NES_ppu {
         if (this.line_cycle < 65) {
             if (this.line_cycle === 1) {
                 for (let n = 0; n < 32; n++) {
-                    this.secondary_OAM[n] = 0xFF;
+                    unchecked(this.secondary_OAM[n] = 0xFF);
                     this.secondary_OAM_sprite_total = 0;
                     this.secondary_OAM_index = 0;
                     this.OAM_eval_index = 0;
@@ -322,14 +325,14 @@ export class NES_ppu {
         if (this.line_cycle <= 256) { // and >= 65...
             if (this.OAM_eval_done) return;
             if (!odd) {
-                this.OAM_transfer_latch = this.OAM[this.OAM_eval_index];
+                this.OAM_transfer_latch = unchecked(this.OAM[this.OAM_eval_index]);
                 if (!this.secondary_OAM_lock) {
-                    this.secondary_OAM[this.secondary_OAM_index] = this.OAM_transfer_latch;
+                    unchecked(this.secondary_OAM[this.secondary_OAM_index] = this.OAM_transfer_latch);
                     if ((eval_y >= this.OAM_transfer_latch) && (eval_y < (this.OAM_transfer_latch + this.status.sprite_height))) {
                         if (this.OAM_eval_index === 0) this.sprite0_on_next_line = true;
-                        this.secondary_OAM[this.secondary_OAM_index + 1] = this.OAM[this.OAM_eval_index + 1];
-                        this.secondary_OAM[this.secondary_OAM_index + 2] = this.OAM[this.OAM_eval_index + 2];
-                        this.secondary_OAM[this.secondary_OAM_index + 3] = this.OAM[this.OAM_eval_index + 3];
+                        unchecked(this.secondary_OAM[this.secondary_OAM_index + 1] = this.OAM[this.OAM_eval_index + 1]);
+                        unchecked(this.secondary_OAM[this.secondary_OAM_index + 2] = this.OAM[this.OAM_eval_index + 2]);
+                        unchecked(this.secondary_OAM[this.secondary_OAM_index + 3] = this.OAM[this.OAM_eval_index + 3]);
                         this.secondary_OAM_index += 4;
                         this.secondary_OAM_sprite_total++;
                         //this.secondary_OAM_lock = this.secondary_OAM_index >= 32;
@@ -356,7 +359,7 @@ export class NES_ppu {
                     let m: u32 = 0;
                     let f: u32 = 0;
                     while (n < 64) {
-                        let e: u32 = this.OAM[(n * 4) + m];
+                        let e: u32 = unchecked(this.OAM[(n * 4) + m]);
                         // If value is in range....
                         if ((eval_y >= e) && (eval_y < (e + this.status.sprite_height))) {
                             // Set overflow flag if needed
@@ -383,29 +386,29 @@ export class NES_ppu {
             let sub_cycle = (this.line_cycle - 257) & 0x07;
             switch (sub_cycle) {
                 case 0: // Read Y coordinate.  257
-                    let syl: i32 = eval_y - this.secondary_OAM[this.secondary_OAM_index];
+                    let syl: i32 = eval_y - unchecked(this.secondary_OAM[this.secondary_OAM_index]);
                     if (syl < 0) syl = 0;
                     if (syl > <i32>(this.status.sprite_height - 1)) syl = this.status.sprite_height - 1;
-                    this.sprite_y_lines[this.secondary_OAM_sprite_index] = syl;
+                    unchecked(this.sprite_y_lines[this.secondary_OAM_sprite_index] = syl);
                     this.secondary_OAM_index++;
                     break;
                 case 1: // Read tile number 258
-                    this.sprite_pattern_shifters[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index];
+                    unchecked(this.sprite_pattern_shifters[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index]);
                     this.secondary_OAM_index++;
                     break;
                 case 2: // Read attributes 259
-                    this.sprite_attribute_latches[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index];
+                    unchecked(this.sprite_attribute_latches[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index]);
                     this.secondary_OAM_index++;
                     break;
                 case 3: // Read X-coordinate 260
-                    this.sprite_x_counters[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index];
+                    unchecked(this.sprite_x_counters[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index]);
                     this.secondary_OAM_index++;
                     break;
                 case 4: // Fetch tiles for the shifters 261
-                    let tn = this.sprite_pattern_shifters[this.secondary_OAM_sprite_index];
-                    let sy = this.sprite_y_lines[this.secondary_OAM_sprite_index];
-                    let table = this.io.sprite_pattern_table;
-                    let attr = this.sprite_attribute_latches[this.secondary_OAM_sprite_index];
+                    let tn: u32 = unchecked(this.sprite_pattern_shifters[this.secondary_OAM_sprite_index]);
+                    let sy: i32 = unchecked(this.sprite_y_lines[this.secondary_OAM_sprite_index]);
+                    let table: u32 = this.io.sprite_pattern_table;
+                    let attr: u32 = unchecked(this.sprite_attribute_latches[this.secondary_OAM_sprite_index]);
                     // Vertical flip....
                     if (attr & 0x80) sy = (this.status.sprite_height - 1) - sy;
                     if (this.status.sprite_height === 16) {
@@ -416,10 +419,7 @@ export class NES_ppu {
                         sy -= 8;
                         tn += 1;
                     }
-                    this.sprite_pattern_shifters[this.secondary_OAM_sprite_index] = this.fetch_chr_line(table, tn, sy);
-                    break;
-                case 5:
-                case 6: // 263
+                    unchecked(this.sprite_pattern_shifters[this.secondary_OAM_sprite_index] = this.fetch_chr_line(table, tn, sy));
                     break;
                 case 7:
                     this.secondary_OAM_sprite_index++;
@@ -433,14 +433,14 @@ export class NES_ppu {
         if (this.clock.ppu_y < this.clock.timing.bottom_rendered_line) {
             // Sprites
             if ((this.line_cycle > 0) && (this.line_cycle < 257)) {
-                this.sprite_x_counters[0]--;
-                this.sprite_x_counters[1]--;
-                this.sprite_x_counters[2]--;
-                this.sprite_x_counters[3]--;
-                this.sprite_x_counters[4]--;
-                this.sprite_x_counters[5]--;
-                this.sprite_x_counters[6]--;
-                this.sprite_x_counters[7]--;
+                unchecked(this.sprite_x_counters[0]--);
+                unchecked(this.sprite_x_counters[1]--);
+                unchecked(this.sprite_x_counters[2]--);
+                unchecked(this.sprite_x_counters[3]--);
+                unchecked(this.sprite_x_counters[4]--);
+                unchecked(this.sprite_x_counters[5]--);
+                unchecked(this.sprite_x_counters[6]--);
+                unchecked(this.sprite_x_counters[7]--);
             }
         }
         if (!this.rendering_enabled() || (this.line_cycle === 0)) return;
@@ -481,14 +481,12 @@ export class NES_ppu {
 
     cycle_visible(): void {
         if (!this.rendering_enabled()) {
-            if (this.line_cycle === 340) {
+            if (this.line_cycle === 340)
                 this.new_scanline();
-                if (this.clock.ppu_y >= 240) return;
-            }
             return;
         }
 
-        if ((this.line_cycle < 1) && (this.clock.ppu_y === 0)) {
+        if ((this.line_cycle < 1) && (this.clock.ppu_y == 0)) {
             this.clock.ppu_frame_cycle = 0;
         }
         if (this.line_cycle < 1) {
@@ -509,9 +507,7 @@ export class NES_ppu {
         if (this.line_cycle === 340) {
             this.new_scanline();
             // Quit out if we've stumbled past the last rendered line
-            if (this.clock.ppu_y >= 240) {
-                return;
-            }
+            if (this.clock.ppu_y >= 240) return;
         }
         //this.scanline_timer.record_split('startup2');
 
@@ -522,20 +518,20 @@ export class NES_ppu {
         //this.scanline_timer.record_split('maint');
 
         // Shift out some bits for backgrounds
-        let bg_shift: u32, bg_color: u32 = 0;
+        let bg_shift: u32 = 0, bg_color: u32 = 0;
         let bg_has_pixel: bool = false;
         if (this.io.bg_enable) {
             bg_shift = (((sx & 7) + this.io.x) & 15) * 2;
             bg_color = (this.bg_shifter >>> bg_shift) & 3;
             bg_has_pixel = bg_color !== 0;
         }
-        let sprite_has_pixel = false;
+        let sprite_has_pixel: bool = false;
         if (bg_has_pixel) {
             let agb = this.bg_palette_shifter;
             if (this.io.x + (sx & 0x07) < 8) agb >>>= 2;
-            bg_color = this.CGRAM[bg_color | ((agb & 3) << 2)];
+            bg_color = unchecked(this.CGRAM[bg_color | ((agb & 3) << 2)]);
         }
-        else bg_color = this.CGRAM[0];
+        else bg_color = unchecked(this.CGRAM[0]);
 
         //this.scanline_timer.record_split('bgcolor')
 
@@ -545,27 +541,25 @@ export class NES_ppu {
         // Check if any sprites need drawing
         //for (let m = 0; m < 8; m++) {
         for (let m: i32 = 7; m >= 0; m--) {
-            //console.log(m.toString());
-            if ((m < 0) || (m > 7)) {
-                console.log('HEY! ' + m.toString());
-            }
-            let sxc: i32 = this.sprite_x_counters[m];
+            let sxc: i32 = unchecked(this.sprite_x_counters[m]);
             if ((sxc >= -8) &&
                 (sxc <= -1) &&
                 (this.line_cycle < 256)) {
-                let s_x_flip: u32 = (this.sprite_attribute_latches[m] & 0x40) >>> 6;
+                let sal: u32 = unchecked(this.sprite_attribute_latches[m]);
+                let sps: u32 = unchecked(this.sprite_pattern_shifters[m]);
+                let s_x_flip: u32 = (sal & 0x40) >>> 6;
                 let my_color: u32 = 0;
                 if (s_x_flip) {
-                    my_color = (this.sprite_pattern_shifters[m] & 0xC000) >>> 14;
-                    this.sprite_pattern_shifters[m] <<= 2;
+                    my_color = (sps & 0xC000) >>> 14;
+                    unchecked(this.sprite_pattern_shifters[m] = sps << 2);
                 } else {
-                    my_color = (this.sprite_pattern_shifters[m] & 3);
-                    this.sprite_pattern_shifters[m] >>>= 2;
+                    my_color = sps & 3;
+                    unchecked(this.sprite_pattern_shifters[m] = sps >>> 2);
                 }
                 if (my_color !== 0) {
                     sprite_has_pixel = true;
-                    my_color |= (this.sprite_attribute_latches[m] & 3) << 2;
-                    sprite_priority = (this.sprite_attribute_latches[m] & 0x20) >>> 5;
+                    my_color |= (sal & 3) << 2;
+                    sprite_priority = (sal & 0x20) >>> 5;
                     sprite_color = this.CGRAM[0x10 + my_color];
                     if ((!this.io.sprite0_hit) && (this.sprite0_on_this_line) && (m === 0) && bg_has_pixel && (this.line_cycle < 256)) {
                         this.io.sprite0_hit = 1;
@@ -588,7 +582,7 @@ export class NES_ppu {
             }
         }
 
-        this.output[bo] = out_color;
+        unchecked(this.output[bo] = <u8>out_color);
     }
 
     cycle_postrender(): void {
@@ -668,7 +662,7 @@ export class NES_ppu {
                 }
                 break;
             case 0x2004: // OAMDATA
-                output = this.OAM[this.io.OAM_addr];
+                output = unchecked(this.OAM[this.io.OAM_addr]);
                 // reads do not increment counter
                 break;
             case 0x2007:
