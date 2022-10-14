@@ -22,6 +22,7 @@ class threaded_emulator_t {
     constructor(onmsg) {
         console.log('EMULATOR WORKER THREAD CONSTRUCTOR!');
         this.thread = null;
+        this.system_kind = '';
         this.parent_msg = onmsg;
         this.framebuffer_sab = new SharedArrayBuffer(256*256*4);
         this.framebuffer = new Uint8Array(this.framebuffer_sab);
@@ -49,6 +50,7 @@ class threaded_emulator_t {
 
     send_set_system(kind) {
         console.log('MT: SET SYSTEM')
+        this.system_kind = kind;
         this.thread.postMessage({kind: emulator_messages.change_system, kind_str: kind});
     }
 
@@ -56,11 +58,12 @@ class threaded_emulator_t {
      * @param {Uint8Array} ROM
      */
     send_load_ROM(ROM) {
+        this.send_set_system(this.system_kind)
         this.thread.postMessage({kind: emulator_messages.load_rom, ROM: ROM});
     }
 
     send_request_frame() {
-        console.log('MT: REQUEST FRAME');
+        //console.log('MT: REQUEST FRAME');
         this.thread.postMessage({kind: emulator_messages.frame_requested});
     }
 
@@ -75,19 +78,15 @@ class threaded_emulator_t {
     present(canvas) {
         canvas.set_size(this.tech_specs.x_resolution, this.tech_specs.y_resolution);
         let imgdata = canvas.get_imgdata();
-        console.log('DOING THE PRESENT');
-        console.log('FBI:', this.framebuffer[0].toString(16), this.framebuffer[1].toString(16), this.framebuffer[2].toString(16), this.framebuffer[3].toString(16));
 		for (let y = 0; y < this.tech_specs.y_resolution; y++) {
 			for (let x = 0; x < this.tech_specs.x_resolution; x++) {
 				let po = ((y * this.tech_specs.x_resolution) + x) * 4;
                 imgdata.data[po] = this.framebuffer[po];
                 imgdata.data[po+1] = this.framebuffer[po+1];
                 imgdata.data[po+2] = this.framebuffer[po+2];
-                //imgdata.data[po+3] = this.framebuffer[po+3];
-                imgdata.data[po+3] = 255;
+                imgdata.data[po+3] = this.framebuffer[po+3];
 			}
 		}
         canvas.put_imgdata(imgdata);
-
     }
 }

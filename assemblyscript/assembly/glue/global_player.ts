@@ -23,7 +23,7 @@ export class global_player_t {
     ready: bool = false;
     tech_specs: machine_description = new machine_description();
     bios_manager: bios_manager_t
-    output_buffer: usize = heap.alloc(256*240*4);
+    output_buffer: usize = heap.alloc(256*256*4);
 
     constructor() {
         this.bios_manager = new bios_manager_t();

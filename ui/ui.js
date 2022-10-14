@@ -428,8 +428,8 @@ function click_play() {
 
 let animations_called = 0;
 function do_fps() {
-	let fps = global_player.system.clock.frames_since_restart - fps_old_frames;
-	fps_old_frames = global_player.system.clock.frames_since_restart;
+	let fps = global_player.frame_present - fps_old_frames;
+	fps_old_frames = global_player.frame_present;
 	//let fps = animations_called - fps_old_frames;
 	//fps_old_frames = animations_called;
 	ui_el.fps.value = fps;

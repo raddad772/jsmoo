@@ -29,6 +29,7 @@ class global_player_t {
 		this.tech_specs = {};
 		this.queued_save_state = -1;
 		this.queued_load_state = -1;
+		this.frame_present = 0;
 
 		/**
 		 * @type {bios_manager_t}
@@ -184,6 +185,7 @@ class global_player_t {
 	}
 
 	present() {
+		this.frame_present++;
 		this.player_thread.present(this.canvas_manager)
 	}
 
