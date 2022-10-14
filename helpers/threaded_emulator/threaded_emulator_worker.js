@@ -6,7 +6,7 @@ import {
     gp_set_system,
     new_global_player,
     memory}
-    from "/assemblyscript/build/release.js";
+    from "/assemblyscript/build/debug.js";
 //importScripts('/assemblyscript/build/debug.js');
 
 
