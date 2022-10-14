@@ -1,3 +1,4 @@
+"use strict";
 import {
     gp_load_ROM_from_RAM,
     gp_run_frame,
@@ -6,6 +7,7 @@ import {
     new_global_player,
     memory}
     from "/assemblyscript/build/debug.js";
+//importScripts('/assemblyscript/build/debug.js');
 
 
 const emulator_messages = Object.freeze({
@@ -34,6 +36,7 @@ class threaded_emulator_worker_t {
         this.shared_counters = null;
         this.frames_since_reset = 0;
         this.out_ptr = 0;
+        this.tech_specs = null;
         this.global_player = null;
     }
 
@@ -43,11 +46,11 @@ class threaded_emulator_worker_t {
                 console.log('ET: startup');
                 this.framebuffer_sab = e.framebuffer_sab;
                 this.general_sab = e.general_sab;
-                this.framebuffer = new Uint8Array(this.framebuffer_sab);
+                this.framebuffer = new Uint32Array(this.framebuffer_sab);
                 this.global_player = new_global_player();
                 return;
             case emulator_messages.load_rom:
-                console.log('ET: passing ROM...');
+                console.log('ET: passing ROM...', this.global_player, e);
                 gp_load_ROM_from_RAM(this.global_player, e.ROM);
                 return;
             case emulator_messages.frame_requested:
@@ -64,16 +67,20 @@ class threaded_emulator_worker_t {
         }
     }
 
-    run_frame(): void {
+    run_frame() {
         gp_run_frame(this.global_player);
-        console.log(memory);
+        let rd = new Uint32Array(memory.buffer);
+        let to_copy = Math.ceil((this.tech_specs.x_resolution * this.tech_specs.y_resolution) / 4) * 4;
+        //console.log('H4!', rd[this.out_ptr >>> 2].toString(16));
+        this.framebuffer.set(rd.slice(this.out_ptr >>> 2, (this.out_ptr>>>2)+to_copy));
+        console.log('FB0', this.framebuffer[0].toString(16));
     }
 
     do_set_system(kind) {
         gp_set_system(this.global_player, kind);
-        let r = gp_get_specs(this.global_player);
-        this.out_ptr = r.out_ptr;
-        this.send_specs(r)
+        this.tech_specs = gp_get_specs(this.global_player);
+        this.out_ptr = this.tech_specs.out_ptr;
+        this.send_specs(this.tech_specs)
     }
 
     send_specs(specs) {
