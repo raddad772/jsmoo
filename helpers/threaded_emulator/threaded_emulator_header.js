@@ -24,7 +24,9 @@ class threaded_emulator_t {
         this.thread = null;
         this.parent_msg = onmsg;
         this.framebuffer_sab = new SharedArrayBuffer(256*256*4);
+        this.framebuffer = new Uint8Array(this.framebuffer_sab);
         this.general_sab = new SharedArrayBuffer(64);
+        this.tech_specs = null;
 
         this.parent_msg = onmsg;
     }
@@ -39,6 +41,9 @@ class threaded_emulator_t {
 
     on_child_message(ev) {
         let e = ev.data;
+        if (e.kind === emulator_messages.specs) {
+            this.tech_specs = e.specs;
+        }
         this.parent_msg(e);
     }
 
@@ -62,5 +67,27 @@ class threaded_emulator_t {
     send_startup_message() {
         console.log('POSTING STARTUP MESSAGE', this.thread);
         this.thread.postMessage({kind: emulator_messages.startup, framebuffer_sab: this.framebuffer_sab, general_sab: this.general_sab});
+    }
+
+    /**
+     * @param {canvas_manager_t} canvas
+     */
+    present(canvas) {
+        canvas.set_size(this.tech_specs.x_resolution, this.tech_specs.y_resolution);
+        let imgdata = canvas.get_imgdata();
+        console.log('DOING THE PRESENT');
+        console.log('FBI:', this.framebuffer[0].toString(16), this.framebuffer[1].toString(16), this.framebuffer[2].toString(16), this.framebuffer[3].toString(16));
+		for (let y = 0; y < this.tech_specs.y_resolution; y++) {
+			for (let x = 0; x < this.tech_specs.x_resolution; x++) {
+				let po = ((y * this.tech_specs.x_resolution) + x) * 4;
+                imgdata.data[po] = this.framebuffer[po];
+                imgdata.data[po+1] = this.framebuffer[po+1];
+                imgdata.data[po+2] = this.framebuffer[po+2];
+                //imgdata.data[po+3] = this.framebuffer[po+3];
+                imgdata.data[po+3] = 255;
+			}
+		}
+        canvas.put_imgdata(imgdata);
+
     }
 }

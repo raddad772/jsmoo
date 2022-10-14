@@ -84,7 +84,8 @@ function NES_get_RGB(i: u32): RGBval {
 }
 for (let i = 0; i < 64; i++) {
     let r: RGBval = NES_get_RGB(i);
-    NES_palette[i] = (r.r << 24) | (r.g << 16) | (r.b << 8) | 0xFF;
+    //NES_palette[i] = (r.r << 24) | (r.g << 16) | (r.b << 8) | 0xFF;
+    NES_palette[i] = 0xFF000000 | (r.b << 16) | (r.g << 8) | r.r;
 }
 
 class NES_PPU_io {
@@ -139,7 +140,7 @@ export class NES_ppu {
     sprite0_on_this_line: bool = false;
 
     CGRAM: Uint8Array = new Uint8Array(32);
-    output: Uint8Array = new Uint8Array(256*240);
+    output: Uint8Array = new Uint8Array(256*256);
 
     bg_fetches: Uint32Array = new Uint32Array(4);
     bg_shifter: u32 = 0;
@@ -169,16 +170,15 @@ export class NES_ppu {
         let BOTTOM_OVERSCAN: u32 = 240;
         let LEFT_OVERSCAN: u32 = 8;
         let RIGHT_OVERSCAN: u32 = 248;
-        let out_width: u32 = 256 - (LEFT_OVERSCAN + (256 - RIGHT_OVERSCAN));
-        let out_height: u32 = 240 - (TOP_OVERSCAN + (240 - BOTTOM_OVERSCAN));
+        /*let out_width: u32 = 256 - (LEFT_OVERSCAN + (256 - RIGHT_OVERSCAN));
+        let out_height: u32 = 240 - (TOP_OVERSCAN + (240 - BOTTOM_OVERSCAN));*/
         for (let ry: u32 = TOP_OVERSCAN; ry < BOTTOM_OVERSCAN; ry++) {
             let y: u32 = ry - TOP_OVERSCAN;
             for (let rx: u32 = LEFT_OVERSCAN; rx < RIGHT_OVERSCAN; rx++) {
                 let ap: usize = (y * 256) + (rx - LEFT_OVERSCAN);
-                store<u32>(ab+ap, NES_palette[this.output[<u32>ap]]);
+                store<u32>(ab+(ap*4), NES_palette[this.output[<u32>ap]]);
             }
         }
-        console.log('NES PRESENT DONE!');
     }
 
     reset(): void {
@@ -541,8 +541,15 @@ export class NES_ppu {
 
         // Check if any sprites need drawing
         //for (let m = 0; m < 8; m++) {
-        for (let m: u32 = 7; m >= 0; m--) {
-            if ((this.sprite_x_counters[m] >= -8) && (this.sprite_x_counters[m] <= -1) && this.line_cycle < 256) {
+        for (let m: i32 = 7; m >= 0; m--) {
+            //console.log(m.toString());
+            if ((m < 0) || (m > 7)) {
+                console.log('HEY! ' + m.toString());
+            }
+            let sxc: i32 = this.sprite_x_counters[m];
+            if ((sxc >= -8) &&
+                (sxc <= -1) &&
+                (this.line_cycle < 256)) {
                 let s_x_flip: u32 = (this.sprite_attribute_latches[m] & 0x40) >>> 6;
                 let my_color: u32 = 0;
                 if (s_x_flip) {

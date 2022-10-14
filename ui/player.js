@@ -184,7 +184,7 @@ class global_player_t {
 	}
 
 	present() {
-		//this.system.present();
+		this.player_thread.present(this.canvas_manager)
 	}
 
 	on_timing_message(e) {
