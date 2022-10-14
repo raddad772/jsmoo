@@ -12,7 +12,7 @@ class RGBval {
     }
 }
 
-export const NES_palette = new Array<RGBval>(64);
+export const NES_palette = new Uint32Array(64);
 function NES_get_RGB(i: u32): RGBval {
     switch(i) {
         case 0: return new RGBval(0x54, 0x54, 0x54);
@@ -82,7 +82,10 @@ function NES_get_RGB(i: u32): RGBval {
     }
     return new RGBval(0, 0, 0);
 }
-for (let i = 0; i < 64; i++) NES_palette[i] = NES_get_RGB(i);
+for (let i = 0; i < 64; i++) {
+    let r: RGBval = NES_get_RGB(i);
+    NES_palette[i] = (r.r << 24) | (r.g << 16) | (r.b << 8) | 0xFF;
+}
 
 class NES_PPU_io {
     nmi_enable: u32 = 0
@@ -159,6 +162,23 @@ export class NES_ppu {
 
 
         this.bus.ppu = this;
+    }
+
+    present(ab: usize): void {
+        let TOP_OVERSCAN: u32 = 8;
+        let BOTTOM_OVERSCAN: u32 = 240;
+        let LEFT_OVERSCAN: u32 = 8;
+        let RIGHT_OVERSCAN: u32 = 248;
+        let out_width: u32 = 256 - (LEFT_OVERSCAN + (256 - RIGHT_OVERSCAN));
+        let out_height: u32 = 240 - (TOP_OVERSCAN + (240 - BOTTOM_OVERSCAN));
+        for (let ry: u32 = TOP_OVERSCAN; ry < BOTTOM_OVERSCAN; ry++) {
+            let y: u32 = ry - TOP_OVERSCAN;
+            for (let rx: u32 = LEFT_OVERSCAN; rx < RIGHT_OVERSCAN; rx++) {
+                let ap: usize = (y * 256) + (rx - LEFT_OVERSCAN);
+                store<u32>(ab+ap, NES_palette[this.output[<u32>ap]]);
+            }
+        }
+        console.log('NES PRESENT DONE!');
     }
 
     reset(): void {

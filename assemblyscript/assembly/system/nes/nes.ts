@@ -27,6 +27,10 @@ export class NES implements systemEmulator {
         this.cycles_left = 0;
     }
 
+    present(ab: usize): void {
+        this.ppu.present(ab)
+    }
+
     get_description(): machine_description {
         let md = new machine_description();
         md.name = 'Nintendo Entertainment System';

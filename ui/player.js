@@ -165,6 +165,17 @@ class global_player_t {
 
 	on_player_message(e) {
 		console.log('MESSAGE FROM PLAYER THREAD', e);
+		switch(e.kind) {
+			case emulator_messages.specs:
+				this.tech_specs = e.specs;
+				this.update_tech_specs();
+				break;
+		}
+	}
+
+	update_tech_specs() {
+		this.canvas_manager.set_size(this.tech_specs.x_resolution, this.tech_specs.y_resolution);
+		this.set_fps_target(this.tech_specs.fps);
 	}
 
 	run_frame() {

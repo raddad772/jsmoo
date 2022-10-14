@@ -22,6 +22,7 @@ export class machine_description {
     fps: u32 = 60
     x_resolution: u32 = 256
     y_resolution: u32 = 256
+    out_ptr: usize = 0;
 }
 
 export interface systemEmulator {
@@ -37,6 +38,7 @@ export interface systemEmulator {
     load_ROM(what: Uint8Array): void;
     load_BIOS(): void;
     killall(): void;
+    present(ab: usize): void;
 }
 
 export interface systemEmulatorStandardClock {
