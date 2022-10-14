@@ -172,10 +172,13 @@ export class NES_ppu {
         let RIGHT_OVERSCAN: u32 = 248;
         /*let out_width: u32 = 256 - (LEFT_OVERSCAN + (256 - RIGHT_OVERSCAN));
         let out_height: u32 = 240 - (TOP_OVERSCAN + (240 - BOTTOM_OVERSCAN));*/
-        for (let ry: u32 = TOP_OVERSCAN; ry < BOTTOM_OVERSCAN; ry++) {
+        /*for (let ry: u32 = TOP_OVERSCAN; ry < BOTTOM_OVERSCAN; ry++) {
             let y: u32 = ry - TOP_OVERSCAN;
-            for (let rx: u32 = LEFT_OVERSCAN; rx < RIGHT_OVERSCAN; rx++) {
-                let ap: usize = (y * 256) + (rx - LEFT_OVERSCAN);
+            for (let rx: u32 = LEFT_OVERSCAN; rx < RIGHT_OVERSCAN; rx++) {*/
+        for (let y = 0; y < 240; y++) {
+            for (let rx = 0; rx < 256; rx++) {
+                //let ap: usize = (y * 256) + (rx - LEFT_OVERSCAN);
+                let ap: usize = (y * 256) + rx;
                 store<u32>(ab+(ap*4), NES_palette[this.output[<u32>ap]]);
             }
         }

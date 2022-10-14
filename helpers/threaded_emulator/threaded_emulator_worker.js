@@ -6,7 +6,7 @@ import {
     gp_set_system,
     new_global_player,
     memory}
-    from "/assemblyscript/build/debug.js";
+    from "/assemblyscript/build/release.js";
 //importScripts('/assemblyscript/build/debug.js');
 
 
@@ -54,7 +54,7 @@ class threaded_emulator_worker_t {
                 gp_load_ROM_from_RAM(this.global_player, e.ROM);
                 return;
             case emulator_messages.frame_requested:
-                console.log('ET: running frame...');
+                //console.log('ET: running frame...');
                 this.run_frame();
                 return;
             case emulator_messages.change_system:
@@ -68,12 +68,13 @@ class threaded_emulator_worker_t {
     }
 
     run_frame() {
+        let ts = performance.now();
         gp_run_frame(this.global_player);
+        let span = performance.now() - ts;
+        console.log('TIME PER FRAME:', span.toFixed(4));
         let rd = new Uint32Array(memory.buffer);
         let to_copy = Math.ceil((this.tech_specs.x_resolution * this.tech_specs.y_resolution) / 4) * 4;
-        //console.log('H4!', rd[this.out_ptr >>> 2].toString(16));
         this.framebuffer.set(rd.slice(this.out_ptr >>> 2, (this.out_ptr>>>2)+to_copy));
-        console.log('FB0', this.framebuffer[0].toString(16));
     }
 
     do_set_system(kind) {
