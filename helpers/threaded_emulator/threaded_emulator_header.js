@@ -8,6 +8,7 @@ const emulator_messages = Object.freeze({
     load_rom: 3,
     load_bios: 4,
     reset: 5,
+    specs: 6,
     startup: 100,
 
 

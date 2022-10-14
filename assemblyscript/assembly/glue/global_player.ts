@@ -23,6 +23,7 @@ export class global_player_t {
     ready: bool = false;
     tech_specs: machine_description = new machine_description();
     bios_manager: bios_manager_t
+    output_buffer: usize = heap.alloc(256*240*4);
 
     constructor() {
         this.bios_manager = new bios_manager_t();
@@ -46,6 +47,7 @@ export class global_player_t {
                 return;
         }
         this.tech_specs = this.system.get_description();
+        this.tech_specs.out_ptr = this.output_buffer;
         this.ready = true;
     }
 
@@ -73,7 +75,7 @@ export class global_player_t {
     }
 
     present(): void {
-        //if (this.system !== null) this.system.present();
+        this.system.present(this.output_buffer);
     }
 }
 
@@ -91,6 +93,7 @@ export function gp_load_ROM_from_RAM(player: global_player_t, ROM: Uint8Array): 
 
 export function gp_run_frame(player: global_player_t): void {
     player.run_frame();
+    player.present();
 }
 
 export function gp_get_specs(player: global_player_t): machine_description {

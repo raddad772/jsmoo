@@ -1,10 +1,10 @@
-"use strict";
 import {
     gp_load_ROM_from_RAM,
     gp_run_frame,
     gp_get_specs,
     gp_set_system,
-    new_global_player }
+    new_global_player,
+    memory}
     from "/assemblyscript/build/debug.js";
 
 
@@ -16,6 +16,7 @@ const emulator_messages = Object.freeze({
     load_rom: 3,
     load_bios: 4,
     reset: 5,
+    specs: 6,
     startup: 100,
 
 
@@ -25,8 +26,6 @@ const emulator_messages = Object.freeze({
 
 });
 
-
-
 class threaded_emulator_worker_t {
     constructor() {
         this.general_sab = null;
@@ -34,6 +33,7 @@ class threaded_emulator_worker_t {
         this.framebuffer = new Uint8Array(1);
         this.shared_counters = null;
         this.frames_since_reset = 0;
+        this.out_ptr = 0;
         this.global_player = null;
     }
 
@@ -52,7 +52,7 @@ class threaded_emulator_worker_t {
                 return;
             case emulator_messages.frame_requested:
                 console.log('ET: running frame...');
-                //gp_run_frame(this.global_player);
+                this.run_frame();
                 return;
             case emulator_messages.change_system:
                 console.log('ET: setting system to', e.kind_str);
@@ -64,11 +64,20 @@ class threaded_emulator_worker_t {
         }
     }
 
+    run_frame(): void {
+        gp_run_frame(this.global_player);
+        console.log(memory);
+    }
+
     do_set_system(kind) {
-        console.log('GP!', this.global_player);
         gp_set_system(this.global_player, kind);
         let r = gp_get_specs(this.global_player);
-        console.log('GOT SPECS:', r);
+        this.out_ptr = r.out_ptr;
+        this.send_specs(r)
+    }
+
+    send_specs(specs) {
+        postMessage({kind: emulator_messages.specs, specs: specs})
     }
 
     reset() {
