@@ -3,6 +3,7 @@
     "debug": {
       "outFile": "build/debug.wasm",
       "textFile": "build/debug.wat",
+      "optimizeLevel": 3,
       "sourceMap": true,
       "debug": true
     },

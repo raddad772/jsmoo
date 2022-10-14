@@ -1,6 +1,6 @@
 'use strict';
 
-
+const USE_ASSEMBLYSCRIPT = false;
 const SNES_STR = 'snes';
 const NES_STR = 'nes';
 const COMMODORE64_STR = 'c64';
@@ -180,13 +180,20 @@ class global_player_t {
 	}
 
 	run_frame() {
-		//this.system.run_frame();
-		this.player_thread.send_request_frame();
+		if (USE_ASSEMBLYSCRIPT)
+			this.player_thread.send_request_frame();
+		else {
+			//let t = performance.now();
+			this.system.run_frame();
+			//let span = performance.now() - t;
+			//console.log('FRAMETIME', span.toFixed(2));
+		}
 	}
 
 	present() {
 		this.frame_present++;
-		this.player_thread.present(this.canvas_manager)
+		if (USE_ASSEMBLYSCRIPT) this.player_thread.present(this.canvas_manager)
+		else this.system.present()
 	}
 
 	on_timing_message(e) {
@@ -262,8 +269,10 @@ class global_player_t {
 	}
 
 	load_rom(what) {
-		//this.system.load_ROM_from_RAM(what);
-		this.player_thread.send_load_ROM(new Uint8Array(what));
+		if (USE_ASSEMBLYSCRIPT)
+			this.player_thread.send_load_ROM(new Uint8Array(what));
+		else
+			this.system.load_ROM_from_RAM(what);
 	}
 
 	load_bios(what) {
