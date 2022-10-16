@@ -192,7 +192,7 @@ class NES_mapper_MMC3b {
 
     a12_watch(addr) {
         if (this.a12_watcher.update(addr) === this.a12_watcher.rise) {
-            let ocunt = this.irq_counter;
+            let count = this.irq_counter;
             if ((this.irq_counter === 0) || (this.irq_reload)) {
                 this.irq_counter = this.regs.rC000;
             } else {
@@ -205,27 +205,6 @@ class NES_mapper_MMC3b {
             }
             this.irq_reload = false;
         }
-        /*let a12 = (addr & 0x1000) >>> 12;
-
-        if (a12 !== this.last_a12) {
-            if (a12 === 1 && this.a12_count >= 3) {
-                //console.log(this.irq_counter, this.irq_enable);
-                if (this.irq_counter === 0) {
-                    this.irq_counter = this.regs.rC000;
-                    if (this.irq_enable) {
-                        //console.log('NOTIFY IRQ, RELOAD', this.regs.rC000)
-                        this.bus.CPU_notify_IRQ(1);
-                    }
-                }
-                else this.irq_counter--;
-                if (this.irq_counter < 0) this.irq_counter = 0;
-            }
-            this.last_a12 = a12;
-            this.a12_count = 0;
-        }
-        //console.log(a12);
-        if (a12 === 0) this.a12_count++;
-        else this.a12_count = 0;*/
     }
 
     set_PRG_ROM(addr, bank_num) {
@@ -266,7 +245,7 @@ class NES_mapper_MMC3b {
             this.PRG_map[0].data = this.PRG_RAM;
             this.PRG_map[0].RAM = true;
             this.PRG_map[0].ROM = false;
-            this.set_PRG_ROM(0xE000, this.num_PRG_banks-1, this.PRG_ROM);
+            this.set_PRG_ROM(0xE000, this.num_PRG_banks-1);
         }
 
         if (this.status.PRG_mode === 0) {
@@ -364,8 +343,6 @@ class NES_mapper_MMC3b {
                 this.status.CHR_mode = (val & 0x80) >>> 7;
                 break;
             case 0x8001: // Bank data
-                // 6 25 // 1 1001
-                // 7 24 // 1 1000
                 this.regs.bank[this.regs.bank_select] = val;
                 this.remap();
                 break;
