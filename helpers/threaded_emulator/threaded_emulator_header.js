@@ -21,7 +21,9 @@ const emulator_messages = Object.freeze({
 class threaded_emulator_t {
     constructor(onmsg) {
         console.log('EMULATOR WORKER THREAD CONSTRUCTOR!');
-        this.thread = null;
+        this.thread = new Worker('/helpers/threaded_emulator/threaded_emulator_worker.js');
+        this.thread.onmessage = this.on_child_message.bind(this);
+        this.thread.onerror = function(a,b,c) { console.log('ERR', a, b, c);}
         this.system_kind = '';
         this.parent_msg = onmsg;
         this.framebuffer_sab = new SharedArrayBuffer(256*256*4);
@@ -33,11 +35,7 @@ class threaded_emulator_t {
     }
 
     onload() {
-        this.thread = new Worker('/helpers/threaded_emulator/threaded_emulator_worker.js', {type: 'module'});
-        this.thread.onmessage = this.on_child_message.bind(this);
-        this.thread.onerror = function(a,b,c) { console.log('ERR', a, b, c);}
         this.send_startup_message();
-        this.send_set_system(DEFAULT_SYSTEM);
     }
 
     on_child_message(ev) {
@@ -49,7 +47,7 @@ class threaded_emulator_t {
     }
 
     send_set_system(kind) {
-        console.log('MT: SET SYSTEM')
+        console.log('MT: SET SYSTEM', kind)
         this.system_kind = kind;
         this.thread.postMessage({kind: emulator_messages.change_system, kind_str: kind});
     }
@@ -58,7 +56,6 @@ class threaded_emulator_t {
      * @param {Uint8Array} ROM
      */
     send_load_ROM(ROM) {
-        this.send_set_system(this.system_kind)
         this.thread.postMessage({kind: emulator_messages.load_rom, ROM: ROM});
     }
 

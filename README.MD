@@ -71,7 +71,7 @@
 
 <!--[![Product Name Screen Shot][product-screenshot]](https://example.com)-->
 
-JSMoo is an attempt at making great emulators, in pure JavaScript. Currently that includes NES, SNES, ZX Spectrum, and (soon) SMS, with many more planned.
+JSMoo is an attempt at making great emulators, in pure JavaScript and AssemblyScript. Currently that includes NES, SNES, ZX Spectrum, and Sega Master System, with many more planned.
 
 I also hope to make retro systems more accessible in every possible way, as I get into more detail below. But first...
 

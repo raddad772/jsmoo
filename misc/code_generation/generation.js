@@ -37,27 +37,32 @@ function generate_spc_tests() {
 }
 
 function generate_wdc65816_js() {
+    GENTARGET = 'js'; // JavaScript
 	save_js('wdc65816_generated_opcodes.js', '"use strict";\n\nconst wdc65816_decoded_opcodes = Object.freeze(\n' + decode_opcodes() + ');');
 }
 
 function generate_spc700_js() {
+    GENTARGET = 'js'; // JavaScript
     save_js('spc700_generated_opcodes.js', '"use strict";\n\nconst SPC_decoded_opcodes = Object.freeze(\n' + SPC_decode_opcodes() + ');');
 }
 
 function generate_nes6502_js() {
+    GENTARGET = 'js'; // JavaScript
     save_js('nesm6502_generated_opcodes.js', generate_nes6502_core());
 }
 
 function generate_nes6502_as() {
+    GENTARGET = 'as'; // AssemblyScript
     save_js('nesm6502_generated_opcodes.ts', generate_nes6502_core_as());
 }
 
-
 function generate_65c02_js() {
+    GENTARGET = 'js'; // JavaScript
     save_js('m65c02_generated_opcodes.js', generate_6502_cmos_core());
 }
 
 function generate_z80_js() {
+    GENTARGET = 'js'; // JavaScript
     save_js('z80_generated_opcodes.js', generate_z80_core(false));
 }
 
