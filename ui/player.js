@@ -1,6 +1,8 @@
 'use strict';
 
-const USE_ASSEMBLYSCRIPT = false;
+const USE_THREADED_PLAYER = true;
+
+const USE_ASSEMBLYSCRIPT = true;
 const SNES_STR = 'snes';
 const NES_STR = 'nes';
 const COMMODORE64_STR = 'c64';
@@ -24,7 +26,9 @@ class global_player_t {
 		this.playing = false;
 		this.system = null;
 		this.timing_thread = new timing_thread_t(this.on_timing_message.bind(this));
-		this.player_thread = new threaded_emulator_t(this.on_player_message.bind(this));
+		if (USE_THREADED_PLAYER) {
+			this.player_thread = new threaded_emulator_t(this.on_player_message.bind(this));
+		}
 		this.ready = false;
 		this.tech_specs = {};
 		this.queued_save_state = -1;
@@ -48,6 +52,7 @@ class global_player_t {
 		this.bios_manager = new bios_manager_t();
 		await this.bios_manager.onload();
 		this.player_thread.onload();
+		this.player_thread.send_set_system(this.system_kind);
 	}
 
 	save_state(num) {
