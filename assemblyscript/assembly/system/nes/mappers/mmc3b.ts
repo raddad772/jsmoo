@@ -48,6 +48,7 @@ export class NES_MMC3b implements NES_mapper {
     CIRAM: StaticArray<u8> = new StaticArray<u8>(0x2000); // PPU RAM
     CPU_RAM: StaticArray<u8> = new StaticArray<u8>(0x800); // CPU RAM
     PRG_RAM: StaticArray<u8> = new StaticArray<u8>(0);
+    prg_ram_size: u32 = 0
     regs: NES_MMC3b_regs = new NES_MMC3b_regs();
     status: NES_MMC3b_status = new NES_MMC3b_status();
 
@@ -105,7 +106,7 @@ export class NES_MMC3b implements NES_mapper {
 
     remap(boot: bool = false): void {
         if (boot) {
-            for (let i: u32 = 1; i < 5; i++) {
+            for (let i: u32 = 0; i < 5; i++) {
                 this.PRG_map[i].data = this.PRG_ROM;
                 this.PRG_map[i].ROM = true;
                 this.PRG_map[i].RAM = false;
@@ -116,10 +117,12 @@ export class NES_MMC3b implements NES_mapper {
                 this.CHR_map[i].ROM = true;
                 this.CHR_map[i].RAM = false;
             }
-            this.PRG_map[0].set(0x6000, 0, false, true);
-            this.PRG_map[0].data = this.PRG_RAM;
-            this.PRG_map[0].RAM = true;
-            this.PRG_map[0].ROM = false;
+            if (this.PRG_RAM.length > 0) {
+                this.PRG_map[0].set(0x6000, 0, false, true);
+                this.PRG_map[0].data = this.PRG_RAM;
+                this.PRG_map[0].RAM = true;
+                this.PRG_map[0].ROM = false;
+            }
             this.set_PRG_ROM(0xE000, this.num_PRG_banks-1);
         }
 
@@ -226,10 +229,10 @@ export class NES_MMC3b implements NES_mapper {
         }
     }
 
-    PPU_read(addr: u32, val: u32, has_effect: u32): u32 {
+    @inline PPU_read(addr: u32, val: u32, has_effect: u32): u32 {
         if (has_effect) this.a12_watch(addr);
 
-        if (addr < 0x2000) return unchecked(this.CHR_map[addr >>> 10].read(addr, val, has_effect));
+        if (addr < 0x2000) return unchecked(this.CHR_map[addr >>> 10]).read(addr, val, has_effect);
 
         return unchecked(this.CIRAM[this.mirror_ppu_addr(addr)]);
     }
@@ -253,6 +256,10 @@ export class NES_MMC3b implements NES_mapper {
         for (let i: u32 = 0, k: u32 = cart.PRG_ROM.byteLength; i < k; i++) {
             this.PRG_ROM[i] = cart.PRG_ROM[i];
         }
+
+        this.prg_ram_size = cart.header.prg_ram_size;
+        console.log('MMC3 PRG RAM SIZE ' + cart.header.prg_ram_size.toString());
+        this.PRG_RAM = new StaticArray<u8>(this.prg_ram_size);
 
         this.ppu_mirror = cart.header.mirroring;
 
