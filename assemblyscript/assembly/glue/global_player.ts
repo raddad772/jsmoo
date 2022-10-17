@@ -12,6 +12,11 @@ export enum JSMOO_SYSTEMS {
     TEST_NESM6502
 }
 
+export enum input_types {
+    CONTROLLER = 0,
+    KEYBOARD
+}
+
 class bios_manager_t {
 
 }
@@ -73,7 +78,10 @@ export class global_player_t {
     }
 
     run_frame(): void {
-        if (this.system !== null) this.system.finish_frame();
+        if (this.system !== null) {
+            this.system.map_inputs(this.input_buffer);
+            this.system.finish_frame();
+        }
     }
 
     present(): void {

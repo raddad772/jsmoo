@@ -1,6 +1,6 @@
 export interface NES_controller {
     data(): u32;
-    latch(what: u32): u32;
+    latch(what: u32): void;
 }
 
 export class NES_controllerport {
@@ -15,7 +15,8 @@ export class NES_controllerport {
 	}
 
 	latch(what: u32): u32 {
-		if (this.device !== null) return this.device!.latch(what);
+		if (this.device !== null)
+			this.device!.latch(what);
 		return 0;
 	}
 }

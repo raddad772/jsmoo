@@ -15,10 +15,18 @@ export enum SCREENVAR_FIELDS {
     current_x = 2
 }
 
+export class input_map_keypoint {
+    uber: String = ''       // Like player 1, player 2, keyboard, etc.
+    name: String = ''       // Name like up down a b
+    buf_pos: u32 = 0        // Position in buffer
+    internal_code: u32 = 0  // Internal usage
+}
+
 export class machine_description {
     name: String = '';
     timing: MD_TIMING = MD_TIMING.frame
     standard: MD_STANDARD = MD_STANDARD.NSTC
+    keymap: Array<input_map_keypoint> = new Array<input_map_keypoint>();
     fps: u32 = 60
     x_resolution: u32 = 256
     y_resolution: u32 = 256
@@ -39,6 +47,7 @@ export interface systemEmulator {
     load_BIOS(): void;
     killall(): void;
     present(ab: usize): void;
+    map_inputs(bufptr: usize): void;
 }
 
 export interface systemEmulatorStandardClock {

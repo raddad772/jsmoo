@@ -20,6 +20,87 @@ const DEFAULT_SYSTEM = NES_STR;
 //const DEFAULT_SYSTEM = SMS_STR;
 //const DEFAULT_SYSTEM = SMS_STR;
 
+class input_provider_t {
+	constructor(system_kind, keymap) {
+		this.system_kind = system_kind;
+		console.log('SET SYSTEM KIND', system_kind);
+		this.keymap = keymap;
+
+		let joymap1, joymap2;
+		for (let i in this.keymap) {
+			this.keymap[i].value = 0;
+		}
+		switch(this.system_kind) {
+			case 'nes':
+				this.setup_nes();
+				break;
+			default:
+				this.poll = function(){};
+				console.log('NO INPUT FOR', this.system_kind);
+				break;
+		}
+	}
+
+	latch_nes() {
+		this.input_buffer1 = this.joymap1.latch();
+		this.input_buffer2 = this.joymap2.latch();
+	}
+
+	poll_nes() {
+		for (let i in this.keymap) {
+			const km = this.keymap[i];
+			let imap;
+			switch(km.uber) {
+				case 'p1':
+					imap = this.input_buffer1;
+					break;
+				case 'p2':
+					imap = this.input_buffer2;
+					break;
+				default:
+					console.log('WHAT!?!?!?');
+					break;
+			}
+
+			km.value = imap[km.name];
+		}
+		return this.keymap;
+	}
+
+	setup_nes() {
+		this.latch = this.latch_nes.bind(this);
+		this.poll = this.poll_nes.bind(this);
+		input_config.connect_controller('nes1');
+		input_config.connect_controller('nes2');
+		this.input_buffer1 = {
+			'a': 0,
+			'b': 0,
+			'up': 0,
+			'down': 0,
+			'left': 0,
+			'right': 0,
+			'start': 0,
+			'select': 0
+		}
+		this.input_buffer2 = {
+			'a': 0,
+			'b': 0,
+			'up': 0,
+			'down': 0,
+			'left': 0,
+			'right': 0,
+			'start': 0,
+			'select': 0
+		}
+
+		this.joymap1 = input_config.controller_els.nes1;
+		this.joymap2 = input_config.controller_els.nes2;
+	}
+
+	poll() {
+	}
+}
+
 class global_player_t {
 	constructor() {
 		this.system_kind = DEFAULT_SYSTEM;
@@ -184,11 +265,18 @@ class global_player_t {
 	update_tech_specs() {
 		this.canvas_manager.set_size(this.tech_specs.x_resolution, this.tech_specs.y_resolution);
 		this.set_fps_target(this.tech_specs.fps);
+		this.set_input(this.tech_specs.keymap);
+	}
+
+	set_input(keymap) {
+		this.input_provider = new input_provider_t(this.system_kind, keymap);
 	}
 
 	run_frame() {
-		if (USE_ASSEMBLYSCRIPT)
-			this.player_thread.send_request_frame();
+		if (USE_ASSEMBLYSCRIPT) {
+			this.input_provider.latch();
+			this.player_thread.send_request_frame(this.input_provider.poll());
+		}
 		else {
 			let t = performance.now();
 			this.system.run_frame();

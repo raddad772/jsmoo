@@ -43,6 +43,14 @@ class threaded_emulator_worker_t {
         this.step = 0;
     }
 
+    output_input(keymap) {
+        let obuf = new Uint32Array(this.wrapper.wasm.memory.buffer)
+        let startpos = this.out_ptr >>> 2;
+        for (let i in keymap) {
+            obuf[startpos+keymap[i].buf_pos] = keymap[i].value;
+        }
+    }
+
     async onmessage(e) {
         await this.wrapper.do_setup();
         switch(e.kind) {
@@ -61,6 +69,7 @@ class threaded_emulator_worker_t {
                 return;
             case emulator_messages.frame_requested:
                 //console.log('ET: running frame...');
+                this.output_input(e.keymap);
                 this.run_frame();
                 return;
             case emulator_messages.change_system:
@@ -85,7 +94,7 @@ class threaded_emulator_worker_t {
     }
 
     do_set_system(kind) {
-        console.log('GP:', this.wrapper.global_player);
+        console.log('GP:', this.wrapper.global_player.toString());
         this.wrapper.wasm.gp_set_system(this.wrapper.global_player, kind);
         this.tech_specs = this.wrapper.wasm.gp_get_specs(this.wrapper.global_player);
         this.out_ptr = this.tech_specs.out_ptr;

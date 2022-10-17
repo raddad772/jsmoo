@@ -118,6 +118,8 @@ class perf_timer_t {
     }
 
     end_sample() {
+        //@external("env", "performance.now");
+        // function perfNow(): u64;
         this.sample_end = performance.now();
         this.samples++;
         //this.sample_time_total += this.sample_end - this.sample_start;

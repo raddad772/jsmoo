@@ -1,6 +1,6 @@
 "use strict";
 
-const USE_DEBUG = false;
+const USE_DEBUG = true;
 if (USE_DEBUG)
     importScripts('/assemblyscript/build/debug.js');
 else

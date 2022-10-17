@@ -2,6 +2,8 @@ import {NES_bus, NES_clock} from "../nes_common";
 import {m6502} from "../../../component/cpu/m6502/m6502";
 import {NES_controllerport} from "./controller_port";
 import {nesm6502_opcodes_decoded} from "./nesm6502_generated_opcodes";
+import {nespad_inputs} from "../nes";
+import {NES_joypad} from "../../../component/controller/nes_joypad";
 
 
 
@@ -20,6 +22,9 @@ export class ricoh2A03 {
     tracing: bool = false;
     dma: ricoh2A03_DMA = new ricoh2A03_DMA();
 
+    joypad1: NES_joypad = new NES_joypad(1);
+    joypad2: NES_joypad = new NES_joypad(2);
+
     controller_port1: NES_controllerport = new NES_controllerport();
     controller_port2: NES_controllerport = new NES_controllerport();
     constructor(clock: NES_clock, bus: NES_bus) {
@@ -28,7 +33,14 @@ export class ricoh2A03 {
         this.clock = clock;
         this.bus.cpu = this;
 
+        this.controller_port1.device = this.joypad1;
+        this.controller_port1.device = this.joypad2;
         this.cpu.reset();
+    }
+
+    update_inputs(inp1: nespad_inputs, inp2: nespad_inputs): void {
+        this.joypad1.buffer_input(inp1);
+        this.joypad2.buffer_input(inp2);
     }
 
     notify_NMI(level: u32): void {
@@ -85,12 +97,9 @@ export class ricoh2A03 {
         switch(addr) {
             case 0x4016: // JOYSER0
                 let r: u32 = this.controller_port1.data();
-                //console.log(r);
                 return r;
             case 0x4017: // JOYSER1
-                //let rr = this.controller_port2.data();
-                return 0;
-                //return rr;
+                return this.controller_port2.data();
         }
         return val;
     }
