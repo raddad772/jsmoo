@@ -1,10 +1,71 @@
-import {machine_description, MD_STANDARD, MD_TIMING, systemEmulator} from "../interface"
+import {input_map_keypoint, machine_description, MD_STANDARD, MD_TIMING, systemEmulator} from "../interface"
 import {m6502} from "../../component/cpu/m6502/m6502"
 import {NES_clock, NES_bus, NES_VARIANTS} from "./nes_common"
 import {NES_ppu} from "./nes_ppu";
 import {NES_cart} from "./nes_cart";
 import {ricoh2A03} from "./cpu/r2a03";
 import {dbg} from "../../helpers/debug";
+
+let NES_inputmap: Array<input_map_keypoint> = new Array<input_map_keypoint>(16);
+// p1                                    p2
+// Up down left right a b start select
+
+function fill_NES_inputmap(): void {
+    for (let i = 0; i < 16; i++) {
+        let kp = new input_map_keypoint();
+        let uber: String = (i < 8) ? 'p1' : 'p2';
+        kp.internal_code = i;
+        kp.buf_pos = i;
+        kp.uber = uber;
+        switch(i) {
+            case 0:
+            case 8:
+                kp.name = 'up';
+                break;
+            case 1:
+            case 9:
+                kp.name = 'down';
+                break;
+            case 2:
+            case 10:
+                kp.name = 'left';
+                break;
+            case 3:
+            case 11:
+                kp.name = 'right';
+                break;
+            case 4:
+            case 12:
+                kp.name = 'a';
+                break;
+            case 5:
+            case 13:
+                kp.name = 'b';
+                break;
+            case 6:
+            case 14:
+                kp.name = 'start';
+                break;
+            case 7:
+            case 15:
+                kp.name = 'select';
+                break;
+        }
+        NES_inputmap[i] = kp;
+    }
+}
+fill_NES_inputmap();
+
+export class nespad_inputs {
+    a: u32 = 0;
+    b: u32 = 0;
+    start: u32 = 0;
+    select: u32 = 0;
+    up: u32 = 0;
+    down: u32 = 0;
+    left: u32 = 0;
+    right: u32 = 0;
+}
 
 export class NES implements systemEmulator {
     cpu: ricoh2A03
@@ -14,6 +75,9 @@ export class NES implements systemEmulator {
     bus: NES_bus
     clock: NES_clock
     cycles_left: i32
+    decode_array: StaticArray<u32> = new StaticArray<u32>(16);
+    controller1_in: nespad_inputs = new nespad_inputs();
+    controller2_in: nespad_inputs = new nespad_inputs();
 
     constructor(variant: NES_VARIANTS) {
         this.variant = variant
@@ -31,6 +95,27 @@ export class NES implements systemEmulator {
         this.ppu.present(ab)
     }
 
+    map_inputs(bufptr: usize): void {
+        // Hardcoded yo!
+        this.controller1_in.up = load<u32>(bufptr);
+        this.controller1_in.down = load<u32>(bufptr+(4));
+        this.controller1_in.left = load<u32>(bufptr+(4*2));
+        this.controller1_in.right = load<u32>(bufptr+(4*3));
+        this.controller1_in.a = load<u32>(bufptr+(4*4));
+        this.controller1_in.b = load<u32>(bufptr+(4*5));
+        this.controller1_in.start = load<u32>(bufptr+(4*6));
+        this.controller1_in.select = load<u32>(bufptr+(4*7));
+        this.controller2_in.up = load<u32>(bufptr+(4*8));
+        this.controller2_in.down = load<u32>(bufptr+(4*9));
+        this.controller2_in.left = load<u32>(bufptr+(4*101));
+        this.controller2_in.right = load<u32>(bufptr+(4*11));
+        this.controller2_in.a = load<u32>(bufptr+(4*12));
+        this.controller2_in.b = load<u32>(bufptr+(4*13));
+        this.controller2_in.start = load<u32>(bufptr+(4*14));
+        this.controller2_in.select = load<u32>(bufptr+(4*15));
+        this.cpu.update_inputs(this.controller1_in, this.controller2_in);
+    }
+
     get_description(): machine_description {
         let md = new machine_description();
         md.name = 'Nintendo Entertainment System';
@@ -39,6 +124,9 @@ export class NES implements systemEmulator {
         md.standard = MD_STANDARD.NSTC;
         md.x_resolution = 256;
         md.y_resolution = 224;
+        for (let i = 0, k = NES_inputmap.length; i < k; i++) {
+            md.keymap.push(NES_inputmap[i]);
+        }
         return md;
     }
 

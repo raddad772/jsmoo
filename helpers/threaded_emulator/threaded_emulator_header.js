@@ -59,9 +59,9 @@ class threaded_emulator_t {
         this.thread.postMessage({kind: emulator_messages.load_rom, ROM: ROM});
     }
 
-    send_request_frame() {
+    send_request_frame(keymap) {
         //console.log('MT: REQUEST FRAME');
-        this.thread.postMessage({kind: emulator_messages.frame_requested});
+        this.thread.postMessage({kind: emulator_messages.frame_requested, keymap: keymap});
     }
 
     send_startup_message() {
