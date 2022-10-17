@@ -35,7 +35,7 @@ export class NES_a12_watcher_t {
         this.clock = clock;
     }
 
-    update(addr: u32): NES_a12_watcher_edge {
+    @inline update(addr: u32): NES_a12_watcher_edge {
         let result: NES_a12_watcher_edge = NES_a12_watcher_edge.nothing;
         let ppufc: u32 = this.clock.ppu_frame_cycle;
         if (this.cycles_down > 0) {
@@ -63,11 +63,11 @@ export class NES_a12_watcher_t {
 }
 
 export interface NES_mapper {
-    a12_watcher: NES_a12_watcher_t; // For mappers that watch A12 for IRQs
     cycle(howmany: u32): void; // For VRC cycle-counting IRQs
     CPU_read(addr: u32, val: u32, has_effect: u32): u32;
     CPU_write(addr: u32, val: u32): void;
-    PPU_read(addr: u32, val: u32, has_effect: u32): u32;
+    PPU_read_effect(addr: u32): u32;
+    PPU_read_noeffect(addr: u32): u32;
     PPU_write(addr: u32, val: u32): void;
     reset(): void;
     set_cart(cart: NES_cart): void;

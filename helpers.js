@@ -124,9 +124,9 @@ class perf_timer_t {
         this.do_samples();
         this.req_breakdowns++;
         if (this.req_breakdowns >= this.breakdown_every) {
-            //this.req_breakdowns = 0;
-            //this.analyze();
-            //this.reset();
+            this.req_breakdowns = 0;
+            this.analyze();
+            this.reset();
         }
     }
 

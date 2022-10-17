@@ -18,8 +18,12 @@ export enum NES_VARIANTS {
 }
 
 export class NES_bus {
-    @inline PPU_read(addr: u32, val: u32, has_effect: u32 = 1): u32 {
-        return this.mapper.PPU_read(addr, val, has_effect);
+    @inline PPU_read_effect(addr: u32): u32 {
+        return this.mapper.PPU_read_effect(addr);
+    }
+
+    @inline PPU_read_noeffect(addr: u32): u32 {
+        return this.mapper.PPU_read_noeffect(addr);
     }
 
     PPU_write(addr: u32, val: u32): void {
