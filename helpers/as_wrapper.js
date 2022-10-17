@@ -11,6 +11,7 @@ class gp_wrapper_t {
         this.wasm_fetch = null;
         this.wasm = null;
         this.setup = false;
+        this.input_buffer_ptr = null;
 
         this.global_player = null;
 
@@ -20,7 +21,6 @@ class gp_wrapper_t {
 
     async onload() {
         if (!this.setup) await this.do_setup();
-        console.log('ONLOAD!');
     }
 
     async do_setup() {
@@ -28,6 +28,7 @@ class gp_wrapper_t {
         await this.fetch_wasm();
         await this.instantiate();
         this.global_player = this.wasm.new_global_player();
+        this.input_buffer_ptr = this.wasm.gp_get_input_buffer(this.global_player);
         console.log('GOT GP', this.global_player);
         this.setup = true;
     }
@@ -45,4 +46,16 @@ class gp_wrapper_t {
         this.wasm_fetch = await fetch(url);
     }
 
+    /**
+     * @param {Uint8Array} what
+     */
+    copy_to_input_buffer(what) {
+        let ob = new Uint8Array(this.wasm.memory.buffer);
+        let t = performance.now();
+        for (let i = 0; i < what.byteLength; i++) {
+            ob[i+this.input_buffer_ptr] = what[i];
+        }
+        t = performance.now() - t;
+        console.log('COPY TOOK', t.toFixed(2), 'ms');
+    }
 }

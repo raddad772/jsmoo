@@ -103,8 +103,8 @@ export class NES implements systemEmulator {
     load_BIOS(): void {
     }
 
-    load_ROM(what: Uint8Array): void {
-        this.cart.load_cart_from_RAM(what);
+    load_ROM(what: usize, sz: u32): void {
+        this.cart.load_cart_from_RAM(what, sz);
         this.reset();
     }
 }

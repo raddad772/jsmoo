@@ -24,6 +24,7 @@ export class global_player_t {
     tech_specs: machine_description = new machine_description();
     bios_manager: bios_manager_t
     output_buffer: usize = heap.alloc(256*256*4);
+    input_buffer: usize = heap.alloc(1024*1024*2);
 
     constructor() {
         this.bios_manager = new bios_manager_t();
@@ -67,8 +68,8 @@ export class global_player_t {
         }
     }
 
-    load_rom(what: Uint8Array): void {
-        this.system.load_ROM(what);
+    load_rom(sz: u32): void {
+        this.system.load_ROM(this.input_buffer, sz);
     }
 
     run_frame(): void {
@@ -88,8 +89,8 @@ export function gp_set_system(player: global_player_t, to: String): void {
     player.ext_set_system(to);
 }
 
-export function gp_load_ROM_from_RAM(player: global_player_t, ROM: Uint8Array): void {
-    player.load_rom(ROM);
+export function gp_load_ROM_from_RAM(player: global_player_t, sz: u32): void {
+    player.load_rom(sz);
 }
 
 export function gp_run_frame(player: global_player_t): void {
@@ -99,4 +100,8 @@ export function gp_run_frame(player: global_player_t): void {
 
 export function gp_get_specs(player: global_player_t): machine_description {
     return player.tech_specs;
+}
+
+export function gp_get_input_buffer(player: global_player_t): usize {
+    return player.input_buffer;
 }

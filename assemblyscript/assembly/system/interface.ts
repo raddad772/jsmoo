@@ -35,7 +35,7 @@ export interface systemEmulator {
     update_inputs(): void;
     step_master(cycles: u32): void;
     reset(): void;
-    load_ROM(what: Uint8Array): void;
+    load_ROM(what: usize, sz: u32): void;
     load_BIOS(): void;
     killall(): void;
     present(ab: usize): void;
