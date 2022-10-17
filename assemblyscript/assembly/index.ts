@@ -5,6 +5,7 @@ export {
     gp_run_frame,
     gp_set_system,
     new_global_player,
-    gp_get_specs
+    gp_get_specs,
+    gp_get_input_buffer
 } from "./glue/global_player";
 

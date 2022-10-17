@@ -1,6 +1,6 @@
 "use strict";
 
-const USE_DEBUG = true;
+const USE_DEBUG = false;
 if (USE_DEBUG)
     importScripts('/assemblyscript/build/debug.js');
 else
@@ -10,6 +10,7 @@ class gp_wrapper_t {
     constructor() {
         this.wasm_fetch = null;
         this.wasm = null;
+        this.wasm_raw = null;
         this.setup = false;
         this.input_buffer_ptr = null;
 
@@ -31,10 +32,13 @@ class gp_wrapper_t {
         this.input_buffer_ptr = this.wasm.gp_get_input_buffer(this.global_player);
         console.log('GOT GP', this.global_player);
         this.setup = true;
+        console.log(this.setup);
     }
 
     async instantiate() {
-        this.wasm = await instantiate(await WebAssembly.compileStreaming(this.wasm_fetch), {})
+        console.log('INSTANTIATE EXEC!!!!');
+        this.wasm_raw = await WebAssembly.compileStreaming(this.wasm_fetch)
+        this.wasm = await instantiate(this.wasm_raw, {})
     }
 
     async fetch_wasm() {
