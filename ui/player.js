@@ -51,8 +51,10 @@ class global_player_t {
 	async onload() {
 		this.bios_manager = new bios_manager_t();
 		await this.bios_manager.onload();
-		this.player_thread.onload();
-		this.player_thread.send_set_system(this.system_kind);
+		if (USE_THREADED_PLAYER) {
+			this.player_thread.onload();
+			this.player_thread.send_set_system(this.system_kind);
+		}
 	}
 
 	save_state(num) {
@@ -188,10 +190,10 @@ class global_player_t {
 		if (USE_ASSEMBLYSCRIPT)
 			this.player_thread.send_request_frame();
 		else {
-			//let t = performance.now();
+			let t = performance.now();
 			this.system.run_frame();
-			//let span = performance.now() - t;
-			//console.log('FRAMETIME', span.toFixed(2));
+			let span = performance.now() - t;
+			console.log('FRAMETIME', span.toFixed(2));
 		}
 	}
 

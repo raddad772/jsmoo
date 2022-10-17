@@ -1,6 +1,8 @@
 import {NES_bus, NES_clock, NES_TIMINGS} from "./nes_common";
 import {NES_mapper_none} from "./mappers/mapper_none";
 import {NES_MMC3b} from "./mappers/mmc3b";
+import {NES_mapper_VRC2B_4E_4F} from "./mappers/vrc_2b_4e_4f";
+import {NES_mapper_MMC1} from "./mappers/mmc1";
 
 class heapArray {
 	ptr: usize = 0;
@@ -84,9 +86,15 @@ export class NES_cart {
             case 0: // no mapper
                 this.bus.mapper = new NES_mapper_none(this.clock, this.bus);
                 break;
-            case 4:
+			case 1: // MMC1
+				this.bus.mapper = new NES_mapper_MMC1(this.clock, this.bus);
+				break;
+            case 4: // MMC3
                 this.bus.mapper = new NES_MMC3b(this.clock, this.bus);
                 break;
+			case 23: // VRC4
+				this.bus.mapper = new NES_mapper_VRC2B_4E_4F(this.clock, this.bus);
+				break;
             default:
                 console.log('Unknown mapper number dawg! ' + this.header.mapper_number.toString());
                 return false;

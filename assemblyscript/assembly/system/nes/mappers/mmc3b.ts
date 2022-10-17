@@ -21,7 +21,7 @@ export class MMC3b_map {
         this.data[(addr - this.addr) + this.offset] = <u8>val;
     }
 
-    @inline read(addr: u32, val: u32, has_effect: u32): u32 {
+    @inline read(addr: u32): u32 {
         return this.data[(addr - this.addr) + this.offset];
     }
 }
@@ -79,9 +79,9 @@ export class NES_MMC3b implements NES_mapper {
     // MMC3 no cycle counter
     cycle(howmany: u32) : void {}
 
-    a12_watch(addr: u32): void {
+    @inline a12_watch(addr: u32): void {
         if (this.a12_watcher.update(addr) === NES_a12_watcher_edge.rise) {
-            if ((this.irq_counter === 0) || (this.irq_reload))
+            if ((this.irq_counter === 0) || this.irq_reload)
                 this.irq_counter = <i32>this.regs.rC000;
             else {
                 this.irq_counter--;
@@ -180,7 +180,7 @@ export class NES_MMC3b implements NES_mapper {
         if (addr < 0x4020)
             return this.bus.CPU_reg_read(addr, val, has_effect);
         if (addr >= 0x6000)
-            return unchecked(this.PRG_map[(addr - 0x6000) >>> 13]).read(addr, val, has_effect);
+            return unchecked(this.PRG_map[(addr - 0x6000) >>> 13]).read(addr);
         return val;
     }
 
@@ -229,10 +229,18 @@ export class NES_MMC3b implements NES_mapper {
         }
     }
 
-    @inline PPU_read(addr: u32, val: u32, has_effect: u32): u32 {
-        if (has_effect) this.a12_watch(addr);
+    @inline PPU_read_effect(addr: u32): u32 {
+        this.a12_watch(addr);
+        if (addr < 0x2000) {
+            return unchecked(this.CHR_map[addr >>> 10]).read(addr);
+        }
 
-        if (addr < 0x2000) return unchecked(this.CHR_map[addr >>> 10]).read(addr, val, has_effect);
+        return unchecked(this.CIRAM[this.mirror_ppu_addr(addr)]);
+    }
+
+    PPU_read_noeffect(addr: u32): u32 {
+        //if (has_effect) this.a12_watch(addr);
+        if (addr < 0x2000) return unchecked(this.CHR_map[addr >>> 10]).read(addr);
 
         return unchecked(this.CIRAM[this.mirror_ppu_addr(addr)]);
     }

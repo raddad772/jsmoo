@@ -67,7 +67,13 @@ export class NES_mapper_none implements NES_mapper {
         }
     }
 
-    PPU_read(addr: u32, val: u32, has_effect: u32): u32 {
+    @inline PPU_read_effect(addr: u32): u32 {
+        if (addr < 0x2000)
+            return unchecked(this.CHR_ROM[addr]);
+        return unchecked(this.CIRAM[this.mirror_ppu_addr(addr)]);
+    }
+
+    @inline PPU_read_noeffect(addr: u32): u32 {
         if (addr < 0x2000)
             return unchecked(this.CHR_ROM[addr]);
         return unchecked(this.CIRAM[this.mirror_ppu_addr(addr)]);

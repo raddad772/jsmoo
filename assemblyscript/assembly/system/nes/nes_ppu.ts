@@ -1,4 +1,5 @@
 import {NES_VARIANTS, NES_clock, NES_bus} from "./nes_common";
+import {perf_timer_t} from "../../helpers/helpers";
 
 
 class RGBval {
@@ -119,6 +120,15 @@ class NES_PPU_latch {
     VRAM_read: u32 = 0
 }
 
+const scanline_splits: Array<String> = new Array<String>(6);
+//['startup', 'startup2', 'maint', 'bgcolor', 'sprite_eval', 'color_out']
+scanline_splits[0] = 'startup';
+scanline_splits[1] = 'startup2';
+scanline_splits[2] = 'maint';
+scanline_splits[3] = 'bgcolor';
+scanline_splits[4] = 'sprite_eval';
+scanline_splits[5] = 'color_out';
+
 export class NES_ppu {
     clock: NES_clock
     bus: NES_bus
@@ -158,7 +168,7 @@ export class NES_ppu {
     io: NES_PPU_io = new NES_PPU_io();
     status: NES_PPU_status = new NES_PPU_status();
     latch: NES_PPU_latch = new NES_PPU_latch();
-
+    scanline_timer: perf_timer_t = new perf_timer_t('scanline timer', 60*240, scanline_splits);
     constructor(variant: NES_VARIANTS, clock: NES_clock, bus: NES_bus) {
         this.variant = variant;
         this.clock = clock;
@@ -231,10 +241,10 @@ export class NES_ppu {
     }
 
 
-    fetch_chr_line(table: u32, tile: u32, line: u32, has_effect: u32 = 1): u32 {
+    fetch_chr_line(table: u32, tile: u32, line: u32): u32 {
         let r: u32 = (0x1000 * table) + (tile * 16) + line;
-        let low: u32 = this.bus.PPU_read(r, 0, has_effect);
-        let high: u32 = this.bus.PPU_read(r + 8, 0, has_effect);
+        let low: u32 = this.bus.mapper.PPU_read_effect(r);
+        let high: u32 = this.bus.mapper.PPU_read_effect(r + 8);
         let output: u32 = 0;
         for (let i = 0; i < 8; i++) {
             output <<= 2;
@@ -250,7 +260,7 @@ export class NES_ppu {
     }
 
     fetch_chr_line_low(addr: u32): u32 {
-        let low: u32 = this.bus.PPU_read(addr, 0);
+        let low: u32 = this.bus.mapper.PPU_read_effect(addr);
         let output: u32 = 0;
         for (let i: u32 = 0; i < 8; i++) {
             output <<= 2;
@@ -261,7 +271,7 @@ export class NES_ppu {
     }
 
     fetch_chr_line_high(addr: u32, o: u32): u32 {
-        let high: u32 = this.bus.PPU_read(addr + 8, 0);
+        let high: u32 = this.bus.mapper.PPU_read_effect(addr + 8);
         let output: u32 = 0;
         for (let i: u32 = 0; i < 8; i++) {
             output <<= 2;
@@ -278,7 +288,7 @@ export class NES_ppu {
             // Do memory accesses and shifters
             switch (this.line_cycle & 7) {
                 case 1: // nametable, tile #
-                    this.bg_fetches0 = this.bus.PPU_read(0x2000 | (this.io.v & 0xFFF), 0);
+                    this.bg_fetches0 = this.bus.mapper.PPU_read_effect(0x2000 | (this.io.v & 0xFFF));
                     this.bg_tile_fetch_addr = this.fetch_chr_addr(this.io.bg_pattern_table, this.bg_fetches0, in_tile_y);
                     this.bg_tile_fetch_buffer = 0;
                     // Reload shifters if needed
@@ -290,7 +300,7 @@ export class NES_ppu {
                 case 3: // attribute table
                     let attrib_addr: u32 = 0x23C0 | (this.io.v & 0x0C00) | ((this.io.v >>> 4) & 0x38) | ((this.io.v >>> 2) & 7);
                     let shift: u32 = ((this.io.v >>> 4) & 0x04) | (this.io.v & 0x02);
-                    this.bg_fetches1 = (this.bus.PPU_read(attrib_addr, 0) >>> shift) & 3;
+                    this.bg_fetches1 = (this.bus.mapper.PPU_read_effect(attrib_addr) >>> shift) & 3;
                     return;
                 case 5: // low buffer
                     this.bg_tile_fetch_buffer = this.fetch_chr_line_low(this.bg_tile_fetch_addr);
@@ -494,12 +504,6 @@ export class NES_ppu {
             return;
         }
 
-        /*if ((this.line_cycle === 1) && (this.clock.ppu_y === 32)) { // Capture scroll info for display
-            this.dbg.v = this.io.v;
-            this.dbg.t = this.io.t;
-            this.dbg.x = this.io.x;
-            this.dbg.w = this.io.w;
-        }*/
         //this.scanline_timer.record_split('startup');
         let sx: i32 = this.line_cycle-1;
         let sy: i32 = this.clock.ppu_y;
@@ -674,7 +678,7 @@ export class NES_ppu {
                 }
                 else {
                     output = this.latch.VRAM_read;
-                    this.latch.VRAM_read = this.bus.PPU_read(this.io.v & 0x3FFF, val);
+                    this.latch.VRAM_read = this.bus.mapper.PPU_read_effect(this.io.v & 0x3FFF);
                 }
                 this.io.v = (this.io.v + this.io.vram_increment) & 0x7FFF;
                 break;
