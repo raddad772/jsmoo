@@ -56,7 +56,8 @@ class threaded_emulator_worker_t {
             case emulator_messages.load_rom:
                 console.log('step3')
                 console.log('ET: passing ROM...', this.wrapper.global_player, e.ROM);
-                this.wrapper.wasm.gp_load_ROM_from_RAM(this.wrapper.global_player, e.ROM);
+                this.wrapper.copy_to_input_buffer(e.ROM);
+                this.wrapper.wasm.gp_load_ROM_from_RAM(this.wrapper.global_player, e.ROM.byteLength);
                 return;
             case emulator_messages.frame_requested:
                 //console.log('ET: running frame...');

@@ -5,7 +5,8 @@
       "textFile": "build/debug.wat",
       "optimizeLevel": 3,
       "sourceMap": true,
-      "debug": true
+      "debug": true,
+      "exportRuntime": true
     },
     "release": {
       "outFile": "build/release.wasm",
@@ -15,7 +16,8 @@
       "shrinkLevel": 0,
       "converge": true,
       "noAssert": true,
-      "runtime": "minimal"
+      "runtime": "minimal",
+      "exportRuntime": true
     }
   },
   "options": {
