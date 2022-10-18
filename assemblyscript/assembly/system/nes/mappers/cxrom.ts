@@ -59,7 +59,7 @@ export class NES_mapper_CXROM implements NES_mapper {
         if (addr < 0x4020)
             return this.bus.CPU_reg_read(addr, val, has_effect);
         if (addr < 0x8000) return val;
-        return this.PRG_ROM[(addr - 0x8000) & this.PRG_ROM_mask];
+        return unchecked(this.PRG_ROM[(addr - 0x8000) & this.PRG_ROM_mask]);
     }
 
     @inline CPU_write(addr: u32, val: u32): void {
