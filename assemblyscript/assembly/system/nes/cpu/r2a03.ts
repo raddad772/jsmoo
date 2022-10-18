@@ -34,7 +34,7 @@ export class ricoh2A03 {
         this.bus.cpu = this;
 
         this.controller_port1.device = this.joypad1;
-        this.controller_port1.device = this.joypad2;
+        this.controller_port2.device = this.joypad2;
         this.cpu.reset();
     }
 
@@ -99,7 +99,8 @@ export class ricoh2A03 {
                 let r: u32 = this.controller_port1.data();
                 return r;
             case 0x4017: // JOYSER1
-                return this.controller_port2.data();
+                return 0;
+                //return this.controller_port2.data();
         }
         return val;
     }

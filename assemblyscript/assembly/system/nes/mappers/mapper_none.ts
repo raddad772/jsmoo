@@ -25,7 +25,7 @@ export class NES_mapper_none implements NES_mapper {
         this.ppu_mirror = 0;
     }
 
-    mirror_ppu_addr(addr: u32): u32 {
+    @inline mirror_ppu_addr(addr: u32): u32 {
         addr &= 0xFFF;
         if (this.ppu_mirror === 0) {
             if ((addr >= 0x400) && (addr < 0x800)) return addr - 0x400;
@@ -38,7 +38,7 @@ export class NES_mapper_none implements NES_mapper {
 
     cycle(howmany: u32) : void {}
 
-    CPU_read(addr: u32, val: u32, has_effect: u32): u32 {
+    @inline CPU_read(addr: u32, val: u32, has_effect: u32): u32 {
         addr &= 0xFFFF;
         if (addr < 0x2000)
             return unchecked(this.CPU_RAM[addr & 0x7FF]);
@@ -51,7 +51,7 @@ export class NES_mapper_none implements NES_mapper {
         return val;
     }
 
-    CPU_write(addr: u32, val: u32): void {
+    @inline CPU_write(addr: u32, val: u32): void {
         addr &= 0xFFFF;
         if (addr < 0x2000) {
             unchecked(this.CPU_RAM[addr & 0x7FF] = <u8>val);
@@ -73,10 +73,8 @@ export class NES_mapper_none implements NES_mapper {
         return unchecked(this.CIRAM[this.mirror_ppu_addr(addr)]);
     }
 
-    @inline PPU_read_noeffect(addr: u32): u32 {
-        if (addr < 0x2000)
-            return unchecked(this.CHR_ROM[addr]);
-        return unchecked(this.CIRAM[this.mirror_ppu_addr(addr)]);
+    PPU_read_noeffect(addr: u32): u32 {
+        return this.PPU_read_effect(addr);
     }
 
     PPU_write(addr: u32, val: u32): void {
