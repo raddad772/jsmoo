@@ -14,7 +14,8 @@ export class NES_mapper_AXROM implements NES_mapper {
     clock: NES_clock
     bus: NES_bus
     PRG_ROM: StaticArray<u8> = new StaticArray<u8>(0);
-    CIRAM: StaticArray<u8> = new StaticArray<u8>(0x2800); // PPU RAM
+    CHR_RAM: StaticArray<u8> = new StaticArray<u8>(0x2000);
+    CIRAM: StaticArray<u8> = new StaticArray<u8>(0x800); // PPU RAM
     CPU_RAM: StaticArray<u8> = new StaticArray<u8>(0x800); // CPU RAM
 
     ppu_mirror: NES_PPU_mirror_modes = NES_PPU_mirror_modes.ScreenAOnly;
@@ -39,8 +40,8 @@ export class NES_mapper_AXROM implements NES_mapper {
     }
 
     @inline PPU_read_effect(addr: u32): u32 {
-        if (addr < 0x2000) return this.CIRAM[addr];
-        return unchecked(this.CIRAM[0x2000 | this.mirror_ppu_addr(addr)]);
+        if (addr < 0x2000) return this.CHR_RAM[addr];
+        return unchecked(this.CIRAM[this.mirror_ppu_addr(addr)]);
     }
 
     PPU_read_noeffect(addr: u32): u32 {
@@ -48,8 +49,8 @@ export class NES_mapper_AXROM implements NES_mapper {
     }
 
     PPU_write(addr: u32, val: u32): void {
-        if (addr < 0x2000) this.CIRAM[addr] = <u8>val;
-        else this.CIRAM[0x2000 | this.mirror_ppu_addr(addr)] = <u8>val;
+        if (addr < 0x2000) this.CHR_RAM[addr] = <u8>val;
+        else this.CIRAM[this.mirror_ppu_addr(addr)] = <u8>val;
     }
 
     @inline CPU_read(addr: u32, val: u32, has_effect: u32): u32 {
