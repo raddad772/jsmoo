@@ -1,0 +1,100 @@
+import {NES_mapper} from "./interface";
+import {NES_cart} from "../nes_cart";
+import {NES_bus, NES_clock} from "../nes_common";
+
+export enum NES_PPU_mirror_modes {
+    Horizontal,
+    Vertical,
+    Four,
+    ScreenAOnly,
+    ScreenBOnly
+}
+
+export class NES_mapper_AXROM implements NES_mapper {
+    clock: NES_clock
+    bus: NES_bus
+    PRG_ROM: StaticArray<u8> = new StaticArray<u8>(0);
+    CIRAM: StaticArray<u8> = new StaticArray<u8>(0x2800); // PPU RAM
+    CPU_RAM: StaticArray<u8> = new StaticArray<u8>(0x800); // CPU RAM
+
+    ppu_mirror: NES_PPU_mirror_modes = NES_PPU_mirror_modes.ScreenAOnly;
+    num_PRG_banks: u32 = 0;
+    prg_bank_offset: u32 = 0;
+
+    constructor(clock: NES_clock, bus: NES_bus) {
+        this.clock = clock;
+        this.bus = bus;
+    }
+
+    @inline cycle(howmany: u32): void {}
+
+    @inline mirror_ppu_addr(addr: u32): u32 {
+        switch(this.ppu_mirror) {
+            case NES_PPU_mirror_modes.ScreenAOnly:
+                return addr & 0x3FF;
+            case NES_PPU_mirror_modes.ScreenBOnly:
+                return (addr & 0x3FF) + 0x400;
+        }
+        return 0;
+    }
+
+    @inline PPU_read_effect(addr: u32): u32 {
+        if (addr < 0x2000) return this.CIRAM[addr];
+        return unchecked(this.CIRAM[0x2000 | this.mirror_ppu_addr(addr)]);
+    }
+
+    PPU_read_noeffect(addr: u32): u32 {
+        return this.PPU_read_effect(addr);
+    }
+
+    PPU_write(addr: u32, val: u32): void {
+        if (addr < 0x2000) this.CIRAM[addr] = <u8>val;
+        else this.CIRAM[0x2000 | this.mirror_ppu_addr(addr)] = <u8>val;
+    }
+
+    @inline CPU_read(addr: u32, val: u32, has_effect: u32): u32 {
+        addr &= 0xFFFF;
+        if (addr < 0x2000)
+            return unchecked(this.CPU_RAM[addr & 0x7FF]);
+        if (addr < 0x3FFF)
+            return this.bus.PPU_reg_read(addr, val, has_effect);
+        if (addr < 0x4020)
+            return this.bus.CPU_reg_read(addr, val, has_effect);
+        if (addr < 0x8000) return val;
+        return this.PRG_ROM[(addr - 0x8000) + this.prg_bank_offset];
+    }
+
+    @inline CPU_write(addr: u32, val: u32): void {
+        addr &= 0xFFFF;
+        if (addr < 0x2000) {
+            unchecked(this.CPU_RAM[addr & 0x7FF] = <u8>val);
+            return;
+        }
+        if (addr < 0x3FFF)
+            return this.bus.PPU_reg_write(addr, val);
+        if (addr < 0x4020)
+            return this.bus.CPU_reg_write(addr, val);
+
+        if (addr < 0x8000) return;
+
+        let prgb: u32 = val & 15;
+        this.prg_bank_offset = (prgb % this.num_PRG_banks) * 32768;
+        this.ppu_mirror = (val & 0x10) ? NES_PPU_mirror_modes.ScreenBOnly : NES_PPU_mirror_modes.ScreenAOnly;
+    }
+
+    reset(): void {
+        this.prg_bank_offset = (this.num_PRG_banks - 1) * 32768;
+    }
+
+    set_cart(cart: NES_cart): void {
+        this.PRG_ROM = new StaticArray<u8>(cart.PRG_ROM.byteLength);
+        for (let i = 0, k = cart.PRG_ROM.byteLength; i < k; i++) {
+            this.PRG_ROM[i] = cart.PRG_ROM[i];
+        }
+        this.num_PRG_banks = cart.header.prg_rom_size / 32768;
+
+        this.ppu_mirror = cart.header.mirroring;
+
+        this.prg_bank_offset = 0;
+    }
+}

@@ -193,7 +193,7 @@ export class NES_mapper_MMC1 implements NES_mapper {
                     break;
                 case 0xE000: // PRG bank
                     this.io.bank = this.io.shift_value & 0x0F;
-                    if (this.io.shift_value & 0x10) console.log('WARNING!');
+                    if (this.io.shift_value & 0x10) console.log('WARNING50!');
                     this.remap();
                     break;
             }

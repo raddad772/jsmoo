@@ -253,12 +253,15 @@ class global_player_t {
 	}
 
 	on_player_message(e) {
-		console.log('MESSAGE FROM PLAYER THREAD', e);
 		switch(e.kind) {
 			case emulator_messages.specs:
 				this.tech_specs = e.specs;
 				this.update_tech_specs();
 				break;
+			case emulator_messages.frame_complete:
+				this.present();
+				break;
+
 		}
 	}
 
@@ -287,7 +290,10 @@ class global_player_t {
 
 	present() {
 		this.frame_present++;
-		if (USE_ASSEMBLYSCRIPT) this.player_thread.present(this.canvas_manager)
+		if (USE_ASSEMBLYSCRIPT) {
+			this.timing_thread.frame_done();
+			this.player_thread.present(this.canvas_manager)
+		}
 		else this.system.present()
 	}
 
@@ -296,14 +302,14 @@ class global_player_t {
 			case timing_messages.frame_request:
 				if (this.playing) {
 					this.run_frame();
-					//this.system.run_frame();
-					this.timing_thread.frame_done();
+					if (!USE_ASSEMBLYSCRIPT)
+						this.timing_thread.frame_done();
 					if (this.queued_save_state !== -1)
 						this.do_save_state();
 					if (this.queued_load_state !== -1)
 						this.do_load_state();
 					//this.system.present();
-					this.present();
+					if (!USE_ASSEMBLYSCRIPT) this.present();
 					this.update_status();
 					input_config.emu_input.between_frames();
 				}

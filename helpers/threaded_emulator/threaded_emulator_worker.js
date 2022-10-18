@@ -45,7 +45,7 @@ class threaded_emulator_worker_t {
 
     output_input(keymap) {
         let obuf = new Uint32Array(this.wrapper.wasm.memory.buffer)
-        let startpos = this.out_ptr >>> 2;
+        let startpos = this.wrapper.input_buffer_ptr >>> 2;
         for (let i in keymap) {
             obuf[startpos+keymap[i].buf_pos] = keymap[i].value;
         }
@@ -91,6 +91,7 @@ class threaded_emulator_worker_t {
         let rd = new Uint32Array(this.wrapper.wasm.memory.buffer);
         let to_copy = Math.ceil((this.tech_specs.x_resolution * this.tech_specs.y_resolution) / 4) * 4;
         this.framebuffer.set(rd.slice(this.out_ptr >>> 2, (this.out_ptr>>>2)+to_copy));
+        this.send_frame_done();
     }
 
     do_set_system(kind) {
@@ -99,6 +100,10 @@ class threaded_emulator_worker_t {
         this.tech_specs = this.wrapper.wasm.gp_get_specs(this.wrapper.global_player);
         this.out_ptr = this.tech_specs.out_ptr;
         this.send_specs(this.tech_specs)
+    }
+
+    send_frame_done() {
+        postMessage({kind: emulator_messages.frame_complete})
     }
 
     send_specs(specs) {

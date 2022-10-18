@@ -219,7 +219,7 @@ export class NES_ppu {
         else this.write_cgram(addr, val);
     }
 
-    rendering_enabled(): bool {
+    @inline rendering_enabled(): bool {
         return this.io.bg_enable || this.io.sprite_enable;
     }
 
@@ -282,17 +282,22 @@ export class NES_ppu {
     }
 
     perform_bg_fetches(): void { // Only called from prerender and visible scanlines
-        let in_tile_y: u32 = (this.io.v >>> 12) & 7; // Y position inside tile
+        const lc = this.line_cycle;
 
-        if (((this.line_cycle > 0) && (this.line_cycle <= 257)) || (this.line_cycle > 320)) {
+        // Only do things on odd cycles
+        if ((lc & 1) === 0) return;
+
+        const in_tile_y: u32 = (this.io.v >>> 12) & 7; // Y position inside tile
+
+        if (((lc > 0) && (lc <= 257)) || (lc > 320)) {
             // Do memory accesses and shifters
-            switch (this.line_cycle & 7) {
+            switch (lc & 7) {
                 case 1: // nametable, tile #
                     this.bg_fetches0 = this.bus.mapper.PPU_read_effect(0x2000 | (this.io.v & 0xFFF));
                     this.bg_tile_fetch_addr = this.fetch_chr_addr(this.io.bg_pattern_table, this.bg_fetches0, in_tile_y);
                     this.bg_tile_fetch_buffer = 0;
                     // Reload shifters if needed
-                    if (this.line_cycle !== 1) { // reload shifter at interval #9 9....257
+                    if (lc !== 1) { // reload shifter at interval #9 9....257
                         this.bg_shifter = (this.bg_shifter >>> 16) | (this.bg_fetches2 << 16) | (this.bg_fetches3 << 24);
                         this.bg_palette_shifter = ((this.bg_palette_shifter << 2) | this.bg_fetches1) & 0x0F; //(this.bg_palette_shifter >>> 8) | (this.bg_fetches1 << 8);
                     }
@@ -340,9 +345,9 @@ export class NES_ppu {
                     unchecked(this.secondary_OAM[this.secondary_OAM_index] = this.OAM_transfer_latch);
                     if ((eval_y >= this.OAM_transfer_latch) && (eval_y < (this.OAM_transfer_latch + this.status.sprite_height))) {
                         if (this.OAM_eval_index === 0) this.sprite0_on_next_line = true;
-                        unchecked(this.secondary_OAM[this.secondary_OAM_index + 1] = this.OAM[this.OAM_eval_index + 1]);
-                        unchecked(this.secondary_OAM[this.secondary_OAM_index + 2] = this.OAM[this.OAM_eval_index + 2]);
-                        unchecked(this.secondary_OAM[this.secondary_OAM_index + 3] = this.OAM[this.OAM_eval_index + 3]);
+                        unchecked(this.secondary_OAM[this.secondary_OAM_index + 1] = unchecked(this.OAM[this.OAM_eval_index + 1]));
+                        unchecked(this.secondary_OAM[this.secondary_OAM_index + 2] = unchecked(this.OAM[this.OAM_eval_index + 2]));
+                        unchecked(this.secondary_OAM[this.secondary_OAM_index + 3] = unchecked(this.OAM[this.OAM_eval_index + 3]));
                         this.secondary_OAM_index += 4;
                         this.secondary_OAM_sprite_total++;
                         //this.secondary_OAM_lock = this.secondary_OAM_index >= 32;
@@ -403,15 +408,15 @@ export class NES_ppu {
                     this.secondary_OAM_index++;
                     break;
                 case 1: // Read tile number 258
-                    unchecked(this.sprite_pattern_shifters[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index]);
+                    unchecked(this.sprite_pattern_shifters[this.secondary_OAM_sprite_index] = unchecked(this.secondary_OAM[this.secondary_OAM_index]));
                     this.secondary_OAM_index++;
                     break;
                 case 2: // Read attributes 259
-                    unchecked(this.sprite_attribute_latches[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index]);
+                    unchecked(this.sprite_attribute_latches[this.secondary_OAM_sprite_index] = unchecked(this.secondary_OAM[this.secondary_OAM_index]));
                     this.secondary_OAM_index++;
                     break;
                 case 3: // Read X-coordinate 260
-                    unchecked(this.sprite_x_counters[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index]);
+                    unchecked(this.sprite_x_counters[this.secondary_OAM_sprite_index] = unchecked(this.secondary_OAM[this.secondary_OAM_index]));
                     this.secondary_OAM_index++;
                     break;
                 case 4: // Fetch tiles for the shifters 261
@@ -440,9 +445,10 @@ export class NES_ppu {
 
     // Do sprite counters & memory address updates
     cycle_scanline_addr(): void {
+        const lc = this.line_cycle
         if (this.clock.ppu_y < this.clock.timing.bottom_rendered_line) {
             // Sprites
-            if ((this.line_cycle > 0) && (this.line_cycle < 257)) {
+            if ((lc > 0) && (lc < 257)) {
                 unchecked(this.sprite_x_counters[0]--);
                 unchecked(this.sprite_x_counters[1]--);
                 unchecked(this.sprite_x_counters[2]--);
@@ -453,9 +459,9 @@ export class NES_ppu {
                 unchecked(this.sprite_x_counters[7]--);
             }
         }
-        if (!this.rendering_enabled() || (this.line_cycle === 0)) return;
+        if (!(this.io.bg_enable | this.io.sprite_enable) || (lc === 0)) return;
         // Cycle # 8, 16,...248, and 328, 336. BUT NOT 0
-        if (((this.line_cycle & 7) == 0) && ((this.line_cycle >= 328) || (this.line_cycle < 256))) {
+        if (((lc & 7) == 0) && ((lc >= 328) || (lc < 256))) {
             // INCREMENT HORIZONTAL SCROLL IN v
             if ((this.io.v & 0x1F) == 0x1F) // If X scroll is 31...
                 this.io.v = (this.io.v & 0xFFE0) ^ 0x0400; // clear x scroll to 0 (& FFE0) and swap nametable (^ 0x400)
@@ -464,7 +470,7 @@ export class NES_ppu {
             return;
         }
         // INCREMENT VERTICAL SCROLL IN v
-        if (this.line_cycle == 256) {
+        if (lc == 256) {
             if ((this.io.v & 0x7000) !== 0x7000) { // if fine y !== 7
                 this.io.v += 0x1000;               // add 1 to fine y
             }
@@ -484,7 +490,7 @@ export class NES_ppu {
             return;
         }
         // Cycles 257...320, copy parts of T to V over and over...
-        if ((this.line_cycle >= 257) && (this.line_cycle <= 320)) {
+        if ((lc >= 257) && (lc <= 320)) {
             this.io.v = (this.io.v & 0xFBE0) | (this.io.t & 0x41F);
         }
     }

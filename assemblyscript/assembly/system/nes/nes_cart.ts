@@ -3,6 +3,9 @@ import {NES_mapper_none} from "./mappers/mapper_none";
 import {NES_MMC3b} from "./mappers/mmc3b";
 import {NES_mapper_VRC2B_4E_4F} from "./mappers/vrc_2b_4e_4f";
 import {NES_mapper_MMC1} from "./mappers/mmc1";
+import {NES_mapper_UXROM} from "./mappers/uxrom";
+import {NES_mapper_CXROM} from "./mappers/cxrom";
+import {NES_mapper_AXROM} from "./mappers/axrom";
 
 class heapArray {
 	ptr: usize = 0;
@@ -89,9 +92,18 @@ export class NES_cart {
 			case 1: // MMC1
 				this.bus.mapper = new NES_mapper_MMC1(this.clock, this.bus);
 				break;
-            case 4: // MMC3
+			case 2: // UxROM
+				this.bus.mapper = new NES_mapper_UXROM(this.clock, this.bus);
+				break;
+			case 3: // CxROM
+				this.bus.mapper = new NES_mapper_CXROM(this.clock, this.bus);
+				break;
+			case 4: // MMC3
                 this.bus.mapper = new NES_MMC3b(this.clock, this.bus);
                 break;
+			case 7: // AXROM
+				this.bus.mapper = new NES_mapper_AXROM(this.clock, this.bus);
+				break;
 			case 23: // VRC4
 				this.bus.mapper = new NES_mapper_VRC2B_4E_4F(this.clock, this.bus);
 				break;
