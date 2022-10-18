@@ -5,7 +5,7 @@ import {NES_bus, NES_clock} from "../nes_common";
 export class NES_mapper_UXROM implements NES_mapper {
     clock: NES_clock
     bus: NES_bus
-    CHR_ROM: StaticArray<u8> = new StaticArray<u8>(0x2000);
+    CHR_RAM: StaticArray<u8> = new StaticArray<u8>(0x2000);
     PRG_ROM: StaticArray<u8> = new StaticArray<u8>(0);
     CIRAM: StaticArray<u8> = new StaticArray<u8>(0x2000); // PPU RAM
     CPU_RAM: StaticArray<u8> = new StaticArray<u8>(0x800); // CPU RAM
@@ -38,7 +38,7 @@ export class NES_mapper_UXROM implements NES_mapper {
     }
 
     @inline PPU_read_effect(addr: u32): u32 {
-        if (addr < 0x2000) return unchecked(this.CHR_ROM[addr]);
+        if (addr < 0x2000) return unchecked(this.CHR_RAM[addr]);
         return unchecked(this.CIRAM[this.mirror_ppu_addr(addr)]);
     }
 
@@ -47,8 +47,8 @@ export class NES_mapper_UXROM implements NES_mapper {
     }
 
     PPU_write(addr: u32, val: u32): void {
-        if (addr < 0x2000) return;
-        unchecked(this.CIRAM[this.mirror_ppu_addr(addr)] = <u8>val);
+        if (addr < 0x2000) this.CHR_RAM[addr] = <u8>val;
+        else unchecked(this.CIRAM[this.mirror_ppu_addr(addr)] = <u8>val);
     }
 
     @inline CPU_read(addr: u32, val: u32, has_effect: u32): u32 {
@@ -88,9 +88,6 @@ export class NES_mapper_UXROM implements NES_mapper {
     }
 
     set_cart(cart: NES_cart): void {
-        for (let i = 0; i < 0x2000; i++) {
-            this.CHR_ROM[i] = cart.CHR_ROM[i];
-        }
         this.PRG_ROM = new StaticArray<u8>(cart.PRG_ROM.byteLength);
         for (let i = 0, k = cart.PRG_ROM.byteLength; i < k; i++) {
             this.PRG_ROM[i] = cart.PRG_ROM[i];
