@@ -47,7 +47,7 @@ export class NES_mapper_UXROM implements NES_mapper {
     }
 
     PPU_write(addr: u32, val: u32): void {
-        if (addr < 0x2000) this.CHR_RAM[addr] = <u8>val;
+        if (addr < 0x2000) unchecked(this.CHR_RAM[addr] = <u8>val);
         else unchecked(this.CIRAM[this.mirror_ppu_addr(addr)] = <u8>val);
     }
 
@@ -60,8 +60,8 @@ export class NES_mapper_UXROM implements NES_mapper {
         if (addr < 0x4020)
             return this.bus.CPU_reg_read(addr, val, has_effect);
         if (addr < 0x8000) return val;
-        if (addr < 0xC000) return this.PRG_ROM[(addr - 0x8000) + this.prg_bank_offset];
-        return this.PRG_ROM[(addr - 0xC000) + this.last_bank_offset];
+        if (addr < 0xC000) return unchecked(this.PRG_ROM[(addr - 0x8000) + this.prg_bank_offset]);
+        return unchecked(this.PRG_ROM[(addr - 0xC000) + this.last_bank_offset]);
     }
 
     @inline CPU_write(addr: u32, val: u32): void {

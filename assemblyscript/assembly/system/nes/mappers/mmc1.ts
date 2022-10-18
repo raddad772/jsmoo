@@ -97,7 +97,7 @@ export class NES_mapper_MMC1 implements NES_mapper {
         }
     }
 
-    mirror_ppu_addr(addr: u32): u32 {
+    @inline mirror_ppu_addr(addr: u32): u32 {
         switch(this.ppu_mirror) {
             case 0:
                 return (addr & 0x3FF);
