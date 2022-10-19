@@ -99,7 +99,7 @@ export class NES_mapper_VRC2B_4E_4F implements NES_mapper {
         }
     }
 
-    @inline cycle(): void {
+    @inline cycle(howmany: u32): void {
         if (!this.is_vrc4) return;
         this.irq.cycle();
     }

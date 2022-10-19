@@ -35,7 +35,7 @@ export class NES_mapper_DXROM implements NES_mapper {
         this.bus = bus;
     }
 
-    @inline cycle(): void {}
+    @inline cycle(howmany: u32): void {}
 
     @inline PPU_read_effect(addr: u32): u32 {
         if (addr < 0x2000)

@@ -1,8 +1,8 @@
 'use strict';
 
-const USE_THREADED_PLAYER = true;
 
-const USE_ASSEMBLYSCRIPT = true;
+const USE_ASSEMBLYSCRIPT = false;
+const USE_THREADED_PLAYER = USE_ASSEMBLYSCRIPT;
 const SNES_STR = 'snes';
 const NES_STR = 'nes';
 const COMMODORE64_STR = 'c64';

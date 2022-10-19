@@ -160,7 +160,7 @@ export class NES implements systemEmulator {
         while (this.clock.ppu_y === start_y) {
             this.clock.master_clock += cpu_step;
             this.cpu.run_cycle();
-            //this.cart.mapper.cycle();
+            this.bus.mapper.cycle(1);
             this.clock.cpu_frame_cycle++;
             this.clock.cpu_master_clock += cpu_step;
             let ppu_left = this.clock.master_clock - this.clock.ppu_master_clock;

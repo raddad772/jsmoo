@@ -234,7 +234,6 @@ class m6502_t {
             if (this.regs.NMI_pending && !this.NMI_ack) {
                 this.NMI_ack = true;
                 this.regs.NMI_pending = false;
-                //console.log('NMI1!', this.clock.master_frame, this.clock.ppu_y);
                 this.regs.IR = M6502_OP_NMI;
                 if (dbg.brk_on_NMIRQ) dbg.break(D_RESOURCE_TYPES.M6502);
             } else if (this.regs.IRQ_pending && !this.IRQ_ack && !this.regs.old_I) {
