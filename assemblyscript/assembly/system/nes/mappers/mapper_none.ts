@@ -1,4 +1,12 @@
-import {NES_a12_watcher_t, NES_mapper} from "./interface";
+import {
+    NES_a12_watcher_t,
+    NES_mapper,
+    NES_mirror_ppu_Aonly,
+    NES_mirror_ppu_Bonly,
+    NES_mirror_ppu_four,
+    NES_mirror_ppu_horizontal,
+    NES_mirror_ppu_vertical, NES_PPU_mirror_modes
+} from "./interface";
 import {NES_bus, NES_clock} from "../nes_common";
 import {NES_cart} from "../nes_cart";
 
@@ -10,8 +18,9 @@ export class NES_mapper_none implements NES_mapper {
     PRG_ROM: StaticArray<u8>
     CIRAM: StaticArray<u8>
     CPU_RAM: StaticArray<u8>
-    ppu_mirror: u32
+    ppu_mirror: NES_PPU_mirror_modes = NES_PPU_mirror_modes.Horizontal;
     PRG_ROM_size: u32
+    mirror_ppu_addr: (addr: u32) => u32 = NES_mirror_ppu_horizontal;
     constructor(clock: NES_clock, bus: NES_bus) {
         this.clock = clock;
         this.bus = bus;
@@ -23,17 +32,6 @@ export class NES_mapper_none implements NES_mapper {
         this.CIRAM = new StaticArray<u8>(0x2000); // PPU RAM
         this.CPU_RAM = new StaticArray<u8>(0x800);
         this.ppu_mirror = 0;
-    }
-
-    @inline mirror_ppu_addr(addr: u32): u32 {
-        addr &= 0xFFF;
-        if (this.ppu_mirror === 0) {
-            if ((addr >= 0x400) && (addr < 0x800)) return addr - 0x400;
-            if ((addr >= 0xC00)) return addr - 0x400;
-        } else {
-            if (addr >= 0x800) return addr - 0x800;
-        }
-        return addr;
     }
 
     cycle(howmany: u32) : void {}
@@ -77,9 +75,29 @@ export class NES_mapper_none implements NES_mapper {
         return this.PPU_read_effect(addr);
     }
 
-    PPU_write(addr: u32, val: u32): void {
+    @inline PPU_write(addr: u32, val: u32): void {
         if (addr < 0x2000) return;
         unchecked(this.CIRAM[this.mirror_ppu_addr(addr)] = <u8>val);
+    }
+
+    set_mirroring(): void {
+        switch(this.ppu_mirror) {
+            case NES_PPU_mirror_modes.Vertical:
+                this.mirror_ppu_addr = NES_mirror_ppu_vertical;
+                return;
+            case NES_PPU_mirror_modes.Horizontal:
+                this.mirror_ppu_addr = NES_mirror_ppu_horizontal;
+                return;
+            case NES_PPU_mirror_modes.FourWay:
+                this.mirror_ppu_addr = NES_mirror_ppu_four;
+                return;
+            case NES_PPU_mirror_modes.ScreenAOnly:
+                this.mirror_ppu_addr = NES_mirror_ppu_Aonly;
+                return;
+            case NES_PPU_mirror_modes.ScreenBOnly:
+                this.mirror_ppu_addr = NES_mirror_ppu_Bonly;
+                return;
+        }
     }
 
     reset(): void { } // naught to do on reset
@@ -95,5 +113,6 @@ export class NES_mapper_none implements NES_mapper {
         this.PRG_ROM_size = cart.header.prg_rom_size;
 
         this.ppu_mirror = cart.header.mirroring;
+        this.set_mirroring();
     }
 }

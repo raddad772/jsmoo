@@ -1,4 +1,12 @@
-import {NES_mapper} from "./interface";
+import {
+    NES_mapper,
+    NES_mirror_ppu_Aonly,
+    NES_mirror_ppu_Bonly,
+    NES_mirror_ppu_four,
+    NES_mirror_ppu_horizontal,
+    NES_mirror_ppu_vertical,
+    NES_PPU_mirror_modes
+} from "./interface";
 import {NES_bus, NES_clock} from "../nes_common";
 import {MMC3b_map} from "./mmc3b";
 import {NES_cart} from "../nes_cart";
@@ -60,10 +68,9 @@ export class NES_mapper_VRC2B_4E_4F implements NES_mapper {
     CHR_ROM: StaticArray<u8> = new StaticArray<u8>(0);
     PRG_ROM: StaticArray<u8> = new StaticArray<u8>(0);
     CIRAM: StaticArray<u8> = new StaticArray<u8>(0x2000); // PPU RAM
-    CPU_RAM: StaticArray<u8> = new StaticArray<u8>(8192); // CPU RAM
+    CPU_RAM: StaticArray<u8> = new StaticArray<u8>(0x800); // CPU RAM
     PRG_RAM: StaticArray<u8> = new StaticArray<u8>(0);
     prg_ram_size: u32 = 0;
-
 
     PRG_map: StaticArray<MMC3b_map> = new StaticArray<MMC3b_map>(8);
     CHR_map: StaticArray<MMC3b_map> = new StaticArray<MMC3b_map>(8);
@@ -72,15 +79,17 @@ export class NES_mapper_VRC2B_4E_4F implements NES_mapper {
     num_PRG_banks: u32 = 0
 
     is_vrc4: bool = false
-    ppu_mirror: u32 = 0
+    ppu_mirror: NES_PPU_mirror_modes = NES_PPU_mirror_modes.Horizontal;
+    mirror_ppu_addr: (addr: u32) => u32 = NES_mirror_ppu_horizontal;
     is_vrc2a: bool = false
 
     irq: NES_VRC_IRQ
     io: mapper_io = new mapper_io();
 
-    constructor(clock: NES_clock, bus: NES_bus) {
+    constructor(clock: NES_clock, bus: NES_bus, is_vrc4: bool = false) {
         this.clock = clock;
         this.bus = bus;
+        this.is_vrc4 = is_vrc4;
 
         this.irq = new NES_VRC_IRQ(bus);
 
@@ -213,8 +222,18 @@ export class NES_mapper_VRC2B_4E_4F implements NES_mapper {
                     console.log('a2');
                     return;
                 }
-                if (this.is_vrc4) this.ppu_mirror = val & 3;
-                else this.ppu_mirror = val & 1;
+
+                if (this.is_vrc4) val &= 3;
+                else val &= 1;
+                // 0 vertical 1 horizontal 2 a 3 b
+
+                switch(val) {
+                    case 0: this.ppu_mirror = NES_PPU_mirror_modes.Vertical; break;
+                    case 1: this.ppu_mirror = NES_PPU_mirror_modes.Horizontal; break;
+                    case 2: this.ppu_mirror = NES_PPU_mirror_modes.ScreenAOnly; break;
+                    case 3: this.ppu_mirror = NES_PPU_mirror_modes.ScreenBOnly; break;
+                }
+                this.set_mirroring();
                 return;
             case 0xA000:
             case 0xA001:
@@ -307,21 +326,27 @@ export class NES_mapper_VRC2B_4E_4F implements NES_mapper {
         this.set_CHR_ROM_1k(7, this.io.ppu_banks[7]);
     }
 
-    mirror_ppu_addr(addr: u32): u32 {
+     set_mirroring(): void {
         switch(this.ppu_mirror) {
-            case 0: //vertical mirroring
-                return (addr & 0x0400) | (addr & 0x03FF);
-            case 1: //horizontal mirroring
-                return (addr >>> 1 & 0x0400) | (addr & 0x03FF);
-            case 2: // one-screen first
-                 return addr & 0x03FF;
-            case 3: // one-screen second
-                return 0x0400 | (addr & 0x03FF);
+            case NES_PPU_mirror_modes.Vertical:
+                this.mirror_ppu_addr = NES_mirror_ppu_vertical;
+                return;
+            case NES_PPU_mirror_modes.Horizontal:
+                this.mirror_ppu_addr = NES_mirror_ppu_horizontal;
+                return;
+            case NES_PPU_mirror_modes.FourWay:
+                this.mirror_ppu_addr = NES_mirror_ppu_four;
+                return;
+            case NES_PPU_mirror_modes.ScreenAOnly:
+                this.mirror_ppu_addr = NES_mirror_ppu_Aonly;
+                return;
+            case NES_PPU_mirror_modes.ScreenBOnly:
+                this.mirror_ppu_addr = NES_mirror_ppu_Bonly;
+                return;
         }
-        return 0;
     }
 
-    set_cart(cart: NES_cart): void {
+   set_cart(cart: NES_cart): void {
         this.CHR_ROM = new StaticArray<u8>(cart.CHR_ROM.byteLength);
         for (let i: u32 = 0, k: u32 = cart.CHR_ROM.byteLength; i < k; i++) {
             this.CHR_ROM[i] = cart.CHR_ROM[i];

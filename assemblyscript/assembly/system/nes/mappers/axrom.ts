@@ -1,14 +1,12 @@
-import {NES_mapper} from "./interface";
+import {
+    NES_mapper,
+    NES_mirror_ppu_Aonly, NES_mirror_ppu_Bonly, NES_mirror_ppu_four,
+    NES_mirror_ppu_horizontal,
+    NES_mirror_ppu_vertical,
+    NES_PPU_mirror_modes
+} from "./interface";
 import {NES_cart} from "../nes_cart";
 import {NES_bus, NES_clock} from "../nes_common";
-
-export enum NES_PPU_mirror_modes {
-    Horizontal,
-    Vertical,
-    Four,
-    ScreenAOnly,
-    ScreenBOnly
-}
 
 export class NES_mapper_AXROM implements NES_mapper {
     clock: NES_clock
@@ -19,6 +17,7 @@ export class NES_mapper_AXROM implements NES_mapper {
     CPU_RAM: StaticArray<u8> = new StaticArray<u8>(0x800); // CPU RAM
 
     ppu_mirror: NES_PPU_mirror_modes = NES_PPU_mirror_modes.ScreenAOnly;
+    mirror_ppu_addr: (addr: u32) => u32 = NES_mirror_ppu_Aonly;
     num_PRG_banks: u32 = 0;
     prg_bank_offset: u32 = 0;
 
@@ -28,16 +27,6 @@ export class NES_mapper_AXROM implements NES_mapper {
     }
 
     @inline cycle(howmany: u32): void {}
-
-    @inline mirror_ppu_addr(addr: u32): u32 {
-        switch(this.ppu_mirror) {
-            case NES_PPU_mirror_modes.ScreenAOnly:
-                return addr & 0x3FF;
-            case NES_PPU_mirror_modes.ScreenBOnly:
-                return (addr & 0x3FF) + 0x400;
-        }
-        return 0;
-    }
 
     @inline PPU_read_effect(addr: u32): u32 {
         if (addr < 0x2000) return unchecked(this.CHR_RAM[addr]);
@@ -78,13 +67,33 @@ export class NES_mapper_AXROM implements NES_mapper {
 
         if (addr < 0x8000) return;
 
-        let prgb: u32 = val & 15;
-        this.prg_bank_offset = (prgb % this.num_PRG_banks) * 32768;
+        this.prg_bank_offset = ((val & 15) % this.num_PRG_banks) * 32768;
         this.ppu_mirror = (val & 0x10) ? NES_PPU_mirror_modes.ScreenBOnly : NES_PPU_mirror_modes.ScreenAOnly;
+        this.set_mirroring();
     }
 
     reset(): void {
         this.prg_bank_offset = (this.num_PRG_banks - 1) * 32768;
+    }
+
+    set_mirroring(): void {
+        switch(this.ppu_mirror) {
+            case NES_PPU_mirror_modes.Vertical:
+                this.mirror_ppu_addr = NES_mirror_ppu_vertical;
+                return;
+            case NES_PPU_mirror_modes.Horizontal:
+                this.mirror_ppu_addr = NES_mirror_ppu_horizontal;
+                return;
+            case NES_PPU_mirror_modes.FourWay:
+                this.mirror_ppu_addr = NES_mirror_ppu_four;
+                return;
+            case NES_PPU_mirror_modes.ScreenAOnly:
+                this.mirror_ppu_addr = NES_mirror_ppu_Aonly;
+                return;
+            case NES_PPU_mirror_modes.ScreenBOnly:
+                this.mirror_ppu_addr = NES_mirror_ppu_Bonly;
+                return;
+        }
     }
 
     set_cart(cart: NES_cart): void {
@@ -95,6 +104,7 @@ export class NES_mapper_AXROM implements NES_mapper {
         this.num_PRG_banks = cart.header.prg_rom_size / 32768;
 
         this.ppu_mirror = cart.header.mirroring;
+        this.set_mirroring();
 
         this.prg_bank_offset = 0;
     }
