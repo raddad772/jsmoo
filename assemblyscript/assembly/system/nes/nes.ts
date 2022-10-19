@@ -123,7 +123,7 @@ export class NES implements systemEmulator {
         md.timing = MD_TIMING.frame;
         md.standard = MD_STANDARD.NSTC;
         md.x_resolution = 256;
-        md.y_resolution = 224;
+        md.y_resolution = 240;
         for (let i = 0, k = NES_inputmap.length; i < k; i++) {
             md.keymap.push(NES_inputmap[i]);
         }

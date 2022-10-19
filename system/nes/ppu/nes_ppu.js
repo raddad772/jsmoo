@@ -314,7 +314,7 @@ class NES_ppu {
                     this.io.t = (this.io.t & 0x0C1F) | ((val & 0xF8) << 2) | ((val & 7) << 12);
                     this.io.w = 0;
                 }
-                // NOTFINISHED
+                //console.log('JS PPUSCROLL ON LINE ' + this.clock.ppu_y.toString() + ': ' + val.toString() + ', ' + this.io.t.toString());
                 return;
             case 0x2006: // PPUADDR
                 if (this.io.w === 0) {
@@ -333,7 +333,6 @@ class NES_ppu {
                     console.log('REJECT WRITE', this.clock.ppu_y, this.io.sprite_enable, this.io.bg_enable, hex4(this.io.v), hex2(val));
                     return;
                 }
-                //console.log(hex4(this.io.v), hex2(val));
                 this.mem_write(this.io.v, val);
                 this.io.v = (this.io.v + this.io.vram_increment) & 0x7FFF;
                 return;

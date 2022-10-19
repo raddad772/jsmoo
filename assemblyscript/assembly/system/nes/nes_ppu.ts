@@ -732,6 +732,7 @@ export class NES_ppu {
                     this.io.t = (this.io.t & 0x0C1F) | ((val & 0xF8) << 2) | ((val & 7) << 12);
                     this.io.w = 0;
                 }
+                //console.log('AS PPUSCROLL ON LINE ' + this.clock.ppu_y.toString() + ': ' + val.toString() + ', ' + this.io.t.toString());
                 return;
             case 0x2006: // PPUADDR
                 if (this.io.w === 0) {
@@ -746,10 +747,9 @@ export class NES_ppu {
                 return;
             case 0x2007: // PPUDATA
                 if (this.rendering_enabled() && ((this.clock.ppu_y < this.clock.timing.vblank_start) || (this.clock.ppu_y > this.clock.timing.vblank_end))) {
-                    //console.log('REJECT WRITE', this.clock.ppu_y, this.io.sprite_enable, this.io.bg_enable, hex4(this.io.v), hex2(val));
+                    console.log('REJECT WRITE ' + this.clock.ppu_y.toString() + ' ' + this.io.sprite_enable.toString() + ' ' + this.io.bg_enable.toString() + ' ' + this.io.v.toString(16) + ' ' + val.toString(16));
                     return;
                 }
-                //console.log(hex4(this.io.v), hex2(val));
                 this.mem_write(this.io.v, val);
                 this.io.v = (this.io.v + this.io.vram_increment) & 0x7FFF;
                 return;
