@@ -1,10 +1,12 @@
 "use strict";
 
 const USE_DEBUG = false;
-if (USE_DEBUG)
-    importScripts('/assemblyscript/build/debug.js');
-else
-    importScripts('/assemblyscript/build/release.js');
+if (DO_WASM_IMPORTS) {
+    if (USE_DEBUG)
+        importScripts('/assemblyscript/build/debug.js');
+    else
+        importScripts('/assemblyscript/build/release.js');
+}
 
 class gp_wrapper_t {
     constructor() {

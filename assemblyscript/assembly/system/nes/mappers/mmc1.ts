@@ -58,7 +58,7 @@ export class NES_mapper_MMC1 implements NES_mapper {
         }
     }
 
-    cycle(): void { }
+    @inline cycle(howmany: u32): void { }
 
     remap(boot: bool = false): void {
         if (boot) {

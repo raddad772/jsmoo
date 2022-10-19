@@ -1,0 +1,1 @@
+const DO_WASM_IMPORTS = false;

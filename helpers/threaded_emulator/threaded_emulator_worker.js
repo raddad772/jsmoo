@@ -8,6 +8,7 @@
     new_global_player,
     memory}
     from "/assemblyscript/build/release.js";*/
+const DO_WASM_IMPORTS = true;
 importScripts('/helpers/as_wrapper.js')
 
 
