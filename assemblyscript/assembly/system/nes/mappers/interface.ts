@@ -19,6 +19,15 @@ export interface systemEmulator {
 import {NES_bus, NES_clock} from "../nes_common";
 import {NES_cart} from "../nes_cart";
 
+export enum NES_PPU_mirror_modes {
+    Horizontal,
+    Vertical,
+    FourWay,
+    ScreenAOnly,
+    ScreenBOnly
+}
+
+
 export enum NES_a12_watcher_edge {
     nothing = 0,
     rise,
@@ -71,4 +80,24 @@ export interface NES_mapper {
     PPU_write(addr: u32, val: u32): void;
     reset(): void;
     set_cart(cart: NES_cart): void;
+}
+
+export function NES_mirror_ppu_four(addr: u32): u32 {
+    return addr & 0xFFF;
+}
+
+export function NES_mirror_ppu_vertical(addr: u32): u32 {
+    return (addr & 0x0400) | (addr & 0x03FF);
+}
+
+export function NES_mirror_ppu_horizontal(addr: u32): u32 {
+    return ((addr >>> 1) & 0x0400) | (addr & 0x03FF);
+}
+
+export function NES_mirror_ppu_Aonly(addr: u32): u32 {
+    return addr & 0x3FF;
+}
+
+export function NES_mirror_ppu_Bonly(addr: u32): u32 {
+    return 0x400 | (addr & 0x3FF);
 }

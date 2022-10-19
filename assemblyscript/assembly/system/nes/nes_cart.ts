@@ -5,6 +5,8 @@ import {NES_mapper_VRC2B_4E_4F} from "./mappers/vrc_2b_4e_4f";
 import {NES_mapper_MMC1} from "./mappers/mmc1";
 import {NES_mapper_UXROM} from "./mappers/uxrom";
 import {NES_mapper_CXROM} from "./mappers/cxrom";
+import {NES_mapper_DXROM} from "./mappers/dxrom";
+import {NES_PPU_mirror_modes} from "./mappers/interface";
 import {NES_mapper_AXROM} from "./mappers/axrom";
 
 class heapArray {
@@ -31,7 +33,7 @@ class NES_cart_header {
     mapper_number: u32 = 0;
     nes_timing: u32 = 0;
     submapper: u32 = 0;
-    mirroring: u32 = 0;
+    mirroring: NES_PPU_mirror_modes = NES_PPU_mirror_modes.Horizontal;
     battery_present: u32 = 0;
     trainer_present: u32 = 0;
     four_screen_mode: u32 = 0;
@@ -105,7 +107,10 @@ export class NES_cart {
 				this.bus.mapper = new NES_mapper_AXROM(this.clock, this.bus);
 				break;
 			case 23: // VRC4
-				this.bus.mapper = new NES_mapper_VRC2B_4E_4F(this.clock, this.bus);
+				this.bus.mapper = new NES_mapper_VRC2B_4E_4F(this.clock, this.bus, true);
+				break;
+			case 206: // DXROM
+				this.bus.mapper = new NES_mapper_DXROM(this.clock, this.bus);
 				break;
             default:
                 console.log('Unknown mapper number dawg! ' + this.header.mapper_number.toString());
@@ -146,6 +151,8 @@ export class NES_cart {
 		if (this.header.chr_ram_present) this.header.chr_ram_size = 8192;
 		// @ts-ignore
 		this.header.mirroring = fil[6] & 1;
+		if (this.header.mirroring === 0) this.header.mirroring = NES_PPU_mirror_modes.Horizontal;
+		else this.header.mirroring = NES_PPU_mirror_modes.Vertical;
 		// @ts-ignore
 		this.header.battery_present = (fil[6] & 2) >>> 1;
 		// @ts-ignore

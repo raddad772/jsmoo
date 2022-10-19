@@ -1,8 +1,15 @@
-import {NES_mapper} from "./interface";
+import {
+    NES_mapper,
+    NES_mirror_ppu_Aonly,
+    NES_mirror_ppu_Bonly,
+    NES_mirror_ppu_four,
+    NES_mirror_ppu_horizontal,
+    NES_mirror_ppu_vertical,
+    NES_PPU_mirror_modes
+} from "./interface";
 import {NES_bus, NES_clock} from "../nes_common";
 import {MMC3b_map} from "./mmc3b";
 import {NES_cart} from "../nes_cart";
-
 
 class io {
     shift_pos: u32 = 0;
@@ -37,7 +44,8 @@ export class NES_mapper_MMC1 implements NES_mapper {
 
     num_CHR_banks: u32 = 0
     num_PRG_banks: u32 = 0
-    ppu_mirror: u32 = 0
+    ppu_mirror: NES_PPU_mirror_modes = NES_PPU_mirror_modes.Horizontal;
+    mirror_ppu_addr: (addr: u32) => u32 = NES_mirror_ppu_horizontal;
 
     io: io = new io();
 
@@ -95,20 +103,6 @@ export class NES_mapper_MMC1 implements NES_mapper {
                     break;
             }
         }
-    }
-
-    @inline mirror_ppu_addr(addr: u32): u32 {
-        switch(this.ppu_mirror) {
-            case 0:
-                return (addr & 0x3FF);
-            case 1:
-                return (addr & 0x3FF) | 0x400;
-            case 3:
-                return (addr >>> 1 & 0x0400) | (addr & 0x03ff);
-            case 2:
-                return (addr & 0x0400) | (addr & 0x03ff);
-        }
-        return 0;
     }
 
     PPU_write(addr: u32, val: u32): void {
@@ -178,7 +172,13 @@ export class NES_mapper_MMC1 implements NES_mapper {
             switch (addr) {
                 case 0x8000: // control register
                     this.io.ctrl = this.io.shift_value;
-                    this.ppu_mirror = val & 3;
+                    switch(val & 3) {
+                        case 0: this.ppu_mirror = NES_PPU_mirror_modes.ScreenAOnly; break;
+                        case 1: this.ppu_mirror = NES_PPU_mirror_modes.ScreenBOnly; break;
+                        case 2: this.ppu_mirror = NES_PPU_mirror_modes.Vertical; break;
+                        case 3: this.ppu_mirror = NES_PPU_mirror_modes.Horizontal; break;
+                    }
+                    this.set_mirroring();
                     this.io.prg_bank_mode = (val >>> 2) & 3;
                     this.io.chr_bank_mode = (val >>> 4) & 1;
                     this.remap();
@@ -236,6 +236,26 @@ export class NES_mapper_MMC1 implements NES_mapper {
         this.PRG_map[b].offset = (bank_num % this.num_PRG_banks) * 0x4000;
     }
 
+    set_mirroring(): void {
+        switch(this.ppu_mirror) {
+            case NES_PPU_mirror_modes.Vertical:
+                this.mirror_ppu_addr = NES_mirror_ppu_vertical;
+                return;
+            case NES_PPU_mirror_modes.Horizontal:
+                this.mirror_ppu_addr = NES_mirror_ppu_horizontal;
+                return;
+            case NES_PPU_mirror_modes.FourWay:
+                this.mirror_ppu_addr = NES_mirror_ppu_four;
+                return;
+            case NES_PPU_mirror_modes.ScreenAOnly:
+                this.mirror_ppu_addr = NES_mirror_ppu_Aonly;
+                return;
+            case NES_PPU_mirror_modes.ScreenBOnly:
+                this.mirror_ppu_addr = NES_mirror_ppu_Bonly;
+                return;
+        }
+    }
+
     set_cart(cart: NES_cart): void {
         this.CHR_ROM = new StaticArray<u8>(cart.CHR_ROM.byteLength);
         for (let i: u32 = 0, k: u32 = cart.CHR_ROM.byteLength; i < k; i++) {
@@ -258,6 +278,7 @@ export class NES_mapper_MMC1 implements NES_mapper {
         this.has_chr_ram = this.chr_ram_size !== 0;
 
         this.ppu_mirror = cart.header.mirroring;
+        this.set_mirroring();
         this.num_PRG_banks = (cart.PRG_ROM.byteLength / 16384);
         this.num_CHR_banks = (cart.CHR_ROM.byteLength / 4096);
         console.log('Num PRG banks ' + this.num_PRG_banks.toString());
