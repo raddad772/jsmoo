@@ -81,6 +81,8 @@ class NES_mapper_MMC1 {
         return deserialization_helper(this, from, SER_NES_mapper_MMC1);
     }
 
+    a12_watch() {}
+
     cycle() {}
 
     remap(boot=false) {

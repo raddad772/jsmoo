@@ -455,14 +455,14 @@ class NES_ppu {
         let eval_y = this.clock.ppu_y;
         if (this.line_cycle < 65) {
             if (this.line_cycle === 1) {
+                this.secondary_OAM_sprite_total = 0;
+                this.secondary_OAM_index = 0;
+                this.OAM_eval_index = 0;
+                this.secondary_OAM_lock = false;
+                this.OAM_eval_done = false;
+                this.sprite0_on_next_line = false;
                 for (let n = 0; n < 32; n++) {
                     this.secondary_OAM[n] = 0xFF;
-                    this.secondary_OAM_sprite_total = 0;
-                    this.secondary_OAM_index = 0;
-                    this.OAM_eval_index = 0;
-                    this.secondary_OAM_lock = false;
-                    this.OAM_eval_done = false;
-                    this.sprite0_on_next_line = false;
                 }
             }
             return;
@@ -687,6 +687,9 @@ class NES_ppu {
 
     scanline_visible() {
         //this.scanline_timer.start_sample();
+        if ((this.clock.ppu_y === 207) && (this.line_cycle === 1)) {
+            console.log('T, V!', hex4(this.io.t), hex4(this.io.v))
+        }
         if (!this.rendering_enabled()) {
             if (this.line_cycle === 340) {
                 this.new_scanline();
