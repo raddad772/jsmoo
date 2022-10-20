@@ -240,6 +240,7 @@ class m6502_t {
                 this.IRQ_ack = true;
                 this.regs.IRQ_pending = false;
                 this.regs.IR = M6502_OP_IRQ;
+                if (dbg.brk_on_NMIRQ) dbg.break(D_RESOURCE_TYPES.M6502);
             }
             this.regs.old_I = this.regs.P.I;
             if (typeof this.regs.IR === 'undefined') {

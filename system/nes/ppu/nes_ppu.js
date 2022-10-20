@@ -119,6 +119,8 @@ class NES_ppu {
         this.clock = clock;
         this.bus = bus;
 
+        this.bus.ppu = this;
+
         this.bus.PPU_reg_write = this.write_regs.bind(this);
         this.bus.PPU_reg_read = this.read_regs.bind(this);
 
@@ -314,7 +316,6 @@ class NES_ppu {
                     this.io.t = (this.io.t & 0x0C1F) | ((val & 0xF8) << 2) | ((val & 7) << 12);
                     this.io.w = 0;
                 }
-                //console.log('JS PPUSCROLL ON LINE ' + this.clock.ppu_y.toString() + ': ' + val.toString() + ', ' + this.io.t.toString());
                 return;
             case 0x2006: // PPUADDR
                 if (this.io.w === 0) {
@@ -323,6 +324,8 @@ class NES_ppu {
                 } else {
                     this.io.t = (this.io.t & 0x7F00) | val;
                     this.io.v = this.io.t;
+                    //console.log('UPDATE V AT ' + this.clock.ppu_y.toString() + ' X: ' + this.line_cycle.toString());
+                    this.bus.mapper.a12_watch(this.io.v & 0x3FFF);
                     this.io.w = 0;
                     //console.log('SET V', hex4(this.io.v), this.clock.trace_cycles);
                     //TODO: Video RAM update is apparently delayed by 3 PPU cycles (based on Visual NES findings)
@@ -384,6 +387,7 @@ class NES_ppu {
                     console.log('READ ADDR', hex4(this.io.v));
                 }
                 this.io.v = (this.io.v + this.io.vram_increment) & 0x7FFF;
+                this.bus.mapper.a12_watch(this.io.v & 0x3FFF);
                 break;
             default:
                 console.log('READ UNIMPLEMENTED', hex4(addr));
@@ -618,10 +622,8 @@ class NES_ppu {
             }
             return;
         }
-        // Cycles 257...320, copy parts of T to V over and over...
-        if ((this.line_cycle >= 257) && (this.line_cycle <= 320)) {
-            this.io.v = (this.io.v & 0xFBE0) | (this.io.t & 0x41F);
-        }
+        // Cycles 257, copy parts of T to V
+        if ((this.line_cycle === 257) && this.rendering_enabled()) this.io.v = (this.io.v & 0xFBE0) | (this.io.t & 0x41F);
     }
 
     // Get tile info into shifters using screen X, Y coordinates
@@ -635,11 +637,11 @@ class NES_ppu {
             this.update_nmi();
         }
         if (this.rendering_enabled()) {
-            if (this.line_cycle === 304) {
-                // Reload horizontal scroll
+            // Reload horizontal scroll 258-320
+            if ((this.line_cycle === 257) && this.rendering_enabled()) this.io.v = (this.io.v & 0xFBE0) | (this.io.t & 0x41F);
+            if ((this.rendering_enabled()) && (this.line_cycle >= 258) && (this.line_cycle <= 320)) {
                 this.io.v = (this.io.v & 0x041F) | (this.io.t & 0x7BE0);
             }
-            //this.oam_evaluate_slow();
         }
         if (this.io.sprite_enable && (this.line_cycle >= 257)) {
             this.oam_evaluate_slow();
@@ -650,9 +652,10 @@ class NES_ppu {
     }
 
     perform_bg_fetches() { // Only called from prerender and visible scanlines
+        if (!this.rendering_enabled()) return;
         let in_tile_y = (this.io.v >>> 12) & 7; // Y position inside tile
 
-        if (((this.line_cycle > 0) && (this.line_cycle <= 257)) || (this.line_cycle > 320)) {
+        if (((this.line_cycle > 0) && (this.line_cycle <= 256)) || (this.line_cycle > 320)) {
             // Do memory accesses and shifters
             switch (this.line_cycle & 7) {
                 case 1: // nametable, tile #
@@ -821,7 +824,7 @@ class NES_ppu {
             this.update_nmi();
         }
         this.set_scanline(this.clock.ppu_y);
-        this.line_cycle = -1; // This will immediately get
+        this.line_cycle = 0; // This will immediately get
     }
 
     set_scanline(to) {
