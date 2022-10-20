@@ -325,14 +325,14 @@ export class NES_ppu {
         let eval_y: u32 = this.clock.ppu_y;
         if (this.line_cycle < 65) {
             if (this.line_cycle === 1) {
+                this.secondary_OAM_sprite_total = 0;
+                this.secondary_OAM_index = 0;
+                this.OAM_eval_index = 0;
+                this.secondary_OAM_lock = false;
+                this.OAM_eval_done = 0;
+                this.sprite0_on_next_line = false;
                 for (let n = 0; n < 32; n++) {
                     unchecked(this.secondary_OAM[n] = 0xFF);
-                    this.secondary_OAM_sprite_total = 0;
-                    this.secondary_OAM_index = 0;
-                    this.OAM_eval_index = 0;
-                    this.secondary_OAM_lock = false;
-                    this.OAM_eval_done = 0;
-                    this.sprite0_on_next_line = false;
                 }
             }
             return;

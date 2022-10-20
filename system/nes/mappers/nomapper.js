@@ -42,6 +42,8 @@ class NES_mapper_none {
 
     cycle() {};
 
+    a12_watch() {}
+
     mirror_ppu_addr(addr) {
         if (addr > 0x3000) addr -= 0x1000;
         if (this.ppu_mirror === 0) {
