@@ -15,5 +15,8 @@ class NES_bus {
         this.CPU_reg_write = function(addr, val) {};
         this.CPU_notify_NMI = function(level) {};
         this.CPU_notify_IRQ = function(level) {};
+
+        this.ppu = null;
+        this.mapper = null
     }
 }

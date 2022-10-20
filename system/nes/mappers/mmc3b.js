@@ -133,11 +133,13 @@ class NES_mapper_MMC3b {
         this.CIRAM = new Uint8Array(0x2000); // Standard PPU RAM
         this.CPU_RAM = new Uint8Array(0x800); // Standard CPU RAM
         this.PRG_RAM = []; // Extra CPU RAM
+        this.CHR_RAM = new Uint8Array(0);
         this.cart = null;
         this.a12_watcher = new a12_watcher(clock);
 
         this.clock = clock;
         this.bus = bus;
+        this.bus.mapper = this;
 
         this.bus.CPU_read = this.cpu_read.bind(this);
         this.bus.CPU_write = this.cpu_write.bind(this);
@@ -180,7 +182,7 @@ class NES_mapper_MMC3b {
         }
         this.num_PRG_banks = 0;
         this.num_CHR_banks = 0;
-
+        this.has_chr_ram = false;
     }
 
     serialize() {
@@ -299,14 +301,19 @@ class NES_mapper_MMC3b {
 
     ppu_write(addr, val) {
         this.a12_watch(addr);
-        if (addr < 0x2000) // can't write ROM
+        if (addr < 0x2000) {
+            if (this.has_chr_ram)
+                this.CHR_RAM[addr] = val;
             return;
+        }// can't write ROM
         this.CIRAM[this.mirror_ppu_addr(addr)] = val;
     }
 
     ppu_read(addr, val, has_effect=true) {
         if (has_effect) this.a12_watch(addr);
         if (addr < 0x2000) {
+            if (this.has_chr_ram)
+                return this.CHR_RAM[addr];
             return this.CHR_map[addr >>> 10].read(addr, val, has_effect);
         }
         return this.CIRAM[this.mirror_ppu_addr(addr)];
@@ -355,6 +362,7 @@ class NES_mapper_MMC3b {
                 this.regs.rC000 = val;
                 break;
             case 0xC001:
+                this.irq_counter = 0;
                 this.irq_reload = true;
                 break;
             case 0xE000:
@@ -397,6 +405,9 @@ class NES_mapper_MMC3b {
         } else {
             this.PRG_RAM = 0;
         }
+        console.log('CHR RAM SIZE', cart.header.chr_ram_size)
+        this.CHR_RAM = new Uint8Array(cart.header.chr_ram_size);
+        this.has_chr_ram = cart.header.chr_ram_size > 0;
 
         this.ppu_mirror = cart.header.mirroring;
         this.num_PRG_banks = (this.PRG_ROM.byteLength / 8192);

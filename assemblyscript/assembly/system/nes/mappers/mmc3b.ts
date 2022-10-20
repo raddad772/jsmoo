@@ -216,6 +216,7 @@ export class NES_MMC3b implements NES_mapper {
                 this.regs.rC000 = val;
                 break;
             case 0xC001:
+                this.irq_counter = 0;
                 this.irq_reload = true;
                 break;
             case 0xE000:
