@@ -237,7 +237,7 @@ export class NES_ppu {
             this.clock.vblank = 0;
             this.update_nmi();
         }
-        this.line_cycle = -1;
+        this.line_cycle = 0;
     }
 
 
@@ -289,7 +289,7 @@ export class NES_ppu {
 
         const in_tile_y: u32 = (this.io.v >>> 12) & 7; // Y position inside tile
 
-        if (((lc > 0) && (lc <= 257)) || (lc > 320)) {
+        if (((lc > 0) && (lc <= 256)) || (lc > 320)) {
             // Do memory accesses and shifters
             switch (lc & 7) {
                 case 1: // nametable, tile #
@@ -445,7 +445,7 @@ export class NES_ppu {
 
     // Do sprite counters & memory address updates
     cycle_scanline_addr(): void {
-        const lc = this.line_cycle
+        const lc = this.line_cycle;
         if (this.clock.ppu_y < this.clock.timing.bottom_rendered_line) {
             // Sprites
             if ((lc > 0) && (lc < 257)) {
@@ -490,9 +490,8 @@ export class NES_ppu {
             return;
         }
         // Cycles 257...320, copy parts of T to V over and over...
-        if ((lc >= 257) && (lc <= 320)) {
+        if (lc == 257)
             this.io.v = (this.io.v & 0xFBE0) | (this.io.t & 0x41F);
-        }
     }
 
     cycle_visible(): void {
@@ -608,18 +607,16 @@ export class NES_ppu {
     // Get tile info into shifters using screen X, Y coordinates
     cycle_prerender(): void {
         if ((this.clock.frame_odd) && (this.line_cycle === 0)) this.line_cycle++;
-        if (this.line_cycle === 1) {
+        let lc = this.line_cycle;
+        if (lc === 1) {
             this.io.sprite0_hit = 0;
             this.io.sprite_overflow = 0;
             this.status.nmi_out = 0;
             this.update_nmi();
         }
         if (this.rendering_enabled()) {
-            if (this.line_cycle === 304) {
-                // Reload horizontal scroll
-                this.io.v = (this.io.v & 0x041F) | (this.io.t & 0x7BE0);
-            }
-            //this.oam_evaluate_slow();
+            if (lc === 257) this.io.v = (this.io.v & 0xFBE0) | (this.io.t & 0x41F);
+            if ((this.line_cycle >= 258) && (this.line_cycle <= 320)) this.io.v = (this.io.v & 0x041F) | (this.io.t & 0x7BE0);
         }
         if (this.io.sprite_enable && (this.line_cycle >= 257)) {
             this.oam_evaluate_slow();
@@ -741,6 +738,7 @@ export class NES_ppu {
                 } else {
                     this.io.t = (this.io.t & 0x7F00) | val;
                     this.io.v = this.io.t;
+                    this.bus.mapper.a12_watch(this.io.v);
                     this.io.w = 0;
                     //TODO: Video RAM update is apparently delayed by 3 PPU cycles (based on Visual NES findings)
                 }

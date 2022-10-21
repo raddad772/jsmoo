@@ -32,6 +32,8 @@ export class NES_mapper_CXROM implements NES_mapper {
 
     @inline cycle(howmany: u32): void {}
 
+    @inline a12_watch(addr: u32): void {}
+
     @inline PPU_read_effect(addr: u32): u32 {
         if (addr < 0x2000) return unchecked(this.CHR_ROM[addr + this.chr_bank_offset]);
         return unchecked(this.CIRAM[this.mirror_ppu_addr(addr)]);

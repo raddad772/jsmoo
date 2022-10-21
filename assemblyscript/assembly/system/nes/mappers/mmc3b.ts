@@ -50,11 +50,13 @@ export class NES_MMC3b implements NES_mapper {
     bus: NES_bus
     a12_watcher: NES_a12_watcher_t
     CHR_ROM: StaticArray<u8> = new StaticArray<u8>(0);
+    CHR_RAM: StaticArray<u8> = new StaticArray<u8>(0);
     PRG_ROM: StaticArray<u8> = new StaticArray<u8>(0);
     CIRAM: StaticArray<u8> = new StaticArray<u8>(0x2000); // PPU RAM
     CPU_RAM: StaticArray<u8> = new StaticArray<u8>(0x800); // CPU RAM
     PRG_RAM: StaticArray<u8> = new StaticArray<u8>(0);
     prg_ram_size: u32 = 0
+    has_chr_ram: bool = false
     regs: NES_MMC3b_regs = new NES_MMC3b_regs();
     status: NES_MMC3b_status = new NES_MMC3b_status();
 
@@ -82,7 +84,7 @@ export class NES_MMC3b implements NES_mapper {
     }
 
     // MMC3 no cycle counter
-    cycle(howmany: u32) : void {}
+    @inline cycle(howmany: u32) : void {}
 
     @inline a12_watch(addr: u32): void {
         if (this.a12_watcher.update(addr) === NES_a12_watcher_edge.rise) {
@@ -230,22 +232,29 @@ export class NES_MMC3b implements NES_mapper {
 
     @inline PPU_read_effect(addr: u32): u32 {
         this.a12_watch(addr);
-        if (addr < 0x2000)
+        if (addr < 0x2000) {
+            if (this.has_chr_ram) return unchecked(this.CHR_RAM[addr]);
             return unchecked(this.CHR_map[addr >>> 10]).read(addr);
+        }
 
         return unchecked(this.CIRAM[this.mirror_ppu_addr(addr)]);
     }
 
     PPU_read_noeffect(addr: u32): u32 {
-        //if (has_effect) this.a12_watch(addr);
-        if (addr < 0x2000) return unchecked(this.CHR_map[addr >>> 10]).read(addr);
+        if (addr < 0x2000) {
+            if (this.has_chr_ram) return unchecked(this.CHR_RAM[addr]);
+            return unchecked(this.CHR_map[addr >>> 10]).read(addr);
+        }
 
         return unchecked(this.CIRAM[this.mirror_ppu_addr(addr)]);
     }
 
     @inline PPU_write(addr: u32, val: u32): void {
         this.a12_watch(addr);
-        if (addr < 0x2000) return;
+        if (addr < 0x2000) {
+            if (this.has_chr_ram) unchecked(this.CHR_RAM[addr] = <u8> val)
+            return;
+        }
         unchecked(this.CIRAM[this.mirror_ppu_addr(addr)] = <u8>val);
     }
 
@@ -286,6 +295,9 @@ export class NES_MMC3b implements NES_mapper {
         this.prg_ram_size = cart.header.prg_ram_size;
         console.log('MMC3 PRG RAM SIZE ' + cart.header.prg_ram_size.toString());
         this.PRG_RAM = new StaticArray<u8>(this.prg_ram_size);
+
+        this.CHR_RAM = new StaticArray<u8>(cart.header.chr_ram_size);
+        this.has_chr_ram = cart.header.chr_ram_size > 0;
 
         this.ppu_mirror = cart.header.mirroring;
         if (cart.header.four_screen_mode === 1) this.ppu_mirror = NES_PPU_mirror_modes.FourWay;
