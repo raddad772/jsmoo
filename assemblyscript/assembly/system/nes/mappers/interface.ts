@@ -80,6 +80,7 @@ export interface NES_mapper {
     PPU_write(addr: u32, val: u32): void;
     reset(): void;
     set_cart(cart: NES_cart): void;
+    a12_watch(addr: u32): void;
 }
 
 export function NES_mirror_ppu_four(addr: u32): u32 {

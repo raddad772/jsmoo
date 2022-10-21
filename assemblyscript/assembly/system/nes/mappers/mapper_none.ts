@@ -34,7 +34,9 @@ export class NES_mapper_none implements NES_mapper {
         this.ppu_mirror = 0;
     }
 
-    cycle(howmany: u32) : void {}
+    @inline cycle(howmany: u32) : void {}
+
+    @inline a12_watch(addr: u32): void {}
 
     @inline CPU_read(addr: u32, val: u32, has_effect: u32): u32 {
         addr &= 0xFFFF;

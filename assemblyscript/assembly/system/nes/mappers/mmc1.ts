@@ -60,6 +60,8 @@ export class NES_mapper_MMC1 implements NES_mapper {
 
     @inline cycle(howmany: u32): void { }
 
+    @inline a12_watch(addr: u32): void {}
+
     remap(boot: bool = false): void {
         if (boot) {
             for (let i = 0; i < 2; i++) {

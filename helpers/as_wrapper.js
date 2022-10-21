@@ -3,9 +3,9 @@
 const USE_DEBUG = false;
 if (DO_WASM_IMPORTS) {
     if (USE_DEBUG)
-        importScripts('/assemblyscript/build/debug.js');
+        importScripts('/assemblyscript/build/debug_stable.js');
     else
-        importScripts('/assemblyscript/build/release.js');
+        importScripts('/assemblyscript/build/release_stable.js');
 }
 
 class gp_wrapper_t {

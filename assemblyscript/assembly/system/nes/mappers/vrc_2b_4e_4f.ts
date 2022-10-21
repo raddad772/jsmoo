@@ -104,6 +104,9 @@ export class NES_mapper_VRC2B_4E_4F implements NES_mapper {
         this.irq.cycle();
     }
 
+    @inline a12_watch(addr: u32): void {}
+
+
     set_CHR_ROM_1k(b: u32, bank_num: u32): void {
         this.CHR_map[b].offset = (bank_num % this.num_CHR_banks) * 0x0400;
     }

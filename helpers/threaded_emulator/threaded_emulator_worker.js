@@ -7,7 +7,7 @@
     gp_set_system,
     new_global_player,
     memory}
-    from "/assemblyscript/build/release.js";*/
+    from "/assemblyscript/build/release_stable.js";*/
 const DO_WASM_IMPORTS = true;
 importScripts('/helpers/as_wrapper.js')
 
