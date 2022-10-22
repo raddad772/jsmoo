@@ -36,16 +36,14 @@ export class global_player_t {
     }
 
     set_system(to: JSMOO_SYSTEMS): void {
-        console.log('GP setting system ' + to.toString());
         if (this.system_kind == to) {
             this.system.reset();
-            console.log('SET TO SAME, LEAVING');
             return;
         }
         if (this.system_kind !== JSMOO_SYSTEMS.NONE) this.system.killall();
+
         switch(to) {
             case JSMOO_SYSTEMS.NES_USA:
-                console.log('SETING NES');
                 this.system = new NES(NES_VARIANTS.NTSCU);
                 break;
             default:
@@ -74,6 +72,7 @@ export class global_player_t {
     }
 
     load_rom(sz: u32): void {
+        let r: usize = this.input_buffer;
         this.system.load_ROM(this.input_buffer, sz);
     }
 

@@ -23,6 +23,9 @@ const emulator_messages = Object.freeze({
     specs: 6,
     startup: 100,
 
+    step1_done: 1001,
+    step2_done: 1002,
+    step3_done: 1003,
 
     // Child to parent
     frame_complete: 50,
@@ -56,17 +59,15 @@ class threaded_emulator_worker_t {
         await this.wrapper.do_setup();
         switch(e.kind) {
             case emulator_messages.startup:
-                console.log('ET: startup');
-                console.log('step1')
                 this.framebuffer_sab = e.framebuffer_sab;
                 this.general_sab = e.general_sab;
                 this.framebuffer = new Uint32Array(this.framebuffer_sab);
+                this.step_done(emulator_messages.step1_done);
                 return;
             case emulator_messages.load_rom:
-                console.log('step3')
-                console.log('ET: passing ROM...', this.wrapper.global_player, e.ROM);
                 this.wrapper.copy_to_input_buffer(e.ROM);
                 this.wrapper.wasm.gp_load_ROM_from_RAM(this.wrapper.global_player, e.ROM.byteLength);
+                this.step_done(emulator_messages.step3_done);
                 return;
             case emulator_messages.frame_requested:
                 //console.log('ET: running frame...');
@@ -74,9 +75,8 @@ class threaded_emulator_worker_t {
                 this.run_frame();
                 return;
             case emulator_messages.change_system:
-                console.log('ET: setting system to', e.kind_str);
-                console.log('step2')
                 this.do_set_system(e.kind_str)
+                this.step_done(emulator_messages.step2_done);
                 return;
             default:
                 console.log('EMULATION MAIN THREAD UNHANDLED MESSAGE', e);
@@ -96,7 +96,6 @@ class threaded_emulator_worker_t {
     }
 
     do_set_system(kind) {
-        console.log('GP:', this.wrapper.global_player.toString());
         this.wrapper.wasm.gp_set_system(this.wrapper.global_player, kind);
         this.tech_specs = this.wrapper.wasm.gp_get_specs(this.wrapper.global_player);
         this.out_ptr = this.tech_specs.out_ptr;
@@ -105,6 +104,10 @@ class threaded_emulator_worker_t {
 
     send_frame_done() {
         postMessage({kind: emulator_messages.frame_complete})
+    }
+
+    step_done(which) {
+        postMessage({kind: which});
     }
 
     send_specs(specs) {
@@ -117,7 +120,6 @@ class threaded_emulator_worker_t {
 }
 
 const emulator_worker = new threaded_emulator_worker_t()
-console.log('ET: LOAD');
 onmessage = async function(ev) {
     let e = ev.data;
     await emulator_worker.onmessage(e);

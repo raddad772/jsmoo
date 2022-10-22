@@ -1,7 +1,7 @@
 'use strict';
 
 
-const USE_ASSEMBLYSCRIPT = false;
+const USE_ASSEMBLYSCRIPT = true;
 const USE_THREADED_PLAYER = USE_ASSEMBLYSCRIPT;
 const SNES_STR = 'snes';
 const NES_STR = 'nes';
