@@ -446,6 +446,7 @@ export class NES_ppu {
     // Do sprite counters & memory address updates
     cycle_scanline_addr(): void {
         const lc = this.line_cycle;
+        let io_v = this.io.v;
         if (this.clock.ppu_y < this.clock.timing.bottom_rendered_line) {
             // Sprites
             if ((lc > 0) && (lc < 257)) {
@@ -463,30 +464,31 @@ export class NES_ppu {
         // Cycle # 8, 16,...248, and 328, 336. BUT NOT 0
         if (((lc & 7) == 0) && ((lc >= 328) || (lc < 256))) {
             // INCREMENT HORIZONTAL SCROLL IN v
-            if ((this.io.v & 0x1F) == 0x1F) // If X scroll is 31...
-                this.io.v = (this.io.v & 0xFFE0) ^ 0x0400; // clear x scroll to 0 (& FFE0) and swap nametable (^ 0x400)
+            if ((io_v & 0x1F) == 0x1F) // If X scroll is 31...
+                this.io.v = (io_v & 0xFFE0) ^ 0x0400; // clear x scroll to 0 (& FFE0) and swap nametable (^ 0x400)
             else
                 this.io.v++;  // just increment the X scroll
             return;
         }
         // INCREMENT VERTICAL SCROLL IN v
         if (lc == 256) {
-            if ((this.io.v & 0x7000) !== 0x7000) { // if fine y !== 7
-                this.io.v += 0x1000;               // add 1 to fine y
+            if ((io_v & 0x7000) !== 0x7000) { // if fine y !== 7
+                io_v += 0x1000;               // add 1 to fine y
             }
             else {                                   // else it is overflow so
-                this.io.v &= 0x8FFF;                 // clear fine y to 0
-                let y: u32 = (this.io.v & 0x03E0) >>> 5;  // get coarse y
+                io_v &= 0x8FFF;                 // clear fine y to 0
+                let y: u32 = (io_v & 0x03E0) >>> 5;  // get coarse y
                 if (y == 29) {                      // y overflows 30->0 with vertical nametable swap
                     y = 0;
-                    this.io.v ^= 0x0800;             // Change vertical nametable
+                    io_v ^= 0x0800;             // Change vertical nametable
                 } else if (y == 31) {               // y also overflows at 31 but without nametable swap
                     y = 0;
                 }
                 else                                 // just add to coarse scroll
                     y += 1;
-                this.io.v = (this.io.v & 0xFC1F) | (y << 5); // put scroll back in
+                io_v = (io_v & 0xFC1F) | (y << 5); // put scroll back in
             }
+            this.io.v = io_v;
             return;
         }
         // Cycles 257...320, copy parts of T to V over and over...
