@@ -42,11 +42,26 @@ class m68k_SRL_t {
 
 class m68k_registers_t {
     constructor() {
-        // 0-7 are R, 8-15 are A, 16 is SSP
-        this.RA = new Uint32Array(17);
+        this.D = new Uint32Array(8);
+        this.A = new Uint32Array(8);
+        this.SP = 0;
         this.PC = 0;
-        this.SRH = new m68k_SRH_t();
-        this.CCR = new m68k_SRL_t(); // aka SRL
+
+        this.C = 0; // Carry
+        this.V = 0; // Overflow
+        this.Z = 0; // Zero
+        this.N = 0; // Negative
+        this.X = 0; // eXtend
+        this.I = 0; // Interrupt mask
+        this.S = 0; // Supervisor mode
+        this.T = 0; // Trace mode
+
+        this.IRC = 0; // instruction prefetch first
+        this.IR = 0;  // instruction being decoded
+        this.IRD = 0; // instruction being executed
+
+        this.STP = 0;
+        this.RES = 0;
     }
 }
 
