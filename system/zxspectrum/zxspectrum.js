@@ -284,12 +284,14 @@ class ZXSpectrum {
 
         /* RETN */
         this.cpu.regs.Q = 0;
-        this.cpu.regs.WZ = this.bus.RAM[this.cpu.regs.SP];
+        console.log('SP!', hex4(this.cpu.regs.SP));
+        this.cpu.regs.WZ = this.bus.cpu_read(this.cpu.regs.SP);
         this.cpu.regs.SP = (this.cpu.regs.SP + 1) & 0xFFFF;
-        this.cpu.regs.WZ |= (this.bus.RAM[this.cpu.regs.SP] << 8);
+        this.cpu.regs.WZ |= this.bus.cpu_read(this.cpu.regs.SP) << 8;
         this.cpu.regs.SP = (this.cpu.regs.SP + 1) & 0xFFFF;
         this.cpu.regs.PC = this.cpu.regs.WZ;
         this.cpu.regs.IFF1 = this.cpu.regs.IFF2;
+        console.log('PC!', hex4(this.cpu.regs.PC));
 
         /* Initialize CPU */
         this.cpu.TCU = 0;
