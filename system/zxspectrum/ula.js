@@ -306,3 +306,53 @@ class ZXSpectrum_ULA {
         ctx.putImageData(imgdata, x_origin, y_origin);
     }
 }
+
+/*
+static zsint16 const speaker_sample[] = {
+    (zsint16)((((float)Z_SINT16_MAXIMUM) * 0.20) * 0.34),
+    (zsint16)((((float)Z_SINT16_MAXIMUM) * 0.20) * 0.66),
+    (zsint16)((((float)Z_SINT16_MAXIMUM) * 0.20) * 3.56),
+    (zsint16)((((float)Z_SINT16_MAXIMUM) * 0.20) * 3.70)
+};
+
+static void update_audio_output(ZXSpectrum *self, zusize cycle)
+    {
+    zusize position = (cycle * self->audio_output_spf) / self->vmt->cycles_per_frame;
+
+#    ifdef Z80_DEBUG_DETECT_ERRORS
+        if (position < self->audio_output_position || position > self->audio_output_spf)
+            printf("%s: Incorrect position\n", __func__);
+#    endif
+
+    zsint16 sample = self->current_audio_sample;
+    zsint16 *p     = &self->audio_output_buffer[self->audio_output_position];
+    zsint16 *e     = &self->audio_output_buffer[position <= self->audio_output_spf ? position : self->audio_output_spf];
+
+#    ifdef Z80_DEBUG_DETECT_ERRORS
+        if (p > e) printf("%s: Incorrect audio sample pointer\n", __func__);
+#    endif
+
+    for (; p != e; p++) *p = sample; // PETA en 128K con Iridium, mirar
+    self->audio_output_position = position;
+    }
+
+static void ula_write(ZXSpectrum *self, zusize cycle, zuint8 value)
+    {
+    zuint8 border_color = value & 7;
+
+    if (border_color != self->border_color)
+        {
+        update_video_output_border(self, cycle);
+        self->border_color = border_color;
+        }
+
+    // MIC - EAR
+    if ((self->ula_io.value ^ value) & 0x18)
+        {
+        update_audio_output(self, cycle);
+        self->current_audio_sample = speaker_sample[(value & 0x18) >> 3];
+        }
+
+    self->ula_io.value = value;
+    }
+ */

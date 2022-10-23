@@ -51,7 +51,7 @@ class keyboard_input_t {
 		}
 		else {
 			if (typeof this.keys[keyCode] !== 'undefined') {
-				console.log('Duplicate bound key! ' + key);
+				if (key !== null) console.log('Duplicate bound key! ', keyCode, key);
 			} else {
 				this.keys[keyCode] = new key_t(keyCode, key, bound_function, prevent)
 			}
