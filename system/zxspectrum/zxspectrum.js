@@ -260,18 +260,19 @@ class ZXSpectrum {
         this.cpu.regs.DE_ = infil[3] + (infil[4] << 8);
         this.cpu.regs.BC_ = infil[5] + (infil[6] << 8);
         this.cpu.regs.AF_ = infil[7] + (infil[8] << 8);
-        this.cpu.regs.H = infil[9];
-        this.cpu.regs.L = infil[0x0A];
-        this.cpu.regs.D = infil[0x0B];
-        this.cpu.regs.E = infil[0x0C];
-        this.cpu.regs.B = infil[0x0D];
-        this.cpu.regs.C = infil[0x0E];
+        this.cpu.regs.L = infil[9];
+        this.cpu.regs.H = infil[0x0A];
+        this.cpu.regs.E = infil[0x0B];
+        this.cpu.regs.D = infil[0x0C];
+        this.cpu.regs.C = infil[0x0D];
+        this.cpu.regs.B = infil[0x0E];
         this.cpu.regs.IY = infil[0x0F] + (infil[0x10] << 8);
         this.cpu.regs.IX = infil[0x11] + (infil[0x12] << 8);
-        this.cpu.regs.IFF2 = infil[0x13];
+        this.cpu.regs.IFF2 = (infil[0x13] >> 2) & 1
+        this.cpu.regs.IFF1 = infil[0x13] & 1;
         this.cpu.regs.R = infil[0x14];
-        this.cpu.regs.A = infil[0x15];
-        this.cpu.regs.F.setbyte(infil[0x16]);
+        this.cpu.regs.F.setbyte(infil[0x15]);
+        this.cpu.regs.A = infil[0x16];
         this.cpu.regs.SP = infil[0x17] + (infil[0x18] << 8);
         this.cpu.regs.IM = infil[0x19];
         this.ula.io.border_color = infil[0x1A];
@@ -285,7 +286,7 @@ class ZXSpectrum {
         this.cpu.regs.Q = 0;
         this.cpu.regs.WZ = this.bus.RAM[this.cpu.regs.SP];
         this.cpu.regs.SP = (this.cpu.regs.SP + 1) & 0xFFFF;
-        this.cpu.regs.WZ |= this.bus.RAM[this.cpu.regs.SP];
+        this.cpu.regs.WZ |= (this.bus.RAM[this.cpu.regs.SP] << 8);
         this.cpu.regs.SP = (this.cpu.regs.SP + 1) & 0xFFFF;
         this.cpu.regs.PC = this.cpu.regs.WZ;
         this.cpu.regs.IFF1 = this.cpu.regs.IFF2;
