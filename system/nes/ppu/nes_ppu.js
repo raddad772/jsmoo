@@ -687,9 +687,6 @@ class NES_ppu {
 
     scanline_visible() {
         //this.scanline_timer.start_sample();
-        if ((this.clock.ppu_y === 207) && (this.line_cycle === 1)) {
-            console.log('T, V!', hex4(this.io.t), hex4(this.io.v))
-        }
         if (!this.rendering_enabled()) {
             if (this.line_cycle === 340) {
                 this.new_scanline();

@@ -246,7 +246,63 @@ class ZXSpectrum {
 
     load_ROM_from_RAM(what) {
         // Oops!
-        this.tape_deck.load_ROM_from_RAM(what);
+        //this.tape_deck.load_ROM_from_RAM(what);
+        this.load_SNA_file(what);
+    }
+
+    load_SNA_file(what) {
+        console.log('loading SNA');
+        let infil = new Uint8Array(what);
+
+        /* Load CPU registers */
+        this.cpu.regs.I = infil[0];
+        this.cpu.regs.HL_ = infil[1] + (infil[2] << 8);
+        this.cpu.regs.DE_ = infil[3] + (infil[4] << 8);
+        this.cpu.regs.BC_ = infil[5] + (infil[6] << 8);
+        this.cpu.regs.AF_ = infil[7] + (infil[8] << 8);
+        this.cpu.regs.H = infil[9];
+        this.cpu.regs.L = infil[0x0A];
+        this.cpu.regs.D = infil[0x0B];
+        this.cpu.regs.E = infil[0x0C];
+        this.cpu.regs.B = infil[0x0D];
+        this.cpu.regs.C = infil[0x0E];
+        this.cpu.regs.IY = infil[0x0F] + (infil[0x10] << 8);
+        this.cpu.regs.IX = infil[0x11] + (infil[0x12] << 8);
+        this.cpu.regs.IFF2 = infil[0x13];
+        this.cpu.regs.R = infil[0x14];
+        this.cpu.regs.A = infil[0x15];
+        this.cpu.regs.F.setbyte(infil[0x16]);
+        this.cpu.regs.SP = infil[0x17] + (infil[0x18] << 8);
+        this.cpu.regs.IM = infil[0x19];
+        this.ula.io.border_color = infil[0x1A];
+
+        /* Copy 48k RAM */
+        for (let i = 0; i < 49152; i++) {
+            this.bus.RAM[i] = infil[i+0x1B];
+        }
+
+        /* RETN */
+        this.cpu.regs.Q = 0;
+        this.cpu.regs.WZ = this.bus.RAM[this.cpu.regs.SP];
+        this.cpu.regs.SP = (this.cpu.regs.SP + 1) & 0xFFFF;
+        this.cpu.regs.WZ |= this.bus.RAM[this.cpu.regs.SP];
+        this.cpu.regs.SP = (this.cpu.regs.SP + 1) & 0xFFFF;
+        this.cpu.regs.PC = this.cpu.regs.WZ;
+        this.cpu.regs.IFF1 = this.cpu.regs.IFF2;
+
+        /* Initialize CPU */
+        this.cpu.TCU = 0;
+        this.cpu.pins.Addr = this.cpu.regs.PC;
+        this.cpu.pins.D = this.bus.RAM[this.cpu.regs.PC];
+        this.cpu.regs.PC = (this.cpu.regs.PC + 1) & 0xFFFF;
+        this.cpu.regs.EI = 0;
+        this.cpu.regs.P = 0;
+        this.cpu.regs.prefix = 0;
+        this.cpu.regs.rprefix = Z80P.HL;
+        this.cpu.regs.IR = Z80_S_DECODE;
+        this.cpu.regs.poll_IRQ = true;
+
+        /* All done! */
     }
 
     present() {
