@@ -241,7 +241,7 @@ class ZXSpectrum_ULA {
             case 0: // lines 0-7 are vblank
                 this.scanline_func = this.scanline_vblank.bind(this);
                 break;
-            case 8: // lines 8-63 are upper border
+            case 16: // lines 8-63 are upper border
                 this.scanline_func = this.scanline_border_top.bind(this);
                 break;
             case 64: // lines 64-255 are visible
