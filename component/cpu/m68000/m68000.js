@@ -67,7 +67,7 @@ class m68k_registers_t {
 
 class m68k_pins_t {
     constructor() {
-        this.A = 0; // Address, 24-32 bits
+        this.Addr = 0; // Address, 23 bits
         this.D = 0; // Data, 16 bits
         this.interrupt_ack = -1; // Interrupt acknowledge, multiplexed from address
         this.interrupt_vector = -1; // Interrupt vector number, multiplexed from data
@@ -76,7 +76,6 @@ class m68k_pins_t {
         this.RW = 0; // Read/Write
         this.UDS = 0; // Valid upper data, 15-8
         this.LDS = 0; // Valid lower data, 7-0
-
     }
 }
 

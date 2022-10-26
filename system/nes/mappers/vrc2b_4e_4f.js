@@ -40,6 +40,7 @@ class NES_mapper_VRC2B_4E_4F {
         this.bus.CPU_write = this.cpu_write.bind(this);
         this.bus.PPU_read = this.ppu_read.bind(this);
         this.bus.PPU_write = this.ppu_write.bind(this);
+        this.bus.mapper = this;
 
         this.is_vrc4 = false;
         this.is_vrc2a = false;
@@ -304,6 +305,7 @@ class NES_mapper_VRC2B_4E_4F {
         // Thanks Messen! NESdev wiki was wrong here...
         if ((addr >= 0xB000) && (addr <= 0xE006)) {
             let rn = ((((addr >>> 12) & 0x07) - 3) << 1) + ((addr >>> 1) & 0x01);
+            if ((addr & 0xFFF) > 3) console.log('HA!', hex4(addr));
             let lowBits = (addr & 0x01) === 0;
             if (lowBits) {
                 //The other reg contains the low 4 bits
@@ -347,7 +349,6 @@ class NES_mapper_VRC2B_4E_4F {
         this.PRG_ROM = cart.PRG_ROM;
 
         this.prg_ram_size = cart.header.prg_ram_size;
-        console.log('VRC2/4 PRG RAM SIZE', cart.header.prg_ram_size);
         if (this.prg_ram_size !== 0) {
             this.PRG_RAM = new Uint8Array(this.prg_ram_size);
         }
