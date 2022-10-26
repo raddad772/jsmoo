@@ -33,6 +33,7 @@ class NES_mapper_MMC1 {
         this.bus.CPU_write = this.cpu_write.bind(this);
         this.bus.PPU_read = this.ppu_read.bind(this);
         this.bus.PPU_write = this.ppu_write.bind(this);
+        this.bus.mapper = this;
         this.last_cycle_write = 0;
 
         this.io = {

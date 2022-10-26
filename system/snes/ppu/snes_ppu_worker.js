@@ -715,7 +715,7 @@ function PPUF_render_bg(bg, y, source, io, VRAM, CGRAM, above, below, verbose = 
 					color += (datahi >>> (shift + 17)) & 128;
 				}
 
-				mosaic_counter = bg.mosaic_enable ? io.mosaic.size << hires : 1;
+				mosaic_counter = bg.mosaic_enable ? (io.mosaic.size << hires) : 1;
 				mosaic_palette = color;
 				mosaic_priority = tile_priority;
 

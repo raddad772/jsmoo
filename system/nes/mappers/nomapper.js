@@ -16,6 +16,7 @@ class NES_mapper_none {
 
         this.clock = clock;
         this.bus = bus;
+        this.bus.mapper = this;
 
         this.bus.CPU_read = this.cpu_read.bind(this);
         this.bus.CPU_write = this.cpu_write.bind(this);
