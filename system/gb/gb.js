@@ -1,66 +1,100 @@
 "use strict";
 
-const SER_NES = ['clock', 'cart', 'cpu', 'ppu', 'cycles_left']
+const GB_variants = new Object.freeze({
+    GAMEBOY: 0,
+    GAMEBOY_COLOR: 1,
+    SUPER_GAMEBOY: 2
+})
 
-class NES {
+class GB_mapper {
+    constructor() {
+    }
+}
+
+class GB_cart {
     /**
-     * @param {canvas_manager_t} canvas_manager
+     * @param {GB_clock} clock
+     * @param {GB_bus} bus
      */
-    constructor(canvas_manager) {
-        this.bus = new NES_bus();
-        this.clock = new NES_clock();
-        this.cart = new NES_cart(this.clock, this.bus);
-        this.cpu = new ricoh2A03(this.clock, this.bus);
-        this.ppu = new NES_ppu(canvas_manager, this.clock, this.bus);
+    constructor(clock, bus) {
+        this.clock = clock;
+        this.bus = bus;
+    }
+}
+
+class GB_clock {
+    constructor() {
+        this.hblank_pending = 0;
+        this.ppu_mode = 0; // PPU mode. OAM search, etc.
+        this.frames_since_restart = 0;
+
+        this.master_clock = 0;
+        this.ppu_master_clock = 0;
+        this.cpu_master_clock = 0;
+
+        this.ppu_y = 0;
+        this.cpu_frame_cycle = 0;
+        this.ppu_frame_cycle = 0;
+
+        this.timing = {
+            ppu_divisor: 1,
+            cpu_divisor: 4
+        }
+    }
+}
+
+class GB_bus {
+    constructor() {
+        this.cart = null;
+        this.mapper = null;
+
+        this.CPU_read = function(addr, val, has_effect=true) {debugger;};
+        this.CPU_write = function(addr, val){debugger;};
+    }
+
+}
+
+
+class GB {
+    /**
+     * @param {Number} variant
+     */
+    constructor(variant) {
+        this.variant = variant;
+        this.bus = new GB_bus();
+        this.clock = new GB_clock();
+        this.cpu = new GB_CPU(this.variant, this.bus, this.clock);
+        this.ppu = new GB_PPU(this.variant, this.bus, this.clock);
+
         this.cycles_left = 0;
-
         this.display_enabled = true;
-        input_config.connect_controller('nes1');
-        dbg.add_cpu(D_RESOURCE_TYPES.M6502, this.cpu);
-    }
 
-    serialize() {
-        let o = {
-            version: 1,
-            system: 'NES',
-            rom_name: ''
-        }
-        serialization_helper(o, this, SER_NES);
-        return o;
-    }
-
-    deserialize(from) {
-        if (from.version !== 1) {
-            console.log('BAD NES VERSION!');
-            return false;
-        }
-        if (from.system !== 'NES') {
-            console.log('WRONG SYSTEM!');
-            return false;
-        }
-        return deserialization_helper(this, from, SER_NES);
-    }
-
-    enable_display(to) {
-        if (to !== this.display_enabled) {
-            this.display_enabled = to;
-        }
+        input_config.connect_controller('gb');
+        dbg.add_cpu(D_RESOURCE_TYPES.SM83, this.cpu);
     }
 
     killall() {
-        dbg.remove_cpu(D_RESOURCE_TYPES.M6502);
-        input_config.disconnect_controller('nes1');
+        dbg.remove_cpu(D_RESOURCE_TYPES.SM83);
+        input_config.disconnect_controller('gb');
     }
 
-	get_description() {
-        let d = new machine_description('Nintendo Entertainment System');
-        d.technical.standard = 'NTSC';
+    get_description() {
+        let d = new machine_description('GameBoy');
+        switch(this.variant) {
+            case GB_variants.GAMEBOY_COLOR:
+                d.name = 'GameBoy Color';
+                break;
+            case GB_variants.SUPER_GAMEBOY:
+                d.name = 'Super GameBoy';
+                break;
+        }
+        d.technical.standard = 'LCD';
         d.technical.fps = 60;
-        d.input_types = [INPUT_TYPES.SNES_CONTROLLER];
-        d.technical.x_resolution = 256;
-        d.technical.y_resolution = 240;
+        d.input_types = [INPUT_TYPES.GB_CONTROLLER];
+        d.technical.x_resolution = 160;
+        d.technical.y_resolution = 144;
         return d;
-	}
+    }
 
     update_status(current_frame, current_scanline, current_x) {
         current_frame.innerHTML = this.clock.frames_since_restart;
@@ -69,13 +103,12 @@ class NES {
     }
 
     present() {
-        if (this.display_enabled)
-            this.ppu.present();
+        this.ppu.present();
     }
 
     run_frame() {
-        let current_frame = this.clock.master_frame;
-        while (this.clock.master_frame === current_frame) {
+        let current_frame = this.clock.frames_since_restart;
+        while (this.clock.frames_since_restart === current_frame) {
             this.finish_scanline();
             if (dbg.do_break) break;
         }
@@ -101,8 +134,8 @@ class NES {
         let start_y = this.clock.ppu_y;
         while (this.clock.ppu_y === start_y) {
             this.clock.master_clock += cpu_step;
-            this.cpu.run_cycle();
-            this.cart.mapper.cycle();
+            this.cpu.cycle();
+            //this.cart.mapper.cycle();
             this.clock.cpu_frame_cycle++;
             this.clock.cpu_master_clock += cpu_step;
             let ppu_left = this.clock.master_clock - this.clock.ppu_master_clock;
@@ -125,7 +158,7 @@ class NES {
         let done = 0>>>0;
         while (this.cycles_left >= cpu_step) {
             this.clock.master_clock += cpu_step;
-            this.cpu.run_cycle();
+            this.cpu.cycle();
             this.clock.cpu_frame_cycle++;
             this.clock.cpu_master_clock += cpu_step;
             let ppu_left = this.clock.master_clock - this.clock.ppu_master_clock;
@@ -141,6 +174,7 @@ class NES {
         }
     }
 
+
     reset() {
         this.clock.reset();
         this.cpu.reset();
@@ -149,8 +183,9 @@ class NES {
     }
 
     load_ROM_from_RAM(ROM) {
-        console.log('Loading ROM...');
+        console.log('GB Loading ROM...');
         this.cart.load_cart_from_RAM(ROM);
         this.reset();
     }
+
 }

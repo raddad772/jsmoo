@@ -1,5 +1,28 @@
 "use strict";
 
+class SM83_RWMIO_t {
+    constructor() {
+        this.RD = 0;
+        this.WR = 0;
+        this.MRQ = 0;
+        this.IO = 0;
+    }
+
+    reset() {
+        this.RD = 0;
+        this.WR = 0;
+        this.MRQ = 0;
+        this.IO = 0;
+    }
+
+    copy(what) {
+        this.RD = what.RD;
+        this.WR = what.WR;
+        this.MRQ = what.MRQ;
+        this.IO = what.IO;
+    }
+}
+
 class SM83_switchgen {
     constructor(indent, what) {
         this.indent1 = indent;
@@ -15,14 +38,22 @@ class SM83_switchgen {
         this.on_cycle = [];
         this.queued_line = false;
 
+        this.RWMIO_start = new SM83_RWMIO_t();
+        this.RWMIO_end = new SM83_RWMIO_t();
+
+        // We *ALWAYS* start with a READ and MRQ
+        this.RWMIO_start.RD = 1;
+        this.RWMIO_start.MRQ = 1;
+
         this.cycle_has_line = false;
 
-        this.old_wr = 0;
-        this.old_rd = 0;
-        this.old_io = 0;
-        this.old_mrq = 0;
+        this.force_queue = false;
+
+        this.rwmio_str = null;
 
         this.opcode_info = what;
+
+        this.queued_RWMIO = [];
     }
 
     psaddl(what) {
@@ -31,6 +62,11 @@ class SM83_switchgen {
     }
 
     addl(what) {
+        if (this.force_queue) {
+            this.on_cycle.push(what);
+            this.queued_line = true;
+            return;
+        }
         this.added_lines++;
         this.cycle_has_line = true;
         if (this.has_cycle)
@@ -43,8 +79,10 @@ class SM83_switchgen {
     // This is determined automatically
     // Passed in is reference cycle # and/or a comment for the bros
     addcycle(whatup) {
-        if (this.in_case)
+        if (this.in_case) {
+            this.RWMIO_finish();
             this.outstr += this.indent3 + 'break;\n';
+        }
         let what = (parseInt(this.last_case) + 1).toString();
         this.last_case = what;
         this.in_case = true;
@@ -52,16 +90,23 @@ class SM83_switchgen {
             this.outstr += this.indent2 + 'case ' + what + ': // ' + whatup + '\n';
         else
             this.outstr += this.indent2 + 'case ' + what + ':\n';
-        if ((!this.has_cycle) || (this.queued_line)) {
+        for (let i in this.queued_RWMIO) {
+            let qw = this.queued_RWMIO[i];
+            this.RWMIO(qw[0], qw[1], qw[2]);
+        }
+        this.queued_RWMIO = [];
+        if ((!this.has_cycle) || (this.queued_line) || (this.force_queue)) {
             this.queued_line = false;
             this.has_cycle = true;
+            this.force_queue = false;
             for (let i in this.on_cycle) {
-                this.addl(this.on_cycle[i])
+                this.addl(this.on_cycle[i] + ' // DELAYED')
             }
             this.on_cycle = [];
             this.has_cycle = true;
         }
         this.cycle_has_line = false;
+        this.force_queue = false;
     }
 
     push(what) {
@@ -145,6 +190,10 @@ class SM83_switchgen {
         this.addl('regs.TA |= (regs.TR << 8);');
     }
 
+    force_q() {
+        this.force_queue = true;
+    }
+
     q_line(l) {
         this.queued_line = true;
         this.on_cycle.push(l);
@@ -163,71 +212,47 @@ class SM83_switchgen {
         }
         if (!this.no_addr_at_end)
             this.addr_to_PC_then_inc();
-        this.RWMIO(0, 0, 0, 0);
+        this.RWMIO(1, 0, 1);
         this.addl('regs.TCU = 0;');
         this.addl('regs.IR = SM83_S_DECODE;');
         this.addl('regs.poll_IRQ = true;');
+        this.RWMIO_finish();
         this.addl('break;');
     }
 
-    RWMIO(rd, wr, mrq, io) {
-        let ostr = '';
-        let ndsp = false;
-        if (rd !== this.old_rd) {
-            ostr += 'pins.RD = ' + rd + ';';
-            this.old_rd = rd;
-            ndsp = true;
-        }
-        if (wr !== this.old_wr) {
-            if (ndsp) ostr += ' ';
-            ostr += 'pins.WR = ' + wr + ';';
-            this.old_wr = wr;
-            ndsp = true;
-        }
-        if (mrq !== this.old_mrq) {
-            if (ndsp) ostr += ' ';
-            ostr += 'pins.MRQ = ' + mrq + ';';
-            this.old_mrq = mrq;
-            ndsp = true;
-        }
-        if (io !== this.old_io) {
-            if (ndsp) ostr += ' ';
-            ostr += 'pins.IO = ' + io + ';';
-            this.old_io = io;
-            ndsp = true;
-        }
-        if (ostr.length > 0) this.addl(ostr);
+    RWMIO(rd, wr, mrq) {
+        this.RWMIO_end.RD = rd;
+        this.RWMIO_end.WR = wr;
+        this.RWMIO_end.MRQ = mrq;
     }
 
-    q_RWMIO(rd, wr, mrq, io) {
-        let ostr = '';
-        let ndsp = false;
-        if (rd !== this.old_rd) {
-            ostr += 'pins.RD = ' + rd + ';';
-            this.old_rd = rd;
-            ndsp = true;
+    RWMIO_finish() {
+        if ((this.RWMIO_start.RD !== this.RWMIO_end.RD) || (this.RWMIO_start.WR !== this.RWMIO_end.WR) ||
+            (this.RWMIO_start.MRQ !== this.RWMIO_end.MRQ) || (this.RWMIO_start.IO !== this.RWMIO_end.IO)) {
+            let ostr = '';
+            let ndsp = false;
+            if (this.RWMIO_start.RD !== this.RWMIO_end.RD) {
+                ostr += 'pins.RD = ' + this.RWMIO_end.RD + ';';
+                ndsp = true;
+            }
+            if (this.RWMIO_start.WR !== this.RWMIO_end.WR) {
+                if (ndsp) ostr += ' ';
+                ostr += 'pins.WR = ' + this.RWMIO_end.WR + ';';
+                ndsp = true;
+            }
+            if (this.RWMIO_start.MRQ !== this.RWMIO_end.MRQ) {
+                if (ndsp) ostr += ' ';
+                ostr += 'pins.MRQ = ' + this.RWMIO_end.MRQ + ';';
+                ndsp = true;
+            }
+            if (ostr.length > 0) this.addl(ostr);
         }
-        if (wr !== this.old_wr) {
-            if (ndsp) ostr += ' ';
-            ostr += 'pins.WR = ' + wr + ';';
-            this.old_wr = wr;
-            ndsp = true;
-        }
-        if (mrq !== this.old_mrq) {
-            if (ndsp) ostr += ' ';
-            ostr += 'pins.MRQ = ' + mrq + ';';
-            this.old_mrq = mrq;
-            ndsp = true;
-        }
-        if (io !== this.old_io) {
-            if (ndsp) ostr += ' ';
-            ostr += 'pins.IO = ' + io + ';';
-            this.old_io = io;
-            ndsp = true;
-        }
-        if (ostr.length > 0) {
-            this.q_line(ostr);
-        }
+
+        this.RWMIO_start.copy(this.RWMIO_end);
+    }
+
+    q_RWMIO(rd, wr, mrq) {
+        this.queued_RWMIO.push([rd, wr, mrq]);
     }
 
     addr_to_PC() {
@@ -250,7 +275,7 @@ class SM83_switchgen {
     }
 
     addcycles(howmany) {
-        this.RWMIO(0, 0, 0, 0);
+        this.RWMIO(0, 0, 0);
         let first = true;
         for (let i = 0; i < howmany; i++) {
             if (first) this.addcycle('Adding ' + howmany + ' cycles');
@@ -263,9 +288,9 @@ class SM83_switchgen {
         this.addcycle('Do write')
         this.addl('pins.Addr = (' + where + ');');
         this.addl('pins.D = ' + what + ';');
-        this.RWMIO(0, 1, 1, 0);
+        this.RWMIO(0, 1, 1);
 
-        this.q_RWMIO(0, 0, 0, 0);
+        this.q_RWMIO(0, 0, 0);
     }
 
     store(where, what) {
@@ -276,10 +301,10 @@ class SM83_switchgen {
     read(where, to) {
         this.addcycle('Do read')
         this.addl('pins.Addr = (' + where + ');');
-        this.RWMIO(1, 0, 1, 0);
+        this.RWMIO(1, 0, 1);
 
         this.q_line(to + ' = pins.D;');
-        this.q_RWMIO(0, 0, 0, 0);
+        this.q_RWMIO(0, 0, 0);
     }
 
     operand(what) {
@@ -290,8 +315,9 @@ class SM83_switchgen {
 
     operands(what) {
         this.operand(what);
-        this.operand('regs.TR');
-        this.q_line(what + ' |= (regs.TR << 8);');
+        this.operand('regs.RR');
+        this.force_q();
+        this.q_line(what + ' |= (regs.RR << 8);');
     }
 
     writereg16(what, val) {
@@ -308,8 +334,12 @@ class SM83_switchgen {
                 this.addl('regs.D = (' + val + ' & 0xFF00) >>> 8;');
                 this.addl('regs.E = ' + val + ' & 0xFF;');
                 break;
+            case 'SP':
+                this.addl('regs.SP = ' + val + ';');
+                break;
             default:
                 console.log('unknown writereg16!', what);
+                debugger;
         }
     }
 
@@ -346,6 +376,11 @@ class SM83_switchgen {
         let sh, sl, dh, dl;
         switch(source) {
             case 'HL':
+                if (target === 'SP') {
+                    this.addl('regs.H = (regs.SP & 0xFF00) >> 8;');
+                    this.addl('regs.L = regs.SP & 0xFF;');
+                    return;
+                }
                 sh = 'regs.H';
                 sl = 'regs.L';
                 break;
@@ -375,7 +410,7 @@ class SM83_switchgen {
                 sl = 'regs.C';
                 break;
             default:
-                console.log('UNKNOWN CPREG16 BOTTOM');
+                console.log('UNKNOWN CPREG16 BOTTOM', target, source);
                 return;
         }
         this.addl(sh + ' = ' + dh + ';');
@@ -402,6 +437,7 @@ class SM83_switchgen {
             case 'HL': return '(regs.H << 8) | regs.L';
             case 'DE': return '(regs.D << 8) | regs.E';
             case 'BC': return '(regs.B << 8) | regs.C';
+            case 'SP': return 'regs.SP';
             default:
                 console.log('UNKNOWN GETREG16', what);
         }
@@ -417,7 +453,7 @@ class SM83_switchgen {
             this.addl('let y = ((' + target + ') & 0x0F) + ((' + source + ') & 0x0F) + regs.F.C;');
         }
         else {
-            this.addl('let x = (' + target + ') + (' + source + ');';
+            this.addl('let x = (' + target + ') + (' + source + ');');
             this.addl('let y = ((' + target + ') & 0x0F) + ((' + source + ') & 0x0F);');
         }
         this.addl('regs.F.C = +(x > 0xFF);');
@@ -451,14 +487,14 @@ class SM83_switchgen {
 
     DEC(target) {
         this.addl(target + ' = ((' + target + ') - 1) & 0xFF;');
-        this.addl('refs.F.H = +(((' + target + ') & 0x0F) === 0x0F);');
+        this.addl('regs.F.H = +(((' + target + ') & 0x0F) === 0x0F);');
         this.addl('regs.F.N = 1;');
         this.setz(target);
     }
 
     INC(target) {
         this.addl(target + ' = ((' + target + ') + 1) & 0xFF;');
-        this.addl('refs.F.H = +(((' + target + ') & 0x0F) === 0);');
+        this.addl('regs.F.H = +(((' + target + ') & 0x0F) === 0);');
         this.addl('regs.F.N = 1;');
         this.setz(target);
     }
@@ -597,7 +633,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             ag.addl('let source = ' + source + ';');
             ag.addl('let x = target + source;');
             ag.addl('let y = (target & 0xFFF) + (source & 0xFFF);');
-            ag.writereg16(target,'x');
+            ag.writereg16(arg1,'x');
             ag.addl('regs.F.C = +(x > 0xFFFF);');
             ag.addl('regs.F.H = +(y > 0x0FFF);');
             ag.addl('regs.F.N = 0;');
@@ -766,7 +802,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
         case SM83_MN.LD_di_di_rel:
             ag.operand('regs.TR');
             ag.addcycle();
-            ag.addl('let source = ' + ag.getreg8(arg2) + ';');
+            ag.addl('let source = ' + ag.getreg16(arg2) + ';');
             ag.addl('regs.F.C = +((source + regs.TR) > 0xFF);');
             ag.addl('regs.F.H = +(((source & 0x0F) + (regs.TR & 0x0F)) > 0x0F);');
             ag.addl('regs.F.N = regs.F.Z = 0;');
@@ -973,7 +1009,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             ag.SLA(ag.getreg8(arg1));
             break;
         case SM83_MN.SLA_ind:
-            ag.addl('regs.TA = ' + ag.getreg16(arg2));
+            ag.addl('regs.TA = ' + ag.getreg16(arg1));
             ag.read('regs.TA', 'regs.TR');
             ag.SLA('regs.TR');
             ag.write('regs.TA', 'regs.TR');
@@ -982,7 +1018,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             ag.SRA(ag.getreg8(arg1));
             break;
         case SM83_MN.SRA_ind:
-            ag.addl('regs.TA = ' + ag.getreg16(arg2));
+            ag.addl('regs.TA = ' + ag.getreg16(arg1));
             ag.read('regs.TA', 'regs.TR');
             ag.SRA('regs.TR');
             ag.write('regs.TA', 'regs.TR');
@@ -991,7 +1027,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             ag.SRL(ag.getreg8(arg1));
             break;
         case SM83_MN.SRL_ind:
-            ag.addl('regs.TA = ' + ag.getreg16(arg2));
+            ag.addl('regs.TA = ' + ag.getreg16(arg1));
             ag.read('regs.TA', 'regs.TR');
             ag.SRL('regs.TR');
             ag.write('regs.TA', 'regs.TR');
@@ -1021,7 +1057,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             ag.SWAP(ag.getreg8(arg1));
             break;
         case SM83_MN.SWAP_ind:
-            ag.addl('regs.TA = ' + ag.getreg16(arg2));
+            ag.addl('regs.TA = ' + ag.getreg16(arg1));
             ag.read('regs.TA', 'regs.TR');
             ag.SWAP('regs.TR');
             ag.write('regs.TA', 'regs.TR');
@@ -1041,4 +1077,78 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             ag.writereg8(arg1, 'regs.TR');
             break;
    }
+   return 'function(regs, pins) { //' + SM83_MN_R[opcode_info.ins] + '\n' + ag.finished() + indent + '}';
+}
+
+const SM83_MAX_OPCODE = 0x101;
+
+const SM83_prefixes = [0, 0xCB]
+const SM83_prefix_to_codemap = Object.freeze({
+    [Z80_prefixes[0]]: 0x00,
+    [Z80_prefixes[1]]: (SM83_MAX_OPCODE + 1),
+});
+
+class SM83_opcode_functions {
+    constructor(opcode_info, exec_func) {
+        this.opcode = opcode_info.opcode;
+        this.ins = opcode_info.ins;
+        this.mnemonic = opcode_info.mnemonic;
+        this.exec_func = exec_func;
+    }
+}
+
+function SM83_get_opc_by_prefix(prfx, i) {
+    switch(prfx) {
+        case 0:
+            return SM83_opcode_matrix[i];
+        case 0xCB:
+            return SM83_opcode_matrixCB[i];
+        default:
+            console.log('WHAT?', hex2(prfx), hex2(i));
+            return;
+    }
+}
+
+function SM83_get_matrix_by_prefix(prfx, i) {
+    switch(prfx) {
+        case 0:
+            return 'SM83_opcode_matrix[' + hex0x2(i) + '], // ' + hex2(i) + '\n';
+        case 0xCB:
+            return 'SM83_opcode_matrixCB[' + hex0x2(i) + '], // CB ' + hex2(i) + '\n';
+    }
+}
+
+
+function generate_sm83_core() {
+    let outstr = '"use strict";\n\nconst sm83_decoded_opcodes = Object.freeze({\n';
+    let indent = '    ';
+    let firstin = false;
+    for (let p in SM83_prefixes) {
+        let prfx = SM83_prefixes[p];
+        for (let i = 0; i <= SM83_MAX_OPCODE; i++) {
+            let matrix_code = SM83_prefix_to_codemap[prfx] + i;
+            let mystr = indent + hex0x2(matrix_code) + ': new SM83_opcode_functions(';
+            let r = SM83_get_opc_by_prefix(prfx, i);
+            let ra;
+            if (typeof r === 'undefined') {
+                mystr += 'SM83_opcode_matrix[0x00],\n';
+                ra = SM83_generate_instruction_function(indent, SM83_opcode_matrix[0]);
+            }
+            else {
+                let sre = SM83_get_matrix_by_prefix(prfx, i);
+                if (typeof sre === 'undefined') {
+                    console.log('WHAT?', hex2(prfx), hex2(i));
+                }
+                mystr += sre;
+                ra = SM83_generate_instruction_function(indent, r);
+            }
+            mystr += '        ' + ra + ')';
+            if (firstin)
+                outstr += ',\n';
+            firstin = true;
+            outstr += mystr;
+        }
+    }
+    outstr += '\n});';
+    return outstr;
 }

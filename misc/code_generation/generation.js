@@ -66,6 +66,11 @@ function generate_z80_js() {
     save_js('z80_generated_opcodes.js', generate_z80_core(false));
 }
 
+function generate_sm83_js() {
+    GENTARGET = 'js';
+    save_js('sm83_generated_opcodes.js', generate_sm83_core());
+}
+
 function click_generate_z80_tests() {
     let seed = seed_input.value;
     if (seed.length < 1) {

@@ -17,6 +17,7 @@ let SPC_COLOR = '{r}';
 let WDC_COLOR = '{b}';
 let MOS_COLOR = '{g}';
 let Z80_COLOR = '{g}';
+let SM83_COLOR = '{g}';
 let WDC_TRACE_IO = false;
 let TRACE_INS_PADDING = 14;
 
@@ -187,7 +188,7 @@ class traces_t {
 
 //let traces = new traces_t();
 
-const D_RESOURCE_TYPES = Object.freeze({R5A22: 0, SPC700: 1, WDC65C816: 2, SNESPPU: 3, M6502: 4, Z80: 5});
+const D_RESOURCE_TYPES = Object.freeze({R5A22: 0, SPC700: 1, WDC65C816: 2, SNESPPU: 3, M6502: 4, Z80: 5, SM83: 6});
 
 class breakpoint_t {
     constructor(resource_type, resource) {

@@ -51,6 +51,12 @@ class SM83_regs_t {
 
         this.TR = 0; // Temporary Register
         this.TA = 0; // Temporary Address
+        this.RR = 0; // Remorary Register
+
+    }
+
+    stoppable() {
+        return false;
     }
 }
 
@@ -80,5 +86,9 @@ class SM83_t {
     constructor() {
         this.regs = new SM83_regs_t();
         this.pins = new SM83_pins_t();
+    }
+
+    cycle() {
+
     }
 }

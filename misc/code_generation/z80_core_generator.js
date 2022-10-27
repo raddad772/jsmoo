@@ -2214,8 +2214,6 @@ function Z80_get_matrix_by_prefix(prfx, i) {
         case 0xFDCB:
             return 'Z80_CBd_opcode_matrix[' + hex0x2(i) + '], // CB FD ' + hex2(i) + '\n';
     }
-
-
 }
 
 function generate_z80_core(CMOS) {

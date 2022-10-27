@@ -4,7 +4,8 @@ const INPUT_TYPES = Object.freeze({
     NES_CONTROLLER: 0,
     SNES_CONTROLLER: 1,
     KEYBOARD: 2,
-    SMS_CONTROLLER: 3
+    SMS_CONTROLLER: 3,
+    GB_CONTROLLER: 4
 })
 
 // Example machine
