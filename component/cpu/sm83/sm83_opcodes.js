@@ -698,3 +698,8 @@ const SM83_opcode_matrixCB = Object.freeze({
     0xFE: new SM83_opcode_info(0xFE, SM83_MN.SET_idx_ind, 7, 'HL'),
     0xFF: new SM83_opcode_info(0xFF, SM83_MN.SET_idx_di, 7, 'A'),
 });
+
+const SM83_S_IRQ = 0x100;
+const SM83_S_RESET = 0x101;
+// SPECIAL #. This is above Z80_MAX because it is special-case handled by cycle()
+const SM83_S_DECODE = 0x102;

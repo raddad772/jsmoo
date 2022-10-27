@@ -2,6 +2,7 @@
 /smw.smc
 /.idea
 /misc/tests/ProcessorTests
+/misc/tests/gameboy-test-data
 SMS TROUBLESHOOT.txt
 assemblyscript/package-lock.json
 assemblyscript/node_modules/
