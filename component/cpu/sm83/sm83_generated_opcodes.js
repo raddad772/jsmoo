@@ -11,7 +11,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do read
                 regs.TR = pins.D; // DELAYED
@@ -41,7 +40,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.TA);
                 pins.D = regs.A;
                 // Following is auto-generated code for instruction finish
-                pins.WR = 1; pins.MRQ = 1;
+                pins.RD = 0; pins.WR = 1;
                 break;
             case 2: // cleanup_custom
                 pins.Addr = regs.PC;
@@ -62,6 +61,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.B = (a & 0xFF00) >>> 8;
                 regs.C = a & 0xFF;
                 // Following is auto-generated code for instruction finish
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // cleanup_custom
                 pins.Addr = regs.PC;
@@ -87,7 +87,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -105,7 +104,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -117,7 +115,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.B = pins.D; // DELAYED
@@ -144,7 +141,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -155,7 +151,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do read
                 regs.TA = pins.D; // DELAYED
@@ -199,6 +194,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.H = +(y > 0x0FFF);
                 regs.F.N = 0;
                 // Following is auto-generated code for instruction finish
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // cleanup_custom
                 pins.Addr = regs.PC;
@@ -217,7 +213,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TA = (regs.B << 8) | regs.C // DELAYED
                 pins.Addr = (regs.TA);
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -238,6 +233,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.B = (a & 0xFF00) >>> 8;
                 regs.C = a & 0xFF;
                 // Following is auto-generated code for instruction finish
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // cleanup_custom
                 pins.Addr = regs.PC;
@@ -263,7 +259,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -281,7 +276,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -293,7 +287,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.C = pins.D; // DELAYED
@@ -320,7 +313,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -330,6 +322,7 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1:
                 if (!regs.stoppable()) {break;}
                 regs.STP = 1;
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2:
                 if (regs.STP) regs.TCU--;
@@ -352,7 +345,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do read
                 regs.TR = pins.D; // DELAYED
@@ -382,7 +374,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.TA);
                 pins.D = regs.A;
                 // Following is auto-generated code for instruction finish
-                pins.WR = 1; pins.MRQ = 1;
+                pins.RD = 0; pins.WR = 1;
                 break;
             case 2: // cleanup_custom
                 pins.Addr = regs.PC;
@@ -403,6 +395,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.D = (a & 0xFF00) >>> 8;
                 regs.E = a & 0xFF;
                 // Following is auto-generated code for instruction finish
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // cleanup_custom
                 pins.Addr = regs.PC;
@@ -428,7 +421,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -446,7 +438,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -458,7 +449,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.D = pins.D; // DELAYED
@@ -486,7 +476,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -498,7 +487,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
                 if (!(1)) { regs.TCU += 1; break; } // CHECKHERE
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2:
                 regs.TA = pins.D; // DELAYED
@@ -530,6 +518,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.H = +(y > 0x0FFF);
                 regs.F.N = 0;
                 // Following is auto-generated code for instruction finish
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // cleanup_custom
                 pins.Addr = regs.PC;
@@ -548,7 +537,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TA = (regs.D << 8) | regs.E // DELAYED
                 pins.Addr = (regs.TA);
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -569,6 +557,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.D = (a & 0xFF00) >>> 8;
                 regs.E = a & 0xFF;
                 // Following is auto-generated code for instruction finish
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // cleanup_custom
                 pins.Addr = regs.PC;
@@ -594,7 +583,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -612,7 +600,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -624,7 +611,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.E = pins.D; // DELAYED
@@ -652,7 +638,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -664,7 +649,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
                 if (!(regs.F.Z === 0)) { regs.TCU += 1; break; } // CHECKHERE
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2:
                 regs.TA = pins.D; // DELAYED
@@ -689,7 +673,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do read
                 regs.TR = pins.D; // DELAYED
@@ -720,7 +703,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.D = regs.A;
                 regs.A = (regs.A + 1) & 0xFF;
                 // Following is auto-generated code for instruction finish
-                pins.WR = 1; pins.MRQ = 1;
+                pins.RD = 0; pins.WR = 1;
                 break;
             case 2: // cleanup_custom
                 pins.Addr = regs.PC;
@@ -741,6 +724,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.H = (a & 0xFF00) >>> 8;
                 regs.L = a & 0xFF;
                 // Following is auto-generated code for instruction finish
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // cleanup_custom
                 pins.Addr = regs.PC;
@@ -766,7 +750,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -784,7 +767,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -796,7 +778,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.H = pins.D; // DELAYED
@@ -832,7 +813,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -844,7 +824,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
                 if (!(regs.F.Z === 1)) { regs.TCU += 1; break; } // CHECKHERE
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2:
                 regs.TA = pins.D; // DELAYED
@@ -876,6 +855,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.H = +(y > 0x0FFF);
                 regs.F.N = 0;
                 // Following is auto-generated code for instruction finish
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // cleanup_custom
                 pins.Addr = regs.PC;
@@ -897,7 +877,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.H = (regs.TA & 0xFF00) >>> 8;
                 regs.L = regs.TA & 0xFF;
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -918,6 +897,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.H = (a & 0xFF00) >>> 8;
                 regs.L = a & 0xFF;
                 // Following is auto-generated code for instruction finish
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // cleanup_custom
                 pins.Addr = regs.PC;
@@ -943,7 +923,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -961,7 +940,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -973,7 +951,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.L = pins.D; // DELAYED
@@ -997,7 +974,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1009,7 +985,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
                 if (!(regs.F.C === 0)) { regs.TCU += 1; break; } // CHECKHERE
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2:
                 regs.TA = pins.D; // DELAYED
@@ -1034,7 +1009,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do read
                 regs.TR = pins.D; // DELAYED
@@ -1064,7 +1038,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.D = regs.A;
                 regs.A = (regs.A - 1) & 0xFF;
                 // Following is auto-generated code for instruction finish
-                pins.WR = 1; pins.MRQ = 1;
+                pins.RD = 0; pins.WR = 1;
                 break;
             case 2: // cleanup_custom
                 pins.Addr = regs.PC;
@@ -1084,6 +1058,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 a = (a + 1) & 0xFFFF;
                 regs.SP = a;
                 // Following is auto-generated code for instruction finish
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // cleanup_custom
                 pins.Addr = regs.PC;
@@ -1105,7 +1080,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.H = +(((regs.TR) & 0x0F) === 0);
                 regs.F.N = 1;
                 regs.F.Z = +((regs.TR) === 0);
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
@@ -1134,7 +1108,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.H = +(((regs.TR) & 0x0F) === 0x0F);
                 regs.F.N = 1;
                 regs.F.Z = +((regs.TR) === 0);
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
@@ -1160,7 +1133,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do read
                 regs.TR = pins.D; // DELAYED
@@ -1194,7 +1166,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1206,7 +1177,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
                 if (!(regs.F.C === 1)) { regs.TCU += 1; break; } // CHECKHERE
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2:
                 regs.TA = pins.D; // DELAYED
@@ -1238,6 +1208,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.H = +(y > 0x0FFF);
                 regs.F.N = 0;
                 // Following is auto-generated code for instruction finish
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // cleanup_custom
                 pins.Addr = regs.PC;
@@ -1259,7 +1230,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.H = (regs.TA & 0xFF00) >>> 8;
                 regs.L = regs.TA & 0xFF;
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -1279,6 +1249,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 a = (a - 1) & 0xFFFF;
                 regs.SP = a;
                 // Following is auto-generated code for instruction finish
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // cleanup_custom
                 pins.Addr = regs.PC;
@@ -1304,7 +1275,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1322,7 +1292,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1334,7 +1303,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.A = pins.D; // DELAYED
@@ -1358,7 +1326,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1373,7 +1340,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1388,7 +1354,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1403,7 +1368,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1418,7 +1382,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1433,7 +1396,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1448,7 +1410,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1459,7 +1420,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -1482,7 +1442,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1497,7 +1456,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1512,7 +1470,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1527,7 +1484,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1542,7 +1498,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1557,7 +1512,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1572,7 +1526,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1583,7 +1536,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -1606,7 +1558,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1621,7 +1572,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1636,7 +1586,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1651,7 +1600,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1666,7 +1614,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1681,7 +1628,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1696,7 +1642,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1707,7 +1652,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -1730,7 +1674,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1745,7 +1688,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1760,7 +1702,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1775,7 +1716,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1790,7 +1730,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1805,7 +1744,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1820,7 +1758,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1831,7 +1768,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -1854,7 +1790,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1869,7 +1804,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1884,7 +1818,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1899,7 +1832,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1914,7 +1846,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1929,7 +1860,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1944,7 +1874,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1955,7 +1884,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -1978,7 +1906,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -1993,7 +1920,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2008,7 +1934,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2023,7 +1948,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2038,7 +1962,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2053,7 +1976,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2068,7 +1990,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2079,7 +2000,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -2102,7 +2022,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2114,7 +2033,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.TA);
                 pins.D = regs.B;
                 // Following is auto-generated code for instruction finish
-                pins.WR = 1; pins.MRQ = 1;
+                pins.RD = 0; pins.WR = 1;
                 break;
             case 2: // cleanup_custom
                 pins.Addr = regs.PC;
@@ -2134,7 +2053,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.TA);
                 pins.D = regs.C;
                 // Following is auto-generated code for instruction finish
-                pins.WR = 1; pins.MRQ = 1;
+                pins.RD = 0; pins.WR = 1;
                 break;
             case 2: // cleanup_custom
                 pins.Addr = regs.PC;
@@ -2154,7 +2073,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.TA);
                 pins.D = regs.D;
                 // Following is auto-generated code for instruction finish
-                pins.WR = 1; pins.MRQ = 1;
+                pins.RD = 0; pins.WR = 1;
                 break;
             case 2: // cleanup_custom
                 pins.Addr = regs.PC;
@@ -2174,7 +2093,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.TA);
                 pins.D = regs.E;
                 // Following is auto-generated code for instruction finish
-                pins.WR = 1; pins.MRQ = 1;
+                pins.RD = 0; pins.WR = 1;
                 break;
             case 2: // cleanup_custom
                 pins.Addr = regs.PC;
@@ -2194,7 +2113,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.TA);
                 pins.D = regs.H;
                 // Following is auto-generated code for instruction finish
-                pins.WR = 1; pins.MRQ = 1;
+                pins.RD = 0; pins.WR = 1;
                 break;
             case 2: // cleanup_custom
                 pins.Addr = regs.PC;
@@ -2214,7 +2133,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.TA);
                 pins.D = regs.L;
                 // Following is auto-generated code for instruction finish
-                pins.WR = 1; pins.MRQ = 1;
+                pins.RD = 0; pins.WR = 1;
                 break;
             case 2: // cleanup_custom
                 pins.Addr = regs.PC;
@@ -2234,6 +2153,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 if ((!regs.IME) && (regs.interrupt_latch !== 0)) regs.halt_bug = 1;  // DELAYED
                 if (regs.HLT) regs.TCU--;
                 // Following is auto-generated code for instruction finish
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // cleanup_custom
                 pins.Addr = regs.PC;
@@ -2253,7 +2173,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.TA);
                 pins.D = regs.A;
                 // Following is auto-generated code for instruction finish
-                pins.WR = 1; pins.MRQ = 1;
+                pins.RD = 0; pins.WR = 1;
                 break;
             case 2: // cleanup_custom
                 pins.Addr = regs.PC;
@@ -2276,7 +2196,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2291,7 +2210,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2306,7 +2224,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2321,7 +2238,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2336,7 +2252,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2351,7 +2266,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2362,7 +2276,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -2385,7 +2298,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2407,7 +2319,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2429,7 +2340,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2451,7 +2361,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2473,7 +2382,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2495,7 +2403,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2517,7 +2424,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2535,7 +2441,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.Z = +((regs.TR) === 0);
                 regs.A = regs.TR;
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -2565,7 +2470,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2587,7 +2491,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2609,7 +2512,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2631,7 +2533,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2653,7 +2554,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2675,7 +2575,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2697,7 +2596,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2714,7 +2612,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TR = (x & 0xFF);
                 regs.F.Z = +((regs.TR) === 0);
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -2744,7 +2641,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2766,7 +2662,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2788,7 +2683,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2810,7 +2704,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2832,7 +2725,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2854,7 +2746,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2876,7 +2767,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2893,7 +2783,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TR = x & 0xFF;
                 regs.F.Z = +((regs.TR) === 0);
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -2923,7 +2812,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2945,7 +2833,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2967,7 +2854,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -2989,7 +2875,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3011,7 +2896,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3033,7 +2917,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3055,7 +2938,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3072,7 +2954,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TR = x & 0xFF;
                 regs.F.Z = +((regs.TR) === 0);
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -3102,7 +2983,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3121,7 +3001,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3140,7 +3019,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3159,7 +3037,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3178,7 +3055,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3197,7 +3073,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3216,7 +3091,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3231,7 +3105,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.Z = +((regs.TR) === 0);
                 regs.A = regs.TR;
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -3258,7 +3131,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3276,7 +3148,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3294,7 +3165,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3312,7 +3182,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3330,7 +3199,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3348,7 +3216,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3366,7 +3233,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3380,7 +3246,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.Z = +((regs.TR) === 0);
                 regs.A = regs.TR;
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -3406,7 +3271,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3424,7 +3288,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3442,7 +3305,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3460,7 +3322,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3478,7 +3339,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3496,7 +3356,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3514,7 +3373,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3528,7 +3386,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.Z = +((regs.TR) === 0);
                 regs.A = regs.TR;
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -3554,7 +3411,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3574,7 +3430,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3594,7 +3449,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3614,7 +3468,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3634,7 +3487,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3654,7 +3506,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3674,7 +3525,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3690,7 +3540,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 1;
                 regs.F.Z = +((x & 0xFF) === 0);
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -3718,7 +3567,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -3727,6 +3575,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1:
                 if (!(regs.F.Z === 0)) { regs.TCU += 3; break; } // CHECKHERE
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // Do read
                 pins.Addr = (regs.SP);
@@ -3761,7 +3610,6 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 pins.Addr = (regs.SP);
                 regs.SP = (regs.SP + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do read
                 regs.C = pins.D; // DELAYED
@@ -3786,7 +3634,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do read
                 regs.TA = pins.D; // DELAYED
@@ -3819,7 +3666,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do read
                 regs.TA = pins.D; // DELAYED
@@ -3852,7 +3698,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do read
                 regs.TA = pins.D; // DELAYED
@@ -3894,6 +3739,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1:
                 regs.SP = (regs.SP - 1) & 0xFFFF;
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // Do write
                 pins.Addr = (regs.SP);
@@ -3932,7 +3778,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.Z = +((regs.TR) === 0);
                 regs.A = regs.TR;
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -3949,6 +3794,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1:
                 regs.SP = (regs.SP - 1) & 0xFFFF;
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // Do write
                 pins.Addr = (regs.SP);
@@ -3977,6 +3823,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1:
                 if (!(regs.F.Z === 1)) { regs.TCU += 3; break; } // CHECKHERE
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // Do read
                 pins.Addr = (regs.SP);
@@ -4011,7 +3858,6 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 pins.Addr = (regs.SP);
                 regs.SP = (regs.SP + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do read
                 regs.TA = pins.D; // DELAYED
@@ -4042,7 +3888,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do read
                 regs.TA = pins.D; // DELAYED
@@ -4078,7 +3923,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do read
                 regs.TA = pins.D; // DELAYED
@@ -4122,7 +3966,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do read
                 regs.TA = pins.D; // DELAYED
@@ -4175,7 +4018,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.Z = +((regs.TR) === 0);
                 regs.A = regs.TR;
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -4192,6 +4034,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1:
                 regs.SP = (regs.SP - 1) & 0xFFFF;
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // Do write
                 pins.Addr = (regs.SP);
@@ -4220,6 +4063,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1:
                 if (!(regs.F.C === 0)) { regs.TCU += 3; break; } // CHECKHERE
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // Do read
                 pins.Addr = (regs.SP);
@@ -4254,7 +4098,6 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 pins.Addr = (regs.SP);
                 regs.SP = (regs.SP + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do read
                 regs.E = pins.D; // DELAYED
@@ -4279,7 +4122,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do read
                 regs.TA = pins.D; // DELAYED
@@ -4315,7 +4157,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do read
                 regs.TA = pins.D; // DELAYED
@@ -4357,6 +4198,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1:
                 regs.SP = (regs.SP - 1) & 0xFFFF;
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // Do write
                 pins.Addr = (regs.SP);
@@ -4395,7 +4237,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.Z = +((regs.TR) === 0);
                 regs.A = regs.TR;
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -4412,6 +4253,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1:
                 regs.SP = (regs.SP - 1) & 0xFFFF;
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // Do write
                 pins.Addr = (regs.SP);
@@ -4440,6 +4282,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1:
                 if (!(regs.F.C === 1)) { regs.TCU += 3; break; } // CHECKHERE
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // Do read
                 pins.Addr = (regs.SP);
@@ -4474,7 +4317,6 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 pins.Addr = (regs.SP);
                 regs.SP = (regs.SP + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do read
                 regs.TA = pins.D; // DELAYED
@@ -4506,7 +4348,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do read
                 regs.TA = pins.D; // DELAYED
@@ -4542,7 +4383,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do read
                 regs.TA = pins.D; // DELAYED
@@ -4598,7 +4438,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.Z = +((regs.TR) === 0);
                 regs.A = regs.TR;
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -4615,6 +4454,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1:
                 regs.SP = (regs.SP - 1) & 0xFFFF;
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // Do write
                 pins.Addr = (regs.SP);
@@ -4646,7 +4486,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TA |= 0xFF00;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TA = pins.D; // DELAYED
@@ -4671,7 +4510,6 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 pins.Addr = (regs.SP);
                 regs.SP = (regs.SP + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do read
                 regs.L = pins.D; // DELAYED
@@ -4697,7 +4535,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.TA);
                 pins.D = regs.A;
                 // Following is auto-generated code for instruction finish
-                pins.WR = 1; pins.MRQ = 1;
+                pins.RD = 0; pins.WR = 1;
                 break;
             case 2: // cleanup_custom
                 pins.Addr = regs.PC;
@@ -4720,6 +4558,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1:
                 regs.SP = (regs.SP - 1) & 0xFFFF;
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // Do write
                 pins.Addr = (regs.SP);
@@ -4755,7 +4594,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.Z = +((regs.TR) === 0);
                 regs.A = regs.TR;
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -4772,6 +4610,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1:
                 regs.SP = (regs.SP - 1) & 0xFFFF;
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // Do write
                 pins.Addr = (regs.SP);
@@ -4802,6 +4641,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // Adding 2 cycles
                 regs.TR = pins.D; // DELAYED
@@ -4836,7 +4676,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -4847,7 +4686,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do read
                 regs.TA = pins.D; // DELAYED
@@ -4894,7 +4732,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.Z = +((regs.TR) === 0);
                 regs.A = regs.TR;
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -4911,6 +4748,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1:
                 regs.SP = (regs.SP - 1) & 0xFFFF;
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // Do write
                 pins.Addr = (regs.SP);
@@ -4942,7 +4780,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TA |= 0xFF00;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do read
                 regs.TA = pins.D; // DELAYED
@@ -4966,7 +4803,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.SP);
                 regs.F.setbyte(regs.TR & 0xF0);
                 regs.SP = (regs.SP + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do read
                 regs.TR = pins.D; // DELAYED
@@ -4991,7 +4827,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TA = 0xFF00 | regs.C; // DELAYED
                 pins.Addr = (regs.TA);
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.A = pins.D; // DELAYED
@@ -5014,7 +4849,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5026,6 +4860,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1:
                 regs.SP = (regs.SP - 1) & 0xFFFF;
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // Do write
                 pins.Addr = (regs.SP);
@@ -5060,7 +4895,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.Z = +((regs.TR) === 0);
                 regs.A = regs.TR;
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -5077,6 +4911,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1:
                 regs.SP = (regs.SP - 1) & 0xFFFF;
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // Do write
                 pins.Addr = (regs.SP);
@@ -5107,7 +4942,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2:
                 regs.TR = pins.D; // DELAYED
@@ -5136,6 +4970,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.H = (regs.SP & 0xFF00) >> 8;
                 regs.L = regs.SP & 0xFF;
                 // Following is auto-generated code for instruction finish
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // cleanup_custom
                 pins.Addr = regs.PC;
@@ -5154,7 +4989,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do read
                 regs.TA = pins.D; // DELAYED
@@ -5189,7 +5023,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5213,7 +5046,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 1;
                 regs.F.Z = +((x & 0xFF) === 0);
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -5230,6 +5062,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1:
                 regs.SP = (regs.SP - 1) & 0xFFFF;
+                pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // Do write
                 pins.Addr = (regs.SP);
@@ -5256,8 +5089,22 @@ const sm83_decoded_opcodes = Object.freeze({
     0x100: new SM83_opcode_functions(SM83_opcode_matrix[0x00],
         function(regs, pins) { //NOP
     }),
-    0x101: new SM83_opcode_functions(SM83_opcode_matrix[0x00],
-        function(regs, pins) { //NOP
+    0x101: new SM83_opcode_functions(SM83_opcode_matrix[0x101], // 101
+        function(regs, pins) { //RESET
+        switch(regs.TCU) {
+            case 1:
+                // Following is auto-generated code for instruction finish
+                pins.RD = 0; pins.MRQ = 0;
+                break;
+            case 2: // cleanup_custom
+                pins.Addr = regs.PC;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.TCU = 0;
+                regs.IR = SM83_S_DECODE;
+                regs.poll_IRQ = true;
+                pins.RD = 1; pins.MRQ = 1;
+                break;
+        }
     }),
     0x102: new SM83_opcode_functions(SM83_opcode_matrixCB[0x00], // CB 00
         function(regs, pins) { //RLC_di
@@ -5273,7 +5120,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5291,7 +5137,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5309,7 +5154,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5327,7 +5171,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5345,7 +5188,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5363,7 +5205,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5377,7 +5218,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.C = regs.TR & 1;
                 regs.F.H = regs.F.N = 0;
                 regs.F.Z = +((regs.TR) === 0);
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
@@ -5410,7 +5250,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5428,7 +5267,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5446,7 +5284,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5464,7 +5301,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5482,7 +5318,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5500,7 +5335,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5518,7 +5352,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5532,7 +5365,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.C = ((regs.TR) & 0x80) >>> 7;
                 regs.F.H = regs.F.N = 0;
                 regs.F.Z = +((regs.TR) === 0);
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
@@ -5565,7 +5397,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5584,7 +5415,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5603,7 +5433,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5622,7 +5451,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5641,7 +5469,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5660,7 +5487,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5679,7 +5505,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5694,7 +5519,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.C = carry;
                 regs.F.H = regs.F.N = 0;
                 regs.F.Z = +((regs.TR) === 0);
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
@@ -5728,7 +5552,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5747,7 +5570,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5766,7 +5588,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5785,7 +5606,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5804,7 +5624,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5823,7 +5642,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5842,7 +5660,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5857,7 +5674,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.C = carry;
                 regs.F.H = regs.F.N = 0;
                 regs.F.Z = +((regs.TR) === 0);
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
@@ -5891,7 +5707,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5910,7 +5725,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5929,7 +5743,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5948,7 +5761,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5967,7 +5779,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -5986,7 +5797,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6005,7 +5815,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6020,7 +5829,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.C = carry;
                 regs.F.H = regs.F.N = 0;
                 regs.F.Z = +((regs.TR) === 0);
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
@@ -6054,7 +5862,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6073,7 +5880,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6092,7 +5898,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6111,7 +5916,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6130,7 +5934,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6149,7 +5952,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6168,7 +5970,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6183,7 +5984,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.C = carry;
                 regs.F.H = regs.F.N = 0;
                 regs.F.Z = +((regs.TR) === 0);
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
@@ -6217,7 +6017,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6234,7 +6033,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6251,7 +6049,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6268,7 +6065,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6285,7 +6081,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6302,7 +6097,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6319,7 +6113,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6332,7 +6125,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TR = (((regs.TR) << 4) | ((regs.TR) >>> 4)) & 0xFF;
                 regs.F.C = regs.F.H = regs.F.N = 0;
                 regs.F.Z = +((regs.TR) === 0);
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
@@ -6364,7 +6156,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6382,7 +6173,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6400,7 +6190,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6418,7 +6207,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6436,7 +6224,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6454,7 +6241,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6472,7 +6258,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6486,7 +6271,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TR = (regs.TR) >>> 1;
                 regs.F.H = regs.F.N = 0;
                 regs.F.Z = +((regs.TR) === 0);
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
@@ -6519,7 +6303,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6536,7 +6319,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6553,7 +6335,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6570,7 +6351,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6587,7 +6367,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6604,7 +6383,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6621,7 +6399,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6634,7 +6411,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 0;
                 regs.F.Z = +((regs.TR & 1) === 0);
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -6659,7 +6435,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6676,7 +6451,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6693,7 +6467,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6710,7 +6483,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6727,7 +6499,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6744,7 +6515,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6761,7 +6531,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6774,7 +6543,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 0;
                 regs.F.Z = +((regs.TR & 2) === 0);
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -6799,7 +6567,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6816,7 +6583,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6833,7 +6599,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6850,7 +6615,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6867,7 +6631,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6884,7 +6647,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6901,7 +6663,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6914,7 +6675,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 0;
                 regs.F.Z = +((regs.TR & 4) === 0);
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -6939,7 +6699,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6956,7 +6715,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6973,7 +6731,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -6990,7 +6747,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7007,7 +6763,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7024,7 +6779,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7041,7 +6795,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7054,7 +6807,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 0;
                 regs.F.Z = +((regs.TR & 8) === 0);
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -7079,7 +6831,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7096,7 +6847,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7113,7 +6863,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7130,7 +6879,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7147,7 +6895,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7164,7 +6911,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7181,7 +6927,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7194,7 +6939,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 0;
                 regs.F.Z = +((regs.TR & 16) === 0);
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -7219,7 +6963,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7236,7 +6979,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7253,7 +6995,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7270,7 +7011,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7287,7 +7027,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7304,7 +7043,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7321,7 +7059,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7334,7 +7071,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 0;
                 regs.F.Z = +((regs.TR & 32) === 0);
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -7359,7 +7095,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7376,7 +7111,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7393,7 +7127,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7410,7 +7143,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7427,7 +7159,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7444,7 +7175,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7461,7 +7191,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7474,7 +7203,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 0;
                 regs.F.Z = +((regs.TR & 64) === 0);
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -7499,7 +7227,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7516,7 +7243,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7533,7 +7259,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7550,7 +7275,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7567,7 +7291,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7584,7 +7307,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7601,7 +7323,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7614,7 +7335,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 0;
                 regs.F.Z = +((regs.TR & 128) === 0);
                 // Following is auto-generated code for instruction finish
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
@@ -7639,7 +7359,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7654,7 +7373,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7669,7 +7387,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7684,7 +7401,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7699,7 +7415,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7714,7 +7429,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7729,7 +7443,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7739,7 +7452,6 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
@@ -7769,7 +7481,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7784,7 +7495,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7799,7 +7509,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7814,7 +7523,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7829,7 +7537,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7844,7 +7551,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7859,7 +7565,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7869,7 +7574,6 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
@@ -7899,7 +7603,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7914,7 +7617,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7929,7 +7631,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7944,7 +7645,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7959,7 +7659,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7974,7 +7673,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7989,7 +7687,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -7999,7 +7696,6 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
@@ -8029,7 +7725,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8044,7 +7739,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8059,7 +7753,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8074,7 +7767,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8089,7 +7781,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8104,7 +7795,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8119,7 +7809,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8129,7 +7818,6 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
@@ -8159,7 +7847,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8174,7 +7861,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8189,7 +7875,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8204,7 +7889,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8219,7 +7903,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8234,7 +7917,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8249,7 +7931,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8259,7 +7940,6 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
@@ -8289,7 +7969,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8304,7 +7983,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8319,7 +7997,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8334,7 +8011,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8349,7 +8025,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8364,7 +8039,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8379,7 +8053,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8389,7 +8062,6 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
@@ -8419,7 +8091,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8434,7 +8105,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8449,7 +8119,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8464,7 +8133,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8479,7 +8147,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8494,7 +8161,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8509,7 +8175,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8519,7 +8184,6 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
@@ -8549,7 +8213,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8564,7 +8227,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8579,7 +8241,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8594,7 +8255,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8609,7 +8269,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8624,7 +8283,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8639,7 +8297,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8649,7 +8306,6 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
@@ -8679,7 +8335,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8694,7 +8349,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8709,7 +8363,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8724,7 +8377,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8739,7 +8391,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8754,7 +8405,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8769,7 +8419,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8780,7 +8429,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
                 regs.TR |= 0x01;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
@@ -8810,7 +8458,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8825,7 +8472,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8840,7 +8486,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8855,7 +8500,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8870,7 +8514,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8885,7 +8528,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8900,7 +8542,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8911,7 +8552,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
                 regs.TR |= 0x02;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
@@ -8941,7 +8581,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8956,7 +8595,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8971,7 +8609,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -8986,7 +8623,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9001,7 +8637,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9016,7 +8651,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9031,7 +8665,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9042,7 +8675,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
                 regs.TR |= 0x04;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
@@ -9072,7 +8704,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9087,7 +8718,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9102,7 +8732,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9117,7 +8746,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9132,7 +8760,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9147,7 +8774,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9162,7 +8788,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9173,7 +8798,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
                 regs.TR |= 0x08;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
@@ -9203,7 +8827,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9218,7 +8841,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9233,7 +8855,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9248,7 +8869,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9263,7 +8883,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9278,7 +8897,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9293,7 +8911,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9304,7 +8921,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
                 regs.TR |= 0x10;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
@@ -9334,7 +8950,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9349,7 +8964,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9364,7 +8978,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9379,7 +8992,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9394,7 +9006,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9409,7 +9020,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9424,7 +9034,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9435,7 +9044,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
                 regs.TR |= 0x20;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
@@ -9465,7 +9073,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9480,7 +9087,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9495,7 +9101,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9510,7 +9115,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9525,7 +9129,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9540,7 +9143,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9555,7 +9157,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9566,7 +9167,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
                 regs.TR |= 0x40;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
@@ -9596,7 +9196,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9611,7 +9210,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9626,7 +9224,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9641,7 +9238,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9656,7 +9252,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9671,7 +9266,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9686,7 +9280,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -9697,7 +9290,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
                 regs.TR |= 0x80;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
@@ -9727,7 +9319,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),

@@ -18,6 +18,15 @@ class SM83_regs_F {
         this.N = (val & 0x40) >>> 6;
         this.Z = (val & 0x80) >>> 7;
     }
+
+    formatbyte() {
+		let outstr = '';
+		outstr += this.C ? 'C' : 'c';
+		outstr += this.H ? 'H' : 'h';
+		outstr += this.N ? 'N' : 'n';
+		outstr += this.Z ? 'Z' : 'z';
+		return outstr;
+    }
 }
 
 class SM83_regs_t {
@@ -53,6 +62,7 @@ class SM83_regs_t {
         this.TA = 0; // Temporary Address
         this.RR = 0; // Remorary Register
 
+        this.prefix = 0;
     }
 
     stoppable() {
@@ -86,9 +96,89 @@ class SM83_t {
     constructor() {
         this.regs = new SM83_regs_t();
         this.pins = new SM83_pins_t();
+
+        this.trace_on = false;
+        this.trace_peek = null;
+
+        this.trace_cycles = 0;
+        this.current_instruction = SM83_opcode_matrix[SM83_S_RESET];
+    }
+
+    enable_tracing(trace_peek=null) {
+        this.trace_on = true;
+        if (trace_peek !== null)
+            this.trace_peek = trace_peek;
+    }
+
+    disable_tracing() {
+        if (!this.trace_on) return;
+        this.trace_on = false;
+    }
+
+    trace_format(dass, PCO) {
+		let outstr = trace_start_format('SM83', SM83_COLOR, this.trace_cycles, ' ', PCO);
+		// General trace format is...
+		outstr += dass;
+		let sp = dass.length;
+		while(sp < TRACE_INS_PADDING) {
+			outstr += ' ';
+			sp++;
+		}
+
+		outstr += 'TCU:' + this.regs.TCU + ' ';
+        outstr += 'PC:' + hex4(this.regs.PC) + ' ';
+		outstr += ' A:' + hex2(this.regs.A);
+		outstr += ' B:' + hex2(this.regs.B);
+		outstr += ' C:' + hex2(this.regs.C);
+		outstr += ' D:' + hex2(this.regs.D);
+		outstr += ' E:' + hex2(this.regs.E);
+		outstr += ' HL:' + hex4((this.regs.H << 8) | (this.regs.L));
+		outstr += ' SP:' + hex4(this.regs.SP);
+		outstr += ' F:' + this.regs.F.formatbyte();
+        return outstr;
+	}
+
+    reset() {
+        this.regs.PC = 0;
+        this.regs.TCU = 0;
+    }
+
+    ins_cycles() {
+        switch(this.regs.TCU) {
+            case 1: // Initial opcode fetch has already been done as last cycle of last instruction
+                this.regs.IR = this.pins.D;
+                if (this.regs.IR === 0xCB) { this.pins.Addr = this.regs.PC; this.regs.PC = (this.regs.PC + 1) & 0xFFFF; break; }
+
+                this.current_instruction = sm83_decoded_opcodes[this.regs.IR];
+                this.regs.prefix = 0;
+                this.regs.TCU = 0;
+                break;
+            case 2:
+                this.regs.IR = this.pins.D;
+                if (this.regs.IR === 0xCB) { console.log('UM?'); this.regs.TCU--; this.pins.Addr = this.regs.PC; this.regs.PC = (this.regs.PC + 1) & 0xFFFF; break; }
+                this.regs.prefix = 0xCB;
+                this.regs.TCU = 0;
+                this.current_instruction = sm83_decoded_opcodes[SM83_prefix_to_codemap[0xCB] + this.regs.IR];
+                break;
+        }
     }
 
     cycle() {
-
+        this.regs.TCU++;
+        this.trace_cycles++;
+        if (this.regs.IR === SM83_S_DECODE) {
+            // operand()
+            // if CB, operand() again
+            if ((this.regs.TCU === 1) && (this.regs.prefix === 0)) this.PCO = this.pins.Addr;
+            this.ins_cycles();
+        } else {
+            if (this.trace_on && this.regs.TCU === 1) {
+                this.last_trace_cycle = this.PCO;
+                dbg.traces.add(TRACERS.SM83, this.trace_cycles, this.trace_format(SM83_disassemble(this.PCO, this.trace_peek), this.PCO));
+            }
+            // Execute an actual opcode
+            this.current_instruction.exec_func(this.regs, this.pins);
+        }
     }
+
 }

@@ -33,16 +33,16 @@ function dhex2(what) {
 
 function SM83_fmt_test(tst) {
     let oute = JSON.parse(JSON.stringify(tst));
-    oute.initial.pc = dhex4(oute.initial.pc);
-    oute.initial.sp = dhex4(oute.initial.sp);
-    oute.initial.a = dhex2(oute.initial.a);
-    oute.initial.b = dhex2(oute.initial.b);
-    oute.initial.c = dhex2(oute.initial.c);
-    oute.initial.d = dhex2(oute.initial.d);
-    oute.initial.e = dhex2(oute.initial.e);
-    oute.initial.f = dhex2(oute.initial.f);
-    oute.initial.h = dhex2(oute.initial.h);
-    oute.initial.l = dhex2(oute.initial.l);
+    oute.initial.cpu.pc = dhex4(oute.initial.cpu.pc);
+    oute.initial.cpu.sp = dhex4(oute.initial.cpu.sp);
+    oute.initial.cpu.a = dhex2(oute.initial.cpu.a);
+    oute.initial.cpu.b = dhex2(oute.initial.cpu.b);
+    oute.initial.cpu.c = dhex2(oute.initial.cpu.c);
+    oute.initial.cpu.d = dhex2(oute.initial.cpu.d);
+    oute.initial.cpu.e = dhex2(oute.initial.cpu.e);
+    oute.initial.cpu.f = dhex2(oute.initial.cpu.f);
+    oute.initial.cpu.h = dhex2(oute.initial.cpu.h);
+    oute.initial.cpu.l = dhex2(oute.initial.cpu.l);
     for (let j in oute.initial.ram) {
         let ro = oute.initial.ram[j]
         ro[0] = dhex4(ro[0]);
@@ -58,16 +58,16 @@ function SM83_fmt_test(tst) {
         cycle[0] = dhex4(cycle[0]);
         if (cycle[1] !== null) cycle[1] = dhex2(cycle[1]);
     }
-    oute.final.pc = dhex4(oute.final.pc);
-    oute.final.sp = dhex4(oute.final.sp);
-    oute.final.a = dhex2(oute.final.a);
-    oute.final.b = dhex2(oute.final.b);
-    oute.final.c = dhex2(oute.final.c);
-    oute.final.d = dhex2(oute.final.d);
-    oute.final.e = dhex2(oute.final.e);
-    oute.final.f = dhex2(oute.final.f);
-    oute.final.h = dhex2(oute.final.h);
-    oute.final.l = dhex2(oute.final.l);
+    oute.final.cpu.pc = dhex4(oute.final.cpu.pc);
+    oute.final.cpu.sp = dhex4(oute.final.cpu.sp);
+    oute.final.cpu.a = dhex2(oute.final.cpu.a);
+    oute.final.cpu.b = dhex2(oute.final.cpu.b);
+    oute.final.cpu.c = dhex2(oute.final.cpu.c);
+    oute.final.cpu.d = dhex2(oute.final.cpu.d);
+    oute.final.cpu.e = dhex2(oute.final.cpu.e);
+    oute.final.cpu.f = dhex2(oute.final.cpu.f);
+    oute.final.cpu.h = dhex2(oute.final.cpu.h);
+    oute.final.cpu.l = dhex2(oute.final.cpu.l);
     return oute;
 }
 
@@ -132,16 +132,16 @@ function SM83test_it_automated(cpu, tests, is_call = false) {
     for (let i in tests) {
         let initial = tests[i].initial;
         let final = tests[i].final;
-        cpu.regs.PC = initial.pc;
-        cpu.regs.SP = initial.sp;
-        cpu.regs.A = initial.a;
-        cpu.regs.B = initial.b;
-        cpu.regs.C = initial.c;
-        cpu.regs.D = initial.d;
-        cpu.regs.E = initial.e;
-        cpu.regs.F.setbyte(initial.f);
-        cpu.regs.H = initial.h;
-        cpu.regs.L = initial.l;
+        cpu.regs.PC = parseInt(initial.cpu.pc);
+        cpu.regs.SP = parseInt(initial.cpu.sp);
+        cpu.regs.A = parseInt(initial.cpu.a);
+        cpu.regs.B = parseInt(initial.cpu.b);
+        cpu.regs.C = parseInt(initial.cpu.c);
+        cpu.regs.D = parseInt(initial.cpu.d);
+        cpu.regs.E = parseInt(initial.cpu.e);
+        cpu.regs.F.setbyte(parseInt(initial.cpu.f));
+        cpu.regs.H = parseInt(initial.cpu.h);
+        cpu.regs.L = parseInt(initial.cpu.l);
         cpu.regs.prefix = 0x00;
 
         let my_cycles = [];
@@ -151,7 +151,10 @@ function SM83test_it_automated(cpu, tests, is_call = false) {
         cpu.regs.IR = SM83_S_DECODE;
         cpu.pins.Addr = cpu.regs.PC;
         cpu.pins.D = SM83testRAM[cpu.regs.PC];
+        cpu.pins.MRQ = 1;
+        cpu.pins.RD = 1;
         cpu.regs.TCU = 0;
+        cpu.regs.PC = (cpu.regs.PC + 1) & 0xFFFF;
         let addr;
         let passed = true;
         for (let cyclei in tests[i].cycles)
@@ -229,6 +232,7 @@ function SM83test_it_automated(cpu, tests, is_call = false) {
                     console.log('LETS SEE', hex4(cpu.regs.PC));*/
                 }
                 console.log(name + ' MISMATCH!');;
+                console.log(name, hex2(mine), hex2(theirs));
                 messages.push('reg ' + name + ' MISMATCH! MINE:' + hex0x2(mine) + ' THEIRS:' + hex0x2(theirs));
                 return false;
             }
@@ -240,16 +244,16 @@ function SM83test_it_automated(cpu, tests, is_call = false) {
             passed &= testregs('PC', (cpu.regs.PC - 1) & 0xFFFF, final.pc)
         } else passed &= testregs('PC', last_pc, final.pc);*/
         cpu.cycle(); // for more trace
-        passed &= testregs('PC', last_pc, final.pc, cpu.pins.Addr);
-        passed &= testregs('SP', cpu.regs.SP, final.sp);
-        passed &= testregs('A', cpu.regs.A, final.a);
-        passed &= testregs('B', cpu.regs.B, final.b);
-        passed &= testregs('C', cpu.regs.C, final.c);
-        passed &= testregs('D', cpu.regs.D, final.d);
-        passed &= testregs('E', cpu.regs.E, final.e);
-        passed &= testregs('F', cpu.regs.F.getbyte(), final.f);
-        passed &= testregs('H', cpu.regs.H, final.h);
-        passed &= testregs('L', cpu.regs.L, final.l);
+        passed &= testregs('PC', last_pc, parseInt(final.cpu.pc), cpu.pins.Addr);
+        passed &= testregs('SP', cpu.regs.SP, parseInt(final.cpu.sp));
+        passed &= testregs('A', cpu.regs.A, parseInt(final.cpu.a));
+        passed &= testregs('B', cpu.regs.B, parseInt(final.cpu.b));
+        passed &= testregs('C', cpu.regs.C, parseInt(final.cpu.c));
+        passed &= testregs('D', cpu.regs.D, parseInt(final.cpu.d));
+        passed &= testregs('E', cpu.regs.E, parseInt(final.cpu.e));
+        passed &= testregs('F', cpu.regs.F.getbyte(), parseInt(final.cpu.f));
+        passed &= testregs('H', cpu.regs.H, parseInt(final.cpu.h));
+        passed &= testregs('L', cpu.regs.L, parseInt(final.cpu.l));
 
         for (let j in final.ram) {
             if (SM83testRAM[faddr(parseInt(final.ram[j][0]))] !== parseInt(final.ram[j][1])) {
@@ -272,7 +276,7 @@ function SM83test_it_automated(cpu, tests, is_call = false) {
 
 let SM83_io_mismatches = [];
 
-async function test_pt_z80() {
+async function test_pt_sm83() {
     SM83local_server_url = 'http://[::1]:8000/misc/tests/gameboy-test-data/cpu_tests/v1/'
     await dotest_pt_sm83();
 }
@@ -297,7 +301,6 @@ function SM83_get_name(iclass, ins) {
 async function test_pt_sm83_ins(cpu, iclass, ins, is_call=false) {
     let opc = SM83_get_name(iclass, ins);
     let data = await getJSON(SM83local_server_url + opc + '.json');
-    console.log('TESTING', opc);
     let result = SM83test_it_automated(cpu, data, is_call);
     if (!result.passed) {
         tconsole.addl(txf('{r}TEST FOR {/b}' + hex0x2(ins) + ' {/r*}FAILED!{/} See console for test deets'));

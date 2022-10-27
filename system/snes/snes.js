@@ -146,6 +146,7 @@ class SNES {
 }
 
 //after_js = test_pt_z80;
+after_js = test_pt_sm83;
 //after_js = test_65c816;
 //after_js = test_pt_65c816;
 //after_js = test_pt_spc700;

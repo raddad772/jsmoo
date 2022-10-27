@@ -1076,25 +1076,11 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             ag.XOR(ag.getreg8(arg1), 'regs.TR');
             ag.writereg8(arg1, 'regs.TR');
             break;
+        case SM83_MN.RESET:
+            ag.addcycle();
+            break;
    }
    return 'function(regs, pins) { //' + SM83_MN_R[opcode_info.ins] + '\n' + ag.finished() + indent + '}';
-}
-
-const SM83_MAX_OPCODE = 0x101;
-
-const SM83_prefixes = [0, 0xCB]
-const SM83_prefix_to_codemap = Object.freeze({
-    [Z80_prefixes[0]]: 0x00,
-    [Z80_prefixes[1]]: (SM83_MAX_OPCODE + 1),
-});
-
-class SM83_opcode_functions {
-    constructor(opcode_info, exec_func) {
-        this.opcode = opcode_info.opcode;
-        this.ins = opcode_info.ins;
-        this.mnemonic = opcode_info.mnemonic;
-        this.exec_func = exec_func;
-    }
 }
 
 function SM83_get_opc_by_prefix(prfx, i) {
