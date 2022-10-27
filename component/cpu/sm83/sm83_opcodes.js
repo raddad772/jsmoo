@@ -46,6 +46,7 @@
     'SWAP_di', 'SWAP_ind', 
     'STOP', 
     'XOR_di_da', 'XOR_di_di', 'XOR_di_ind',
+    'RESET
 ]);
 
 function sm83_mn_gen() {
@@ -90,7 +91,7 @@ const SM83_MN = Object.freeze({
     SET_idx_di: 80, SET_idx_ind: 81, SLA_di: 82, SLA_ind: 83, SRA_di: 84,
     SRA_ind: 85, SRL_di: 86, SRL_ind: 87, SUB_di_da: 88, SUB_di_di: 89,
     SUB_di_ind: 90, SWAP_di: 91, SWAP_ind: 92, STOP: 93, XOR_di_da: 94,
-    XOR_di_di: 95, XOR_di_ind: 96
+    XOR_di_di: 95, XOR_di_ind: 96, RESET: 97
 });
 
 const SM83_MN_R = Object.freeze({
@@ -113,7 +114,7 @@ const SM83_MN_R = Object.freeze({
     80: 'SET_idx_di', 81: 'SET_idx_ind', 82: 'SLA_di', 83: 'SLA_ind', 84: 'SRA_di',
     85: 'SRA_ind', 86: 'SRL_di', 87: 'SRL_ind', 88: 'SUB_di_da', 89: 'SUB_di_di',
     90: 'SUB_di_ind', 91: 'SWAP_di', 92: 'SWAP_ind', 93: 'STOP', 94: 'XOR_di_da',
-    95: 'XOR_di_di', 96: 'XOR_di_ind'
+    95: 'XOR_di_di', 96: 'XOR_di_ind', 97: 'RESET'
 });
 
 function SM83_generate_opcode_matrix()
@@ -150,6 +151,8 @@ class SM83_opcode_info {
         this.arg2 = arg2;
     }
 }
+
+const SM83_S_RESET = 0x101;
 
 const SM83_opcode_matrix = Object.freeze({
     0x00: new SM83_opcode_info(0x00, SM83_MN.NOP),
@@ -422,7 +425,8 @@ const SM83_opcode_matrix = Object.freeze({
     //0xFC: new SM83_opcode_info(0xFC, SM83_MN.),
     //0xFD: new SM83_opcode_info(0xFD, SM83_MN.),
     0xFE: new SM83_opcode_info(0xFE, SM83_MN.CP_di_da, 'A'),
-    0xFF: new SM83_opcode_info(0xFF, SM83_MN.RST_imp, 0x38)
+    0xFF: new SM83_opcode_info(0xFF, SM83_MN.RST_imp, 0x38),
+    [SM83_S_RESET]: new SM83_opcode_info(SM83_S_RESET, SM83_MN.RESET)
 });
 
 const SM83_opcode_matrixCB = Object.freeze({
@@ -700,6 +704,22 @@ const SM83_opcode_matrixCB = Object.freeze({
 });
 
 const SM83_S_IRQ = 0x100;
-const SM83_S_RESET = 0x101;
 // SPECIAL #. This is above Z80_MAX because it is special-case handled by cycle()
 const SM83_S_DECODE = 0x102;
+const SM83_MAX_OPCODE = 0x101;
+
+const SM83_prefixes = [0, 0xCB]
+const SM83_prefix_to_codemap = Object.freeze({
+    [SM83_prefixes[0]]: 0x00,
+    [SM83_prefixes[1]]: (SM83_MAX_OPCODE + 1),
+});
+
+class SM83_opcode_functions {
+    constructor(opcode_info, exec_func) {
+        this.opcode = opcode_info.opcode;
+        this.ins = opcode_info.ins;
+        this.mnemonic = opcode_info.mnemonic;
+        this.exec_func = exec_func;
+    }
+}
+

@@ -26,7 +26,8 @@ const TRACERS = Object.freeze({
     SPC: 1,
     WDC: 2,
     M6502: 3,
-    Z80: 4
+    Z80: 4,
+    SM83: 5
 });
 
 const TRACE_BG_COLORS = Object.freeze({
