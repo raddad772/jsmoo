@@ -33,16 +33,16 @@ function dhex2(what) {
 
 function SM83_fmt_test(tst) {
     let oute = JSON.parse(JSON.stringify(tst));
-    oute.initial.cpu.pc = dhex4(oute.initial.cpu.pc);
-    oute.initial.cpu.sp = dhex4(oute.initial.cpu.sp);
-    oute.initial.cpu.a = dhex2(oute.initial.cpu.a);
-    oute.initial.cpu.b = dhex2(oute.initial.cpu.b);
-    oute.initial.cpu.c = dhex2(oute.initial.cpu.c);
-    oute.initial.cpu.d = dhex2(oute.initial.cpu.d);
-    oute.initial.cpu.e = dhex2(oute.initial.cpu.e);
-    oute.initial.cpu.f = dhex2(oute.initial.cpu.f);
-    oute.initial.cpu.h = dhex2(oute.initial.cpu.h);
-    oute.initial.cpu.l = dhex2(oute.initial.cpu.l);
+    oute.initial.pc = dhex4(oute.initial.pc);
+    oute.initial.sp = dhex4(oute.initial.sp);
+    oute.initial.a = dhex2(oute.initial.a);
+    oute.initial.b = dhex2(oute.initial.b);
+    oute.initial.c = dhex2(oute.initial.c);
+    oute.initial.d = dhex2(oute.initial.d);
+    oute.initial.e = dhex2(oute.initial.e);
+    oute.initial.f = dhex2(oute.initial.f);
+    oute.initial.h = dhex2(oute.initial.h);
+    oute.initial.l = dhex2(oute.initial.l);
     for (let j in oute.initial.ram) {
         let ro = oute.initial.ram[j]
         ro[0] = dhex4(ro[0]);
@@ -59,16 +59,16 @@ function SM83_fmt_test(tst) {
         cycle[0] = dhex4(cycle[0]);
         if (cycle[1] !== null) cycle[1] = dhex2(cycle[1]);
     }
-    oute.final.cpu.pc = dhex4(oute.final.cpu.pc);
-    oute.final.cpu.sp = dhex4(oute.final.cpu.sp);
-    oute.final.cpu.a = dhex2(oute.final.cpu.a);
-    oute.final.cpu.b = dhex2(oute.final.cpu.b);
-    oute.final.cpu.c = dhex2(oute.final.cpu.c);
-    oute.final.cpu.d = dhex2(oute.final.cpu.d);
-    oute.final.cpu.e = dhex2(oute.final.cpu.e);
-    oute.final.cpu.f = dhex2(oute.final.cpu.f);
-    oute.final.cpu.h = dhex2(oute.final.cpu.h);
-    oute.final.cpu.l = dhex2(oute.final.cpu.l);
+    oute.final.pc = dhex4(oute.final.pc);
+    oute.final.sp = dhex4(oute.final.sp);
+    oute.final.a = dhex2(oute.final.a);
+    oute.final.b = dhex2(oute.final.b);
+    oute.final.c = dhex2(oute.final.c);
+    oute.final.d = dhex2(oute.final.d);
+    oute.final.e = dhex2(oute.final.e);
+    oute.final.f = dhex2(oute.final.f);
+    oute.final.h = dhex2(oute.final.h);
+    oute.final.l = dhex2(oute.final.l);
     return oute;
 }
 
@@ -103,8 +103,13 @@ function faddr(addr) {
 }
 
 function SM83cycle_pins(pins) {
-    if (pins.WR) return 'write';
-    else return 'read';
+    /*if (pins.WR) return 'write';
+    else return 'read';*/
+    let ostr = '';
+    ostr += pins.RD ? 'r' : '-';
+    ostr += pins.WR ? 'w' : '-';
+    ostr += pins.MRQ ? 'm' : '-';
+    return ostr;
 }
 
 /**
@@ -134,16 +139,16 @@ function SM83test_it_automated(cpu, tests, is_call = false) {
         //console.log(tests[i]);
         let initial = tests[i].initial;
         let final = tests[i].final;
-        cpu.regs.PC = parseInt(initial.cpu.pc);
-        cpu.regs.SP = parseInt(initial.cpu.sp);
-        cpu.regs.A = parseInt(initial.cpu.a);
-        cpu.regs.B = parseInt(initial.cpu.b);
-        cpu.regs.C = parseInt(initial.cpu.c);
-        cpu.regs.D = parseInt(initial.cpu.d);
-        cpu.regs.E = parseInt(initial.cpu.e);
-        cpu.regs.F.setbyte(parseInt(initial.cpu.f));
-        cpu.regs.H = parseInt(initial.cpu.h);
-        cpu.regs.L = parseInt(initial.cpu.l);
+        cpu.regs.PC = parseInt(initial.pc);
+        cpu.regs.SP = parseInt(initial.sp);
+        cpu.regs.A = parseInt(initial.a);
+        cpu.regs.B = parseInt(initial.b);
+        cpu.regs.C = parseInt(initial.c);
+        cpu.regs.D = parseInt(initial.d);
+        cpu.regs.E = parseInt(initial.e);
+        cpu.regs.F.setbyte(parseInt(initial.f));
+        cpu.regs.H = parseInt(initial.h);
+        cpu.regs.L = parseInt(initial.l);
         cpu.regs.prefix = 0x00;
 
         let my_cycles = [];
@@ -153,8 +158,6 @@ function SM83test_it_automated(cpu, tests, is_call = false) {
         cpu.regs.IR = SM83_S_DECODE;
         cpu.pins.Addr = cpu.regs.PC;
         cpu.pins.D = SM83testRAM[cpu.regs.PC];
-        let soy = cpu.pins.D;
-        if (soy !== null) soy = hex2(soy)
         cpu.pins.MRQ = 1;
         cpu.pins.RD = 1;
         cpu.regs.TCU = 0;
@@ -168,12 +171,6 @@ function SM83test_it_automated(cpu, tests, is_call = false) {
                 //console.log('NULL!');
                 continue;
             }
-            /*if (cpu.pins.RD && cpu.pins.MRQ) {
-                cpu.pins.D = SM83testRAM[addr];
-                if (SM83_TEST_DO_TRACING) {
-                    dbg.traces.add(D_RESOURCE_TYPES.SM83, cpu.trace_cycles, trace_format_read('SM83', SM83_COLOR, cpu.trace_cycles, addr & 0xFFFF, cpu.pins.D));
-                }
-            }*/
 
             cpu.cycle();
 
@@ -184,23 +181,30 @@ function SM83test_it_automated(cpu, tests, is_call = false) {
                     dbg.traces.add(D_RESOURCE_TYPES.SM83, cpu.trace_cycles, trace_format_read('SM83', SM83_COLOR, cpu.trace_cycles, addr & 0xFFFF, cpu.pins.D));
                 }
             }
-
             let soy = cpu.pins.D;
             if (soy !== null) soy = hex2(soy)
             my_cycles.push([hex4(addr), soy, SM83cycle_pins(cpu.pins)]);
+
+
+
 
             cycle[0] = parseInt(cycle[0]);
             cycle[1] = parseInt(cycle[1]);
 
             // Check address, data
             if (faddr(cycle[0]) !== addr) {
-                messages.push(cyclei.toString() + ' MISMATCH IN ADDRESSES, THEIRS: ' + hex0x4(cycle[0]) + ' OURS: ' + hex0x4(addr));
-                passed = false;
+                if ((cyclei !== 0) && (cyclei !== '0')) {
+                    //console.log(cyclei, typeof cyclei, cyclei === 0);
+                    messages.push(cyclei.toString() + ' MISMATCH IN ADDRESSES, THEIRS: ' + hex0x4(cycle[0]) + ' OURS: ' + hex0x4(addr));
+                    passed = false;
+                }
             }
             if (cycle[1] !== null && (cycle[1] !== cpu.pins.D)) {
-                //console.log(cyclei, cycle[1], cpu.pins.D, my_cycles);
-                messages.push(cyclei.toString() + ' MISMATCH IN DATAPIN AT ' + hex0x4(cycle[0]) + ' THEIRS: ' + hex0x2(cycle[1]) + ' OURS: ' + hex0x2(cpu.pins.D));
-                passed = false;
+                if ((cyclei !== 0) && (cyclei !== '0')) {
+                    //console.log(cyclei, cycle[1], cpu.pins.D, my_cycles);
+                    messages.push(cyclei.toString() + ' MISMATCH IN DATAPIN AT ' + hex0x4(cycle[0]) + ' THEIRS: ' + hex0x2(cycle[1]) + ' OURS: ' + hex0x2(cpu.pins.D));
+                    passed = false;
+                }
             }
             // Check pins
             if (cycle[2] !== SM83cycle_pins(cpu.pins)) {
@@ -237,16 +241,20 @@ function SM83test_it_automated(cpu, tests, is_call = false) {
                     messages.push('theirF ' + SM83_PARSEP(theirs));
                 }
                 if (name === 'PC') {
-                    if (((cpu.regs.PC) & 0xFFFF) === theirs) {
+                    if (((cpu.regs.PC-1) & 0xFFFF) === theirs) {
                         if (is_call) return true;
                     }
+                    /*if (is_call) {
+                        cpu.cycle();
+                        console.log(cpu.regs.PC, theirs);
+                    }*/
                     /*messages.push('its the PC. Testing...');
                     console.log('LETS SEE1', hex4(cpu.regs.PC), hex4(last_pc));
                     cpu.cycle();
                     console.log('LETS SEE', hex4(cpu.regs.PC));*/
                 }
                 console.log(name + ' MISMATCH!');;
-                console.log(name, hex2(mine), hex2(theirs));
+                console.log(name, 'MINE, THEIRS', hex2(mine), hex2(theirs));
                 messages.push('reg ' + name + ' MISMATCH! MINE:' + hex0x2(mine) + ' THEIRS:' + hex0x2(theirs));
                 return false;
             }
@@ -257,23 +265,23 @@ function SM83test_it_automated(cpu, tests, is_call = false) {
         if (JMP_INS.indexOf(ins) !== -1) {
             passed &= testregs('PC', (cpu.regs.PC - 1) & 0xFFFF, final.pc)
         } else passed &= testregs('PC', last_pc, final.pc);*/
-        if (cpu.pins.RD && cpu.pins.MRQ) {
+        /*if (cpu.pins.RD && cpu.pins.MRQ) {
             cpu.pins.D = SM83testRAM[addr];
             if (SM83_TEST_DO_TRACING) {
                 dbg.traces.add(D_RESOURCE_TYPES.SM83, cpu.trace_cycles, trace_format_read('SM83', SM83_COLOR, cpu.trace_cycles, addr & 0xFFFF, cpu.pins.D));
             }
-        }
+        }*/
         cpu.cycle(); // for more trace
-        passed &= testregs('PC', last_pc, parseInt(final.cpu.pc), cpu.pins.Addr);
-        passed &= testregs('SP', cpu.regs.SP, parseInt(final.cpu.sp));
-        passed &= testregs('A', cpu.regs.A, parseInt(final.cpu.a));
-        passed &= testregs('B', cpu.regs.B, parseInt(final.cpu.b));
-        passed &= testregs('C', cpu.regs.C, parseInt(final.cpu.c));
-        passed &= testregs('D', cpu.regs.D, parseInt(final.cpu.d));
-        passed &= testregs('E', cpu.regs.E, parseInt(final.cpu.e));
-        passed &= testregs('F', cpu.regs.F.getbyte(), parseInt(final.cpu.f));
-        passed &= testregs('H', cpu.regs.H, parseInt(final.cpu.h));
-        passed &= testregs('L', cpu.regs.L, parseInt(final.cpu.l));
+        passed &= testregs('PC', last_pc, parseInt(final.pc), cpu.pins.Addr);
+        passed &= testregs('SP', cpu.regs.SP, parseInt(final.sp));
+        passed &= testregs('A', cpu.regs.A, parseInt(final.a));
+        passed &= testregs('B', cpu.regs.B, parseInt(final.b));
+        passed &= testregs('C', cpu.regs.C, parseInt(final.c));
+        passed &= testregs('D', cpu.regs.D, parseInt(final.d));
+        passed &= testregs('E', cpu.regs.E, parseInt(final.e));
+        passed &= testregs('F', cpu.regs.F.getbyte(), parseInt(final.f));
+        passed &= testregs('H', cpu.regs.H, parseInt(final.h));
+        passed &= testregs('L', cpu.regs.L, parseInt(final.l));
 
         for (let j in final.ram) {
             if (SM83testRAM[faddr(parseInt(final.ram[j][0]))] !== parseInt(final.ram[j][1])) {
@@ -297,7 +305,7 @@ function SM83test_it_automated(cpu, tests, is_call = false) {
 let SM83_io_mismatches = [];
 
 async function test_pt_sm83() {
-    SM83local_server_url = 'http://[::1]:8000/misc/tests/gameboy-test-data/cpu_tests/v1/'
+    SM83local_server_url = 'http://[::1]:8000/misc/tests/GeneratedTests/sm83/v1/'
     await dotest_pt_sm83();
 }
 
@@ -375,25 +383,7 @@ async function dotest_pt_sm83() {
     let skip_tests = {
         0x00: [
             0x10, // STOP
-            0xC4, // test bad null cycle
-            0xC5, // test bad null
-            0xC7, // test bad null
-            0xCA, // test bad null
-            0xCB, // the 0xCB tests are bad
-            0xCC, // test bad null
-            0xCD, // test bad null
-            0xCF, // test bad null
-            0xD4, // test bad null
-            0xD5, // test bad null
-            0xD7, // test bad null
-            0xDC, // test bad null
-            0xDF, // test bad null
-            0xE5, // test bad null
-            0xE7, // test bad null
-            0xE9, // weird thing,
-            0xEF, // null
-            0xF5, // null
-            0xF7,
+            0xCB
         ],
         0xCB: [],
     }
@@ -409,16 +399,14 @@ async function dotest_pt_sm83() {
     }
     //let test_classes = [0x00, 0xCB, 0xED, 0xDD, 0xFD, 0xDDCB, 0xFDCB]
     // PASSED CLASSES: 0x00, 0xCB, 0xED, 0xDD, 0xFD, 0xDDCB
+    //let test_classes = [0x00, 0xCB];
     let test_classes = [0x00, 0xCB];
-    //let test_classes = [0xDDCB];
     if (SM83_TEST_DO_TRACING) cpu.enable_tracing(read8);
     for (let mclass in test_classes) {
         let iclass = test_classes[mclass];
         let opcode_table;
         let skip_table = skip_tests[iclass];
         switch(iclass) {
-            case 0xDD:
-            case 0xFD:
             case 0x00:
                 opcode_table = SM83_opcode_matrix;
                 break;
@@ -426,7 +414,7 @@ async function dotest_pt_sm83() {
                 opcode_table = SM83_opcode_matrixCB;
                 break;
         }
-        console.log('Testing instruction class', hex4(iclass));
+        console.log('Testing instruction class', hex2(iclass));
         for (let i = start_test; i < 256; i++) {
             if (skip_table.indexOf(i) !== -1) {
                 tconsole.addl(txf('Test for ' + hex0x2(i) + ' {b}skipped{/}!'));

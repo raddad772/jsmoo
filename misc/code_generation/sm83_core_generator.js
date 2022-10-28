@@ -80,7 +80,7 @@ class SM83_switchgen {
     // Passed in is reference cycle # and/or a comment for the bros
     addcycle(whatup) {
         if (this.in_case) {
-            this.RWMIO_finish();
+            this.RWM_finish();
             this.outstr += this.indent3 + 'break;\n';
         }
         let what = (parseInt(this.last_case) + 1).toString();
@@ -92,7 +92,7 @@ class SM83_switchgen {
             this.outstr += this.indent2 + 'case ' + what + ':\n';
         for (let i in this.queued_RWMIO) {
             let qw = this.queued_RWMIO[i];
-            this.RWMIO(qw[0], qw[1], qw[2]);
+            this.RWM(qw[0], qw[1], qw[2]);
         }
         this.queued_RWMIO = [];
         if ((!this.has_cycle) || (this.queued_line) || (this.force_queue)) {
@@ -215,21 +215,21 @@ class SM83_switchgen {
         }
         if (!this.no_addr_at_end)
             this.addr_to_PC_then_inc();
-        this.RWMIO(1, 0, 1);
+        this.RWM(1, 0, 1);
         this.addl('regs.TCU = 0;');
         this.addl('regs.IR = SM83_S_DECODE;');
         this.addl('regs.poll_IRQ = true;');
-        this.RWMIO_finish();
+        this.RWM_finish();
         this.addl('break;');
     }
 
-    RWMIO(rd, wr, mrq) {
+    RWM(rd, wr, mrq) {
         this.RWMIO_end.RD = rd;
         this.RWMIO_end.WR = wr;
         this.RWMIO_end.MRQ = mrq;
     }
 
-    RWMIO_finish() {
+    RWM_finish() {
         if ((this.RWMIO_start.RD !== this.RWMIO_end.RD) || (this.RWMIO_start.WR !== this.RWMIO_end.WR) ||
             (this.RWMIO_start.MRQ !== this.RWMIO_end.MRQ) || (this.RWMIO_start.IO !== this.RWMIO_end.IO)) {
             let ostr = '';
@@ -248,13 +248,13 @@ class SM83_switchgen {
                 ostr += 'pins.MRQ = ' + this.RWMIO_end.MRQ + ';';
                 ndsp = true;
             }
-            if (ostr.length > 0) this.addl(ostr);
+            if (ostr.length > 0) this.outstr += this.indent3 + ostr + '\n';
         }
 
         this.RWMIO_start.copy(this.RWMIO_end);
     }
 
-    q_RWMIO(rd, wr, mrq) {
+    q_RWM(rd, wr, mrq) {
         this.queued_RWMIO.push([rd, wr, mrq]);
     }
 
@@ -278,7 +278,7 @@ class SM83_switchgen {
     }
 
     addcycles(howmany, do_rwmio=true) {
-        if (do_rwmio) this.RWMIO(0, 0, 0);
+        if (do_rwmio) this.RWM(0, 0, 0);
         let first = true;
         for (let i = 0; i < howmany; i++) {
             if (first) this.addcycle('Adding ' + howmany + ' cycles');
@@ -291,9 +291,9 @@ class SM83_switchgen {
         this.addcycle('Do write')
         this.addl('pins.Addr = (' + where + ');');
         this.addl('pins.D = ' + what + ';');
-        this.RWMIO(0, 1, 1);
+        this.RWM(0, 1, 1);
 
-        this.q_RWMIO(0, 0, 0);
+        this.q_RWM(0, 0, 0);
     }
 
     store(where, what) {
@@ -304,10 +304,10 @@ class SM83_switchgen {
     read(where, to) {
         this.addcycle('Do read')
         this.addl('pins.Addr = (' + where + ');');
-        this.RWMIO(1, 0, 1);
+        this.RWM(1, 0, 1);
 
         this.q_line(to + ' = pins.D;');
-        this.q_RWMIO(0, 0, 0);
+        this.q_RWM(0, 0, 0);
     }
 
     operand(what) {
@@ -552,10 +552,7 @@ class SM83_switchgen {
 
     SRA(target) {
         this.addl('let carry = (' + target + ') & 1;');
-        if (GENTARGET === 'js')
-            this.addl(target + ' = (' + target + ') >> 1;');
-        else
-            this.addl(target + ' = ((' + target + ') & 0x80) | ((' + target + ') >>> 1);');
+        this.addl(target + ' = ((' + target + ') & 0x80) | ((' + target + ') >>> 1);');
         this.addl('regs.F.C = carry;');
         this.addl('regs.F.H = regs.F.N = 0;');
         this.setz(target);
@@ -656,7 +653,9 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             break;
         case SM83_MN.ADD_di_rel:
             ag.operand('regs.TR');
-            ag.force_q();
+            ag.addcycle();
+            ag.RWM(0, 0, 0);
+            ag.addcycle();
             ag.addl('let target = ' + ag.getreg16(arg1) + ';');
             ag.addl('regs.F.C = +(((target & 0xFF) + regs.TR) > 0xFF);');
             ag.addl('regs.F.H = +(((target & 0x0F) + (regs.TR & 0x0F)) > 0x0F);');
@@ -822,7 +821,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             ag.operand('regs.TR');
             ag.addcycle();
             ag.addl('let source = ' + ag.getreg16(arg2) + ';');
-            ag.addl('regs.F.C = +(((source & 0xFF) + (regs.TR & 0xFF)) > 0xFF);');
+            ag.addl('regs.F.C = +(((source & 0xFF) + regs.TR) > 0xFF);');
             ag.addl('regs.F.H = +(((source & 0x0F) + (regs.TR & 0x0F)) > 0x0F);');
             ag.addl('regs.F.N = regs.F.Z = 0;');
             ag.addl('source = (source + mksigned8(regs.TR)) & 0xFFFF;');
@@ -936,10 +935,13 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             ag.addl('regs.PC = regs.TA;');
             break;
         case SM83_MN.RET_cond:
-            ag.addl('if (!(' + arg1 + ')) { regs.TCU += 3; break; } // CHECKHERE');
+            ag.addcycle();
+            ag.addl('if (!(' + arg1 + ')) { pins.RD = 0; pins.MRQ = 0; regs.TCU += 3; break; } // CHECKHERE');
+            ag.RWM(0, 0, 0)
             ag.pop();
             ag.addl('regs.PC = regs.TA;');
             ag.addcycle();
+            ag.RWM(0, 0, 0);
             break;
         case SM83_MN.RETI:
             ag.pop();
@@ -953,6 +955,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
         case SM83_MN.RL_ind:
             ag.addl('regs.TA = ' + ag.getreg16(arg1));
             ag.read('regs.TA', 'regs.TR');
+            ag.force_q();
             ag.RL('regs.TR');
             ag.write('regs.TA', 'regs.TR');
             break;
@@ -964,8 +967,9 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             ag.RLC(ag.getreg8(arg1));
             break;
         case SM83_MN.RLC_ind:
-            ag.addl('regs.TA = ' + ag.getreg16(arg1));
+            ag.addl('regs.TA = ' + ag.getreg16(arg1) + ';');
             ag.read('regs.TA', 'regs.TR');
+            ag.force_q();
             ag.RLC('regs.TR');
             ag.write('regs.TA', 'regs.TR');
             break;
@@ -979,6 +983,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
         case SM83_MN.RR_ind:
             ag.addl('regs.TA = ' + ag.getreg16(arg1));
             ag.read('regs.TA', 'regs.TR');
+            ag.force_q();
             ag.RR('regs.TR');
             ag.write('regs.TA', 'regs.TR');
             break;
@@ -992,6 +997,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
         case SM83_MN.RRC_ind:
             ag.addl('regs.TA = ' + ag.getreg16(arg1));
             ag.read('regs.TA', 'regs.TR');
+            ag.force_q();
             ag.RRC('regs.TR');
             ag.write('regs.TA', 'regs.TR');
             break;

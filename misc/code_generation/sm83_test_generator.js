@@ -32,6 +32,7 @@ class SM83_cycle {
         ostr += this.pins.RD ? 'r' : '-';
         ostr += this.pins.WR ? 'w' : '-';
         ostr += this.pins.MRQ ? 'm' : '-';
+        if ((this.addr === null) || (this.val === null)) debugger;
         return [this.addr, this.val, ostr];
     }
 }
@@ -49,6 +50,7 @@ class SM83_m_states {
     }
 
     add(addr, val, RD, WR, MRQ, force_treat_as_read) {
+        if ((addr === null) || (val === null)) debugger;
         this.cycles.push(new SM83_cycle(addr, val, RD, WR, MRQ, force_treat_as_read));
     }
 
@@ -80,6 +82,7 @@ class SM83_proc_test {
         this.opcode_RAMs = {};
 
         this.last_addr = null;
+        this.last_val = null;
     }
 
     serializable() {
@@ -94,6 +97,7 @@ class SM83_proc_test {
 
     finalize(regs, initial_PC, opcode_stream) {
         regs.dump_to(this.final);
+        if (this.final.f > 0xFF) debugger;
         //console.log(this.cycles.cycles);
         let initial_RAMs = [];
         let final_RAMs = [];
@@ -150,8 +154,14 @@ class SM83_proc_test {
     }
 
     add_cycle(addr, val, RD, WR, MRQ, force_treat_as_read=false) {
-        if (addr === null) addr = this.last_addr;
+        if (addr === null) {
+            addr = this.last_addr;
+        }
+        if (val === null) {
+            val = this.last_val;
+        }
         this.last_addr = addr;
+        this.last_val = val;
         this.cycles.add(addr, val, RD, WR, MRQ, force_treat_as_read);
     }
 }
@@ -224,15 +234,12 @@ class SM83T_state {
         if (!ckrange(this.E, 0, 255)) return false;
         if (!ckrange(this.H, 0, 255)) return false;
         if (!ckrange(this.L, 0, 255)) return false;
+        if (!ckrange(this.F.getbyte(), 0, 255)) debugger;
         if (!ckrange(this.F.C, 0, 1)) return false;
         if (!ckrange(this.F.H, 0, 1)) return false;
         if (!ckrange(this.F.N, 0, 1)) return false;
         if (!ckrange(this.F.Z, 0, 1)) return false;
         return true;
-    }
-
-    setZ(z) {
-        this.F.Z = +(z === 0);
     }
 
     dump_to(where) {
@@ -273,7 +280,7 @@ function SM83_generate_registers(where) {
     where.c = pt_rnd8();
     where.d = pt_rnd8();
     where.e = pt_rnd8();
-    where.f = pt_rnd8();
+    where.f = pt_rnd8() & 0xF0;
     where.h = pt_rnd8();
     where.l = pt_rnd8();
     where.ime = pt_rnd1();
@@ -336,7 +343,7 @@ class SM83_test_generator {
         if (addr in this.test.opcode_RAMs) {
             delete this.test.opcode_RAMs[addr];
         }
-        this.test.add_cycle(addr, val, 0, 1, 0);
+        this.test.add_cycle(addr, val, 0, 1, 1);
     }
 
     store(addr, val) {
@@ -357,7 +364,7 @@ class SM83_test_generator {
 
     wait(howlong) {
         for (let i = 0; i < howlong; i++) {
-            this.test.add_cycle(null, null, 0, 0, 0, 0);
+            this.test.add_cycle(null, null, 0, 0, 0);
         }
     }
 
@@ -507,9 +514,9 @@ class SM83_test_generator {
         let x = (target - source) & 0xFFFF;
         let y = ((target & 0x0F) - (source & 0x0F)) & 0xFFFF;
         this.sC(x > 0xFF);
-        this.sH(y > 0xFF);
+        this.sH(y > 0x0F);
         this.sN(1);
-        this.sZ(x & 0xFF);
+        this.sZ((x & 0xFF) === 0);
     }
 
     DEC(target) {
@@ -617,7 +624,7 @@ class SM83_test_generator {
     }
 
     SWAP(target) {
-        target = ((target << 4)  (target >>> 4)) & 0xFF;
+        target = ((target << 4) | (target >>> 4)) & 0xFF;
         this.sC(0);
         this.sH(0);
         this.sN(0);
@@ -635,8 +642,9 @@ class SM83_test_generator {
     }
 
     idle() {
-        this.test.add_cycle()
+        this.test.add_cycle(null, null, 0, 0, 0)
     }
+
     /*** NOT-ALGORITHMS ***/
     ADC_di_da(target) {
         this.writereg(target, this.ADD(this.readreg(target), this.operand(), this.regs.F.C));
@@ -661,7 +669,7 @@ class SM83_test_generator {
     ADD16_di_di(target, source) {
         this.idle();
         let x = this.readreg(target) + this.readreg(source);
-        let y = ((this.readreg(target) & 0xFFF) + (this.readreg(target) & 0xFFF));
+        let y = ((this.readreg(target) & 0xFFF) + (this.readreg(source) & 0xFFF));
         this.writereg(target, (x & 0xFFFF))
         this.sC(x > 0xFFFF);
         this.sH(y > 0xFFF);
@@ -676,11 +684,11 @@ class SM83_test_generator {
         let data = this.operand();
         this.idle();
         this.idle();
-        this.sC((this.readreg(target) + data) > 0xFF);
+        this.sC(((this.readreg(target) & 0xFF) + data) > 0xFF);
         this.sH(((this.readreg(target) & 0x0F) + (data & 0x0F)) > 0x0F);
         this.sN(0);
         this.sZ(0);
-        this.writereg(target, this.readreg(target) + mksigned8(data));
+        this.writereg(target, (this.readreg(target) + mksigned8(data)) & 0xFFFF);
     }
 
     AND_di_da(target) {
@@ -751,7 +759,7 @@ class SM83_test_generator {
         a &= 0xFFFF;
         this.regs.A = (a & 0xFF);
         this.sH(0);
-        this.sZ(this.regs.A);
+        this.sZ(this.regs.A === 0);
     }
 
     DEC_di(data) {
@@ -846,7 +854,7 @@ class SM83_test_generator {
         let data = this.operand();
         this.idle();
         this.sC(((this.readreg(source) & 0xFF) + data) > 0xFF);
-        this.sH(((this.readreg(source) & 0x0F) + data) > 0x0F);
+        this.sH(((this.readreg(source) & 0x0F) + (data & 0x0F)) > 0x0F);
         this.sN(0);
         this.sZ(0);
         this.writereg(target, (this.readreg(source) + mksigned8(data)) & 0xFFFF);
@@ -1174,15 +1182,13 @@ class SM83_test_generator {
             this.prefix = 0;
 
             // read the opcode stream
-            let i = 0;
             // 4 T-states for an opcode read
 
-            curd = this.fetch_opcode(opcode_stream, i);
+            curd = this.fetch_opcode(opcode_stream, 0);
             let operand;
 
             if (curd === 0xCB) { // with no prefix
-                curd = this.fetch_opcode(opcode_stream, i);
-                i++;
+                curd = this.fetch_opcode(opcode_stream, 1);
                 this.instructionCB(curd);
             }
             else {
