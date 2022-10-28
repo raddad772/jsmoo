@@ -55,6 +55,7 @@ function SM83_fmt_test(tst) {
     }
     for (let ci in oute.cycles) {
         let cycle = oute.cycles[ci];
+        if (cycle === null) continue;
         cycle[0] = dhex4(cycle[0]);
         if (cycle[1] !== null) cycle[1] = dhex2(cycle[1]);
     }
@@ -130,6 +131,7 @@ function SM83test_it_automated(cpu, tests, is_call = false) {
     let addr_io_mismatched = 0;
     let length_mismatch = 0;
     for (let i in tests) {
+        //console.log(tests[i]);
         let initial = tests[i].initial;
         let final = tests[i].final;
         cpu.regs.PC = parseInt(initial.cpu.pc);
@@ -151,6 +153,8 @@ function SM83test_it_automated(cpu, tests, is_call = false) {
         cpu.regs.IR = SM83_S_DECODE;
         cpu.pins.Addr = cpu.regs.PC;
         cpu.pins.D = SM83testRAM[cpu.regs.PC];
+        let soy = cpu.pins.D;
+        if (soy !== null) soy = hex2(soy)
         cpu.pins.MRQ = 1;
         cpu.pins.RD = 1;
         cpu.regs.TCU = 0;
@@ -159,6 +163,20 @@ function SM83test_it_automated(cpu, tests, is_call = false) {
         let passed = true;
         for (let cyclei in tests[i].cycles)
         {
+            let cycle = tests[i].cycles[cyclei];
+            if (cycle === null) {
+                //console.log('NULL!');
+                continue;
+            }
+            /*if (cpu.pins.RD && cpu.pins.MRQ) {
+                cpu.pins.D = SM83testRAM[addr];
+                if (SM83_TEST_DO_TRACING) {
+                    dbg.traces.add(D_RESOURCE_TYPES.SM83, cpu.trace_cycles, trace_format_read('SM83', SM83_COLOR, cpu.trace_cycles, addr & 0xFFFF, cpu.pins.D));
+                }
+            }*/
+
+            cpu.cycle();
+
             addr = cpu.pins.Addr;
             if (cpu.pins.RD && cpu.pins.MRQ) {
                 cpu.pins.D = SM83testRAM[addr];
@@ -167,13 +185,10 @@ function SM83test_it_automated(cpu, tests, is_call = false) {
                 }
             }
 
-            cpu.cycle();
             let soy = cpu.pins.D;
             if (soy !== null) soy = hex2(soy)
-            addr = cpu.pins.Addr;
-            my_cycles.push([hex4(cpu.pins.Addr), soy, SM83cycle_pins(cpu.pins)]);
+            my_cycles.push([hex4(addr), soy, SM83cycle_pins(cpu.pins)]);
 
-            let cycle = tests[i].cycles[cyclei];
             cycle[0] = parseInt(cycle[0]);
             cycle[1] = parseInt(cycle[1]);
 
@@ -222,9 +237,8 @@ function SM83test_it_automated(cpu, tests, is_call = false) {
                     messages.push('theirF ' + SM83_PARSEP(theirs));
                 }
                 if (name === 'PC') {
-                    if (((cpu.regs.PC - 1) & 0xFFFF) === theirs) {
+                    if (((cpu.regs.PC) & 0xFFFF) === theirs) {
                         if (is_call) return true;
-                        console.log('HMM WHAT? OFF BY 1');
                     }
                     /*messages.push('its the PC. Testing...');
                     console.log('LETS SEE1', hex4(cpu.regs.PC), hex4(last_pc));
@@ -243,6 +257,12 @@ function SM83test_it_automated(cpu, tests, is_call = false) {
         if (JMP_INS.indexOf(ins) !== -1) {
             passed &= testregs('PC', (cpu.regs.PC - 1) & 0xFFFF, final.pc)
         } else passed &= testregs('PC', last_pc, final.pc);*/
+        if (cpu.pins.RD && cpu.pins.MRQ) {
+            cpu.pins.D = SM83testRAM[addr];
+            if (SM83_TEST_DO_TRACING) {
+                dbg.traces.add(D_RESOURCE_TYPES.SM83, cpu.trace_cycles, trace_format_read('SM83', SM83_COLOR, cpu.trace_cycles, addr & 0xFFFF, cpu.pins.D));
+            }
+        }
         cpu.cycle(); // for more trace
         passed &= testregs('PC', last_pc, parseInt(final.cpu.pc), cpu.pins.Addr);
         passed &= testregs('SP', cpu.regs.SP, parseInt(final.cpu.sp));
@@ -301,6 +321,7 @@ function SM83_get_name(iclass, ins) {
 async function test_pt_sm83_ins(cpu, iclass, ins, is_call=false) {
     let opc = SM83_get_name(iclass, ins);
     let data = await getJSON(SM83local_server_url + opc + '.json');
+    console.log('TEST', hex2(opc));
     let result = SM83test_it_automated(cpu, data, is_call);
     if (!result.passed) {
         tconsole.addl(txf('{r}TEST FOR {/b}' + hex0x2(ins) + ' {/r*}FAILED!{/} See console for test deets'));
@@ -350,13 +371,40 @@ async function dotest_pt_sm83() {
         dbg.enable_tracing_for(D_RESOURCE_TYPES.SM83);
         dbg.enable_tracing();
     }
-    let start_test = 0;
+    let start_test = 0x00;
     let skip_tests = {
-        0x00: [], // HALT
+        0x00: [
+            0x10, // STOP
+            0xC4, // test bad null cycle
+            0xC5, // test bad null
+            0xC7, // test bad null
+            0xCA, // test bad null
+            0xCB, // the 0xCB tests are bad
+            0xCC, // test bad null
+            0xCD, // test bad null
+            0xCF, // test bad null
+            0xD4, // test bad null
+            0xD5, // test bad null
+            0xD7, // test bad null
+            0xDC, // test bad null
+            0xDF, // test bad null
+            0xE5, // test bad null
+            0xE7, // test bad null
+            0xE9, // weird thing,
+            0xEF, // null
+            0xF5, // null
+            0xF7,
+        ],
         0xCB: [],
     }
     let is_call = {
-        0x00: [],
+        0x00: [
+            0x18, 0x20, 0x28, 0x30, 0x38,
+            0xC0, 0xC2, 0xC3, 0xC4, 0xC5,
+            0xC8, 0xC9, 0xCA, 0xCC, 0xCD,
+            0xD0, 0xD2, 0xD4, 0xD8, 0xD9,
+            0xDA, 0xDC, 0xE9,
+        ],
         0xCB: [],
     }
     //let test_classes = [0x00, 0xCB, 0xED, 0xDD, 0xFD, 0xDDCB, 0xFDCB]
@@ -385,8 +433,10 @@ async function dotest_pt_sm83() {
                 continue;
             }
             if (typeof opcode_table[i] === 'undefined') {
-                console.log('Skipping empty instruction', hex0x2(i));
-                continue;
+                if (i !== 0xCB) {
+                    console.log('Skipping empty instruction', hex0x2(i));
+                    continue;
+                }
             }
             let icall = (is_call[iclass].indexOf(i) !== -1);
             let result = await test_pt_sm83_ins(cpu, iclass, i, icall);

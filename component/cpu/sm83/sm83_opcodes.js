@@ -212,7 +212,7 @@ const SM83_opcode_matrix = Object.freeze({
     0x33: new SM83_opcode_info(0x33, SM83_MN.INC16_di, 'SP'),
     0x34: new SM83_opcode_info(0x34, SM83_MN.INC_ind, 'HL'),
     0x35: new SM83_opcode_info(0x35, SM83_MN.DEC_ind, 'HL'),
-    0x36: new SM83_opcode_info(0x36, SM83_MN.LD16_di_da, 'HL'),
+    0x36: new SM83_opcode_info(0x36, SM83_MN.LD_ind_da, 'HL'),
     0x37: new SM83_opcode_info(0x37, SM83_MN.SCF),
     0x38: new SM83_opcode_info(0x38, SM83_MN.JR_cond_rel, 'regs.F.C === 1'),
     0x39: new SM83_opcode_info(0x39, SM83_MN.ADD16_di_di, 'HL', 'SP'),

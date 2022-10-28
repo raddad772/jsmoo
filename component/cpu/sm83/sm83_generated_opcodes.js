@@ -79,7 +79,7 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.B = ((regs.B) + 1) & 0xFF; // DELAYED
                 regs.F.H = +(((regs.B) & 0x0F) === 0); // DELAYED
-                regs.F.N = 1; // DELAYED
+                regs.F.N = 0; // DELAYED
                 regs.F.Z = +((regs.B) === 0); // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
@@ -212,10 +212,11 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.B << 8) | regs.C // DELAYED
                 pins.Addr = (regs.TA);
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                regs.A = regs.TR; // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -251,7 +252,7 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.C = ((regs.C) + 1) & 0xFF; // DELAYED
                 regs.F.H = +(((regs.C) & 0x0F) === 0); // DELAYED
-                regs.F.N = 1; // DELAYED
+                regs.F.N = 0; // DELAYED
                 regs.F.Z = +((regs.C) === 0); // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
@@ -413,7 +414,7 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.D = ((regs.D) + 1) & 0xFF; // DELAYED
                 regs.F.H = +(((regs.D) & 0x0F) === 0); // DELAYED
-                regs.F.N = 1; // DELAYED
+                regs.F.N = 0; // DELAYED
                 regs.F.Z = +((regs.D) === 0); // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
@@ -536,10 +537,11 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.D << 8) | regs.E // DELAYED
                 pins.Addr = (regs.TA);
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                regs.A = regs.TR; // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -575,7 +577,7 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.E = ((regs.E) + 1) & 0xFF; // DELAYED
                 regs.F.H = +(((regs.E) & 0x0F) === 0); // DELAYED
-                regs.F.N = 1; // DELAYED
+                regs.F.N = 0; // DELAYED
                 regs.F.Z = +((regs.E) === 0); // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
@@ -701,7 +703,9 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TA = (regs.H << 8) | regs.L; // DELAYED
                 pins.Addr = (regs.TA);
                 pins.D = regs.A;
-                regs.A = (regs.A + 1) & 0xFF;
+                regs.TA = (regs.TA + 1) & 0xFFFF;
+                regs.H = (regs.TA & 0xFF00) >>> 8;
+                regs.L = regs.TA & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.RD = 0; pins.WR = 1;
                 break;
@@ -742,7 +746,7 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.H = ((regs.H) + 1) & 0xFF; // DELAYED
                 regs.F.H = +(((regs.H) & 0x0F) === 0); // DELAYED
-                regs.F.N = 1; // DELAYED
+                regs.F.N = 0; // DELAYED
                 regs.F.Z = +((regs.H) === 0); // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
@@ -876,10 +880,11 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TA = (regs.TA + 1) & 0xFFFF;
                 regs.H = (regs.TA & 0xFF00) >>> 8;
                 regs.L = regs.TA & 0xFF;
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                regs.A = regs.TR; // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -915,7 +920,7 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.L = ((regs.L) + 1) & 0xFF; // DELAYED
                 regs.F.H = +(((regs.L) & 0x0F) === 0); // DELAYED
-                regs.F.N = 1; // DELAYED
+                regs.F.N = 0; // DELAYED
                 regs.F.Z = +((regs.L) === 0); // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
@@ -1036,7 +1041,9 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TA = (regs.H << 8) | regs.L; // DELAYED
                 pins.Addr = (regs.TA);
                 pins.D = regs.A;
-                regs.A = (regs.A - 1) & 0xFF;
+                regs.TA = (regs.TA - 1) & 0xFFFF;
+                regs.H = (regs.TA & 0xFF00) >>> 8;
+                regs.L = regs.TA & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.RD = 0; pins.WR = 1;
                 break;
@@ -1076,13 +1083,13 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L; // DELAYED
                 pins.Addr = (regs.TA);
-                regs.TR = ((regs.TR) + 1) & 0xFF;
-                regs.F.H = +(((regs.TR) & 0x0F) === 0);
-                regs.F.N = 1;
-                regs.F.Z = +((regs.TR) === 0);
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
+                regs.TR = ((regs.TR) + 1) & 0xFF; // DELAYED
+                regs.F.H = +(((regs.TR) & 0x0F) === 0); // DELAYED
+                regs.F.N = 0; // DELAYED
+                regs.F.Z = +((regs.TR) === 0); // DELAYED
                 pins.Addr = (regs.TA);
                 pins.D = regs.TR;
                 // Following is auto-generated code for instruction finish
@@ -1104,13 +1111,13 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L; // DELAYED
                 pins.Addr = (regs.TA);
-                regs.TR = ((regs.TR) - 1) & 0xFF;
-                regs.F.H = +(((regs.TR) & 0x0F) === 0x0F);
-                regs.F.N = 1;
-                regs.F.Z = +((regs.TR) === 0);
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
+                regs.TR = ((regs.TR) - 1) & 0xFF; // DELAYED
+                regs.F.H = +(((regs.TR) & 0x0F) === 0x0F); // DELAYED
+                regs.F.N = 1; // DELAYED
+                regs.F.Z = +((regs.TR) === 0); // DELAYED
                 pins.Addr = (regs.TA);
                 pins.D = regs.TR;
                 // Following is auto-generated code for instruction finish
@@ -1127,30 +1134,28 @@ const sm83_decoded_opcodes = Object.freeze({
         }
     }),
     0x36: new SM83_opcode_functions(SM83_opcode_matrix[0x36], // 36
-        function(regs, pins) { //LD16_di_da
+        function(regs, pins) { //LD_ind_da
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.TA = (regs.H << 8) | regs.L;
                 break;
-            case 2: // Do read
+            case 2: // Do write
                 regs.TR = pins.D; // DELAYED
-                pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                pins.Addr = (regs.TA);
+                pins.D = regs.TR;
+                // Following is auto-generated code for instruction finish
+                pins.RD = 0; pins.WR = 1;
                 break;
             case 3: // cleanup_custom
-                regs.RR = pins.D; // DELAYED
-                regs.TR |= (regs.RR << 8); // DELAYED
-                regs.H = (regs.TR & 0xFF00) >>> 8; // DELAYED
-                regs.L = regs.TR & 0xFF; // DELAYED
-                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
+                pins.RD = 1; pins.WR = 0;
                 break;
         }
     }),
@@ -1229,10 +1234,11 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TA = (regs.TA - 1) & 0xFFFF;
                 regs.H = (regs.TA & 0xFF00) >>> 8;
                 regs.L = regs.TA & 0xFF;
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                regs.A = regs.TR; // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -1267,7 +1273,7 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // cleanup_custom
                 regs.A = ((regs.A) + 1) & 0xFF; // DELAYED
                 regs.F.H = +(((regs.A) & 0x0F) === 0); // DELAYED
-                regs.F.N = 1; // DELAYED
+                regs.F.N = 0; // DELAYED
                 regs.F.Z = +((regs.A) === 0); // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
@@ -1419,10 +1425,11 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                regs.B = regs.TR; // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -1535,10 +1542,11 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                regs.C = regs.TR; // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -1651,10 +1659,11 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                regs.D = regs.TR; // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -1767,10 +1776,11 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                regs.E = regs.TR; // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -1883,10 +1893,11 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                regs.H = regs.TR; // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -1999,10 +2010,11 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                regs.L = regs.TR; // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -2275,10 +2287,11 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                regs.A = regs.TR; // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -2312,7 +2325,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 0; // DELAYED
                 regs.TR = (x & 0xFF); // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2333,7 +2346,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 0; // DELAYED
                 regs.TR = (x & 0xFF); // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2354,7 +2367,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 0; // DELAYED
                 regs.TR = (x & 0xFF); // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2375,7 +2388,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 0; // DELAYED
                 regs.TR = (x & 0xFF); // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2396,7 +2409,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 0; // DELAYED
                 regs.TR = (x & 0xFF); // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2417,7 +2430,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 0; // DELAYED
                 regs.TR = (x & 0xFF); // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2432,18 +2445,18 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = ((regs.H << 8) | regs.L);
-                let x = (regs.A) + (regs.TR);
-                let y = ((regs.A) & 0x0F) + ((regs.TR) & 0x0F);
-                regs.F.C = +(x > 0xFF);
-                regs.F.H = +(y > 0x0F);
-                regs.F.N = 0;
-                regs.TR = (x & 0xFF);
-                regs.F.Z = +((regs.TR) === 0);
-                regs.A = regs.TR;
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                let x = (regs.A) + (regs.TR); // DELAYED
+                let y = ((regs.A) & 0x0F) + ((regs.TR) & 0x0F); // DELAYED
+                regs.F.C = +(x > 0xFF); // DELAYED
+                regs.F.H = +(y > 0x0F); // DELAYED
+                regs.F.N = 0; // DELAYED
+                regs.TR = (x & 0xFF); // DELAYED
+                regs.F.Z = +((regs.TR) === 0); // DELAYED
+                regs.A = regs.TR; // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -2463,7 +2476,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 0; // DELAYED
                 regs.TR = (x & 0xFF); // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2484,7 +2497,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 0; // DELAYED
                 regs.TR = (x & 0xFF); // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2505,7 +2518,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 0; // DELAYED
                 regs.TR = (x & 0xFF); // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2526,7 +2539,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 0; // DELAYED
                 regs.TR = (x & 0xFF); // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2547,7 +2560,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 0; // DELAYED
                 regs.TR = (x & 0xFF); // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2568,7 +2581,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 0; // DELAYED
                 regs.TR = (x & 0xFF); // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2589,7 +2602,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 0; // DELAYED
                 regs.TR = (x & 0xFF); // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2604,17 +2617,18 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = ((regs.H << 8) | regs.L);
-                let x = (regs.A) + (regs.TR) + regs.F.C;
-                let y = ((regs.A) & 0x0F) + ((regs.TR) & 0x0F) + regs.F.C;
-                regs.F.C = +(x > 0xFF);
-                regs.F.H = +(y > 0x0F);
-                regs.F.N = 0;
-                regs.TR = (x & 0xFF);
-                regs.F.Z = +((regs.TR) === 0);
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                let x = (regs.A) + (regs.TR) + regs.F.C; // DELAYED
+                let y = ((regs.A) & 0x0F) + ((regs.TR) & 0x0F) + regs.F.C; // DELAYED
+                regs.F.C = +(x > 0xFF); // DELAYED
+                regs.F.H = +(y > 0x0F); // DELAYED
+                regs.F.N = 0; // DELAYED
+                regs.TR = (x & 0xFF); // DELAYED
+                regs.F.Z = +((regs.TR) === 0); // DELAYED
+                regs.A = regs.TR; // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -2634,7 +2648,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 0; // DELAYED
                 regs.TR = (x & 0xFF); // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2655,7 +2669,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 1; // DELAYED
                 regs.TR = x & 0xFF; // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2676,7 +2690,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 1; // DELAYED
                 regs.TR = x & 0xFF; // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2697,7 +2711,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 1; // DELAYED
                 regs.TR = x & 0xFF; // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2718,7 +2732,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 1; // DELAYED
                 regs.TR = x & 0xFF; // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2739,7 +2753,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 1; // DELAYED
                 regs.TR = x & 0xFF; // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2760,7 +2774,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 1; // DELAYED
                 regs.TR = x & 0xFF; // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2775,17 +2789,18 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = ((regs.H << 8) | regs.L);
-                let x = ((regs.A) - (regs.TR)) & 0xFFFF;
-                let y = (((regs.A) & 0x0F) - ((regs.TR) & 0x0F)) & 0xFFFF;
-                regs.F.C = +(x > 0xFF);
-                regs.F.H = +(y > 0x0F);
-                regs.F.N = 1;
-                regs.TR = x & 0xFF;
-                regs.F.Z = +((regs.TR) === 0);
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                let x = ((regs.A) - (regs.TR)) & 0xFFFF; // DELAYED
+                let y = (((regs.A) & 0x0F) - ((regs.TR) & 0x0F)) & 0xFFFF; // DELAYED
+                regs.F.C = +(x > 0xFF); // DELAYED
+                regs.F.H = +(y > 0x0F); // DELAYED
+                regs.F.N = 1; // DELAYED
+                regs.TR = x & 0xFF; // DELAYED
+                regs.F.Z = +((regs.TR) === 0); // DELAYED
+                regs.A = regs.TR; // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -2805,7 +2820,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 1; // DELAYED
                 regs.TR = x & 0xFF; // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2826,7 +2841,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 1; // DELAYED
                 regs.TR = x & 0xFF; // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2847,7 +2862,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 1; // DELAYED
                 regs.TR = x & 0xFF; // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2868,7 +2883,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 1; // DELAYED
                 regs.TR = x & 0xFF; // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2889,7 +2904,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 1; // DELAYED
                 regs.TR = x & 0xFF; // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2910,7 +2925,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 1; // DELAYED
                 regs.TR = x & 0xFF; // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2931,7 +2946,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 1; // DELAYED
                 regs.TR = x & 0xFF; // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -2946,17 +2961,18 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = ((regs.H << 8) | regs.L);
-                let x = ((regs.A) - (regs.TR) - regs.F.C) & 0xFFFF;
-                let y = (((regs.A) & 0x0F) - ((regs.TR) &0x0F) - regs.F.C) & 0xFFFF;
-                regs.F.C = +(x > 0xFF);
-                regs.F.H = +(y > 0x0F);
-                regs.F.N = 1;
-                regs.TR = x & 0xFF;
-                regs.F.Z = +((regs.TR) === 0);
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                let x = ((regs.A) - (regs.TR) - regs.F.C) & 0xFFFF; // DELAYED
+                let y = (((regs.A) & 0x0F) - ((regs.TR) &0x0F) - regs.F.C) & 0xFFFF; // DELAYED
+                regs.F.C = +(x > 0xFF); // DELAYED
+                regs.F.H = +(y > 0x0F); // DELAYED
+                regs.F.N = 1; // DELAYED
+                regs.TR = x & 0xFF; // DELAYED
+                regs.F.Z = +((regs.TR) === 0); // DELAYED
+                regs.A = regs.TR; // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -2976,7 +2992,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.F.N = 1; // DELAYED
                 regs.TR = x & 0xFF; // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
-                regs.A = undefined; // DELAYED
+                regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -3099,15 +3115,15 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = ((regs.H << 8) | regs.L);
-                regs.TR = (regs.A) & (regs.TR);
-                regs.F.C = regs.F.N = 0;
-                regs.F.H = 1;
-                regs.F.Z = +((regs.TR) === 0);
-                regs.A = regs.TR;
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                regs.TR = (regs.A) & (regs.TR); // DELAYED
+                regs.F.C = regs.F.N = 0; // DELAYED
+                regs.F.H = 1; // DELAYED
+                regs.F.Z = +((regs.TR) === 0); // DELAYED
+                regs.A = regs.TR; // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -3139,7 +3155,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.TR = (regs.A) ^ (regs.B); // DELAYED
-                regs.F.C = regs.F.N = regs.F.C = 0; // DELAYED
+                regs.F.C = regs.F.N = regs.F.H = 0; // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
                 regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
@@ -3156,7 +3172,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.TR = (regs.A) ^ (regs.C); // DELAYED
-                regs.F.C = regs.F.N = regs.F.C = 0; // DELAYED
+                regs.F.C = regs.F.N = regs.F.H = 0; // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
                 regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
@@ -3173,7 +3189,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.TR = (regs.A) ^ (regs.D); // DELAYED
-                regs.F.C = regs.F.N = regs.F.C = 0; // DELAYED
+                regs.F.C = regs.F.N = regs.F.H = 0; // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
                 regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
@@ -3190,7 +3206,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.TR = (regs.A) ^ (regs.E); // DELAYED
-                regs.F.C = regs.F.N = regs.F.C = 0; // DELAYED
+                regs.F.C = regs.F.N = regs.F.H = 0; // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
                 regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
@@ -3207,7 +3223,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.TR = (regs.A) ^ (regs.H); // DELAYED
-                regs.F.C = regs.F.N = regs.F.C = 0; // DELAYED
+                regs.F.C = regs.F.N = regs.F.H = 0; // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
                 regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
@@ -3224,7 +3240,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.TR = (regs.A) ^ (regs.L); // DELAYED
-                regs.F.C = regs.F.N = regs.F.C = 0; // DELAYED
+                regs.F.C = regs.F.N = regs.F.H = 0; // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
                 regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
@@ -3241,14 +3257,14 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = ((regs.H << 8) | regs.L);
-                regs.TR = (regs.A) ^ (regs.TR);
-                regs.F.C = regs.F.N = regs.F.C = 0;
-                regs.F.Z = +((regs.TR) === 0);
-                regs.A = regs.TR;
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                regs.TR = (regs.A) ^ (regs.TR); // DELAYED
+                regs.F.C = regs.F.N = regs.F.H = 0; // DELAYED
+                regs.F.Z = +((regs.TR) === 0); // DELAYED
+                regs.A = regs.TR; // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -3262,7 +3278,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.TR = (regs.A) ^ (regs.A); // DELAYED
-                regs.F.C = regs.F.N = regs.F.C = 0; // DELAYED
+                regs.F.C = regs.F.N = regs.F.H = 0; // DELAYED
                 regs.F.Z = +((regs.TR) === 0); // DELAYED
                 regs.A = regs.TR; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
@@ -3381,14 +3397,14 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = ((regs.H << 8) | regs.L);
-                regs.TR = (regs.A) | (regs.TR);
-                regs.F.C = regs.F.N = regs.F.H = 0;
-                regs.F.Z = +((regs.TR) === 0);
-                regs.A = regs.TR;
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                regs.TR = (regs.A) | (regs.TR); // DELAYED
+                regs.F.C = regs.F.N = regs.F.H = 0; // DELAYED
+                regs.F.Z = +((regs.TR) === 0); // DELAYED
+                regs.A = regs.TR; // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -3419,7 +3435,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 let x = ((regs.A) - (regs.B)) & 0xFFFF; // DELAYED
-                let y = (((regs.A) & 0x0F) - ((regs.A) & 0x0F)) & 0xFFFF; // DELAYED
+                let y = (((regs.A) & 0x0F) - ((regs.B) & 0x0F)) & 0xFFFF; // DELAYED
                 regs.F.C = +(x > 0xFF); // DELAYED
                 regs.F.H = +(y > 0x0F); // DELAYED
                 regs.F.N = 1; // DELAYED
@@ -3438,7 +3454,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 let x = ((regs.A) - (regs.C)) & 0xFFFF; // DELAYED
-                let y = (((regs.A) & 0x0F) - ((regs.A) & 0x0F)) & 0xFFFF; // DELAYED
+                let y = (((regs.A) & 0x0F) - ((regs.C) & 0x0F)) & 0xFFFF; // DELAYED
                 regs.F.C = +(x > 0xFF); // DELAYED
                 regs.F.H = +(y > 0x0F); // DELAYED
                 regs.F.N = 1; // DELAYED
@@ -3457,7 +3473,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 let x = ((regs.A) - (regs.D)) & 0xFFFF; // DELAYED
-                let y = (((regs.A) & 0x0F) - ((regs.A) & 0x0F)) & 0xFFFF; // DELAYED
+                let y = (((regs.A) & 0x0F) - ((regs.D) & 0x0F)) & 0xFFFF; // DELAYED
                 regs.F.C = +(x > 0xFF); // DELAYED
                 regs.F.H = +(y > 0x0F); // DELAYED
                 regs.F.N = 1; // DELAYED
@@ -3476,7 +3492,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 let x = ((regs.A) - (regs.E)) & 0xFFFF; // DELAYED
-                let y = (((regs.A) & 0x0F) - ((regs.A) & 0x0F)) & 0xFFFF; // DELAYED
+                let y = (((regs.A) & 0x0F) - ((regs.E) & 0x0F)) & 0xFFFF; // DELAYED
                 regs.F.C = +(x > 0xFF); // DELAYED
                 regs.F.H = +(y > 0x0F); // DELAYED
                 regs.F.N = 1; // DELAYED
@@ -3495,7 +3511,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 let x = ((regs.A) - (regs.H)) & 0xFFFF; // DELAYED
-                let y = (((regs.A) & 0x0F) - ((regs.A) & 0x0F)) & 0xFFFF; // DELAYED
+                let y = (((regs.A) & 0x0F) - ((regs.H) & 0x0F)) & 0xFFFF; // DELAYED
                 regs.F.C = +(x > 0xFF); // DELAYED
                 regs.F.H = +(y > 0x0F); // DELAYED
                 regs.F.N = 1; // DELAYED
@@ -3514,7 +3530,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 let x = ((regs.A) - (regs.L)) & 0xFFFF; // DELAYED
-                let y = (((regs.A) & 0x0F) - ((regs.A) & 0x0F)) & 0xFFFF; // DELAYED
+                let y = (((regs.A) & 0x0F) - ((regs.L) & 0x0F)) & 0xFFFF; // DELAYED
                 regs.F.C = +(x > 0xFF); // DELAYED
                 regs.F.H = +(y > 0x0F); // DELAYED
                 regs.F.N = 1; // DELAYED
@@ -3533,16 +3549,16 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = ((regs.H << 8) | regs.L);
-                let x = ((regs.A) - (regs.TR)) & 0xFFFF;
-                let y = (((regs.A) & 0x0F) - ((regs.A) & 0x0F)) & 0xFFFF;
-                regs.F.C = +(x > 0xFF);
-                regs.F.H = +(y > 0x0F);
-                regs.F.N = 1;
-                regs.F.Z = +((x & 0xFF) === 0);
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                let x = ((regs.A) - (regs.TR)) & 0xFFFF; // DELAYED
+                let y = (((regs.A) & 0x0F) - ((regs.TR) & 0x0F)) & 0xFFFF; // DELAYED
+                regs.F.C = +(x > 0xFF); // DELAYED
+                regs.F.H = +(y > 0x0F); // DELAYED
+                regs.F.N = 1; // DELAYED
+                regs.F.Z = +((x & 0xFF) === 0); // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -3573,28 +3589,24 @@ const sm83_decoded_opcodes = Object.freeze({
     0xC0: new SM83_opcode_functions(SM83_opcode_matrix[0xC0], // C0
         function(regs, pins) { //RET_cond
         switch(regs.TCU) {
-            case 1:
-                if (!(regs.F.Z === 0)) { regs.TCU += 3; break; } // CHECKHERE
-                pins.RD = 0; pins.MRQ = 0;
-                break;
-            case 2: // Do read
+            case 1: // Do read
+                if (!(regs.F.Z === 0)) { regs.TCU += 3; break; } // CHECKHERE // DELAYED
                 pins.Addr = (regs.SP);
                 regs.SP = (regs.SP + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Do read
+            case 2: // Do read
                 regs.TA = pins.D; // DELAYED
                 pins.Addr = (regs.SP);
                 regs.SP = (regs.SP + 1) & 0xFFFF;
-                regs.TA |= (regs.TR << 8);
-                regs.PC = regs.TA;
                 break;
-            case 4:
+            case 3:
                 regs.TR = pins.D; // DELAYED
+                regs.TA |= (regs.TR << 8); // DELAYED
+                regs.PC = regs.TA; // DELAYED
                 // Following is auto-generated code for instruction finish
                 pins.RD = 0; pins.MRQ = 0;
                 break;
-            case 5: // cleanup_custom
+            case 4: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -3769,18 +3781,18 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                let x = (regs.A) + (regs.TR);
-                let y = ((regs.A) & 0x0F) + ((regs.TR) & 0x0F);
-                regs.F.C = +(x > 0xFF);
-                regs.F.H = +(y > 0x0F);
-                regs.F.N = 0;
-                regs.TR = (x & 0xFF);
-                regs.F.Z = +((regs.TR) === 0);
-                regs.A = regs.TR;
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                let x = (regs.A) + (regs.TR); // DELAYED
+                let y = ((regs.A) & 0x0F) + ((regs.TR) & 0x0F); // DELAYED
+                regs.F.C = +(x > 0xFF); // DELAYED
+                regs.F.H = +(y > 0x0F); // DELAYED
+                regs.F.N = 0; // DELAYED
+                regs.TR = (x & 0xFF); // DELAYED
+                regs.F.Z = +((regs.TR) === 0); // DELAYED
+                regs.A = regs.TR; // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -3821,28 +3833,24 @@ const sm83_decoded_opcodes = Object.freeze({
     0xC8: new SM83_opcode_functions(SM83_opcode_matrix[0xC8], // C8
         function(regs, pins) { //RET_cond
         switch(regs.TCU) {
-            case 1:
-                if (!(regs.F.Z === 1)) { regs.TCU += 3; break; } // CHECKHERE
-                pins.RD = 0; pins.MRQ = 0;
-                break;
-            case 2: // Do read
+            case 1: // Do read
+                if (!(regs.F.Z === 1)) { regs.TCU += 3; break; } // CHECKHERE // DELAYED
                 pins.Addr = (regs.SP);
                 regs.SP = (regs.SP + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Do read
+            case 2: // Do read
                 regs.TA = pins.D; // DELAYED
                 pins.Addr = (regs.SP);
                 regs.SP = (regs.SP + 1) & 0xFFFF;
-                regs.TA |= (regs.TR << 8);
-                regs.PC = regs.TA;
                 break;
-            case 4:
+            case 3:
                 regs.TR = pins.D; // DELAYED
+                regs.TA |= (regs.TR << 8); // DELAYED
+                regs.PC = regs.TA; // DELAYED
                 // Following is auto-generated code for instruction finish
                 pins.RD = 0; pins.MRQ = 0;
                 break;
-            case 5: // cleanup_custom
+            case 4: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -3863,10 +3871,10 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TA = pins.D; // DELAYED
                 pins.Addr = (regs.SP);
                 regs.SP = (regs.SP + 1) & 0xFFFF;
-                regs.TA |= (regs.TR << 8);
                 break;
             case 3:
                 regs.TR = pins.D; // DELAYED
+                regs.TA |= (regs.TR << 8); // DELAYED
                 regs.PC = regs.TA;
                 // Following is auto-generated code for instruction finish
                 pins.RD = 0; pins.MRQ = 0;
@@ -4009,18 +4017,18 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                let x = (regs.A) + (regs.TR) + regs.F.C;
-                let y = ((regs.A) & 0x0F) + ((regs.TR) & 0x0F) + regs.F.C;
-                regs.F.C = +(x > 0xFF);
-                regs.F.H = +(y > 0x0F);
-                regs.F.N = 0;
-                regs.TR = (x & 0xFF);
-                regs.F.Z = +((regs.TR) === 0);
-                regs.A = regs.TR;
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                let x = (regs.A) + (regs.TR) + regs.F.C; // DELAYED
+                let y = ((regs.A) & 0x0F) + ((regs.TR) & 0x0F) + regs.F.C; // DELAYED
+                regs.F.C = +(x > 0xFF); // DELAYED
+                regs.F.H = +(y > 0x0F); // DELAYED
+                regs.F.N = 0; // DELAYED
+                regs.TR = (x & 0xFF); // DELAYED
+                regs.F.Z = +((regs.TR) === 0); // DELAYED
+                regs.A = regs.TR; // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -4061,28 +4069,24 @@ const sm83_decoded_opcodes = Object.freeze({
     0xD0: new SM83_opcode_functions(SM83_opcode_matrix[0xD0], // D0
         function(regs, pins) { //RET_cond
         switch(regs.TCU) {
-            case 1:
-                if (!(regs.F.C === 0)) { regs.TCU += 3; break; } // CHECKHERE
-                pins.RD = 0; pins.MRQ = 0;
-                break;
-            case 2: // Do read
+            case 1: // Do read
+                if (!(regs.F.C === 0)) { regs.TCU += 3; break; } // CHECKHERE // DELAYED
                 pins.Addr = (regs.SP);
                 regs.SP = (regs.SP + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Do read
+            case 2: // Do read
                 regs.TA = pins.D; // DELAYED
                 pins.Addr = (regs.SP);
                 regs.SP = (regs.SP + 1) & 0xFFFF;
-                regs.TA |= (regs.TR << 8);
-                regs.PC = regs.TA;
                 break;
-            case 4:
+            case 3:
                 regs.TR = pins.D; // DELAYED
+                regs.TA |= (regs.TR << 8); // DELAYED
+                regs.PC = regs.TA; // DELAYED
                 // Following is auto-generated code for instruction finish
                 pins.RD = 0; pins.MRQ = 0;
                 break;
-            case 5: // cleanup_custom
+            case 4: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -4228,18 +4232,18 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                let x = ((regs.A) - (regs.TR)) & 0xFFFF;
-                let y = (((regs.A) & 0x0F) - ((regs.TR) & 0x0F)) & 0xFFFF;
-                regs.F.C = +(x > 0xFF);
-                regs.F.H = +(y > 0x0F);
-                regs.F.N = 1;
-                regs.TR = x & 0xFF;
-                regs.F.Z = +((regs.TR) === 0);
-                regs.A = regs.TR;
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                let x = ((regs.A) - (regs.TR)) & 0xFFFF; // DELAYED
+                let y = (((regs.A) & 0x0F) - ((regs.TR) & 0x0F)) & 0xFFFF; // DELAYED
+                regs.F.C = +(x > 0xFF); // DELAYED
+                regs.F.H = +(y > 0x0F); // DELAYED
+                regs.F.N = 1; // DELAYED
+                regs.TR = x & 0xFF; // DELAYED
+                regs.F.Z = +((regs.TR) === 0); // DELAYED
+                regs.A = regs.TR; // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -4280,28 +4284,24 @@ const sm83_decoded_opcodes = Object.freeze({
     0xD8: new SM83_opcode_functions(SM83_opcode_matrix[0xD8], // D8
         function(regs, pins) { //RET_cond
         switch(regs.TCU) {
-            case 1:
-                if (!(regs.F.C === 1)) { regs.TCU += 3; break; } // CHECKHERE
-                pins.RD = 0; pins.MRQ = 0;
-                break;
-            case 2: // Do read
+            case 1: // Do read
+                if (!(regs.F.C === 1)) { regs.TCU += 3; break; } // CHECKHERE // DELAYED
                 pins.Addr = (regs.SP);
                 regs.SP = (regs.SP + 1) & 0xFFFF;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
-            case 3: // Do read
+            case 2: // Do read
                 regs.TA = pins.D; // DELAYED
                 pins.Addr = (regs.SP);
                 regs.SP = (regs.SP + 1) & 0xFFFF;
-                regs.TA |= (regs.TR << 8);
-                regs.PC = regs.TA;
                 break;
-            case 4:
+            case 3:
                 regs.TR = pins.D; // DELAYED
+                regs.TA |= (regs.TR << 8); // DELAYED
+                regs.PC = regs.TA; // DELAYED
                 // Following is auto-generated code for instruction finish
                 pins.RD = 0; pins.MRQ = 0;
                 break;
-            case 5: // cleanup_custom
+            case 4: // cleanup_custom
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -4322,10 +4322,10 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TA = pins.D; // DELAYED
                 pins.Addr = (regs.SP);
                 regs.SP = (regs.SP + 1) & 0xFFFF;
-                regs.TA |= (regs.TR << 8);
                 break;
             case 3:
                 regs.TR = pins.D; // DELAYED
+                regs.TA |= (regs.TR << 8); // DELAYED
                 regs.PC = regs.TA;
                 regs.IME = 1;
                 // Following is auto-generated code for instruction finish
@@ -4429,18 +4429,18 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                let x = ((regs.A) - (regs.TR) - regs.F.C) & 0xFFFF;
-                let y = (((regs.A) & 0x0F) - ((regs.TR) &0x0F) - regs.F.C) & 0xFFFF;
-                regs.F.C = +(x > 0xFF);
-                regs.F.H = +(y > 0x0F);
-                regs.F.N = 1;
-                regs.TR = x & 0xFF;
-                regs.F.Z = +((regs.TR) === 0);
-                regs.A = regs.TR;
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                let x = ((regs.A) - (regs.TR) - regs.F.C) & 0xFFFF; // DELAYED
+                let y = (((regs.A) & 0x0F) - ((regs.TR) &0x0F) - regs.F.C) & 0xFFFF; // DELAYED
+                regs.F.C = +(x > 0xFF); // DELAYED
+                regs.F.H = +(y > 0x0F); // DELAYED
+                regs.F.N = 1; // DELAYED
+                regs.TR = x & 0xFF; // DELAYED
+                regs.F.Z = +((regs.TR) === 0); // DELAYED
+                regs.A = regs.TR; // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -4485,10 +4485,10 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                regs.TA |= 0xFF00;
                 break;
             case 2: // Do write
                 regs.TA = pins.D; // DELAYED
+                regs.TA |= 0xFF00; // DELAYED
                 pins.Addr = (regs.TA);
                 pins.D = regs.A;
                 // Following is auto-generated code for instruction finish
@@ -4588,15 +4588,15 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                regs.TR = (regs.A) & (regs.TR);
-                regs.F.C = regs.F.N = 0;
-                regs.F.H = 1;
-                regs.F.Z = +((regs.TR) === 0);
-                regs.A = regs.TR;
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                regs.TR = (regs.A) & (regs.TR); // DELAYED
+                regs.F.C = regs.F.N = 0; // DELAYED
+                regs.F.H = 1; // DELAYED
+                regs.F.Z = +((regs.TR) === 0); // DELAYED
+                regs.A = regs.TR; // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -4641,27 +4641,21 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                pins.RD = 0; pins.MRQ = 0;
                 break;
-            case 2: // Adding 2 cycles
+            case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
-                break;
-            case 3:
-                let target = regs.SP
-                regs.F.C = +(((target & 0xFF) + regs.TR) > 0xFF);
-                regs.F.H = +(((target & 0x0F) + (regs.TR & 0x0F)) > 0x0F);
-                regs.F.N = regs.F.Z = 0;
-                target = (target + regs.TR) & 0xFFFF;
-                regs.SP = target;
-                // Following is auto-generated code for instruction finish
-                break;
-            case 4: // cleanup_custom
+                let target = regs.SP; // DELAYED
+                regs.F.C = +(((target & 0xFF) + regs.TR) > 0xFF); // DELAYED
+                regs.F.H = +(((target & 0x0F) + (regs.TR & 0x0F)) > 0x0F); // DELAYED
+                regs.F.N = regs.F.Z = 0; // DELAYED
+                target = (target + mksigned8(regs.TR)) & 0xFFFF; // DELAYED
+                regs.SP = target; // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
                 regs.IR = SM83_S_DECODE;
                 regs.poll_IRQ = true;
-                pins.RD = 1; pins.MRQ = 1;
                 break;
         }
     }),
@@ -4727,14 +4721,14 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                regs.TR = (regs.A) ^ (regs.TR);
-                regs.F.C = regs.F.N = regs.F.C = 0;
-                regs.F.Z = +((regs.TR) === 0);
-                regs.A = regs.TR;
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                regs.TR = (regs.A) ^ (regs.TR); // DELAYED
+                regs.F.C = regs.F.N = regs.F.H = 0; // DELAYED
+                regs.F.Z = +((regs.TR) === 0); // DELAYED
+                regs.A = regs.TR; // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -4779,10 +4773,10 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                regs.TA |= 0xFF00;
                 break;
             case 2: // Do read
                 regs.TA = pins.D; // DELAYED
+                regs.TA |= 0xFF00; // DELAYED
                 pins.Addr = (regs.TA);
                 // Following is auto-generated code for instruction finish
                 break;
@@ -4801,11 +4795,11 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.SP);
-                regs.F.setbyte(regs.TR & 0xF0);
-                regs.SP = (regs.SP + 1) & 0xFFFF;
                 break;
             case 2: // Do read
                 regs.TR = pins.D; // DELAYED
+                regs.F.setbyte(regs.TR & 0xF0); // DELAYED
+                regs.SP = (regs.SP + 1) & 0xFFFF; // DELAYED
                 pins.Addr = (regs.SP);
                 regs.SP = (regs.SP + 1) & 0xFFFF;
                 // Following is auto-generated code for instruction finish
@@ -4890,14 +4884,14 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                regs.TR = (regs.A) | (regs.TR);
-                regs.F.C = regs.F.N = regs.F.H = 0;
-                regs.F.Z = +((regs.TR) === 0);
-                regs.A = regs.TR;
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                regs.TR = (regs.A) | (regs.TR); // DELAYED
+                regs.F.C = regs.F.N = regs.F.H = 0; // DELAYED
+                regs.F.Z = +((regs.TR) === 0); // DELAYED
+                regs.A = regs.TR; // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -4946,10 +4940,12 @@ const sm83_decoded_opcodes = Object.freeze({
             case 2:
                 regs.TR = pins.D; // DELAYED
                 let source = regs.SP;
-                regs.F.C = +((source + regs.TR) > 0xFF);
+                regs.F.C = +(((source & 0xFF) + (regs.TR & 0xFF)) > 0xFF);
                 regs.F.H = +(((source & 0x0F) + (regs.TR & 0x0F)) > 0x0F);
                 regs.F.N = regs.F.Z = 0;
-                source = (source + mksigned8(regs.TR)) & 0xFF;
+                source = (source + mksigned8(regs.TR)) & 0xFFFF;
+                regs.H = (source & 0xFF00) >>> 8;
+                regs.L = source & 0xFF;
                 // Following is auto-generated code for instruction finish
                 pins.RD = 0; pins.MRQ = 0;
                 break;
@@ -4967,8 +4963,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //LD16_di_di
         switch(regs.TCU) {
             case 1:
-                regs.H = (regs.SP & 0xFF00) >> 8;
-                regs.L = regs.SP & 0xFF;
+                regs.SP = (regs.H << 8) | regs.L;
                 // Following is auto-generated code for instruction finish
                 pins.RD = 0; pins.MRQ = 0;
                 break;
@@ -5039,16 +5034,16 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.Addr = (regs.PC);
                 if (regs.halt_bug) regs.halt_bug = 0;
                 else regs.PC = (regs.PC + 1) & 0xFFFF;
-                let x = ((regs.A) - (regs.TR)) & 0xFFFF;
-                let y = (((regs.A) & 0x0F) - ((regs.A) & 0x0F)) & 0xFFFF;
-                regs.F.C = +(x > 0xFF);
-                regs.F.H = +(y > 0x0F);
-                regs.F.N = 1;
-                regs.F.Z = +((x & 0xFF) === 0);
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                let x = ((regs.A) - (regs.TR)) & 0xFFFF; // DELAYED
+                let y = (((regs.A) & 0x0F) - ((regs.TR) & 0x0F)) & 0xFFFF; // DELAYED
+                regs.F.C = +(x > 0xFF); // DELAYED
+                regs.F.H = +(y > 0x0F); // DELAYED
+                regs.F.N = 1; // DELAYED
+                regs.F.Z = +((x & 0xFF) === 0); // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -5824,14 +5819,14 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                let carry = ((regs.TR) & 0x80) >>> 7;
-                regs.TR = ((regs.TR) << 1) & 0xFF;
-                regs.F.C = carry;
-                regs.F.H = regs.F.N = 0;
-                regs.F.Z = +((regs.TR) === 0);
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
+                let carry = ((regs.TR) & 0x80) >>> 7; // DELAYED
+                regs.TR = ((regs.TR) << 1) & 0xFF; // DELAYED
+                regs.F.C = carry; // DELAYED
+                regs.F.H = regs.F.N = 0; // DELAYED
+                regs.F.Z = +((regs.TR) === 0); // DELAYED
                 pins.Addr = (regs.TA);
                 pins.D = regs.TR;
                 // Following is auto-generated code for instruction finish
@@ -5979,14 +5974,14 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                let carry = (regs.TR) & 1;
-                regs.TR = (regs.TR) >> 1;
-                regs.F.C = carry;
-                regs.F.H = regs.F.N = 0;
-                regs.F.Z = +((regs.TR) === 0);
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
+                let carry = (regs.TR) & 1; // DELAYED
+                regs.TR = (regs.TR) >> 1; // DELAYED
+                regs.F.C = carry; // DELAYED
+                regs.F.H = regs.F.N = 0; // DELAYED
+                regs.F.Z = +((regs.TR) === 0); // DELAYED
                 pins.Addr = (regs.TA);
                 pins.D = regs.TR;
                 // Following is auto-generated code for instruction finish
@@ -6122,12 +6117,12 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                regs.TR = (((regs.TR) << 4) | ((regs.TR) >>> 4)) & 0xFF;
-                regs.F.C = regs.F.H = regs.F.N = 0;
-                regs.F.Z = +((regs.TR) === 0);
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
+                regs.TR = (((regs.TR) << 4) | ((regs.TR) >>> 4)) & 0xFF; // DELAYED
+                regs.F.C = regs.F.H = regs.F.N = 0; // DELAYED
+                regs.F.Z = +((regs.TR) === 0); // DELAYED
                 pins.Addr = (regs.TA);
                 pins.D = regs.TR;
                 // Following is auto-generated code for instruction finish
@@ -6267,13 +6262,13 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                regs.F.C = (regs.TR) & 1;
-                regs.TR = (regs.TR) >>> 1;
-                regs.F.H = regs.F.N = 0;
-                regs.F.Z = +((regs.TR) === 0);
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
+                regs.F.C = (regs.TR) & 1; // DELAYED
+                regs.TR = (regs.TR) >>> 1; // DELAYED
+                regs.F.H = regs.F.N = 0; // DELAYED
+                regs.F.Z = +((regs.TR) === 0); // DELAYED
                 pins.Addr = (regs.TA);
                 pins.D = regs.TR;
                 // Following is auto-generated code for instruction finish
@@ -6407,13 +6402,13 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = ((regs.H << 8) | regs.L);
-                regs.F.H = 1;
-                regs.F.N = 0;
-                regs.F.Z = +((regs.TR & 1) === 0);
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                regs.F.H = 1; // DELAYED
+                regs.F.N = 0; // DELAYED
+                regs.F.Z = +((regs.TR & 1) === 0); // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -6539,13 +6534,13 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = ((regs.H << 8) | regs.L);
-                regs.F.H = 1;
-                regs.F.N = 0;
-                regs.F.Z = +((regs.TR & 2) === 0);
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                regs.F.H = 1; // DELAYED
+                regs.F.N = 0; // DELAYED
+                regs.F.Z = +((regs.TR & 2) === 0); // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -6668,16 +6663,19 @@ const sm83_decoded_opcodes = Object.freeze({
     }),
     0x158: new SM83_opcode_functions(SM83_opcode_matrixCB[0x56], // CB 56
         function(regs, pins) { //BIT_idx_ind
+        console.log('TCU!', regs.TCU);
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = ((regs.H << 8) | regs.L);
-                regs.F.H = 1;
-                regs.F.N = 0;
-                regs.F.Z = +((regs.TR & 4) === 0);
-                // Following is auto-generated code for instruction finish
+                console.log('HERE!', hex4(pins.Addr), pins.RD, pins.MRQ);
                 break;
             case 2: // cleanup_custom
+                console.log('NOW HERE!', hex2(pins.D));
                 regs.TR = pins.D; // DELAYED
+                regs.F.H = 1; // DELAYED
+                regs.F.N = 0; // DELAYED
+                regs.F.Z = +((regs.TR & 4) === 0); // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -6803,13 +6801,13 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = ((regs.H << 8) | regs.L);
-                regs.F.H = 1;
-                regs.F.N = 0;
-                regs.F.Z = +((regs.TR & 8) === 0);
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                regs.F.H = 1; // DELAYED
+                regs.F.N = 0; // DELAYED
+                regs.F.Z = +((regs.TR & 8) === 0); // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -6935,13 +6933,13 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = ((regs.H << 8) | regs.L);
-                regs.F.H = 1;
-                regs.F.N = 0;
-                regs.F.Z = +((regs.TR & 16) === 0);
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                regs.F.H = 1; // DELAYED
+                regs.F.N = 0; // DELAYED
+                regs.F.Z = +((regs.TR & 16) === 0); // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -7067,13 +7065,13 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = ((regs.H << 8) | regs.L);
-                regs.F.H = 1;
-                regs.F.N = 0;
-                regs.F.Z = +((regs.TR & 32) === 0);
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                regs.F.H = 1; // DELAYED
+                regs.F.N = 0; // DELAYED
+                regs.F.Z = +((regs.TR & 32) === 0); // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -7199,13 +7197,13 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = ((regs.H << 8) | regs.L);
-                regs.F.H = 1;
-                regs.F.N = 0;
-                regs.F.Z = +((regs.TR & 64) === 0);
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                regs.F.H = 1; // DELAYED
+                regs.F.N = 0; // DELAYED
+                regs.F.Z = +((regs.TR & 64) === 0); // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -7331,13 +7329,13 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = ((regs.H << 8) | regs.L);
-                regs.F.H = 1;
-                regs.F.N = 0;
-                regs.F.Z = +((regs.TR & 128) === 0);
-                // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D; // DELAYED
+                regs.F.H = 1; // DELAYED
+                regs.F.N = 0; // DELAYED
+                regs.F.Z = +((regs.TR & 128) === 0); // DELAYED
+                // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -8342,7 +8340,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.B = regs.B & 0x01; // DELAYED
+                regs.B = regs.B | 0x01; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8356,7 +8354,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.C = regs.C & 0x01; // DELAYED
+                regs.C = regs.C | 0x01; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8370,7 +8368,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.D = regs.D & 0x01; // DELAYED
+                regs.D = regs.D | 0x01; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8384,7 +8382,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.E = regs.E & 0x01; // DELAYED
+                regs.E = regs.E | 0x01; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8398,7 +8396,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.H = regs.H & 0x01; // DELAYED
+                regs.H = regs.H | 0x01; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8412,7 +8410,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.L = regs.L & 0x01; // DELAYED
+                regs.L = regs.L | 0x01; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8428,10 +8426,10 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                regs.TR |= 0x01;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
+                regs.TR |= 0x01; // DELAYED
                 pins.Addr = (regs.TA);
                 pins.D = regs.TR;
                 // Following is auto-generated code for instruction finish
@@ -8451,7 +8449,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.A = regs.A & 0x01; // DELAYED
+                regs.A = regs.A | 0x01; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8465,7 +8463,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.B = regs.B & 0x02; // DELAYED
+                regs.B = regs.B | 0x02; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8479,7 +8477,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.C = regs.C & 0x02; // DELAYED
+                regs.C = regs.C | 0x02; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8493,7 +8491,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.D = regs.D & 0x02; // DELAYED
+                regs.D = regs.D | 0x02; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8507,7 +8505,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.E = regs.E & 0x02; // DELAYED
+                regs.E = regs.E | 0x02; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8521,7 +8519,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.H = regs.H & 0x02; // DELAYED
+                regs.H = regs.H | 0x02; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8535,7 +8533,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.L = regs.L & 0x02; // DELAYED
+                regs.L = regs.L | 0x02; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8551,10 +8549,10 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                regs.TR |= 0x02;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
+                regs.TR |= 0x02; // DELAYED
                 pins.Addr = (regs.TA);
                 pins.D = regs.TR;
                 // Following is auto-generated code for instruction finish
@@ -8574,7 +8572,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.A = regs.A & 0x02; // DELAYED
+                regs.A = regs.A | 0x02; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8588,7 +8586,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.B = regs.B & 0x04; // DELAYED
+                regs.B = regs.B | 0x04; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8602,7 +8600,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.C = regs.C & 0x04; // DELAYED
+                regs.C = regs.C | 0x04; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8616,7 +8614,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.D = regs.D & 0x04; // DELAYED
+                regs.D = regs.D | 0x04; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8630,7 +8628,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.E = regs.E & 0x04; // DELAYED
+                regs.E = regs.E | 0x04; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8644,7 +8642,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.H = regs.H & 0x04; // DELAYED
+                regs.H = regs.H | 0x04; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8658,7 +8656,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.L = regs.L & 0x04; // DELAYED
+                regs.L = regs.L | 0x04; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8674,10 +8672,10 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                regs.TR |= 0x04;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
+                regs.TR |= 0x04; // DELAYED
                 pins.Addr = (regs.TA);
                 pins.D = regs.TR;
                 // Following is auto-generated code for instruction finish
@@ -8697,7 +8695,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.A = regs.A & 0x04; // DELAYED
+                regs.A = regs.A | 0x04; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8711,7 +8709,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.B = regs.B & 0x08; // DELAYED
+                regs.B = regs.B | 0x08; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8725,7 +8723,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.C = regs.C & 0x08; // DELAYED
+                regs.C = regs.C | 0x08; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8739,7 +8737,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.D = regs.D & 0x08; // DELAYED
+                regs.D = regs.D | 0x08; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8753,7 +8751,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.E = regs.E & 0x08; // DELAYED
+                regs.E = regs.E | 0x08; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8767,7 +8765,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.H = regs.H & 0x08; // DELAYED
+                regs.H = regs.H | 0x08; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8781,7 +8779,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.L = regs.L & 0x08; // DELAYED
+                regs.L = regs.L | 0x08; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8797,10 +8795,10 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                regs.TR |= 0x08;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
+                regs.TR |= 0x08; // DELAYED
                 pins.Addr = (regs.TA);
                 pins.D = regs.TR;
                 // Following is auto-generated code for instruction finish
@@ -8820,7 +8818,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.A = regs.A & 0x08; // DELAYED
+                regs.A = regs.A | 0x08; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8834,7 +8832,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.B = regs.B & 0x10; // DELAYED
+                regs.B = regs.B | 0x10; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8848,7 +8846,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.C = regs.C & 0x10; // DELAYED
+                regs.C = regs.C | 0x10; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8862,7 +8860,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.D = regs.D & 0x10; // DELAYED
+                regs.D = regs.D | 0x10; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8876,7 +8874,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.E = regs.E & 0x10; // DELAYED
+                regs.E = regs.E | 0x10; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8890,7 +8888,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.H = regs.H & 0x10; // DELAYED
+                regs.H = regs.H | 0x10; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8904,7 +8902,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.L = regs.L & 0x10; // DELAYED
+                regs.L = regs.L | 0x10; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8920,10 +8918,10 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                regs.TR |= 0x10;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
+                regs.TR |= 0x10; // DELAYED
                 pins.Addr = (regs.TA);
                 pins.D = regs.TR;
                 // Following is auto-generated code for instruction finish
@@ -8943,7 +8941,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.A = regs.A & 0x10; // DELAYED
+                regs.A = regs.A | 0x10; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8957,7 +8955,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.B = regs.B & 0x20; // DELAYED
+                regs.B = regs.B | 0x20; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8971,7 +8969,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.C = regs.C & 0x20; // DELAYED
+                regs.C = regs.C | 0x20; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8985,7 +8983,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.D = regs.D & 0x20; // DELAYED
+                regs.D = regs.D | 0x20; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -8999,7 +8997,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.E = regs.E & 0x20; // DELAYED
+                regs.E = regs.E | 0x20; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -9013,7 +9011,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.H = regs.H & 0x20; // DELAYED
+                regs.H = regs.H | 0x20; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -9027,7 +9025,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.L = regs.L & 0x20; // DELAYED
+                regs.L = regs.L | 0x20; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -9043,10 +9041,10 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                regs.TR |= 0x20;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
+                regs.TR |= 0x20; // DELAYED
                 pins.Addr = (regs.TA);
                 pins.D = regs.TR;
                 // Following is auto-generated code for instruction finish
@@ -9066,7 +9064,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.A = regs.A & 0x20; // DELAYED
+                regs.A = regs.A | 0x20; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -9080,7 +9078,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.B = regs.B & 0x40; // DELAYED
+                regs.B = regs.B | 0x40; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -9094,7 +9092,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.C = regs.C & 0x40; // DELAYED
+                regs.C = regs.C | 0x40; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -9108,7 +9106,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.D = regs.D & 0x40; // DELAYED
+                regs.D = regs.D | 0x40; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -9122,7 +9120,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.E = regs.E & 0x40; // DELAYED
+                regs.E = regs.E | 0x40; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -9136,7 +9134,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.H = regs.H & 0x40; // DELAYED
+                regs.H = regs.H | 0x40; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -9150,7 +9148,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.L = regs.L & 0x40; // DELAYED
+                regs.L = regs.L | 0x40; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -9166,10 +9164,10 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                regs.TR |= 0x40;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
+                regs.TR |= 0x40; // DELAYED
                 pins.Addr = (regs.TA);
                 pins.D = regs.TR;
                 // Following is auto-generated code for instruction finish
@@ -9189,7 +9187,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.A = regs.A & 0x40; // DELAYED
+                regs.A = regs.A | 0x40; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -9203,7 +9201,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.B = regs.B & 0x80; // DELAYED
+                regs.B = regs.B | 0x80; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -9217,7 +9215,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.C = regs.C & 0x80; // DELAYED
+                regs.C = regs.C | 0x80; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -9231,7 +9229,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.D = regs.D & 0x80; // DELAYED
+                regs.D = regs.D | 0x80; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -9245,7 +9243,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.E = regs.E & 0x80; // DELAYED
+                regs.E = regs.E | 0x80; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -9259,7 +9257,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.H = regs.H & 0x80; // DELAYED
+                regs.H = regs.H | 0x80; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -9273,7 +9271,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.L = regs.L & 0x80; // DELAYED
+                regs.L = regs.L | 0x80; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -9289,10 +9287,10 @@ const sm83_decoded_opcodes = Object.freeze({
             case 1: // Do read
                 regs.TA = (regs.H << 8) | regs.L // DELAYED
                 pins.Addr = (regs.TA);
-                regs.TR |= 0x80;
                 break;
             case 2: // Do write
                 regs.TR = pins.D; // DELAYED
+                regs.TR |= 0x80; // DELAYED
                 pins.Addr = (regs.TA);
                 pins.D = regs.TR;
                 // Following is auto-generated code for instruction finish
@@ -9312,7 +9310,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //SET_idx_di
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                regs.A = regs.A & 0x80; // DELAYED
+                regs.A = regs.A | 0x80; // DELAYED
                 // Following is auto-generated code for instruction finish // DELAYED
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;

@@ -71,6 +71,21 @@ function generate_sm83_js() {
     save_js('sm83_generated_opcodes.js', generate_sm83_core());
 }
 
+function click_generate_sm83_tests() {
+    let seed = seed_input.value;
+    if (seed.length < 1) {
+        alert('Please use a seed!');
+        return;
+    }
+    let numtests = parseInt(numtests_input.value);
+    if (!numtests) {
+        alert('Please enter a valid number of tests to generate per opcode');
+        return;
+    }
+
+    SM83_NUM_TO_GENERATE = numtests;
+    generate_SM83_tests(seed);
+}
 function click_generate_z80_tests() {
     let seed = seed_input.value;
     if (seed.length < 1) {
@@ -89,7 +104,7 @@ function click_generate_z80_tests() {
 
     Z80_DO_FULL_MEMCYCLES = !simplified_mem;
     Z80_DO_MEM_REFRESHES = refresh; // Put I/R on address bus
-    Z80_NUM_TO_GENERATE = numtests;
+    SM83_NUM_TO_GENERATE = numtests;
     Z80_NULL_WAIT_STATES = nullwaits;
     generate_Z80_tests(seed, CMOS);
 }

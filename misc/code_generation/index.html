@@ -6,6 +6,7 @@
     <script type="text/javascript" src="/component/cpu/m68000/m68000_opcodes.js"></script>
     <script type="text/javascript" src="/component/cpu/m68000/m68000_opcode_generator.js"></script>
     <script type="text/javascript" src="/component/cpu/sm83/sm83_opcodes.js"></script>
+    <script type="text/javascript" src="sm83_test_generator.js"></script>
     <script type="text/javascript" src="/helpers/jszip/dist/jszip.js"></script>
     <script type="text/javascript" src="/component/cpu/wdc65816/wdc65816_t.js"></script>
     <script type="text/javascript" src="/component/cpu/m6502/m6502_opcodes.js"></script>
@@ -34,6 +35,10 @@ Seed to use for generating tests: <input id="seed">
 <h2>SPC700 tests</h2>
 <button type="button" id="generatespc700tests" onclick="generate_spc_tests()">Generate and download SPC700 tests</button>
 <br>
+<hr>
+<h2>SM83 tests</h2>
+<button type="button" id="generatesm83tests" onclick="click_generate_sm83_tests()">Generate and download SM83 tests</button>
+
 <hr>
 <h2>Z80 test generation</h2>
 <input type="checkbox" id="Z80cmos">CMOS variant

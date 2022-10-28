@@ -151,6 +151,7 @@ class SM83_switchgen {
 
     popAF() {
         this.read('regs.SP', 'regs.TR');
+        this.force_q();
         this.addl('regs.F.setbyte(regs.TR & 0xF0);');
         this.addl('regs.SP = (regs.SP + 1) & 0xFFFF;');
         this.read('regs.SP', 'regs.A');
@@ -185,8 +186,10 @@ class SM83_switchgen {
     pop() {
         this.read('regs.SP', 'regs.TA');
         this.addl('regs.SP = (regs.SP + 1) & 0xFFFF;');
+        this.force_q();
         this.read('regs.SP', 'regs.TR');
         this.addl('regs.SP = (regs.SP + 1) & 0xFFFF;');
+        this.force_q();
         this.addl('regs.TA |= (regs.TR << 8);');
     }
 
@@ -274,8 +277,8 @@ class SM83_switchgen {
         return this.outstr;
     }
 
-    addcycles(howmany) {
-        this.RWMIO(0, 0, 0);
+    addcycles(howmany, do_rwmio=true) {
+        if (do_rwmio) this.RWMIO(0, 0, 0);
         let first = true;
         for (let i = 0; i < howmany; i++) {
             if (first) this.addcycle('Adding ' + howmany + ' cycles');
@@ -368,6 +371,10 @@ class SM83_switchgen {
                 break;
             case 'F':
                 this.addl('regs.F.setbyte(' + val + ');');
+                break;
+            default:
+                console.log('UNKNOWN THING!', what, val);
+                debugger;
                 break;
         }
     }
@@ -478,7 +485,7 @@ class SM83_switchgen {
 
     CP(target, source) {
         this.addl('let x = ((' + target + ') - (' + source + ')) & 0xFFFF;');
-        this.addl('let y = (((' + target +') & 0x0F) - ((' + target + ') & 0x0F)) & 0xFFFF;');
+        this.addl('let y = (((' + target +') & 0x0F) - ((' + source + ') & 0x0F)) & 0xFFFF;');
         this.addl('regs.F.C = +(x > 0xFF);');
         this.addl('regs.F.H = +(y > 0x0F);');
         this.addl('regs.F.N = 1;');
@@ -495,7 +502,7 @@ class SM83_switchgen {
     INC(target) {
         this.addl(target + ' = ((' + target + ') + 1) & 0xFF;');
         this.addl('regs.F.H = +(((' + target + ') & 0x0F) === 0);');
-        this.addl('regs.F.N = 1;');
+        this.addl('regs.F.N = 0;');
         this.setz(target);
     }
 
@@ -584,7 +591,7 @@ class SM83_switchgen {
 
     XOR(target, source, output='regs.TR') {
         this.addl(output + ' = (' + target + ') ^ (' + source + ');');
-        this.addl('regs.F.C = regs.F.N = regs.F.C = 0;');
+        this.addl('regs.F.C = regs.F.N = regs.F.H = 0;');
         this.setz(output);
     }
 
@@ -604,26 +611,29 @@ function SM83_generate_instruction_function(indent, opcode_info) {
     switch (opcode_info.ins) {
         case SM83_MN.ADC_di_da:
             ag.operand('regs.TR');
+            ag.force_q();
             ag.ADD(ag.getreg8(arg1), 'regs.TR', true);
             ag.writereg8(arg1, 'regs.TR');
             break;
         case SM83_MN.ADC_di_di:
             ag.ADD(ag.getreg8(arg1), ag.getreg8(arg2), true);
-            ag.writereg8(arg1);
+            ag.writereg8(arg1, 'regs.TR');
             break;
         case SM83_MN.ADC_di_ind:
             ag.read(ag.getreg16(arg2), 'regs.TR');
+            ag.force_q();
             ag.ADD(ag.getreg8(arg1), 'regs.TR', true);
-            ag.writereg8('regs.TR');
+            ag.writereg8(arg1, 'regs.TR');
             break;
         case SM83_MN.ADD_di_da:
             ag.operand('regs.TR');
+            ag.force_q();
             ag.ADD(ag.getreg8(arg1), 'regs.TR', false);
             ag.writereg8(arg1, 'regs.TR');
             break;
         case SM83_MN.ADD_di_di:
             ag.ADD(ag.getreg8(arg1), ag.getreg8(arg2), false);
-            ag.writereg8(arg1);
+            ag.writereg8(arg1, 'regs.TR');
             break;
         case SM83_MN.ADD16_di_di:
             ag.addcycle('idle');
@@ -640,21 +650,23 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             break;
         case SM83_MN.ADD_di_ind:
             ag.read(ag.getreg16(arg2), 'regs.TR');
+            ag.force_q();
             ag.ADD(ag.getreg8(arg1), 'regs.TR', false);
             ag.writereg8(arg1, 'regs.TR');
             break;
         case SM83_MN.ADD_di_rel:
             ag.operand('regs.TR');
-            ag.addcycles(2);
-            ag.addl('let target = ' + ag.getreg16(arg1));
+            ag.force_q();
+            ag.addl('let target = ' + ag.getreg16(arg1) + ';');
             ag.addl('regs.F.C = +(((target & 0xFF) + regs.TR) > 0xFF);');
             ag.addl('regs.F.H = +(((target & 0x0F) + (regs.TR & 0x0F)) > 0x0F);');
             ag.addl('regs.F.N = regs.F.Z = 0;');
-            ag.addl('target = (target + regs.TR) & 0xFFFF;');
+            ag.addl('target = (target + mksigned8(regs.TR)) & 0xFFFF;');
             ag.writereg16(arg1, 'target');
             break;
         case SM83_MN.AND_di_da:
             ag.operand('regs.TR');
+            ag.force_q();
             ag.AND(ag.getreg8(arg1), 'regs.TR');
             ag.writereg8(arg1, 'regs.TR');
             break;
@@ -664,6 +676,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             break;
         case SM83_MN.AND_di_ind:
             ag.read(ag.getreg16(arg2), 'regs.TR');
+            ag.force_q();
             ag.AND(ag.getreg8(arg1), 'regs.TR');
             ag.writereg8(arg1, 'regs.TR');
             break;
@@ -672,6 +685,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             break;
         case SM83_MN.BIT_idx_ind:
             ag.read(ag.getreg16(arg2), 'regs.TR');
+            ag.force_q();
             ag.BIT(arg1, 'regs.TR');
             break;
         case SM83_MN.CALL_cond_addr:
@@ -687,6 +701,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             break;
         case SM83_MN.CP_di_da:
             ag.operand('regs.TR');
+            ag.force_q();
             ag.CP(ag.getreg8(arg1), 'regs.TR');
             break;
         case SM83_MN.CP_di_di:
@@ -694,6 +709,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             break;
         case SM83_MN.CP_di_ind:
             ag.read(ag.getreg16(arg2), 'regs.TR');
+            ag.force_q();
             ag.CP(ag.getreg8(arg1), 'regs.TR');
             break;
         case SM83_MN.CPL:
@@ -728,6 +744,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
         case SM83_MN.DEC_ind:
             ag.addl('regs.TA = ' + ag.getreg16(arg1) + ';');
             ag.read('regs.TA', 'regs.TR');
+            ag.force_q();
             ag.DEC('regs.TR');
             ag.write('regs.TA', 'regs.TR');
             break;
@@ -755,6 +772,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
         case SM83_MN.INC_ind:
             ag.addl('regs.TA = ' + ag.getreg16(arg1) + ';');
             ag.read('regs.TA', 'regs.TR');
+            ag.force_q();
             ag.INC('regs.TR');
             ag.write('regs.TA', 'regs.TR');
             break;
@@ -797,36 +815,40 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             break;
         case SM83_MN.LD16_di_di:
             ag.addcycle();
-            ag.cpreg16(arg1, arg2);
+            ag.addl('regs.SP = (regs.H << 8) | regs.L;');
+            //ag.cpreg16(arg1, arg2);
             break;
         case SM83_MN.LD_di_di_rel:
             ag.operand('regs.TR');
             ag.addcycle();
             ag.addl('let source = ' + ag.getreg16(arg2) + ';');
-            ag.addl('regs.F.C = +((source + regs.TR) > 0xFF);');
+            ag.addl('regs.F.C = +(((source & 0xFF) + (regs.TR & 0xFF)) > 0xFF);');
             ag.addl('regs.F.H = +(((source & 0x0F) + (regs.TR & 0x0F)) > 0x0F);');
             ag.addl('regs.F.N = regs.F.Z = 0;');
-            ag.addl('source = (source + mksigned8(regs.TR)) & 0xFF;');
-            ag.writereg8(arg1, 'source');
+            ag.addl('source = (source + mksigned8(regs.TR)) & 0xFFFF;');
+            ag.writereg16(arg1, 'source');
             break;
         case SM83_MN.LD_di_ind:
             ag.addl('regs.TA = ' + ag.getreg16(arg2));
             ag.read('regs.TA', 'regs.TR');
-            ag.writereg8(ag.getreg8(arg1), 'regs.TR');
+            ag.force_q();
+            ag.writereg8(arg1, 'regs.TR');
             break;
         case SM83_MN.LD_di_ind_dec:
             ag.addl('regs.TA = ' + ag.getreg16(arg2));
             ag.read('regs.TA', 'regs.TR');
             ag.addl('regs.TA = (regs.TA - 1) & 0xFFFF;');
             ag.writereg16(arg2, 'regs.TA');
-            ag.writereg8(ag.getreg8(arg1), 'regs.TR');
+            ag.force_q();
+            ag.writereg8(arg1, 'regs.TR');
             break;
         case SM83_MN.LD_di_ind_inc:
             ag.addl('regs.TA = ' + ag.getreg16(arg2));
             ag.read('regs.TA', 'regs.TR');
             ag.addl('regs.TA = (regs.TA + 1) & 0xFFFF;');
             ag.writereg16(arg2, 'regs.TA');
-            ag.writereg8(ag.getreg8(arg1), 'regs.TR');
+            ag.force_q();
+            ag.writereg8(arg1, 'regs.TR');
             break;
         case SM83_MN.LD_ind_da:
             ag.operand('regs.TR');
@@ -840,20 +862,24 @@ function SM83_generate_instruction_function(indent, opcode_info) {
         case SM83_MN.LD_ind_dec_di:
             ag.addl('regs.TA = ' + ag.getreg16(arg1) + ';');
             ag.write('regs.TA', ag.getreg8(arg2));
-            ag.addl(ag.getreg8(arg2) + ' = (' + ag.getreg8(arg2) + ' - 1) & 0xFF;');
+            ag.addl('regs.TA = (regs.TA - 1) & 0xFFFF;');
+            ag.writereg16(arg1, 'regs.TA');
             break;
         case SM83_MN.LD_ind_inc_di:
             ag.addl('regs.TA = ' + ag.getreg16(arg1) + ';');
             ag.write('regs.TA', ag.getreg8(arg2));
-            ag.addl(ag.getreg8(arg2) + ' = (' + ag.getreg8(arg2) + ' + 1) & 0xFF;');
+            ag.addl('regs.TA = (regs.TA + 1) & 0xFFFF;');
+            ag.writereg16(arg1, 'regs.TA');
             break;
         case SM83_MN.LDH_addr_di:
             ag.operand('regs.TA');
+            ag.force_q();
             ag.addl('regs.TA |= 0xFF00;');
             ag.write('regs.TA', ag.getreg8(arg1));
             break;
         case SM83_MN.LDH_di_addr:
             ag.operand('regs.TA');
+            ag.force_q();
             ag.addl('regs.TA |= 0xFF00;');
             ag.read('regs.TA', ag.getreg8(arg1));
             break;
@@ -869,6 +895,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             break;
         case SM83_MN.OR_di_da:
             ag.operand('regs.TR');
+            ag.force_q();
             ag.OR(ag.getreg8(arg1), 'regs.TR');
             ag.writereg8(arg1, 'regs.TR');
             break;
@@ -878,6 +905,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             break;
         case SM83_MN.OR_di_ind:
             ag.read(ag.getreg16(arg2), 'regs.TR');
+            ag.force_q();
             ag.OR(ag.getreg8(arg1), 'regs.TR');
             ag.writereg8(arg1, 'regs.TR');
             break;
@@ -899,6 +927,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             mask = (1 << arg1) ^ 0xFF;
             ag.addl('regs.TA = ' + ag.getreg16(arg2));
             ag.read('regs.TA', 'regs.TR');
+            ag.force_q();
             ag.write('regs.TA', 'regs.TR & ' + hex0x2(mask));
             break;
         case SM83_MN.RET:
@@ -907,7 +936,6 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             ag.addl('regs.PC = regs.TA;');
             break;
         case SM83_MN.RET_cond:
-            ag.addcycle();
             ag.addl('if (!(' + arg1 + ')) { regs.TCU += 3; break; } // CHECKHERE');
             ag.pop();
             ag.addl('regs.PC = regs.TA;');
@@ -978,17 +1006,19 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             break;
         case SM83_MN.SBC_di_da:
             ag.operand('regs.TR');
+            ag.force_q();
             ag.SUB(ag.getreg8(arg1), 'regs.TR', true);
             ag.writereg8(arg1, 'regs.TR');
             break;
         case SM83_MN.SBC_di_di:
             ag.SUB(ag.getreg8(arg1), ag.getreg8(arg2), true);
-            ag.writereg8(arg1);
+            ag.writereg8(arg1, 'regs.TR');
             break;
         case SM83_MN.SBC_di_ind:
             ag.read(ag.getreg16(arg2), 'regs.TR');
+            ag.force_q();
             ag.SUB(ag.getreg8(arg1), 'regs.TR', true);
-            ag.writereg8('regs.TR');
+            ag.writereg8(arg1, 'regs.TR');
             break;
         case SM83_MN.SCF:
             ag.addl('regs.F.C = 1;');
@@ -996,12 +1026,13 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             break;
         case SM83_MN.SET_idx_di:
             bit = 1 << arg1;
-            ag.writereg8(arg2, ag.getreg8(arg2) + ' & ' + hex0x2(bit));
+            ag.writereg8(arg2, ag.getreg8(arg2) + ' | ' + hex0x2(bit));
             break;
         case SM83_MN.SET_idx_ind:
             bit = 1 << arg1;
             ag.addl('regs.TA = ' + ag.getreg16(arg2));
             ag.read('regs.TA', 'regs.TR');
+            ag.force_q();
             ag.addl('regs.TR |= ' + hex0x2(bit) + ';');
             ag.write('regs.TA', 'regs.TR');
             break;
@@ -1011,6 +1042,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
         case SM83_MN.SLA_ind:
             ag.addl('regs.TA = ' + ag.getreg16(arg1));
             ag.read('regs.TA', 'regs.TR');
+            ag.force_q();
             ag.SLA('regs.TR');
             ag.write('regs.TA', 'regs.TR');
             break;
@@ -1020,6 +1052,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
         case SM83_MN.SRA_ind:
             ag.addl('regs.TA = ' + ag.getreg16(arg1));
             ag.read('regs.TA', 'regs.TR');
+            ag.force_q();
             ag.SRA('regs.TR');
             ag.write('regs.TA', 'regs.TR');
             break;
@@ -1029,6 +1062,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
         case SM83_MN.SRL_ind:
             ag.addl('regs.TA = ' + ag.getreg16(arg1));
             ag.read('regs.TA', 'regs.TR');
+            ag.force_q();
             ag.SRL('regs.TR');
             ag.write('regs.TA', 'regs.TR');
             break;
@@ -1041,17 +1075,19 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             break;
         case SM83_MN.SUB_di_da:
             ag.operand('regs.TR');
+            ag.force_q();
             ag.SUB(ag.getreg8(arg1), 'regs.TR', false);
             ag.writereg8(arg1, 'regs.TR');
             break;
         case SM83_MN.SUB_di_di:
             ag.SUB(ag.getreg8(arg1), ag.getreg8(arg2), false);
-            ag.writereg8(arg1);
+            ag.writereg8(arg1, 'regs.TR');
             break;
         case SM83_MN.SUB_di_ind:
             ag.read(ag.getreg16(arg2), 'regs.TR');
+            ag.force_q();
             ag.SUB(ag.getreg8(arg1), 'regs.TR', false);
-            ag.writereg8('regs.TR');
+            ag.writereg8(arg1, 'regs.TR');
             break;
         case SM83_MN.SWAP_di:
             ag.SWAP(ag.getreg8(arg1));
@@ -1059,11 +1095,13 @@ function SM83_generate_instruction_function(indent, opcode_info) {
         case SM83_MN.SWAP_ind:
             ag.addl('regs.TA = ' + ag.getreg16(arg1));
             ag.read('regs.TA', 'regs.TR');
+            ag.force_q();
             ag.SWAP('regs.TR');
             ag.write('regs.TA', 'regs.TR');
             break;
          case SM83_MN.XOR_di_da:
             ag.operand('regs.TR');
+            ag.force_q();
             ag.XOR(ag.getreg8(arg1), 'regs.TR');
             ag.writereg8(arg1, 'regs.TR');
             break;
@@ -1073,6 +1111,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             break;
         case SM83_MN.XOR_di_ind:
             ag.read(ag.getreg16(arg2), 'regs.TR');
+            ag.force_q();
             ag.XOR(ag.getreg8(arg1), 'regs.TR');
             ag.writereg8(arg1, 'regs.TR');
             break;
