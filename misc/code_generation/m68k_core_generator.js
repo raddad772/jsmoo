@@ -77,7 +77,7 @@ class M68K_switchgen {
             this.addr_to_PC_then_inc();
         // TODO: fix this
         /*
-        this.RWMIO(0, 0, 0, 0);
+        this.RWM(0, 0, 0, 0);
         this.addl('regs.TCU = 0;');
         this.addl('regs.EI = 0;');
         this.addl('regs.P = 0;');

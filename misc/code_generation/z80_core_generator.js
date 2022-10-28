@@ -306,7 +306,7 @@ class Z80_switchgen {
         this.addl('pins.Addr = ' + addr + ';');
 
         this.addcycle('IN actual read');
-        //this.RWMIO(0, 0, 0, 1);
+        //this.RWM(0, 0, 0, 1);
 
         this.addcycle('IN wait state');
         this.RWMIO(1, 0, 0, 1);
