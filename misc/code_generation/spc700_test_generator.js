@@ -208,6 +208,10 @@ class SPC_state {
 
 }
 
+function pt_rnd1() {
+    return Math.floor(rand_seeded() * 2) & 1;
+}
+
 function pt_rnd8() {
     return Math.floor(rand_seeded() * 256) & 0xFF;
 }

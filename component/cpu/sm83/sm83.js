@@ -147,7 +147,11 @@ class SM83_t {
         switch(this.regs.TCU) {
             case 1: // Initial opcode fetch has already been done as last cycle of last instruction
                 this.regs.IR = this.pins.D;
-                if (this.regs.IR === 0xCB) { this.pins.Addr = this.regs.PC; this.regs.PC = (this.regs.PC + 1) & 0xFFFF; break; }
+                if (this.regs.IR === 0xCB) {
+                    this.prefix = 0xCB;
+                    this.regs.IR = SM83_S_DECODE;
+                    this.pins.Addr = this.regs.PC; this.regs.PC = (this.regs.PC + 1) & 0xFFFF; break;
+                }
 
                 this.current_instruction = sm83_decoded_opcodes[this.regs.IR];
                 this.regs.prefix = 0;
@@ -155,8 +159,16 @@ class SM83_t {
                 break;
             case 2:
                 this.regs.IR = this.pins.D;
-                if (this.regs.IR === 0xCB) { console.log('UM?'); this.regs.TCU--; this.pins.Addr = this.regs.PC; this.regs.PC = (this.regs.PC + 1) & 0xFFFF; break; }
-                this.regs.prefix = 0xCB;
+                if (this.regs.IR === 0xCB) {
+                    console.log('UM?');
+                    this.regs.TCU--;
+                    this.pins.Addr = this.regs.PC;
+                    this.regs.PC = (this.regs.PC + 1) & 0xFFFF;
+                    this.regs.IR = SM83_S_DECODE;
+                    break;
+                }
+                console.log('SETTING INS', hex2(this.regs.IR));
+                this.regs.prefix = 0x00;
                 this.regs.TCU = 0;
                 this.current_instruction = sm83_decoded_opcodes[SM83_prefix_to_codemap[0xCB] + this.regs.IR];
                 break;

@@ -46,7 +46,7 @@ function SM83_disassemble(PC, peek) {
         case 0x1f: return 'rra';
         case 0x20: return 'jr   nz,$' + hex4((PC + 2 + mksigned8(lo)) & 0xFFFF);
         case 0x21: return 'ld   hl,$' + hex4(word);
-        case 0x22: return 'ldi  (hl),a';
+        case 0x22: return 'ldi  (hl+),a';
         case 0x23: return 'inc  hl';
         case 0x24: return 'inc  h';
         case 0x25: return 'dec  h';
@@ -62,7 +62,7 @@ function SM83_disassemble(PC, peek) {
         case 0x2f: return 'cpl';
         case 0x30: return 'jr   nc,$' + hex4((PC + 2 + mksigned8(lo)) & 0xFFFF);
         case 0x31: return 'ld   sp,$' + hex4(word);
-        case 0x32: return 'ldd  (hl),a';
+        case 0x32: return 'ldd  (hl-),a';
         case 0x33: return 'inc  sp';
         case 0x34: return 'inc  (hl)';
         case 0x35: return 'dec  (hl)';
