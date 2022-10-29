@@ -71,6 +71,7 @@ const SER_z80_registers_t = [
     't', 'WZ', 'EI', 'P', 'Q', 'IFF1', 'IFF2', 'IM', 'HALT',
     'IRQ_vec', 'rprefix', 'prefix', 'poll_IRQ'
 ]
+
 class z80_registers_t {
     constructor() {
         this.IR = 0;

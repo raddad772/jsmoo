@@ -100,7 +100,7 @@ class SM83_switchgen {
             this.has_cycle = true;
             this.force_queue = false;
             for (let i in this.on_cycle) {
-                this.addl(this.on_cycle[i] + ' // DELAYED')
+                this.addl(this.on_cycle[i])
             }
             this.on_cycle = [];
             this.has_cycle = true;
@@ -137,6 +137,10 @@ class SM83_switchgen {
             case 'AF':
                 h = 'regs.A';
                 l = 'regs.F.getbyte()';
+                break;
+            case 'PC':
+                h = '(regs.PC & 0xFF00) >>> 8';
+                l = '(regs.PC & 0xFF)';
                 break;
             default:
                 console.log('PUSH16 UNKNOWN THING', reg);
@@ -749,9 +753,10 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             break;
         case SM83_MN.DI:
             ag.addl('regs.IME = 0;');
+            ag.addl('regs.IE = 0;');
             break;
         case SM83_MN.EI:
-            ag.addl('regs.EI = 1;');
+            ag.addl('regs.IE = 2;');
             break;
         case SM83_MN.HALT:
             ag.addl('regs.HLT = 1;');
@@ -1123,6 +1128,13 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             break;
         case SM83_MN.RESET:
             ag.addcycle();
+            break;
+        case SM83_MN.S_IRQ:
+            ag.addcycle();
+            ag.addcycle();
+            ag.push16('PC');
+            ag.addcycle();
+            ag.addl('regs.PC = regs.IV;');
             break;
    }
    return 'function(regs, pins) { //' + SM83_MN_R[opcode_info.ins] + '\n' + ag.finished() + indent + '}';

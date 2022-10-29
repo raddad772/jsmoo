@@ -7021,45 +7021,45 @@ const wdc65816_decoded_opcodes = Object.freeze(
             },
             true, false, true),
         0xA5: new WDC_opcode_functions(WDC_opcode_matrix[0xA5],
-            function(regs, pins) { // LDA d
-                switch(regs.TCU) {
-                        // LDA d E=0 M=0 X=0
-                    case 1: // fetch_D0_and_skip_cycle 2
-                        pins.Addr = regs.PC; pins.BA = regs.PBR;
-                        regs.PC = (regs.PC + 1) & 0xFFFF;
-                        regs.skipped_cycle = false;
-                        if ((regs.D & 0xFF) === 0) { regs.skipped_cycle = true; regs.TCU++; }
-                        break;
-                    case 2: // fetch_D0_and_skip_cycle 2a
-                        regs.TA = pins.D;
-                        pins.PDV = 0;
-                        break;
-                    case 3: // fetch_D0_and_skip_cycle 3
-                        if (regs.skipped_cycle) {
-                            regs.TA = pins.D;
-                            pins.PDV = 0;
-                        }
-                        pins.Addr = ((regs.D + pins.D) & 0xFFFF); pins.BA = (0);
-                        pins.PDV = 1;
-                        break;
-                    case 4: // finish_R16p
-                        regs.TR = pins.D;
-                        pins.Addr = (pins.Addr + 1) & 0xFFFF;
-                        break;
-                    case 5: // cleanup_custom
-                        regs.TR += pins.D << 8;
-                        // instruction code follows
-                        regs.C = regs.TR & 0xFFFF;
-                        regs.P.Z = +((regs.C) === 0);
-                        regs.P.N = ((regs.C) & 0x8000) >>> 15;
-                        // instruction code ends
-                        // Following is auto-generated code for instruction finish
-                        pins.Addr = regs.PC; pins.BA = regs.PBR;
-                        regs.PC = (regs.PC + 1) & 0xFFFF;
-                        regs.TCU = 0;
-                        break;
-                }
-            },
+function(regs, pins) { // LDA d
+    switch(regs.TCU) {
+            // LDA d E=0 M=0 X=0
+        case 1: // fetch_D0_and_skip_cycle 2
+            pins.Addr = regs.PC; pins.BA = regs.PBR;
+            regs.PC = (regs.PC + 1) & 0xFFFF;
+            regs.skipped_cycle = false;
+            if ((regs.D & 0xFF) === 0) { regs.skipped_cycle = true; regs.TCU++; }
+            break;
+        case 2: // fetch_D0_and_skip_cycle 2a
+            regs.TA = pins.D;
+            pins.PDV = 0;
+            break;
+        case 3: // fetch_D0_and_skip_cycle 3
+            if (regs.skipped_cycle) {
+                regs.TA = pins.D;
+                pins.PDV = 0;
+            }
+            pins.Addr = ((regs.D + pins.D) & 0xFFFF); pins.BA = (0);
+            pins.PDV = 1;
+            break;
+        case 4: // finish_R16p
+            regs.TR = pins.D;
+            pins.Addr = (pins.Addr + 1) & 0xFFFF;
+            break;
+        case 5: // cleanup_custom
+            regs.TR += pins.D << 8;
+            // instruction code follows
+            regs.C = regs.TR & 0xFFFF;
+            regs.P.Z = +((regs.C) === 0);
+            regs.P.N = ((regs.C) & 0x8000) >>> 15;
+            // instruction code ends
+            // Following is auto-generated code for instruction finish
+            pins.Addr = regs.PC; pins.BA = regs.PBR;
+            regs.PC = (regs.PC + 1) & 0xFFFF;
+            regs.TCU = 0;
+            break;
+    }
+},
             true, true, false),
         0xA6: new WDC_opcode_functions(WDC_opcode_matrix[0xA6],
             function(regs, pins) { // LDX d
