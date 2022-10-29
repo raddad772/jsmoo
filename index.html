@@ -103,6 +103,12 @@
     <script type="text/javascript" src="component/cpu/sm83/sm83.js"></script>
     <script type="text/javascript" src="component/cpu/sm83/sm83_generated_opcodes.js"></script>
     <script type="text/javascript" src="component/cpu/sm83/sm83_tests_pt.js"></script>
+    <script type="text/javascript" src="system/gb/gb_cart.js"></script>
+    <script type="text/javascript" src="system/gb/gb_ppu.js"></script>
+    <script type="text/javascript" src="system/gb/mappers/nomapper.js"></script>
+    <script type="text/javascript" src="system/gb/mappers/mbc1.js"></script>
+    <script type="text/javascript" src="system/gb/cpu/gb_cpu.js"></script>
+    <script type="text/javascript" src="system/gb/gb.js"></script>
 
     <!-- because bad organization -->
     <script type="text/javascript" src="system/snes/snes.js"></script>
@@ -168,6 +174,15 @@
             </div>
         </div>
     </div>
+    <div id="settings_tab_input_gb" class="ui-tab-settings-input" style="display:none">
+        Click a button to assign key
+        <div style="padding-top: 10px; padding-left: 10px;">
+            <div style="width: 220px; float: left;">
+                Player 1
+                <img src="/img/nes-controller.svg" id="gbcfg" alt="GameBoy" width="220px"/>
+            </div>
+        </div>
+    </div>
     <div id="settings_tab_input_snes" class="ui-tab-settings-input" style="display:none">
         Click a button to assign key
         <div style="padding-top: 10px; padding-left: 10px;">
@@ -223,6 +238,7 @@
         <span>SYSTEM SELECT<br><select id="systemselect" name="systemselect">
             <option value="snes">SNES</option>
             <option value="nes">NES</option>
+            <option value="gb">Nintendo GameBoy</option>
             <option value="spectrum">ZX Spectrum 48</option>
             <option value="sms">Sega Master System v2</option>
             <!--<option value="gg">GameGear</option>-->

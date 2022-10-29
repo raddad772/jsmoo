@@ -16,8 +16,9 @@ const GENERICZ80_STR = 'genericz80'
 //const DEFAULT_SYSTEM = GENERICZ80_STR;
 //const DEFAULT_SYSTEM = SPECTRUM_STR;
 //const DEFAULT_SYSTEM = GG_STR;
-const DEFAULT_SYSTEM = NES_STR;
+//const DEFAULT_SYSTEM = NES_STR;
 //const DEFAULT_SYSTEM = SMS_STR;
+const DEFAULT_SYSTEM = GB_STR;
 
 class input_provider_t {
 	constructor(system_kind, keymap) {
@@ -161,6 +162,9 @@ class global_player_t {
 
 	after_break(whodidit) {
 		switch(this.system_kind) {
+			case 'gb':
+				this.system.cycles_left = 0;
+				break;
 			case 'nes':
 				this.system.cycles_left = 0;
 				break;
@@ -345,9 +349,9 @@ class global_player_t {
 				//load_bios('/gg/roms/bios.gg');
 				break;
 			case 'gb':
-				this.system = new GB(this.canvas_manager, this.bios_manager.bioses['gg'], GB_variants.GAMEBOY);
+				this.system = new GameBoy(this.canvas_manager, this.bios_manager.bioses['gb'], GB_variants.GAMEBOY);
 				break;
-				case 'sms':
+			case 'sms':
 				this.system = new SMSGG(this.canvas_manager, this.bios_manager.bioses['sms'], SMSGG_variants.SMS2, REGION.NTSC);
 				break;
 			case 'snes':

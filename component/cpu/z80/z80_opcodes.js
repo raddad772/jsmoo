@@ -158,7 +158,7 @@ const Z80_MN = Object.freeze({
 
 
 function z80_generate_mn_r() {
-    let ostr = 'const Z80_MN_R = new Object.freeze({\n';
+    let ostr = 'const Z80_MN_R = Object.freeze({\n';
     for (let k in Z80_MN) {
         ostr += '  ' + Z80_MN[k] + ': \'' + k + '\',\n'
     }

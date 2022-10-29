@@ -138,7 +138,6 @@ class GB_slice_fetcher {
         this.clock = this.ppu.clock;
         this.bus = this.ppu.bus;
 
-
         // Background and Sprite request lines
         this.bg_request = 0;
         this.sp_request = 0;
@@ -391,6 +390,7 @@ class GB_PPU {
         this.clock = clock;
         this.canvas_manager = canvas_manager;
         this.bus = bus;
+        console.log('SET BUS!', bus);
 
         this.clock.ppu_mode = GB_PPU_modes.OAM_search;
         this.line_cycle = 0;
@@ -446,10 +446,27 @@ class GB_PPU {
         }
 
         this.output = new Uint8Array(160*144);
+        this.first_reset = true;
     }
 
     present() {
-        this.canvas_manager.set_size
+        this.canvas_manager.set_size(160, 144);
+        let imgdata = this.canvas_manager.get_imgdata();
+        for (let y = 0; y < 144; y++) {
+            for (let x = 0; x < 160; x++) {
+                let ppui = (y * 160) + x;
+                let di = ppui * 4;
+                let r, g, b;
+                let o = this.output[ppui];
+                r = 255 - ((o / 3) * 255);
+                g = b = r;
+                imgdata.data[di] = r;
+                imgdata.data[di+1] = g;
+                imgdata.data[di+2] = b;
+                imgdata.data[di+3] = 255;
+            }
+        }
+        this.canvas_manager.put_imgdata(imgdata);
     }
 
     write_IO(addr, val) {
@@ -844,9 +861,11 @@ To make the estimate for mode 3 more precise, see "Nitty Gritty Gameboy Cycle Ti
         this.io.stat_irq_mode2_request = 0;
         this.io.stat_irq_lylyc_request = 0;
         this.io.stat_irq_mode0_enable = this.io.stat_irq_mode1_enable = this.io.stat_irq_mode2_enable = this.io.stat_irq_lylyc_enable = 0;
-        this.IRQ_check_down();
+        if (!this.first_reset)
+            this.IRQ_check_down();
 
         // Set mode to OAM search
         this.set_mode(GB_PPU_modes.OAM_search);
+        this.first_reset = false;
    }
 }

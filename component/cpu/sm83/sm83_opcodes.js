@@ -46,7 +46,7 @@
     'SWAP_di', 'SWAP_ind', 
     'STOP', 
     'XOR_di_da', 'XOR_di_di', 'XOR_di_ind',
-    'RESET
+    'RESET', 'S_IRQ'
 ]);
 
 function sm83_mn_gen() {
@@ -114,10 +114,10 @@ const SM83_MN_R = Object.freeze({
     80: 'SET_idx_di', 81: 'SET_idx_ind', 82: 'SLA_di', 83: 'SLA_ind', 84: 'SRA_di',
     85: 'SRA_ind', 86: 'SRL_di', 87: 'SRL_ind', 88: 'SUB_di_da', 89: 'SUB_di_di',
     90: 'SUB_di_ind', 91: 'SWAP_di', 92: 'SWAP_ind', 93: 'STOP', 94: 'XOR_di_da',
-    95: 'XOR_di_di', 96: 'XOR_di_ind', 97: 'RESET'
+    95: 'XOR_di_di', 96: 'XOR_di_ind', 97: 'RESET', 98: 'S_IRQ'
 });
 
-function SM83_generate_opcode_matrix()
+/*function SM83_generate_opcode_matrix()
 {
     let outstr = 'const SM83_opcode_matrix = Object.freeze({\n';
     for (let i = 0; i <= 0xFF; i++) {
@@ -127,10 +127,10 @@ function SM83_generate_opcode_matrix()
     return outstr;
 }
 
-//console.log(SM83_generate_opcode_matrix());
+console.log(SM83_generate_opcode_matrix());*/
 
 
-function SM83_generate_opcode_matrixCB()
+/*function SM83_generate_opcode_matrixCB()
 {
     let outstr = 'const SM83_opcode_matrix = Object.freeze({\n';
     for (let i = 0; i <= 0xFF; i++) {
@@ -141,7 +141,7 @@ function SM83_generate_opcode_matrixCB()
     return outstr;
 }
 
-//console.log(SM83_generate_opcode_matrixCB());
+console.log(SM83_generate_opcode_matrixCB());*/
 
 class SM83_opcode_info {
     constructor(opcode, ins, arg1=null, arg2=null) {

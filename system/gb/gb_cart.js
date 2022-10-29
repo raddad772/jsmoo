@@ -68,7 +68,7 @@ class GB_cart {
         let inp = new Uint8Array(what);
 
         // Look for header
-        if ((inp[0x104] !== '0xCE') || (inp[0x105] !== 0xED)) {
+        if ((inp[0x104] !== 0xCE) || (inp[0x105] !== 0xED)) {
             console.log('Did not detect Nintendo header');
             return;
         }
@@ -121,6 +121,9 @@ class GB_cart {
         let mn = inp[0x0147];
         this.header.mapper = GB_MAPPERS.none;
         switch(mn) {
+            case 0:
+                this.header.mapper = GB_MAPPERS.none;
+                break;
             case 1: // MBC1
             case 2: // MBC1+RAM
             case 3: // MBC1+RAM+BATTERY
@@ -244,7 +247,7 @@ class GB_cart {
                 this.header.battery_present = 1;
                 break;
         }
-        this.read_ROM();
+        this.read_ROM(inp);
         this.setup_mapper();
     }
 
@@ -255,17 +258,18 @@ class GB_cart {
     setup_mapper() {
         switch(this.header.mapper) {
             case GB_MAPPERS.none:
-                this.mapper = new GB_MAPPER_none(this.bios, this, this.clock, this.bus);
+                this.mapper = new GB_MAPPER_none(this, this.bios, this, this.clock, this.bus);
                 break;
             case GB_MAPPERS.MBC1:
-                this.mapper = new GB_MAPPER_MBC1(this.bios, this, this.clock, this.bus);
+                this.mapper = new GB_MAPPER_MBC1(this, this.bios, this, this.clock, this.bus);
                 break;
             default:
                 console.log('UNSUPPORTED MAPPER SO FAR', this.header.mapper);
                 return;
         }
-        this.mapper.load_bios(this.bios);
-        this.mapper.set_cart(this);
+        //this.bus.load_bios(this.bios);
+        console.log('SETTING CART!', this);
+        this.mapper.set_cart(this, this.bus.BIOS);
     }
 }
 
