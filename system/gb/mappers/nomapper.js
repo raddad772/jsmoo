@@ -39,6 +39,15 @@ class GB_MAPPER_none {
         this.set_cart(cart);
     }
 
+    reset() {
+        // This changes on other mappers for banking
+        this.ROM_bank_offset = 16384;
+        // This changes on CGB
+        this.VRAM_bank_offset = 0;
+        // This changes on CGB
+        this.WRAM_bank_offset = 0x1000;
+    }
+
     CPU_read(addr, val, has_effect=true) {
         if (this.clock.bootROM_enabled) {
             if (addr < 0x100)

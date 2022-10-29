@@ -19,6 +19,11 @@ class GB_clock {
 
         this.ly = 0;
         this.lx = 0;
+
+        // "virtual" x and y for syncing to main program when screen is off
+        this.vx = 0;
+        this.vy = 0;
+
         this.cpu_frame_cycle = 0;
         this.ppu_frame_cycle = 0;
         this.CPU_can_VRAM = 1;
@@ -68,6 +73,9 @@ class GB_bus {
         this.cart = null;
         this.mapper = null;
         this.ppu = null;
+        /**
+         * @type {null|GB_CPU}
+         */
         this.cpu = null;
 
         this.CPU_read = function(addr, val, has_effect=true) {debugger; return 0xFF; };
@@ -96,6 +104,15 @@ class GB_bus {
         }
     }
 
+    IRQ_vblank_down() {
+        console.log('VBLANK IRQ DOWN!')
+        this.cpu.cpu.regs.IF &= 0xFE;
+    }
+
+    IRQ_vblank_up() {
+        console.log('VBLANK IRQ UP!')
+        this.cpu.cpu.regs.IF |= 1;
+    }
 }
 
 
