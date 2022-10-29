@@ -49,6 +49,7 @@ class GB_cart {
 
         this.header = {
             ROM_banks: 0,
+            ROM_size: 0,
             RAM_size: 0,
             RAM_banks: 0,
             RAM_mask: 0,
@@ -258,10 +259,10 @@ class GB_cart {
     setup_mapper() {
         switch(this.header.mapper) {
             case GB_MAPPERS.none:
-                this.mapper = new GB_MAPPER_none(this, this.bios, this, this.clock, this.bus);
+                this.mapper = new GB_MAPPER_none(this.clock, this.bus);
                 break;
             case GB_MAPPERS.MBC1:
-                this.mapper = new GB_MAPPER_MBC1(this, this.bios, this, this.clock, this.bus);
+                this.mapper = new GB_MAPPER_MBC1(this.clock, this.bus);
                 break;
             default:
                 console.log('UNSUPPORTED MAPPER SO FAR', this.header.mapper);
