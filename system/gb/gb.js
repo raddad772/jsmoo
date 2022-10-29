@@ -6,40 +6,60 @@ const GB_variants = new Object.freeze({
     SUPER_GAMEBOY: 2
 })
 
-class GB_mapper {
-    constructor() {
-    }
-}
-
-class GB_cart {
-    /**
-     * @param {GB_clock} clock
-     * @param {GB_bus} bus
-     */
-    constructor(clock, bus) {
-        this.clock = clock;
-        this.bus = bus;
-    }
-}
-
 class GB_clock {
     constructor() {
         this.hblank_pending = 0;
-        this.ppu_mode = 0; // PPU mode. OAM search, etc.
+        this.ppu_mode = 2; // PPU mode. OAM search, etc.
         this.frames_since_restart = 0;
+        this.master_frame = 0;
 
         this.master_clock = 0;
         this.ppu_master_clock = 0;
         this.cpu_master_clock = 0;
 
-        this.ppu_y = 0;
+        this.ly = 0;
+        this.lx = 0;
         this.cpu_frame_cycle = 0;
         this.ppu_frame_cycle = 0;
+        this.CPU_can_VRAM = 1;
+        this.CPU_can_OAM = 0;
+        this.bootROM_enabled = true;
 
-        this.timing = {
+        this.irq = {
+            vblank_enable: 0,
+            vblank_request: 0,
+            lcd_stat_enable: 0,
+            lcd_stat_request: 0,
+            timer_enable: 0,
+            timer_request: 0,
+            serial_enable: 0,
+            serial_request: 0,
+            joypad_enable: 0,
+            joypad_request: 0
+        }
+
+    this.timing = {
             ppu_divisor: 1,
             cpu_divisor: 4
         }
+    }
+
+    reset() {
+        this.ppu_mode = 2;
+        this.frames_since_restart = 0;
+        this.hblank_pending = 0;
+        this.master_clock = 0;
+        this.cpu_master_clock = 0;
+        this.ppu_master_clock = 0;
+        this.lx = 0;
+        this.ly = 0;
+        this.timing.ppu_divisor = 1;
+        this.timing.cpu_divisor = 4;
+        this.cpu_frame_cycle = 0;
+        this.ppu_frame_cycle = 0;
+        this.CPU_can_VRAM = 1;
+        this.CPU_can_OAM = 0;
+        this.bootROM_enabled = true;
     }
 }
 
@@ -47,9 +67,25 @@ class GB_bus {
     constructor() {
         this.cart = null;
         this.mapper = null;
+        this.ppu = null;
+        this.cpu = null;
 
         this.CPU_read = function(addr, val, has_effect=true) {debugger;};
         this.CPU_write = function(addr, val){debugger;};
+        this.CPU_read_OAM = function(addr, val, has_effect) {debugger;}
+        this.CPU_write_OAM = function(addr, val) {debugger;}
+    }
+
+    CPU_read_IO(addr, val, has_effect=true) {
+        let out = 0;
+        out |= this.cpu.read_IO(addr, val, has_effect);
+        out |= this.ppu.read_IO(addr, val, has_effect);
+        return out;
+    }
+
+    CPU_write_IO(addr, val) {
+        this.cpu.write_IO(addr, val);
+        this.ppu.write_IO(addr, val);
     }
 
 }
@@ -63,8 +99,9 @@ class GB {
         this.variant = variant;
         this.bus = new GB_bus();
         this.clock = new GB_clock();
-        this.cpu = new GB_CPU(this.variant, this.bus, this.clock);
-        this.ppu = new GB_PPU(this.variant, this.bus, this.clock);
+        this.cart = new GB_cart(this.variant, this.clock, this.bus);
+        this.cpu = new GB_CPU(this.variant, this.clock, this.bus);
+        this.ppu = new GB_PPU(this.variant, this.clock, this.bus);
 
         this.cycles_left = 0;
         this.display_enabled = true;
@@ -98,7 +135,7 @@ class GB {
 
     update_status(current_frame, current_scanline, current_x) {
         current_frame.innerHTML = this.clock.frames_since_restart;
-        current_scanline.innerHTML = this.clock.ppu_y;
+        current_scanline.innerHTML = this.clock.ly;
         current_x.innerHTML = this.ppu.line_cycle;
     }
 
@@ -131,8 +168,8 @@ class GB {
         let cpu_step = this.clock.timing.cpu_divisor;
         let ppu_step = this.clock.timing.ppu_divisor;
         let done = 0>>>0;
-        let start_y = this.clock.ppu_y;
-        while (this.clock.ppu_y === start_y) {
+        let start_y = this.clock.ly;
+        while (this.clock.ly === start_y) {
             this.clock.master_clock += cpu_step;
             this.cpu.cycle();
             //this.cart.mapper.cycle();
@@ -144,7 +181,7 @@ class GB {
                 ppu_left -= ppu_step;
                 done++;
             }
-            this.ppu.cycle(done);
+            this.ppu.run_cycles(done);
             this.clock.ppu_master_clock += done * ppu_step;
             this.cycles_left -= cpu_step;
             if (dbg.do_break) break;
@@ -167,13 +204,12 @@ class GB {
                 ppu_left -= ppu_step;
                 done++;
             }
-            this.ppu.cycle(done);
+            this.ppu.run_cycles(done);
             this.clock.ppu_master_clock += done * ppu_step;
             this.cycles_left -= cpu_step;
             if (dbg.do_break) break;
         }
     }
-
 
     reset() {
         this.clock.reset();
@@ -184,7 +220,7 @@ class GB {
 
     load_ROM_from_RAM(ROM) {
         console.log('GB Loading ROM...');
-        this.cart.load_cart_from_RAM(ROM);
+        this.cart.load_ROM_from_RAM(ROM);
         this.reset();
     }
 

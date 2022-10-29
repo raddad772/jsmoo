@@ -91,7 +91,7 @@ const SM83_MN = Object.freeze({
     SET_idx_di: 80, SET_idx_ind: 81, SLA_di: 82, SLA_ind: 83, SRA_di: 84,
     SRA_ind: 85, SRL_di: 86, SRL_ind: 87, SUB_di_da: 88, SUB_di_di: 89,
     SUB_di_ind: 90, SWAP_di: 91, SWAP_ind: 92, STOP: 93, XOR_di_da: 94,
-    XOR_di_di: 95, XOR_di_ind: 96, RESET: 97
+    XOR_di_di: 95, XOR_di_ind: 96, RESET: 97, S_IRQ: 98
 });
 
 const SM83_MN_R = Object.freeze({
@@ -153,6 +153,7 @@ class SM83_opcode_info {
 }
 
 const SM83_S_RESET = 0x101;
+const SM83_S_IRQ = 0x100;
 
 const SM83_opcode_matrix = Object.freeze({
     0x00: new SM83_opcode_info(0x00, SM83_MN.NOP),
@@ -426,7 +427,8 @@ const SM83_opcode_matrix = Object.freeze({
     //0xFD: new SM83_opcode_info(0xFD, SM83_MN.),
     0xFE: new SM83_opcode_info(0xFE, SM83_MN.CP_di_da, 'A'),
     0xFF: new SM83_opcode_info(0xFF, SM83_MN.RST_imp, 0x38),
-    [SM83_S_RESET]: new SM83_opcode_info(SM83_S_RESET, SM83_MN.RESET)
+    [SM83_S_RESET]: new SM83_opcode_info(SM83_S_RESET, SM83_MN.RESET),
+    [SM83_S_IRQ]: new SM83_opcode_info(SM83_S_IRQ, SM83_MN.S_IRQ)
 });
 
 const SM83_opcode_matrixCB = Object.freeze({
@@ -703,7 +705,6 @@ const SM83_opcode_matrixCB = Object.freeze({
     0xFF: new SM83_opcode_info(0xFF, SM83_MN.SET_idx_di, 7, 'A'),
 });
 
-const SM83_S_IRQ = 0x100;
 // SPECIAL #. This is above Z80_MAX because it is special-case handled by cycle()
 const SM83_S_DECODE = 0x102;
 const SM83_MAX_OPCODE = 0x101;

@@ -43,10 +43,15 @@ class SM83_regs_t {
         this.SP = 0;
         this.PC = 0;
 
-        this.EI = 0;
+        this.IV = 0; // interrupt vector to execute
+
+        // TODO: interrupt handling
+        // https://gbdev.io/pandocs/Interrupts.html
+        this.IE = 0; // Enable interrupt?
+        this.IF = 0; // Interrupt flag
         this.HLT = 0;
         this.STP = 0;
-        this.IME = 0;
+        this.IME = 0; // Global enable interrupt
 
         this.halt_bug = 0;
 
@@ -63,6 +68,7 @@ class SM83_regs_t {
         this.RR = 0; // Remorary Register
 
         this.prefix = 0;
+        this.poll_IRQ = false;
     }
 
     stoppable() {
@@ -168,7 +174,46 @@ class SM83_t {
 
     cycle() {
         this.regs.TCU++;
+        // Enable interrupts on next cycle
+        if (this.regs.IE > 0) {
+            this.regs.IE--;
+            if (this.regs.IE === 0) this.regs.IME = 1;
+        }
         this.trace_cycles++;
+        if ((this.regs.IR === SM83_S_DECODE) && (this.regs.TCU === 1) && (this.regs.poll_IRQ)) {
+            this.regs.poll_IRQ = false;
+            if (this.regs.IME > 0) {
+                let mask = this.regs.IME & this.regs.IF;
+                this.regs.IV = -1;
+                if (mask & 1) { // VBLANK interrupt
+                    this.regs.IF &= 0xFE;
+                    this.regs.IV = 0x40;
+                    console.log('VBLANK IRQ');
+                } else if (mask & 2) { // STAT interrupt
+                    this.regs.IF &= 0xFD;
+                    this.regs.IV = 0x48;
+                    console.log('STAT IRQ');
+                } else if (mask & 4) { // Timer interrupt
+                    this.regs.IF &= 0xFB;
+                    this.regs.IV = 0x50;
+                    console.log('TIMER IRQ');
+                } else if (mask & 8) { // Serial interrupt
+                    this.regs.IF &= 0xF7;
+                    this.regs.IV = 0x58;
+                    console.log('SERIAL IRQ');
+                } else if (mask & 0x10) { // Joypad interrupt
+                    this.regs.IF &= 0xEF;
+                    this.regs.IV = 0x60;
+                    console.log('JOYPAD IRQ');
+                }
+                if (this.regs.IV > 0) {
+                    this.regs.IR = SM83_S_IRQ;
+                    this.current_instruction = sm83_decoded_opcodes[SM83_S_IRQ];
+                }
+            }
+        }
+
+
         if (this.regs.IR === SM83_S_DECODE) {
             // operand()
             // if CB, operand() again
