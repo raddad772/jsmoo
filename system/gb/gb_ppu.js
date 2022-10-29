@@ -297,7 +297,8 @@ class GB_PPU {
 
     IRQ_lylyc_up() {
         this.io.stat_irq_lylyc_request = 1;
-        this.trigger_stat_irq()
+        if (!(this.io.stat_irq_mode0_request || this.io.stat_irq_mode1_request || this.io.stat_irq_mode2_request))
+            this.trigger_stat_irq()
     }
 
     IRQ_lylyc_down() {
@@ -307,6 +308,7 @@ class GB_PPU {
     
     IRQ_mode0_up() {
         this.io.stat_irq_mode0_request = 1;
+        if (!(this.io.stat_irq_mode1_request || this.io.stat_irq_mode2_request || this.io.stat_irq_lylyc_request))
         this.trigger_stat_irq()
     }
     
@@ -322,9 +324,10 @@ class GB_PPU {
     
     IRQ_mode1_up() {
         this.io.stat_irq_mode1_request = 1;
-        this.trigger_stat_irq()
+        if (!(this.io.stat_irq_mode0_request || this.io.stat_irq_mode2_request || this.io.stat_irq_lylyc_request))
+            this.trigger_stat_irq()
     }
-    
+
     IRQ_mode1_down() {
         this.io.stat_irq_mode1_request = 0;
         this.IRQ_check_down();
@@ -332,7 +335,8 @@ class GB_PPU {
     
     IRQ_mode2_up() {
         this.io.stat_irq_mode2_request = 1;
-        this.trigger_stat_irq()
+        if (!(this.io.stat_irq_mode0_request || this.io.stat_irq_mode1_request || this.io.stat_irq_lylyc_request))
+            this.trigger_stat_irq()
     }
     
     IRQ_mode2_down() {
