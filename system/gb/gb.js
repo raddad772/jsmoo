@@ -1,6 +1,6 @@
 "use strict";
 
-const GB_variants = new Object.freeze({
+const GB_variants = Object.freeze({
     GAMEBOY: 0,
     GAMEBOY_COLOR: 1,
     SUPER_GAMEBOY: 2
@@ -69,7 +69,10 @@ class GB_clock {
 }
 
 class GB_bus {
-    constructor() {
+    /**
+     * @param {bios_t} bios
+     */
+    constructor(bios) {
         this.cart = null;
         this.mapper = null;
         this.ppu = null;
@@ -82,6 +85,19 @@ class GB_bus {
         this.CPU_write = function(addr, val){debugger;};
         this.CPU_read_OAM = function(addr, val, has_effect) {debugger; return 0xFF; }
         this.CPU_write_OAM = function(addr, val) {debugger;}
+
+        this.bios = bios;
+        this.BIOS = new Uint8Array(0);
+        this.BIOS_big = 0;
+    }
+
+    /**
+     * @param {Uint8Array} inp
+     */
+    load_BIOS_from_RAM(inp) {
+        this.BIOS = new Uint8Array(inp.byteLength);
+        this.BIOS.set(inp);
+        console.log('Loaded BIOS', inp.byteLength, 'bytes');
     }
 
     CPU_read_IO(addr, val, has_effect=true) {
@@ -116,7 +132,7 @@ class GB_bus {
 }
 
 
-class GB {
+class GameBoy {
     /**
      * @param {canvas_manager_t} canvas_manager
      * @param {bios_t} bios
@@ -126,11 +142,12 @@ class GB {
         this.variant = variant;
         this.canvas_manager = canvas_manager;
         this.bios = bios;
+        console.log('BIOS!', bios);
         this.bus = new GB_bus();
         this.clock = new GB_clock();
         this.cart = new GB_cart(this.variant, this.bios, this.clock, this.bus);
         this.cpu = new GB_CPU(this.variant, this.clock, this.bus);
-        this.ppu = new GB_PPU(this.variant, this.clock, this.bus);
+        this.ppu = new GB_PPU(canvas_manager, this.variant, this.clock, this.bus);
 
         this.cycles_left = 0;
         this.display_enabled = true;
@@ -246,7 +263,8 @@ class GB {
         this.clock.reset();
         this.cpu.reset();
         this.ppu.reset();
-        this.cart.mapper.reset();
+        if (this.cart.mapper !== null)
+            this.cart.mapper.reset();
     }
 
     load_ROM_from_RAM(ROM) {
@@ -260,6 +278,6 @@ class GB {
             alert('Please upload or select a Master System BIOS under Tools/Bios');
             return;
         }
-        this.bus.mapper.load_BIOS_from_RAM(this.bios.BIOS);
+        this.bus.load_BIOS_from_RAM(this.bios.BIOS);
     }
 }

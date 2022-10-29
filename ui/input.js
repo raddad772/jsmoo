@@ -20,6 +20,17 @@ const DEFAULT_NES1 = {
     'b': ['z', 90]
 }
 
+const DEFAULT_GB = {
+    'up': ['arrowUp', 38],
+    'down': ['arrowDown', 40],
+    'left': ['arrowLeft', 37],
+    'right': ['arrowRight', 39],
+    'start': ['f', 70],
+    'select': ['Tab', 9],
+    'a': ['x', 88],
+    'b': ['z', 90]
+}
+
 const DEFAULT_NES2 = {
     'up': [null, null],
     'down': [null, null],
@@ -84,7 +95,8 @@ const DEFAULT_SMS2 = {
 const CONTROLLERS = {
     NES: 0,
     SNES: 1,
-    SMS: 2
+    SMS: 2,
+    GAMEBOY: 3
 }
 
 const QWERTYVALS = [
@@ -381,6 +393,9 @@ class controller_input_config_t {
             case CONTROLLERS.SMS:
                 this.setup_sms();
                 break;
+            case CONTROLLERS.GAMEBOY:
+                this.setup_gameboy();
+                break;
         }
         this.setup_latches();
     }
@@ -468,6 +483,27 @@ class controller_input_config_t {
         this.buttons.x = new controller_button_t(c,'x', 232, 47, 255, 74);
         this.buttons.b = new controller_button_t(c,'b', 231, 95, 255, 118);
         this.buttons.a = new controller_button_t(c,'a', 260, 69, 282, 96);
+    }
+
+    setup_gameboy() {
+        if (typeof this.savedict[this.id] === 'undefined') {
+            this.changed = true;
+            switch(this.id) {
+                case 'gbcfg':
+                    this.savedict[this.id] = DEFAULT_GB;
+                    break;
+            }
+        }
+        this.arrow_exclude = true;
+        let c = this.savedict[this.id];
+        this.buttons.up = new controller_button_t(c,'up', 30, 30, 41, 45);
+        this.buttons.left = new controller_button_t(c,'left', 15, 45, 30, 59);
+        this.buttons.right = new controller_button_t(c,'right', 41, 46, 55, 59);
+        this.buttons.down = new controller_button_t(c,'down', 30, 60, 41, 72);
+        this.buttons.select = new controller_button_t(c,'select', 79, 60, 94, 68);
+        this.buttons.start = new controller_button_t(c,'start', 108, 60, 125, 67);
+        this.buttons.b = new controller_button_t(c,'b', 142, 54, 166, 75);
+        this.buttons.a = new controller_button_t(c,'a', 172, 54, 194, 75);
     }
 
     setup_sms() {
@@ -587,6 +623,7 @@ class input_config_t {
             snes2: new controller_input_config_t('SNES player 2', 'snes2cfg', this.savedict, CONTROLLERS.SNES),
             sms1: new controller_input_config_t('SMS player 1', 'sms1cfg', this.savedict, CONTROLLERS.SMS),
             sms2: new controller_input_config_t('SMS player 2', 'sms2cfg', this.savedict, CONTROLLERS.SMS),
+            gb: new controller_input_config_t('GameBoy player', 'gbcfg', this.savedict, CONTROLLERS.GAMEBOY),
         }
         this.ui_els = {
             controller: document.getElementById('input-cfg-controller'),
@@ -645,6 +682,10 @@ class input_config_t {
         switch(name) {
             case 'settings_tab_input_nes':
                 this.selected_controller = this.controller_els.nes1;
+                this.selected_button = this.selected_controller.buttons.a;
+                break;
+            case 'settings_tab_input_gb':
+                this.selected_controller = this.controller_els.gb;
                 this.selected_button = this.selected_controller.buttons.a;
                 break;
             case 'settings_tab_input_snes':

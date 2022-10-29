@@ -16,6 +16,9 @@ class GB_MAPPER_none {
 
         this.ROM = new Uint8Array(0);
 
+        this.BIOS_big = 0;
+
+
         // This changes on other mappers for banking
         this.ROM_bank_offset = 16384;
         // This changes on CGB
@@ -31,12 +34,10 @@ class GB_MAPPER_none {
         this.VRAM = new Uint8Array(32768);
 
         this.bus.mapper = this;
-        this.bios = bios;
-        this.BIOS = new Uint8Array(0);
-        this.BIOS_big = 0;
 
         this.cart = cart;
-        this.set_cart(cart);
+        this.BIOS = new Uint8Array(0);
+        this.set_cart(cart, this.bus.BIOS);
     }
 
     reset() {
@@ -51,15 +52,15 @@ class GB_MAPPER_none {
     CPU_read(addr, val, has_effect=true) {
         if (this.clock.bootROM_enabled) {
             if (addr < 0x100)
-                return this.BIOS[addr];
+                return this.bus.BIOS[addr];
             if (this.BIOS_big && (addr >= 0x200) && (addr < 0x900))
-                return this.bios[addr - 0x100];
+                return this.bus.BIOS[addr - 0x100];
         }
-        if (addr < 0x4000) // ROM low bank
+        if (addr < 0x4000) // ROM lo bank
             return this.ROM[addr];
         if (addr < 0x8000) // ROM hi bank
             return this.ROM[(addr & 0x3FFF) + this.ROM_bank_offset];
-        if (addr < 0xA000) { // VRAM
+        if (addr < 0xA000) { // VRAM, banked
             if (this.clock.CPU_can_VRAM)
                 return this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset];
             return 0xFF;
@@ -70,7 +71,7 @@ class GB_MAPPER_none {
         }
         // Adjust address for mirroring
         if ((addr > 0xE000) && (addr < 0xFE00)) addr -= 0x2000;
-        if (addr < 0xD000) // WRAM low bank
+        if (addr < 0xD000) // WRAM lo bank
             return this.WRAM[addr & 0xFFF];
         if (addr < 0xE000) // WRAM hi bank
             return this.WRAM[(addr & 0xFFF) + this.WRAM_bank_offset]
@@ -99,7 +100,7 @@ class GB_MAPPER_none {
         // adjust address for mirroring
         if ((addr > 0xE000) && (addr < 0xFE00)) addr -= 0x2000;
 
-        if (addr < 0xD000) { // WRAM low bank
+        if (addr < 0xD000) { // WRAM lo bank
             this.WRAM[addr & 0xFFF] = val;
             return;
         }
@@ -125,22 +126,17 @@ class GB_MAPPER_none {
 
     /**
      * @param {GB_cart} cart
+     * @param {Uint8Array} BIOS
      */
-    set_cart(cart) {
+    set_cart(cart, BIOS) {
+        console.log('GOT CART', cart);
         this.cart = cart;
+        this.BIOS = BIOS;
+        this.BIOS_big = this.BIOS.byteLength > 256;
         this.ROM = new Uint8Array(cart.header.RAM_size);
         this.ROM.set(cart.ROM);
         this.cartRAM = new Uint8Array(cart.header.RAM_size);
         this.RAM_mask = cart.header.RAM_mask;
         this.has_RAM = this.cartRAM.byteLength > 0;
-    }
-
-    /**
-     * @param {Uint8Array} inp
-     */
-    load_BIOS_from_RAM(inp) {
-        this.BIOS = new Uint8Array(inp.byteLength);
-        this.BIOS.set(inp);
-        this.BIOS_big = this.BIOS.byteLength > 256;
     }
 }
