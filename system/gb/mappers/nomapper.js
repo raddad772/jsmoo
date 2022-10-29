@@ -7,7 +7,7 @@ class GB_MAPPER_none {
      * @param {GB_bus} bus
      * @param {GB_clock} clock
      */
-    constructor(cart, bios, clock, bus) {
+    constructor(clock, bus) {
         this.clock = clock;
         this.bus = bus;
 
@@ -17,7 +17,6 @@ class GB_MAPPER_none {
         this.ROM = new Uint8Array(0);
 
         this.BIOS_big = 0;
-
 
         // This changes on other mappers for banking
         this.ROM_bank_offset = 16384;
@@ -34,10 +33,12 @@ class GB_MAPPER_none {
         this.VRAM = new Uint8Array(32768);
 
         this.bus.mapper = this;
+        /**
+         * @type {null|GB_cart}
+         */
+        this.cart = null;
 
-        this.cart = cart;
         this.BIOS = new Uint8Array(0);
-        this.set_cart(cart, this.bus.BIOS);
     }
 
     reset() {
@@ -133,7 +134,7 @@ class GB_MAPPER_none {
         this.cart = cart;
         this.BIOS = BIOS;
         this.BIOS_big = this.BIOS.byteLength > 256;
-        this.ROM = new Uint8Array(cart.header.RAM_size);
+        this.ROM = new Uint8Array(cart.header.ROM_size);
         this.ROM.set(cart.ROM);
         this.cartRAM = new Uint8Array(cart.header.RAM_size);
         this.RAM_mask = cart.header.RAM_mask;
