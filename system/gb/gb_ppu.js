@@ -213,12 +213,7 @@ class GB_PPU {
     enable() {
         if (this.enabled) return;
         console.log('ENABLE PPU');
-        this.enabled = true;
-
-        this.bus.IRQ_vblank_down();
-        this.IRQ_mode1_down();
-        if (this.io.stat_irq_mode2_enable)
-            this.IRQ_mode2_up();
+        this.enable_next_frame = true;
     }
 
     // Called on change to IRQ STAT settings
@@ -265,10 +260,9 @@ class GB_PPU {
 
     run_cycles(howmany) {
         // We don't do anything, and in fact are off, if LCD is off
-        if (!this.enabled) return;
-
         for (let i = 0; i < howmany; i++) {
-            this.cycle();
+            // TODO: make this enabled on frame AFTER enable happens
+            if (this.enabled) this.cycle();
             this.line_cycle++;
             if (this.line_cycle === 456) this.advance_line();
             if (dbg.do_break) break;
@@ -279,9 +273,9 @@ class GB_PPU {
         this.clock.lx = 0;
         this.clock.ly++;
         this.clock.vy++;
+        if (this.clock.ly === 144) this.set_mode(1); // VBLANK
         this.line_cycle = 0;
-        if (this.clock.ly >= 154) {
-            this.display_update = true;
+        if (this.clock.vy >= 154) {
             this.advance_frame();
         }
         this.eval_lyc();
@@ -351,7 +345,14 @@ class GB_PPU {
     }
 
     advance_frame() {
-        this.clock.ly = 0;
+        if (this.enable_next_frame) {
+            this.enabled = true;
+            this.enable_next_frame = false;
+        }
+        if (this.enabled) {
+            this.display_update = true;
+            this.clock.ly = 0;
+        }
         this.clock.frames_since_restart++;
         this.clock.master_frame++;
     }
@@ -362,33 +363,23 @@ class GB_PPU {
         // Check if a sprite is at the right place
         // 4 bytes, 0 = Y position
         if (this.sprites.num === 10) return;
-        let y = this.OAM[this.sprites.search_index] - 16;
-        let y_bottom = y + (this.io.sprites_big ? 16 : 8);
-        if ((this.clock.ly >= this.sprites.y_top) && (this.clock.ly <= this.sprites.y_bottom)) {
+        let sy = this.OAM[this.sprites.search_index] - 16;
+        let sy_bottom = sy + (this.io.sprites_big ? 16 : 8);
+        if ((this.clock.ly >= sy) && (this.clock.ly <= sy_bottom)) {
             // WE GOT A HIT!
             this.OBJ[this.sprites.num].y = y;
             this.OBJ[this.sprites.num].x = this.OAM[this.sprites.search_index + 1] - 8;
             this.OBJ[this.sprites.num].tile = this.OAM[this.sprites.search_index + 2]
             this.OBJ[this.sprites.num].attr = this.OAM[this.sprites.search_index + 3];
 
-            this.sprites.search_index += 4;
             this.sprites.num++;
         }
+        this.sprites.search_index += 4;
     }
 
     pixel_transfer() {
         // so we need to fill our FIFO
-        // first fetch is done twice and discarded the first time
-        // first fetch i
-        // fetch pattern
-        // 0
-        // 1 - fetch tile #
-        // 2
-        // 3 - fetch bitplane 0
-        // 4
-        // 5 - fetch bitplane 1
-        // 6 - wait to push to FIFO (FIFO empty)
-        // 7 - do sprite fetch if neccessary
+        // and write to screen
     }
 
 
@@ -399,10 +390,10 @@ class GB_PPU {
             this.sprites.num = 0;
             this.sprites.index = 0;
             this.sprites.search_index = 0;
+            this.set_mode(2); // OAM search
         }
 
-
-        switch(this.clock.ppu_mode) {
+        switch (this.clock.ppu_mode) {
             case 2: // OAM search 0-80
                 // 80 dots long, 2 per entry, find up to 10 sprites 0...n on this line
                 this.OAM_search();
@@ -417,6 +408,8 @@ class GB_PPU {
             case 1: // vblank
                 break;
         }
+    }
+
 /*
 Each scanline is 456 dots (114 CPU cycles) long and consists of
 
@@ -462,8 +455,6 @@ The CPU can't see OAM during modes 2 and 3, but it can during blanking modes (0 
 
 To make the estimate for mode 3 more precise, see "Nitty Gritty Gameboy Cycle Timing" by Kevin Horton.
  */
-
-    }
 
     reset() {
         // Reset variables
