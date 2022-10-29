@@ -70,9 +70,9 @@ class GB_bus {
         this.ppu = null;
         this.cpu = null;
 
-        this.CPU_read = function(addr, val, has_effect=true) {debugger;};
+        this.CPU_read = function(addr, val, has_effect=true) {debugger; return 0xFF; };
         this.CPU_write = function(addr, val){debugger;};
-        this.CPU_read_OAM = function(addr, val, has_effect) {debugger;}
+        this.CPU_read_OAM = function(addr, val, has_effect) {debugger; return 0xFF; }
         this.CPU_write_OAM = function(addr, val) {debugger;}
     }
 
@@ -88,18 +88,30 @@ class GB_bus {
         this.ppu.write_IO(addr, val);
     }
 
+    DMA_read(addr) {
+        if (addr >= 0xA000) {
+            console.log('IMPLEMENT OAM >0xA000!');
+        } else {
+            return this.mapper.CPU_read(addr, 0);
+        }
+    }
+
 }
 
 
 class GB {
     /**
+     * @param {canvas_manager_t} canvas_manager
+     * @param {bios_t} bios
      * @param {Number} variant
      */
-    constructor(variant) {
+    constructor(canvas_manager, bios, variant) {
         this.variant = variant;
+        this.canvas_manager = canvas_manager;
+        this.bios = bios;
         this.bus = new GB_bus();
         this.clock = new GB_clock();
-        this.cart = new GB_cart(this.variant, this.clock, this.bus);
+        this.cart = new GB_cart(this.variant, this.bios, this.clock, this.bus);
         this.cpu = new GB_CPU(this.variant, this.clock, this.bus);
         this.ppu = new GB_PPU(this.variant, this.clock, this.bus);
 
@@ -108,6 +120,8 @@ class GB {
 
         input_config.connect_controller('gb');
         dbg.add_cpu(D_RESOURCE_TYPES.SM83, this.cpu);
+
+        this.load_bios();
     }
 
     killall() {
@@ -224,4 +238,11 @@ class GB {
         this.reset();
     }
 
+    load_bios() {
+        if (!this.bios.loaded) {
+            alert('Please upload or select a Master System BIOS under Tools/Bios');
+            return;
+        }
+        this.bus.mapper.load_BIOS_from_RAM(this.bios.BIOS);
+    }
 }

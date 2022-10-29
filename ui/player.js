@@ -344,7 +344,10 @@ class global_player_t {
 				this.system = new SMSGG(this.canvas_manager, this.bios_manager.bioses['gg'], SMSGG_variants.GG, REGION.NTSC);
 				//load_bios('/gg/roms/bios.gg');
 				break;
-			case 'sms':
+			case 'gb':
+				this.system = new GB(this.canvas_manager, this.bios_manager.bioses['gg'], GB_variants.GAMEBOY);
+				break;
+				case 'sms':
 				this.system = new SMSGG(this.canvas_manager, this.bios_manager.bioses['sms'], SMSGG_variants.SMS2, REGION.NTSC);
 				break;
 			case 'snes':

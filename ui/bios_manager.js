@@ -2,7 +2,9 @@
 
 const SYSTEMS_WITH_BIOS = [
     ['sms', 'Sega Master System'],
-    ['spectrum', 'ZX Spectrum 48k']
+    ['spectrum', 'ZX Spectrum 48k'],
+    ['gb', 'GameBoy'],
+    ['gbc', 'GameBoy Color']
 ]
 
 

@@ -304,7 +304,6 @@ class SMSGG {
         this.bus.mapper.load_BIOS_from_RAM(this.bios.BIOS);
     }
 
-
     present() {
         if (this.display_enabled)
             this.vdp.present();
