@@ -34,14 +34,16 @@ const GB_MAPPERS = Object.freeze({
 class GB_cart {
     /**
      * @param {number} variant
+     * @param {bios_t} bios
      * @param {GB_bus} bus
      * @param {GB_clock} clock
      */
-    constructor(variant, clock, bus) {
+    constructor(variant, bios, clock, bus) {
         this.ROM = new Uint8Array(0);
         this.variant = variant;
         this.bus = bus;
         this.clock = clock;
+        this.bios = bios;
 
         this.mapper = null;
 
@@ -253,15 +255,16 @@ class GB_cart {
     setup_mapper() {
         switch(this.header.mapper) {
             case GB_MAPPERS.none:
-                this.mapper = new GB_MAPPER_none(this.clock, this.bus);
+                this.mapper = new GB_MAPPER_none(this.bios, this, this.clock, this.bus);
                 break;
             case GB_MAPPERS.MBC1:
-                this.mapper = new GB_MAPPER_MBC1(this.clock, this.bus);
+                this.mapper = new GB_MAPPER_MBC1(this.bios, this, this.clock, this.bus);
                 break;
             default:
                 console.log('UNSUPPORTED MAPPER SO FAR', this.header.mapper);
                 return;
         }
+        this.mapper.load_bios(this.bios);
         this.mapper.set_cart(this);
     }
 }

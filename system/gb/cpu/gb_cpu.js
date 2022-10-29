@@ -34,7 +34,9 @@ class GB_CPU {
         }
 
         this.dma = {
-            running: 0
+            running: 0,
+            index: 0,
+            high: 0
         }
     }
 
@@ -64,6 +66,7 @@ class GB_CPU {
     reset() {
         this.cpu.reset();
         this.clock.cpu_frame_cycle = 0;
+        this.clock.bootROM_enabled = true;
         this.dma.running = 0;
     }
 
@@ -103,8 +106,11 @@ class GB_CPU {
                         break;
                 }
                 break;
-            case 0xFF50: // Boot rom disable
-                this.clock.bootROM_enabled = (val !== 0);
+            case 0xFF50: // Boot ROM disable. Cannot re-enable
+                if (val > 0) {
+                    console.log('Disable boot ROM!');
+                    this.clock.bootROM_enabled = false;
+                }
                 break;
             case 0xFF0F:
                 /*this.clock.irq.vblank_request = val & 1;
@@ -121,8 +127,9 @@ class GB_CPU {
                 this.clock.irq.timer_enable = (val & 4) >>> 2;
                 this.clock.irq.serial_enable = (val & 8) >>> 3;
                 this.clock.irq.joypad_enable = (val & 0x10) >>> 4;*/
-                this.cpu.regs.EI = val & 0x1F;
+                //this.cpu.regs.EI = val & 0x1F;
                 //this.clock.IRQ_eval();
+                this.cpu.regs.IME = val & 0x1F;
                 return;
         }
     }
@@ -144,10 +151,10 @@ class GB_CPU {
             case 0xFF07: // TAC timer control
                 return (this.timer.enabled << 2) | this.timer.tima_mode;
             case 0xFF0F: // IF: interrupt flag
-                return this.cpu.regs.IME;
+                return this.cpu.regs.IF;
                 //return this.clock.irq.vblank_request | (this.clock.irq.lcd_stat_request << 1) | (this.clock.irq.timer_request << 2) | (this.clock.irq.serial_request << 3) | (this.clock.irq.joypad_request << 4);
             case 0xFFFF: // IE Interrupt Enable
-                return this.cpu.regs.EI;
+                return this.cpu.regs.IME;
                 //return this.clock.irq.vblank_enable | (this.clock.irq.lcd_stat_enable << 1) | (this.clock.irq.timer_enable << 2) | (this.clock.irq.serial_enable << 3) | (this.clock.irq.joypad_enable << 4);
         }
     }
@@ -157,8 +164,26 @@ class GB_CPU {
 
     }
 
+    dma_eval() {
+        this.bus.CPU_write_OAM(0xFFE0 | this.dma.index, this.bus.DMA_read(this.dma.high | this.dma.index, 0));
+        this.dma.index++;
+        if (this.dma.index === 160) {
+            this.dma.running = 0;
+        }
+    }
+
+    tima_IRQ() {
+        this.cpu.regs.IF |= 4;
+        console.log('TIMER IRQ IF SET');
+    }
+
     cycle() {
         // Update timers
+        if (this.dma.running) {
+            this.dma_eval();
+            if ((this.cpu.pins.Addr < 0xFF80) && (this.cpu.pins.MRQ)) return; // Skip CPU cycle due to OAM
+            // TODO: should timer skip too!?
+        }
         if (this.cpu.regs.STP)
             this.timer.div = 0;
         else {
