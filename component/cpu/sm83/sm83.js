@@ -223,6 +223,7 @@ class SM83_t {
                 }
                 if (this.regs.IV > 0) {
                     console.log('SO IRQ ACTUALLY GOING TO HAPPEN!');
+                    if (dbg.brk_on_NMIRQ) dbg.break();
                     this.regs.IR = SM83_S_IRQ;
                     this.current_instruction = sm83_decoded_opcodes[SM83_S_IRQ];
                 }

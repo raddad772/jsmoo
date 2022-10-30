@@ -7,7 +7,6 @@ const GB_PPU_modes = Object.freeze({
     pixel_transfer: 3
 });
 
-
 class GB_FIFO_get_pixel_return {
     constructor() {
         this.palette = 0;
@@ -115,7 +114,10 @@ class GB_FIFO_t {
      * @returns {null|GB_FIFO_item_t}
      */
     push() {
-        if (this.num_items === 8) return null;
+        if (this.num_items >= 8) {
+            console.log('NO!');
+            return null;
+        }
         let r = this.items[this.tail];
         this.tail = (this.tail + 1) & 7;
         this.num_items++;
@@ -133,6 +135,28 @@ class GB_FIFO_t {
         return r;
     }
 }
+
+function GB_FIFO_test() {
+    let fifo = new GB_FIFO_t(0);
+    for (let i = 0; i < 9; i++) {
+        let b = fifo.push();
+        b.pixel = i;
+    }
+    while(!fifo.empty()) {
+        let b = fifo.pop();
+        console.log(b.pixel);
+    }
+    for (let i = 0; i < 8; i++) {
+        let b = fifo.push();
+        b.pixel = i;
+    }
+    while(!fifo.empty()) {
+        let b = fifo.pop();
+        console.log(b.pixel);
+    }
+}
+//GB_FIFO_test();
+
 
 class GB_slice_fetcher {
     /**
@@ -177,9 +201,11 @@ class GB_slice_fetcher {
 
     trigger_window() {
         // TODO: Clear BG FIFO and start over
+        console.log('OK BUB WINDOW');
         this.bg_FIFO.clear();
+        this.cycle = 0;
+        this.bg_request = 1;
 
-        console.log('TRIGGER WINDOW!')
         // Trigger window
         this.wy = this.ppu.io.wy - this.clock.ly;
         this.wy_addr = (this.wy >>> 3) << 5;
@@ -189,6 +215,7 @@ class GB_slice_fetcher {
     advance_line() {
         this.bp0_fetch = 0;
         this.bp1_fetch = 0;
+        this.bg_FIFO.clear();
         this.line_first_fetch = true;
         this.in_window = false;
         this.real_lx = -8;
@@ -196,6 +223,7 @@ class GB_slice_fetcher {
 
     advance_pixel() {
         // Check sprites
+        //console.log('HAD PIXEL', this.clock.lx)
         for (let i = 0; i < this.ppu.sprites.num; i++) {
             let OBJ = this.ppu.OBJ[i];
             if (this.clock.lx === OBJ.x) {
@@ -207,10 +235,10 @@ class GB_slice_fetcher {
         // Check if in window
         this.real_lx++;
         if (!this.in_window) {
-            if ((this.ppu.io.bg_window_enable) &&
+            if (this.ppu.io.bg_window_enable &&
+                this.ppu.io.window_enable &&
                 (this.clock.lx === this.ppu.io.wx) &&
-                (this.clock.ly >= this.ppu.io.wy)
-            ) {
+                (this.clock.ly >= this.ppu.io.wy) ) {
                 // Trigger window
                 this.trigger_window();
             }
@@ -268,83 +296,87 @@ class GB_slice_fetcher {
     run_cycle() {
         // Only act every other cycle
         let addr, tn;
-        if (this.cycle & 1) {
-            if (this.bg_request) {
-                switch(this.cycle) {
-                    case 0:
-                        this.cycle++;
-                        break;
-                    case 1: // tile number fetch
-                        tn = this.bus.mapper.PPU_read(this.bg_tilemap_addr());
-                        this.fetch_addr = this.bg_tile_addr(tn);
-                        this.cycle = 2;
-                        break;
-                    case 2:
-                        this.cycle++;
-                        break;
-                    case 3: // bp0 fetch
+        //if (this.bg_request || this.sp_request) {
+            switch(this.cycle) {
+                case 0:
+                    this.cycle++;
+                    break;
+                case 1: // tile number fetch
+                    tn = this.bus.mapper.PPU_read(this.bg_tilemap_addr());
+                    this.fetch_addr = this.bg_tile_addr(tn);
+                    this.cycle = 2;
+                    break;
+                case 2:
+                    this.cycle++;
+                    break;
+                case 3: // bp0 fetch
+                    this.bp0_fetch = this.bus.mapper.PPU_read(this.fetch_addr);
+                    this.fetch_addr++;
+                    this.cycle = 4;
+                    break;
+                case 4:
+                    this.cycle++;
+                    break;
+                case 5: // bp1 fetch
+                    this.bp1_fetch = this.bus.mapper.PPU_read(this.fetch_addr);
+                    this.cycle = 6;
+                    break;
+                case 6: // Attempt to push data to FIFO, *OR* get hijacked by sprites
+                    if (this.sp_request) {
+                        let request = this.sprite_requests.shift();
+                        tn = request.tile;
+                        let y = (request.y - this.clock.ly);
+                        if (request.attr & 0x40) y = (this.ppu.io.sprites_big ? 16 : 8) - y;
+
+                        if (y > 7) {
+                            tn++;
+                            y -= 8;
+                        }
+                        this.fetch_addr = this.sp_tile_addr(tn, y);
                         this.bp0_fetch = this.bus.mapper.PPU_read(this.fetch_addr);
                         this.fetch_addr++;
-                        this.cycle = 4;
-                        break;
-                    case 4:
-                        this.cycle++;
-                        break;
-                    case 5: // bp1 fetch
-                        this.bp1_fetch = this.bus.mapper.PPU_read(this.fetch_addr);
-                        this.cycle = 6;
-                        break;
-                    case 6:
-                        this.cycle++;
-                        break;
-                    case 7: // Attempt to push data to FIFO,
-                        if (this.sp_request) {
-                            let request = this.sprite_requests.shift();
-                            tn = request.tile;
-                            let y = (request.y - this.clock.ly);
-                            if (request.attr & 0x40) y = (this.ppu.io.sprites_big ? 16 : 8) - y;
-
-                            if (y > 7) {
-                                tn++;
-                                y -= 8;
-                            }
-                            this.fetch_addr = this.sp_tile_addr(tn, y);
-                            this.bp0_fetch = this.bus.mapper.PPU_read(this.fetch_addr);
-                            this.fetch_addr++;
-                            this.sp_req_attr = request.attr;
-                            this.cycle = 8;
-                            if (this.sprite_requests.length === 0) this.sp_request = 0;
-                        } else {
-                            // Try to push
-                            if (this.bg_FIFO.empty()) {
-                                for (let i = 0; i < 7; i++) {
-                                    let b = this.bg_FIFO.push();
-                                    b.pixel = (this.bp0_fetch) & 1 | ((this.bp1_fetch & 1) << 1);
-                                    this.bp0_fetch >>= 1;
-                                    this.bp1_fetch >>= 1;
-                                    b.palette = 0;
-                                    b.cgb_priority = 0;
-                                    b.sprite_priority = 0;
-                                }
-                                // Reset back to tile fetch
+                        this.sp_req_attr = request.attr;
+                        this.cycle = 8;
+                        if (this.sprite_requests.length === 0) this.sp_request = 0;
+                    } else {
+                        // Try to push
+                        if (this.bg_FIFO.empty()) {
+                            // Throw away first fetch
+                            if (this.line_first_fetch) {
+                                this.line_first_fetch = false;
                                 this.cycle = 0;
+                                break;
                             }
-                            // DO NOT change cycle if waiting to push
+                            for (let i = 0; i < 8; i++) {
+                                let b = this.bg_FIFO.push();
+                                b.pixel = ((this.bp0_fetch & 0x80) >>> 7) | ((this.bp1_fetch & 0x80) >>> 6);
+                                this.bp0_fetch <<= 1;
+                                this.bp1_fetch <<= 1;
+                                b.palette = 0;
+                                b.cgb_priority = 0;
+                                b.sprite_priority = 0;
+                            }
+                            this.bg_request = 0;
+                            // Reset back to tile fetch
+                            this.cycle = 0;
                         }
-                        break;
-                    case 8: // do nothing, waiting for next sprite fetch.
-                        this.cycle = 9;
-                        break;
-                    case 9: // fetch other part of sprite
-                        this.bp1_fetch = this.bus.mapper.PPU_read(this.fetch_addr);
-                        this.sp_FIFO.sprite_mix(this.bp0_fetch, this.bp1_fetch, (this.sp_req_attr & 0x80) >>> 7, (this.sp_req_attr & 0x10) >>> 4, (this.sp_req_attr & 0x20) >>> 5);
-                        this.cycle = 0;
-                        break;
-                }
+                        // DO NOT change cycle if waiting to push
+                    }
+                    break;
+                case 7:
+                    this.cycle++;
+                    break;
+                case 8: // do nothing, waiting for next sprite fetch.
+                    this.cycle = 9;
+                    break;
+                case 9: // fetch other part of sprite
+                    this.bp1_fetch = this.bus.mapper.PPU_read(this.fetch_addr);
+                    this.sp_FIFO.sprite_mix(this.bp0_fetch, this.bp1_fetch, (this.sp_req_attr & 0x80) >>> 7, (this.sp_req_attr & 0x10) >>> 4, (this.sp_req_attr & 0x20) >>> 5);
+                    if (this.sprite_requests.length === 0) this.sp_request = 0;
+                    this.cycle = 0;
+                    break;
             }
-        } else {
-            this.cycle++;
-        }
+        //}
     }
 
     /**
@@ -360,16 +392,18 @@ class GB_slice_fetcher {
                 // TODO: blend them!
             }
             else if (bgo !== null) {
-                console.log('YAY');
                 this.get_return.bg = 0;
                 this.get_return.palette = 0;
                 this.get_return.color = bgo.pixel;
                 this.get_return.had_pixel = true;
             }
         }
-        if (this.bg_FIFO.empty()) this.bg_request = 1;
+        if (this.bg_FIFO.empty()) {
+            this.bg_request = 1;
+        }
         if (this.get_return.had_pixel) this.advance_pixel();
-        if (this.real_lx < 0) this.get_return.had_pixel = false;
+        //else console.log('NOT HAD PIXEL', this.clock.lx);
+        //if (this.real_lx < 0) this.get_return.had_pixel = false;
         return this.get_return;
     }
 }
@@ -453,6 +487,9 @@ class GB_PPU {
 
         this.output = new Uint8Array(160*144);
         this.first_reset = true;
+
+        this.bus.CPU_read_OAM = this.read_OAM.bind(this);
+        this.bus.CPU_write_OAM = this.write_OAM.bind(this);
         this.disable();
     }
 
@@ -476,7 +513,7 @@ class GB_PPU {
                         bp0 <<= 1;
                         bp1 <<= 1;
 
-                        let c = Math.floor((px / 3) * 255);
+                        let c = 255 - Math.floor((px / 3) * 255);
 
                         let sy = (tile_y * 8) + ty;
                         let sx = (tile_x * 8) + tx;
@@ -604,6 +641,7 @@ class GB_PPU {
                 let r, g, b;
                 let o = this.output[ppui];
                 r = ((o / 3) * 255);
+                r = 255 - r;
                 g = b = r;
                 imgdata.data[di] = r;
                 imgdata.data[di+1] = g;
@@ -614,6 +652,14 @@ class GB_PPU {
         this.canvas_manager.put_imgdata(imgdata);
         this.dump_bg(bg_canvas, 0x9800, 0x8000);
 
+    }
+
+    write_OAM(addr, val) {
+        this.OAM[addr - 0xFE00] = val;
+    }
+
+    read_OAM(addr) {
+        return this.OAM[addr - 0xFE00];
     }
 
     write_IO(addr, val) {
@@ -631,7 +677,7 @@ class GB_PPU {
                 this.io.bg_window_enable = val & 1;
                 return;
             case 0xFF41: // STAT LCD status
-                if (this.variant !== GB_variants.GAMEBOY_COLOR) {
+                if (this.variant !== GB_variants.GBC) {
                     this.io.stat_irq_mode0_enable = 1;
                     this.io.stat_irq_mode1_enable = 1;
                     this.io.stat_irq_mode2_enable = 1;
@@ -662,7 +708,8 @@ class GB_PPU {
                 this.io.wx = val;
                 return;
             case 0xFF47: // BGP pallete
-                if (!this.clock.CPU_can_VRAM) return;
+                console.log('WROTE BGP!', val);
+                //if (!this.clock.CPU_can_VRAM) return;
                 this.bg_palette[0] = val & 3;
                 this.bg_palette[1] = (val >>> 2) & 3;
                 this.bg_palette[2] = (val >>> 4) & 3;
@@ -734,12 +781,15 @@ class GB_PPU {
         console.log('DISABLE PPU');
         this.enabled = false;
         this.reset();
+        this.clock.CPU_can_VRAM = 1;
+        this.clock.CPU_can_OAM = 1;
     }
 
     enable() {
         console.log('ENABLE PPU', this.enabled);
         if (this.enabled) return;
         this.enable_next_frame = true;
+        this.clock.CPU_can_OAM = 0;
     }
 
     // Called on change to IRQ STAT settings
@@ -752,8 +802,8 @@ class GB_PPU {
 
         switch(which) {
             case GB_PPU_modes.OAM_search: // 2. after vblank
-                this.clock.CPU_can_OAM = false;
-                this.clock.CPU_can_VRAM = true;
+                this.clock.CPU_can_OAM = 0;
+                this.clock.CPU_can_VRAM = 1;
                 //
                 if (this.enabled) {
                     this.bus.IRQ_vblank_down();
@@ -764,19 +814,19 @@ class GB_PPU {
                 break;
             case GB_PPU_modes.pixel_transfer: // 3
                 this.IRQ_mode2_down();
-                this.clock.CPU_can_VRAM = false;
-                this.clock.CPU_can_OAM = false;
+                this.clock.CPU_can_VRAM = 0;
+                this.clock.CPU_can_OAM = 0;
                 break;
             case GB_PPU_modes.HBLANK: // 0
                 if (this.io.stat_irq_mode0_enable)
                     this.IRQ_mode0_up();
-                this.clock.CPU_can_VRAM = true;
-                this.clock.CPU_can_OAM = true;
+                this.clock.CPU_can_VRAM = 1;
+                this.clock.CPU_can_OAM = 1;
                 break;
             case GB_PPU_modes.VBLANK: // 1
                 this.IRQ_mode0_down();
-                this.clock.CPU_can_VRAM = true;
-                this.clock.CPU_can_OAM = true;
+                this.clock.CPU_can_VRAM = 1;
+                this.clock.CPU_can_OAM = 1;
                 if (this.io.stat_irq_mode1_enable)
                     this.IRQ_mode1_up();
                 this.bus.IRQ_vblank_up();
@@ -884,7 +934,6 @@ class GB_PPU {
         }
         this.clock.frames_since_restart++;
         this.clock.master_frame++;
-        console.log('NEW FRAME!', this.clock.master_frame);
     }
 
     /********************/
@@ -914,10 +963,12 @@ class GB_PPU {
         let px = this.fetcher.get_pixel_if_possible();
         if (px.had_pixel) {
             let cv;
-            if (px.bg === 0) // background
+            if (px.bg === 0) {// background
                 cv = this.bg_palette[px.color];
-            else // sprite
+            }
+            else {// sprite
                 cv = this.sp_palette[px.palette][px.color];
+            }
             this.output[(this.clock.ly * 160) + this.clock.lx] = cv;
             this.clock.lx++;
         }
@@ -943,7 +994,7 @@ class GB_PPU {
             case 3: // Pixel transfer. Complicated.
                 this.pixel_transfer();
                 if (this.clock.lx > 160) {
-                    console.log('LINE DONE AFTER', this.line_cycle - 80);
+                    //console.log('LINE FINISHED IN', this.line_cycle - 80, ' CYCLES!');
                     this.set_mode(0);
                 }
                 break;

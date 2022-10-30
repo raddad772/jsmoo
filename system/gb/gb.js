@@ -1,14 +1,13 @@
 "use strict";
 
 const GB_variants = Object.freeze({
-    GAMEBOY: 0,
-    GAMEBOY_COLOR: 1,
-    SUPER_GAMEBOY: 2
+    DMG: 0,
+    GBC: 1,
+    SGB: 2
 })
 
 class GB_clock {
     constructor() {
-        this.hblank_pending = 0;
         this.ppu_mode = 2; // PPU mode. OAM search, etc.
         this.frames_since_restart = 0;
         this.master_frame = 0;
@@ -157,6 +156,12 @@ class GameBoy {
         this.load_bios();
     }
 
+    pprint_palette() {
+        for (let i = 0; i < 4; i++) {
+            console.log('BG', i, this.ppu.bg_palette[i]);
+        }
+    }
+
     killall() {
         dbg.remove_cpu(D_RESOURCE_TYPES.SM83);
         input_config.disconnect_controller('gb');
@@ -165,10 +170,10 @@ class GameBoy {
     get_description() {
         let d = new machine_description('GameBoy');
         switch(this.variant) {
-            case GB_variants.GAMEBOY_COLOR:
+            case GB_variants.GBC:
                 d.name = 'GameBoy Color';
                 break;
-            case GB_variants.SUPER_GAMEBOY:
+            case GB_variants.SGB:
                 d.name = 'Super GameBoy';
                 break;
         }

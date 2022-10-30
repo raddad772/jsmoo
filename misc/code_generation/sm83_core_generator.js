@@ -896,6 +896,8 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             ag.write('regs.TA', ag.getreg8(arg2));
             break;
         case SM83_MN.NOP:
+            ag.addl('//NOPE!')
+            ag.cleanup();
             break;
         case SM83_MN.OR_di_da:
             ag.operand('regs.TR');
