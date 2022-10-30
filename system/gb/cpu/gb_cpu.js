@@ -206,10 +206,19 @@ class GB_CPU {
                 }
             }
         }
-
-        if (this.clock.hblank_pending) {
-            this.clock.blank_pending = 0;
-            if (this.hdma_eval()) return;
+        if (this.cpu.pins.RD && this.cpu.pins.MRQ) {
+            this.cpu.pins.D = this.bus.mapper.CPU_read(this.cpu.pins.Addr, 0xCC);
+            if (this.tracing) {
+                dbg.traces.add(TRACERS.SM83, this.cpu.trace_cycles, trace_format_read('SM83', SM83_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
+            }
         }
+        this.cpu.cycle();
+        if (this.cpu.pins.WR && this.cpu.pins.MRQ) {
+            this.bus.mapper.CPU_write(this.cpu.pins.Addr, this.cpu.pins.D);
+            if (this.tracing) {
+                dbg.traces.add(TRACERS.SM83, this.cpu.trace_cycles, trace_format_write('SM83', SM83_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
+            }
+        }
+
     }
 }

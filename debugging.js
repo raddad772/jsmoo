@@ -1,6 +1,6 @@
 "use strict";
 
-let CPU_DO_TRACING_AT_START = false;
+let CPU_DO_TRACING_AT_START = true;
 let APU_DO_TRACING_AT_START = false;
 let TRACE_COLOR = true;
 let SPC_TRACING_START = 20 * 68 * 262 * 9;
@@ -267,12 +267,14 @@ class debugger_t {
     }
 
     enable_tracing() {
+        console.log('ENABLE!');
         this.tracing = true;
         this.cpu_refresh_tracing();
     }
 
     disable_tracing() {
         this.tracing = false;
+        console.log('DISABLE!');
         this.cpu_refresh_tracing();
     }
 
@@ -312,6 +314,9 @@ class debugger_t {
             this.tracing_for[kind] = CPU_DO_TRACING_AT_START;
         }
         else if (kind === D_RESOURCE_TYPES.Z80) {
+            this.tracing_for[kind] = CPU_DO_TRACING_AT_START;
+        }
+        else if (kind === D_RESOURCE_TYPES.SM83) {
             this.tracing_for[kind] = CPU_DO_TRACING_AT_START;
         }
         this.cpu_refresh_tracing();

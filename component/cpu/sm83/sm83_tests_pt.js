@@ -149,7 +149,6 @@ function SM83test_it_automated(cpu, tests, is_call = false) {
         cpu.regs.F.setbyte(parseInt(initial.f));
         cpu.regs.H = parseInt(initial.h);
         cpu.regs.L = parseInt(initial.l);
-        cpu.regs.prefix = 0x00;
 
         let my_cycles = [];
         for (let j in initial.ram) {

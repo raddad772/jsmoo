@@ -524,7 +524,11 @@ async function init_ui() {
 
 	ui_el.tracing_CPU_checkbox.addEventListener('change', (event) => {
 		if (event.currentTarget.checked) {
+			console.log('ENABLE FOR!', global_player.system_kind);
 			switch(global_player.system_kind) {
+				case 'gb':
+					dbg.enable_tracing_for(D_RESOURCE_TYPES.SM83);
+					break;
 				case 'nes':
 					dbg.enable_tracing_for(D_RESOURCE_TYPES.M6502);
 					break;
@@ -543,6 +547,9 @@ async function init_ui() {
 		}
 		else {
 			switch(global_player.system_kind) {
+				case 'gb':
+					dbg.disable_tracing_for(D_RESOURCE_TYPES.SM83);
+					break;
 				case 'nes':
 					dbg.disable_tracing_for(D_RESOURCE_TYPES.M6502);
 					break;
