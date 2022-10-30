@@ -5105,7 +5105,7 @@ const sm83_decoded_opcodes = Object.freeze({
         }
     }),
     0x100: new SM83_opcode_functions(SM83_opcode_matrix[0x100], // 100
-        function(regs, pins) { //undefined
+        function(regs, pins) { //S_IRQ
         switch(regs.TCU) {
             case 1:
                 pins.RD = 0; pins.MRQ = 0;

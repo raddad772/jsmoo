@@ -348,17 +348,18 @@ class GB_slice_fetcher {
     get_pixel_if_possible() {
         this.get_return.had_pixel = false;
         if (!(this.bg_request || this.sp_request)) { // Only output if there are no requests being serviced
-            this.get_return.had_pixel = true;
             let bgo = this.bg_FIFO.pop();
             let spo;
             if (this.sp_FIFO.any_there()) {
                 spo = this.sp_FIFO.pop();
                 // TODO: blend them!
             }
-            else {
+            else if (bgo !== null) {
+                console.log('YAY');
                 this.get_return.bg = 0;
                 this.get_return.palette = 0;
                 this.get_return.color = bgo.pixel;
+                this.get_return.had_pixel = true;
             }
         }
         if (this.bg_FIFO.empty()) this.bg_request = 1;
@@ -390,7 +391,7 @@ class GB_PPU {
         this.clock = clock;
         this.canvas_manager = canvas_manager;
         this.bus = bus;
-        console.log('SET BUS!', bus);
+        this.bus.ppu = this;
 
         this.clock.ppu_mode = GB_PPU_modes.OAM_search;
         this.line_cycle = 0;
@@ -458,7 +459,7 @@ class GB_PPU {
                 let di = ppui * 4;
                 let r, g, b;
                 let o = this.output[ppui];
-                r = 255 - ((o / 3) * 255);
+                r = ((o / 3) * 255);
                 g = b = r;
                 imgdata.data[di] = r;
                 imgdata.data[di+1] = g;
@@ -651,7 +652,7 @@ class GB_PPU {
         this.clock.vy++;
         if (this.clock.ly === 144) this.set_mode(1); // VBLANK
         this.line_cycle = 0;
-        if (this.clock.vy >= 154) {
+        if (this.clock.ly >= 154) {
             this.advance_frame();
         }
         this.eval_lyc();
@@ -732,6 +733,7 @@ class GB_PPU {
         }
         this.clock.frames_since_restart++;
         this.clock.master_frame++;
+        console.log('NEW FRAME!', this.clock.master_frame);
     }
 
     /********************/

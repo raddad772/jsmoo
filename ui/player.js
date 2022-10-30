@@ -287,7 +287,7 @@ class global_player_t {
 			let t = performance.now();
 			this.system.run_frame();
 			let span = performance.now() - t;
-			console.log('FRAMETIME', span.toFixed(2));
+			//console.log('FRAMETIME', span.toFixed(2));
 		}
 	}
 

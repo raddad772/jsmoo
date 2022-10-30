@@ -178,20 +178,20 @@ class GB_cart {
         }
 
         switch(mn) {
-            case 2: // MBC1+RAM
+            case 0x02: // MBC1+RAM
                 this.header.ram_present = 1;
                 break;
-            case 3: // MBC1+RAM+BATTERY
+            case 0x03: // MBC1+RAM+BATTERY
                 this.header.battery_present = 1;
                 this.header.ram_present = 1;
                 break;
-            case 6: // MBC2+BATTERY
+            case 0x06: // MBC2+BATTERY
                 this.header.battery_present = 1;
                 break;
-            case 8: // ROM+RAM
+            case 0x08: // ROM+RAM
                 this.header.ram_present = 1;
                 break;
-            case 9: // ROM+RAM+BATTERY
+            case 0x09: // ROM+RAM+BATTERY
                 this.header.battery_present = 1;
                 this.header.ram_present = 1;
                 break;

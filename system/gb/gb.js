@@ -13,6 +13,8 @@ class GB_clock {
         this.frames_since_restart = 0;
         this.master_frame = 0;
 
+        this.trace_cycles = 0;
+
         this.master_clock = 0;
         this.ppu_master_clock = 0;
         this.cpu_master_clock = 0;
@@ -88,7 +90,6 @@ class GB_bus {
 
         this.bios = bios;
         this.BIOS = new Uint8Array(0);
-        this.BIOS_big = 0;
     }
 
     /**
@@ -96,8 +97,7 @@ class GB_bus {
      */
     load_BIOS_from_RAM(inp) {
         this.BIOS = new Uint8Array(inp.byteLength);
-        this.BIOS.set(inp);
-        console.log('Loaded BIOS', inp.byteLength, 'bytes');
+        this.BIOS.set(new Uint8Array(inp));
     }
 
     CPU_read_IO(addr, val, has_effect=true) {
@@ -121,12 +121,11 @@ class GB_bus {
     }
 
     IRQ_vblank_down() {
-        console.log('VBLANK IRQ DOWN!')
+        //console.log('VBLANK IRQ DOWN!')
         this.cpu.cpu.regs.IF &= 0xFE;
     }
 
     IRQ_vblank_up() {
-        console.log('VBLANK IRQ UP!')
         this.cpu.cpu.regs.IF |= 1;
     }
 }
@@ -184,7 +183,7 @@ class GameBoy {
     update_status(current_frame, current_scanline, current_x) {
         current_frame.innerHTML = this.clock.frames_since_restart;
         current_scanline.innerHTML = this.clock.ly;
-        current_x.innerHTML = this.ppu.line_cycle;
+        current_x.innerHTML = this.clock.lx;
     }
 
     present() {

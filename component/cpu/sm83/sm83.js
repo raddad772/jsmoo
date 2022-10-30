@@ -114,11 +114,13 @@ class SM83_t {
         this.trace_on = true;
         if (trace_peek !== null)
             this.trace_peek = trace_peek;
+        console.log('TRACING ENABLED HERE!')
     }
 
     disable_tracing() {
         if (!this.trace_on) return;
         this.trace_on = false;
+        console.log('TRACING DISABLED HERE!');
     }
 
     trace_format(dass, PCO) {
@@ -145,8 +147,12 @@ class SM83_t {
 	}
 
     reset() {
-        this.regs.PC = 0;
+        this.regs.PC = 1;
         this.regs.TCU = 0;
+        this.pins.Addr = 0;
+        this.pins.RD = this.pins.MRQ = 1;
+        this.pins.WR = 0;
+        this.regs.IR = SM83_S_DECODE;
     }
 
     ins_cycles() {
@@ -156,18 +162,27 @@ class SM83_t {
                 if (this.regs.IR === 0xCB) {
                     this.prefix = 0xCB;
                     this.regs.IR = SM83_S_DECODE;
-                    this.pins.Addr = this.regs.PC; this.regs.PC = (this.regs.PC + 1) & 0xFFFF; break;
+                    this.pins.Addr = this.regs.PC;
+                    this.regs.PC = (this.regs.PC + 1) & 0xFFFF;
+                    break;
                 }
 
                 this.current_instruction = sm83_decoded_opcodes[this.regs.IR];
-                this.regs.prefix = 0;
-                this.regs.TCU = 0;
+                if (this.trace_on) {
+                    dbg.traces.add(TRACERS.SM83, this.trace_cycles, this.trace_format(SM83_disassemble(this.pins.Addr, this.trace_peek), this.pins.Addr));
+                }
+
+                this.regs.TCU = 1;
+                this.current_instruction.exec_func(this.regs, this.pins);
                 break;
             case 2:
                 this.regs.IR = this.pins.D;
-                this.regs.prefix = 0x00;
-                this.regs.TCU = 0;
                 this.current_instruction = sm83_decoded_opcodes[SM83_prefix_to_codemap[0xCB] + this.regs.IR];
+                if (this.trace_on) {
+                    dbg.traces.add(TRACERS.SM83, this.trace_cycles, this.trace_format(SM83_disassemble((this.pins.Addr-1) & 0xFFFF, this.trace_peek), this.pins.Addr));
+                }
+                this.regs.TCU = 1;
+                this.current_instruction.exec_func(this.regs, this.pins);
                 break;
         }
     }
@@ -207,6 +222,7 @@ class SM83_t {
                     console.log('JOYPAD IRQ');
                 }
                 if (this.regs.IV > 0) {
+                    console.log('SO IRQ ACTUALLY GOING TO HAPPEN!');
                     this.regs.IR = SM83_S_IRQ;
                     this.current_instruction = sm83_decoded_opcodes[SM83_S_IRQ];
                 }
@@ -217,13 +233,9 @@ class SM83_t {
         if (this.regs.IR === SM83_S_DECODE) {
             // operand()
             // if CB, operand() again
-            if ((this.regs.TCU === 1) && (this.regs.prefix === 0)) this.PCO = this.pins.Addr;
+            if (this.regs.TCU === 1) this.PCO = this.pins.Addr;
             this.ins_cycles();
         } else {
-            if (this.trace_on && this.regs.TCU === 1) {
-                this.last_trace_cycle = this.PCO;
-                dbg.traces.add(TRACERS.SM83, this.trace_cycles, this.trace_format(SM83_disassemble(this.PCO, this.trace_peek), this.PCO));
-            }
             // Execute an actual opcode
             this.current_instruction.exec_func(this.regs, this.pins);
         }

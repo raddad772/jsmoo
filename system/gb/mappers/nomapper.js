@@ -52,8 +52,10 @@ class GB_MAPPER_none {
 
     CPU_read(addr, val, has_effect=true) {
         if (this.clock.bootROM_enabled) {
-            if (addr < 0x100)
-                return this.bus.BIOS[addr];
+            if (addr < 0x100) {
+                let r = this.bus.BIOS[addr];
+                return r;
+            }
             if (this.BIOS_big && (addr >= 0x200) && (addr < 0x900))
                 return this.bus.BIOS[addr - 0x100];
         }
