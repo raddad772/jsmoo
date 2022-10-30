@@ -196,6 +196,13 @@ class global_player_t {
 		ui_el.system_select.disabled = false;
 		ui_el.play_button.innerHTML = "Play";
 		input_config.emu_input.between_frames();
+		if (this.system !== null) {
+			switch (this.system_kind) {
+				case 'gb':
+					this.system.pprint_palette();
+					break;
+			}
+		}
 	}
 
 	play() {
@@ -349,7 +356,7 @@ class global_player_t {
 				//load_bios('/gg/roms/bios.gg');
 				break;
 			case 'gb':
-				this.system = new GameBoy(this.canvas_manager, this.bios_manager.bioses['gb'], GB_variants.GAMEBOY);
+				this.system = new GameBoy(this.canvas_manager, this.bios_manager.bioses['gb'], GB_variants.DMG);
 				break;
 			case 'sms':
 				this.system = new SMSGG(this.canvas_manager, this.bios_manager.bioses['sms'], SMSGG_variants.SMS2, REGION.NTSC);

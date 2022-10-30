@@ -3,6 +3,17 @@
 const sm83_decoded_opcodes = Object.freeze({
     0x00: new SM83_opcode_functions(SM83_opcode_matrix[0x00], // 00
         function(regs, pins) { //NOP
+        switch(regs.TCU) {
+            case 1: // cleanup_custom
+                //NOPE!
+                // Following is auto-generated code for instruction finish
+                pins.Addr = regs.PC;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.TCU = 0;
+                regs.IR = SM83_S_DECODE;
+                regs.poll_IRQ = true;
+                break;
+        }
     }),
     0x01: new SM83_opcode_functions(SM83_opcode_matrix[0x01], // 01
         function(regs, pins) { //LD16_di_da
@@ -3931,6 +3942,17 @@ const sm83_decoded_opcodes = Object.freeze({
     }),
     0xCB: new SM83_opcode_functions(SM83_opcode_matrix[0x00],
         function(regs, pins) { //NOP
+        switch(regs.TCU) {
+            case 1: // cleanup_custom
+                //NOPE!
+                // Following is auto-generated code for instruction finish
+                pins.Addr = regs.PC;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.TCU = 0;
+                regs.IR = SM83_S_DECODE;
+                regs.poll_IRQ = true;
+                break;
+        }
     }),
     0xCC: new SM83_opcode_functions(SM83_opcode_matrix[0xCC], // CC
         function(regs, pins) { //CALL_cond_addr
@@ -4165,6 +4187,17 @@ const sm83_decoded_opcodes = Object.freeze({
     }),
     0xD3: new SM83_opcode_functions(SM83_opcode_matrix[0x00],
         function(regs, pins) { //NOP
+        switch(regs.TCU) {
+            case 1: // cleanup_custom
+                //NOPE!
+                // Following is auto-generated code for instruction finish
+                pins.Addr = regs.PC;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.TCU = 0;
+                regs.IR = SM83_S_DECODE;
+                regs.poll_IRQ = true;
+                break;
+        }
     }),
     0xD4: new SM83_opcode_functions(SM83_opcode_matrix[0xD4], // D4
         function(regs, pins) { //CALL_cond_addr
@@ -4391,6 +4424,17 @@ const sm83_decoded_opcodes = Object.freeze({
     }),
     0xDB: new SM83_opcode_functions(SM83_opcode_matrix[0x00],
         function(regs, pins) { //NOP
+        switch(regs.TCU) {
+            case 1: // cleanup_custom
+                //NOPE!
+                // Following is auto-generated code for instruction finish
+                pins.Addr = regs.PC;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.TCU = 0;
+                regs.IR = SM83_S_DECODE;
+                regs.poll_IRQ = true;
+                break;
+        }
     }),
     0xDC: new SM83_opcode_functions(SM83_opcode_matrix[0xDC], // DC
         function(regs, pins) { //CALL_cond_addr
@@ -4437,6 +4481,17 @@ const sm83_decoded_opcodes = Object.freeze({
     }),
     0xDD: new SM83_opcode_functions(SM83_opcode_matrix[0x00],
         function(regs, pins) { //NOP
+        switch(regs.TCU) {
+            case 1: // cleanup_custom
+                //NOPE!
+                // Following is auto-generated code for instruction finish
+                pins.Addr = regs.PC;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.TCU = 0;
+                regs.IR = SM83_S_DECODE;
+                regs.poll_IRQ = true;
+                break;
+        }
     }),
     0xDE: new SM83_opcode_functions(SM83_opcode_matrix[0xDE], // DE
         function(regs, pins) { //SBC_di_da
@@ -4565,9 +4620,31 @@ const sm83_decoded_opcodes = Object.freeze({
     }),
     0xE3: new SM83_opcode_functions(SM83_opcode_matrix[0x00],
         function(regs, pins) { //NOP
+        switch(regs.TCU) {
+            case 1: // cleanup_custom
+                //NOPE!
+                // Following is auto-generated code for instruction finish
+                pins.Addr = regs.PC;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.TCU = 0;
+                regs.IR = SM83_S_DECODE;
+                regs.poll_IRQ = true;
+                break;
+        }
     }),
     0xE4: new SM83_opcode_functions(SM83_opcode_matrix[0x00],
         function(regs, pins) { //NOP
+        switch(regs.TCU) {
+            case 1: // cleanup_custom
+                //NOPE!
+                // Following is auto-generated code for instruction finish
+                pins.Addr = regs.PC;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.TCU = 0;
+                regs.IR = SM83_S_DECODE;
+                regs.poll_IRQ = true;
+                break;
+        }
     }),
     0xE5: new SM83_opcode_functions(SM83_opcode_matrix[0xE5], // E5
         function(regs, pins) { //PUSH_di
@@ -4729,12 +4806,45 @@ const sm83_decoded_opcodes = Object.freeze({
     }),
     0xEB: new SM83_opcode_functions(SM83_opcode_matrix[0x00],
         function(regs, pins) { //NOP
+        switch(regs.TCU) {
+            case 1: // cleanup_custom
+                //NOPE!
+                // Following is auto-generated code for instruction finish
+                pins.Addr = regs.PC;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.TCU = 0;
+                regs.IR = SM83_S_DECODE;
+                regs.poll_IRQ = true;
+                break;
+        }
     }),
     0xEC: new SM83_opcode_functions(SM83_opcode_matrix[0x00],
         function(regs, pins) { //NOP
+        switch(regs.TCU) {
+            case 1: // cleanup_custom
+                //NOPE!
+                // Following is auto-generated code for instruction finish
+                pins.Addr = regs.PC;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.TCU = 0;
+                regs.IR = SM83_S_DECODE;
+                regs.poll_IRQ = true;
+                break;
+        }
     }),
     0xED: new SM83_opcode_functions(SM83_opcode_matrix[0x00],
         function(regs, pins) { //NOP
+        switch(regs.TCU) {
+            case 1: // cleanup_custom
+                //NOPE!
+                // Following is auto-generated code for instruction finish
+                pins.Addr = regs.PC;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.TCU = 0;
+                regs.IR = SM83_S_DECODE;
+                regs.poll_IRQ = true;
+                break;
+        }
     }),
     0xEE: new SM83_opcode_functions(SM83_opcode_matrix[0xEE], // EE
         function(regs, pins) { //XOR_di_da
@@ -4871,6 +4981,17 @@ const sm83_decoded_opcodes = Object.freeze({
     }),
     0xF4: new SM83_opcode_functions(SM83_opcode_matrix[0x00],
         function(regs, pins) { //NOP
+        switch(regs.TCU) {
+            case 1: // cleanup_custom
+                //NOPE!
+                // Following is auto-generated code for instruction finish
+                pins.Addr = regs.PC;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.TCU = 0;
+                regs.IR = SM83_S_DECODE;
+                regs.poll_IRQ = true;
+                break;
+        }
     }),
     0xF5: new SM83_opcode_functions(SM83_opcode_matrix[0xF5], // F5
         function(regs, pins) { //PUSH_di
@@ -5046,9 +5167,31 @@ const sm83_decoded_opcodes = Object.freeze({
     }),
     0xFC: new SM83_opcode_functions(SM83_opcode_matrix[0x00],
         function(regs, pins) { //NOP
+        switch(regs.TCU) {
+            case 1: // cleanup_custom
+                //NOPE!
+                // Following is auto-generated code for instruction finish
+                pins.Addr = regs.PC;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.TCU = 0;
+                regs.IR = SM83_S_DECODE;
+                regs.poll_IRQ = true;
+                break;
+        }
     }),
     0xFD: new SM83_opcode_functions(SM83_opcode_matrix[0x00],
         function(regs, pins) { //NOP
+        switch(regs.TCU) {
+            case 1: // cleanup_custom
+                //NOPE!
+                // Following is auto-generated code for instruction finish
+                pins.Addr = regs.PC;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.TCU = 0;
+                regs.IR = SM83_S_DECODE;
+                regs.poll_IRQ = true;
+                break;
+        }
     }),
     0xFE: new SM83_opcode_functions(SM83_opcode_matrix[0xFE], // FE
         function(regs, pins) { //CP_di_da
@@ -9373,8 +9516,30 @@ const sm83_decoded_opcodes = Object.freeze({
     }),
     0x202: new SM83_opcode_functions(SM83_opcode_matrix[0x00],
         function(regs, pins) { //NOP
+        switch(regs.TCU) {
+            case 1: // cleanup_custom
+                //NOPE!
+                // Following is auto-generated code for instruction finish
+                pins.Addr = regs.PC;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.TCU = 0;
+                regs.IR = SM83_S_DECODE;
+                regs.poll_IRQ = true;
+                break;
+        }
     }),
     0x203: new SM83_opcode_functions(SM83_opcode_matrix[0x00],
         function(regs, pins) { //NOP
+        switch(regs.TCU) {
+            case 1: // cleanup_custom
+                //NOPE!
+                // Following is auto-generated code for instruction finish
+                pins.Addr = regs.PC;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.TCU = 0;
+                regs.IR = SM83_S_DECODE;
+                regs.poll_IRQ = true;
+                break;
+        }
     })
 });

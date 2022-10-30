@@ -96,9 +96,9 @@ class GB_MAPPER_none {
             }
             else {
                 //console.log('VRAM WRITE BLOCKEID!', this.clock.ly, this.bus.ppu.line_cycle);
-                if (this.clock.ly === 0) dbg.break();
-                //console.log('')
-                this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset] = val;
+                //if (this.clock.ly === 0) dbg.break();
+                //console.log('YAR.')
+                //this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset] = val;
             }
             return;
         }
