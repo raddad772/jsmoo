@@ -91,8 +91,15 @@ class GB_MAPPER_none {
         if (addr < 0x8000) // ROMs
             return;
         if (addr < 0xA000) { // VRAM
-            if (this.clock.CPU_can_VRAM)
+            if (this.clock.CPU_can_VRAM) {
                 this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset] = val;
+            }
+            else {
+                //console.log('VRAM WRITE BLOCKEID!', this.clock.ly, this.bus.ppu.line_cycle);
+                if (this.clock.ly === 0) dbg.break();
+                //console.log('')
+                this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset] = val;
+            }
             return;
         }
         if (addr < 0xC000) { // cart RAM

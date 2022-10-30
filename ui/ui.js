@@ -191,6 +191,9 @@ function click_step_seconds() {
 function click_bg_dump(which) {
 	let bg;
 	switch(global_player.system_kind) {
+		case 'gb':
+			global_player.system.ppu.dump_bg(bg_canvas, 0x9800, 0x8000);
+			break;
 		case 'sms':
 		case 'gg':
 			global_player.system.vdp.dump_bg(bg_canvas);
@@ -214,10 +217,6 @@ function click_bg_dump(which) {
 			console.log(hex4(global_player.system.ppu.io.bg3.get_tile(global_player.system.ppu.VRAM, global_player.system.ppu.io, global_player.system.ppu.io.bg3, 10*8, 5*8)))
 			global_player.system.ppu.present();
 			break;
-		case 'sms':
-		case 'gg':
-			global_player.system.vdp.dump_bg();
-			break;
 		case 'nes':
 			global_player.system.ppu.render_bgtables_from_memory(0, 260);
 			break;
@@ -235,6 +234,9 @@ function click_tile_dump() {
 		case 'gg':
 		case 'sms':
 			global_player.system.vdp.dump_tiles(tile_canvas);
+			break;
+		case 'gb':
+			global_player.system.ppu.dump_tiles(tile_canvas);
 			break;
 	}
 }
@@ -299,6 +301,9 @@ function click_dump_ram() {
 				case 'gg':
 					rd = hex2(global_player.system.bus.cpu_read(baddr, 0, false));
 					break;
+				case 'gb':
+					rd = hex2(global_player.system.bus.mapper.CPU_read(baddr, 0, false));
+					break;
 			}
 			ln += rd + ' ';
 		}
@@ -355,6 +360,9 @@ function click_dump_vram() {
 				case 'gg':
 				case 'sms':
 					rd = hex2(global_player.system.vdp.VRAM[baddr & 0x3FFF]);
+					break;
+				case 'gb':
+					rd = hex2(global_player.system.bus.mapper.VRAM[addr & 0x1FFF]);
 					break;
 			}
 			ln += rd + ' ';

@@ -80,14 +80,16 @@ class GB_FIFO_t {
                     if (this.items[i].pixel === 0) {
                         this.items[i].palette = sp_palette;
                         this.items[i].sprite_priority = sp_priority;
-                        this.items[i].pixel = ((bp0 & 1) + ((bp1 & 1) << 1));
+                        //this.items[i].pixel = ((bp0 & 1) | ((bp1 & 1) << 1));
+                        this.items[i].pixel = ((bp0 & 0x80) >>> 7) | ((bp1 & 0x80) >>> 6);
                         this.items[i].cgb_priority = 0;
                     }
                 } else {
                     if (this.items[i].cgb_priority < sp_priority) {
                         this.items[i].palette = sp_palette;
                         this.items[i].sprite_priority = sp_priority;
-                        this.items[i].pixel = ((bp0 & 1) + ((bp1 & 1) << 1));
+                        //this.items[i].pixel = ((bp0 & 1) | ((bp1 & 1) << 1));
+                        this.items[i].pixel = ((bp0 & 0x80) >>> 7) | ((bp1 & 0x80) >>> 6);
                         this.items[i].cgb_priority = sp_priority;
                     }
                 }
@@ -95,11 +97,14 @@ class GB_FIFO_t {
                 // Empty so just insert
                 this.items[i].palette = sp_palette;
                 this.items[i].sprite_priority = sp_priority;
-                this.items[i].pixel = ((bp0 & 1) + ((bp1 & 1) << 1));
+                //this.items[i].pixel = ((bp0 & 1) | ((bp1 & 1) << 1));
+                this.items[i].pixel = ((bp0 & 0x80) >>> 7) | ((bp1 & 0x80) >>> 6);
                 this.items[i].cgb_priority = 0;
             }
-            bp0 >>>= 1;
-            bp1 >>>= 1;
+            /*bp0 >>>= 1;
+            bp1 >>>= 1;*/
+            bp0 <<= 1;
+            bp1 <<= 1;
         }
         // We now have a full FIFO
         this.num_items = 8;
@@ -395,7 +400,7 @@ class GB_PPU {
 
         this.clock.ppu_mode = GB_PPU_modes.OAM_search;
         this.line_cycle = 0;
-        this.enabled = true;
+        this.enabled = false; // PPU off at startup
         // First frame after reset, we don't draw.
         this.display_update = false;
 
@@ -448,6 +453,145 @@ class GB_PPU {
 
         this.output = new Uint8Array(160*144);
         this.first_reset = true;
+        this.disable();
+    }
+
+    dump_bg(cm, map_base_addr, tile_base_addr) {
+        let TILE_ROWS = 32;
+        let TILE_COLS = 32;
+        let w = TILE_COLS*8;
+        let h = TILE_ROWS*8;
+        cm.set_size(w, h);
+        let imgdata = cm.get_imgdata();
+        for (let tile_y = 0; tile_y < TILE_ROWS; tile_y++) {
+            for (let tile_x = 0; tile_x < TILE_COLS; tile_x++) {
+                let addr = map_base_addr + (tile_y * 32) + tile_x;
+                let tile_num = this.bus.mapper.PPU_read(addr);
+                for (let ty = 0; ty < 8; ty++) {
+                    let fetch_addr = tile_base_addr | (tile_num * 0x10) + (ty*2);
+                    let bp0 = this.bus.mapper.PPU_read(fetch_addr);
+                    let bp1 = this.bus.mapper.PPU_read(fetch_addr + 1);
+                    for (let tx = 0; tx < 8; tx++) {
+                        let px = ((bp0 & 0x80) >>> 7) | ((bp1 & 0x80) >>> 6);
+                        bp0 <<= 1;
+                        bp1 <<= 1;
+
+                        let c = Math.floor((px / 3) * 255);
+
+                        let sy = (tile_y * 8) + ty;
+                        let sx = (tile_x * 8) + tx;
+                        let poi = ((sy * w) + sx) * 4;
+                        imgdata.data[poi] = c;
+                        imgdata.data[poi+1] = c;
+                        imgdata.data[poi+2] = c;
+                        imgdata.data[poi+3] = 255;
+                    }
+                }
+            }
+        }
+
+        // Now render scroll...
+        let scroll_x = this.io.SCX;
+        let scroll_y = this.io.SCY;
+        let cr = 0xA0;
+        let cg = 0xC0;
+        let cb = 0x40;
+        // Render scroll position...
+        for (let y = 0; y < 144; y++) {
+            for (let x = 0; x < 160; x++) {
+                let sx = (x + scroll_x) % w;
+                let sy = (y + scroll_y) % h;
+                let poi = ((sy * w) + sx) * 4;
+                imgdata.data[poi+3] = 100;
+            }
+        }
+        cm.put_imgdata(imgdata);
+    }
+
+    dump_tiles(cm) {
+        let TILE_COLS = 16;
+        let TILE_ROWS = 24;
+        let TILE_SIZE = 8;
+        let TILE_SIZE_SPACED = 8;
+        let w = TILE_COLS * TILE_SIZE_SPACED;
+        let h = TILE_ROWS * TILE_SIZE_SPACED;
+        cm.set_size(w, h);
+        cm.set_scale(2);
+        let DO_BREAK = false;
+        let imgdata = cm.get_imgdata();
+        for (let ytile = 0; ytile < TILE_ROWS; ytile++) {
+            if (DO_BREAK) break;
+            for (let xtile = 0; xtile < TILE_COLS; xtile++) {
+                if (DO_BREAK) break;
+                let tile_num = (ytile * TILE_COLS) + xtile;
+                /*let fr, fg, fb;
+                switch(tile_num % 3) {
+                    case 0:
+                        fr = 255;
+                        fg = 0;
+                        fb = 0;
+                        break;
+                    case 1:
+                        fr = 0;
+                        fg = 255;
+                        fb = 0;
+                        break;
+                    case 2:
+                        fr = 0;
+                        fg = 0;
+                        fb = 255;
+                        break;
+                    case 3:
+                        console.log('WHAT?');
+                        break;
+                }*/
+
+                //console.log(tile_num);
+                for (let ty = 0; ty < 8; ty++) {
+                    // Fetch a tile row
+                    let addr = ((tile_num * 0x10) | 0x8000) + (ty*2);
+                    let bp0 = this.bus.mapper.PPU_read(addr);
+                    let bp1 = this.bus.mapper.PPU_read(addr+1);
+                    let sy = (ytile * TILE_SIZE_SPACED) + ty;
+                    for (let tx = 0; tx < 8; tx++) {
+                        let sx = (xtile * TILE_SIZE_SPACED) + tx;
+                        let oad = ((sy * w) + sx)
+                        oad *= 4;
+                        let px = ((bp0 & 0x80) >>> 7) | ((bp1 & 0x80) >>> 6);
+                        bp0 <<= 1;
+                        bp1 <<= 1;
+                        let c = Math.floor((px / 3) * 255);
+                        //if (tile_num & 1) c = 255;
+                        let r = c;
+                        let g = c;
+                        let b = c;
+
+                        /*r = fr;
+                        g = fg;
+                        b = fb;*/
+                        imgdata.data[oad] = r;
+                        imgdata.data[oad+1] = g;
+                        imgdata.data[oad+2] = b;
+                        imgdata.data[oad+3] = 255;
+                    }
+                }
+            }
+        }
+        let sep_r = 0x30;
+        let sep_g = 0x60;
+        let sep_b = 0x30;
+        // Render horizontal lines
+        /*for (let y = 8; y < (24*9); y+=9) {
+            for (let x = 0; x < w; x++) {
+                let dpi = ((y * w)+x)*4;
+                imgdata.data[dpi] = sep_r;
+                imgdata.data[dpi+1] = sep_g;
+                imgdata.data[dpi+2] = sep_b;
+                imgdata.data[dpi+3] = 255;
+            }
+        }*/
+        // Render vertical lines
+        cm.put_imgdata(imgdata);
     }
 
     present() {
@@ -468,6 +612,8 @@ class GB_PPU {
             }
         }
         this.canvas_manager.put_imgdata(imgdata);
+        this.dump_bg(bg_canvas, 0x9800, 0x8000);
+
     }
 
     write_IO(addr, val) {
@@ -559,6 +705,8 @@ class GB_PPU {
             case 0xFF43: // SCX
                 return this.io.SCX;
             case 0xFF44: // LY
+                /*console.log('READ FF44!', this.clock.ly);
+                if (this.clock.ly === 0x90) dbg.break();*/
                 return this.clock.ly;
             case 0xFF45: // LYC
                 return this.io.lyc;
@@ -581,6 +729,7 @@ class GB_PPU {
     }
 
     disable() {
+        console.log('DISABLE PPU', this.enabled);
         if (!this.enabled) return;
         console.log('DISABLE PPU');
         this.enabled = false;
@@ -588,8 +737,8 @@ class GB_PPU {
     }
 
     enable() {
+        console.log('ENABLE PPU', this.enabled);
         if (this.enabled) return;
-        console.log('ENABLE PPU');
         this.enable_next_frame = true;
     }
 
@@ -650,13 +799,15 @@ class GB_PPU {
         this.clock.lx = 0;
         this.clock.ly++;
         this.clock.vy++;
-        if (this.clock.ly === 144) this.set_mode(1); // VBLANK
+        if ((this.enabled) && (this.clock.ly === 144)) this.set_mode(1); // VBLANK
         this.line_cycle = 0;
         if (this.clock.ly >= 154) {
             this.advance_frame();
         }
-        this.eval_lyc();
-        this.fetcher.advance_line();
+        if (this.enabled) {
+            this.eval_lyc();
+            this.fetcher.advance_line();
+        }
     }
 
     // TODO: trigger IRQ if enabled properly
@@ -727,9 +878,9 @@ class GB_PPU {
             this.enabled = true;
             this.enable_next_frame = false;
         }
+        this.clock.ly = 0;
         if (this.enabled) {
             this.display_update = true;
-            this.clock.ly = 0;
         }
         this.clock.frames_since_restart++;
         this.clock.master_frame++;
