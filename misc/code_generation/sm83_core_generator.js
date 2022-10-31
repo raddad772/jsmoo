@@ -761,10 +761,12 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             break;
         case SM83_MN.HALT:
             ag.addl("console.log('HALT!');");
-            ag.addl('regs.HLT = 1;');
             ag.addl('if ((!regs.IME) && (regs.interrupt_latch !== 0)) regs.halt_bug = 1; ')
+            ag.addl('regs.HLT = 1;');
             ag.addcycle();
-            ag.addl('if (regs.HLT) regs.TCU--;');
+            ag.addl('if (regs.HLT) { regs.poll_IRQ = true; regs.TCU--; }');
+            ag.cleanup();
+            ag.addl('//YOYOYO');
             break;
         case SM83_MN.INC_di:
             ag.INC(ag.getreg8(arg1));

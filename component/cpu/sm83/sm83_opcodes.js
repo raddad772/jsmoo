@@ -706,6 +706,7 @@ const SM83_opcode_matrixCB = Object.freeze({
 });
 
 // SPECIAL #. This is above Z80_MAX because it is special-case handled by cycle()
+const SM83_HALT = 0x76;
 const SM83_S_DECODE = 0x102;
 const SM83_MAX_OPCODE = 0x101;
 

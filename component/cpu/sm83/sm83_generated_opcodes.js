@@ -2174,13 +2174,14 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1:
                 console.log('HALT!');
-                regs.HLT = 1;
                 if ((!regs.IME) && (regs.interrupt_latch !== 0)) regs.halt_bug = 1; 
-                if (regs.HLT) regs.TCU--;
-                // Following is auto-generated code for instruction finish
+                regs.HLT = 1;
+                if (regs.HLT) { regs.poll_IRQ = true; regs.TCU--; }
                 pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // cleanup_custom
+                //YOYOYO
+                // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -5254,11 +5255,12 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //S_IRQ
         switch(regs.TCU) {
             case 1:
-                regs.PC = (regs.PC - 1) & 0xFFFF;
+                console.log('IRQ TRIGGER');
                 regs.IME = 0;
                 pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2:
+                regs.PC = (regs.PC - 1) & 0xFFFF;
                 regs.SP = (regs.SP - 1) & 0xFFFF;
                 break;
             case 3: // Do write
