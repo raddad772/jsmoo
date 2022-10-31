@@ -44,6 +44,7 @@ class SM83_regs_t {
         this.PC = 0;
 
         this.IV = 0; // interrupt vector to execute
+        this.IME_DELAY = 0;
 
         // TODO: interrupt handling
         // https://gbdev.io/pandocs/Interrupts.html
@@ -81,17 +82,6 @@ class SM83_pins_t {
         this.RD = 0; // External read request
         this.WR = 0; // External write request
         this.MRQ = 0; // Extermal memory request
-        this.IRQ0 = 0;
-        this.IRQ0_ack = 0;
-        this.IRQ1 = 0;
-        this.IRQ1_ack = 0;
-        this.IRQ2 = 0;
-        this.IRQ2_ack = 0;
-        this.IRQ3 = 0;
-        this.IRQ3_ack = 0;
-        this.IRQ4 = 0;
-        this.IRQ4_ack = 0;
-        // IRQ5-7 are not connected in gameboy
 
         this.D = 0; // Data; 8 bits
         this.Addr = 0; // Address; 16 bits
@@ -99,9 +89,10 @@ class SM83_pins_t {
 }
 
 class SM83_t {
-    constructor() {
+    constructor(clock) {
         this.regs = new SM83_regs_t();
         this.pins = new SM83_pins_t();
+        this.clock = clock;
 
         this.trace_on = false;
         this.trace_peek = null;
@@ -189,21 +180,25 @@ class SM83_t {
 
     cycle() {
         this.regs.TCU++;
-        // Enable interrupts on next cycle
-        if (this.regs.IE > 0) {
-            this.regs.IE--;
-            if (this.regs.IE === 0) this.regs.IME = 1;
-        }
         this.trace_cycles++;
+        // Enable interrupts on next cycle
+        if (this.regs.IME_DELAY > 0) {
+            this.regs.IME_DELAY--;
+            if (this.regs.IME_DELAY <= 0) {
+                console.log('IRQ ENABLED!');
+                this.regs.IME = 1;
+            }
+        }
         if ((this.regs.IR === SM83_S_DECODE) && (this.regs.TCU === 1) && (this.regs.poll_IRQ)) {
+            if (dbg.watch_on) console.log('IRQ poll', this.regs.IME, this.regs.IF, this.regs.IE);
             this.regs.poll_IRQ = false;
-            if (this.regs.IME > 0) {
-                let mask = this.regs.IME & this.regs.IF;
+            if (this.regs.IME) {
+                let mask = this.regs.IE & this.regs.IF;
                 this.regs.IV = -1;
                 if (mask & 1) { // VBLANK interrupt
                     this.regs.IF &= 0xFE;
                     this.regs.IV = 0x40;
-                    console.log('VBLANK IRQ');
+                    console.log('VBLANK IRQ', this.clock.master_frame, this.clock.ly, this.clock.lx);
                 } else if (mask & 2) { // STAT interrupt
                     this.regs.IF &= 0xFD;
                     this.regs.IV = 0x48;
@@ -229,7 +224,6 @@ class SM83_t {
                 }
             }
         }
-
 
         if (this.regs.IR === SM83_S_DECODE) {
             // operand()

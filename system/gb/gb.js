@@ -100,9 +100,9 @@ class GB_bus {
     }
 
     CPU_read_IO(addr, val, has_effect=true) {
-        let out = 0;
-        out |= this.cpu.read_IO(addr, val, has_effect);
-        out |= this.ppu.read_IO(addr, val, has_effect);
+        let out = 0xFF;
+        out &= this.cpu.read_IO(addr, val, has_effect);
+        out &= this.ppu.read_IO(addr, val, has_effect);
         return out;
     }
 
@@ -112,8 +112,9 @@ class GB_bus {
     }
 
     DMA_read(addr) {
+        return this.mapper.CPU_read(addr);
         if (addr >= 0xA000) {
-            console.log('IMPLEMENT OAM >0xA000!');
+            console.log('IMPLEMENT OAM >0xA000!', hex4(addr));
         } else {
             return this.mapper.CPU_read(addr, 0);
         }
@@ -157,9 +158,10 @@ class GameBoy {
     }
 
     pprint_palette() {
-        for (let i = 0; i < 4; i++) {
+        /*for (let i = 0; i < 4; i++) {
             console.log('BG', i, this.ppu.bg_palette[i]);
-        }
+        }*/
+        console.log(this.cpu);
     }
 
     killall() {
@@ -269,6 +271,11 @@ class GameBoy {
         this.ppu.reset();
         if (this.cart.mapper !== null)
             this.cart.mapper.reset();
+        if (GB_QUICK_BOOT) {
+            this.ppu.quick_boot();
+            this.cpu.quick_boot();
+        }
+
     }
 
     load_ROM_from_RAM(ROM) {
@@ -284,4 +291,5 @@ class GameBoy {
         }
         this.bus.load_BIOS_from_RAM(this.bios.BIOS);
     }
+
 }

@@ -458,6 +458,7 @@ class GB_PPU {
             search_index: 0,
         }
 
+        this.console_str = '';
         this.io = {
             sprites_big: 0,
 
@@ -655,15 +656,21 @@ class GB_PPU {
     }
 
     write_OAM(addr, val) {
-        this.OAM[addr - 0xFE00] = val;
+        if (addr < 0xFEA0) this.OAM[addr - 0xFE00] = val;
     }
 
     read_OAM(addr) {
+        if (addr >= 0xFEA0) return 0xFF;
         return this.OAM[addr - 0xFE00];
     }
 
     write_IO(addr, val) {
         switch(addr) {
+            case 0xFF01:
+                let nstr = String.fromCharCode(val);
+                this.console_str += nstr;
+                console.log(this.console_str);
+                break;
             case 0xFF40: // LCDC LCD Control
                 if (val & 0x80) this.enable();
                 else this.disable();
@@ -692,6 +699,7 @@ class GB_PPU {
                 this.IRQ_stat_eval();
                 return;
             case 0xFF42: // SCY
+                console.log('SCY!', val);
                 this.io.SCY = val;
                 return;
             case 0xFF43: // SCX
@@ -708,7 +716,6 @@ class GB_PPU {
                 this.io.wx = val;
                 return;
             case 0xFF47: // BGP pallete
-                console.log('WROTE BGP!', val);
                 //if (!this.clock.CPU_can_VRAM) return;
                 this.bg_palette[0] = val & 3;
                 this.bg_palette[1] = (val >>> 2) & 3;
@@ -716,14 +723,14 @@ class GB_PPU {
                 this.bg_palette[3] = (val >>> 6) & 3;
                 return;
             case 0xFF48: // OBP0 sprite palette 0
-                if (!this.clock.CPU_can_VRAM) return;
+                //if (!this.clock.CPU_can_VRAM) return;
                 this.sp_palette[0][0] = val & 3;
                 this.sp_palette[0][1] = (val >>> 2) & 3;
                 this.sp_palette[0][2] = (val >>> 4) & 3;
                 this.sp_palette[0][3] = (val >>> 6) & 3;
                 return;
             case 0xFF49: // OBP1 sprite palette 1
-                if (!this.clock.CPU_can_VRAM) return;
+                //if (!this.clock.CPU_can_VRAM) return;
                 this.sp_palette[1][0] = val & 3;
                 this.sp_palette[1][1] = (val >>> 2) & 3;
                 this.sp_palette[1][2] = (val >>> 4) & 3;
@@ -762,17 +769,17 @@ class GB_PPU {
             case 0xFF4B: // window x + 7
                 return this.io.wx;
             case 0xFF47: // BGP
-                if (!this.clock.CPU_can_VRAM) return 0xFF;
+                //if (!this.clock.CPU_can_VRAM) return 0xFF;
                 return this.bg_palette[0] | (this.bg_palette[1] << 2) | (this.bg_palette[2] << 4) | (this.bg_palette[3] << 6);
             case 0xFF48: // OBP0
-                if (!this.clock.CPU_can_VRAM) return 0xFF;
+                //if (!this.clock.CPU_can_VRAM) return 0xFF;
                 return this.sp_palette[0][0] | (this.sp_palette[0][1] << 2) | (this.sp_palette[0][2] << 4) | (this.sp_palette[0][3] << 6);
-            case 0xFF48: // OBP1
-                if (!this.clock.CPU_can_VRAM) return 0xFF;
+            case 0xFF49: // OBP1
+                //if (!this.clock.CPU_can_VRAM) return 0xFF;
                 return this.sp_palette[1][0] | (this.sp_palette[1][1] << 2) | (this.sp_palette[1][2] << 4) | (this.sp_palette[1][3] << 6);
 
         }
-        return 0;
+        return 0xFF;
     }
 
     disable() {
@@ -798,6 +805,7 @@ class GB_PPU {
     }
 
     set_mode(which) {
+        if (this.clock.ppu_mode === which) return;
         this.clock.ppu_mode = which;
 
         switch(which) {
@@ -851,9 +859,13 @@ class GB_PPU {
         this.clock.vy++;
         if ((this.enabled) && (this.clock.ly === 144)) this.set_mode(1); // VBLANK
         this.line_cycle = 0;
-        if (this.clock.ly >= 154) {
+        if (this.clock.ly < 144) {
+            this.set_mode(2); // OAM search
+        }
+        else if (this.clock.ly >= 154) {
             this.advance_frame();
         }
+
         if (this.enabled) {
             this.eval_lyc();
             this.fetcher.advance_line();
@@ -969,7 +981,7 @@ class GB_PPU {
             else {// sprite
                 cv = this.sp_palette[px.palette][px.color];
             }
-            this.output[(this.clock.ly * 160) + this.clock.lx] = cv;
+            this.output[(this.clock.ly * 160) + (this.clock.lx-8)] = cv;
             this.clock.lx++;
         }
     }
@@ -977,6 +989,10 @@ class GB_PPU {
 
     /*******************/
     cycle() {
+        // During HBlank and VBlank do nothing...
+        if (this.clock.ly > 143) return;
+        if (this.clock.ppu_mode < 2) return;
+
         // Clear sprites
         if (this.line_cycle === 0) {
             this.sprites.num = 0;
@@ -997,10 +1013,6 @@ class GB_PPU {
                     //console.log('LINE FINISHED IN', this.line_cycle - 80, ' CYCLES!');
                     this.set_mode(0);
                 }
-                break;
-            case 0: // hblank
-                break;
-            case 1: // vblank
                 break;
         }
     }
@@ -1071,5 +1083,10 @@ To make the estimate for mode 3 more precise, see "Nitty Gritty Gameboy Cycle Ti
         // Set mode to OAM search
         this.set_mode(GB_PPU_modes.OAM_search);
         this.first_reset = false;
+   }
+
+   quick_boot() {
+        this.enabled = true;
+        this.advance_frame();
    }
 }
