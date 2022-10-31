@@ -257,6 +257,7 @@ function SM83_disassemble(PC, peek) {
         case 0xfb: return 'ei';
         case 0xfe: return 'cp   a,$' + hex2(lo);
         case 0xff: return 'rst  $0038';
+        case SM83_S_IRQ: return "IRQ";
     }
     return 'ILLEGAL';
 }

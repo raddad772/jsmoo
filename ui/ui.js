@@ -180,11 +180,12 @@ function click_step_clock() {
 }
 
 function click_step_seconds() {
-	let seconds = parseInt(ui_el.seconds_input.value);
+	/*let seconds = parseInt(ui_el.seconds_input.value);
 	if (seconds > 5) console.log('SECONDS STEP START');
 	global_player.step_seconds(seconds);
 
-	if (seconds > 5) console.log('SECONDS STEP DONE');
+	if (seconds > 5) console.log('SECONDS STEP DONE');*/
+	console.log('Dumping CPU!', global_player.system.cpu.cpu);
 
 }
 

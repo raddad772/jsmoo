@@ -693,7 +693,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             break;
         case SM83_MN.CALL_cond_addr:
             ag.operands('regs.TA');
-            ag.addl('if (!(' + arg1 + ')) { regs.TCU += 3; break; } // CHECKHERE');
+            ag.addl('if (!(' + arg1 + ')) { regs.TCU += 2; break; } // CHECKHERE');
             ag.addcycle();
             ag.push('regs.PC');
             ag.addl('regs.PC = regs.TA;');
@@ -753,12 +753,14 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             break;
         case SM83_MN.DI:
             ag.addl('regs.IME = 0;');
-            ag.addl('regs.IE = 0;');
+            ag.addl("console.log('DI!');");
             break;
         case SM83_MN.EI:
-            ag.addl('regs.IE = 2;');
+            ag.addl("console.log('EI!');");
+            ag.addl('regs.IME_DELAY = 2;');
             break;
         case SM83_MN.HALT:
+            ag.addl("console.log('HALT!');");
             ag.addl('regs.HLT = 1;');
             ag.addl('if ((!regs.IME) && (regs.interrupt_latch !== 0)) regs.halt_bug = 1; ')
             ag.addcycle();
@@ -782,7 +784,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             break;
         case SM83_MN.JP_cond_addr:
             ag.operands('regs.TA');
-            ag.addl('if (!(' + arg1 + ')) { regs.TCU += 1; break; } // CHECKHERE');
+            ag.addl('if (!(' + arg1 + ')) { break; } // CHECKHERE');
             ag.addcycle();
             ag.addl('regs.PC = regs.TA;');
             break;
@@ -1082,6 +1084,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
         case SM83_MN.STOP:
             ag.addcycle();
             ag.addl('if (!regs.stoppable()) {break;}')
+            ag.addl("console.log('STP!');");
             ag.addl('regs.STP = 1;');
             ag.addcycle();
             ag.addl('if (regs.STP) regs.TCU--;')
@@ -1133,7 +1136,10 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             break;
         case SM83_MN.S_IRQ:
             ag.addcycle();
+            ag.addl("console.log('IRQ TRIGGER');");
+            ag.addl('regs.IME = 0;');
             ag.addcycle();
+            ag.addl('regs.PC = (regs.PC - 1) & 0xFFFF;');
             ag.push16('PC');
             ag.addcycle();
             ag.addl('regs.PC = regs.IV;');

@@ -64,12 +64,12 @@ class GB_MAPPER_none {
         if (addr < 0x8000) // ROM hi bank
             return this.ROM[(addr & 0x3FFF) + this.ROM_bank_offset];
         if (addr < 0xA000) { // VRAM, banked
-            if (this.clock.CPU_can_VRAM)
+            //if (this.clock.CPU_can_VRAM)
                 return this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset];
             return 0xFF;
         } // cart RAM if it's there
         if (addr < 0xC000) {
-            if (!this.has_RAM) return;
+            if (!this.has_RAM) return 0xFF;
             return this.cartRAM[(addr - 0xA000) & this.RAM_mask];
         }
         // Adjust address for mirroring
@@ -91,15 +91,15 @@ class GB_MAPPER_none {
         if (addr < 0x8000) // ROMs
             return;
         if (addr < 0xA000) { // VRAM
-            if (this.clock.CPU_can_VRAM) {
+            //if (this.clock.CPU_can_VRAM) {
                 this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset] = val;
-            }
-            else {
-                //console.log('VRAM WRITE BLOCKEID!', this.clock.ly, this.bus.ppu.line_cycle);
+            //}
+            //else {
+                //console.log('VRAM WRITE BLOCKED!', this.clock.ly, this.bus.ppu.line_cycle);
                 //if (this.clock.ly === 0) dbg.break();
                 //console.log('YAR.')
                 //this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset] = val;
-            }
+            //}
             return;
         }
         if (addr < 0xC000) { // cart RAM
