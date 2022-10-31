@@ -183,7 +183,6 @@ class GB_CPU {
 
     tima_IRQ() {
         this.cpu.regs.IF |= 4;
-        console.log('TIMER IRQ IF SET', this.cpu.regs.IME, this.cpu.regs.IE);
     }
 
     // Routine to set state as if boot ROM had run
