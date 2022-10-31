@@ -263,8 +263,8 @@ class GB_slice_fetcher {
             );
         else
             return (0x9800 | (this.ppu.io.bg_tile_map_base << 10) |
-                (((this.clock.ly + this.ppu.io.SCY) >>> 3) << 5) |
-                ((this.clock.lx + this.ppu.io.SCX) >>> 3)
+                ((((this.clock.ly + this.ppu.io.SCY) & 0xFF) >>> 3) << 5) |
+                (((this.clock.lx + this.ppu.io.SCX) & 0xFF) >>> 3)
             );
     }
 
@@ -277,7 +277,7 @@ class GB_slice_fetcher {
         if (!this.in_window) {
             return (0x8000 | b12 |
                 (which << 4) |
-                (((this.clock.ly + this.ppu.io.SCY) & 7) << 1)
+                ((((this.clock.ly + this.ppu.io.SCY) & 0xFF) & 7) << 1)
             );
         } else {
             return (0x8000 | b12 |
