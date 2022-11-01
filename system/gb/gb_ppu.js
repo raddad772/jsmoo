@@ -1,5 +1,7 @@
 "use strict";
 
+const DO_RENDERLOG = false;
+
 const GB_PPU_modes = Object.freeze({
     HBLANK: 0,
     VBLANK: 1,
@@ -170,6 +172,7 @@ class GB_slice_fetcher {
 
         this.in_window = false;
 
+        this.bg_x = 0;
         this.cycle = 0;
 
         // FIFO's
@@ -194,7 +197,6 @@ class GB_slice_fetcher {
 
     trigger_window() {
         // TODO: Clear BG FIFO and start over
-        console.log('OK BUB WINDOW');
         this.bg_FIFO.clear();
         this.cycle = 0;
         this.bg_request = 1;
@@ -212,22 +214,25 @@ class GB_slice_fetcher {
         this.sp_FIFO.clear();
         this.in_window = false;
         this.cycle = 0;
-        this.discard_pixels = (SCX & 7) + 8;
-        this.fetch_x = 0;
+        this.bg_x = 0;
+        this.sp_request = 0;
+        this.bg_request = 1;
     }
 
-    advance_pixel() {
-        // Check sprites
-        //console.log('HAD PIXEL', this.clock.lx)
+    check_sprite_requests() {
         for (let i = 0; i < this.ppu.sprites.num; i++) {
             let OBJ = this.ppu.OBJ[i];
-            if ((this.clock.lx === OBJ.x) && (!OBJ.in_q)) {
+            if (((this.clock.lx+1) === OBJ.x) && (!OBJ.in_q)) {
                 OBJ.in_q = 1;
                 this.sp_request++;
                 this.sprite_requests.push(OBJ);
+                //if (DO_RENDERLOG && (this.clock.ly === 112)) console.log(this.ppu.line_cycle, this.clock.lx, 'SPRITE REQUEST STARTED, BG FIFO SIZE:', this.bg_FIFO.num_items);
             }
         }
+        return false;
+    }
 
+    advance_pixel() {
         // Check if in window
         if (!this.in_window) {
             if (this.ppu.io.bg_window_enable &&
@@ -238,13 +243,10 @@ class GB_slice_fetcher {
                 this.trigger_window();
             }
         }
-        //this.clock.lx++;
-
     }
 
     restart() {
         this.in_window = false;
-        //this.advance_line();
     }
 
     bg_tilemap_addr() {
@@ -293,8 +295,9 @@ class GB_slice_fetcher {
                 this.cycle = 1;
                 break;
             case 1: // tile number fetch
-                tn = this.bus.mapper.PPU_read(this.bg_tilemap_addr());
-                this.fetch_addr = this.bg_tile_addr(tn);
+                this.bg_tn = this.bus.mapper.PPU_read(this.bg_tilemap_addr());
+                //if (DO_RENDERLOG && (this.clock.ly === 112)) console.log(this.ppu.line_cycle, this.clock.lx, 'BG FETCH TILE#', hex2(this.bg_tn), 'BG_X', hex2(this.bg_x));
+                this.fetch_addr = this.bg_tile_addr(this.bg_tn);
                 this.cycle = 2;
                 break;
             case 2:
@@ -312,29 +315,33 @@ class GB_slice_fetcher {
                 this.bp1_fetch = this.bus.mapper.PPU_read(this.fetch_addr);
                 this.cycle = 6;
                 break;
-            case 6: // Attempt to push data to FIFO, *OR* get hijacked by sprites
+            case 6:
+                this.cycle++;
+                break;
+            case 7: // Attempt to push data to FIFO, *OR* get hijacked by sprites
                 if (this.sp_request) {
                     let request = this.sprite_requests.shift();
+                    /*if (this.bg_FIFO.empty()) {
+                        if (DO_RENDERLOG && (this.clock.ly === 112)) console.log(this.ppu.line_cycle, this.clock.lx, 'DISCARD BG FIFO FOR SPRITE X/Y', request.x, request.y);
+                    }*/
                     tn = request.tile;
-                    console.log('FETCH TN!', tn);
                     let y = (this.clock.ly - request.y);
                     if (request.attr & 0x40) y = (this.ppu.io.sprites_big ? 16 : 8) - y;
 
-                    if (y > 7) {
+                    /*if (y > 7) {
                         tn++;
                         y -= 8;
-                    }
+                    }*/
                     this.fetch_addr = this.sp_tile_addr(tn, y);
-                    //console.log(hex4(this.fetch_addr));
                     this.bp1_fetch = 0;
                     this.bp0_fetch = this.bus.mapper.PPU_read(this.fetch_addr);
                     this.fetch_addr++;
                     this.sp_req_attr = request.attr;
                     this.cycle = 8;
                 } else {
-                    // Throw away first fetch
                     // Try to push
                     if (this.bg_FIFO.empty()) {
+                        //if (DO_RENDERLOG && (this.clock.ly === 112)) console.log(this.ppu.line_cycle, this.clock.lx, 'FILL BG FIFO');
                         for (let i = 0; i < 8; i++) {
                             let b = this.bg_FIFO.push();
                             b.pixel = ((this.bp0_fetch & 0x80) >>> 7) | ((this.bp1_fetch & 0x80) >>> 6);
@@ -348,18 +355,21 @@ class GB_slice_fetcher {
                         // Reset back to tile fetch
                         this.cycle = 0;
                     }
+                    /*else {
+                        if (DO_RENDERLOG && (this.clock.ly === 112)) console.log(this.ppu.line_cycle, this.clock.lx, 'FETCHER SLEEP');
+                    }*/
                     // DO NOT change cycle if waiting to push
                 }
-                break;
-            case 7:
-                this.cycle++;
                 break;
             case 8: // do nothing, waiting for next sprite fetch.
                 this.cycle = 9;
                 break;
             case 9: // fetch other part of sprite
                 this.bp1_fetch = this.bus.mapper.PPU_read(this.fetch_addr);
-                this.sp_FIFO.sprite_mix(this.bp0_fetch, this.bp1_fetch, (this.sp_req_attr & 0x80) >>> 7, (this.sp_req_attr & 0x10) >>> 4, (this.sp_req_attr & 0x20) >>> 5);
+                //this.bp0_fetch, this.bp1_fetch
+                //if (DO_RENDERLOG && (this.clock.ly === 112)) console.log(this.ppu.line_cycle, this.clock.lx, 'SPRITE MIX STARTED');
+                //this.sp_FIFO.sprite_mix(0x11, 0x11,(this.sp_req_attr & 0x80) >>> 7, (this.sp_req_attr & 0x10) >>> 4, (this.sp_req_attr & 0x20) >>> 5);
+                this.sp_FIFO.sprite_mix(this.bp0_fetch, this.bp1_fetch,(this.sp_req_attr & 0x80) >>> 7, (this.sp_req_attr & 0x10) >>> 4, (this.sp_req_attr & 0x20) >>> 5);
                 this.sp_request--;
                 this.cycle = 0;
                 break;
@@ -371,63 +381,62 @@ class GB_slice_fetcher {
      */
     get_pixel_if_possible(bg_on, sp_on) {
         this.get_return.had_pixel = false;
-        if ((!this.bg_FIFO.empty()) && (this.sp_request===0)) { // Only output if there are no requests being serviced
-            //if(this.sp_request) console.log('WAIT WHAT');
-            /**
-             * @type {GB_FIFO_item_t}
-             */
-            let bgo = null;
-            /**
-             * @type {GB_FIFO_item_t}
-             */
-            let spo = null;
-            if (bg_on)
-                bgo = this.bg_FIFO.pop();
-            if (sp_on)
-                spo = this.sp_FIFO.pop();
-            if (bgo !== null) {
-                this.clock.lx++;
+        if (!this.bg_FIFO.empty()) {
+            this.check_sprite_requests()
+            if (this.sp_request === 0) { // Only output if there are no requests being serviced
+                /**
+                 * @type {GB_FIFO_item_t}
+                 */
+                let bgo = null;
+                /**
+                 * @type {GB_FIFO_item_t}
+                 */
+                let spo = null;
+                if (bg_on)
+                    bgo = this.bg_FIFO.pop();
+                if (sp_on)
+                    spo = this.sp_FIFO.pop();
+                if (this.bg_FIFO.empty()) {
+                    this.bg_x = this.clock.lx;
+                    //if (DO_RENDERLOG && (this.clock.ly === 112)) console.log(this.ppu.line_cycle, this.clock.lx, 'BG FIFO EMPTY, SETTING BG GRAB TO X', this.bg_x);
+                    this.bg_request = 1;
+                }
+                let use_what = 0;
                 this.get_return.had_pixel = true;
-            }
-            let use_what = 0;
 
-            if ((bgo !== null) && (spo === null))
-                use_what = 1; // Use background
-            else if ((bgo === null) && (spo !== null))
-                use_what = 2; // Use sprite
-            else if ((bgo !== null) && (spo !== null)) { // Determine which
-                if ((spo.sprite_priority) && (bgo.pixel !== 0)) // "If the OBJ pixel has its priority bit set, and the BG pixel's ID is not 0, pick the BG pixel."
-                    use_what = 1; // use sprite
-                else if (spo.pixel === 0) // "If the OBJ pixel is 0, pick the BG pixel; "
-                    use_what = 1;
-                else // "otherwise, pick the OBJ pixel"
-                    use_what = 2;
-            }
-            /*if (bgo !== null) use_what = 1;
-            if (spo !== null) use_what = 2;*/
+                if ((bgo !== null) && (spo === null))
+                    use_what = 1; // Use background
+                else if ((bgo === null) && (spo !== null))
+                    use_what = 2; // Use sprite
+                else if ((bgo !== null) && (spo !== null)) { // Determine which
+                    //if (DO_RENDERLOG && (this.clock.ly === 112)) console.log(this.ppu.line_cycle, this.clock.lx, 'SPRITE PIXEL RENDER ALSO');
+                    if ((spo.sprite_priority) && (bgo.pixel !== 0)) // "If the OBJ pixel has its priority bit set, and the BG pixel's ID is not 0, pick the BG pixel."
+                        use_what = 2; // use sprite
+                    else if (spo.pixel === 0) // "If the OBJ pixel is 0, pick the BG pixel; "
+                        use_what = 1; // BG
+                    else // "otherwise, pick the OBJ pixel"
+                        use_what = 2; // sprite
+                }
+                /*if (bgo !== null) use_what = 1;
+                if (spo !== null) use_what = 2;*/
 
-            if (use_what === 1) { // BG
-                this.get_return.bg = 0;
-                this.get_return.palette = 0;
-                this.get_return.color = bgo.pixel;
-            } else if (use_what === 2) { // Sprite
-                this.get_return.bg = 1;
-                this.get_return.palette = spo.palette;
-                this.get_return.color = spo.pixel;
+                if (use_what === 1) { // BG
+                    this.get_return.bg = 0;
+                    this.get_return.palette = 0;
+                    this.get_return.color = bgo.pixel;
+                } else if (use_what === 2) { // Sprite
+                    this.get_return.bg = 1;
+                    this.get_return.palette = spo.palette;
+                    this.get_return.color = spo.pixel;
+                }
+
+
             }
         }
-        if (this.bg_FIFO.empty()) {
-            this.bg_request = 1;
-        }
-        if (this.get_return.had_pixel) this.advance_pixel();
-        if (this.get_return.had_pixel && (this.discard_pixels > 0)) {
-            this.discard_pixels--;
-            this.get_return.had_pixel = false;
-        }
+
         return this.get_return;
     }
 }
-// 160x144
 
 class GB_PPU_sprite_t {
     constructor() {
@@ -452,6 +461,8 @@ class GB_PPU {
         this.canvas_manager = canvas_manager;
         this.bus = bus;
         this.bus.ppu = this;
+
+        this.discard_pixels = 8;
 
         this.clock.ppu_mode = GB_PPU_modes.OAM_search;
         this.line_cycle = 0;
@@ -583,29 +594,6 @@ class GB_PPU {
             for (let xtile = 0; xtile < TILE_COLS; xtile++) {
                 if (DO_BREAK) break;
                 let tile_num = (ytile * TILE_COLS) + xtile;
-                /*let fr, fg, fb;
-                switch(tile_num % 3) {
-                    case 0:
-                        fr = 255;
-                        fg = 0;
-                        fb = 0;
-                        break;
-                    case 1:
-                        fr = 0;
-                        fg = 255;
-                        fb = 0;
-                        break;
-                    case 2:
-                        fr = 0;
-                        fg = 0;
-                        fb = 255;
-                        break;
-                    case 3:
-                        console.log('WHAT?');
-                        break;
-                }*/
-
-                //console.log(tile_num);
                 for (let ty = 0; ty < 8; ty++) {
                     // Fetch a tile row
                     let addr = ((tile_num * 0x10) | 0x8000) + (ty*2);
@@ -673,7 +661,7 @@ class GB_PPU {
         }
 
         // draw lines around screen
-        this.draw_lines_around_screen(imgdata);
+        //this.draw_lines_around_screen(imgdata);
 
         this.canvas_manager.put_imgdata(imgdata);
         this.dump_bg(bg_canvas, 0x9800, 0x8000);
@@ -905,6 +893,7 @@ class GB_PPU {
         this.clock.vy++;
         if ((this.enabled) && (this.clock.ly === 144)) this.set_mode(1); // VBLANK
         this.line_cycle = 0;
+        this.discard_pixels = (this.io.SCX & 7) + 8;
         if (this.clock.ly < 144) {
             this.set_mode(2); // OAM search
         }
@@ -1003,7 +992,7 @@ class GB_PPU {
         if (this.sprites.num === 10) return;
         let sy = this.OAM[this.sprites.search_index] - 16;
         let sy_bottom = sy + (this.io.sprites_big ? 16 : 8);
-        if ((this.clock.ly >= sy) && (this.clock.ly <= sy_bottom)) {
+        if ((this.clock.ly >= sy) && (this.clock.ly < sy_bottom)) {
             // WE GOT A HIT!
             this.OBJ[this.sprites.num].y = sy;
             this.OBJ[this.sprites.num].x = this.OAM[this.sprites.search_index + 1];
@@ -1021,7 +1010,15 @@ class GB_PPU {
         if (this.line_cycle > 8) {
             this.fetcher.run_cycle();
             let px = this.fetcher.get_pixel_if_possible(this.io.bg_window_enable, this.io.obj_enable);
+            if (this.discard_pixels > 0) {
+                this.discard_pixels--;
+                px.had_pixel = false;
+                this.clock.lx++;
+                this.fetcher.advance_pixel()
+            }
             if (px.had_pixel) {
+                this.clock.lx++;
+                this.fetcher.advance_pixel()
                 let cv;
                 if (px.bg === 0) {// background
                     cv = this.bg_palette[px.color];
