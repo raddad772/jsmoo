@@ -185,7 +185,8 @@ function click_step_seconds() {
 	global_player.step_seconds(seconds);
 
 	if (seconds > 5) console.log('SECONDS STEP DONE');*/
-	console.log('Dumping CPU!', global_player.system.cpu.cpu);
+	//console.log('Dumping CPU!', global_player.system.cpu.cpu);
+	global_player.system.pprint_palette();
 
 }
 

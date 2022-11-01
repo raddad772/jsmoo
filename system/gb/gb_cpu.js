@@ -40,6 +40,20 @@ class GB_CPU {
             index: 0,
             high: 0
         }
+
+        input_config.connect_controller('gb');
+        this.input_buffer = {
+            'a': 0,
+            'b': 0,
+            'up': 0,
+            'down': 0,
+            'left': 0,
+            'right': 0,
+            'start': 0,
+            'select': 0
+        }
+        this.joymap = input_config.controller_els.gb;
+
     }
 
     // TODO: emulate bug for Road Rash
@@ -111,11 +125,8 @@ class GB_CPU {
                         break;
                 }
                 this.timer.cycles_til_tima = this.timer.cycles_til_tima_reload;
-                console.log('TIL RELOAD!', this.timer.cycles_til_tima);
-                console.log('TAC', val)
                 break;
             case 0xFF46: // OAM DMA
-                console.log('OAM DMA!');
                 this.dma.running = 1;
                 this.dma.high = (val << 8);
                 this.dma.index = 0;
@@ -128,7 +139,7 @@ class GB_CPU {
                 }
                 break;
             case 0xFF0F:
-                console.log('WRITE IF', val);
+                //console.log('WRITE IF', val);
                 this.cpu.regs.IF = val & 0x1F;
                 return;
             case 0xFFFF: // IE: Interrupt Enable
@@ -137,11 +148,29 @@ class GB_CPU {
         }
     }
 
+    get_input() {
+        this.input_buffer = this.joymap.latch();
+        let out1, out2;
+        let out3 = 0;
+        if (this.io.JOYP.action_select === 0) {
+            out1 = this.input_buffer['a'] | (this.input_buffer['b'] << 1) | (this.input_buffer['select'] << 2) | (this.input_buffer['start'] << 3);
+            out1 ^= 0x0F;
+            out3 |= out1;
+        }
+
+        if (this.io.JOYP.direction_select === 0) {
+            out1 = this.input_buffer['right'] | (this.input_buffer['left'] << 1) | (this.input_buffer['up'] << 2) | (this.input_buffer['down'] << 3);
+            out1 ^= 0x0F;
+            out3 |= out1;
+        }
+        return out3;
+    }
+
     read_IO(addr, val, has_effect=true) {
         switch(addr) {
             case 0xFF00: // JOYP
                 // return not pressed=1 in bottom 4 bits
-                return 0x0F | (this.io.JOYP.action_select << 5) | (this.io.JOYP.direction_select << 6);
+                return this.get_input() | (this.io.JOYP.action_select << 5) | (this.io.JOYP.direction_select << 6);
             case 0xFF01: // SB serial
                 return this.FFregs[1];
             case 0xFF02:
