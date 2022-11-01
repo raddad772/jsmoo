@@ -2173,8 +2173,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //HALT
         switch(regs.TCU) {
             case 1:
-                console.log('HALT!');
-                if ((!regs.IME) && (regs.interrupt_latch !== 0)) regs.halt_bug = 1; 
+                if ((!regs.IME) && (regs.interrupt_latch !== 0)) regs.halt_bug = 1;
                 regs.HLT = 1;
                 if (regs.HLT) { regs.poll_IRQ = true; regs.TCU--; }
                 pins.RD = 0; pins.MRQ = 0;
@@ -4972,7 +4971,6 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.IME = 0;
-                console.log('DI!');
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -5158,7 +5156,6 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //EI
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                console.log('EI!');
                 regs.IME_DELAY = 2;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
@@ -5255,7 +5252,6 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //S_IRQ
         switch(regs.TCU) {
             case 1:
-                console.log('IRQ TRIGGER');
                 regs.IME = 0;
                 pins.RD = 0; pins.MRQ = 0;
                 break;

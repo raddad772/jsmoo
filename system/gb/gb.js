@@ -141,7 +141,6 @@ class GameBoy {
         this.variant = variant;
         this.canvas_manager = canvas_manager;
         this.bios = bios;
-        console.log('BIOS!', bios);
         this.bus = new GB_bus();
         this.clock = new GB_clock();
         this.cart = new GB_cart(this.variant, this.bios, this.clock, this.bus);
@@ -151,16 +150,14 @@ class GameBoy {
         this.cycles_left = 0;
         this.display_enabled = true;
 
-        input_config.connect_controller('gb');
         dbg.add_cpu(D_RESOURCE_TYPES.SM83, this.cpu);
 
         this.load_bios();
     }
 
     pprint_palette() {
-        /*for (let i = 0; i < 4; i++) {
-            console.log('BG', i, this.ppu.bg_palette[i]);
-        }*/
+        console.log('BG', this.ppu.bg_palette);
+        console.log('SP', this.ppu.sp_palette);
         console.log(this.cpu);
     }
 

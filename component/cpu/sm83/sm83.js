@@ -200,19 +200,19 @@ class SM83_t {
                 if (mask & 1) { // VBLANK interrupt
                     if (!is_halt) this.regs.IF &= 0xFE;
                     this.regs.IV = 0x40;
-                    console.log('VBLANK IRQ', this.clock.master_frame, this.clock.ly, this.clock.lx);
+                    //console.log('VBLANK IRQ', this.clock.master_frame, this.clock.ly, this.clock.lx);
                 } else if (mask & 2) { // STAT interrupt
                     if (!is_halt) this.regs.IF &= 0xFD;
                     this.regs.IV = 0x48;
-                    console.log('STAT IRQ');
+                    //console.log('STAT IRQ');
                 } else if (mask & 4) { // Timer interrupt
                     if (!is_halt) this.regs.IF &= 0xFB;
                     this.regs.IV = 0x50;
-                    console.log('TIMER IRQ');
+                    //console.log('TIMER IRQ');
                 } else if (mask & 8) { // Serial interrupt
                     if (!is_halt) this.regs.IF &= 0xF7;
                     this.regs.IV = 0x58;
-                    console.log('SERIAL IRQ');
+                    //console.log('SERIAL IRQ');
                 } else if (mask & 0x10) { // Joypad interrupt
                     if (!is_halt) this.regs.IF &= 0xEF;
                     this.regs.IV = 0x60;
@@ -224,7 +224,7 @@ class SM83_t {
                         this.regs.TCU++;
                     }
                     else {
-                        console.log('SO IRQ ACTUALLY GOING TO HAPPEN!');
+                        //console.log('SO IRQ ACTUALLY GOING TO HAPPEN!');
                         if (dbg.brk_on_NMIRQ) dbg.break();
                         this.regs.IR = SM83_S_IRQ;
                         this.current_instruction = sm83_decoded_opcodes[SM83_S_IRQ];
