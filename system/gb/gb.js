@@ -25,6 +25,9 @@ class GB_clock {
         this.vx = 0;
         this.vy = 0;
 
+        this.wly = 0;
+        this.wlx = 0;
+
         this.cpu_frame_cycle = 0;
         this.ppu_frame_cycle = 0;
         this.CPU_can_VRAM = 1;
@@ -126,6 +129,7 @@ class GB_bus {
     }
 
     IRQ_vblank_up() {
+        //console.log('IRQ VBLANK UP!');
         this.cpu.cpu.regs.IF |= 1;
     }
 }
@@ -145,7 +149,7 @@ class GameBoy {
         this.clock = new GB_clock();
         this.cart = new GB_cart(this.variant, this.bios, this.clock, this.bus);
         this.cpu = new GB_CPU(this.variant, this.clock, this.bus);
-        this.ppu = new GB_PPU(canvas_manager, this.variant, this.clock, this.bus);
+        this.ppu = new GB_PPU_noFIFO(canvas_manager, this.variant, this.clock, this.bus);
 
         this.cycles_left = 0;
         this.display_enabled = true;
