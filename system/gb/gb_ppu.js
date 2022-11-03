@@ -96,6 +96,7 @@ class GB_PPU_noFIFO {
         this.first_reset = true;
 
         this.is_window_line = false;
+        this.window_triggered_on_line = false;
 
         this.bus.CPU_read_OAM = this.read_OAM.bind(this);
         this.bus.CPU_write_OAM = this.write_OAM.bind(this);
@@ -242,7 +243,7 @@ class GB_PPU_noFIFO {
     bg_tilemap_addr_window(wlx) {
         return (0x9800 | (this.io.window_tile_map_base << 10) |
             ((this.clock.wly >>> 3) << 5) |
-            (wlx >>> 3)
+            ((this.clock.lx - this.io.wx) >>> 3)
         );
     }
 
@@ -379,7 +380,7 @@ class GB_PPU_noFIFO {
                 this.io.wy = val;
                 return;
             case 0xFF4B: // window x + 7
-                this.io.wx = val;
+                this.io.wx = val - 7;
                 return;
             case 0xFF47: // BGP pallete
                 //if (!this.clock.CPU_can_VRAM) return;
@@ -556,20 +557,19 @@ class GB_PPU_noFIFO {
     }
 
     advance_line() {
-        this.is_window_line = this.clock.ly >= this.io.wy;
+        if (this.window_triggered_on_line) this.clock.wly++;
         this.clock.lx = 0;
         this.clock.ly++;
-        this.clock.vy++;
-        this.clock.wlx = 0;
+        this.is_window_line = this.clock.ly >= this.io.wy;
+        this.window_triggered_on_line = false;
         this.line_cycle = 0;
-        if (this.clock.ly < 144) {
-            this.set_mode(2); // OAM search
-        }
-        else if (this.clock.ly >= 154)
+        if (this.clock.ly >= 154)
             this.advance_frame();
         if (this.enabled) {
             this.eval_lyc();
-            if (this.clock.ly === 144)
+            if (this.clock.ly < 144)
+                this.set_mode(2); // OAM search
+            else if (this.clock.ly === 144)
                 this.set_mode(1); // VBLANK
         }
     }
@@ -644,13 +644,12 @@ class GB_PPU_noFIFO {
             this.enable_next_frame = false;
         }
         this.clock.ly = 0;
-        this.clock.wly = -1;
+        this.clock.wly = 0;
         if (this.enabled) {
             this.display_update = true;
         }
         this.clock.frames_since_restart++;
         this.clock.master_frame++;
-        this.window_v_counter = 0;
     }
 
     /********************/
@@ -690,7 +689,7 @@ class GB_PPU_noFIFO {
     }
 
     in_window() {
-        return this.is_window_line && (this.io.wx >= this.clock.lx);
+        return this.io.window_enable && this.is_window_line && (this.clock.lx >= this.io.wx);
     }
 
     pixel_transfer() {
@@ -725,11 +724,20 @@ class GB_PPU_noFIFO {
         let cv;
 
 
-        /*if (this.in_window()) { // Grab window tile
-            cv = 0;
-        }
-        else */{ // Grab background tile
-            if (this.io.bg_window_enable) {
+        if (this.io.bg_window_enable) {
+            if (this.in_window()) { // Grab window tile
+                this.window_triggered_on_line = true;
+                let addr = this.bg_tilemap_addr_window()
+                let tn = this.bus.mapper.PPU_read(addr);
+                addr = this.bg_tile_addr_window(tn);
+                let bp0 = this.bus.mapper.PPU_read(addr);
+                let bp1 = this.bus.mapper.PPU_read(addr + 1);
+                //bp0 = 0x55;
+                //bp1 = 0x55;
+                let index = 7 - ((this.clock.lx - this.io.wx) & 7);
+                let mask = 1 << index;
+                bg_color = ((bp0 & mask) >>> index) | (((bp1 & mask) >>> index) << 1);
+            } else { // Grab background tile
                 let addr = this.bg_tilemap_addr_nowindow()
                 let tn = this.bus.mapper.PPU_read(addr);
                 addr = this.bg_tile_addr_nowindow(tn);
@@ -740,7 +748,6 @@ class GB_PPU_noFIFO {
                 bg_color = ((bp0 & mask) >>> index) | (((bp1 & mask) >>> index) << 1);
             }
         }
-
         let use_what = 1;
 
         if (has_sp) {
@@ -766,7 +773,6 @@ class GB_PPU_noFIFO {
 
         this.output[(this.clock.ly * 160) + this.clock.lx] = cv;
         this.clock.lx++;
-        if (this.in_window()) this.clock.wlx++;
     }
 
 
