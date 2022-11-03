@@ -93,13 +93,13 @@ class GB_MAPPER_none {
         if (addr < 0xA000) { // VRAM
             //if (this.clock.CPU_can_VRAM) {
                 this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset] = val;
-            //}
-            //else {
-                //console.log('VRAM WRITE BLOCKED!', this.clock.ly, this.bus.ppu.line_cycle);
+            /*}
+            else {
+                console.log('VRAM WRITE BLOCKED!', this.bus.ppu.enabled, this.bus.ppu.io.bg_window_enable, this.clock.ly, this.bus.ppu.line_cycle);
                 //if (this.clock.ly === 0) dbg.break();
                 //console.log('YAR.')
                 //this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset] = val;
-            //}
+            }*/
             return;
         }
         if (addr < 0xC000) { // cart RAM
