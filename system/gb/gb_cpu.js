@@ -127,6 +127,7 @@ class GB_CPU {
                 this.timer.cycles_til_tima = this.timer.cycles_til_tima_reload;
                 break;
             case 0xFF46: // OAM DMA
+                //console.log('OAM DMA START')
                 this.dma.running = 1;
                 this.dma.high = (val << 8);
                 this.dma.index = 0;
@@ -143,6 +144,7 @@ class GB_CPU {
                 this.cpu.regs.IF = val & 0x1F;
                 return;
             case 0xFFFF: // IE: Interrupt Enable
+                console.log('IE', val & 0x1F);
                 this.cpu.regs.IE = val & 0x1F;
                 return;
         }
@@ -191,7 +193,7 @@ class GB_CPU {
                 return this.cpu.regs.IF;
                 //return this.clock.irq.vblank_request | (this.clock.irq.lcd_stat_request << 1) | (this.clock.irq.timer_request << 2) | (this.clock.irq.serial_request << 3) | (this.clock.irq.joypad_request << 4);
             case 0xFFFF: // IE Interrupt Enable
-                return this.cpu.regs.IME;
+                return this.cpu.regs.IE;
                 //return this.clock.irq.vblank_enable | (this.clock.irq.lcd_stat_enable << 1) | (this.clock.irq.timer_enable << 2) | (this.clock.irq.serial_enable << 3) | (this.clock.irq.joypad_enable << 4);
         }
         return 0xFF;
@@ -206,6 +208,7 @@ class GB_CPU {
         this.bus.CPU_write_OAM(0xFE00 | this.dma.index, this.bus.DMA_read(this.dma.high | this.dma.index, 0));
         this.dma.index++;
         if (this.dma.index >= 160) {
+            //console.log('DMA END!');
             this.dma.running = 0;
         }
     }
@@ -249,7 +252,10 @@ class GB_CPU {
         // Update timers
         if (this.dma.running) {
             this.dma_eval();
-            if ((this.cpu.pins.Addr < 0xFF80) && (this.cpu.pins.MRQ)) return; // Skip CPU cycle due to OAM
+            if ((this.cpu.pins.Addr < 0xFF80) && (this.cpu.pins.MRQ) && (this.dma.index > 2)) {
+                console.log('SKIP CPU CYCLE TO DMA', hex4(this.cpu.pins.Addr), this.cpu.pins.MRQ);
+                return;
+            } // Skip CPU cycle due to OAM
             // TODO: should timer skip too!?
         }
         if (this.cpu.regs.STP)

@@ -1,5 +1,7 @@
 "use strict";
 
+let SM83_PC_BRK = 0x46E8;
+
 class SM83_regs_F {
     constructor() {
         this.Z = 0;
@@ -190,41 +192,45 @@ class SM83_t {
         }
         if ((this.regs.IR === SM83_HALT) ||
             ((this.regs.IR === SM83_S_DECODE) && (this.regs.TCU === 1) && (this.regs.poll_IRQ))) {
-            let is_halt = (this.regs.IR === SM83_HALT);
+            let is_halt = ((this.regs.IR === SM83_HALT) && (this.regs.IME === 0));
             if (dbg.watch_on) console.log('IRQ poll', this.regs.IME, this.regs.IF, this.regs.IE);
             this.regs.poll_IRQ = false;
+            let imask = 0xFF;
             if ((this.regs.IME) || is_halt) {
                 let mask = this.regs.IE & this.regs.IF;
                 this.regs.IV = -1;
                 if (mask & 1) { // VBLANK interrupt
-                    if (!is_halt) this.regs.IF &= 0xFE;
+                    imask = 0xFE;
                     this.regs.IV = 0x40;
                     //console.log('VBLANK IRQ', this.clock.master_frame, this.clock.ly, this.clock.lx);
                 } else if (mask & 2) { // STAT interrupt
-                    if (!is_halt) this.regs.IF &= 0xFD;
+                    imask = 0xFD;
                     this.regs.IV = 0x48;
                     //console.log('STAT IRQ');
                 } else if (mask & 4) { // Timer interrupt
-                    if (!is_halt) this.regs.IF &= 0xFB;
+                    imask = 0xFB;
                     this.regs.IV = 0x50;
                     //console.log('TIMER IRQ');
                 } else if (mask & 8) { // Serial interrupt
-                    if (!is_halt) this.regs.IF &= 0xF7;
+                    imask = 0xF7;
                     this.regs.IV = 0x58;
                     //console.log('SERIAL IRQ');
                 } else if (mask & 0x10) { // Joypad interrupt
-                    if (!is_halt) this.regs.IF &= 0xEF;
+                    imask = 0xEF;
                     this.regs.IV = 0x60;
                     console.log('JOYPAD IRQ');
                 }
                 if (this.regs.IV > 0) {
                     if (is_halt && (this.regs.IME === 0)) {
                         console.log('HLT EJECT!');
+                        this.regs.HLT = 0;
                         this.regs.TCU++;
                     }
                     else {
                         //console.log('SO IRQ ACTUALLY GOING TO HAPPEN!', hex2(this.regs.IV));
                         if (dbg.brk_on_NMIRQ) dbg.break();
+                        this.regs.IF &= imask;
+                        this.regs.HLT = 0;
                         this.regs.IR = SM83_S_IRQ;
                         this.current_instruction = sm83_decoded_opcodes[SM83_S_IRQ];
                     }
@@ -240,6 +246,10 @@ class SM83_t {
         } else {
             // Execute an actual opcode
             this.current_instruction.exec_func(this.regs, this.pins);
+        }
+        if (this.regs.PC === SM83_PC_BRK) {
+            SM83_PC_BRK = -1;
+            dbg.break();
         }
     }
 

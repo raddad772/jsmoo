@@ -1,7 +1,5 @@
 "use strict";
 
-"use strict";
-
 /*const DO_RENDERLOG = false;
 
 const GB_PPU_modes = Object.freeze({
@@ -363,6 +361,7 @@ class GB_PPU_noFIFO {
                 this.io.stat_irq_mode1_enable = (val & 0x10) >>> 4;
                 this.io.stat_irq_mode2_enable = (val & 0x20) >>> 5;
                 this.io.stat_irq_lylyc_enable = (val & 0x40) >>> 6;
+                console.log('IRQ STAT ENABLES', val);
                 this.IRQ_stat_eval();
                 return;
             case 0xFF42: // SCY
@@ -500,7 +499,7 @@ class GB_PPU_noFIFO {
 
     // Called on change to IRQ STAT settings
     IRQ_stat_eval() {
-        return;
+        //return;
         this.IRQ_stat_eval_mode0();
         this.IRQ_stat_eval_mode1();
         this.IRQ_stat_eval_mode2();
@@ -606,7 +605,7 @@ class GB_PPU_noFIFO {
     }
 
     trigger_stat_irq() {
-        //console.log('TRIGGERING STAT IRQ!');
+        console.log('TRIGGERING STAT IRQ!');
         this.bus.cpu.cpu.regs.IF |= 2;
     }
 

@@ -88,11 +88,12 @@ class GB_MAPPER_MBC1 {
             return 0xFF;
         } // cart RAM if it's there
         if (addr < 0xC000) {
-            if (!this.has_RAM) return 0xFF;
+            if ((!this.has_RAM) || (!this.regs.ext_RAM_enable))
+                return 0xFF;
             return this.cartRAM[((addr - 0xA000) & this.RAM_mask) + this.cartRAM_offset];
         }
         // Adjust address for mirroring
-        if ((addr > 0xE000) && (addr < 0xFE00)) addr -= 0x2000;
+        if ((addr > 0xE000) && (addr < 0xFE00)) return 0xFF; //addr -= 0x2000;
         if (addr < 0xD000) // WRAM lo bank
             return this.WRAM[addr & 0xFFF];
         if (addr < 0xE000) // WRAM hi bank
@@ -101,8 +102,10 @@ class GB_MAPPER_MBC1 {
             return this.bus.CPU_read_OAM(addr, val, has_effect);
         if (addr < 0xFF80) // registers
             return this.bus.CPU_read_IO(addr, val, has_effect);
-        if (addr < 0xFFFF) // HRAM always accessible
-            return this.HRAM[addr - 0xFF80];
+        if (addr < 0xFFFF) {// HRAM always accessible
+            let v = this.HRAM[addr - 0xFF80];
+            return v;
+        }
         return this.bus.CPU_read_IO(addr, val, has_effect); // 0xFFFF register
     }
 
@@ -119,7 +122,11 @@ class GB_MAPPER_MBC1 {
             }
 
         }
-        this.ROM_bank_hi_offset = (this.regs.ROM_bank_hi % this.regs.num_ROM_banks) * 16384;
+        else {
+            this.ROM_bank_lo_offset = 0;
+            this.cartRAM_offset = 0;
+            this.ROM_bank_hi_offset = (this.regs.ROM_bank_hi % this.num_ROM_banks) * 16384;
+        }
     }
 
     CPU_write(addr, val) {
@@ -132,10 +139,10 @@ class GB_MAPPER_MBC1 {
                     return;
                 case 0x2000: // ROM bank number
                     rb = val & 0x1F;
-                    if (rb === 0) this.rb = 1;
+                    if (rb === 0) rb = 1;
                     rb %= this.num_ROM_banks;
                     this.regs.ROM_bank_hi = (this.regs.ROM_bank_hi & 0xE0) | rb;
-                    this.ROM_bank_hi_offset = this.regs.ROM_bank_hi * 16384;
+                    this.update_banks();
                     return;
                 case 0x4000: // RAM or ROM banks...
                     if (this.num_ROM_banks > 31) {
@@ -176,13 +183,16 @@ class GB_MAPPER_MBC1 {
             return;
         }
         // adjust address for mirroring
-        if ((addr > 0xE000) && (addr < 0xFE00)) addr -= 0x2000;
+        if ((addr > 0xE000) && (addr < 0xFE00)) return; //addr -= 0x2000;
 
         if (addr < 0xD000) { // WRAM lo bank
             this.WRAM[addr & 0xFFF] = val;
             return;
         }
         if (addr < 0xE000) { // WRAM hi bank
+            if (addr === 0xD6FE) {
+                console.log('W', hex4(addr), hex2(val));
+            }
             this.WRAM[(addr & 0xFFF) + this.WRAM_bank_offset] = val;
             return;
         }
@@ -215,6 +225,7 @@ class GB_MAPPER_MBC1 {
         this.ROM.set(cart.ROM);
         this.cartRAM = new Uint8Array(cart.header.RAM_size);
         this.cartRAM32k = cart.header.RAM_size === 32768;
+        console.log('Cart RAM size', cart.header.RAM_size);
         this.RAM_mask = cart.header.RAM_mask;
         this.has_RAM = this.cartRAM.byteLength > 0;
         this.num_ROM_banks = this.ROM.byteLength / 16384;
