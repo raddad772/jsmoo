@@ -124,13 +124,13 @@ class GB_bus {
     }
 
     IRQ_vblank_down() {
-        //console.log('VBLANK IRQ DOWN!')
         this.cpu.cpu.regs.IF &= 0xFE;
+        //console.log('VBLANK DOWN!', this.cpu.cpu.regs.IF);
     }
 
     IRQ_vblank_up() {
-        //console.log('IRQ VBLANK UP!');
         this.cpu.cpu.regs.IF |= 1;
+        console.log('VBLANK UP!', this.cpu.cpu.regs.IF);
     }
 }
 
