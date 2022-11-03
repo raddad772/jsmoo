@@ -112,7 +112,7 @@ This means the Address pins are set to 24525, the Data pins set to 174, and READ
 
 If you are using T-states, this probably happened during some number of the 4 cycles an M-state represents.
 
-A null value for the address or data pins refers to when the bus is electrically disconnected from the processor internals, so the value doesn't matter. For convenience, we just use the last address generated, but this is a configurable option too.
+A null value for the address or data pins refers to when the bus is electrically disconnected from the processor internals, so the value doesn't matter. For convenience, we often just use the last address generated.
 
 ---
 
@@ -127,7 +127,7 @@ for test in test.json:
     for cycle in test:
         cycle processor
         if we are checking cycle-by-cycle:
-            compare our R/W/MRQ/IO/Address/Data pins against the current cycle;
+            compare our R/W/MRQ/Address/Data pins against the current cycle;
       
     compare final RAM state to test and report any errors;
     compare final processor state to test and report any errors;
