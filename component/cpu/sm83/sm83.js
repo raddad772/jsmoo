@@ -185,7 +185,6 @@ class SM83_t {
         if (this.regs.IME_DELAY > 0) {
             this.regs.IME_DELAY--;
             if (this.regs.IME_DELAY <= 0) {
-                console.log('IRQ ENABLED!');
                 this.regs.IME = 1;
             }
         }
