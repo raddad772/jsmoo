@@ -1,6 +1,6 @@
 "use strict";
 
-const GB_QUICK_BOOT = false;
+const GB_QUICK_BOOT = true;
 
 // number of 16KB banks
 const GB_ROMBANKS = Object.freeze({
@@ -123,6 +123,7 @@ class GB_cart {
         this.header.sensor_present = 0;
         let mn = inp[0x0147];
         this.header.mapper = GB_MAPPERS.none;
+        console.log('MAPPER', hex2(mn))
         switch(mn) {
             case 0:
                 this.header.mapper = GB_MAPPERS.none;
@@ -265,6 +266,9 @@ class GB_cart {
                 break;
             case GB_MAPPERS.MBC1:
                 this.mapper = new GB_MAPPER_MBC1(this.clock, this.bus);
+                break;
+            case GB_MAPPERS.MBC3:
+                this.mapper = new GB_MAPPER_MBC3(this.clock, this.bus);
                 break;
             default:
                 console.log('UNSUPPORTED MAPPER SO FAR', this.header.mapper);
