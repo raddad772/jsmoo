@@ -16,9 +16,9 @@ const GENERICZ80_STR = 'genericz80'
 //const DEFAULT_SYSTEM = GENERICZ80_STR;
 //const DEFAULT_SYSTEM = SPECTRUM_STR;
 //const DEFAULT_SYSTEM = GG_STR;
-//const DEFAULT_SYSTEM = NES_STR;
+const DEFAULT_SYSTEM = NES_STR;
 //const DEFAULT_SYSTEM = SMS_STR;
-const DEFAULT_SYSTEM = GB_STR;
+//const DEFAULT_SYSTEM = GB_STR;
 
 class input_provider_t {
 	constructor(system_kind, keymap) {

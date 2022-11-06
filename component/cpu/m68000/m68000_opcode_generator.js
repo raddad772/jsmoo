@@ -5,6 +5,8 @@ class M68K_EA {
         this.reg = reg;
         this.valid = false;
         this.address = 0;
+
+        this.kind = 'EA';
     }
 }
 
@@ -24,21 +26,29 @@ class M68K_ins {
 class M68K_DR {
     constructor(reg_num) {
         this.number = reg_num;
+        this.kind = 'DR';
     }
 }
 
 class M68K_AR {
     constructor(reg_num) {
         this.number = reg_num;
+        this.kind = 'AR';
     }
 }
 
+const M68T_B = 0;
+const M68T_W = 1;
+const M68T_L = 2;
 
 /**
  * {Array<M68K_ins>} M68K_INS_TEST
  */
 let M68K_INS_TEST;
 
+/**
+ * @returns {Array<M68K_ins>[]}
+ */
 function fill_m68k_opcode_table() {
     let table = new Array(65536);
     function bind(opcodei, mn, arg1=null, arg2=null, arg3=null) {
@@ -685,8 +695,8 @@ function fill_m68k_opcode_table() {
             if (mode !== 4) {
                 let opcode = 0x4C80 | (mode << 3) | reg;
                 let ea_from = new M68K_EA(mode, reg);
-                bind(opcode | (0 << 6), M68K_MN.MOVEM_TO_REG_W, ea_from);
-                bind(opcode | (1 << 6), M68K_MN.MOVEM_TO_REG_L, ea_from);
+                bind(opcode | (0 << 6), M68K_MN.MOVEM_TO_RG_W, ea_from);
+                bind(opcode | (1 << 6), M68K_MN.MOVEM_TO_RG_L, ea_from);
             }
         }
     }
