@@ -62,6 +62,18 @@ class m68k_registers_t {
 
         this.STP = 0;
         this.RES = 0;
+
+        this.T1 = 0;
+        this.T2 = 0;
+        this.T3 = 0;
+
+        this.TRs = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        this.DR1 = new M68K_DR(0);
+        this.DR2 = new M68K_DR(0);
+        this.AR1 = new M68K_AR(0);
+        this.AR2 = new M68K_AR(0);
+        this.EA1 = new M68K_EA(0, 0);
+        this.EA2 = new M68K_EA(0, 0);
     }
 }
 
@@ -84,4 +96,6 @@ class m68k_t {
         this.regs = new m68k_registers_t();
         this.pins = new m68k_pins_t();
     }
+
+
 }
