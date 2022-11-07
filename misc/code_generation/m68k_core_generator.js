@@ -150,7 +150,8 @@ class M68K_switchgen {
         return this.outstr;
     }
 
-    addcycles(howmany) {
+    addcycles(howmany, actually_make_them=true) {
+        if (!actually_make_them) console.log('PLEASE IMPLEMENT actually_make_them');
         this.RWAUL(0, 0, 0, 0);
         let first = true;
         for (let i = 0; i < howmany; i++) {
@@ -365,7 +366,7 @@ class M68K_switchgen {
 
     readAddrB(addr, output) {
         this.readAddrW(addr + ' & 0xFFFFFFFE', output);
-        this.addl(output + ' = ((' + addr + ') & 1) ? ((' + output + ' & 0xFF00) >>> 8) : (' + output + ' & 0xFF;');
+        if (output !== null) this.addl(output + ' = ((' + addr + ') & 1) ? ((' + output + ' & 0xFF00) >>> 8) : (' + output + ' & 0xFF;');
     }
 
     readAddrW(addr, output) {
@@ -374,26 +375,35 @@ class M68K_switchgen {
         this.RWAUL(0, 1, 1, 1);
         this.addcycle('read 2');
         this.RWAUL(0, 0, 0, 0);
-        this.addl(output + ' = pins.D;');
+        if (output !== null) this.addl(output + ' = pins.D;');
         this.addcycle('read 3');
         this.addcycle('read 4');
     }
 
     readAddrL(addr, output) {
         let TR1 = this.allocate_temp_reg();
-        this.readAddrW(addr, TR1);
-        this.readAddrW('(' + addr + ' + 2) & 0xFFFFFFFF', output);
-        this.addl(output + ' |= (' + TR1 + ' << 16);');
+        if (output !== null) {
+            this.readAddrW(addr, TR1);
+            this.readAddrW('(' + addr + ' + 2) & 0xFFFFFFFF', output);
+            this.addl(output + ' |= (' + TR1 + ' << 16);');
+        }
+        else {
+            this.readAddrW(addr, null);
+            this.readAddrW('(' + addr + ' + 2) & 0xFFFFFFFF', output);
+        }
     }
 
     readAddr(Tsize, addr, output) {
         switch(Tsize) {
             case 'B':
-                return this.readAddrB(addr, output);
+                this.readAddrB(addr, output);
+                return;
             case 'W':
-                return this.readAddrW(addr, output);
+                this.readAddrW(addr, output);
+                return;
             case 'L':
-                return this.readAddrL(addr, output);
+                this.readAddrL(addr, output);
+                return;
         }
         debugger;
     }
@@ -534,17 +544,11 @@ class M68K_switchgen {
     sign(Tsize, value) {
         switch(Tsize) {
             case 'B':
-                this.addl('let stemp = (' + value + ') & 0xFF;');
-                this.addl('stemp = (stemp > 0x80) ? (-0x100 - stemp) : stemp;');
-                return 'stemp';
+                return '((' + value + ' > 0x80) ? (-0x100 - ' + value + ') : ' + value + ');';
             case 'W':
-                this.addl('let stemp = (' + value + ') & 0xFFFF;');
-                this.addl('stemp = (stemp > 0x8000) ? (-0x10000 - stemp) : stemp;');
-                return 'stemp';
+                return '((' + value + ' > 0x8000) ? (-0x10000 - ' + value + ') : ' + value + ');';
             case 'L':
-                this.addl('let stemp = (' + value + ') & 0xFFFFFFFF;');
-                this.addl('stemp = (stemp > 0x80000000) ? (-0x100000000 - stemp) : stemp;');
-                return 'stemp';
+                return '((' + value + ' > 0x80000000) ? (-0x100000000 - ' + value + ') : ' + value + ');';
         }
     }
 
@@ -599,6 +603,47 @@ class M68K_switchgen {
         }
     }
 
+    readCCR(output) {
+        this.addl(output + ' = regs.C | (regs.V << 1) | (regs.Z << 2) | (regs.N << 3) | (regs.X << 4);');
+    }
+
+    writeCCR(input) {
+        this.addl('regs.C = ' + input + ' & 1;');
+        this.addl('regs.V = (' + input + ' & 2) >>> 1;');
+        this.addl('regs.Z = (' + input + ' & 4) >>> 2;');
+        this.addl('regs.N = (' + input + ' & 8) >>> 3;');
+        this.addl('regs.X = (' + input + ' & 0x10) >>> 4;');
+    }
+
+    readSR(output) {
+        this.addl(output + ' = regs.C | (regs.V << 1) | (regs.Z << 2) | (regs.N << 3) | (regs.X << 4) | (regs.I << 8) | (regs.S << 13) | (regs.T << 15);');
+    }
+
+    writeSR(input) {
+        this.writeCCR(input);
+        this.addl('if (regs.S !== ((' + input + ' >>> 13) & 1) {');
+        let swap = this.allocate_temp_reg();
+        this.addl('    ' + swap + ' = regs.A[7];');
+        this.addl('    regs.A[7] = regs.SP;');
+        this.addl('    regs.SP = ' + swap + ';');
+        this.addl('}');
+
+        this.addl('regs.I = (' + input + ' & 0x700) >>> 8;');
+        this.addl('regs.S = (' + input + ' & 0x2000) >>> 13;');
+        this.addl('regs.T = (' + input + ' & 0x8000) >>> 15;');
+    }
+
+    check_supervisor(do_prefetch) {
+        this.addl('if (!regs.S) {')
+        this.addl('    regs.PC = (regs.PC - 4) & 0xFFFFFFFF;');
+        this.addl('    regs.EXC = M68K_EX.Unprivileged;');
+        this.addl('    regs.EXC_vec = ' + hex4(M68K_VEC.Unprivileged) + ';');
+        this.addl('    regs.TCU = 0;');
+        this.addl('    return;');
+        if (do_prefetch) this.prefetch();
+        this.addl('}')
+    }
+
     // *************So-called algorithms
     ADD(Tsize, source, target, out, extend=false) {
         let result = this.allocate_temp_reg();
@@ -632,6 +677,25 @@ class M68K_switchgen {
         this.addl('regs.Z = +(' + out + ' === 0);');
         this.setN(Tsize, out);
         //this.addl(out + ' = ' + this.clip(Tsize, 'result') + ';');
+    }
+
+    ASL(Tsize, result, shift, output) {
+        let carry = this.allocate_temp_reg();
+        let overflow = this.allocate_temp_reg();
+        let before = this.allocate_temp_reg();
+        this.addl('for (let i = 0; i < ' + shift + '; i++) {')
+        this.addl(carry + ' = +((' + result + ' & ' + this.msb(Tsize) + ') === ' + this.msb(Tsize) + ');');
+        this.addl(before + ' = ' + result + ';');
+        this.addl(result + ' = (' + result + ' << 1) & 0xFFFFFFFF;');
+        this.addl(overflow + ' |= ' + before + ' ^ ' + result);
+        this.addl('}');
+
+        this.addl('regs.C = ' + carry + ';');
+        this.addl('regs.V = +(' + this.sign(Tsize, overflow) + ' < 0)');
+        this.addl('regs.Z = +(' + this.clip(Tsize, result) + ' === 0);');
+        this.addl('regs.N = +(' + this.sign(Tsize, result) + ' < 0);');
+        this.addl('if (' + shift + ') regs.X = regs.C;');
+        this.addl(output + ' = ' + this.clip(Tsize, result) + ';');
     }
 
     // ************** instructions themselves
@@ -806,6 +870,88 @@ class M68K_switchgen {
         }
     }
 
+    instructionANDI(pa, mwith) {
+        if ((pa.Tsize === 'L') && (mwith.mode === M68K_AM.DataRegisterDirect)) this.idle(4);
+        let source = this.allocate_temp_reg();
+        let target = this.allocate_temp_reg();
+        let result = this.allocate_temp_reg();
+        this.extension(pa.Tsize, source);
+        this.read(pa.Tsize, mwith, target, true);
+        this.AND(pa.Tsize, source, target, result);
+        this.prefetch();
+        this.write(pa.Tsize, mwith, result);
+    }
+
+    instructionANDI_TO_CCR(pa) {
+        let data = this.allocate_temp_reg();
+        let TR = this.allocate_temp_reg();
+        this.extension('W', data);
+        this.readCCR(TR);
+        this.addl (TR + ' &= ' + data + ';');
+        this.writeCCR(TR);
+        this.idle(8);
+        this.readAddr('W', 'regs.PC', null);
+        this.prefetch();
+    }
+
+    instructionANDI_TO_SR(pa) {
+        this.check_supervisor(true);
+        let data = this.allocate_temp_reg();
+        let TR = this.allocate_temp_reg();
+        this.extension('W', data);
+        this.readSR(TR);
+        this.addl(TR + ' &= ' + data + ';');
+        this.writeSR(TR);
+        this.idle(8);
+        this.readAddr('W', 'regs.PC', null)
+        this.prefetch();
+    }
+
+    instructionASL(pa, arg1, arg2) {
+        let count, mwith, from, result, TR, skip;
+        switch(pa.Ttype) {
+            case 'IMM':
+                count = arg1;
+                mwith = arg2;
+                this.idle(((pa.Tsize !== 4) ? 2 : 4) + parseInt(count) * 2);
+                TR = this.allocate_temp_reg();
+                this.read(pa.Tsize, mwith, TR);
+                result = this.allocate_temp_reg();
+                this.ASL(pa.Tsize, parseInt(count), result);
+                this.prefetch();
+                this.write(pa.Tsize, result);
+                return;
+            case 'REG':
+                count = this.allocate_temp_reg();
+                skip = this.allocate_temp_reg();
+                from = arg1;
+                mwith = arg2;
+                this.read('L', from, count);
+                this.addl(count + ' &= ' + 63 + ';');
+                let r = (pa.Tsize !== 'L') ? 2 : 4;
+                // ARGH!
+                this.addl(skip + ' = 130 - (' + r + ' + ' + count + ' * 2);');
+                this.addl('regs.TCU += ' + skip + ';');
+                this.addcycles(130, false);
+                //
+                TR = this.allocate_temp_reg();
+                this.read(pa.Tsize, mwith, TR);
+                this.ASL(pa.Tsize, TR, count, result);
+                this.prefetch();
+                this.write(pa.Tsize, mwith, result);
+                return;
+            case 'EA':
+                mwith = arg1;
+                TR = this.allocate_temp_reg();
+                result = this.allocate_temp_reg();
+                this.read('W', mwith, TR,true);
+                this.ASL('W', 1, result);
+                this.prefetch();
+                this.write('W', mwith, result);
+                return;
+        }
+    }
+
 }
 
 
@@ -834,7 +980,12 @@ function M68K_generate_instruction_function(indent, opcode_info, opt_matrix) {
             ag['instruction' + parsed.outstr](parsed, arg1, arg2);
             break;
         case 'ADDI':
+        case 'ANDI':
             ag['instruction' + parsed.outstr](parsed, arg1);
+            break;
+        case 'ANDI_TO_CCR':
+        case 'ANDI_TO_SR':
+            ag['instruction' + parsed.outstr](parsed);
             break;
         case undefined:
             console.log('WAIT WHAT?');
