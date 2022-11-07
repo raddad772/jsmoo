@@ -700,6 +700,71 @@ class M68K_switchgen {
         }
     }
 
+    instructionADDA(parsed, from, mwith) {
+        if ((parsed.Tsize !== 'L') || (from.mode === M68K_AM.DataRegisterDirect) || (from.mode === M68K_AM.AddressRegisterDirect) || (from.mode === M68K_AM.Immediate))
+            this.addcycles(4);
+        else
+            this.addcycles(2);
+        let source = this.allocate_temp_reg();
+        let target = this.allocate_temp_reg();
+        this.read(parsed.Tsize, from, source);
+        this.addl(source + ' = ' + this.sign(parsed.Tsize, source) + ';');
+        this.read('L', mwith, target);
+        this.prefetch();
+        this.write('L', mwith, '(' + source + ' + ' + target + ') & 0xFFFFFFFF');
+    }
+
+    instructionADDI(parsed, mwith) {
+        if((parsed.Tsize === 'L') && (mwith.mode === M68K_AM.DataRegisterDirect))
+            this.idle(4);
+        let source = this.allocate_temp_reg();
+        let target = this.allocate_temp_reg();
+        let result = this.allocate_temp_reg();
+        this.extension(parsed.Tsize, source);
+        this.read(parsed.Tsize, mwith, target, true);
+        this.ADD(parsed.Tsize, source, target, result);
+        this.prefetch();
+        this.write(parsed.Tsize, mwith, result);
+    }
+
+    instructionADDQ(parsed, immediate, mwith) {
+        let source = this.allocate_temp_reg();
+        let target = this.allocate_temp_reg();
+        let result = this.allocate_temp_reg();
+        switch(parsed.Ttype) {
+            case 'EA':
+                if ((parsed.Tsize === 'L') && (mwith.mode === M68K_AM.DataRegisterDirect)) this.idle(4);
+                this.addl(source + ' = ' + immediate + ';');
+                this.read(parsed.Tsize, mwith, target, true);
+                this.ADD(parsed.Tsize, source, target, result);
+                this.prefetch();
+                this.write(Tsize, mwith, result);
+                break;
+            case 'AR':
+                this.idle(4);
+                this.read('L', mwith, source);
+                this.addl(result + ' = (' + source + ' + ' + immediate + ') & 0xFFFFFFFF;');
+                this.prefetch();
+                this.write('L', mwith, result);
+                break;
+            default:
+                console.log('INVESTIGATE!');
+                debugger;
+        }
+    }
+
+    instructionADDX(parsed, from, mwith) {
+        if ((parsed.Tsize === 'L') && (from.mode === M68K_AM.DataRegisterDirect)) this.idle(4);
+        let source = this.allocate_temp_reg();
+        let target = this.allocate_temp_reg();
+        let result = this.allocate_temp_reg();
+        this.read(parsed.Tsize, from, source);
+        this.read(parsed.Tsize, mwith, target, true, true);
+        this.ADD(parsed.Tsize, source, target, result, true);
+        this.prefetch();
+        this.write(parsed.Tsize, mwith, result);
+    }
+
     /**
      * @param {M68K_MN_parse_ret} parsed
      * @param from
@@ -761,13 +826,15 @@ function M68K_generate_instruction_function(indent, opcode_info, opt_matrix) {
     if (typeof MN_n !== 'number') console.log('WHAT? OUTRAGEOUS!', MN_n, parsed.outstr);
     switch(parsed.outstr) {
         case 'ABCD':
-            ag.instructionABCD(parsed, arg1, arg2);
-            break;
         case 'ADD':
-            ag.instructionADD(parsed, arg1, arg2);
-            break;
         case 'AND':
-            ag.instructionAND(parsed, arg1, arg2);
+        case 'ADDA':
+        case 'ADDQ':
+        case 'ADDX':
+            ag['instruction' + parsed.outstr](parsed, arg1, arg2);
+            break;
+        case 'ADDI':
+            ag['instruction' + parsed.outstr](parsed, arg1);
             break;
         case undefined:
             console.log('WAIT WHAT?');
