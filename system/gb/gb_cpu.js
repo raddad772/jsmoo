@@ -7,7 +7,6 @@ class GB_timer {
         this.TAC = 0;
         this.last_bit = 0;
         this.TIMA_reload_cycle = false;
-        this.DIV_reset = false;
 
         this.SYSCLK = 0;
 
@@ -27,9 +26,7 @@ class GB_timer {
                 this.TIMA_reload_cycle = true
             }
         }
-        //if (!this.DIV_reset)
             this.SYSCLK_change((this.SYSCLK + 4) & 0xFFFF);
-        this.DIV_reset = false;
     }
 
     SYSCLK_change(new_value) {
@@ -69,7 +66,6 @@ class GB_timer {
         switch(addr) {
             case 0xFF04: // DIV, which is upper 8 bits of SYSCLK
                 this.SYSCLK_change(0);
-                this.DIV_reset = true;
                 break;
             case 0xFF05: // TIMA, the timer counter
                 this.TIMA = val;
@@ -131,7 +127,8 @@ class GB_CPU {
         this.dma = {
             running: 0,
             index: 0,
-            high: 0
+            high: 0,
+            last_write: 0
         }
 
         input_config.connect_controller('gb');
@@ -207,6 +204,7 @@ class GB_CPU {
                 this.dma.running = 1;
                 this.dma.high = (val << 8);
                 this.dma.index = 0;
+                this.dma.last_write = val;
                 break;
             case 0xFF50: // Boot ROM disable. Cannot re-enable
                 if (val > 0) {
@@ -216,11 +214,11 @@ class GB_CPU {
                 }
                 break;
             case 0xFF0F:
-                //console.log('WRITE IF', val);
+                console.log('WRITE IF', val);
                 this.cpu.regs.IF = val & 0x1F;
                 return;
             case 0xFFFF: // IE: Interrupt Enable
-                console.log('IE', val & 0x1F);
+                console.log('WRITE IE', val & 0x1F);
                 this.cpu.regs.IE = val & 0x1F;
                 return;
         }
@@ -265,6 +263,8 @@ class GB_CPU {
                 console.log('READ IF!', this.cpu.regs.IF);
                 return this.cpu.regs.IF;
                 //return this.clock.irq.vblank_request | (this.clock.irq.lcd_stat_request << 1) | (this.clock.irq.timer_request << 2) | (this.clock.irq.serial_request << 3) | (this.clock.irq.joypad_request << 4);
+            case 0xFF46: // OAM DMA
+                return this.dma.last_write;
             case 0xFFFF: // IE Interrupt Enable
                 return this.cpu.regs.IE;
                 //return this.clock.irq.vblank_enable | (this.clock.irq.lcd_stat_enable << 1) | (this.clock.irq.timer_enable << 2) | (this.clock.irq.serial_enable << 3) | (this.clock.irq.joypad_enable << 4);

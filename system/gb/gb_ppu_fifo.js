@@ -369,6 +369,7 @@ class GB_PPU_FIFO {
 
         this.clock.ppu_mode = GB_PPU_modes.OAM_search;
         this.line_cycle = 0;
+        this.cycles_til_vblank = 0;
         this.enabled = false; // PPU off at startup
         // First frame after reset, we don't draw.
         this.display_update = false;
@@ -812,7 +813,7 @@ class GB_PPU_FIFO {
             case GB_PPU_modes.VBLANK: // 1, comes after 0
                 this.IRQ_mode0_down();
                 this.IRQ_mode1_up();
-                this.bus.IRQ_vblank_up();
+                this.IRQ_vblank_up();
                 this.clock.CPU_can_VRAM = 1;
                 this.clock.CPU_can_OAM = 1;
                 break;
@@ -824,6 +825,11 @@ class GB_PPU_FIFO {
         for (let i = 0; i < howmany; i++) {
             // TODO: make this enabled on frame AFTER enable happens
             if (this.enabled) this.cycle();
+            if (this.cycles_til_vblank) {
+                this.cycles_til_vblank--;
+                if (this.cycles_til_vblank === 0)
+                    this.bus.IRQ_vblank_up();
+            }
             this.line_cycle++;
             if (this.line_cycle === 456) this.advance_line();
             if (dbg.do_break) break;
@@ -875,6 +881,10 @@ class GB_PPU_FIFO {
     IRQ_mode0_down() {
         this.io.STAT_IF &= 0xFE;
         this.eval_STAT();
+    }
+
+    IRQ_vblank_up() {
+        this.cycles_til_vblank = 1;
     }
 
     IRQ_mode1_up() {
@@ -1006,6 +1016,7 @@ class GB_PPU_FIFO {
         this.clock.ly = 0;
         this.line_cycle = 0;
         this.display_update = false;
+        this.cycles_til_vblank = 0;
 
         // Reset IRQs
         this.io.STAT_IE = 0; // Interrupt enables
