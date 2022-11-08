@@ -1,6 +1,6 @@
 "use strict";
 
-let SM83_PC_BRK = 0x46E8;
+let SM83_PC_BRK = -1;
 
 class SM83_regs_F {
     constructor() {
@@ -165,7 +165,7 @@ class SM83_t {
                     dbg.traces.add(TRACERS.SM83, this.trace_cycles, this.trace_format(SM83_disassemble(this.pins.Addr, this.trace_peek), this.pins.Addr));
                 }
 
-                this.regs.TCU = 1;
+                //this.regs.TCU = 1;
                 this.current_instruction.exec_func(this.regs, this.pins);
                 break;
             case 2:

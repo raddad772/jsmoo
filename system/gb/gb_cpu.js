@@ -1,5 +1,105 @@
 "use strict";
 
+class GB_timer {
+    constructor(raise_IRQ) {
+        this.TIMA = 0;
+        this.TMA = 0;
+        this.TAC = 0;
+        this.last_bit = 0;
+        this.TIMA_reload_cycle = false;
+        this.DIV_reset = false;
+
+        this.SYSCLK = 0;
+
+        this.cycles_til_TIMA_IRQ = 0;
+
+        this.raise_IRQ = raise_IRQ;
+    }
+
+    // Increment 1 state
+    inc() {
+        this.TIMA_reload_cycle = false;
+        if (this.cycles_til_TIMA_IRQ > 0) {
+            this.cycles_til_TIMA_IRQ--;
+            if (this.cycles_til_TIMA_IRQ === 0) {
+                this.raise_IRQ();
+                this.TIMA = this.TMA;
+                this.TIMA_reload_cycle = true
+            }
+        }
+        if (!this.DIV_reset) this.SYSCLK_change((this.SYSCLK + 4) & 0xFFFF);
+        this.DIV_reset = false;
+    }
+
+    SYSCLK_change(new_value) {
+        // 00 = bit 9, lowest speed, /1024  4096 hz   & 0x200
+        // 01 = bit 3,               /16  262144 hz   & 0x08
+        // 10 = bit 5,               /64  65536 hz    & 0x20
+        // 11 = bit 7,              /256  16384 hz    & 0x80
+        this.SYSCLK = new_value;
+        let this_bit;
+        switch(this.TAC & 3) {
+            case 0: // using bit 9
+                this_bit = (this.SYSCLK & 0x200) >>> 9;
+                break;
+            case 3: // using bit 7
+                this_bit = (this.SYSCLK & 0x80) >>> 7;
+                break;
+            case 2: // using bit 5
+                this_bit = (this.SYSCLK & 0x20) >>> 5;
+                break;
+            case 1: // using bit 3
+                this_bit = (this.SYSCLK & 0x08) >>> 3;
+                break;
+        }
+        this_bit &= ((this.TAC & 4) >>> 2);
+
+        // Detect falling edge...
+        if ((this.last_bit === 1) && (this_bit === 0)) {
+            this.TIMA = (this.TIMA + 1) & 0xFF; // Increment TIMA
+            if (this.TIMA === 0) { // If we overflow, schedule IRQ
+                this.cycles_til_TIMA_IRQ = 1;
+            }
+        }
+        this.last_bit = this_bit;
+    }
+
+    write_IO(addr, val) {
+        switch(addr) {
+            case 0xFF04: // DIV, which is upper 8 bits of SYSCLK
+                this.SYSCLK_change(0);
+                this.DIV_reset = true;
+                break;
+            case 0xFF05: // TIMA, the timer counter
+                this.TIMA = val;
+                // "During the strange cycle [A] you can prevent the IF flag from being set and prevent the TIMA from being reloaded from TMA by writing a value to TIMA. That new value will be the one that stays in the TIMA register after the instruction. Writing to DIV, TAC or other registers wont prevent the IF flag from being set or TIMA from being reloaded."
+                if (this.cycles_til_TIMA_IRQ === 1) this.cycles_til_TIMA_IRQ = 0;
+                break;
+            case 0xFF06: // TMA, the timer modulo
+                // "If TMA is written the same cycle it is loaded to TIMA [B], TIMA is also loaded with that value."
+                if (this.TIMA_reload_cycle) this.TIMA = val;
+                this.TMA = val;
+                break;
+            case 0xFF07: // TAC, the timer control
+                this.TAC = val;
+                break;
+        }
+    }
+
+    read_IO(addr) {
+        switch(addr) {
+            case 0xFF04: // DIV, upper 8 bits of SYSCLK
+                return (this.SYSCLK & 0xFF00) >>> 8;
+            case 0xFF05:
+                return this.TIMA;
+            case 0xFF06:
+                return this.TMA;
+            case 0xFF07:
+                return this.TAC;
+        }
+    }
+}
+
 class GB_CPU {
     /**
      * @param {Number} variant
@@ -15,16 +115,8 @@ class GB_CPU {
 
         this.FFregs = new Uint8Array(256); // For unimplemented FF-regs
 
-        this.timer = {
-            cycles_til_div: 256,
-            div: 0,
-            tima: 0,
-            tima_reload: 0,
-            cycles_til_tima: 256,
-            cycles_til_tima_reload: 256,
-            tima_mode: 3,
-            tima_enabled: 0,
-        }
+        this.timer = new GB_timer(this.raise_TIMA.bind(this));
+
 
         this.tracing = false;
 
@@ -59,6 +151,11 @@ class GB_CPU {
     // TODO: emulate bug for Road Rash
     force_IRQ_latch() {
 
+    }
+
+    raise_TIMA() {
+        this.cpu.regs.IF |= 4;
+        console.log('raising TIMA', this.cpu.regs.IE);
     }
 
     enable_tracing() {
@@ -99,33 +196,11 @@ class GB_CPU {
                 this.FFregs[2] = val;
                 return;
             case 0xFF04: // DIV
-                this.timer.div = 0;
-                return;
             case 0xFF05: // TIMA
-                this.timer.tima = val;
-                return;
             case 0xFF06: // TIMA reload
-                this.timer.tima_reload = val;
-                return;
             case 0xFF07: // TAC TIMA controler
-                this.timer.tima_enabled = (val & 4) >>> 2;
-                this.timer.tima_mode = val & 3;
-                switch(val & 3) {
-                    case 0:
-                        this.timer.cycles_til_tima_reload = 256;//1024;
-                        break;
-                    case 1:
-                        this.timer.cycles_til_tima_reload = 4;//16;
-                        break;
-                    case 2:
-                        this.timer.cycles_til_tima_reload = 16;//64;
-                        break;
-                    case 3:
-                        this.timer.cycles_til_tima_reload = 64;//256;
-                        break;
-                }
-                this.timer.cycles_til_tima = this.timer.cycles_til_tima_reload;
-                break;
+                this.timer.write_IO(addr, val);
+                return;
             case 0xFF46: // OAM DMA
                 //console.log('OAM DMA START')
                 this.dma.running = 1;
@@ -181,13 +256,10 @@ class GB_CPU {
             case 0xFF02: // SC
                 return val;
             case 0xFF04: // DIV
-                return this.timer.div;
             case 0xFF05: // TIMA
-                return this.timer.tima;
             case 0xFF06: // TIMA reload
-                return this.timer.tima_reload;
             case 0xFF07: // TAC timer control
-                return (this.timer.enabled << 2) | this.timer.tima_mode;
+                return this.timer.read_IO(addr);
             case 0xFF0F: // IF: interrupt flag
                 console.log('READ IF!', this.cpu.regs.IF);
                 return this.cpu.regs.IF;
@@ -211,10 +283,6 @@ class GB_CPU {
             //console.log('DMA END!');
             this.dma.running = 0;
         }
-    }
-
-    tima_IRQ() {
-        this.cpu.regs.IF |= 4;
     }
 
     // Routine to set state as if boot ROM had run
@@ -259,29 +327,6 @@ class GB_CPU {
             } // Skip CPU cycle due to OAM
             // TODO: should timer skip too!?
         }
-        if (this.cpu.regs.STP)
-            this.timer.div = 0;
-        else {
-            this.timer.cycles_til_div--;
-            if (this.timer.cycles_til_div === 0) {
-                this.timer.cycles_til_div = 256;
-                // TODO: more timer stuff
-                this.timer.div = (this.timer.div + 1) & 0xFF;
-            }
-
-            if (this.timer.tima_enabled) {
-                //console.log(this.timer.cycles_til_tima);
-                this.timer.cycles_til_tima--;
-                if (this.timer.cycles_til_tima <= 0) {
-                    this.timer.cycles_til_tima = this.timer.cycles_til_tima_reload;
-                    this.timer.tima++;
-                    if (this.timer.tima >= 0xFF) {
-                        this.timer.tima = this.timer.tima_reload;
-                        this.tima_IRQ();
-                    }
-                }
-            }
-        }
         if (this.cpu.pins.RD && this.cpu.pins.MRQ) {
             this.cpu.pins.D = this.bus.mapper.CPU_read(this.cpu.pins.Addr, 0xCC);
             if (this.tracing) {
@@ -295,6 +340,10 @@ class GB_CPU {
                 dbg.traces.add(TRACERS.SM83, this.cpu.trace_cycles, trace_format_write('SM83', SM83_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
             }
         }
-
+        if (this.cpu.regs.STP)
+            this.timer.SYSCLK = 0;
+        else {
+            this.timer.inc();
+        }
     }
 }
