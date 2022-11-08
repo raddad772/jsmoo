@@ -396,26 +396,15 @@ class GB_PPU_FIFO {
 
             lyc: 0,
 
+            STAT_IF: 0,
+            STAT_IE: 0,
+
             window_tile_map_base: 0,
             window_enable: 0,
             bg_window_tile_data_base: 0,
             bg_tile_map_base: 0,
             obj_enable: 1,
             bg_window_enable: 1,
-
-            old_stat_irq_mode0_enable: 0,
-            old_stat_irq_mode1_enable: 0,
-            old_stat_irq_mode2_enable: 0,
-            old_stat_irq_lylyc_enable: 0,
-
-            stat_irq_mode0_enable: 0,
-            stat_irq_mode1_enable: 0,
-            stat_irq_mode2_enable: 0,
-            stat_irq_lylyc_enable: 0,
-            stat_irq_mode0_request: 0,
-            stat_irq_mode1_request: 0,
-            stat_irq_mode2_request: 0,
-            stat_irq_lylyc_request: 0,
 
             SCX: 0, // X scroll
             SCY: 0, // Y scroll
@@ -683,19 +672,15 @@ class GB_PPU_FIFO {
                 return;
             case 0xFF41: // STAT LCD status
                 if (this.variant !== GB_variants.GBC) {
-                    this.io.stat_irq_mode0_enable = 1;
-                    this.io.stat_irq_mode1_enable = 1;
-                    this.io.stat_irq_mode2_enable = 1;
-                    this.io.stat_irq_lylyc_enable = 1;
-                    this.IRQ_stat_eval();
-                    //this.bus.cpu.force_IRQ_latch();
+                    this.io.IE = 0x0F;
+                    this.eval_STAT();
                 }
-                this.io.stat_irq_mode0_enable = (val & 8) >>> 3;
-                this.io.stat_irq_mode1_enable = (val & 0x10) >>> 4;
-                this.io.stat_irq_mode2_enable = (val & 0x20) >>> 5;
-                this.io.stat_irq_lylyc_enable = (val & 0x40) >>> 6;
-                console.log('IRQ STAT ENABLES', val);
-                this.IRQ_stat_eval();
+                let mode0_enable = (val & 8) >>> 3;
+                let mode1_enable = (val & 0x10) >>> 4;
+                let mode2_enable = (val & 0x20) >>> 5;
+                let lylyc_enable = (val & 0x40) >>> 6;
+                this.io.STAT_IE = mode0_enable | (mode1_enable << 1) | (mode2_enable << 2) | (lylyc_enable << 3);
+                this.eval_STAT();
                 return;
             case 0xFF42: // SCY
                 //console.log('SCY!', val);
@@ -747,12 +732,16 @@ class GB_PPU_FIFO {
                     (this.io.bg_tile_map_base << 3) | (this.io.sprites_big << 2) |
                     (this.io.obj_enable << 1) | (this.io.bg_window_enable);
             case 0xFF41: // STAT LCD status
+                let mode0_enable = this.io.IE & 1;
+                let mode1_enable = (this.io.IE & 2) >>> 1;
+                let mode2_enable = (this.io.IE & 4) >>> 2;
+                let lylyc_enable = (this.io.IE & 8) >>> 3;
                 return this.clock.ppu_mode |
                     ((this.clock.ly === this.io.lyc) ? 1 : 0) |
-                    (this.io.stat_irq_mode0_enable << 3) |
-                    (this.io.stat_irq_mode1_enable << 4) |
-                    (this.io.stat_irq_mode2_enable << 5) |
-                    (this.io.stat_irq_lylyc_enable << 6);
+                    (mode0_enable << 3) |
+                    (mode1_enable << 4) |
+                    (mode2_enable << 5) |
+                    (lylyc_enable << 6);
             case 0xFF42: // SCY
                 return this.io.SCY;
             case 0xFF43: // SCX
@@ -782,9 +771,7 @@ class GB_PPU_FIFO {
     }
 
     disable() {
-        console.log('DISABLE PPU', this.enabled);
         if (!this.enabled) return;
-        console.log('DISABLE PPU');
         this.enabled = false;
         this.reset();
         this.clock.CPU_can_VRAM = 1;
@@ -792,51 +779,9 @@ class GB_PPU_FIFO {
     }
 
     enable() {
-        //console.log('ENABLE PPU', this.enabled);
         if (this.enabled) return;
         this.enable_next_frame = true;
         this.clock.CPU_can_OAM = 0;
-    }
-
-    IRQ_stat_eval_mode0() {
-        if (this.io.stat_irq_mode0_enable && this.io.stat_irq_mode0_request && !this.io.old_stat_irq_mode0_enable)
-            this.IRQ_mode0_up();
-        if ((!this.io.stat_irq_mode0_enable) && this.io.stat_irq_mode0_request && this.io.old_stat_irq_mode0_enable)
-            this.IRQ_mode0_down();
-        this.io.old_stat_irq_mode0_enable = this.io.stat_irq_mode0_enable;
-    }
-
-    IRQ_stat_eval_mode1() {
-        if (this.io.stat_irq_mode1_enable && this.io.stat_irq_mode1_request && !this.io.old_stat_irq_mode1_enable)
-            this.IRQ_mode1_up();
-        if ((!this.io.stat_irq_mode1_enable) && this.io.stat_irq_mode1_request && this.io.old_stat_irq_mode1_enable)
-            this.IRQ_mode1_down();
-        this.io.old_stat_irq_mode1_enable = this.io.stat_irq_mode1_enable;
-    }
-
-    IRQ_stat_eval_mode2() {
-        if (this.io.stat_irq_mode2_enable && this.io.stat_irq_mode2_request && !this.io.old_stat_irq_mode2_enable)
-            this.IRQ_mode2_up();
-        if ((!this.io.stat_irq_mode2_enable) && this.io.stat_irq_mode2_request && this.io.old_stat_irq_mode2_enable)
-            this.IRQ_mode2_down();
-        this.io.old_stat_irq_mode2_enable = this.io.stat_irq_mode2_enable;
-    }
-
-    IRQ_stat_eval_lylyc() {
-        if (this.io.stat_irq_lylyc_enable && this.io.stat_irq_lylyc_request && !this.io.old_stat_irq_lylyc_enable)
-            this.IRQ_lylyc_up();
-        if ((!this.io.stat_irq_lylyc_enable) && this.io.stat_irq_lylyc_request && this.io.old_stat_irq_lylyc_enable)
-            this.IRQ_lylyc_down();
-        this.io.old_stat_irq_lylyc_enable = this.io.stat_irq_lylyc_enable;
-    }
-
-    // Called on change to IRQ STAT settings
-    IRQ_stat_eval() {
-        //return;
-        this.IRQ_stat_eval_mode0();
-        this.IRQ_stat_eval_mode1();
-        this.IRQ_stat_eval_mode2();
-        this.IRQ_stat_eval_lylyc();
     }
 
     set_mode(which) {
@@ -844,36 +789,32 @@ class GB_PPU_FIFO {
         this.clock.ppu_mode = which;
 
         switch(which) {
-            case GB_PPU_modes.OAM_search: // 2. after vblank
+            case GB_PPU_modes.OAM_search: // 2. after vblank, so after 1
                 this.clock.CPU_can_OAM = 0;
                 this.clock.CPU_can_VRAM = 1;
-                //
                 if (this.enabled) {
                     this.bus.IRQ_vblank_down();
                     this.IRQ_mode1_down();
-                    if (this.io.stat_irq_mode2_enable)
-                        this.IRQ_mode2_up();
+                    this.IRQ_mode2_up();
                 }
                 break;
-            case GB_PPU_modes.pixel_transfer: // 3
+            case GB_PPU_modes.pixel_transfer: // 3, comes after 2
                 this.IRQ_mode2_down();
                 this.clock.CPU_can_VRAM = 0;
                 this.clock.CPU_can_OAM = 0;
                 this.slice_fetcher.advance_line();
                 break;
-            case GB_PPU_modes.HBLANK: // 0
-                if (this.io.stat_irq_mode0_enable)
-                    this.IRQ_mode0_up();
+            case GB_PPU_modes.HBLANK: // 0, comes after 3
+                this.IRQ_mode0_up();
                 this.clock.CPU_can_VRAM = 1;
                 this.clock.CPU_can_OAM = 1;
                 break;
-            case GB_PPU_modes.VBLANK: // 1
+            case GB_PPU_modes.VBLANK: // 1, comes after 0
                 this.IRQ_mode0_down();
+                this.IRQ_mode1_up();
+                this.bus.IRQ_vblank_up();
                 this.clock.CPU_can_VRAM = 1;
                 this.clock.CPU_can_OAM = 1;
-                if (this.io.stat_irq_mode1_enable)
-                    this.IRQ_mode1_up();
-                this.bus.IRQ_vblank_up();
                 break;
         }
     }
@@ -909,66 +850,58 @@ class GB_PPU_FIFO {
 
     // TODO: trigger IRQ if enabled properly
     eval_lyc() {
-        //console.log(this.io.stat_irq_lylyc_enable, this.clock.ly, this.io.lyc)
-        if ((this.io.stat_irq_lylyc_enable) && (this.clock.ly === this.io.lyc))
+        if (this.clock.ly === this.io.lyc) {
             this.IRQ_lylyc_up();
+        }
         else
             this.IRQ_lylyc_down();
     }
 
     IRQ_lylyc_up() {
-        this.io.stat_irq_lylyc_request = 1;
-        if (!(this.io.stat_irq_mode0_request || this.io.stat_irq_mode1_request || this.io.stat_irq_mode2_request))
-            this.trigger_stat_irq()
+        this.io.STAT_IF |= 8;
+        this.eval_STAT();
     }
 
     IRQ_lylyc_down() {
-        this.io.stat_irq_lylyc_request = 0;
-        this.IRQ_check_down();
+        this.io.STAT_IF &= 0xF7;
+        this.eval_STAT();
     }
 
     IRQ_mode0_up() {
-        this.io.stat_irq_mode0_request = 1;
-        if (!(this.io.stat_irq_mode1_request || this.io.stat_irq_mode2_request || this.io.stat_irq_lylyc_request))
-            this.trigger_stat_irq()
+        this.io.STAT_IF |= 1;
+        this.eval_STAT();
     }
 
     IRQ_mode0_down() {
-        this.io.stat_irq_mode0_request = 0;
-        this.IRQ_check_down();
-    }
-
-    trigger_stat_irq() {
-        //console.log('TRIGGERING STAT IRQ!');
-        this.bus.cpu.cpu.regs.IF |= 2;
+        this.io.STAT_IF &= 0xFE;
+        this.eval_STAT();
     }
 
     IRQ_mode1_up() {
-        this.io.stat_irq_mode1_request = 1;
-        if (!(this.io.stat_irq_mode0_request || this.io.stat_irq_mode2_request || this.io.stat_irq_lylyc_request))
-            this.trigger_stat_irq()
+        this.io.STAT_IF |= 2;
+        this.eval_STAT();
     }
 
     IRQ_mode1_down() {
-        this.io.stat_irq_mode1_request = 0;
-        this.IRQ_check_down();
+        this.io.STAT_IF &= 0xFD;
+        this.eval_STAT();
     }
 
     IRQ_mode2_up() {
-        this.io.stat_irq_mode2_request = 1;
-        if (!(this.io.stat_irq_mode0_request || this.io.stat_irq_mode1_request || this.io.stat_irq_lylyc_request))
-            this.trigger_stat_irq()
+        this.io.STAT_IF |= 4;
+        this.eval_STAT();
     }
 
     IRQ_mode2_down() {
-        this.io.stat_irq_mode2_request = 0;
-        this.IRQ_check_down();
+        this.io.STAT_IF &= 0xFB;
+        this.eval_STAT();
     }
 
-    IRQ_check_down() {
-        if (!(this.io.stat_irq_lylyc_request || this.io.stat_irq_mode0_request || this.io.stat_irq_mode1_request || this.io.stat_irq_mode2_request)) {
+    eval_STAT() {
+        if (this.io.STAT_IF & this.io.STAT_IE)
+            this.bus.cpu.cpu.regs.IF |= 2;
+        else
             this.bus.cpu.cpu.regs.IF &= 0xFD;
-        }
     }
 
     advance_frame() {
@@ -1067,68 +1000,18 @@ class GB_PPU_FIFO {
         }
     }
 
-/*
-Each scanline is 456 dots (114 CPU cycles) long and consists of
-
-mode 2 (OAM search). 80 dots long (2 for each OAM entry). finds up to 10 sprites
-mode 3 (pixel transfer), 173.5+ dots long because of FIFO, plus extra
-mode 0 (hblank) is the rest of the time
-vblank is mode 1, 10 lines
-
-so 456 CYCLES by 154 LINES
-
-
-
-at BEGINNING FETCH of LINE, fetch x2. throw away the first fetch.
-8-pixel (32-bit) pixel dual FIFO, one for BG, one for sprite
-
-
-fetch tile # - 2 cycles
-fetch bitplane 0 - 2 cycles
-fetch bitplane 1 - 2 cycles
-fetch sprite top/bottom IF APPLICABLE
-
-it'll do tile-pp-bpp-sprite PER SPRITE?
-
-FIFO stores BPP, priority (sprite), palette #
-
-FIFO is shifting out pixels and must >0 before sprite can happen
-
-when we hit window, bg FIFO is cleared and fetches start over
-
-x fine scroll discards from the FIFO, delaying start
-
-there are comparators for each sprite.
-if a sprite x is the same as our current rendering position,
-we mix the sprite into the sprite FIFO
-
-
-and mode 0 (horizontal blanking) whatever is left over
-
-After 144 scanlines are drawn are 10 lines of mode 1 (vertical blanking), for a total of 154 lines or 70224 dots per screen.
-
-The CPU can't see VRAM (writes are ignored and reads are $FF) during mode 3, but it can during other modes.
-The CPU can't see OAM during modes 2 and 3, but it can during blanking modes (0 and 1).
-
-To make the estimate for mode 3 more precise, see "Nitty Gritty Gameboy Cycle Timing" by Kevin Horton.
- */
-
     reset() {
         // Reset variables
         this.clock.lx = 0;
         this.clock.ly = 0;
         this.line_cycle = 0;
-        this.fetch_cycle = 0;
         this.display_update = false;
 
         // Reset IRQs
-        this.io.stat_irq_mode0_request = 0;
-        this.io.stat_irq_mode1_request = 0;
-        this.io.stat_irq_mode2_request = 0;
-        this.io.stat_irq_lylyc_request = 0;
-        this.io.stat_irq_mode0_enable = this.io.stat_irq_mode1_enable = this.io.stat_irq_mode2_enable = this.io.stat_irq_lylyc_enable = 0;
-        if (!this.first_reset)
-            this.IRQ_check_down();
+        this.io.STAT_IE = 0; // Interrupt enables
+        this.io.STAT_IF = 0; // Interrupt flags
+
+        this.eval_STAT();
 
         // Set mode to OAM search
         this.set_mode(GB_PPU_modes.OAM_search);
@@ -1136,15 +1019,22 @@ To make the estimate for mode 3 more precise, see "Nitty Gritty Gameboy Cycle Ti
    }
 
    quick_boot() {
-        this.enabled = true;
-        this.enable_next_frame = false;
-        let val = 0xFC;
-        //this.clock.ly = 90;
-        this.write_IO(0xFF47, 0xFC);
-        this.write_IO(0xFF40, 0x91);
-        this.write_IO(0xFF41, 0x85);
-        this.io.SCX = this.io.SCY = 0;
+        switch(this.variant) {
+            case GB_variants.DMG:
+                this.enabled = true;
+                this.enable_next_frame = false;
+                let val = 0xFC;
+                //this.clock.ly = 90;
+                this.write_IO(0xFF47, 0xFC);
+                this.write_IO(0xFF40, 0x91);
+                this.write_IO(0xFF41, 0x85);
+                this.io.SCX = this.io.SCY = 0;
 
-        this.advance_frame();
+                this.advance_frame();
+                break;
+            default:
+                console.log('QUICKBOOT NOT SUPPROTEDO N THSI GAMEBOY MODEL');
+                break;
+        }
    }
 }
