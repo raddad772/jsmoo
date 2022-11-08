@@ -11,6 +11,7 @@ class GB_MAPPER_MBC3 {
 
         this.bus.CPU_read = this.CPU_read.bind(this);
         this.bus.CPU_write = this.CPU_write.bind(this);
+        this.bus.PPU_read = this.PPU_read.bind(this);
 
         this.ROM = new Uint8Array(0);
 
