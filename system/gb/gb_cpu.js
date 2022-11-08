@@ -202,13 +202,10 @@ class GB_CPU {
                 this.timer.write_IO(addr, val);
                 return;
             case 0xFF46: // OAM DMA
-                //console.log('OAM DMA START')
                 this.dma.cycles_til = 2;
                 //this.dma.running = 1;
                 this.dma.new_high = (val << 8);
                 this.dma.last_write = val;
-                this.clock.old_OAM_can = this.clock.CPU_can_OAM;
-                this.clock.CPU_can_OAM = 0;
                 break;
             case 0xFF50: // Boot ROM disable. Cannot re-enable
                 if (val > 0) {
@@ -288,18 +285,21 @@ class GB_CPU {
                 this.dma.running = 1;
                 this.dma.index = 0;
                 this.dma.high = this.dma.new_high;
+                this.clock.old_OAM_can = this.clock.CPU_can_OAM;
+                this.clock.CPU_can_OAM = 0;
             }
             else
                 return;
         }
         if (!this.dma.running) return;
-        this.bus.CPU_write_OAM(0xFE00 | this.dma.index, this.bus.DMA_read(this.dma.high | this.dma.index, 0));
-        this.dma.index++;
         if (this.dma.index >= 160) {
             //console.log('DMA END!');
             this.dma.running = 0;
             this.clock.CPU_can_OAM = this.clock.old_OAM_can;
+            return;
         }
+        this.bus.CPU_write_OAM(0xFE00 | this.dma.index, this.bus.DMA_read(this.dma.high | this.dma.index, 0));
+        this.dma.index++;
     }
 
     // Routine to set state as if boot ROM had run
@@ -336,7 +336,6 @@ class GB_CPU {
 
     cycle() {
         // Update timers
-        this.dma_eval();
         if (this.cpu.pins.RD && this.cpu.pins.MRQ) {
             if ((this.dma.running) && (this.cpu.pins.Addr < 0xFF00))
                     this.cpu.pins.D = 0xFF;
@@ -353,6 +352,7 @@ class GB_CPU {
             }
         }
         this.cpu.cycle();
+        this.dma_eval();
         if (this.cpu.regs.STP)
             this.timer.SYSCLK_change(0);
         else {
