@@ -13,6 +13,7 @@ class GB_MAPPER_none {
 
         this.bus.CPU_read = this.CPU_read.bind(this);
         this.bus.CPU_write = this.CPU_write.bind(this);
+        this.bus.PPU_read = this.PPU_read.bind(this);
 
         this.ROM = new Uint8Array(0);
 
@@ -48,6 +49,14 @@ class GB_MAPPER_none {
         this.VRAM_bank_offset = 0;
         // This changes on CGB
         this.WRAM_bank_offset = 0x1000;
+    }
+
+    PPU_read(addr) {
+        if ((addr < 0x8000) || (addr > 0xA000)) {
+            console.log('WAIT WHAT BAD READ?');
+            return null;
+        }
+        return this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset];
     }
 
     CPU_read(addr, val, has_effect=true) {
