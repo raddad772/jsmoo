@@ -1137,9 +1137,14 @@ To make the estimate for mode 3 more precise, see "Nitty Gritty Gameboy Cycle Ti
 
    quick_boot() {
         this.enabled = true;
+        this.enable_next_frame = false;
         let val = 0xFC;
-        this.clock.ly = 90;
-        this.write_IO(0xFF47, 0xFC)
+        //this.clock.ly = 90;
+        this.write_IO(0xFF47, 0xFC);
+        this.write_IO(0xFF40, 0x91);
+        this.write_IO(0xFF41, 0x85);
+        this.io.SCX = this.io.SCY = 0;
+
         this.advance_frame();
    }
 }
