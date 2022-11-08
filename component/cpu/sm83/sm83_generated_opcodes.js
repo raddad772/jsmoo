@@ -2173,14 +2173,16 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //HALT
         switch(regs.TCU) {
             case 1:
+                console.log('HALTED!');
                 if ((!regs.IME) && (regs.interrupt_latch !== 0)) regs.halt_bug = 1;
                 regs.HLT = 1;
-                if (regs.HLT) { regs.poll_IRQ = true; regs.TCU--; }
+                if (regs.HLT) { regs.poll_IRQ = true; regs.TCU--; } // add to start of cleanup_custom? with break; ?
                 pins.RD = 0; pins.MRQ = 0;
                 break;
             case 2: // cleanup_custom
                 //YOYOYO
                 // Following is auto-generated code for instruction finish
+                console.log('HALT FINISHED!');
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
