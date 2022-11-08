@@ -455,14 +455,15 @@ class GB_PPU_noFIFO {
         this.enabled = false;
         this.reset();
         this.clock.CPU_can_VRAM = 1;
-        this.clock.CPU_can_OAM = 1;
+        this.clock.setCPU_can_OAM(1);
+
     }
 
     enable() {
         //console.log('ENABLE PPU', this.enabled);
         if (this.enabled) return;
         this.enable_next_frame = true;
-        this.clock.CPU_can_OAM = 0;
+        this.clock.setCPU_can_OAM(0)
     }
 
     IRQ_stat_eval_mode0() {
@@ -512,7 +513,7 @@ class GB_PPU_noFIFO {
 
         switch(which) {
             case GB_PPU_modes.OAM_search: // 2. after vblank
-                this.clock.CPU_can_OAM = 0;
+                this.clock.setCPU_can_OAM(0);
                 this.clock.CPU_can_VRAM = 1;
                 //
                 if (this.enabled) {
@@ -525,18 +526,18 @@ class GB_PPU_noFIFO {
             case GB_PPU_modes.pixel_transfer: // 3
                 this.IRQ_mode2_down();
                 this.clock.CPU_can_VRAM = 0;
-                this.clock.CPU_can_OAM = 0;
+                this.clock.setCPU_can_OAM(0);
                 break;
             case GB_PPU_modes.HBLANK: // 0
                 if (this.io.stat_irq_mode0_enable)
                     this.IRQ_mode0_up();
                 this.clock.CPU_can_VRAM = 1;
-                this.clock.CPU_can_OAM = 1;
+                this.clock.setCPU_can_OAM(1);
                 break;
             case GB_PPU_modes.VBLANK: // 1
                 this.IRQ_mode0_down();
                 this.clock.CPU_can_VRAM = 1;
-                this.clock.CPU_can_OAM = 1;
+                this.clock.setCPU_can_OAM(1);
                 if (this.io.stat_irq_mode1_enable)
                     this.IRQ_mode1_up();
                 this.bus.IRQ_vblank_up();

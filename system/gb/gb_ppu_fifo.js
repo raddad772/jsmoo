@@ -776,13 +776,13 @@ class GB_PPU_FIFO {
         this.enabled = false;
         this.reset();
         this.clock.CPU_can_VRAM = 1;
-        this.clock.CPU_can_OAM = 1;
+        this.clock.setCPU_can_OAM(1);
     }
 
     enable() {
         if (this.enabled) return;
         this.enable_next_frame = true;
-        this.clock.CPU_can_OAM = 0;
+        this.clock.setCPU_can_OAM(0);
     }
 
     set_mode(which) {
@@ -791,7 +791,7 @@ class GB_PPU_FIFO {
 
         switch(which) {
             case GB_PPU_modes.OAM_search: // 2. after vblank, so after 1
-                this.clock.CPU_can_OAM = 0;
+                this.clock.setCPU_can_OAM(0);
                 this.clock.CPU_can_VRAM = 1;
                 if (this.enabled) {
                     this.bus.IRQ_vblank_down();
@@ -802,20 +802,20 @@ class GB_PPU_FIFO {
             case GB_PPU_modes.pixel_transfer: // 3, comes after 2
                 this.IRQ_mode2_down();
                 this.clock.CPU_can_VRAM = 0;
-                this.clock.CPU_can_OAM = 0;
+                this.clock.setCPU_can_OAM(0);
                 this.slice_fetcher.advance_line();
                 break;
             case GB_PPU_modes.HBLANK: // 0, comes after 3
                 this.IRQ_mode0_up();
                 this.clock.CPU_can_VRAM = 1;
-                this.clock.CPU_can_OAM = 1;
+                this.clock.setCPU_can_OAM(1);
                 break;
             case GB_PPU_modes.VBLANK: // 1, comes after 0
                 this.IRQ_mode0_down();
                 this.IRQ_mode1_up();
                 this.IRQ_vblank_up();
                 this.clock.CPU_can_VRAM = 1;
-                this.clock.CPU_can_OAM = 1;
+                this.clock.setCPU_can_OAM(1);
                 break;
         }
     }

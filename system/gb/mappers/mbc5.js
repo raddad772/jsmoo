@@ -115,7 +115,6 @@ class GB_MAPPER_MBC5 {
     }
 
     CPU_write(addr, val) {
-        let rb;
         if (addr < 0x8000) {
             switch(addr & 0xF000) {
                 case 0x0000: // RAM write enable
@@ -192,6 +191,7 @@ class GB_MAPPER_MBC5 {
      * @param {Uint8Array} BIOS
      */
     set_cart(cart, BIOS) {
+        console.log('MBC5!');
         console.log('GOT CART', cart);
         this.cart = cart;
         this.BIOS = BIOS;
