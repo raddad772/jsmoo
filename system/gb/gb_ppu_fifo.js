@@ -774,6 +774,7 @@ class GB_PPU_FIFO {
     disable() {
         if (!this.enabled) return;
         this.enabled = false;
+        console.log('DISABLE PPU')
         this.reset();
         this.clock.CPU_can_VRAM = 1;
         this.clock.setCPU_can_OAM(1);
@@ -781,8 +782,8 @@ class GB_PPU_FIFO {
 
     enable() {
         if (this.enabled) return;
+        console.log('ENABLE PPU');
         this.enable_next_frame = true;
-        this.clock.setCPU_can_OAM(0);
     }
 
     set_mode(which) {
@@ -884,7 +885,7 @@ class GB_PPU_FIFO {
     }
 
     IRQ_vblank_up() {
-        this.cycles_til_vblank = 1;
+        this.cycles_til_vblank = 2;
     }
 
     IRQ_mode1_up() {

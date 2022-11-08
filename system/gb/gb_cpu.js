@@ -215,11 +215,12 @@ class GB_CPU {
                 }
                 break;
             case 0xFF0F:
-                console.log('WRITE IF', val);
+                console.log('WRITE IF', val & 0x1F);
                 this.cpu.regs.IF = val & 0x1F;
                 return;
             case 0xFFFF: // IE: Interrupt Enable
                 console.log('WRITE IE', val & 0x1F);
+                if ((val & 0x1F) === 30) dbg.break();
                 this.cpu.regs.IE = val & 0x1F;
                 return;
         }
@@ -261,13 +262,14 @@ class GB_CPU {
             case 0xFF07: // TAC timer control
                 return this.timer.read_IO(addr);
             case 0xFF0F: // IF: interrupt flag
-                console.log('READ IF!', this.cpu.regs.IF);
-                return this.cpu.regs.IF;
+                //return this.cpu.regs.IF & 0x1F;
+                return this.cpu.regs.IF | 0xE0;
                 //return this.clock.irq.vblank_request | (this.clock.irq.lcd_stat_request << 1) | (this.clock.irq.timer_request << 2) | (this.clock.irq.serial_request << 3) | (this.clock.irq.joypad_request << 4);
             case 0xFF46: // OAM DMA
                 return this.dma.last_write;
             case 0xFFFF: // IE Interrupt Enable
-                return this.cpu.regs.IE;
+                //return this.cpu.regs.IE & 0x1F;
+                return this.cpu.regs.IE | 0xE0;
                 //return this.clock.irq.vblank_enable | (this.clock.irq.lcd_stat_enable << 1) | (this.clock.irq.timer_enable << 2) | (this.clock.irq.serial_enable << 3) | (this.clock.irq.joypad_enable << 4);
         }
         return 0xFF;
@@ -310,6 +312,7 @@ class GB_CPU {
             case GB_variants.DMG:
                 regs.A = 1;
                 regs.F.Z = 0;
+                regs.SP = 0xFFFE;
                 regs.B = 0;
                 regs.C = 0x13;
                 regs.D = 0;
@@ -321,7 +324,7 @@ class GB_CPU {
                 regs.IR = SM83_S_DECODE;
                 regs.IME = 0;
                 regs.IE = 0;
-                regs.IF = 0xE1;
+                regs.IF = 1;
                 this.clock.bootROM_enabled = false;
                 pins.Addr = 0x100;
                 pins.MRQ = pins.RD = 1;
@@ -337,8 +340,10 @@ class GB_CPU {
     cycle() {
         // Update timers
         if (this.cpu.pins.RD && this.cpu.pins.MRQ) {
-            if ((this.dma.running) && (this.cpu.pins.Addr < 0xFF00))
-                    this.cpu.pins.D = 0xFF;
+            if ((this.dma.running) && (this.cpu.pins.Addr < 0xFF00)) {
+                console.log('DMA BLOCK R!');
+                this.cpu.pins.D = 0xFF;
+            }
             else this.cpu.pins.D = this.bus.mapper.CPU_read(this.cpu.pins.Addr, 0xCC);
             if (this.tracing) {
                 dbg.traces.add(TRACERS.SM83, this.cpu.trace_cycles, trace_format_read('SM83', SM83_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
@@ -347,6 +352,9 @@ class GB_CPU {
         if (this.cpu.pins.WR && this.cpu.pins.MRQ) {
             if ((!this.dma.running) || (this.cpu.pins.Addr >= 0xFF00))
                 this.bus.mapper.CPU_write(this.cpu.pins.Addr, this.cpu.pins.D);
+            else
+                console.log('DMA BLOCK W!');
+
             if (this.tracing) {
                 dbg.traces.add(TRACERS.SM83, this.cpu.trace_cycles, trace_format_write('SM83', SM83_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
             }

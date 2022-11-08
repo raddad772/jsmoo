@@ -786,9 +786,8 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             break;
         case SM83_MN.JP_cond_addr:
             ag.operands('regs.TA');
-            ag.addl('if (!(' + arg1 + ')) { break; } // CHECKHERE');
+            ag.addl('if (' + arg1 + ') { regs.PC = regs.TA; } // CHECKHERE');
             ag.addcycle();
-            ag.addl('regs.PC = regs.TA;');
             break;
         case SM83_MN.JP_di:
             ag.addl('regs.PC = ' + ag.getreg16(arg1) + ';');

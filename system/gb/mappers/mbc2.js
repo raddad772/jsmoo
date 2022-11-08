@@ -146,9 +146,6 @@ class GB_MAPPER_MBC2 {
             return;
         }
         if (addr < 0xE000) { // WRAM hi bank
-            if (addr === 0xD6FE) {
-                console.log('W', hex4(addr), hex2(val));
-            }
             this.WRAM[(addr & 0xFFF) + this.WRAM_bank_offset] = val;
             return;
         }
