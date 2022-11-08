@@ -44,14 +44,11 @@ class GB_MAPPER_MBC1 {
 
         // MMBC1-specific
         this.num_ROM_banks = 0;
-        this.cartRAM32k = 0;
+        this.num_RAM_banks = 1;
         this.regs = {
-            ROM_bank_lo: 0,
-            ROM_bank_hi: 1,
-            ext_RAM_enable: 0,
-            cartRAM_bank: 0,
             banking_mode: 0,
-
+            BANK1: 1,
+            BANK2: 0
         }
         this.cartRAM_offset = 0;
     }
@@ -61,15 +58,16 @@ class GB_MAPPER_MBC1 {
         this.ROM_bank_lo_offset = 0;
         this.ROM_bank_hi_offset = 16384;
         this.cartRAM_offset = 0;
+        this.regs.BANK1 = 1;
+        this.regs.BANK2 = 0;
         this.regs.banking_mode = 0;
         this.regs.ext_RAM_enable = 0;
-        this.regs.ROM_bank_hi = 1;
-        this.regs.ROM_bank_lo = 0;
         this.regs.cartRAM_bank = 0;
         // This changes on CGB
         this.VRAM_bank_offset = 0;
         // This changes on CGB
         this.WRAM_bank_offset = 0x1000;
+        this.update_banks();
     }
 
     CPU_read(addr, val, has_effect=true) {
@@ -112,52 +110,34 @@ class GB_MAPPER_MBC1 {
 
     // Update ROM banks
     update_banks() {
-        if (this.regs.banking_mode === 1) {
-            let rbl = (32 * this.regs.ROM_bank_lo) % this.num_ROM_banks;
-            this.ROM_bank_lo_offset = rbl * 16384;
-            if (this.cartRAM32k) {
-                this.cartRAM_offset = this.regs.cartRAM_bank * 8192;
-            } else {
-                this.ROM_bank_lo_offset = 0;
-                this.cartRAM_offset = 0;
-            }
-
-        }
-        else {
+        let rb;
+        if (this.regs.banking_mode === 0) {
+            // Mode 0, easy-mode
             this.ROM_bank_lo_offset = 0;
             this.cartRAM_offset = 0;
-            this.ROM_bank_hi_offset = (this.regs.ROM_bank_hi % this.num_ROM_banks) * 16384;
+        } else {
+            // Mode 1, hard-mode!
+            this.ROM_bank_lo_offset = ((32 * this.regs.BANK2) % this.num_ROM_banks) * 16384;
+            this.cartRAM_offset = (this.regs.BANK2 % this.num_RAM_banks) * 8192;
         }
+        this.ROM_bank_hi_offset = (((this.regs.BANK2 << 5) | this.regs.BANK1) % this.num_ROM_banks) * 16384;
     }
 
     CPU_write(addr, val) {
         let rb;
         if (addr < 0x8000) {
-            //console.log(hex4(addr), hex2(val));
             switch(addr & 0xE000) {
                 case 0x0000: // RAM write enable
-                    this.regs.ext_RAM_enable = +((val & 0x0A) === 0x0A);
+                    this.regs.ext_RAM_enable = +((val & 0x0F) === 0x0A);
                     return;
                 case 0x2000: // ROM bank number
-                    rb = val & 0x1F;
-                    if (rb === 0) rb = 1;
-                    rb %= this.num_ROM_banks;
-                    this.regs.ROM_bank_hi = (this.regs.ROM_bank_hi & 0xE0) | rb;
+                    val &= 0x1F; // 5 bits
+                    if (val === 0) val = 1; // can't be 0
+                    this.regs.BANK1 = val;
                     this.update_banks();
                     return;
                 case 0x4000: // RAM or ROM banks...
-                    if (this.num_ROM_banks > 31) {
-                        rb = (val & 3) << 5;
-                        this.regs.ROM_bank_hi = (this.regs.ROM_bank_hi & 0x1F) | rb;
-                    }
-                    if (this.regs.banking_mode === 1) {
-                        if (this.num_ROM_banks > 31) {
-                            this.regs.ROM_bank_lo = val & 3;
-                        }
-                        if (this.cartRAM32k) {
-                            this.regs.cartRAM_bank = val & 3;
-                        }
-                    }
+                    this.regs.BANK2 = val & 3;
                     this.update_banks();
                     return;
                 case 0x6000: // Control
@@ -225,9 +205,10 @@ class GB_MAPPER_MBC1 {
         this.ROM = new Uint8Array(cart.header.ROM_size);
         this.ROM.set(cart.ROM);
         this.cartRAM = new Uint8Array(cart.header.RAM_size);
-        this.cartRAM32k = cart.header.RAM_size === 32768;
-        console.log('Cart RAM size', cart.header.RAM_size);
+        this.num_RAM_banks = (cart.header.RAM_size / 8192);
+        console.log('Cart RAM banks', this.num_RAM_banks);
         this.RAM_mask = cart.header.RAM_mask;
+        console.log('RAM mask', hex4(this.RAM_mask));
         this.has_RAM = this.cartRAM.byteLength > 0;
         this.num_ROM_banks = this.ROM.byteLength / 16384;
         console.log('NUMBER OF ROM BANKS', this.num_ROM_banks);
