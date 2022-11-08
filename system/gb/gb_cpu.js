@@ -125,6 +125,8 @@ class GB_CPU {
         }
 
         this.dma = {
+            cycles_til: 0,
+            new_high: 0,
             running: 0,
             index: 0,
             high: 0,
@@ -201,10 +203,12 @@ class GB_CPU {
                 return;
             case 0xFF46: // OAM DMA
                 //console.log('OAM DMA START')
-                this.dma.running = 1;
-                this.dma.high = (val << 8);
-                this.dma.index = 0;
+                this.dma.cycles_til = 2;
+                //this.dma.running = 1;
+                this.dma.new_high = (val << 8);
                 this.dma.last_write = val;
+                this.clock.old_OAM_can = this.clock.CPU_can_OAM;
+                this.clock.CPU_can_OAM = 0;
                 break;
             case 0xFF50: // Boot ROM disable. Cannot re-enable
                 if (val > 0) {
@@ -278,11 +282,23 @@ class GB_CPU {
     }
 
     dma_eval() {
+        if (this.dma.cycles_til) {
+            this.dma.cycles_til--;
+            if (this.dma.cycles_til === 0) {
+                this.dma.running = 1;
+                this.dma.index = 0;
+                this.dma.high = this.dma.new_high;
+            }
+            else
+                return;
+        }
+        if (!this.dma.running) return;
         this.bus.CPU_write_OAM(0xFE00 | this.dma.index, this.bus.DMA_read(this.dma.high | this.dma.index, 0));
         this.dma.index++;
         if (this.dma.index >= 160) {
             //console.log('DMA END!');
             this.dma.running = 0;
+            this.clock.CPU_can_OAM = this.clock.old_OAM_can;
         }
     }
 
@@ -320,29 +336,25 @@ class GB_CPU {
 
     cycle() {
         // Update timers
-        if (this.dma.running) {
-            this.dma_eval();
-            if ((this.cpu.pins.Addr < 0xFF80) && (this.cpu.pins.MRQ) && (this.dma.index > 2)) {
-                console.log('SKIP CPU CYCLE TO DMA', hex4(this.cpu.pins.Addr), this.cpu.pins.MRQ);
-                return;
-            } // Skip CPU cycle due to OAM
-            // TODO: should timer skip too!?
-        }
+        this.dma_eval();
         if (this.cpu.pins.RD && this.cpu.pins.MRQ) {
-            this.cpu.pins.D = this.bus.mapper.CPU_read(this.cpu.pins.Addr, 0xCC);
+            if ((this.dma.running) && (this.cpu.pins.Addr < 0xFF00))
+                    this.cpu.pins.D = 0xFF;
+            else this.cpu.pins.D = this.bus.mapper.CPU_read(this.cpu.pins.Addr, 0xCC);
             if (this.tracing) {
                 dbg.traces.add(TRACERS.SM83, this.cpu.trace_cycles, trace_format_read('SM83', SM83_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
             }
         }
         if (this.cpu.pins.WR && this.cpu.pins.MRQ) {
-            this.bus.mapper.CPU_write(this.cpu.pins.Addr, this.cpu.pins.D);
+            if ((!this.dma.running) || (this.cpu.pins.Addr >= 0xFF00))
+                this.bus.mapper.CPU_write(this.cpu.pins.Addr, this.cpu.pins.D);
             if (this.tracing) {
                 dbg.traces.add(TRACERS.SM83, this.cpu.trace_cycles, trace_format_write('SM83', SM83_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
             }
         }
         this.cpu.cycle();
         if (this.cpu.regs.STP)
-            this.timer.SYSCLK = 0;
+            this.timer.SYSCLK_change(0);
         else {
             this.timer.inc();
         }

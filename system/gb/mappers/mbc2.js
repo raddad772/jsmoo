@@ -80,7 +80,7 @@ class GB_MAPPER_MBC2 {
         if (addr < 0xC000) {
             if (!this.regs.ext_RAM_enable)
                 return 0xFF;
-            return this.cartRAM[addr & 0x1FF] & 0x0F;
+            return this.cartRAM[addr & 0x1FF] | 0xF0;
         }
         // Adjust address for mirroring
         if ((addr > 0xE000) && (addr < 0xFE00)) return 0xFF; //addr -= 0x2000;
@@ -108,6 +108,7 @@ class GB_MAPPER_MBC2 {
     CPU_write(addr, val) {
         let rb;
         if (addr < 0x4000) {
+            console.log(hex4(addr), hex2(val));
             switch(addr & 0x100) {
                 case 0x0000: // RAM write enable
                     this.regs.ext_RAM_enable = +((val & 0x0F) === 0x0A);
@@ -116,6 +117,7 @@ class GB_MAPPER_MBC2 {
                     val &= 0x0F; // 5 bits
                     if (val === 0) val = 1; // can't be 0
                     this.regs.ROMB = val;
+                    this.update_banks();
                     return;
             }
         }

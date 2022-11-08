@@ -31,6 +31,7 @@ class GB_clock {
         this.cpu_frame_cycle = 0;
         this.ppu_frame_cycle = 0;
         this.CPU_can_VRAM = 1;
+        this.old_OAM_can = 0;
         this.CPU_can_OAM = 0;
         this.bootROM_enabled = true;
 
@@ -69,6 +70,11 @@ class GB_clock {
         this.CPU_can_VRAM = 1;
         this.CPU_can_OAM = 0;
         this.bootROM_enabled = true;
+    }
+
+    setCPU_can_OAM(to) {
+        this.CPU_can_OAM = to;
+        this.old_OAM_can = to;
     }
 }
 
@@ -131,7 +137,7 @@ class GB_bus {
 
     IRQ_vblank_up() {
         this.cpu.cpu.regs.IF |= 1;
-        console.log('VBLANK UP!', this.cpu.cpu.regs.IF);
+        console.log('VBLANK UP!', this.cpu.cpu.regs.IE, this.cpu.cpu.regs.IF, this.cpu.cpu.regs.IE & this.cpu.cpu.regs.IF);
     }
 }
 
