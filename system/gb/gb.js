@@ -89,6 +89,7 @@ class GB_bus {
         this.CPU_write = function(addr, val){debugger;};
         this.CPU_read_OAM = function(addr, val, has_effect) {debugger; return 0xFF; }
         this.CPU_write_OAM = function(addr, val) {debugger;}
+        this.PPU_read = function(addr) {debugger; return 40;};
 
         this.bios = bios;
         this.BIOS = new Uint8Array(0);
@@ -149,7 +150,7 @@ class GameBoy {
         this.clock = new GB_clock();
         this.cart = new GB_cart(this.variant, this.bios, this.clock, this.bus);
         this.cpu = new GB_CPU(this.variant, this.clock, this.bus);
-        this.ppu = new GB_PPU_noFIFO(canvas_manager, this.variant, this.clock, this.bus);
+        this.ppu = new GB_PPU_FIFO(canvas_manager, this.variant, this.clock, this.bus);
 
         this.cycles_left = 0;
         this.display_enabled = true;

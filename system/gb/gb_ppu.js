@@ -605,7 +605,7 @@ class GB_PPU_noFIFO {
     }
 
     trigger_stat_irq() {
-        console.log('TRIGGERING STAT IRQ!');
+        //console.log('TRIGGERING STAT IRQ!');
         this.bus.cpu.cpu.regs.IF |= 2;
     }
 
@@ -726,7 +726,7 @@ class GB_PPU_noFIFO {
         if (this.io.bg_window_enable) {
             if (this.in_window()) { // Grab window tile
                 this.window_triggered_on_line = true;
-                let addr = this.bg_tilemap_addr_window()
+                let addr = this.bg_tilemap_addr_window
                 let tn = this.bus.mapper.PPU_read(addr);
                 addr = this.bg_tile_addr_window(tn);
                 let bp0 = this.bus.mapper.PPU_read(addr);
@@ -794,7 +794,7 @@ class GB_PPU_noFIFO {
                 break;
             case 3: // Pixel transfer. Complicated.
                 this.pixel_transfer();
-                if (this.clock.lx >= 160)
+                if (this.clock.lx > 159)
                     this.set_mode(0);
                 break;
         }
