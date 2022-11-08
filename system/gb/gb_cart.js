@@ -267,8 +267,14 @@ class GB_cart {
             case GB_MAPPERS.MBC1:
                 this.mapper = new GB_MAPPER_MBC1(this.clock, this.bus);
                 break;
+            case GB_MAPPERS.MBC2:
+                this.mapper = new GB_MAPPER_MBC2(this.clock, this.bus);
+                break;
             case GB_MAPPERS.MBC3:
                 this.mapper = new GB_MAPPER_MBC3(this.clock, this.bus);
+                break;
+            case GB_MAPPERS.MBC5:
+                this.mapper = new GB_MAPPER_MBC5(this.clock, this.bus);
                 break;
             default:
                 console.log('UNSUPPORTED MAPPER SO FAR', this.header.mapper);

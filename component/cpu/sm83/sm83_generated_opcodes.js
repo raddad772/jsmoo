@@ -5254,6 +5254,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //S_IRQ
         switch(regs.TCU) {
             case 1:
+                console.log('INTERRUPT!');
                 regs.IME = 0;
                 pins.RD = 0; pins.MRQ = 0;
                 break;
