@@ -197,7 +197,7 @@ class SM83_t {
             this.regs.poll_IRQ = false;
             let imask = 0xFF;
             if ((this.regs.IME) || is_halt) {
-                let mask = this.regs.IE & this.regs.IF;
+                let mask = this.regs.IE & this.regs.IF & 0x1F;
                 this.regs.IV = -1;
                 if (mask & 1) { // VBLANK interrupt
                     imask = 0xFE;
