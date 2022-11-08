@@ -236,6 +236,7 @@ class GB_CPU {
                 regs.IR = SM83_S_DECODE;
                 regs.IME = 0;
                 regs.IE = 0;
+                regs.IF = 0xE1;
                 this.clock.bootROM_enabled = false;
                 pins.Addr = 0x100;
                 pins.MRQ = pins.RD = 1;
