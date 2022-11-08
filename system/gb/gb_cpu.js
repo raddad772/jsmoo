@@ -27,7 +27,8 @@ class GB_timer {
                 this.TIMA_reload_cycle = true
             }
         }
-        if (!this.DIV_reset) this.SYSCLK_change((this.SYSCLK + 4) & 0xFFFF);
+        //if (!this.DIV_reset)
+            this.SYSCLK_change((this.SYSCLK + 4) & 0xFFFF);
         this.DIV_reset = false;
     }
 
@@ -155,7 +156,7 @@ class GB_CPU {
 
     raise_TIMA() {
         this.cpu.regs.IF |= 4;
-        console.log('raising TIMA', this.cpu.regs.IE);
+        console.log('raising TIMA', this.cpu.regs.IE, this.cpu.regs.IF);
     }
 
     enable_tracing() {
@@ -333,13 +334,13 @@ class GB_CPU {
                 dbg.traces.add(TRACERS.SM83, this.cpu.trace_cycles, trace_format_read('SM83', SM83_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
             }
         }
-        this.cpu.cycle();
         if (this.cpu.pins.WR && this.cpu.pins.MRQ) {
             this.bus.mapper.CPU_write(this.cpu.pins.Addr, this.cpu.pins.D);
             if (this.tracing) {
                 dbg.traces.add(TRACERS.SM83, this.cpu.trace_cycles, trace_format_write('SM83', SM83_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
             }
         }
+        this.cpu.cycle();
         if (this.cpu.regs.STP)
             this.timer.SYSCLK = 0;
         else {
