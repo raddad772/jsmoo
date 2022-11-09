@@ -243,9 +243,6 @@ class GB_pixel_slice_fetcher {
     }
 }
 
-
-
-
 class GB_FIFO_t {
     constructor(variant) {
         this.variant = variant;
@@ -348,7 +345,6 @@ class GB_FIFO_t {
         return r;
     }
 }
-
 
 class GB_PPU_FIFO {
     /**
@@ -692,7 +688,7 @@ class GB_PPU_FIFO {
                 return;
             case 0xFF45: // LYC
                 this.io.lyc = val;
-                this.eval_lyc();
+                if (this.enable) this.eval_lyc();
                 return;
             case 0xFF4A: // window Y
                 this.io.wy = val;
@@ -775,7 +771,6 @@ class GB_PPU_FIFO {
         if (!this.enabled) return;
         this.enabled = false;
         console.log('DISABLE PPU')
-        this.reset();
         this.clock.CPU_can_VRAM = 1;
         this.clock.setCPU_can_OAM(1);
     }
@@ -918,6 +913,7 @@ class GB_PPU_FIFO {
     advance_frame() {
         if (this.enable_next_frame) {
             this.enabled = true;
+            this.reset();
             this.enable_next_frame = false;
         }
         this.clock.ly = 0;

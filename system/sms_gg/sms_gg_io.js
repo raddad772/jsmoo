@@ -137,6 +137,10 @@ class SMSGG_bus {
         this.portA.attached_device = this.controllerA;
         this.reset_button = new SMSGG_reset_button(variant);
         this.pause_button = new SMSGG_pause_button(variant);
+        /**
+         * @type {null|controller_input_config_t}
+         */
+        this.gg_joymap = null;
 
         this.io = {
             disable: 0,
@@ -154,6 +158,7 @@ class SMSGG_bus {
             default: // GameGear is only emulated one left
                 this.cpu_in = this.cpu_in_gg.bind(this);
                 this.cpu_out = this.cpu_out_gg.bind(this);
+                this.gg_joymap = input_config.controller_els.gg;
                 break;
         }
     }
@@ -298,11 +303,39 @@ class SMSGG_bus {
 
     cpu_in_gg(addr, val, has_effect=true) {
         addr &= 0xFF;
-        if ((addr < 7) && (this.vdp.mode === SMSGG_vdp_modes.GG)) {
-            // GameGear mode registers, start out at C0 7F FF 00 FF 00 FF
+        //console.log('IN', hex2(addr));
+        switch(addr) {
+            case 0: // Various stuff
+                // TODO: make this more complete
+                return 0x40 | 0x80;
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+                return 0;
+            case 6:
+            case 7:
+                return 0;
+            /*case 0xDC: // JOYP1
+                // up down left right b1 b2
+                let buttons = this.gg_joymap.latch();
+                let val = buttons.up ? 0 : 1;
+                val |= buttons.down ? 0 : 2;
+                val |= buttons.left ? 0 : 4;
+                val |= buttons.right ? 0 : 8;
+                val |= buttons.b1 ? 0 : 0x10;
+                val |= buttons.b2 ? 0 : 0x20;
+                val |= 0xC0;
+                return val;
+            case 0xDD:
+                return 0xFF;*/
+
         }
-        else if (addr <= 0x3F)
+        if (addr <= 0x3F) {
+            // reads return last byte of the instruction which read the port
             return 0xFF;
+        }
         if (addr <= 0x7F) {
             if (addr & 1) return this.vdp.read_hcounter();
             return this.vdp.read_vcounter();
@@ -311,35 +344,34 @@ class SMSGG_bus {
             if (addr & 1) return this.vdp.read_status();
             return this.vdp.read_data();
         }
-        if ((addr === 0xC0) || (addr === 0xDC)) return this.read_reg_ioport1(val);
-        if ((addr === 0xC1) || (addr === 0xDD)) return this.read_reg_ioport2(val);
-        // $C0 and $DC are the IO A/B
-        // $C1 and DD are te IO B/misc.
-        // all else is 0xFF
-        return 0xFF;
+        // C0-FF, even is /O port A/B reg
+        // Odd is I/O port B/misc.
+        //if (addr & 1) return this.read_reg_ioport2(val);
+        //return this.read_reg_ioport1(val);
+
     }
 
     cpu_out_gg(addr, val) {
         addr &= 0xFF;
-        if ((addr < 7) && (this.vdp.mode === SMSGG_vdp_modes.GG)) {
-            // GameGear mode registers, start out at C0 7F FF 00 FF 00 FF
-        }
-        else if (addr <= 0x3F) {
+        if (addr <= 0x3F) {
+            // even memory control
+            // odd I/O control
             if (addr & 1) this.write_reg_io_ctrl(val);
             else this.write_reg_memory_ctrl(val);
             return;
         }
-        if (addr <= 0x7F) {
-            // writes to PSG, not implemented yet
-            return
+        if  (addr <= 0x7F) {
+            // writes go to PSG, not implemented yet
+            return;
         }
         if (addr <= 0xBF) {
+            // even goes to VDP data
+            // odd goes to VDP control
             if (addr & 1) this.vdp.write_control(val);
             else this.vdp.write_data(val);
             return;
         }
-        return;
-
+        // C0-FF, no effect
     }
 
     cpu_in_sms1(addr, val, has_effect=true) {

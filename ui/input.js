@@ -31,6 +31,31 @@ const DEFAULT_GB = {
     'b': ['z', 90]
 }
 
+const DEFAULT_GG = {
+    'up': ['arrowUp', 38],
+    'down': ['arrowDown', 40],
+    'left': ['arrowLeft', 37],
+    'right': ['arrowRight', 39],
+    'start': ['f', 70],
+    'b1': ['z', 90],
+    'b2': ['x', 88],
+}
+
+const DEFAULT_GENESIS = {
+    'up': ['arrowUp', 38],
+    'down': ['arrowDown', 40],
+    'left': ['arrowLeft', 37],
+    'right': ['arrowRight', 39],
+    'start': ['f', 70],
+    'a': ['z', 90],
+    'b': ['x', 88],
+    'c': ['c', 67],
+    'x': ['a', 65],
+    'y': ['s', 83],
+    'z': ['d', 68],
+}
+
+
 const DEFAULT_NES2 = {
     'up': [null, null],
     'down': [null, null],
@@ -96,7 +121,9 @@ const CONTROLLERS = {
     NES: 0,
     SNES: 1,
     SMS: 2,
-    GAMEBOY: 3
+    GAMEBOY: 3,
+    GAMEGEAR: 4,
+    GENESIS: 5
 }
 
 const QWERTYVALS = [
@@ -396,6 +423,12 @@ class controller_input_config_t {
             case CONTROLLERS.GAMEBOY:
                 this.setup_gameboy();
                 break;
+            case CONTROLLERS.GAMEGEAR:
+                this.setup_gg();
+                break;
+            case CONTROLLERS.GENESIS:
+                this.setup_genesis();
+                break;
         }
         this.setup_latches();
     }
@@ -488,11 +521,7 @@ class controller_input_config_t {
     setup_gameboy() {
         if (typeof this.savedict[this.id] === 'undefined') {
             this.changed = true;
-            switch(this.id) {
-                case 'gbcfg':
-                    this.savedict[this.id] = DEFAULT_GB;
-                    break;
-            }
+            this.savedict[this.id] = DEFAULT_GB;
         }
         this.arrow_exclude = true;
         let c = this.savedict[this.id];
@@ -504,6 +533,46 @@ class controller_input_config_t {
         this.buttons.start = new controller_button_t(c,'start', 108, 60, 125, 67);
         this.buttons.b = new controller_button_t(c,'b', 142, 54, 166, 75);
         this.buttons.a = new controller_button_t(c,'a', 172, 54, 194, 75);
+    }
+
+    setup_genesis() {
+        if (typeof this.savedict[this.id] === 'undefined') {
+            this.changed = true;
+            switch(this.id) {
+                case 'gbcfg':
+                    this.savedict[this.id] = DEFAULT_GENESIS;
+                    break;
+            }
+        }
+        this.arrow_exclude = true;
+        let c = this.savedict[this.id];
+        this.buttons.up = new controller_button_t(c,'up', 30, 30, 41, 45);
+        this.buttons.left = new controller_button_t(c,'left', 15, 45, 30, 59);
+        this.buttons.right = new controller_button_t(c,'right', 41, 46, 55, 59);
+        this.buttons.down = new controller_button_t(c,'down', 30, 60, 41, 72);
+        this.buttons.start = new controller_button_t(c,'start', 108, 60, 125, 67);
+        this.buttons.z = new controller_button_t(c,'b', 142, 54, 166, 75);
+        this.buttons.y = new controller_button_t(c,'b', 142, 54, 166, 75);
+        this.buttons.x = new controller_button_t(c,'b', 142, 54, 166, 75);
+        this.buttons.c = new controller_button_t(c,'b', 142, 54, 166, 75);
+        this.buttons.b = new controller_button_t(c,'b', 142, 54, 166, 75);
+        this.buttons.a = new controller_button_t(c,'a', 172, 54, 194, 75);
+    }
+
+    setup_gg() {
+        if (typeof this.savedict[this.id] === 'undefined') {
+            this.changed = true;
+            this.savedict[this.id] = DEFAULT_GG;
+        }
+        this.arrow_exclude = true;
+        let c = this.savedict[this.id];
+        this.buttons.up = new controller_button_t(c,'up', 30, 30, 41, 45);
+        this.buttons.left = new controller_button_t(c,'left', 15, 45, 30, 59);
+        this.buttons.right = new controller_button_t(c,'right', 41, 46, 55, 59);
+        this.buttons.down = new controller_button_t(c,'down', 30, 60, 41, 72);
+        this.buttons.start = new controller_button_t(c,'start', 108, 60, 125, 67);
+        this.buttons.b1 = new controller_button_t(c,'b1', 226, 69, 268, 112);
+        this.buttons.b2 = new controller_button_t(c,'b2', 283, 69, 323, 112);
     }
 
     setup_sms() {
@@ -545,6 +614,9 @@ class controller_input_config_t {
     }
 
     // Return input states
+    /**
+     * @returns {*|{}}
+     */
     latch() {
         let upout = 0;
         let downout = 0;
@@ -624,6 +696,8 @@ class input_config_t {
             sms1: new controller_input_config_t('SMS player 1', 'sms1cfg', this.savedict, CONTROLLERS.SMS),
             sms2: new controller_input_config_t('SMS player 2', 'sms2cfg', this.savedict, CONTROLLERS.SMS),
             gb: new controller_input_config_t('GameBoy player', 'gbcfg', this.savedict, CONTROLLERS.GAMEBOY),
+            gg: new controller_input_config_t('GameGear', 'ggcfg', this.savedict, CONTROLLERS.GAMEGEAR),
+            //genesis1: new controller_input_config_t('Genesis player 1', 'genesiscfg', this.savedict, CONTROLLERS.GENESIS)
         }
         this.ui_els = {
             controller: document.getElementById('input-cfg-controller'),
