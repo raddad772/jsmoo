@@ -384,7 +384,7 @@ class z80_t {
                             this.pins.D = 0xFF;
                             this.set_instruction(Z80_S_IRQ);
                             if (dbg.brk_on_NMIRQ) {
-                                console.log(this.trace_cycles);
+                                //console.log(this.trace_cycles);
                                 dbg.break();
                             }
                             break;

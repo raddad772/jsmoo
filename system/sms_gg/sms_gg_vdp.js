@@ -515,7 +515,7 @@ class SMSGG_VDP {
 
         if (this.clock.vpos < this.clock.timing.rendered_lines) {
             this.clock.line_counter = (this.clock.line_counter - 1);
-            if (this.clock.line_counter <= 0) {
+            if (this.clock.line_counter < 0) {
                 this.clock.line_counter = this.io.line_irq_reload;
                 this.io.irq_line_pending = 1;
                 this.update_irqs();
@@ -557,21 +557,21 @@ class SMSGG_VDP {
         if (this.clock.timing.region === REGION.NTSC) {
             switch(this.io.video_mode) {
                 case 0x0B: // 1011 256x224
-                    return (this.clock.vpos <= 234) ? this.clock.vpos : this.clock.vpos - 6;
+                    return (this.clock.vpos <= 234) ? this.clock.vpos : (this.clock.vpos - 6);
                 case 0x0E: // 1110 256x240 NOT FUNCTIONAL ON NTSC really
                     return this.clock.vpos;
                 default: // 256x192
-                    return (this.clock.vpos <= 218) ? this.clock.vpos : this.clock.vpos - 6;
+                    return (this.clock.vpos <= 218) ? this.clock.vpos : (this.clock.vpos - 6);
             }
         }
         else {
             switch(this.io.video_mode) {
                 case 0x0B: // 1011 256x224
-                    return (this.clock.vpos <= 258) ? this.clock.vpos :  this.clock.vpos - 57;
+                    return (this.clock.vpos <= 258) ? this.clock.vpos :  (this.clock.vpos - 57);
                 case 0x0E: // 1110 256x240
-                    return (this.clock.vpos <= 266) ? this.clock.vpos : this.clock.vpos - 56;
+                    return (this.clock.vpos <= 266) ? this.clock.vpos : (this.clock.vpos - 56);
                 default: // 256x192
-                    return (this.clock.vpos <= 242) ? this.clock.vpos : this.clock.vpos - 57;
+                    return (this.clock.vpos <= 242) ? this.clock.vpos : (this.clock.vpos - 57);
             }
         }
     }
@@ -648,11 +648,14 @@ class SMSGG_VDP {
 
     update_irqs() {
         let level = 0;
-        if (this.io.irq_frame_pending && this.io.irq_frame_enabled) level = 1;
+        if (this.io.irq_frame_pending && this.io.irq_frame_enabled) {
+            level = 1;
+        }
         if (this.io.irq_line_pending && this.io.irq_line_enabled) {
             level = 1;
             this.io.irq_line_pending = 0;
         }
+        //if (level === 1) console.log('NOTIFY AT', this.clock.vpos, this.clock.hpos);
         this.bus.notify_IRQ(level);
     }
 
