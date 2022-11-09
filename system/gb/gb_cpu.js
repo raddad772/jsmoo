@@ -107,7 +107,7 @@ class GB_CPU {
         this.bus = bus;
         this.clock = clock;
         this.variant = variant;
-        this.cpu = new SM83_t(this.clock);
+        this.cpu = new SM83_t(variant, clock, bus);
         this.bus.cpu = this;
 
         this.FFregs = new Uint8Array(256); // For unimplemented FF-regs
@@ -228,18 +228,18 @@ class GB_CPU {
 
     get_input() {
         this.input_buffer = this.joymap.latch();
-        let out1, out2;
-        let out3 = 0;
+        let out1;
+        let out3 = 0x0F;
         if (this.io.JOYP.action_select === 0) {
             out1 = this.input_buffer['a'] | (this.input_buffer['b'] << 1) | (this.input_buffer['select'] << 2) | (this.input_buffer['start'] << 3);
             out1 ^= 0x0F;
-            out3 |= out1;
+            out3 &= out1;
         }
 
         if (this.io.JOYP.direction_select === 0) {
             out1 = this.input_buffer['right'] | (this.input_buffer['left'] << 1) | (this.input_buffer['up'] << 2) | (this.input_buffer['down'] << 3);
             out1 ^= 0x0F;
-            out3 |= out1;
+            out3 &= out1;
         }
         return out3;
     }

@@ -91,10 +91,18 @@ class SM83_pins_t {
 }
 
 class SM83_t {
-    constructor(clock) {
+    /**
+     * @param {number} variant
+     * @param {GB_bus} bus
+     * @param {GB_clock} clock
+     */
+    constructor(variant, clock, bus) {
         this.regs = new SM83_regs_t();
         this.pins = new SM83_pins_t();
         this.clock = clock;
+        this.bus = bus;
+
+        this.variant = variant;
 
         this.trace_on = false;
         this.trace_peek = null;
@@ -199,12 +207,14 @@ class SM83_t {
             if ((this.regs.IME) || is_halt) {
                 let mask = this.regs.IE & this.regs.IF & 0x1F;
                 this.regs.IV = -1;
+                imask = 0xFF;
                 if (mask & 1) { // VBLANK interrupt
                     imask = 0xFE;
                     this.regs.IV = 0x40;
                     //console.log('VBLANK IRQ', this.clock.master_frame, this.clock.ly, this.clock.lx);
                 } else if (mask & 2) { // STAT interrupt
-                    imask = 0xFD;
+                    if (this.bus.ppu.enable)
+                        imask = 0xFD;
                     this.regs.IV = 0x48;
                     //console.log('STAT IRQ');
                 } else if (mask & 4) { // Timer interrupt
@@ -229,6 +239,7 @@ class SM83_t {
                     else {
                         //console.log('SO IRQ ACTUALLY GOING TO HAPPEN!', hex2(this.regs.IV));
                         if (dbg.brk_on_NMIRQ) dbg.break();
+                        // Right here, the STAT is not supposed to be cleared if LCD disabled
                         this.regs.IF &= imask;
                         this.regs.HLT = 0;
                         this.regs.IR = SM83_S_IRQ;
