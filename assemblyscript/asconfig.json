@@ -24,6 +24,6 @@
     }
   },
   "options": {
-    "bindings": "raw"
+    "bindings": "esm"
   }
 }
