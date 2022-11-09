@@ -1,6 +1,6 @@
 "use strict";
 
-let CPU_DO_TRACING_AT_START = true;
+let CPU_DO_TRACING_AT_START = false;
 let APU_DO_TRACING_AT_START = false;
 let TRACE_COLOR = true;
 let SPC_TRACING_START = 20 * 68 * 262 * 9;

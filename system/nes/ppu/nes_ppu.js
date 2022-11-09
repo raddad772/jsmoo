@@ -639,7 +639,7 @@ class NES_ppu {
         if (this.rendering_enabled()) {
             // Reload horizontal scroll 258-320
             if ((this.line_cycle === 257) && this.rendering_enabled()) this.io.v = (this.io.v & 0xFBE0) | (this.io.t & 0x41F);
-            if ((this.rendering_enabled()) && (this.line_cycle >= 258) && (this.line_cycle <= 320)) {
+            if ((this.rendering_enabled()) && (this.line_cycle >= 280) && (this.line_cycle <= 304)) {
                 this.io.v = (this.io.v & 0x041F) | (this.io.t & 0x7BE0);
             }
         }

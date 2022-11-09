@@ -65,7 +65,7 @@ class SMSGG_VDP {
         }
 
 
-        this.output = new Uint8Array(256*240);
+        this.output = new Uint16Array(256*240);
 
         this.objects = [];
 
@@ -101,6 +101,8 @@ class SMSGG_VDP {
             irq_frame_enabled: 0,
             irq_line_pending: 0,
             irq_line_enabled: 0,
+
+            address: 0,
 
         };
 
@@ -151,6 +153,38 @@ class SMSGG_VDP {
     }
 
     present() {
+        if (this.variant === SMSGG_variants.GG)
+            this.gg_present()
+        else
+            this.sms_present()
+    }
+
+    gg_present() {
+        this.canvas_manager.set_size(160, 144);
+        let ybottom = this.clock.timing.bottom_rendered_line+1;
+        let ydiff = (ybottom - 144) >>> 1;
+        let imgdata = this.canvas_manager.get_imgdata();
+        for (let ry = ydiff; ry < (144+ydiff); ry++) {
+            let y = ry;
+            for (let rx = 48; rx < 208; rx++) {
+                let x = rx;
+                let di = (((y-ydiff) * 160) + (x-48)) * 4;
+                let ulai = (y * 256) + x;
+                let color = this.output[ulai];
+                let r, g, b
+                b = ((color >>> 8) & 0x0F) * 0x11;
+                g = ((color >>> 4) & 0x0F) * 0x11;
+                r = (color & 0x0F) * 0x11;
+                imgdata.data[di] = r;
+                imgdata.data[di+1] = g;
+                imgdata.data[di+2] = b;
+                imgdata.data[di+3] = 255;
+            }
+        }
+        this.canvas_manager.put_imgdata(imgdata);
+    }
+
+    sms_present() {
         this.canvas_manager.set_size(256, this.clock.timing.rendered_lines+1);
         let imgdata = this.canvas_manager.get_imgdata();
         for (let ry = 0; ry < this.clock.timing.rendered_lines; ry++) {
@@ -162,15 +196,9 @@ class SMSGG_VDP {
 
                 let color = this.output[ulai];
                 let r, g, b;
-                if (this.variant === SMSGG_variants.GG) {
-                    b = (((color >>> 8) & 0x0F) * 16) - 1;
-                    g = (((color >>> 4) & 0x0F) * 16) - 1;
-                    r = ((color & 0x0F) * 16) - 1;
-                } else {
-                    b = ((color >>> 4) & 3) * 0x55;
-                    g = ((color >>> 2) & 3) * 0x55;
-                    r = (color & 3) * 0x55;
-                }
+                b = ((color >>> 4) & 3) * 0x55;
+                g = ((color >>> 2) & 3) * 0x55;
+                r = (color & 3) * 0x55;
 
                 imgdata.data[di] = r;
                 imgdata.data[di+1] = g;
@@ -235,7 +263,7 @@ class SMSGG_VDP {
 
     dac_palette(index) {
         if (this.variant !== SMSGG_variants.GG) {
-            //if (!(this.io.video_mode & 8)) return SMSGG_PALETTE[index & 0x0F];
+            if (!(this.io.video_mode & 8)) return SMSGG_PALETTE[index & 0x0F];
             return this.CRAM[index] & 0x3F;
         }
         if (this.mode === SMSGG_vdp_modes.SMS) {
@@ -316,7 +344,7 @@ class SMSGG_VDP {
             vpos %= 224;
             nta = (this.io.bg_name_table_address & 0x0E) << 10;
             nta += (vpos & 0xF8) << 3;
-            nta += (hpos & 0xF8) >>> 2;
+            nta += ((hpos & 0xF8) >>> 3) << 1;
             if (this.variant === SMSGG_variants.SMS1) {
                 // NTA bit 10 (0x400) & with io nta bit 0
                 nta &= (0x3BFF | ((this.io.bg_name_table_address & 1) << 10));
@@ -325,7 +353,7 @@ class SMSGG_VDP {
             vpos &= 0xFF;
             nta = ((this.io.bg_name_table_address & 0x0C) << 10) | 0x700;
             nta += (vpos & 0xF8) << 3;
-            nta += (hpos & 0xF8) >>> 2;
+            nta += ((hpos & 0xF8) >>> 3) << 1;
         }
 
         let pattern = this.VRAM[nta] | (this.VRAM[nta | 1] << 8);
@@ -449,6 +477,7 @@ class SMSGG_VDP {
                 }
             }
         }
+
         this.output[this.doi] = color;
         this.doi++;
     }
@@ -468,7 +497,6 @@ class SMSGG_VDP {
             this.latch.vscroll = this.io.vscroll;
 
             this.sprite_setup();
-            //this.doi = (((240-this.bg_gfx_vlines)/2) + this.clock.vpos) * 256;
             this.doi = (this.clock.vpos * 256);
         }
         if ((this.clock.hpos < 256) && (this.clock.vpos < this.clock.timing.frame_lines)) {
@@ -583,8 +611,10 @@ class SMSGG_VDP {
                 // odd writes store 12-bits into CRAM
                 if ((this.io.address & 1) === 0)
                     this.latch.cram = val;
-                else
+                else {
                     this.CRAM[this.io.address >>> 1] = ((val & 0x0F) << 8) | this.latch.cram;
+                }
+
             }
             else {
                 // 6 bits for SMS
@@ -904,5 +934,19 @@ class SMSGG_VDP {
         this.clock.vdp_frame_cycle += this.clock.vdp_divisor;
         this.clock.hpos++;
         if (this.clock.hpos === 342) this.new_scanline();
+    }
+
+    dump_palette() {
+        console.log('DOIN IT...');
+        let outstr = '00000000  ';
+        for (let i = 0; i < 32; i++) {
+            //outstr += hex2(this.CRAM[i] & 0xFF) + ' ' + hex2((this.CRAM[i] & 0xFF00) >>> 8) + ' ';
+            outstr += hex4(this.CRAM[i]) + ' ';
+            if ((i & 7) === 7) {
+                console.log(outstr);
+                outstr = '........  ';
+            }
+        }
+        console.log(outstr);
     }
 }

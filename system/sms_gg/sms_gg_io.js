@@ -310,7 +310,8 @@ class SMSGG_bus {
         switch(addr) {
             case 0: // Various stuff
                 // TODO: make this more complete
-                return 0x40 | 0x80;
+                let r = this.gg_joymap.latch();
+                return 0x40 | (r.start ? 0x80 : 0);
             case 1:
             case 2:
             case 3:
