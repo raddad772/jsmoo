@@ -59,6 +59,11 @@ class SMSGG_VDP {
         this.CRAM = new Uint16Array(32);
 
         this.mode = SMSGG_vdp_modes.SMS;
+        switch(variant) {
+            case SMSGG_variants.GG:
+                this.mode = SMSGG_vdp_modes.GG;
+        }
+
 
         this.output = new Uint8Array(256*240);
 
@@ -249,7 +254,7 @@ class SMSGG_VDP {
                 let b = ((color & 0x30) >>> 4) | (color & 0x30) >>> 2;
                 return r | (g << 4) | (b << 8);
             }
-            return self.CRAM[index];
+            return this.CRAM[index];
         }
         return 0;
     }
@@ -576,7 +581,7 @@ class SMSGG_VDP {
             if (this.mode === SMSGG_vdp_modes.GG) {
                 // even writes store 8-bit data into latch
                 // odd writes store 12-bits into CRAM
-                if (!(this.io.address & 1))
+                if ((this.io.address & 1) === 0)
                     this.latch.cram = val;
                 else
                     this.CRAM[this.io.address >>> 1] = ((val & 0x0F) << 8) | this.latch.cram;
@@ -666,7 +671,7 @@ class SMSGG_VDP {
                     bp3 <<= 1;
                     //color = this.CRAM[color];
                     color = this.dac_palette(color);
-                    if (this.variant === SMSGG_variants.gg) {
+                    if (this.variant === SMSGG_variants.GG) {
                         b = (((color >>> 8) & 0x0F) * 16) - 1;
                         g = (((color >>> 4) & 0x0F) * 16) - 1;
                         r = ((color & 0x0F) * 16) - 1;
@@ -743,7 +748,7 @@ class SMSGG_VDP {
                 let color = ((bp0 & 1) | ((bp1 & 1) << 1) | ((bp2 & 1) << 3) | ((bp3 & 1) << 4));
                 color = this.dac_palette(color);
 
-                if (this.variant === SMSGG_variants.gg) {
+                if (this.variant === SMSGG_variants.GG) {
                     b = (((color >>> 8) & 0x0F) * 16) - 1;
                     g = (((color >>> 4) & 0x0F) * 16) - 1;
                     r = ((color & 0x0F) * 16) - 1;

@@ -2,6 +2,7 @@
 
 //let Z80_TRACE_BRK = 37451979;
 let Z80_TRACE_BRK = -1;
+let Z80_INS_BRK = 0x0A; // NOP
 //let Z80_PC_BRK = 0x0EDF; //0x0C0A;
 
 let Z80_PC_BRK = -1; //5713457;
@@ -329,6 +330,10 @@ class z80_t {
 
     set_instruction(to) {
         this.regs.IR = to;
+        if ((to === Z80_INS_BRK) && dbg.watch_on) {
+            console.log('Z80 INS BRK');
+            dbg.break();
+        }
         this.current_instruction = Z80_fetch_decoded(this.regs.IR, this.regs.prefix);
         this.prefix_was = this.regs.prefix;
         if (this.PCO === Z80_PC_BRK) dbg.break();

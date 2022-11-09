@@ -183,8 +183,11 @@ class SMSGG_bus {
 
     // 0x3E memory control
     write_reg_memory_ctrl(val) {
-        this.mapper.set_bios(((val & 8) >>> 3) ^ 1); // 1 = disabled, 0 = enabled
-        this.mapper.enable_cart = ((val & 0x40) >>> 6) ^ 1;
+        if (this.variant !== SMSGG_variants.GG) {
+            this.mapper.set_bios(((val & 8) >>> 3) ^ 1); // 1 = disabled, 0 = enabled
+            this.mapper.enable_cart = ((val & 0x40) >>> 6) ^ 1;
+            if (!this.mapper.enable_cart) dbg.break();
+        }
         this.io.disable = (val & 4) >>> 2;
     }
 
@@ -346,8 +349,8 @@ class SMSGG_bus {
         }
         // C0-FF, even is /O port A/B reg
         // Odd is I/O port B/misc.
-        //if (addr & 1) return this.read_reg_ioport2(val);
-        //return this.read_reg_ioport1(val);
+        if (addr & 1) return this.read_reg_ioport2(val);
+        return this.read_reg_ioport1(val);
 
     }
 

@@ -100,10 +100,12 @@ class SMSGG_mapper_sega {
     }
 
     read(addr, val, has_effect) {
+        val = null;
         addr &= 0xFFFF;
         if ((addr >= 0xC000) && (this.enable_RAM)) val = this.ram_read(addr, val);
         if ((this.variant !== SMSGG_variants.GG) && this.enable_bios) val = this.bios_read(addr, val);
         if (this.enable_cart) val = this.cart_read(addr, val);
+        if (val === null) debugger;
         return val;
     }
 
@@ -144,6 +146,7 @@ class SMSGG_mapper_sega {
     }
 
     cart_write(addr, val) {
+        if (addr >= 0xFFFC) console.log(hex4(addr), hex2(val));
         switch(addr) {
             case 0xFFFC: // various stuff
                 //this.cart.ram_
@@ -151,13 +154,14 @@ class SMSGG_mapper_sega {
                 this.cart.ram_80_enabled = (val & 0x08) >>> 3;
                 return;
             case 0xFFFD: // ROM 0x0400-0x3FFF
+                console.log('ROM CART PAGE0', val % this.cart.num_ROM_banks);
                 this.cart.rom_00_bank = (val % this.cart.num_ROM_banks) << 14;
                 return;
             case 0xFFFE: // ROM 0x4000-0x7FFF
                 this.cart.rom_40_bank = (val % this.cart.num_ROM_banks) << 14;
                 return;
             case 0xFFFF: // ROM 0x8000-0xBFFF
-                //console.log('CART PAGE', this.cpu.trace_cycles, val % this.cart.num_ROM_banks, hex4((val % this.cart.num_ROM_banks) << 14));
+                console.log('CART PAGE', this.cpu.trace_cycles, val % this.cart.num_ROM_banks, hex4((val % this.cart.num_ROM_banks) << 14));
                 //if (val === 15) dbg.break();
                 this.cart.rom_80_bank = (val % this.cart.num_ROM_banks) << 14;
                 return;
