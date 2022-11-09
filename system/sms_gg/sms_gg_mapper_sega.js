@@ -66,6 +66,9 @@ class SMSGG_mapper_sega {
         this.cart.ram_80_enabled = 0;
         this.cart.ram_C0_enabled = false;
         this.enable_cart = (this.variant === SMSGG_variants.GG) ? 1 : 0;
+        for (let i = 0; i < this.RAM.byteLength; i++) {
+            this.RAM[i] = 0;
+        }
     }
 
     //  0 slot 0
@@ -100,12 +103,10 @@ class SMSGG_mapper_sega {
     }
 
     read(addr, val, has_effect) {
-        val = null;
         addr &= 0xFFFF;
         if ((addr >= 0xC000) && (this.enable_RAM)) val = this.ram_read(addr, val);
         if ((this.variant !== SMSGG_variants.GG) && this.enable_bios) val = this.bios_read(addr, val);
         if (this.enable_cart) val = this.cart_read(addr, val);
-        if (val === null) debugger;
         return val;
     }
 

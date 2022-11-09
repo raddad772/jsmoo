@@ -186,7 +186,7 @@ class SMSGG_bus {
         if (this.variant !== SMSGG_variants.GG) {
             this.mapper.set_bios(((val & 8) >>> 3) ^ 1); // 1 = disabled, 0 = enabled
             this.mapper.enable_cart = ((val & 0x40) >>> 6) ^ 1;
-            if (!this.mapper.enable_cart) dbg.break();
+            //if (!this.mapper.enable_cart) dbg.break();
         }
         this.io.disable = (val & 4) >>> 2;
     }
