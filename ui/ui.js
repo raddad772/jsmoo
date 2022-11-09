@@ -265,12 +265,20 @@ function click_sprite_dump() {
 }
 
 function click_render_scr() {
-	let old_scanline = global_player.system.clock.scanline.ppu_y;
-	for (let y = 1; y < 240; y++) {
-		global_player.system.clock.scanline.ppu_y = y;
-		global_player.system.ppu.render_scanline(true)
+	switch(global_player.system_kind) {
+		case 'gg':
+			console.log('HELLO?');
+			global_player.system.vdp.dump_palette();
+			break;
+		case 'snes':
+			let old_scanline = global_player.system.clock.scanline.ppu_y;
+			for (let y = 1; y < 240; y++) {
+				global_player.system.clock.scanline.ppu_y = y;
+				global_player.system.ppu.render_scanline(true)
+			}
+			global_player.system.clock.scanline.ppu_y = old_scanline;
+			break;
 	}
-	global_player.system.clock.scanline.ppu_y = old_scanline;
 	//global_player.system.ppu.present();
 }
 

@@ -618,7 +618,7 @@ export class NES_ppu {
         }
         if (this.rendering_enabled()) {
             if (lc === 257) this.io.v = (this.io.v & 0xFBE0) | (this.io.t & 0x41F);
-            if ((this.line_cycle >= 258) && (this.line_cycle <= 320)) this.io.v = (this.io.v & 0x041F) | (this.io.t & 0x7BE0);
+            if ((this.line_cycle >= 280) && (this.line_cycle <= 308)) this.io.v = (this.io.v & 0x041F) | (this.io.t & 0x7BE0);
         }
         if (this.io.sprite_enable && (this.line_cycle >= 257)) {
             this.oam_evaluate_slow();
