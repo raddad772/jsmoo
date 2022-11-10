@@ -112,7 +112,6 @@ class NES {
                 done++;
             }
             this.ppu.cycle(done);
-            this.clock.ppu_master_clock += done * ppu_step;
             this.cycles_left -= cpu_step;
             if (dbg.do_break) break;
         }
@@ -135,7 +134,6 @@ class NES {
                 done++;
             }
             this.ppu.cycle(done);
-            this.clock.ppu_master_clock += done * ppu_step;
             this.cycles_left -= cpu_step;
             if (dbg.do_break) break;
         }

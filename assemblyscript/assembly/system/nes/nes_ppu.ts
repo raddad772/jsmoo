@@ -645,6 +645,7 @@ export class NES_ppu {
             this.line_cycle++;
             this.clock.ppu_frame_cycle++;
             this.render_cycle();
+            this.clock.ppu_master_clock++;
         }
         return howmany
     }
