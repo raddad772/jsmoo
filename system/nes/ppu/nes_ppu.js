@@ -95,6 +95,36 @@ const NES_palette = Object.freeze({
     63: [0x00, 0x00, 0x00],
 });
 
+
+class PPU_effect_FIFO_item {
+    constructor() {
+        this.cycle = 0;
+        this.value = 0;
+    }
+}
+
+class PPU_effect_buffer {
+    constructor(length) {
+        this.length = length;
+
+        this.items = new Array(length);
+        for (let i = 0; i < length; i++) {
+            this.items[i] = null;
+        }
+    }
+
+    get(cycle) {
+        let ci = cycle % this.length;
+        let r = this.items[ci];
+        this.items[ci] = null;
+        return r;
+    }
+
+    set(cycle, value) {
+        this.items[cycle % this.length] = value;
+    }
+}
+
 const SER_NES_ppu = [
     'line_cycle', 'OAM', 'secondary_OAM',
     'secondary_OAM_index', 'secondary_OAM_sprite_index',
@@ -139,6 +169,8 @@ class NES_ppu {
         this.sprite0_on_next_line = false;
         this.sprite0_on_this_line = false;
 
+        this.w2006_buffer = new PPU_effect_buffer(4);
+
         this.clock.ppu = this;
 
         this.CGRAM = new Uint8Array(0x20);   // 32 byes of "color RAM"
@@ -154,6 +186,8 @@ class NES_ppu {
         this.sprite_attribute_latches = [0, 0, 0, 0, 0, 0, 0, 0]; // Keeps sprite attribute bytes
         this.sprite_x_counters = [0, 0, 0, 0, 0, 0, 0, 0]; // Counts down to 0, when sprite should display
         this.sprite_y_lines = [0, 0, 0, 0, 0, 0, 0, 0]; // Keeps track of what our Y coord inside the sprite is
+
+        this.last_sprite_addr = 0;
 
         this.io = {
             nmi_enable: 0,
@@ -323,11 +357,11 @@ class NES_ppu {
                     this.io.w = 1;
                 } else {
                     this.io.t = (this.io.t & 0x7F00) | val;
-                    this.io.v = this.io.t;
-                    //console.log('UPDATE V AT ' + this.clock.ppu_y.toString() + ' X: ' + this.line_cycle.toString());
-                    this.bus.mapper.a12_watch(this.io.v & 0x3FFF);
+
+                    this.w2006_buffer.set((this.clock.ppu_master_clock / this.clock.timing.ppu_divisor)+3, this.io.t);
+                    //this.io.v = this.io.t;
+                    //this.bus.mapper.a12_watch(this.io.v);
                     this.io.w = 0;
-                    //console.log('SET V', hex4(this.io.v), this.clock.trace_cycles);
                     //TODO: Video RAM update is apparently delayed by 3 PPU cycles (based on Visual NES findings)
                 }
                 return;
@@ -338,6 +372,7 @@ class NES_ppu {
                 }
                 this.mem_write(this.io.v, val);
                 this.io.v = (this.io.v + this.io.vram_increment) & 0x7FFF;
+
                 return;
             default:
                 console.log('WRITE UNIMPLEMENTED', hex4(addr));
@@ -398,6 +433,7 @@ class NES_ppu {
 
     fetch_chr_line(table, tile, line, has_effect=true) {
         let r = (0x1000 * table) + (tile * 16) + line;
+        this.last_sprite_addr = r + 8;
         let low = this.bus.PPU_read(r, 0, has_effect);
         let high = this.bus.PPU_read(r + 8, 0, has_effect);
         let output = 0;
@@ -440,14 +476,6 @@ class NES_ppu {
         }
         return output | o;
     }
-
-    fetch_chr_line16(table, tile, line) {
-        let r = (0x1000 * table) + (tile * 16) + line;
-        let low = this.bus.PPU_read(r, 0);
-        let high = this.bus.PPU_read(r+8, 0);
-        return low | (high << 8);
-    }
-
 
     // Do evaluation of next line of sprites
     oam_evaluate_slow() {
@@ -496,6 +524,7 @@ class NES_ppu {
 
         if ((this.line_cycle >= 257) && (this.line_cycle <= 320)) { // Sprite tile fetches
             if (this.line_cycle === 257) { // Do some housekeeping on cycle 257
+                this.sprite0_on_this_line = this.sprite0_on_next_line;
                 this.secondary_OAM_index = 0;
                 this.secondary_OAM_sprite_index = 0;
                 if (!this.io.sprite_overflow) {
@@ -526,10 +555,6 @@ class NES_ppu {
             }
 
             // Sprite data fetches into shift registers
-            //if (this.secondary_OAM_sprite_index >= this.secondary_OAM_sprite_total) return;
-            if (this.secondary_OAM_sprite_index >= 8) return;
-            //if (this.secondary_OAM_index >= 32) return;
-            this.sprite0_on_this_line = this.sprite0_on_next_line;
             let sub_cycle = (this.line_cycle - 257) & 0x07;
             switch (sub_cycle) {
                 case 0: // Read Y coordinate.  257
@@ -539,19 +564,23 @@ class NES_ppu {
                     this.sprite_y_lines[this.secondary_OAM_sprite_index] = syl;
                     this.secondary_OAM_index++;
                     break;
-                case 1: // Read tile number 258
+                case 1: // Read tile number 258, and do garbage NT access
                     this.sprite_pattern_shifters[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index];
                     this.secondary_OAM_index++;
+                    this.bus.mapper.a12_watch(this.io.v);
                     break;
                 case 2: // Read attributes 259
                     this.sprite_attribute_latches[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index];
                     this.secondary_OAM_index++;
                     break;
-                case 3: // Read X-coordinate 260
+                case 3: // Read X-coordinate 260 and do garbage NT access
                     this.sprite_x_counters[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index];
                     this.secondary_OAM_index++;
+                    this.bus.mapper.a12_watch(this.io.v);
                     break;
                 case 4: // Fetch tiles for the shifters 261
+                    break;
+                case 5:
                     let tn = this.sprite_pattern_shifters[this.secondary_OAM_sprite_index];
                     let sy = this.sprite_y_lines[this.secondary_OAM_sprite_index];
                     let table = this.io.sprite_pattern_table;
@@ -568,10 +597,10 @@ class NES_ppu {
                     }
                     this.sprite_pattern_shifters[this.secondary_OAM_sprite_index] = this.fetch_chr_line(table, tn, sy);
                     break;
-                case 5:
                 case 6: // 263
                     break;
                 case 7:
+                    this.bus.mapper.a12_watch(this.last_sprite_addr);
                     this.secondary_OAM_sprite_index++;
                     break;
             }
@@ -594,15 +623,6 @@ class NES_ppu {
         }
         if (!this.rendering_enabled() || (this.line_cycle === 0)) return;
         // Cycle # 8, 16,...248, and 328, 336. BUT NOT 0
-        if (((this.line_cycle & 7) === 0) && ((this.line_cycle >= 328) || (this.line_cycle < 256))) {
-            // INCREMENT HORIZONTAL SCROLL IN v
-            if ((this.io.v & 0x1F) === 0x1F) // If X scroll is 31...
-                this.io.v = (this.io.v & 0xFFE0) ^ 0x0400; // clear x scroll to 0 (& FFE0) and swap nametable (^ 0x400)
-            else
-                this.io.v++;  // just increment the X scroll
-            return;
-        }
-        // INCREMENT VERTICAL SCROLL IN v
         if (this.line_cycle === 256) {
             if ((this.io.v & 0x7000) !== 0x7000) { // if fine y !== 7
                 this.io.v += 0x1000;               // add 1 to fine y
@@ -622,6 +642,15 @@ class NES_ppu {
             }
             return;
         }
+        if (((this.line_cycle & 7) === 0) && ((this.line_cycle >= 328) || (this.line_cycle <= 256))) {
+            // INCREMENT HORIZONTAL SCROLL IN v
+            if ((this.io.v & 0x1F) === 0x1F) // If X scroll is 31...
+                this.io.v = (this.io.v & 0xFFE0) ^ 0x0400; // clear x scroll to 0 (& FFE0) and swap nametable (^ 0x400)
+            else
+                this.io.v++;  // just increment the X scroll
+            return;
+        }
+        // INCREMENT VERTICAL SCROLL IN v
         // Cycles 257, copy parts of T to V
         if ((this.line_cycle === 257) && this.rendering_enabled()) this.io.v = (this.io.v & 0xFBE0) | (this.io.t & 0x41F);
     }
@@ -657,7 +686,8 @@ class NES_ppu {
 
         if (((this.line_cycle > 0) && (this.line_cycle <= 256)) || (this.line_cycle > 320)) {
             // Do memory accesses and shifters
-            switch (this.line_cycle & 7) {
+            //if ((this.line_cycle === 340)) console.log(this.line_cycle & 7);
+            switch ((this.line_cycle - 1) & 7) {
                 case 1: // nametable, tile #
                     this.bg_fetches[0] = this.bus.PPU_read(0x2000 | (this.io.v & 0xFFF));
                     this.bg_tile_fetch_addr = this.fetch_chr_addr(this.io.bg_pattern_table, this.bg_fetches[0], in_tile_y);
@@ -688,7 +718,7 @@ class NES_ppu {
     scanline_visible() {
         //this.scanline_timer.start_sample();
         if (!this.rendering_enabled()) {
-            if (this.line_cycle === 340) {
+            if (this.line_cycle === 341) {
                 this.new_scanline();
                 // Quit out if we've stumbled past the last rendered line
                 if (this.clock.ppu_y >= 240) return;
@@ -711,7 +741,7 @@ class NES_ppu {
         let sx = this.line_cycle-1;
         let sy = this.clock.ppu_y;
         let bo = (sy * 256) + sx;
-        if (this.line_cycle === 340) {
+        if (this.line_cycle === 341) {
             this.new_scanline();
             // Quit out if we've stumbled past the last rendered line
             if (this.clock.ppu_y >= 240) {
@@ -800,13 +830,13 @@ class NES_ppu {
             this.status.nmi_out = 1;
             this.update_nmi();
         }
-        if (this.line_cycle === 340) this.new_scanline();
+        if (this.line_cycle === 341) this.new_scanline();
     }
 
     scanline_vblank() {
         // 241-260
         // LITERALLY DO NOTHING
-        if (this.line_cycle === 340) this.new_scanline();
+        if (this.line_cycle === 341) this.new_scanline();
     }
 
     new_scanline() {
@@ -843,9 +873,15 @@ class NES_ppu {
 
     cycle(howmany) {
         for (let i = 0; i < howmany; i++) {
+            let r = this.w2006_buffer.get((this.clock.ppu_master_clock / this.clock.timing.ppu_divisor));
+            if (r !== null) {
+                this.io.v = r;
+                this.bus.mapper.a12_watch(r);
+            }
+            this.render_cycle();
             this.line_cycle++;
             this.clock.ppu_frame_cycle++;
-            this.render_cycle();
+            this.clock.ppu_master_clock += this.clock.timing.ppu_divisor;
         }
         return howmany;
     }

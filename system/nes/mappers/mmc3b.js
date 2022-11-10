@@ -66,7 +66,7 @@ class a12_watcher {
         this.cycles_down = 0;
         this.last_cycle = 0;
         this.clock = clock;
-        this.delay = 3;
+        this.delay = 5;
 
         this.nothing = 0;
         this.rise = 1;

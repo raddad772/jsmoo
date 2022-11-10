@@ -1,25 +1,56 @@
+"use strict";
 // GENTARGET = js or as
+
+/* This switch generator differs significantly from even SM83's.
+   This is to make code writing for M68K and more complex processors like ARM7TDMI better.
+ */
+class M68K_RWAUL_t {
+    constructor() {
+        this.AS = 0;
+        this.RW = 0;
+        this.UDS = 0;
+        this.LDS = 0;
+    }
+
+    reset() {
+        this.AS = 0;
+        this.RW = 0;
+        this.UDS = 0;
+        this.LDS = 0;
+    }
+
+    copy(what) {
+        this.AS = what.AS;
+        this.RW = what.RW;
+        this.UDS = what.UDS;
+        this.LDS = what.LDS;
+    }
+
+    eq(what) {
+        return ((this.AS === what.AS) && (this.RW === what.RW) && (this.UDS === what.UDS) && (this.LDS === what.LDS));
+    }
+}
 
 class M68K_switchgen {
     constructor(indent, what) {
         this.indent1 = indent;
         this.indent2 = '    ' + this.indent1;
         this.indent3 = '    ' + this.indent2;
-        this.in_case = false;
-        this.last_case = 0;
-        this.added_lines = 0;
-        this.has_footer = false;
-        this.no_addr_at_end = false;
-        this.outstr = this.indent1 + 'switch(regs.TCU) {\n';
-        this.has_cycle = false;
-        this.on_cycle = [];
+        this.outstr = this.indent1 + 'switch(regs.entrypoint) {\n' + this.indent2 + 'case 1: // start instruction\n';
+        this.on_entrypoint = 1;
+        this.in_break = false;
 
-        this.old_astrobe = 0;
-        this.old_rw = 0;
-        this.old_uds = 0;
-        this.old_lds = 0;
+        this.cycles_til_next_entrypoint = 0;
+        this.entrypoint_comment = '';
+
+        this.RWAUL_start = new M68K_RWAUL_t();
+        this.RWAUL_end = new M68K_RWAUL_t();
 
         this.opcode_info = what;
+
+        this.added_lines = 0;
+
+        this.finished = false;
 
         this.temp_regs_used = [false, false, false, false, false, false, false, false,
         false, false, false, false, false, false, false, false]
@@ -39,21 +70,22 @@ class M68K_switchgen {
         this.temp_regs_used[rnum] = false;
     }
 
-    psaddl(what) {
-        this.added_lines++;
-        this.outstr = this.indent1 + what + '\n' + this.outstr;
-    }
-
     addl(what) {
+        if (this.finished) {
+            debugger;
+        }
+        if (this.in_break) {
+            this.outstr += this.indent2 + 'case ' + this.on_entrypoint + ': // ' + this.entrypoint_comment + ' \n';
+            this.in_break = false;
+        }
         this.added_lines++;
-        if (this.has_cycle)
-            this.outstr += this.indent3 + what + '\n';
-        else
-            this.on_cycle.push(what);
+        this.outstr += this.indent3 + what + '\n';
     }
 
     idle(howmany) {
-        this.addcycles(howmany);
+        this.RWAUL(0, 0, 0, 0);
+        this.RWAUL_finish();
+        this.cycles_til_next_entrypoint += howmany;
     }
 
     // We actually ignore the input cycle #
@@ -94,15 +126,6 @@ class M68K_switchgen {
         if (!this.no_addr_at_end)
             this.addr_to_PC_then_inc();
         // TODO: fix this
-        /*
-        this.RWM(0, 0, 0, 0);
-        this.addl('regs.TCU = 0;');
-        this.addl('regs.EI = 0;');
-        this.addl('regs.P = 0;');
-        this.addl('regs.prefix = 0x00;');
-        this.addl('regs.rprefix = Z80P.HL;');
-        this.addl('regs.IR = Z80_S_DECODE;');
-        this.addl('regs.poll_IRQ = true;');*/
         this.addl('break;');
     }
 
@@ -112,53 +135,55 @@ class M68K_switchgen {
     }
 
     RWAUL(rw, addr_strobe, uds, lds) {
-        let ostr = '';
-        let ndsp = false;
-        if (rw !== this.old_rw) {
-            ostr += 'pins.RW = ' + rw + ';';
-            this.old_rw = rw;
-            ndsp = true;
-        }
-        if (addr_strobe !== this.old_astrobe) {
-            if (ndsp) ostr += ' ';
-            ostr += 'pins.AS = ' + addr_strobe + ';';
-            this.old_astrobe = addr_strobe;
-            ndsp = true;
-        }
-        if (uds !== this.old_uds) {
-            if (ndsp) ostr += ' ';
-            ostr += 'pins.UDS = ' + uds + ';';
-            this.old_uds = uds;
-            ndsp = true;
-        }
-        if (lds !== this.old_lds) {
-            if (ndsp) ostr += ' ';
-            ostr += 'pins.LDS = ' + lds + ';';
-            this.old_lds = lds;
-            ndsp = true;
-        }
-        if (ostr.length > 0) this.addl(ostr);
+        this.RWAUL_end.RW = rw;
+        this.RWAUL_end.AS = addr_strobe;
+        this.RWAUL_end.UDS = uds;
+        this.RWAUL_end.LDS = lds;
     }
 
-    finished() {
-        if ((!this.in_case) && (this.added_lines === 0)) {
-            return '';
-        }
-        this.regular_end();
-
-        this.outstr += this.indent1 + '}\n';
-        return this.outstr;
+    add_break(comment=null) {
+        this.addl('regs.cycles_til_next_entrypoint = ' + this.cycles_til_next_entrypoint + ';');
+        this.RWAUL_finish();
+        this.addl('break;');
+        this.cycles_til_next_entrypoint = 0;
+        if (comment === null) this.entrypoint_comment = ''
+        else this.entrypoint_comment = comment;
+        this.on_entrypoint++;
+        this.in_break = true;
     }
 
-    addcycles(howmany, actually_make_them=true) {
-        if (!actually_make_them) console.log('PLEASE IMPLEMENT actually_make_them');
-        this.RWAUL(0, 0, 0, 0);
-        let first = true;
-        for (let i = 0; i < howmany; i++) {
-            if (first) this.addcycle('Adding ' + howmany + ' cycles');
-            else this.addcycle();
-            first = false;
+    exit() {
+        this.addl('regs.cycles_til_next_entrypoint = -1;');
+        this.RWAUL_finish();
+        this.addl('break;');
+        this.finished = true;
+    }
+
+    RWAUL_finish() {
+        if (!this.RWAUL_start.eq(this.RWAUL_end)) {
+            let ostr = '';
+            let ndsp = false;
+            if (this.RWAUL_start.RW !== this.RWAUL_end.RW) {
+                ostr += 'pins.RW = ' + this.RWAUL_end.RW + ' ;';
+                ndsp = true;
+            }
+            if (this.RWAUL_start.AS !== this.RWAUL_end.AS) {
+                if (ndsp) ostr += ' ';
+                ostr += 'pins.AS = ' + this.RWAUL_end.AS + ';';
+                ndsp = true;
+            }
+            if (this.RWAUL_start.UDS !== this.RWAUL_end.UDS) {
+                if (ndsp) ostr += ' ';
+                ostr += 'pins.UDS = ' + this.RWAUL_end.UDS + ';';
+                ndsp = true;
+            }
+            if (this.RWAUL_start.LDS !== this.RWAUL_end.LDS) {
+                if (ndsp) ostr += ' ';
+                ostr += 'pins.LDS = ' + this.RWAUL_end.LDS + ';';
+            }
+            if (ostr.length > 0) this.outstr += this.indent3 + ostr + '\n';
         }
+        this.RWAUL_start.copy(this.RWAUL_end);
     }
 
     /* Bus activity */
@@ -1001,7 +1026,7 @@ function M68K_generate_instruction_function(indent, opcode_info, opt_matrix) {
 
     //e
     //switch(opcode_info)
-    return ag.finished();
+    return ag.finish_up();
 }
 
 class M68K_MN_parse_ret {
