@@ -42,11 +42,13 @@ class m68k_SRL_t {
 
 class m68k_registers_t {
     constructor() {
+        // Regular registers
         this.D = new Uint32Array(8);
         this.A = new Uint32Array(8);
         this.SP = 0;
         this.PC = 0;
 
+        // Flags
         this.C = 0; // Carry
         this.V = 0; // Overflow
         this.Z = 0; // Zero
@@ -56,18 +58,23 @@ class m68k_registers_t {
         this.S = 0; // Supervisor mode
         this.T = 0; // Trace mode
 
+        // Prefetch registers
         this.IRC = 0; // instruction prefetch first
         this.IR = 0;  // instruction being decoded
         this.IRD = 0; // instruction being executed
 
+        // STP/RES registers
         this.STP = 0;
         this.RES = 0;
 
-        this.T1 = 0;
-        this.T2 = 0;
-        this.T3 = 0;
+
+        // Internal-to-emulator variables
+
+        this.cycles_til_next_entrypoint = 0; // Cycles 'til next instruction entrypoint
+        this.entrypoint = 0; // Current entrypoint of instruction. Should start at 1
 
         this.TRs = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
         this.DR1 = new M68K_DR(0);
         this.DR2 = new M68K_DR(0);
         this.AR1 = new M68K_AR(0);
@@ -96,6 +103,4 @@ class m68k_t {
         this.regs = new m68k_registers_t();
         this.pins = new m68k_pins_t();
     }
-
-
 }
