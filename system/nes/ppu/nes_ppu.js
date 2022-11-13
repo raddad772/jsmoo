@@ -169,7 +169,7 @@ class NES_ppu {
         this.sprite0_on_next_line = false;
         this.sprite0_on_this_line = false;
 
-        this.w2006_buffer = new PPU_effect_buffer(4);
+        this.w2006_buffer = new PPU_effect_buffer(4*this.clock.timing.ppu_divisor);
 
         this.clock.ppu = this;
 
@@ -292,6 +292,7 @@ class NES_ppu {
     }
 
     write_cgram(addr, val) {
+        this.bus.mapper.a12_watch(addr | 0x3F00);
         if((addr & 0x13) === 0x10) addr &= 0xEF;
         this.CGRAM[addr] = val & 0x3F;
     }
@@ -358,7 +359,7 @@ class NES_ppu {
                 } else {
                     this.io.t = (this.io.t & 0x7F00) | val;
 
-                    this.w2006_buffer.set((this.clock.ppu_master_clock / this.clock.timing.ppu_divisor)+3, this.io.t);
+                    this.w2006_buffer.set((this.clock.ppu_master_clock / this.clock.timing.ppu_divisor)+(3*this.clock.timing.ppu_divisor), this.io.t);
                     //this.io.v = this.io.t;
                     //this.bus.mapper.a12_watch(this.io.v);
                     this.io.w = 0;
@@ -401,7 +402,6 @@ class NES_ppu {
 
                     this.io.w = 0;
                 }
-                // NOTFINISHED
                 break;
             case 0x2004: // OAMDATA
                 output = this.io.OAM[this.io.OAM_addr];
@@ -687,7 +687,7 @@ class NES_ppu {
         if (((this.line_cycle > 0) && (this.line_cycle <= 256)) || (this.line_cycle > 320)) {
             // Do memory accesses and shifters
             //if ((this.line_cycle === 340)) console.log(this.line_cycle & 7);
-            switch ((this.line_cycle - 1) & 7) {
+            switch (this.line_cycle & 7) {
                 case 1: // nametable, tile #
                     this.bg_fetches[0] = this.bus.PPU_read(0x2000 | (this.io.v & 0xFFF));
                     this.bg_tile_fetch_addr = this.fetch_chr_addr(this.io.bg_pattern_table, this.bg_fetches[0], in_tile_y);
