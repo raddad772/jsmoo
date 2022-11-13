@@ -89,6 +89,29 @@ for (let i = 0; i < 64; i++) {
     NES_palette[i] = 0xFF000000 | (r.b << 16) | (r.g << 8) | r.r;
 }
 
+class PPU_effect_buffer {
+    length: i32
+    items: StaticArray<i64>
+    constructor(length: u32) {
+        this.length = <i32>length;
+        this.items = new StaticArray<i64>(length);
+        for (let i: u32 = 0; i < length; i++) {
+            this.items[i] = -1;
+        }
+    }
+
+    get(cycle: u64): i64 {
+        let ci: i32 = <i32>cycle % this.length;
+        let r: i64 = unchecked(this.items[ci]);
+        this.items[ci] = -1;
+        return r;
+    }
+
+    set(cycle: u64, value: u32): void {
+        unchecked(this.items[<i32>(cycle % this.length)] = <i64>value);
+    }
+}
+
 class NES_PPU_io {
     nmi_enable: u32 = 0
     sprite_overflow: u32 = 0
@@ -164,16 +187,21 @@ export class NES_ppu {
     sprite_attribute_latches: StaticArray<u32> = new StaticArray<u32>(8);
     sprite_x_counters: StaticArray<i32> = new StaticArray<i32>(8);
     sprite_y_lines: StaticArray<i32> = new StaticArray<i32>(8);
+    last_sprite_addr: u32 = 0;
 
     io: NES_PPU_io = new NES_PPU_io();
     status: NES_PPU_status = new NES_PPU_status();
     latch: NES_PPU_latch = new NES_PPU_latch();
     scanline_timer: perf_timer_t = new perf_timer_t('scanline timer', 60*240, scanline_splits);
+
+    w2006_buffer: PPU_effect_buffer
+
     constructor(variant: NES_VARIANTS, clock: NES_clock, bus: NES_bus) {
         this.variant = variant;
         this.clock = clock;
         this.bus = bus;
 
+        this.w2006_buffer = new PPU_effect_buffer(4*this.clock.timing.ppu_divisor);
 
         this.bus.ppu = this;
     }
@@ -203,6 +231,7 @@ export class NES_ppu {
     }
 
     write_cgram(addr: u32, val: u32): void {
+        this.bus.mapper.a12_watch(addr | 0x3F00)
         if ((addr & 0x13) === 0x10) addr &= 0xEF;
         unchecked(this.CGRAM[addr & 0x1F] = val & 0x3F);
     }
@@ -245,6 +274,7 @@ export class NES_ppu {
         let r: u32 = (0x1000 * table) + (tile * 16) + line;
         let low: u32 = this.bus.mapper.PPU_read_effect(r);
         let high: u32 = this.bus.mapper.PPU_read_effect(r + 8);
+        this.last_sprite_addr = r + 8;
         let output: u32 = 0;
         for (let i = 0; i < 8; i++) {
             output <<= 2;
@@ -366,6 +396,7 @@ export class NES_ppu {
 
         if ((this.line_cycle >= 257) && (this.line_cycle <= 320)) { // Sprite tile fetches
             if (this.line_cycle === 257) { // Do some housekeeping on cycle 257
+                this.sprite0_on_this_line = this.sprite0_on_next_line;
                 this.secondary_OAM_index = 0;
                 this.secondary_OAM_sprite_index = 0;
                 if (!this.io.sprite_overflow) {
@@ -396,8 +427,6 @@ export class NES_ppu {
             }
 
             // Sprite data fetches into shift registers
-            if (this.secondary_OAM_sprite_index >= 8) return;
-            this.sprite0_on_this_line = this.sprite0_on_next_line;
             let sub_cycle = (this.line_cycle - 257) & 0x07;
             switch (sub_cycle) {
                 case 0: // Read Y coordinate.  257
@@ -407,19 +436,23 @@ export class NES_ppu {
                     unchecked(this.sprite_y_lines[this.secondary_OAM_sprite_index] = syl);
                     this.secondary_OAM_index++;
                     break;
-                case 1: // Read tile number 258
+                case 1: // Read tile number 258, and do garbage NT address
                     unchecked(this.sprite_pattern_shifters[this.secondary_OAM_sprite_index] = unchecked(this.secondary_OAM[this.secondary_OAM_index]));
                     this.secondary_OAM_index++;
+                    this.bus.mapper.a12_watch(this.io.v);
                     break;
                 case 2: // Read attributes 259
                     unchecked(this.sprite_attribute_latches[this.secondary_OAM_sprite_index] = unchecked(this.secondary_OAM[this.secondary_OAM_index]));
                     this.secondary_OAM_index++;
                     break;
-                case 3: // Read X-coordinate 260
+                case 3: // Read X-coordinate 260 and do garbage NT access
                     unchecked(this.sprite_x_counters[this.secondary_OAM_sprite_index] = unchecked(this.secondary_OAM[this.secondary_OAM_index]));
                     this.secondary_OAM_index++;
+                    this.bus.mapper.a12_watch(this.io.v);
                     break;
                 case 4: // Fetch tiles for the shifters 261
+                    break;
+                case 5:
                     let tn: u32 = unchecked(this.sprite_pattern_shifters[this.secondary_OAM_sprite_index]);
                     let sy: i32 = unchecked(this.sprite_y_lines[this.secondary_OAM_sprite_index]);
                     let table: u32 = this.io.sprite_pattern_table;
@@ -437,6 +470,7 @@ export class NES_ppu {
                     unchecked(this.sprite_pattern_shifters[this.secondary_OAM_sprite_index] = this.fetch_chr_line(table, tn, sy));
                     break;
                 case 7:
+                    this.bus.mapper.a12_watch(this.last_sprite_addr);
                     this.secondary_OAM_sprite_index++;
                     break;
             }
@@ -462,15 +496,6 @@ export class NES_ppu {
         }
         if (!(this.io.bg_enable | this.io.sprite_enable) || (lc === 0)) return;
         // Cycle # 8, 16,...248, and 328, 336. BUT NOT 0
-        if (((lc & 7) == 0) && ((lc >= 328) || (lc < 256))) {
-            // INCREMENT HORIZONTAL SCROLL IN v
-            if ((io_v & 0x1F) == 0x1F) // If X scroll is 31...
-                this.io.v = (io_v & 0xFFE0) ^ 0x0400; // clear x scroll to 0 (& FFE0) and swap nametable (^ 0x400)
-            else
-                this.io.v++;  // just increment the X scroll
-            return;
-        }
-        // INCREMENT VERTICAL SCROLL IN v
         if (lc == 256) {
             if ((io_v & 0x7000) !== 0x7000) { // if fine y !== 7
                 io_v += 0x1000;               // add 1 to fine y
@@ -491,14 +516,23 @@ export class NES_ppu {
             this.io.v = io_v;
             return;
         }
+        if (((lc & 7) == 0) && ((lc >= 328) || (lc <= 256))) {
+            // INCREMENT HORIZONTAL SCROLL IN v
+            if ((io_v & 0x1F) == 0x1F) // If X scroll is 31...
+                this.io.v = (io_v & 0xFFE0) ^ 0x0400; // clear x scroll to 0 (& FFE0) and swap nametable (^ 0x400)
+            else
+                this.io.v++;  // just increment the X scroll
+            return;
+        }
+        // INCREMENT VERTICAL SCROLL IN v
         // Cycles 257...320, copy parts of T to V over and over...
-        if (lc == 257)
+        if ((lc == 257) && this.rendering_enabled())
             this.io.v = (this.io.v & 0xFBE0) | (this.io.t & 0x41F);
     }
 
     cycle_visible(): void {
         if (!this.rendering_enabled()) {
-            if (this.line_cycle === 340)
+            if (this.line_cycle === 341)
                 this.new_scanline();
             return;
         }
@@ -515,7 +549,7 @@ export class NES_ppu {
         let sx: i32 = this.line_cycle-1;
         let sy: i32 = this.clock.ppu_y;
         let bo: u32 = (sy * 256) + sx;
-        if (this.line_cycle === 340) {
+        if (this.line_cycle === 341) {
             this.new_scanline();
             // Quit out if we've stumbled past the last rendered line
             if (this.clock.ppu_y >= 240) return;
@@ -603,7 +637,7 @@ export class NES_ppu {
             this.status.nmi_out = 1;
             this.update_nmi();
         }
-        if (this.line_cycle === 340) this.new_scanline();
+        if (this.line_cycle === 341) this.new_scanline();
     }
 
     // Get tile info into shifters using screen X, Y coordinates
@@ -623,7 +657,7 @@ export class NES_ppu {
         if (this.io.sprite_enable && (this.line_cycle >= 257)) {
             this.oam_evaluate_slow();
         }
-        if (this.line_cycle === 340) {
+        if (this.line_cycle === 341) {
             this.new_scanline();
         }
     }
@@ -642,10 +676,15 @@ export class NES_ppu {
 
     cycle(howmany: u32): u32 {
         for (let i: u32 = 0; i < howmany; i++) {
+            let r: i64 = this.w2006_buffer.get((this.clock.ppu_master_clock / this.clock.timing.ppu_divisor));
+            if (r > 0) {
+                this.io.v = <u32>r;
+                this.bus.mapper.a12_watch(<u32>r);
+            }
+            this.render_cycle();
             this.line_cycle++;
             this.clock.ppu_frame_cycle++;
-            this.render_cycle();
-            this.clock.ppu_master_clock++;
+            this.clock.ppu_master_clock += this.clock.timing.ppu_divisor;
         }
         return howmany
     }
@@ -740,8 +779,7 @@ export class NES_ppu {
                     this.io.w = 1;
                 } else {
                     this.io.t = (this.io.t & 0x7F00) | val;
-                    this.io.v = this.io.t;
-                    this.bus.mapper.a12_watch(this.io.v);
+                    this.w2006_buffer.set((this.clock.ppu_master_clock / this.clock.timing.ppu_divisor) + (3 * this.clock.timing.ppu_divisor), this.io.t);
                     this.io.w = 0;
                     //TODO: Video RAM update is apparently delayed by 3 PPU cycles (based on Visual NES findings)
                 }
