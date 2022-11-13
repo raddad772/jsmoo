@@ -532,8 +532,6 @@ export class NES_ppu {
 
     cycle_visible(): void {
         if (!this.rendering_enabled()) {
-            if (this.line_cycle === 341)
-                this.new_scanline();
             return;
         }
 
@@ -549,12 +547,6 @@ export class NES_ppu {
         let sx: i32 = this.line_cycle-1;
         let sy: i32 = this.clock.ppu_y;
         let bo: u32 = (sy * 256) + sx;
-        if (this.line_cycle === 341) {
-            this.new_scanline();
-            // Quit out if we've stumbled past the last rendered line
-            if (this.clock.ppu_y >= 240) return;
-        }
-        //this.scanline_timer.record_split('startup2');
 
         this.cycle_scanline_addr();
         this.oam_evaluate_slow();
@@ -637,7 +629,6 @@ export class NES_ppu {
             this.status.nmi_out = 1;
             this.update_nmi();
         }
-        if (this.line_cycle === 341) this.new_scanline();
     }
 
     // Get tile info into shifters using screen X, Y coordinates
@@ -652,26 +643,23 @@ export class NES_ppu {
         }
         if (this.rendering_enabled()) {
             if (lc === 257) this.io.v = (this.io.v & 0xFBE0) | (this.io.t & 0x41F);
-            if ((this.line_cycle >= 280) && (this.line_cycle <= 308)) this.io.v = (this.io.v & 0x041F) | (this.io.t & 0x7BE0);
+            if ((this.rendering_enabled()) && (this.line_cycle >= 280) && (this.line_cycle <= 304)) this.io.v = (this.io.v & 0x041F) | (this.io.t & 0x7BE0);
         }
         if (this.io.sprite_enable && (this.line_cycle >= 257)) {
             this.oam_evaluate_slow();
         }
-        if (this.line_cycle === 341) {
-            this.new_scanline();
-        }
     }
 
     render_cycle(): void {
-        if (this.clock.ppu_y < this.clock.timing.post_render_ppu_idle) {
+        if (this.clock.ppu_y < this.clock.timing.post_render_ppu_idle) { // 0-239
             this.cycle_visible();
             return;
         }
-        else if (this.clock.ppu_y < this.clock.timing.ppu_pre_render) {
+        else if (this.clock.ppu_y < this.clock.timing.ppu_pre_render) { // 240-260
             this.cycle_postrender();
             return;
         }
-        this.cycle_prerender();
+        this.cycle_prerender(); // 261
     }
 
     cycle(howmany: u32): u32 {
@@ -684,6 +672,7 @@ export class NES_ppu {
             this.render_cycle();
             this.line_cycle++;
             this.clock.ppu_frame_cycle++;
+            if (this.line_cycle === 341) this.new_scanline();
             this.clock.ppu_master_clock += this.clock.timing.ppu_divisor;
         }
         return howmany
@@ -781,7 +770,6 @@ export class NES_ppu {
                     this.io.t = (this.io.t & 0x7F00) | val;
                     this.w2006_buffer.set((this.clock.ppu_master_clock / this.clock.timing.ppu_divisor) + (3 * this.clock.timing.ppu_divisor), this.io.t);
                     this.io.w = 0;
-                    //TODO: Video RAM update is apparently delayed by 3 PPU cycles (based on Visual NES findings)
                 }
                 return;
             case 0x2007: // PPUDATA
