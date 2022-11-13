@@ -96,13 +96,6 @@ const NES_palette = Object.freeze({
 });
 
 
-class PPU_effect_FIFO_item {
-    constructor() {
-        this.cycle = 0;
-        this.value = 0;
-    }
-}
-
 class PPU_effect_buffer {
     constructor(length) {
         this.length = length;
