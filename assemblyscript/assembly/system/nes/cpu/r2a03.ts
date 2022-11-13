@@ -79,9 +79,9 @@ export class ricoh2A03 {
         // Service RW pins
         if (!this.cpu.pins.RW) {
             this.cpu.pins.D = this.bus.CPU_read(this.cpu.pins.Addr, this.cpu.pins.D);
-            if (this.tracing) {
+            //if (this.tracing) {
                 //dbg.traces.add(TRACERS.M6502, this.clock.trace_cycles, trace_format_read('MOS', MOS_COLOR, this.clock.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
-            }
+            //}
         }
         this.clock.trace_cycles++;
         this.cpu.cycle();

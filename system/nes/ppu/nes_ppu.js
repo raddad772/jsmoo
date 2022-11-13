@@ -711,11 +711,8 @@ class NES_ppu {
     scanline_visible() {
         //this.scanline_timer.start_sample();
         if (!this.rendering_enabled()) {
-            if (this.line_cycle === 341) {
+            if (this.line_cycle === 341)
                 this.new_scanline();
-                // Quit out if we've stumbled past the last rendered line
-                if (this.clock.ppu_y >= 240) return;
-            }
             return;
        }
         if ((this.line_cycle < 1) && (this.clock.ppu_y === 0)) {
