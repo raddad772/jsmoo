@@ -614,7 +614,7 @@ class NES_ppu {
                 this.sprite_x_counters[7]--;
             }
         }
-        if (!this.rendering_enabled() || (this.line_cycle === 0)) return;
+        if ((!this.rendering_enabled()) || (this.line_cycle === 0)) return;
         // Cycle # 8, 16,...248, and 328, 336. BUT NOT 0
         if (this.line_cycle === 256) {
             if ((this.io.v & 0x7000) !== 0x7000) { // if fine y !== 7
@@ -645,7 +645,8 @@ class NES_ppu {
         }
         // INCREMENT VERTICAL SCROLL IN v
         // Cycles 257, copy parts of T to V
-        if ((this.line_cycle === 257) && this.rendering_enabled()) this.io.v = (this.io.v & 0xFBE0) | (this.io.t & 0x41F);
+        if ((this.line_cycle === 257) && this.rendering_enabled())
+            this.io.v = (this.io.v & 0xFBE0) | (this.io.t & 0x41F);
     }
 
     // Get tile info into shifters using screen X, Y coordinates
@@ -668,9 +669,6 @@ class NES_ppu {
         if (this.io.sprite_enable && (this.line_cycle >= 257)) {
             this.oam_evaluate_slow();
         }
-        if (this.line_cycle === 340) {
-            this.new_scanline();
-        }
     }
 
     perform_bg_fetches() { // Only called from prerender and visible scanlines
@@ -679,7 +677,6 @@ class NES_ppu {
 
         if (((this.line_cycle > 0) && (this.line_cycle <= 256)) || (this.line_cycle > 320)) {
             // Do memory accesses and shifters
-            //if ((this.line_cycle === 340)) console.log(this.line_cycle & 7);
             switch (this.line_cycle & 7) {
                 case 1: // nametable, tile #
                     this.bg_fetches[0] = this.bus.PPU_read(0x2000 | (this.io.v & 0xFFF));
@@ -711,8 +708,6 @@ class NES_ppu {
     scanline_visible() {
         //this.scanline_timer.start_sample();
         if (!this.rendering_enabled()) {
-            if (this.line_cycle === 341)
-                this.new_scanline();
             return;
        }
         if ((this.line_cycle < 1) && (this.clock.ppu_y === 0)) {
@@ -731,13 +726,6 @@ class NES_ppu {
         let sx = this.line_cycle-1;
         let sy = this.clock.ppu_y;
         let bo = (sy * 256) + sx;
-        if (this.line_cycle === 341) {
-            this.new_scanline();
-            // Quit out if we've stumbled past the last rendered line
-            if (this.clock.ppu_y >= 240) {
-                return;
-            }
-        }
         //this.scanline_timer.record_split('startup2');
 
         this.cycle_scanline_addr();
@@ -820,13 +808,11 @@ class NES_ppu {
             this.status.nmi_out = 1;
             this.update_nmi();
         }
-        if (this.line_cycle === 341) this.new_scanline();
     }
 
     scanline_vblank() {
         // 241-260
         // LITERALLY DO NOTHING
-        if (this.line_cycle === 341) this.new_scanline();
     }
 
     new_scanline() {
@@ -871,6 +857,7 @@ class NES_ppu {
             this.render_cycle();
             this.line_cycle++;
             this.clock.ppu_frame_cycle++;
+            if (this.line_cycle === 341) this.new_scanline();
             this.clock.ppu_master_clock += this.clock.timing.ppu_divisor;
         }
         return howmany;

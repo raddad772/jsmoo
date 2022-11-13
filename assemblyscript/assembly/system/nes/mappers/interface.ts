@@ -61,7 +61,7 @@ export class NES_a12_watcher_t {
                 result = NES_a12_watcher_edge.fall;
             }
         }
-        else {
+        else if (addr & 0x1000) {
             if (this.cycles_down > this.delay)
                 result = NES_a12_watcher_edge.rise;
             this.cycles_down = 0;
