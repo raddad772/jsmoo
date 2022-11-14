@@ -670,14 +670,16 @@ class GB_PPU_FIFO {
                 return;
             case 0xFF41: // STAT LCD status
                 if (this.variant !== GB_variants.GBC) {
-                    this.io.IE = 0x0F;
+                    this.io.STAT_IE = 0x0F;
                     this.eval_STAT();
                 }
                 let mode0_enable = (val & 8) >>> 3;
                 let mode1_enable = (val & 0x10) >>> 4;
                 let mode2_enable = (val & 0x20) >>> 5;
                 let lylyc_enable = (val & 0x40) >>> 6;
+                console.log('WRITE STAT MODE', hex2(val));
                 this.io.STAT_IE = mode0_enable | (mode1_enable << 1) | (mode2_enable << 2) | (lylyc_enable << 3);
+                console.log('STAT IE NEW', hex2(this.io.STAT_IE))
                 this.eval_STAT();
                 return;
             case 0xFF42: // SCY
@@ -689,6 +691,7 @@ class GB_PPU_FIFO {
                 return;
             case 0xFF45: // LYC
                 this.io.lyc = val;
+                //console.log('LYC:', this.io.lyc)
                 if (this.enable) this.eval_lyc();
                 return;
             case 0xFF4A: // window Y
@@ -763,7 +766,6 @@ class GB_PPU_FIFO {
             case 0xFF49: // OBP1
                 //if (!this.clock.CPU_can_VRAM) return 0xFF;
                 return this.sp_palette[1][0] | (this.sp_palette[1][1] << 2) | (this.sp_palette[1][2] << 4) | (this.sp_palette[1][3] << 6);
-
         }
         return 0xFF;
     }
@@ -906,8 +908,13 @@ class GB_PPU_FIFO {
 
     eval_STAT() {
         let mask = this.io.STAT_IF & this.io.STAT_IE;
-        if ((this.io.old_mask === 0) && (mask !== 0))
+        if ((this.io.old_mask === 0) && (mask !== 0)) {
+            //console.log('TRIGGER STAT!');
             this.bus.cpu.cpu.regs.IF |= 2;
+        }
+        else {
+            //console.log('DID NOT TRIGGER STAT!');
+        }
         this.io.old_mask = mask;
     }
 
@@ -1017,11 +1024,11 @@ class GB_PPU_FIFO {
         this.cycles_til_vblank = 0;
 
         // Reset IRQs
-        this.io.STAT_IE = 0; // Interrupt enables
-        this.io.STAT_IF = 0; // Interrupt flags
-        this.io.old_mask = 0;
+        //this.io.STAT_IE = 0; // Interrupt enables
+        //this.io.STAT_IF = 0; // Interrupt flags
+        //this.io.old_mask = 0;
 
-        this.eval_STAT();
+        //this.eval_STAT();
 
         // Set mode to OAM search
         this.set_mode(GB_PPU_modes.OAM_search);
@@ -1038,6 +1045,7 @@ class GB_PPU_FIFO {
                 this.write_IO(0xFF47, 0xFC);
                 this.write_IO(0xFF40, 0x91);
                 this.write_IO(0xFF41, 0x85);
+                this.io.lyc = 0;
                 this.io.SCX = this.io.SCY = 0;
 
                 this.advance_frame();

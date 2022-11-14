@@ -103,6 +103,7 @@ class GB_MAPPER_MBC1 {
             return this.bus.CPU_read_IO(addr, val, has_effect);
         if (addr < 0xFFFF) {// HRAM always accessible
             let v = this.HRAM[addr - 0xFF80];
+            //console.log('READ', hex4(addr), hex2(v));
             return v;
         }
         return this.bus.CPU_read_IO(addr, val, has_effect); // 0xFFFF register
@@ -179,6 +180,7 @@ class GB_MAPPER_MBC1 {
         if (addr < 0xFF80) // registers
             return this.bus.CPU_write_IO(addr, val);
         if (addr < 0xFFFF) { // HRAM always accessible
+            //console.log('WRITE', hex4(addr), hex2(val))
             this.HRAM[addr - 0xFF80] = val;
             return;
         }

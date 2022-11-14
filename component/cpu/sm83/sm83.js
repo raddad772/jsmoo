@@ -206,6 +206,7 @@ class SM83_t {
             let imask = 0xFF;
             if ((this.regs.IME) || is_halt) {
                 let mask = this.regs.IE & this.regs.IF & 0x1F;
+                //if (mask !== 0) console.log('IRQ MASK', mask);
                 this.regs.IV = -1;
                 imask = 0xFF;
                 if (mask & 1) { // VBLANK interrupt
@@ -240,6 +241,12 @@ class SM83_t {
                         //console.log('SO IRQ ACTUALLY GOING TO HAPPEN!', hex2(this.regs.IV));
                         if (dbg.brk_on_NMIRQ) dbg.break();
                         // Right here, the STAT is not supposed to be cleared if LCD disabled
+                        if (this.regs.HLT) {
+                            //console.log('HALT BUSTER!');
+                            this.regs.PC = (this.regs.PC + 1) & 0xFFFF;
+                        } else {
+                            //console.log('NO HALT BUST!');
+                        }
                         this.regs.IF &= imask;
                         this.regs.HLT = 0;
                         this.regs.IR = SM83_S_IRQ;
