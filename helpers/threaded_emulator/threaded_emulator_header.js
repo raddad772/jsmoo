@@ -90,6 +90,7 @@ class threaded_emulator_t {
             this.queued_step_3 = ROM;
             return;
         }
+        console.log('SENDING ROM...')
         this.thread.postMessage({kind: emulator_messages.load_rom, ROM: ROM});
     }
 

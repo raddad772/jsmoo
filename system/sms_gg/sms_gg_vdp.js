@@ -160,7 +160,7 @@ class SMSGG_VDP {
     }
 
     gg_present() {
-        this.canvas_manager.set_size(160, 144);
+        this.canvas_manager.set_size(160, 144, 4, 3);
         let ybottom = this.clock.timing.bottom_rendered_line+1;
         let ydiff = (ybottom - 144) >>> 1;
         let imgdata = this.canvas_manager.get_imgdata();
@@ -185,7 +185,8 @@ class SMSGG_VDP {
     }
 
     sms_present() {
-        this.canvas_manager.set_size(256, this.clock.timing.rendered_lines+1);
+        if (this.clock.timing.fps === 50) this.canvas_manager.set_size(256, this.clock.timing.rendered_lines+1, 18, 13);
+        else this.canvas_manager.set_size(256, this.clock.timing.rendered_lines+1, 4*1, 3*.906);
         let imgdata = this.canvas_manager.get_imgdata();
         for (let ry = 0; ry < this.clock.timing.rendered_lines; ry++) {
             let y = ry;

@@ -133,12 +133,10 @@ const SER_NES_ppu = [
 ]
 class NES_ppu {
     /**
-     * @param {canvas_manager_t} canvas_manager
      * @param {NES_clock} clock
      * @param {NES_bus} bus
      */
-    constructor(canvas_manager, clock, bus) {
-        this.canvas_manager = canvas_manager;
+    constructor(clock, bus) {
         this.clock = clock;
         this.bus = bus;
 
@@ -220,7 +218,7 @@ class NES_ppu {
             VRAM_read: 0, // VRAM read buffer
         }
 
-        this.scanline_timer = new perf_timer_t('scanline timer', 60*240, ['startup', 'startup2', 'maint', 'bgcolor', 'sprite_eval', 'color_out']);
+        //this.scanline_timer = new perf_timer_t('scanline timer', 60*240, ['startup', 'startup2', 'maint', 'bgcolor', 'sprite_eval', 'color_out']);
         /*this.scanline_timer.add_split('startup');
         this.scanline_timer.add_split('')*/
     }

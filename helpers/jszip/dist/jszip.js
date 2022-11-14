@@ -4635,7 +4635,7 @@ var Z_DEFLATED  = 8;
 /**
  * class Deflate
  *
- * Generic JS-style wrapper for zlib calls. If you don't need
+ * Generic JS-style as_wrapper for zlib calls. If you don't need
  * streaming behaviour - use more simple functions: [[deflate]],
  * [[deflateRaw]] and [[gzip]].
  **/
@@ -4692,7 +4692,7 @@ var Z_DEFLATED  = 8;
  *
  * - `chunkSize` - size of generated data chunks (16K by default)
  * - `raw` (Boolean) - do raw deflate
- * - `gzip` (Boolean) - create gzip wrapper
+ * - `gzip` (Boolean) - create gzip as_wrapper
  * - `to` (String) - if equal to 'string', then result will be "binary string"
  *    (each char code [0..255])
  * - `header` (Object) - custom header for gzip
@@ -4973,7 +4973,7 @@ function deflate(input, options) {
  * - data (Uint8Array|Array|String): input data to compress.
  * - options (Object): zlib deflate options.
  *
- * The same as [[deflate]], but creates raw data, without wrapper
+ * The same as [[deflate]], but creates raw data, without as_wrapper
  * (header and adler32 crc).
  **/
 function deflateRaw(input, options) {
@@ -4988,7 +4988,7 @@ function deflateRaw(input, options) {
  * - data (Uint8Array|Array|String): input data to compress.
  * - options (Object): zlib deflate options.
  *
- * The same as [[deflate]], but create gzip wrapper instead of
+ * The same as [[deflate]], but create gzip as_wrapper instead of
  * deflate one.
  **/
 function gzip(input, options) {
@@ -5020,7 +5020,7 @@ var toString = Object.prototype.toString;
 /**
  * class Inflate
  *
- * Generic JS-style wrapper for zlib calls. If you don't need
+ * Generic JS-style as_wrapper for zlib calls. If you don't need
  * streaming behaviour - use more simple functions: [[inflate]]
  * and [[inflateRaw]].
  **/
@@ -5077,7 +5077,7 @@ var toString = Object.prototype.toString;
  *   chunk length can differ from `chunkSize`, depending on content.
  *
  * By default, when no options set, autodetect deflate/gzip data format via
- * wrapper header.
+ * as_wrapper header.
  *
  * ##### Example:
  *
@@ -5348,7 +5348,7 @@ Inflate.prototype.onEnd = function (status) {
  * - options (Object): zlib inflate options.
  *
  * Decompress `data` with inflate/ungzip and `options`. Autodetect
- * format via wrapper header by default. That's why we don't provide
+ * format via as_wrapper header by default. That's why we don't provide
  * separate `ungzip` method.
  *
  * Supported options are:
@@ -5398,7 +5398,7 @@ function inflate(input, options) {
  * - data (Uint8Array|Array|String): input data to decompress.
  * - options (Object): zlib inflate options.
  *
- * The same as [[inflate]], but creates raw data, without wrapper
+ * The same as [[inflate]], but creates raw data, without as_wrapper
  * (header and adler32 crc).
  **/
 function inflateRaw(input, options) {
@@ -7235,13 +7235,13 @@ function deflateInit2(strm, level, method, windowBits, memLevel, strategy) {
     level = 6;
   }
 
-  if (windowBits < 0) { /* suppress zlib wrapper */
+  if (windowBits < 0) { /* suppress zlib as_wrapper */
     wrap = 0;
     windowBits = -windowBits;
   }
 
   else if (windowBits > 15) {
-    wrap = 2;           /* write gzip wrapper instead */
+    wrap = 2;           /* write gzip as_wrapper instead */
     windowBits -= 16;
   }
 

@@ -10,10 +10,11 @@ class NES_joypad {
         this.counter = 0;
         this.latched = 0;
         this.joynum = joynum;
-        if (this.joynum === 1) this.joymap = input_config.controller_els.nes1;
-        else this.joymap = input_config.controller_els.nes2;
+        this.joymap = {'a': 0};
+        /*if (this.joynum === 1) this.joymap = input_config.controller_els.nes1;
+        else this.joymap = input_config.controller_els.nes2;*/
 
-        this.button_a = this.joymap.buttons.a;
+        this.button_a = this.joymap['a'];
 
         this.input_buffer = {
             'a': 0,
@@ -95,6 +96,6 @@ class NES_joypad {
     update_a() {
         let key = this.joymap['a'];
         if (key === null) { this.input_buffer['a'] = 0; return; }
-        this.input_buffer['a'] = this.button_a.read();
+        this.input_buffer['a'] = this.joymap['a'];
     }
 }

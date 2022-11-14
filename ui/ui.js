@@ -105,6 +105,13 @@ function str2ab(str) {
 	return buf;
 }
 
+// Top one, going up.
+var dconsole = new console_t('disassembly', -1, 258, false, false);
+// Bottom one, going down.
+var tconsole = new console_t('textconsole', 1, 20, true, true);
+// Memory dump console
+var mconsole = new console_t('memdumpconsole', 1, 30, false, false);
+
 
 async function load_selected_rom() {
 	if (!global_player.ready) {
@@ -121,6 +128,7 @@ async function load_selected_rom() {
 	}
 	await set_last_rom(ui_el.rom_select.value);
 	f = str2ab(f);
+	console.log('TELL PLAYER TO LOAD ROM');
 	global_player.load_rom(f);
 }
 
