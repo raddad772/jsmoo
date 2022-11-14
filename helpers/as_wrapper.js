@@ -1,5 +1,7 @@
 "use strict";
 
+/* Wrap AssemblyScript GlobalPlayer object */
+
 const USE_DEBUG = false;
 if (DO_WASM_IMPORTS) {
     if (USE_DEBUG)

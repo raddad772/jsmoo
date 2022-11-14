@@ -305,7 +305,7 @@ class SM83_test_generator {
         this.write(this.regs.SP, val & 0xFF);
     }
 
-    pop() { // Z80
+    pop() {
         let data = this.read(this.regs.SP);
         this.regs.inc_SP();
         data |= this.read(this.regs.SP) << 8;

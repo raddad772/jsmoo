@@ -2,20 +2,66 @@
 
 const SER_NES = ['clock', 'cart', 'cpu', 'ppu', 'cycles_left']
 
+let NES_inputmap = [];
+
+function fill_NES_inputmap() {
+    for (let i = 0; i < 16; i++) {
+        let kp = new md_input_map_keypoint();
+        let uber = (i < 8) ? 'p1' : 'p2';
+        kp.internal_code = i;
+        kp.buf_pos = i;
+        kp.uber = uber;
+        switch(i) {
+            case 0:
+            case 8:
+                kp.name = 'up';
+                break;
+            case 1:
+            case 9:
+                kp.name = 'down';
+                break;
+            case 2:
+            case 10:
+                kp.name = 'left';
+                break;
+            case 3:
+            case 11:
+                kp.name = 'right';
+                break;
+            case 4:
+            case 12:
+                kp.name = 'a';
+                break;
+            case 5:
+            case 13:
+                kp.name = 'b';
+                break;
+            case 6:
+            case 14:
+                kp.name = 'start';
+                break;
+            case 7:
+            case 15:
+                kp.name = 'select';
+                break;
+        }
+        NES_inputmap[i] = kp;
+    }
+}
+fill_NES_inputmap();
+
+
 class NES {
-    /**
-     * @param {canvas_manager_t} canvas_manager
-     */
-    constructor(canvas_manager) {
+    constructor() {
         this.bus = new NES_bus();
         this.clock = new NES_clock();
         this.cart = new NES_cart(this.clock, this.bus);
         this.cpu = new ricoh2A03(this.clock, this.bus);
-        this.ppu = new NES_ppu(canvas_manager, this.clock, this.bus);
+        this.ppu = new NES_ppu(this.clock, this.bus);
         this.cycles_left = 0;
 
         this.display_enabled = true;
-        input_config.connect_controller('nes1');
+        //input_config.connect_controller('nes1');
         dbg.add_cpu(D_RESOURCE_TYPES.M6502, this.cpu);
     }
 
@@ -53,12 +99,25 @@ class NES {
     }
 
 	get_description() {
-        let d = new machine_description('Nintendo Entertainment System');
-        d.technical.standard = 'NTSC';
-        d.technical.fps = 60;
-        d.input_types = [INPUT_TYPES.SNES_CONTROLLER];
-        d.technical.x_resolution = 256;
-        d.technical.y_resolution = 240;
+        let d = new machine_description();
+        d.name = 'Nintendo Entertainment System';
+        d.standard = MD_STANDARD.NTSC;
+        d.fps = 60;
+        d.input_types = [INPUT_TYPES.NES_CONTROLLER];
+        d.x_resolution = 256;
+        d.y_resolution = 240;
+        d.xrh = 4;
+        d.xrw = 3;
+
+        d.overscan_top = 8;
+        d.overscan_bottom = 8;
+        d.overscan_left = 8;
+        d.overscan_right = 8;
+
+        for (let i = 0; i <  NES_inputmap.length; i++) {
+            d.keymap.push(NES_inputmap[i]);
+        }
+
         return d;
 	}
 

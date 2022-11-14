@@ -9,8 +9,9 @@
     memory}
     from "/assemblyscript/build/release_stable.js";*/
 const DO_WASM_IMPORTS = true;
+const USE_ASSEMBLYSCRIPT = false;
 importScripts('/helpers/as_wrapper.js')
-
+importScripts('/helpers/js_wrapper.js')
 
 const emulator_messages = Object.freeze({
     unknown: 0,
@@ -39,7 +40,8 @@ class threaded_emulator_worker_t {
         this.frames_since_reset = 0;
         this.setup = false;
         this.tech_specs = null;
-        this.wrapper = new gp_wrapper_t();
+        this.as_wrapper = new gp_wrapper_t();
+        this.js_wrapper = new js_wrapper_t();
         this.framebuffer_sab = null;
         this.framebuffer = new Uint8Array(1);
         this.general_sab = null;
@@ -48,15 +50,33 @@ class threaded_emulator_worker_t {
     }
 
     output_input(keymap) {
-        let obuf = new Uint32Array(this.wrapper.wasm.memory.buffer)
-        let startpos = this.wrapper.input_buffer_ptr >>> 2;
-        for (let i in keymap) {
-            obuf[startpos+keymap[i].buf_pos] = keymap[i].value;
+        if (!USE_ASSEMBLYSCRIPT) {
+            this.js_wrapper.update_keymap(keymap);
+        }
+        else {
+            let obuf = new Uint32Array(this.as_wrapper.wasm.memory.buffer)
+            let startpos = this.as_wrapper.input_buffer_ptr >>> 2;
+            for (let i in keymap) {
+                obuf[startpos + keymap[i].buf_pos] = keymap[i].value;
+            }
+        }
+    }
+
+    async process_load_ROM(e) {
+        if (USE_ASSEMBLYSCRIPT) {
+            this.as_wrapper.copy_to_input_buffer(e.ROM);
+            this.as_wrapper.wasm.gp_load_ROM_from_RAM(this.as_wrapper.global_player, e.ROM.byteLength);
+            this.step_done(emulator_messages.step3_done);
+        }
+        else {
+            this.js_wrapper.load_ROM_from_RAM(e.ROM);
+            console.log('ROM load!');
+            this.step_done(emulator_messages.step3_done);
         }
     }
 
     async onmessage(e) {
-        await this.wrapper.do_setup();
+        await this.as_wrapper.do_setup();
         switch(e.kind) {
             case emulator_messages.startup:
                 this.framebuffer_sab = e.framebuffer_sab;
@@ -65,9 +85,7 @@ class threaded_emulator_worker_t {
                 this.step_done(emulator_messages.step1_done);
                 return;
             case emulator_messages.load_rom:
-                this.wrapper.copy_to_input_buffer(e.ROM);
-                this.wrapper.wasm.gp_load_ROM_from_RAM(this.wrapper.global_player, e.ROM.byteLength);
-                this.step_done(emulator_messages.step3_done);
+                await this.process_load_ROM(e)
                 return;
             case emulator_messages.frame_requested:
                 //console.log('ET: running frame...');
@@ -85,20 +103,33 @@ class threaded_emulator_worker_t {
     }
 
     run_frame() {
-        let ts = performance.now();
-        this.wrapper.wasm.gp_run_frame(this.wrapper.global_player);
-        let span = performance.now() - ts;
-        console.log('TIME PER FRAME:', span.toFixed(4));
-        let rd = new Uint32Array(this.wrapper.wasm.memory.buffer);
-        let to_copy = Math.ceil((this.tech_specs.x_resolution * this.tech_specs.y_resolution) / 4) * 4;
-        this.framebuffer.set(rd.slice(this.out_ptr >>> 2, (this.out_ptr>>>2)+to_copy));
-        this.send_frame_done();
+        if (USE_ASSEMBLYSCRIPT) {
+            let ts = performance.now();
+            this.as_wrapper.wasm.gp_run_frame(this.as_wrapper.global_player);
+            let span = performance.now() - ts;
+            console.log('TIME PER FRAME:', span.toFixed(4));
+            let rd = new Uint32Array(this.as_wrapper.wasm.memory.buffer);
+            let to_copy = Math.ceil((this.tech_specs.x_resolution * this.tech_specs.y_resolution) / 4) * 4;
+            this.framebuffer.set(rd.slice(this.out_ptr >>> 2, (this.out_ptr>>>2)+to_copy));
+            this.send_frame_done();
+        } else {
+            let ts = performance.now();
+            this.js_wrapper.run_frame(this.framebuffer);
+            let span = performance.now() - ts;
+            console.log('TIME PER FRAME:', span.toFixed(4));
+            this.send_frame_done();
+        }
     }
 
     do_set_system(kind) {
-        this.wrapper.wasm.gp_set_system(this.wrapper.global_player, kind);
-        this.tech_specs = this.wrapper.wasm.gp_get_specs(this.wrapper.global_player);
-        this.out_ptr = this.tech_specs.out_ptr;
+        if (USE_ASSEMBLYSCRIPT) {
+            this.as_wrapper.wasm.gp_set_system(this.as_wrapper.global_player, kind);
+            this.tech_specs = this.as_wrapper.wasm.gp_get_specs(this.as_wrapper.global_player);
+            this.out_ptr = this.tech_specs.out_ptr;
+        } else {
+            this.js_wrapper.set_system(kind);
+            this.tech_specs = this.js_wrapper.get_specs();
+        }
         this.send_specs(this.tech_specs)
     }
 

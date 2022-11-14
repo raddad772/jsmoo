@@ -3,7 +3,7 @@
 QUnit.module("external");
 
 /**
- * Creates a wrapper around an existing Promise implementation to count
+ * Creates a as_wrapper around an existing Promise implementation to count
  * calls and detect custom implementations.
  * @param {Promise} OriginalPromise the promise to wrap
  * @return {Promise} the wrapped promise

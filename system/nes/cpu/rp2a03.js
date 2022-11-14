@@ -139,68 +139,6 @@ class rp2a03 {
         this.cpu.write_apu = this.write_regs.bind(this);
         this.cpu.read_apu = this.read_regs.bind(this);
 
-        this.audio_ctx_started = false;
-        this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-        /*this.audioCtx.createPulseOscillator=function(ac) {
-            //Use a normal oscillator as the basis of our new oscillator.
-            let node = this.createOscillator();
-            node.type = "sawtooth";
-
-            //Shape the output into a pulse wave.
-            let pulseShaper = ac.createWaveShaper();
-            pulseShaper.curve = pulseCurve;
-            node.connect(pulseShaper);
-
-            //Use a GainNode as our new "width" audio parameter.
-            let widthGain = ac.createGain();
-            widthGain.gain.value = 0; //Default width.
-            node.width = widthGain.gain; //Add parameter to oscillator node.
-            widthGain.connect(pulseShaper);
-
-            //Pass a constant value of 1 into the widthGain – so the "width" setting is
-            //duplicated to its output.
-            let constantOneShaper = this.createWaveShaper();
-            constantOneShaper.curve = constantOneCurve;
-            node.connect(constantOneShaper);
-            constantOneShaper.connect(widthGain);
-
-            //Override the oscillator's "connect" method so that the new node's output
-            //actually comes from the pulseShaper.
-            node.connect = function () {
-                pulseShaper.connect.apply(pulseShaper, arguments);
-                return node;
-            }
-
-            //Override the oscillator's "disconnect" method.
-            node.disconnect = function () {
-                pulseShaper.disconnect.apply(pulseShaper, arguments);
-                return node;
-            }
-
-            return node;
-        }
-
-
-        // create Oscillator node
-        this.sq1 = this.audioCtx.createPulseOscillator(this.audioCtx);
-
-        this.channels = {
-
-        }*/
-
-        this.sample_rate = this.audioCtx.sampleRate;
-        this.audio_buffer1 = this.audioCtx.createBuffer(1, this.sample_rate / 60, this.sample_rate);
-        this.audio_buffer2 = this.audioCtx.createBuffer(1, this.sample_rate / 60, this.sample_rate);
-        this.audio_buffers = [this.audio_buffer1, this.audio_buffer2];
-        this.current_audio_buffer = 0;
-
-        this.buffer_index = 0;
-
-        this.source = this.audioCtx.createBufferSource();
-
-        this.sq1 = new rp2a03_sq_wave(this.clock, this.sample_rate);
-
     }
 
     serialize() {

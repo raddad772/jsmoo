@@ -2,7 +2,7 @@
 
 
 const USE_ASSEMBLYSCRIPT = false;
-const USE_THREADED_PLAYER = USE_ASSEMBLYSCRIPT;
+const USE_THREADED_PLAYER = true;
 const SNES_STR = 'snes';
 const NES_STR = 'nes';
 const COMMODORE64_STR = 'c64';
@@ -15,15 +15,15 @@ const GENERICZ80_STR = 'genericz80'
 
 //const DEFAULT_SYSTEM = GENERICZ80_STR;
 //const DEFAULT_SYSTEM = SPECTRUM_STR;
-//const DEFAULT_SYSTEM = NES_STR;
+const DEFAULT_SYSTEM = NES_STR;
 //const DEFAULT_SYSTEM = SMS_STR;
-const DEFAULT_SYSTEM = GB_STR;
+//const DEFAULT_SYSTEM = GB_STR;
 //const DEFAULT_SYSTEM = GG_STR;
 
 class input_provider_t {
 	constructor(system_kind, keymap) {
 		this.system_kind = system_kind;
-		console.log('SET SYSTEM KIND', system_kind);
+		console.log('INPUT PROVIDER SYSTEM KIND', system_kind);
 		this.keymap = keymap;
 
 		let joymap1, joymap2;
@@ -227,7 +227,7 @@ class global_player_t {
     }
 
     step_seconds(howmany) {
-        let frames = this.tech_specs.technical.fps * howmany;
+        let frames = this.tech_specs.fps * howmany;
         this.system.enable_display(false);
         for (let i = 0; i < frames; i++) {
             this.system.run_frame();
@@ -276,7 +276,8 @@ class global_player_t {
 	}
 
 	update_tech_specs() {
-		this.canvas_manager.set_size(this.tech_specs.x_resolution, this.tech_specs.y_resolution);
+		this.canvas_manager.set_size(this.tech_specs.x_resolution, this.tech_specs.y_resolution, this.tech_specs.xrh, this.tech_specs.xrw);
+		console.log('TECH SPECS UPDATE', this.tech_specs);
 		this.set_fps_target(this.tech_specs.fps);
 		this.set_input(this.tech_specs.keymap);
 	}
@@ -286,7 +287,7 @@ class global_player_t {
 	}
 
 	run_frame() {
-		if (USE_ASSEMBLYSCRIPT) {
+		if (USE_THREADED_PLAYER) {
 			this.input_provider.latch();
 			this.player_thread.send_request_frame(this.input_provider.poll());
 		}
@@ -300,7 +301,7 @@ class global_player_t {
 
 	present() {
 		this.frame_present++;
-		if (USE_ASSEMBLYSCRIPT) {
+		if (USE_THREADED_PLAYER) {
 			this.timing_thread.frame_done();
 			this.player_thread.present(this.canvas_manager)
 		}
@@ -312,14 +313,14 @@ class global_player_t {
 			case timing_messages.frame_request:
 				if (this.playing) {
 					this.run_frame();
-					if (!USE_ASSEMBLYSCRIPT)
+					if (!USE_THREADED_PLAYER)
 						this.timing_thread.frame_done();
 					if (this.queued_save_state !== -1)
 						this.do_save_state();
 					if (this.queued_load_state !== -1)
 						this.do_load_state();
 					//this.system.present();
-					if (!USE_ASSEMBLYSCRIPT) this.present();
+					if (!USE_THREADED_PLAYER) this.present();
 					this.update_status();
 					input_config.emu_input.between_frames();
 				}
@@ -337,53 +338,55 @@ class global_player_t {
 	}
 
 	set_system(to) {
-		this.pause();
-		if (this.system !== null) {
-			this.system.killall();
-			delete this.system;
-			this.system = null;
+		if (!USE_THREADED_PLAYER) {
+			if (this.system !== null) {
+				this.system.killall();
+				delete this.system;
+				this.system = null;
+			}
 		}
 		if (to === null) {
-			this.system_kind = ui_el.system_select.value;
-			console.log('SETTING SYSTEM KIND', this.system_kind);
+			console.log('CANNOT CHANGE SysTEM TO NULL?');
+			return;
 		}
-		else if (typeof to !== 'undefined') {
+		if (typeof to !== 'undefined') {
 			this.system_kind = to;
 		}
-		switch(this.system_kind) {
-			case 'gg':
-				this.system = new SMSGG(this.canvas_manager, this.bios_manager.bioses['gg'], SMSGG_variants.GG, REGION.NTSC);
-				//load_bios('/gg/roms/bios.gg');
-				break;
-			case 'gb':
-				this.system = new GameBoy(this.canvas_manager, this.bios_manager.bioses['gb'], GB_variants.DMG);
-				break;
-			case 'sms':
-				this.system = new SMSGG(this.canvas_manager, this.bios_manager.bioses['sms'], SMSGG_variants.SMS2, REGION.NTSC);
-				break;
-			case 'snes':
-				this.system = new SNES(this.canvas_manager);
-				break;
-			case 'nes':
-				this.system = new NES(this.canvas_manager);
-				break;
-			case 'spectrum':
-				this.system = new ZXSpectrum(this.canvas_manager, this.bios_manager.bioses['spectrum'], ZXSpectrum_variants.s48k);
-				break;
-			case 'genericz80':
-				this.system = new generic_z80_computer();
-				break;
-			default:
-				alert('system not found');
-				return;
+		if (!USE_THREADED_PLAYER) {
+			switch (this.system_kind) {
+				case 'gg':
+					this.system = new SMSGG(this.canvas_manager, this.bios_manager.bioses['gg'], SMSGG_variants.GG, REGION.NTSC);
+					//load_bios('/gg/roms/bios.gg');
+					break;
+				case 'gb':
+					this.system = new GameBoy(this.canvas_manager, this.bios_manager.bioses['gb'], GB_variants.DMG);
+					break;
+				case 'sms':
+					this.system = new SMSGG(this.canvas_manager, this.bios_manager.bioses['sms'], SMSGG_variants.SMS2, REGION.NTSC);
+					break;
+				case 'snes':
+					this.system = new SNES(this.canvas_manager);
+					break;
+				case 'nes':
+					this.system = new NES(this.canvas_manager);
+					break;
+				case 'spectrum':
+					this.system = new ZXSpectrum(this.canvas_manager, this.bios_manager.bioses['spectrum'], ZXSpectrum_variants.s48k);
+					break;
+				case 'genericz80':
+					this.system = new generic_z80_computer();
+					break;
+				default:
+					alert('system not found');
+					return;
+			}
+			this.tech_specs = this.system.get_description();
 		}
-		this.tech_specs = this.system.get_description();
-		this.set_fps_target(this.tech_specs.technical.fps);
 		this.ready = true;
 	}
 
 	load_rom(what) {
-		if (USE_ASSEMBLYSCRIPT)
+		if (USE_THREADED_PLAYER)
 			this.player_thread.send_load_ROM(new Uint8Array(what));
 		else
 			this.system.load_ROM_from_RAM(what);
