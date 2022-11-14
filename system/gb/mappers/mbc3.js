@@ -78,11 +78,12 @@ class GB_MAPPER_MBC3 {
 
     remap() {
         this.regs.ROM_bank_hi %= this.num_ROM_banks;
-        this.ROM_bank_offset_hi = this.regs.ROM_bank_hi << 14;
+
+        this.ROM_bank_offset_hi = this.regs.ROM_bank_hi * 16384;
         if (this.regs.RAM_bank <= 3) this.regs.RAM_bank %= this.num_RAM_banks;
         let rb = this.regs.RAM_bank;
         if (rb <= 3) {
-            if (this.has_RAM) this.RAM_bank_offset = rb << 13;
+            if (this.has_RAM) this.RAM_bank_offset = rb * 8192;
         } else {
             // RTC registers handled during read/write ops to the area
         }

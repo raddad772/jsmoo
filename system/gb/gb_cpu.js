@@ -202,10 +202,14 @@ class GB_CPU {
                 this.timer.write_IO(addr, val);
                 return;
             case 0xFF46: // OAM DMA
-                this.dma.cycles_til = 2;
-                //this.dma.running = 1;
-                this.dma.new_high = (val << 8);
-                this.dma.last_write = val;
+                //this.dma.cycles_til = 2;
+                ////this.dma.running = 1;
+                //this.dma.new_high = (val << 8);
+                //this.dma.last_write = val;
+                this.dma.high = (val << 8);
+                for (let i = 0; i < 160; i++) {
+                    this.bus.CPU_write_OAM(0xFE00 | i, this.bus.DMA_read(this.dma.high | i, 0));
+                }
                 break;
             case 0xFF50: // Boot ROM disable. Cannot re-enable
                 if (val > 0) {
@@ -251,9 +255,6 @@ class GB_CPU {
                 return this.get_input() | (this.io.JOYP.action_select << 5) | (this.io.JOYP.direction_select << 6);
             case 0xFF01: // SB serial
                 return this.FFregs[1];
-            case 0xFF02:
-                return this.FFregs[2];
-                break;
             case 0xFF02: // SC
                 return val;
             case 0xFF04: // DIV
@@ -340,11 +341,11 @@ class GB_CPU {
     cycle() {
         // Update timers
         if (this.cpu.pins.RD && this.cpu.pins.MRQ) {
-            if ((this.dma.running) && (this.cpu.pins.Addr < 0xFF00)) {
+            /*if ((this.dma.running) && (this.cpu.pins.Addr < 0xFF00)) {
                 console.log('DMA BLOCK R!');
                 this.cpu.pins.D = 0xFF;
             }
-            else this.cpu.pins.D = this.bus.mapper.CPU_read(this.cpu.pins.Addr, 0xCC);
+            else*/ this.cpu.pins.D = this.bus.mapper.CPU_read(this.cpu.pins.Addr, 0xCC);
             if (this.tracing) {
                 dbg.traces.add(TRACERS.SM83, this.cpu.trace_cycles, trace_format_read('SM83', SM83_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
             }
@@ -352,8 +353,8 @@ class GB_CPU {
         if (this.cpu.pins.WR && this.cpu.pins.MRQ) {
             if ((!this.dma.running) || (this.cpu.pins.Addr >= 0xFF00))
                 this.bus.mapper.CPU_write(this.cpu.pins.Addr, this.cpu.pins.D);
-            else
-                console.log('DMA BLOCK W!');
+            //else
+             //   console.log('DMA BLOCK W!');
 
             if (this.tracing) {
                 dbg.traces.add(TRACERS.SM83, this.cpu.trace_cycles, trace_format_write('SM83', SM83_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));

@@ -136,7 +136,7 @@ class GB_bus {
 
     IRQ_vblank_up() {
         this.cpu.cpu.regs.IF |= 1;
-        //console.log('VBLANK UP!', this.cpu.cpu.regs.IE, this.cpu.cpu.regs.IF, this.cpu.cpu.regs.IE & this.cpu.cpu.regs.IF);
+        //console.log('VBLANK UP!', this.ppu.clock.master_frame, this.cpu.cpu.regs.IE, this.cpu.cpu.regs.IF, this.cpu.cpu.regs.IE & this.cpu.cpu.regs.IF);
     }
 }
 
