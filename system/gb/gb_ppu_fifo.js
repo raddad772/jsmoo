@@ -95,6 +95,8 @@ class GB_pixel_slice_fetcher {
     trigger_window() {
         this.bg_FIFO.clear();
         this.bg_request_x = 0;
+        this.fetch_cycle = 0;
+        if (this.clock.ly === 140) console.log('WINDOW TRIGGERED', this.clock.lx, this.ppu.line_cycle)
     }
 
     /**
@@ -219,7 +221,7 @@ class GB_pixel_slice_fetcher {
                             this.fetch_bp1 <<= 1;
                         }
                         this.bg_request_x += 8;
-                        if (this.ppu.line_cycle < 88) this.bg_request_x -= 8;
+                        if ((this.ppu.line_cycle < 88) && (!this.ppu.in_window())) this.bg_request_x -= 8;
                         this.fetch_cycle = 0; // Restart fetching
                     }
                 }
@@ -612,7 +614,7 @@ class GB_PPU_FIFO {
         }
 
         // draw lines around screen
-        this.draw_lines_around_screen(imgdata);
+        //this.draw_lines_around_screen(imgdata);
 
         this.canvas_manager.put_imgdata(imgdata);
         this.dump_bg(bg_canvas, 0x9800, 0x8000);
@@ -669,7 +671,7 @@ class GB_PPU_FIFO {
                 this.io.bg_window_enable = val & 1;
                 return;
             case 0xFF41: // STAT LCD status
-                if (this.variant !== GB_variants.GBC) {
+                if (this.variant === GB_variants.DMG) {
                     this.io.STAT_IE = 0x0F;
                     this.eval_STAT();
                 }
@@ -677,9 +679,9 @@ class GB_PPU_FIFO {
                 let mode1_enable = (val & 0x10) >>> 4;
                 let mode2_enable = (val & 0x20) >>> 5;
                 let lylyc_enable = (val & 0x40) >>> 6;
-                console.log('WRITE STAT MODE', hex2(val));
+                //console.log('WRITE STAT MODE', hex2(val));
                 this.io.STAT_IE = mode0_enable | (mode1_enable << 1) | (mode2_enable << 2) | (lylyc_enable << 3);
-                console.log('STAT IE NEW', hex2(this.io.STAT_IE))
+                //console.log('STAT IE NEW', hex2(this.io.STAT_IE))
                 this.eval_STAT();
                 return;
             case 0xFF42: // SCY
@@ -750,7 +752,9 @@ class GB_PPU_FIFO {
             case 0xFF44: // LY
                 /*console.log('READ FF44!', this.clock.ly);
                 if (this.clock.ly === 0x90) dbg.break();*/
-                return this.clock.ly;
+                let ly = this.clock.ly;
+                if ((ly === 153) && (this.line_cycle > 1)) ly = 0;
+                return ly;
             case 0xFF45: // LYC
                 return this.io.lyc;
             case 0xFF4A: // window Y
@@ -855,6 +859,8 @@ class GB_PPU_FIFO {
 
     // TODO: trigger IRQ if enabled properly
     eval_lyc() {
+        let cly = this.clock.ly;
+        if ((cly === 153) && (this.line_cycle > 1)) cly = 0;
         if (this.clock.ly === this.io.lyc) {
             this.IRQ_lylyc_up();
         }
@@ -969,6 +975,10 @@ class GB_PPU_FIFO {
     }
 
     pixel_transfer() {
+        if ((this.io.window_enable) && ((this.clock.lx) === this.io.wx) && this.is_window_line && !this.window_triggered_on_line) {
+            this.slice_fetcher.trigger_window();
+            this.window_triggered_on_line = true;
+        }
         let p = this.slice_fetcher.cycle();
 
         if (p.had_pixel) {
@@ -982,10 +992,6 @@ class GB_PPU_FIFO {
                 this.output[(this.clock.ly * 160) + (this.clock.lx - 8)] = cv;
             }
             this.clock.lx++;
-            if ((this.io.window_enable) && ((this.clock.lx) === this.io.wx) && this.is_window_line) {
-                this.slice_fetcher.trigger_window();
-                this.window_triggered_on_line = true;
-            }
         }
     }
 
