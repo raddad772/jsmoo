@@ -395,6 +395,7 @@ class GB_PPU_FIFO {
 
             STAT_IF: 0,
             STAT_IE: 0,
+            old_mask: 0,
 
             window_tile_map_base: 0,
             window_enable: 0,
@@ -904,10 +905,10 @@ class GB_PPU_FIFO {
     }
 
     eval_STAT() {
-        if (this.io.STAT_IF & this.io.STAT_IE)
+        let mask = this.io.STAT_IF & this.io.STAT_IE;
+        if ((this.io.old_mask === 0) && (mask !== 0))
             this.bus.cpu.cpu.regs.IF |= 2;
-        else
-            this.bus.cpu.cpu.regs.IF &= 0xFD;
+        this.io.old_mask = mask;
     }
 
     advance_frame() {
@@ -1018,6 +1019,7 @@ class GB_PPU_FIFO {
         // Reset IRQs
         this.io.STAT_IE = 0; // Interrupt enables
         this.io.STAT_IF = 0; // Interrupt flags
+        this.io.old_mask = 0;
 
         this.eval_STAT();
 

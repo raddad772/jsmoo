@@ -131,7 +131,6 @@ class GB_bus {
     }
 
     IRQ_vblank_down() {
-        this.cpu.cpu.regs.IF &= 0xFE;
         //console.log('VBLANK DOWN!', this.cpu.cpu.regs.IF);
     }
 
