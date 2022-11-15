@@ -4,28 +4,27 @@
 Joypad register emulation classes and functions.
  */
 
-const SER_NES_joypad = ['counter', 'latched', 'joynum', 'button_a', 'input_buffer'];
+class nespad_inputs {
+    constructor() {
+        this.a = 0;
+        this.b = 0;
+        this.start = 0;
+        this.select = 0;
+        this.up = 0;
+        this.down = 0;
+        this.left = 0;
+        this.right = 0;
+    }
+}
+
+const SER_NES_joypad = ['counter', 'latched', 'joynum'];
 class NES_joypad {
     constructor(joynum) {
         this.counter = 0;
         this.latched = 0;
         this.joynum = joynum;
-        this.joymap = {'a': 0};
-        /*if (this.joynum === 1) this.joymap = input_config.controller_els.nes1;
-        else this.joymap = input_config.controller_els.nes2;*/
-
-        this.button_a = this.joymap['a'];
-
-        this.input_buffer = {
-            'a': 0,
-            'b': 0,
-            'up': 0,
-            'down': 0,
-            'left': 0,
-            'right': 0,
-            'start': 0,
-            'select': 0
-        }
+        this.input_buffer = new nespad_inputs();
+        this.input_waiting = new nespad_inputs();
     }
 
     serialize() {
@@ -44,12 +43,33 @@ class NES_joypad {
         return deserialization_helper(this, from, SER_NES_joypad);
     }
 
+    /**
+     * @param {nespad_inputs} from
+     */
+    buffer_input(from) {
+        this.input_waiting.up = from.up;
+        this.input_waiting.down = from.down;
+        this.input_waiting.left = from.left;
+        this.input_waiting.right = from.right;
+        this.input_waiting.a = from.a;
+        this.input_waiting.b = from.b;
+        this.input_waiting.start = from.start;
+        this.input_waiting.select = from.select;
+    }
+
     latch(what) {
         if (this.latched === what) return;
         this.latched = what;
         this.counter = 0;
         if (this.latched === 0) {
-            this.input_buffer = this.joymap.latch();
+            this.input_buffer.up = this.input_waiting.up;
+            this.input_buffer.down = this.input_waiting.down;
+            this.input_buffer.left = this.input_waiting.left;
+            this.input_buffer.right = this.input_waiting.right;
+            this.input_buffer.a = this.input_waiting.a;
+            this.input_buffer.b = this.input_waiting.b;
+            this.input_buffer.start = this.input_waiting.start;
+            this.input_buffer.select = this.input_waiting.select;
         }
     }
 
@@ -91,11 +111,5 @@ class NES_joypad {
 
         this.counter = 8;
         return 1;
-    }
-
-    update_a() {
-        let key = this.joymap['a'];
-        if (key === null) { this.input_buffer['a'] = 0; return; }
-        this.input_buffer['a'] = this.joymap['a'];
     }
 }

@@ -1,100 +1,6 @@
 "use strict";
 
-const NES_palette_str = "\
- 84  84  84    0  30 116    8  16 144   48   0 136   68   0 100   92   0  48   84   4   0   60  24   0   32  42   0    8  58   0    0  64   0    0  60   0    0  50  60    0   0   0  0 0 0  0 0 0 \
-152 150 152    8  76 196   48  50 236   92  30 228  136  20 176  160  20 100  152  34  32  120  60   0   84  90   0   40 114   0    8 124   0    0 118  40    0 102 120    0   0   0  0 0 0  0 0 0 \
-236 238 236   76 154 236  120 124 236  176  98 236  228  84 236  236  88 180  236 106 100  212 136  32  160 170   0  116 196   0   76 208  32   56 204 108   56 180 204   60  60  60  0 0 0  0 0 0 \
-236 238 236  168 204 236  188 188 236  212 178 236  236 174 236  236 174 212  236 180 176  228 196 144  204 210 120  180 222 120  168 226 144  152 226 180  160 214 228  160 162 160  0 0 0  0 0 0 ";
-
-function NES_parse_palette() {
-    //for (let i = 0; i < 64; i++) {
-
-    //}
-    let arr = NES_palette_str.split(' ');
-    let out = [];
-    for (let i in arr) {
-        if (arr[i] === '') continue;
-        out.push(parseInt(arr[i]));
-    }
-
-    let outstr = 'const NES_palette = Object.freeze({\n';
-    for (let num = 0; num < 64; num++) {
-        let i = num*3;
-        console.log(num, out[i], out[i+1], out[i+2])
-        outstr += '    ' + num + ': [' + hex0x2(out[i]) + ', ' + hex0x2(out[i+1]) + ', ' + hex0x2(out[i+2]) + '],\n';
-    }
-    outstr += '});';
-    console.log(outstr);
-}
-//NES_parse_palette();
-
-const NES_palette = Object.freeze({
-    0: [0x54, 0x54, 0x54],
-    1: [0x00, 0x1E, 0x74],
-    2: [0x08, 0x10, 0x90],
-    3: [0x30, 0x00, 0x88],
-    4: [0x44, 0x00, 0x64],
-    5: [0x5C, 0x00, 0x30],
-    6: [0x54, 0x04, 0x00],
-    7: [0x3C, 0x18, 0x00],
-    8: [0x20, 0x2A, 0x00],
-    9: [0x08, 0x3A, 0x00],
-    10: [0x00, 0x40, 0x00],
-    11: [0x00, 0x3C, 0x00],
-    12: [0x00, 0x32, 0x3C],
-    13: [0x00, 0x00, 0x00],
-    14: [0x00, 0x00, 0x00],
-    15: [0x00, 0x00, 0x00],
-    16: [0x98, 0x96, 0x98],
-    17: [0x08, 0x4C, 0xC4],
-    18: [0x30, 0x32, 0xEC],
-    19: [0x5C, 0x1E, 0xE4],
-    20: [0x88, 0x14, 0xB0],
-    21: [0xA0, 0x14, 0x64],
-    22: [0x98, 0x22, 0x20],
-    23: [0x78, 0x3C, 0x00],
-    24: [0x54, 0x5A, 0x00],
-    25: [0x28, 0x72, 0x00],
-    26: [0x08, 0x7C, 0x00],
-    27: [0x00, 0x76, 0x28],
-    28: [0x00, 0x66, 0x78],
-    29: [0x00, 0x00, 0x00],
-    30: [0x00, 0x00, 0x00],
-    31: [0x00, 0x00, 0x00],
-    32: [0xEC, 0xEE, 0xEC],
-    33: [0x4C, 0x9A, 0xEC],
-    34: [0x78, 0x7C, 0xEC],
-    35: [0xB0, 0x62, 0xEC],
-    36: [0xE4, 0x54, 0xEC],
-    37: [0xEC, 0x58, 0xB4],
-    38: [0xEC, 0x6A, 0x64],
-    39: [0xD4, 0x88, 0x20],
-    40: [0xA0, 0xAA, 0x00],
-    41: [0x74, 0xC4, 0x00],
-    42: [0x4C, 0xD0, 0x20],
-    43: [0x38, 0xCC, 0x6C],
-    44: [0x38, 0xB4, 0xCC],
-    45: [0x3C, 0x3C, 0x3C],
-    46: [0x00, 0x00, 0x00],
-    47: [0x00, 0x00, 0x00],
-    48: [0xEC, 0xEE, 0xEC],
-    49: [0xA8, 0xCC, 0xEC],
-    50: [0xBC, 0xBC, 0xEC],
-    51: [0xD4, 0xB2, 0xEC],
-    52: [0xEC, 0xAE, 0xEC],
-    53: [0xEC, 0xAE, 0xD4],
-    54: [0xEC, 0xB4, 0xB0],
-    55: [0xE4, 0xC4, 0x90],
-    56: [0xCC, 0xD2, 0x78],
-    57: [0xB4, 0xDE, 0x78],
-    58: [0xA8, 0xE2, 0x90],
-    59: [0x98, 0xE2, 0xB4],
-    60: [0xA0, 0xD6, 0xE4],
-    61: [0xA0, 0xA2, 0xA0],
-    62: [0x00, 0x00, 0x00],
-    63: [0x00, 0x00, 0x00],
-});
-
+importScripts('/system/nes/ppu/nes_palette.js')
 
 class PPU_effect_buffer {
     constructor(length) {
@@ -131,6 +37,7 @@ const SER_NES_ppu = [
     'sprite_x_counters', 'sprite_y_lines', 'io',
     'dbg', 'status', 'latch'
 ]
+
 class NES_ppu {
     /**
      * @param {NES_clock} clock
@@ -166,7 +73,11 @@ class NES_ppu {
 
         this.CGRAM = new Uint8Array(0x20);   // 32 byes of "color RAM"
 
-        this.output = new Uint8Array(256*240);
+        this.output_shared_buffers = [new SharedArrayBuffer(256*240), new SharedArrayBuffer(256*240)];
+        this.output = [new Uint8Array(this.output_shared_buffers[0]), new Uint8Array(this.output_shared_buffers[1])];
+        this.cur_output_num = 1;
+        this.cur_output = this.output[1];
+        this.last_used_buffer = 1;
 
         this.bg_fetches = [0, 0, 0, 0]; // Memory fetch buffer
         this.bg_shifter = 0;                       // Holds 32 bits (2 tiles) of 2bpp 8-wide background tiles
@@ -243,38 +154,16 @@ class NES_ppu {
         return r;
     }
 
-    present(buf=null) {
-        let TOP_OVERSCAN = 8;
-        let BOTTOM_OVERSCAN = 240;
-        let LEFT_OVERSCAN = 8;
-        let RIGHT_OVERSCAN = 248;
-        let out_width = 256 - (LEFT_OVERSCAN + (256 - RIGHT_OVERSCAN));
-        let out_height = 240 - (TOP_OVERSCAN + (240 - BOTTOM_OVERSCAN));
-        this.canvas_manager.set_size(out_width, out_height);
-        let imgdata = this.canvas_manager.get_imgdata();
-        for (let ry = TOP_OVERSCAN; ry < BOTTOM_OVERSCAN; ry++) {
-            let y = ry - TOP_OVERSCAN;
-            for (let rx = LEFT_OVERSCAN; rx < RIGHT_OVERSCAN; rx++) {
-                let x = rx - LEFT_OVERSCAN;
-                let di = ((y * out_width) + x) * 4;
-                let ppui = (ry * 256) + rx;
-                let r, g, b;
-                let o = this.output[ppui];
-                if (o === 0) r = g = b = 0; //o = 4;//FIX: TODO: BG_COLOR();
-                else {
-                    r = NES_palette[o][0];
-                    g = NES_palette[o][1];
-                    b = NES_palette[o][2];
-                }
-                //let p = this.output[ppui] ? 255 : 0;
-
-                imgdata.data[di] = r;
-                imgdata.data[di+1] = g;
-                imgdata.data[di+2] = b;
-                imgdata.data[di+3] = 255;
+    present(buf) {
+        let obuffer = new Uint32Array(buf);
+        for (let ry = 0; ry < 240; ry++) {
+            let y = ry;
+            for (let x = 0; x < 256; x++) {
+                let ppui = (ry * 256) + x;
+                let o = this.cur_output[ppui];
+                obuffer[ppui] = NES_palette[o];
             }
         }
-        this.canvas_manager.put_imgdata(imgdata);
     }
 
     reset() {
@@ -794,7 +683,7 @@ class NES_ppu {
             }
         }
 
-        this.output[bo] = out_color;
+        this.cur_output[bo] = out_color;
         //this.scanline_timer.record_split('color_out');
         //this.scanline_timer.end_sample();
     }
@@ -816,6 +705,9 @@ class NES_ppu {
     new_scanline() {
         if (this.clock.ppu_y === this.clock.timing.ppu_pre_render) {
             this.clock.advance_frame();
+            this.last_used_buffer = this.cur_output_num;
+            this.cur_output_num ^= 1;
+            this.cur_output = this.output[this.cur_output_num];
         }
         else this.clock.advance_scanline();
 

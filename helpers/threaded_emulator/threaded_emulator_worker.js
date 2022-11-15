@@ -79,9 +79,8 @@ class threaded_emulator_worker_t {
         await this.as_wrapper.do_setup();
         switch(e.kind) {
             case emulator_messages.startup:
-                this.framebuffer_sab = e.framebuffer_sab;
+                //this.framebuffer_sab = e.framebuffer_sab;
                 this.general_sab = e.general_sab;
-                this.framebuffer = new Uint32Array(this.framebuffer_sab);
                 this.step_done(emulator_messages.step1_done);
                 return;
             case emulator_messages.load_rom:
@@ -110,14 +109,14 @@ class threaded_emulator_worker_t {
             console.log('TIME PER FRAME:', span.toFixed(4));
             let rd = new Uint32Array(this.as_wrapper.wasm.memory.buffer);
             let to_copy = Math.ceil((this.tech_specs.x_resolution * this.tech_specs.y_resolution) / 4) * 4;
-            this.framebuffer.set(rd.slice(this.out_ptr >>> 2, (this.out_ptr>>>2)+to_copy));
+            //this.framebuffer.set(rd.slice(this.out_ptr >>> 2, (this.out_ptr>>>2)+to_copy));
             this.send_frame_done();
         } else {
             let ts = performance.now();
-            this.js_wrapper.run_frame(this.framebuffer);
+            let on = this.js_wrapper.run_frame();
             let span = performance.now() - ts;
             console.log('TIME PER FRAME:', span.toFixed(4));
-            this.send_frame_done();
+            this.send_frame_done(on);
         }
     }
 
@@ -133,8 +132,8 @@ class threaded_emulator_worker_t {
         this.send_specs(this.tech_specs)
     }
 
-    send_frame_done() {
-        postMessage({kind: emulator_messages.frame_complete})
+    send_frame_done(num) {
+        postMessage({kind: emulator_messages.frame_complete, buf_num: num})
     }
 
     step_done(which) {

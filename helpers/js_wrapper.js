@@ -16,20 +16,14 @@ class js_wrapper_t {
          * @type {NES|null}
          */
         this.system = null;
+		this.input_buffer = new Int32Array(256);
     }
 
     update_keymap(keymap) {
-        console.log('UPDATE!', keymap);
+		for (let i in keymap) {
+			this.input_buffer[keymap[i].buf_pos] = keymap[i].value;
+		}
     }
-
-    /*
-        gp_load_ROM_from_RAM,
-        gp_run_frame,
-        gp_set_system,
-        new_global_player,
-        gp_get_specs,
-        gp_get_input_buffer
-     */
 
     set_system(to) {
 		if (this.system !== null) {
@@ -72,8 +66,8 @@ class js_wrapper_t {
         this.system.load_ROM_from_RAM(ROM);
     }
 
-    run_frame(framebuffer) {
-        this.system.run_frame(framebuffer);
+    run_frame() {
+        return this.system.run_frame();
     }
 
     get_specs() {

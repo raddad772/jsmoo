@@ -843,7 +843,7 @@ class GB_PPU_FIFO {
         if (this.window_triggered_on_line) this.clock.wly++;
         this.clock.lx = 0;
         this.clock.ly++;
-        this.is_window_line = this.clock.ly >= this.io.wy;
+        this.is_window_line |= this.clock.ly === this.io.wy;
         this.window_triggered_on_line = false;
         this.line_cycle = 0;
         if (this.clock.ly >= 154)
@@ -937,6 +937,7 @@ class GB_PPU_FIFO {
         }
         this.clock.frames_since_restart++;
         this.clock.master_frame++;
+        this.is_window_line = false;
     }
 
     /********************/

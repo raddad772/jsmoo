@@ -109,12 +109,17 @@ class global_player_t {
 		this.timing_thread = new timing_thread_t(this.on_timing_message.bind(this));
 		if (USE_THREADED_PLAYER) {
 			this.player_thread = new threaded_emulator_t(this.on_player_message.bind(this));
+			this.shared_output_buffers = [null, null];
 		}
 		this.ready = false;
-		this.tech_specs = {};
+		/**
+		 * @type {machine_description}
+		 */
+		this.tech_specs = new machine_description();
 		this.queued_save_state = -1;
 		this.queued_load_state = -1;
 		this.frame_present = 0;
+
 
 		/**
 		 * @type {bios_manager_t}
@@ -269,7 +274,7 @@ class global_player_t {
 				this.update_tech_specs();
 				break;
 			case emulator_messages.frame_complete:
-				this.present();
+				this.present(e.buf_num);
 				break;
 
 		}
@@ -278,6 +283,9 @@ class global_player_t {
 	update_tech_specs() {
 		this.canvas_manager.set_size(this.tech_specs.x_resolution, this.tech_specs.y_resolution, this.tech_specs.xrh, this.tech_specs.xrw);
 		console.log('TECH SPECS UPDATE', this.tech_specs);
+		this.shared_output_buffers[0] = this.tech_specs.output_buffer[0];
+		this.shared_output_buffers[1] = this.tech_specs.output_buffer[1];
+		console.log('SHARED OUTPUT BUFFERS!', this.shared_output_buffers);
 		this.set_fps_target(this.tech_specs.fps);
 		this.set_input(this.tech_specs.keymap);
 	}
@@ -299,13 +307,32 @@ class global_player_t {
 		}
 	}
 
-	present() {
+	present(num) {
 		this.frame_present++;
 		if (USE_THREADED_PLAYER) {
 			this.timing_thread.frame_done();
-			this.player_thread.present(this.canvas_manager)
+			if (USE_ASSEMBLYSCRIPT) {
+				this.player_thread.present(this.canvas_manager)
+			}
+			else {
+				this.present_system(num);
+			}
 		}
 		else this.system.present()
+	}
+
+	present_system(buf_num) {
+		let imgdata = this.canvas_manager.get_imgdata();
+		let buf = this.shared_output_buffers[buf_num];
+		switch(this.system_kind) {
+			case 'nes':
+				NES_present(imgdata.data, buf);
+				break;
+			default:
+				console.log('NO PRESENTATION CODE FOR', this.system_kind);
+				break;
+		}
+		this.canvas_manager.put_imgdata(imgdata);
 	}
 
 	on_timing_message(e) {

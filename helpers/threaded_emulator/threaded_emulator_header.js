@@ -30,8 +30,8 @@ class threaded_emulator_t {
         this.thread.onerror = function(a,b,c) { console.log('ERR', a, b, c);}
         this.system_kind = '';
         this.parent_msg = onmsg;
-        this.framebuffer_sab = new SharedArrayBuffer(256*256*4);
-        this.framebuffer = new Uint8Array(this.framebuffer_sab);
+        //this.framebuffer_sab = new SharedArrayBuffer(256*256*4);
+        //this.framebuffer = new Uint8Array(this.framebuffer_sab);
         this.general_sab = new SharedArrayBuffer(64);
         this.tech_specs = null;
 
@@ -102,14 +102,15 @@ class threaded_emulator_t {
     send_startup_message() {
         console.log('POSTING STARTUP MESSAGE', this.thread);
         this.step1_done = false;
-        this.thread.postMessage({kind: emulator_messages.startup, framebuffer_sab: this.framebuffer_sab, general_sab: this.general_sab});
+        this.thread.postMessage({kind: emulator_messages.startup, general_sab: this.general_sab});
     }
 
     /**
      * @param {canvas_manager_t} canvas
      */
     present(canvas) {
-        canvas.set_size(this.tech_specs.x_resolution, this.tech_specs.y_resolution);
+        console.log('THREADED PRESENT');
+        //canvas.set_size(this.tech_specs.x_resolution, this.tech_specs.y_resolution);
         let imgdata = canvas.get_imgdata();
 		for (let y = 0; y < this.tech_specs.y_resolution; y++) {
 			for (let x = 0; x < this.tech_specs.x_resolution; x++) {

@@ -185,4 +185,13 @@ class ricoh2A03 {
                 break;
        }
     }
+
+    /**
+     * @param {nespad_inputs} inp1
+     * @param {nespad_inputs} inp2
+     */
+    update_inputs(inp1, inp2) {
+        this.joypad1.buffer_input(inp1);
+        this.joypad2.buffer_input(inp2);
+    }
 }
