@@ -282,6 +282,7 @@ class global_player_t {
 
 	update_tech_specs() {
 		this.canvas_manager.set_size(this.tech_specs.x_resolution, this.tech_specs.y_resolution, this.tech_specs.xrh, this.tech_specs.xrw);
+		this.canvas_manager.set_overscan(this.tech_specs.overscan_left, this.tech_specs.overscan_right, this.tech_specs.overscan_top, this.tech_specs.overscan_bottom);
 		console.log('TECH SPECS UPDATE', this.tech_specs);
 		this.shared_output_buffers[0] = this.tech_specs.output_buffer[0];
 		this.shared_output_buffers[1] = this.tech_specs.output_buffer[1];
@@ -326,7 +327,7 @@ class global_player_t {
 		let buf = this.shared_output_buffers[buf_num];
 		switch(this.system_kind) {
 			case 'nes':
-				NES_present(imgdata.data, buf);
+				NES_present(imgdata.data, buf, this.canvas_manager.correct_overscan, this.tech_specs.overscan_left, this.tech_specs.overscan_right, this.tech_specs.overscan_top, this.tech_specs.overscan_bottom);
 				break;
 			default:
 				console.log('NO PRESENTATION CODE FOR', this.system_kind);
@@ -430,6 +431,14 @@ class global_player_t {
 		else {
 			emu_canvas.set_scale(2);
 		}
+	}
+
+	set_PAR(to) {
+		emu_canvas.set_par_correct(to);
+	}
+
+	set_overscan(to) {
+		emu_canvas.set_overscan_correct(to);
 	}
 }
 

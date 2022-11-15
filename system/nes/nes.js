@@ -107,8 +107,8 @@ class NES {
         d.input_types = [INPUT_TYPES.NES_CONTROLLER];
         d.x_resolution = 256;
         d.y_resolution = 240;
-        d.xrh = 4;
-        d.xrw = 3;
+        d.xrh = 8;
+        d.xrw = 7;
 
         d.overscan_top = 8;
         d.overscan_bottom = 8;
@@ -217,23 +217,22 @@ class NES {
     }
 
     map_inputs(buffer) {
-        this.controller1_in.up = load<u32>(bufptr);
-        this.controller1_in.down = load<u32>(bufptr+(4));
-        this.controller1_in.left = load<u32>(bufptr+(4*2));
-        this.controller1_in.right = load<u32>(bufptr+(4*3));
-        this.controller1_in.a = load<u32>(bufptr+(4*4));
-        this.controller1_in.b = load<u32>(bufptr+(4*5));
-        this.controller1_in.start = load<u32>(bufptr+(4*6));
-        this.controller1_in.select = load<u32>(bufptr+(4*7));
-        this.controller2_in.up = load<u32>(bufptr+(4*8));
-        this.controller2_in.down = load<u32>(bufptr+(4*9));
-        this.controller2_in.left = load<u32>(bufptr+(4*101));
-        this.controller2_in.right = load<u32>(bufptr+(4*11));
-        this.controller2_in.a = load<u32>(bufptr+(4*12));
-        this.controller2_in.b = load<u32>(bufptr+(4*13));
-        this.controller2_in.start = load<u32>(bufptr+(4*14));
-        this.controller2_in.select = load<u32>(bufptr+(4*15));
+        this.controller1_in.up = buffer[0];
+        this.controller1_in.down = buffer[1];
+        this.controller1_in.left = buffer[2];
+        this.controller1_in.right = buffer[3];
+        this.controller1_in.a = buffer[4];
+        this.controller1_in.b = buffer[5];
+        this.controller1_in.start = buffer[6];
+        this.controller1_in.select = buffer[7];
+        this.controller2_in.up = buffer[8];
+        this.controller2_in.down = buffer[9];
+        this.controller2_in.left = buffer[101];
+        this.controller2_in.right = buffer[11];
+        this.controller2_in.a = buffer[12];
+        this.controller2_in.b = buffer[13];
+        this.controller2_in.start = buffer[14];
+        this.controller2_in.select = buffer[15];
         this.cpu.update_inputs(this.controller1_in, this.controller2_in);
-
     }
 }

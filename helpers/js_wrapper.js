@@ -23,6 +23,7 @@ class js_wrapper_t {
 		for (let i in keymap) {
 			this.input_buffer[keymap[i].buf_pos] = keymap[i].value;
 		}
+		this.system.map_inputs(this.input_buffer);
     }
 
     set_system(to) {
