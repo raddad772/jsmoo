@@ -24,6 +24,8 @@ let ui_el = {
 	tracing_CPU_checkbox: ['checkbox', 'tracingCPU', CPU_DO_TRACING_AT_START],
 	tracing_APU_checkbox: ['checkbox', 'tracingAPU', APU_DO_TRACING_AT_START],
 	zoom_video_checkbox: ['checkbox','zoom_checkbox', false],
+	par_checkbox: ['checkbox','par_checkbox', true],
+	overscan_checkbox: ['checkbox','overscan_checkbox', true],
 	watching_checkbox: ['checkbox', 'watchpt', null],
 	mc_input: ['input', 'masterclocksteps', DEFAULT_STEPS.master],
 	scanline_input: ['input', 'scanlinesteps', DEFAULT_STEPS.scanlines],
@@ -545,6 +547,13 @@ async function init_ui() {
 
 	ui_el.zoom_video_checkbox.addEventListener('change', (event) => {
 		global_player.set_zoom(!!event.currentTarget.checked);
+	})
+
+	ui_el.par_checkbox.addEventListener('change', (event) => {
+		global_player.set_PAR(!!event.currentTarget.checked);
+	})
+	ui_el.overscan_checkbox.addEventListener('change', (event) => {
+		global_player.set_overscan(!!event.currentTarget.checked);
 	})
 
 
