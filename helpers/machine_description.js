@@ -49,6 +49,8 @@ class machine_description {
         this.overscan_bottom = 0;
         this.overscan_left = 0;
         this.overscan_right = 0;
+
+        this.output_buffer = [];
         /**
          * @type {Array<md_input_map_keypoint>}
          */

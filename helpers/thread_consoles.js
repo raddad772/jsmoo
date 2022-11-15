@@ -6,9 +6,9 @@ class threaded_console_t {
     }
 
     addl(what) {
-        console.log(name, what);
+        console.log(this.name, what);
     }
 }
 
-var tconsole = new threaded_console_t('tconsole')
-var dconsole = new threaded_console_t('dconsole')
+const tconsole = new threaded_console_t('tconsole');
+const dconsole = new threaded_console_t('dconsole');

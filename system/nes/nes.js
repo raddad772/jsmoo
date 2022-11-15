@@ -61,7 +61,8 @@ class NES {
         this.cycles_left = 0;
 
         this.display_enabled = true;
-        //input_config.connect_controller('nes1');
+        this.controller1_in = new nespad_inputs();
+        this.controller2_in = new nespad_inputs();
         dbg.add_cpu(D_RESOURCE_TYPES.M6502, this.cpu);
     }
 
@@ -114,6 +115,9 @@ class NES {
         d.overscan_left = 8;
         d.overscan_right = 8;
 
+        d.output_buffer[0] = this.ppu.output_shared_buffers[0];
+        d.output_buffer[1] = this.ppu.output_shared_buffers[1];
+
         for (let i = 0; i <  NES_inputmap.length; i++) {
             d.keymap.push(NES_inputmap[i]);
         }
@@ -138,6 +142,7 @@ class NES {
             this.finish_scanline();
             if (dbg.do_break) break;
         }
+        return this.ppu.last_used_buffer
     }
 
     catch_up() {}
@@ -209,5 +214,26 @@ class NES {
         console.log('Loading ROM...');
         this.cart.load_cart_from_RAM(ROM);
         this.reset();
+    }
+
+    map_inputs(buffer) {
+        this.controller1_in.up = load<u32>(bufptr);
+        this.controller1_in.down = load<u32>(bufptr+(4));
+        this.controller1_in.left = load<u32>(bufptr+(4*2));
+        this.controller1_in.right = load<u32>(bufptr+(4*3));
+        this.controller1_in.a = load<u32>(bufptr+(4*4));
+        this.controller1_in.b = load<u32>(bufptr+(4*5));
+        this.controller1_in.start = load<u32>(bufptr+(4*6));
+        this.controller1_in.select = load<u32>(bufptr+(4*7));
+        this.controller2_in.up = load<u32>(bufptr+(4*8));
+        this.controller2_in.down = load<u32>(bufptr+(4*9));
+        this.controller2_in.left = load<u32>(bufptr+(4*101));
+        this.controller2_in.right = load<u32>(bufptr+(4*11));
+        this.controller2_in.a = load<u32>(bufptr+(4*12));
+        this.controller2_in.b = load<u32>(bufptr+(4*13));
+        this.controller2_in.start = load<u32>(bufptr+(4*14));
+        this.controller2_in.select = load<u32>(bufptr+(4*15));
+        this.cpu.update_inputs(this.controller1_in, this.controller2_in);
+
     }
 }

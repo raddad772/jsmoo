@@ -24,11 +24,9 @@ class canvas_manager_t {
         this.ymul = 1;
         if ((this.xmul > 0.98) && (this.xmul < 1.02)) this.xmul = 1;
         if (this.xmul < 1) {
-            console.log('XMUL!', this.xmul);
             this.xmul = 1;
             this.ymul = whar / myar;
         }
-        console.log('X, Y MUL', this.xmul, this.ymul)
         if ((width !== this.width) || (height !== this.height) || (ar_w !== this.ar_w) || (ar_h !== this.ar_h)) {
             this.ar_w = ar_w;
             this.ar_h = ar_h;
@@ -64,7 +62,7 @@ class canvas_manager_t {
     }
 
     put_imgdata(data) {
-        this.get_context();
+        //this.get_context();
         this.context.putImageData(data, 0, 0);
         if ((this.scale !== 1) || (this.xmul !== 1)) {
             this.context.globalCompositeOperation = 'copy';
