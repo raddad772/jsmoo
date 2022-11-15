@@ -44,11 +44,13 @@ class canvas_manager_t {
         this.ymul = 1;
     }
 
-    set_size(width, height, ar_w = null, ar_h = null) {
+    set_size(width, height, ar_w = null, ar_h = null, calc_bottom_as=null) {
         this.new_width = width;
         this.new_height = height;
         this.new_ar_w = ar_w;
         this.new_ar_h = ar_h;
+        if (calc_bottom_as === null) calc_bottom_as = height;
+        this.calc_bottom_as = calc_bottom_as;
     }
 
     set_scale(scale) {
@@ -101,7 +103,7 @@ class canvas_manager_t {
                 this.xmul = this.ymul = 1;
             }
             else {
-                let whar = this.width / this.height;
+                let whar = this.width / this.calc_bottom_as
                 let myar = this.ar_w / this.ar_h;
                 this.xmul = myar / whar;
                 this.ymul = 1;

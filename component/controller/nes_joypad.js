@@ -94,7 +94,6 @@ class NES_joypad {
 
     data() {
         if (this.latched === 1) {
-            this.update_a();
             return this.input_buffer.a;
         }
 

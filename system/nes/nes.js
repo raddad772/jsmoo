@@ -142,7 +142,7 @@ class NES {
             this.finish_scanline();
             if (dbg.do_break) break;
         }
-        return this.ppu.last_used_buffer
+        return {buffer_num: this.ppu.last_used_buffer}
     }
 
     catch_up() {}
@@ -227,7 +227,7 @@ class NES {
         this.controller1_in.select = buffer[7];
         this.controller2_in.up = buffer[8];
         this.controller2_in.down = buffer[9];
-        this.controller2_in.left = buffer[101];
+        this.controller2_in.left = buffer[10];
         this.controller2_in.right = buffer[11];
         this.controller2_in.a = buffer[12];
         this.controller2_in.b = buffer[13];

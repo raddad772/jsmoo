@@ -92,7 +92,7 @@ class threaded_emulator_worker_t {
                 this.run_frame();
                 return;
             case emulator_messages.change_system:
-                this.do_set_system(e.kind_str)
+                this.do_set_system(e.kind_str, e.bios)
                 this.step_done(emulator_messages.step2_done);
                 return;
             default:
@@ -120,20 +120,20 @@ class threaded_emulator_worker_t {
         }
     }
 
-    do_set_system(kind) {
+    do_set_system(kind, bios) {
         if (USE_ASSEMBLYSCRIPT) {
             this.as_wrapper.wasm.gp_set_system(this.as_wrapper.global_player, kind);
             this.tech_specs = this.as_wrapper.wasm.gp_get_specs(this.as_wrapper.global_player);
             this.out_ptr = this.tech_specs.out_ptr;
         } else {
-            this.js_wrapper.set_system(kind);
+            this.js_wrapper.set_system(kind, bios);
             this.tech_specs = this.js_wrapper.get_specs();
         }
         this.send_specs(this.tech_specs)
     }
 
-    send_frame_done(num) {
-        postMessage({kind: emulator_messages.frame_complete, buf_num: num})
+    send_frame_done(data) {
+        postMessage({kind: emulator_messages.frame_complete, data: data})
     }
 
     step_done(which) {

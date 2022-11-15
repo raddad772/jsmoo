@@ -6,34 +6,87 @@ const SMSGG_variants = {
     GG: 3
 }
 
-/*
- 2 mclk = 1 vdp clock
- 3 mclk = 1 cpu, sound, etc. clock
+let SMS_inputmap = [];
+let GG_inputmap = [];
+function fill_GG_inputmap() {
+    for (let i = 0; i < 7; i++) {
+        let kp = new md_input_map_keypoint();
+        kp.internal_code = i;
+        kp.buf_pos = i;
+        kp.uber = 1;
+        switch(i) {
+            case 0:
+                kp.name = 'up';
+                break;
+            case 1:
+                kp.name = 'down';
+                break;
+            case 2:
+                kp.name = 'left';
+                break;
+            case 3:
+                kp.name = 'right';
+                break;
+            case 4:
+                kp.name = 'b1';
+                break;
+            case 5:
+                kp.name = 'b2';
+                break;
+            case 6:
+                kp.name = 'start';
+                break;
+        }
+        GG_inputmap[i] = kp;
+    }
+}
 
- so
- cpu.cycle()
- vdp.cycle()
- vdp.cycle()
+function fill_SMS_inputmap() {
+    for (let i = 0; i < 12; i++) {
+        let kp = new md_input_map_keypoint();
+        let uber = (i < 6) ? 'p1' : 'p2';
+        kp.internal_code = i;
+        kp.buf_pos = i;
+        kp.uber = uber;
+        switch(i) {
+            case 0:
+            case 6:
+                kp.name = 'up';
+                break;
+            case 1:
+            case 7:
+                kp.name = 'down';
+                break;
+            case 2:
+            case 8:
+                kp.name = 'left';
+                break;
+            case 3:
+            case 9:
+                kp.name = 'right';
+                break;
+            case 4:
+            case 10:
+                kp.name = 'a';
+                break;
+            case 5:
+            case 11:
+                kp.name = 'b';
+                break;
+        }
+        SMS_inputmap[i] = kp;
+    }
+    let kp = new md_input_map_keypoint();
+    kp.internal_code = 12;
+    kp.uber = 0;
+    kp.buf_pos = 12;
+    kp.name = 'start';
+    SMS_inputmap[12] = kp;
+}
 
- then
- cpu.cycle()
- vdp.cycle()
+fill_GG_inputmap();
+fill_SMS_inputmap();
 
- alternating.
-
-c
- 179,208 mclk per frame
- 262 lines
- 512mclk active display, 172mclk border area
- 684mclk per line
-
- For a frame interrupt, INT is pulled low 607 mclks into scanline 192
-  relative to pixel 0.
-  This is 4 mclks before the rising edge of /HSYNC which starts the next scanline.
- For a line interrupt, /INT is pulled low 608 mclks into the appropriate scanline
-  relative to pixel 0.
-  This is 3 mclks before the rising edge of /HSYNC which starts the next scanline
- */
 
 const SER_SMSGG_clock = [
     'variant', 'region', 'cpu_master_clock', 'vdp_master_clock',
@@ -98,20 +151,19 @@ const SER_SMSGG = [
 ];
 class SMSGG {
     /**
-     * @param {canvas_manager_t} canvas_manager
      * @param {bios_t} bios
      * @param {number} variant
      * @param {number} region
      */
-    constructor(canvas_manager, bios, variant, region) {
-        this.canvas_manager = canvas_manager;
+    constructor(bios, variant, region) {
+        this.bios = bios;
         this.variant = variant;
         this.region = region
         this.clock = new SMSGG_clock(variant, region);
-        this.bus = new SMSGG_bus(variant, region);
+            this.controller1_in = new smspad_inputs();
+        this.bus = new SMSGG_bus(variant, region, this.controller1_in);
         this.cpu = new z80_t(false);
         this.cpu.reset();
-        this.bios = bios;
 
         this.display_enabled = true;
 
@@ -121,7 +173,7 @@ class SMSGG {
         this.bus.notify_IRQ = this.cpu.notify_IRQ.bind(this.cpu);
         this.bus.notify_NMI = this.cpu.notify_NMI.bind(this.cpu);
 
-        this.vdp = new SMSGG_VDP(canvas_manager, this.variant, this.clock, this.bus);
+        this.vdp = new SMSGG_VDP(this.variant, this.clock, this.bus);
         this.vdp.reset();
 
         this.bus.vdp = this.vdp;
@@ -129,12 +181,11 @@ class SMSGG {
         this.bus.mapper.cpu = this.cpu;
 
         dbg.add_cpu(D_RESOURCE_TYPES.Z80, this);
-        if (variant === SMSGG_variants.GG) {
-            input_config.connect_controller('gg');
+        if (variant !== SMSGG_variants.GG) {
+            this.controller1_in = new smspad_inputs();
+            this.controller2_in = new smspad_inputs();
         }
-        else {
-            input_config.connect_controller('sms1');
-        }
+        // TODO: reenable this
         if (variant !== SMSGG_variants.GG)
             this.load_bios();
     }
@@ -155,12 +206,12 @@ class SMSGG {
 
     killall() {
         dbg.remove_cpu(D_RESOURCE_TYPES.Z80, this);
-        if (this.variant === SMSGG_variants.GG) {
+        /*if (this.variant === SMSGG_variants.GG) {
             input_config.disconnect_controller('gg');
         }
         else {
             input_config.disconnect_controller('sms1');
-        }
+        }*/
     }
 
     enable_display(to) {
@@ -189,12 +240,11 @@ class SMSGG {
     }
 
     poll_pause() {
-        if (this.bus.pause_button.poll()) {
-            console.log('PAUSE!!!!');
-            this.bus.notify_NMI(1);
-        }
-        else {
-            this.bus.notify_NMI(0);
+        if (this.variant !== SMSGG_variants.GG) {
+            if (this.controller1_in.start)
+                this.bus.notify_NMI(1);
+            else
+                this.bus.notify_NMI(0);
         }
     }
 
@@ -253,12 +303,35 @@ class SMSGG {
         let nm = 'Master System v1';
         if (this.variant === SMSGG_variants.SMS2) nm = 'Master System v2';
         if (this.variant === SMSGG_variants.GG) nm = 'GameGear';
-        let d = new machine_description(nm);
-        d.technical.standard = 'NTSC';
-        d.technical.fps = 60;
+        let d = new machine_description();
+        d.name = nm;
+        d.standard = MD_STANDARD.NTSC;
+        d.fps = 60;
         d.input_types = [INPUT_TYPES.SMS_CONTROLLER];
-        d.technical.x_resolution = 256;
-        d.technical.y_resolution = 240; // Max
+
+        if (this.variant === SMSGG_variants.GG) {
+            d.x_resolution = 160;
+            d.y_resolution = 144;
+            d.xrh = 4;
+            d.xrw = 3;
+            for (let i = 0; i < GG_inputmap.length; i++) {
+                d.keymap.push(GG_inputmap[i]);
+            }
+        } else {
+            d.x_resolution = 256;
+            d.y_resolution = 240; // Max
+            d.xrh = 8;
+            d.xrw = 7;
+            for (let i = 0; i < SMS_inputmap.length; i++) {
+                d.keymap.push(SMS_inputmap[i]);
+            }
+        }
+
+        d.output_buffer[0] = this.vdp.output_shared_buffers[0];
+        d.output_buffer[1] = this.vdp.output_shared_buffers[1];
+
+
+        d.overscan_top = d.overscan_left = d.overscan_right = d.overscan_bottom = 0;
         return d;
     }
 
@@ -284,6 +357,7 @@ class SMSGG {
             this.finish_scanline();
             if (dbg.do_break) return;
         }
+        return {buffer_num: this.vdp.last_used_buffer, bottom_rendered_line: this.clock.timing.bottom_rendered_line+1};
     }
 
     finish_scanline() {
@@ -307,5 +381,32 @@ class SMSGG {
     present() {
         if (this.display_enabled)
             this.vdp.present();
+    }
+
+    map_inputs(buffer) {
+        if (this.variant === SMSGG_variants.GG) {
+            this.controller1_in.up = buffer[0];
+            this.controller1_in.down = buffer[1];
+            this.controller1_in.left = buffer[2];
+            this.controller1_in.right = buffer[3];
+            this.controller1_in.b1 = buffer[4];
+            this.controller1_in.b2 = buffer[5];
+            this.controller1_in.start = buffer[6];
+        } else {
+            this.controller1_in.up = buffer[0];
+            this.controller1_in.down = buffer[1];
+            this.controller1_in.left = buffer[2];
+            this.controller1_in.right = buffer[3];
+            this.controller1_in.b1 = buffer[4];
+            this.controller1_in.b2 = buffer[5];
+            this.controller2_in.up = buffer[6];
+            this.controller2_in.down = buffer[7];
+            this.controller2_in.left = buffer[8];
+            this.controller2_in.right = buffer[9];
+            this.controller2_in.b1 = buffer[10];
+            this.controller2_in.b2 = buffer[11];
+            this.controller1_in.start = buffer[12];
+        }
+        this.bus.update_inputs(this.controller1_in, this.controller2_in);
     }
 }

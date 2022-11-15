@@ -1,6 +1,7 @@
 "use strict";
 
 /**
+ * @param data
  * @param {ImageData} imgdata
  * @param {SharedArrayBuffer} NES_output_buffer
  * @param {boolean} correct_overscan
@@ -9,7 +10,7 @@
  * @param {number} overscan_top
  * @param {number} overscan_bottom
  */
-function NES_present(imgdata, NES_output_buffer, correct_overscan, overscan_left, overscan_right, overscan_top, overscan_bottom) {
+function NES_present(data, imgdata, NES_output_buffer, correct_overscan, overscan_left, overscan_right, overscan_top, overscan_bottom) {
     let neso = new Uint8Array(NES_output_buffer);
     if (!correct_overscan) { overscan_left = overscan_bottom = overscan_top = overscan_right = 0; }
     let w = 256 - (overscan_left + overscan_right);

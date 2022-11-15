@@ -113,7 +113,7 @@ const SER_SMSGG_bus = [
     'io'
 ];
 class SMSGG_bus {
-    constructor(variant, region) {
+    constructor(variant, region, gg_joymap) {
         this.variant = variant;
         this.region = region;
         /**
@@ -135,12 +135,12 @@ class SMSGG_bus {
         this.portA = new SMSGG_controller_port(variant,'A');
         this.portB = new SMSGG_controller_port(variant, 'B');
         this.portA.attached_device = this.controllerA;
-        this.reset_button = new SMSGG_reset_button(variant);
-        this.pause_button = new SMSGG_pause_button(variant);
+
+        //this.reset_button = new SMSGG_reset_button(variant);
+        //this.pause_button = new SMSGG_pause_button(variant);
         /**
          * @type {null|controller_input_config_t}
          */
-        this.gg_joymap = null;
 
         this.io = {
             disable: 0,
@@ -158,9 +158,18 @@ class SMSGG_bus {
             default: // GameGear is only emulated one left
                 this.cpu_in = this.cpu_in_gg.bind(this);
                 this.cpu_out = this.cpu_out_gg.bind(this);
-                this.gg_joymap = input_config.controller_els.gg;
+                this.gg_joymap = gg_joymap;
                 break;
         }
+    }
+
+    /**
+     * @param {smspad_inputs} inp1
+     * @param {smspad_inputs} inp2
+     */
+    update_inputs(inp1, inp2) {
+        this.controllerA.buffer_input(inp1);
+        //this.controllerB.buffer_input(inp2);
     }
 
     serialize() {
@@ -247,10 +256,10 @@ class SMSGG_bus {
          */
         let pinsA = this.portA.read();
         let pinsB = this.portB.read();
-        this.reset_button.latch();
+        //this.reset_button.latch();
         let r = (pinsB >>> 2) & 0x0F;
-        r |= this.reset_button.value << 4;
-        r |= 0x20;
+        //r |= this.reset_button.value << 4;
+        r |= 0x20 | 0x10;
         r |= (pinsA & 0x40);
         r |= (pinsB & 0x40) << 1;
         if (this.portB.TR_direction === 0) r = (r & 0xF7) | (this.portB.TR_level << 3);
@@ -310,8 +319,9 @@ class SMSGG_bus {
         switch(addr) {
             case 0: // Various stuff
                 // TODO: make this more complete
-                let r = this.gg_joymap.latch();
-                return 0x40 | (r.start ? 0x80 : 0);
+                console.log(this.gg_joymap);
+                console.log(this.gg_joymap.start);
+                return 0x40 | (this.gg_joymap.start ? 0x80 : 0);
             case 1:
             case 2:
             case 3:

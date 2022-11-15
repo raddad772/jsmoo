@@ -15,8 +15,8 @@ const GENERICZ80_STR = 'genericz80'
 
 //const DEFAULT_SYSTEM = GENERICZ80_STR;
 //const DEFAULT_SYSTEM = SPECTRUM_STR;
-const DEFAULT_SYSTEM = NES_STR;
-//const DEFAULT_SYSTEM = SMS_STR;
+//const DEFAULT_SYSTEM = NES_STR;
+const DEFAULT_SYSTEM = SMS_STR;
 //const DEFAULT_SYSTEM = GB_STR;
 //const DEFAULT_SYSTEM = GG_STR;
 
@@ -26,13 +26,18 @@ class input_provider_t {
 		console.log('INPUT PROVIDER SYSTEM KIND', system_kind);
 		this.keymap = keymap;
 
-		let joymap1, joymap2;
 		for (let i in this.keymap) {
 			this.keymap[i].value = 0;
 		}
 		switch(this.system_kind) {
 			case 'nes':
 				this.setup_nes();
+				break;
+			case 'sms':
+				this.setup_sms();
+				break;
+			case 'gg':
+				this.setup_gg();
 				break;
 			default:
 				this.poll = function(){};
@@ -65,6 +70,89 @@ class input_provider_t {
 			km.value = imap[km.name];
 		}
 		return this.keymap;
+	}
+
+	poll_sms() {
+		for (let i in this.keymap) {
+			const km = this.keymap[i];
+			let imap;
+			switch(km.uber) {
+				case 'p1':
+					imap = this.input_buffer1;
+					break;
+				case 'p2':
+					imap = this.input_buffer2;
+					break;
+				case 0:
+					imap = this.input_buffer1;
+					break;
+				default:
+					console.log('WHAT!?!?!?', uber);
+					break;
+			}
+
+			km.value = imap[km.name];
+		}
+		return this.keymap;
+	}
+
+	latch_sms() {
+		this.input_buffer1 = this.joymap1.latch();
+		this.input_buffer2 = this.joymap2.latch();
+	}
+
+	setup_sms() {
+		this.latch = this.latch_sms.bind(this);
+		this.poll = this.poll_sms.bind(this);
+		input_config.connect_controller('sms1');
+		input_config.connect_controller('sms2');
+		this.input_buffer1 = {
+			'b1': 0,
+			'b2': 0,
+			'up': 0,
+			'down': 0,
+			'left': 0,
+			'right': 0,
+			'start': 0,
+		}
+		this.input_buffer2 = {
+			'b1': 0,
+			'b2': 0,
+			'up': 0,
+			'down': 0,
+			'left': 0,
+			'right': 0,
+		}
+
+		this.joymap1 = input_config.controller_els.sms1;
+		this.joymap2 = input_config.controller_els.sms2;
+	}
+
+	poll_gg() {
+		for (let i in this.keymap)
+			this.keymap[i].value = this.input_buffer1[this.keymap[i].name];
+		return this.keymap;
+	}
+
+	latch_gg() {
+		this.input_buffer1 = this.joymap1.latch();
+	}
+
+	setup_gg() {
+		this.latch = this.latch_gg.bind(this);
+		this.poll = this.poll_gg.bind(this);
+		input_config.connect_controller('gg');
+		this.input_buffer1 = {
+			'b1': 0,
+			'b2': 0,
+			'up': 0,
+			'down': 0,
+			'left': 0,
+			'right': 0,
+			'start': 0,
+		}
+
+		this.joymap1 = input_config.controller_els.gg;
 	}
 
 	setup_nes() {
@@ -139,7 +227,7 @@ class global_player_t {
 		await this.bios_manager.onload();
 		if (USE_THREADED_PLAYER) {
 			this.player_thread.onload();
-			this.player_thread.send_set_system(this.system_kind);
+			this.player_thread.send_set_system(this.system_kind, this.bios_manager.bioses[this.system_kind]);
 		}
 	}
 
@@ -274,7 +362,7 @@ class global_player_t {
 				this.update_tech_specs();
 				break;
 			case emulator_messages.frame_complete:
-				this.present(e.buf_num);
+				this.present(e.data);
 				break;
 
 		}
@@ -308,7 +396,7 @@ class global_player_t {
 		}
 	}
 
-	present(num) {
+	present(data) {
 		this.frame_present++;
 		if (USE_THREADED_PLAYER) {
 			this.timing_thread.frame_done();
@@ -316,18 +404,29 @@ class global_player_t {
 				this.player_thread.present(this.canvas_manager)
 			}
 			else {
-				this.present_system(num);
+				this.present_system(data);
 			}
 		}
 		else this.system.present()
 	}
 
-	present_system(buf_num) {
+	present_system(data) {
+		switch(this.system_kind) {
+			case 'sms':
+				this.canvas_manager.set_size(this.tech_specs.x_resolution, data.bottom_rendered_line, this.tech_specs.xrw, this.tech_specs.xrh, 224);
+				break;
+		}
 		let imgdata = this.canvas_manager.get_imgdata();
-		let buf = this.shared_output_buffers[buf_num];
+		let buf = this.shared_output_buffers[data.buffer_num];
 		switch(this.system_kind) {
 			case 'nes':
-				NES_present(imgdata.data, buf, this.canvas_manager.correct_overscan, this.tech_specs.overscan_left, this.tech_specs.overscan_right, this.tech_specs.overscan_top, this.tech_specs.overscan_bottom);
+				NES_present(data, imgdata.data, buf, this.canvas_manager.correct_overscan, this.tech_specs.overscan_left, this.tech_specs.overscan_right, this.tech_specs.overscan_top, this.tech_specs.overscan_bottom);
+				break;
+			case 'gg':
+				GG_present(data, imgdata.data, buf);
+				break;
+			case 'sms':
+				SMS_present(data, imgdata.data, buf);
 				break;
 			default:
 				console.log('NO PRESENTATION CODE FOR', this.system_kind);
