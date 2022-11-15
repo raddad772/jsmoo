@@ -67,11 +67,11 @@ function fill_SMS_inputmap() {
                 break;
             case 4:
             case 10:
-                kp.name = 'a';
+                kp.name = 'b1';
                 break;
             case 5:
             case 11:
-                kp.name = 'b';
+                kp.name = 'b2';
                 break;
         }
         SMS_inputmap[i] = kp;
