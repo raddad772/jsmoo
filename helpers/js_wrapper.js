@@ -1,14 +1,32 @@
 "use strict";
 
 /* Wrap JavaScript emulators like as_wrapper.js does AS ones. */
-// import NES
+// General functions and classes
 importScripts('/debugging.js', '/helpers/machine_description.js', '/helpers/thread_consoles.js', '/helpers.js');
 
-importScripts( '/component/cpu/m6502/m6502_opcodes.js', '/component/cpu/m6502/m6502.js', '/component/cpu/m6502/nesm6502_generated_opcodes.js',
+// m6502 (NES)
+importScripts(
+	'/component/cpu/m6502/m6502_opcodes.js', '/component/cpu/m6502/m6502.js', '/component/cpu/m6502/nesm6502_generated_opcodes.js'
+)
+
+// NES
+importScripts(
     '/system/nes/cpu/rp2a03.js', '/component/controller/nes_joypad.js', '/system/nes/cpu/r2a03.js',
     '/system/nes/nes_bus.js', '/system/nes/nes_cart.js', '/system/nes/nes_clock.js',
     '/system/nes/ppu/nes_ppu.js', '/system/nes/mappers/nomapper.js', '/system/nes/mappers/mmc3b.js',
     '/system/nes/mappers/vrc2b_4e_4f.js', '/system/nes/mappers/mmc1.js', '/system/nes/nes.js')
+
+// Z80 (Spectrum, SMS/GG)
+importScripts(
+	'/component/cpu/z80/z80_opcodes.js', '/component/cpu/z80/z80_generated_opcodes.js',
+	'/component/cpu/z80/z80_disassembler.js', '/component/cpu/z80/z80.js'
+)
+
+// SMS/GG
+importScripts(
+	'/component/controller/sms_joypad.js', '/system/sms_gg/sms_gg.js', '/system/sms_gg/sms_gg_io.js',
+	'/system/sms_gg/sms_gg_mapper_sega.js', '/system/sms_gg/sms_gg_vdp.js'
+	)
 
 class js_wrapper_t {
     constructor() {
@@ -26,7 +44,7 @@ class js_wrapper_t {
 		this.system.map_inputs(this.input_buffer);
     }
 
-    set_system(to) {
+    set_system(to, bios) {
 		if (this.system !== null) {
 			this.system.killall();
 			delete this.system;
@@ -35,17 +53,17 @@ class js_wrapper_t {
 		if (typeof to !== 'undefined') {
 			this.system_kind = to;
 		}
-		console.log('SETTING SYSTEM', this.system_kind)
+		console.log('SETTING SYSTEM', this.system_kind, bios)
 		switch(this.system_kind) {
 			case 'gg':
-				this.system = new SMSGG(this.bios_manager.bioses['gg'], SMSGG_variants.GG, REGION.NTSC);
+				this.system = new SMSGG(bios, SMSGG_variants.GG, REGION.NTSC);
 				//load_bios('/gg/roms/bios.gg');
 				break;
 			case 'gb':
 				this.system = new GameBoy(this.bios_manager.bioses['gb'], GB_variants.DMG);
 				break;
 			case 'sms':
-				this.system = new SMSGG(this.bios_manager.bioses['sms'], SMSGG_variants.SMS2, REGION.NTSC);
+				this.system = new SMSGG(bios, SMSGG_variants.SMS2, REGION.NTSC);
 				break;
 			case 'snes':
 				this.system = new SNES();

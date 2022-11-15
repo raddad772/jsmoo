@@ -5,7 +5,7 @@ const SMSGG_PALETTE = [
     0x02, 0x03, 0x05, 0x0F, 0x04, 0x33, 0x15, 0x3F
 ]
 
-const SMSGG_vdp_modes = {
+const SMSGG_VDP_modes = {
     SMS: 0,
     GG: 1
 }
@@ -42,13 +42,11 @@ const SER_SMSGG_VDP = [
 
 class SMSGG_VDP {
     /**
-     * @param {canvas_manager_t} canvas_manager
      * @param {Number} variant
      * @param {SMSGG_clock} clock
      * @param {SMSGG_bus} bus
      */
-    constructor(canvas_manager, variant, clock, bus) {
-        this.canvas_manager = canvas_manager;
+    constructor(variant, clock, bus) {
         this.variant = variant;
         this.clock = clock;
         this.bus = bus;
@@ -58,14 +56,28 @@ class SMSGG_VDP {
         this.VRAM = new Uint8Array(16384);
         this.CRAM = new Uint16Array(32);
 
-        this.mode = SMSGG_vdp_modes.SMS;
+        this.mode = SMSGG_VDP_modes.SMS;
+        let bm = 1;
         switch(variant) {
             case SMSGG_variants.GG:
-                this.mode = SMSGG_vdp_modes.GG;
+                this.mode = SMSGG_VDP_modes.GG;
+                bm = 2;
+                break;
         }
 
 
-        this.output = new Uint16Array(256*240);
+        this.output_shared_buffers = [new SharedArrayBuffer(256*240*bm), new SharedArrayBuffer(256*240*bm)];
+        switch(variant) {
+            case SMSGG_variants.GG:
+                this.output = [new Uint16Array(this.output_shared_buffers[0]), new Uint16Array(this.output_shared_buffers[1])];
+                break;
+            default:
+                this.output = [new Uint8Array(this.output_shared_buffers[0]), new Uint8Array(this.output_shared_buffers[1])];
+                break;
+        }
+        this.cur_output_num = 1;
+        this.cur_output = this.output[1];
+        this.last_used_buffer = 1;
 
         this.objects = [];
 
@@ -267,7 +279,7 @@ class SMSGG_VDP {
             if (!(this.io.video_mode & 8)) return SMSGG_PALETTE[index & 0x0F];
             return this.CRAM[index] & 0x3F;
         }
-        if (this.mode === SMSGG_vdp_modes.SMS) {
+        if (this.mode === SMSGG_VDP_modes.SMS) {
             let color = this.CRAM[index];
             if (!(this.io.video_mode & 8)) color = SMSGG_PALETTE[index & 0x0F];
             let r = (color & 3) | ((color & 3) << 2);
@@ -275,7 +287,7 @@ class SMSGG_VDP {
             let b = ((color & 0x30) >>> 4) | (color & 0x30) >>> 2;
             return r | (g << 4) | (b << 8);
         }
-        if (this.mode === SMSGG_vdp_modes.GG) {
+        if (this.mode === SMSGG_VDP_modes.GG) {
             if (!(this.io.video_mode & 8)) {
                 let color = SMSGG_PALETTE[index & 7];
                 let r = (color & 3) | ((color & 3) << 2);
@@ -479,7 +491,7 @@ class SMSGG_VDP {
             }
         }
 
-        this.output[this.doi] = color;
+        this.cur_output[this.doi] = color;
         this.doi++;
     }
 
@@ -552,6 +564,9 @@ class SMSGG_VDP {
         this.clock.frames_since_restart++;
         this.clock.vpos = 0;
         this.clock.vdp_frame_cycle = 0;
+        this.last_used_buffer = this.cur_output_num;
+        this.cur_output_num ^= 1;
+        this.cur_output = this.output[this.cur_output_num];
     }
 
     read_vcounter() {
@@ -607,7 +622,7 @@ class SMSGG_VDP {
             this.VRAM[this.io.address] = val;
         }
         else {
-            if (this.mode === SMSGG_vdp_modes.GG) {
+            if (this.mode === SMSGG_VDP_modes.GG) {
                 // even writes store 8-bit data into latch
                 // odd writes store 12-bits into CRAM
                 if ((this.io.address & 1) === 0)

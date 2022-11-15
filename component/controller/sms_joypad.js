@@ -3,6 +3,19 @@
 const SER_SMSGG_gamepad = [
     'variant', 'pins', 'num'
 ]
+
+class smspad_inputs {
+    constructor() {
+        this.b1 = 0;
+        this.b2 = 0;
+        this.start = 0;
+        this.up = 0;
+        this.down = 0;
+        this.left = 0;
+        this.right = 0;
+    }
+}
+
 class SMSGG_gamepad {
     constructor(variant, num) {
         this.variant = variant;
@@ -16,8 +29,7 @@ class SMSGG_gamepad {
             right: 1
         }
         this.num = num;
-        if (num === 1) this.joymap = input_config.controller_els.sms1;
-        else this.joymap = input_config.controller_els.sms2;
+        this.input_waiting = new smspad_inputs();
     }
 
     serialize() {
@@ -34,6 +46,21 @@ class SMSGG_gamepad {
         return deserialization_helper(this, from, SER_SMSGG_gamepad);
     }
 
+    buffer_input(from) {
+        this.input_waiting.up = from.up;
+        this.input_waiting.down = from.down;
+        this.input_waiting.left = from.left;
+        this.input_waiting.right = from.right;
+        this.input_waiting.b1 = from.b1;
+        this.input_waiting.b2 = from.b2;
+        if (this.variant === SMSGG_variants.GG) {
+            this.input_waiting.start = from.start;
+        }
+        else {
+            if (this.num === 1) this.input_waiting.start = from.start;
+        }
+    }
+
     read() {
         this.latch();
         return (this.pins.up) | (this.pins.down << 1) | (this.pins.left << 2) | (this.pins.right << 3) | (this.pins.tl << 4) | (this.pins.tr << 5) | 0x40;
@@ -41,12 +68,11 @@ class SMSGG_gamepad {
 
     latch() {
         // Set our pins based on current input. 1 is high
-        this.joymap.latch();
-        this.pins.up = this.joymap.latched.up ? 0 : 1;
-        this.pins.down = this.joymap.latched.down ? 0 : 1;
-        this.pins.left = this.joymap.latched.left ? 0 : 1;
-        this.pins.right = this.joymap.latched.right ? 0 : 1;
-        this.pins.tr = this.joymap.latched.b2 ? 0 : 1;
-        this.pins.tl = this.joymap.latched.b1 ? 0 : 1;
+        this.pins.up = this.input_waiting.up ? 0 : 1;
+        this.pins.down = this.input_waiting.down ? 0 : 1;
+        this.pins.left = this.input_waiting.left ? 0 : 1;
+        this.pins.right = this.input_waiting.right ? 0 : 1;
+        this.pins.tr = this.input_waiting.b2 ? 0 : 1;
+        this.pins.tl = this.input_waiting.b1 ? 0 : 1;
     }
 }

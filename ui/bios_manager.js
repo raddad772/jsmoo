@@ -130,6 +130,9 @@ class bios_manager_t {
         this.el_cont = document.getElementById('bios-container');
         this.el_system_select = document.getElementById('bios_upload_select');
 
+        /**
+         * @type {Array<bios_t>}
+         */
         this.bioses = {}
         for (let i in SYSTEMS_WITH_BIOS) {
             let item = SYSTEMS_WITH_BIOS[i];

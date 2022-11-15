@@ -40,6 +40,7 @@ class threaded_emulator_t {
         this.step1_done = false;
         this.step2_done = false;
         this.queued_step_2 = null;
+        this.queued_bios = null;
         this.queued_step_3 = null;
     }
 
@@ -57,7 +58,7 @@ class threaded_emulator_t {
                 this.step1_done = true;
                 if (this.queued_step_2 !== null) {
                     this.system_kind = this.queued_step_2;
-                    this.thread.postMessage({kind: emulator_messages.change_system, kind_str: this.queued_step_2});
+                    this.thread.postMessage({kind: emulator_messages.change_system, kind_str: this.queued_step_2, bios: this.queued_bios});
                     this.queued_step_2 = null;
                 }
                 break;
@@ -72,13 +73,14 @@ class threaded_emulator_t {
         this.parent_msg(e);
     }
 
-    send_set_system(kind) {
+    send_set_system(kind, bios) {
         if (!this.step1_done) {
             this.queued_step_2 = kind;
+            this.queued_bios = bios;
             return;
         }
         this.system_kind = kind;
-        this.thread.postMessage({kind: emulator_messages.change_system, kind_str: kind});
+        this.thread.postMessage({kind: emulator_messages.change_system, kind_str: kind, bios: bios});
     }
 
     /**
