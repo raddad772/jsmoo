@@ -16,8 +16,8 @@ const GENERICZ80_STR = 'genericz80'
 //const DEFAULT_SYSTEM = GENERICZ80_STR;
 //const DEFAULT_SYSTEM = SPECTRUM_STR;
 //const DEFAULT_SYSTEM = NES_STR;
-const DEFAULT_SYSTEM = SMS_STR;
-//const DEFAULT_SYSTEM = GB_STR;
+//const DEFAULT_SYSTEM = SMS_STR;
+const DEFAULT_SYSTEM = GB_STR;
 //const DEFAULT_SYSTEM = GG_STR;
 
 class input_provider_t {
@@ -39,8 +39,12 @@ class input_provider_t {
 			case 'gg':
 				this.setup_gg();
 				break;
+			case 'gb':
+				this.setup_gb();
+				break;
 			default:
 				this.poll = function(){};
+				this.latch = function(){};
 				console.log('NO INPUT FOR', this.system_kind);
 				break;
 		}
@@ -153,6 +157,33 @@ class input_provider_t {
 		}
 
 		this.joymap1 = input_config.controller_els.gg;
+	}
+
+	latch_gb() {
+		this.input_buffer1 = this.joymap1.latch();
+	}
+
+	poll_gb() {
+		for (let i in this.keymap)
+			this.keymap[i].value = this.input_buffer1[this.keymap[i].name];
+		return this.keymap;
+	}
+
+	setup_gb() {
+		this.latch = this.latch_gb.bind(this);
+		this.poll = this.poll_gb.bind(this);
+		input_config.connect_controller('gb');
+		this.input_buffer1 = {
+			'a': 0,
+			'b': 0,
+			'up': 0,
+			'down': 0,
+			'left': 0,
+			'right': 0,
+			'select': 0,
+			'start': 0,
+		}
+		this.joymap1 = input_config.controller_els.gb;
 	}
 
 	setup_nes() {
@@ -427,6 +458,9 @@ class global_player_t {
 				break;
 			case 'sms':
 				SMS_present(data, imgdata.data, buf);
+				break;
+			case 'gb':
+				GB_present(data, imgdata.data, buf);
 				break;
 			default:
 				console.log('NO PRESENTATION CODE FOR', this.system_kind);

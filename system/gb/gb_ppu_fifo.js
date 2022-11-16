@@ -96,7 +96,6 @@ class GB_pixel_slice_fetcher {
         this.bg_FIFO.clear();
         this.bg_request_x = 0;
         this.fetch_cycle = 0;
-        if (this.clock.ly === 140) console.log('WINDOW TRIGGERED', this.clock.lx, this.ppu.line_cycle)
     }
 
     /**
@@ -350,15 +349,13 @@ class GB_FIFO_t {
 
 class GB_PPU_FIFO {
     /**
-     * @param {canvas_manager_t} canvas_manager
      * @param {Number} variant
      * @param {GB_clock} clock
      * @param {GB_bus} bus
      */
-    constructor(canvas_manager, variant, clock, bus) {
+    constructor(variant, clock, bus) {
         this.variant = variant;
         this.clock = clock;
-        this.canvas_manager = canvas_manager;
         this.bus = bus;
         this.bus.ppu = this;
 
@@ -412,7 +409,12 @@ class GB_PPU_FIFO {
             wy: 0, // Window Y
         }
 
-        this.output = new Uint8Array(160*144);
+        this.output_shared_buffers = [new SharedArrayBuffer(160*144*2), new SharedArrayBuffer(160*144*2)];
+        this.output = [new Uint16Array(this.output_shared_buffers[0]), new Uint16Array(this.output_shared_buffers[1])];
+        this.cur_output_num = 1;
+        this.cur_output = this.output[1];
+        this.last_used_buffer = 1;
+
         this.first_reset = true;
 
         this.is_window_line = false;
@@ -592,32 +594,6 @@ class GB_PPU_FIFO {
             (tn << 4) |
             ((((this.clock.ly + this.io.SCY) & 0xFF) & 7) << 1)
         );
-    }
-
-    present() {
-        this.canvas_manager.set_size(160, 144);
-        let imgdata = this.canvas_manager.get_imgdata();
-        for (let y = 0; y < 144; y++) {
-            for (let x = 0; x < 160; x++) {
-                let ppui = (y * 160) + x;
-                let di = ppui * 4;
-                let r, g, b;
-                let o = this.output[ppui];
-                r = ((o / 3) * 255);
-                r = 255 - r;
-                g = b = r;
-                imgdata.data[di] = r;
-                imgdata.data[di+1] = g;
-                imgdata.data[di+2] = b;
-                imgdata.data[di+3] = 255;
-            }
-        }
-
-        // draw lines around screen
-        //this.draw_lines_around_screen(imgdata);
-
-        this.canvas_manager.put_imgdata(imgdata);
-        this.dump_bg(bg_canvas, 0x9800, 0x8000);
     }
 
     draw_lines_around_screen(imgdata) {
@@ -938,6 +914,9 @@ class GB_PPU_FIFO {
         this.clock.frames_since_restart++;
         this.clock.master_frame++;
         this.is_window_line = false;
+        this.last_used_buffer = this.cur_output_num;
+        this.cur_output_num ^= 1;
+        this.cur_output = this.output[this.cur_output_num];
     }
 
     /********************/
@@ -990,7 +969,7 @@ class GB_PPU_FIFO {
                 } else {
                     cv = this.sp_palette[p.palette][p.color];
                 }
-                this.output[(this.clock.ly * 160) + (this.clock.lx - 8)] = cv;
+                this.cur_output[(this.clock.ly * 160) + (this.clock.lx - 8)] = cv;
             }
             this.clock.lx++;
         }
