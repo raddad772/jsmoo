@@ -97,6 +97,19 @@ class GB_timer {
     }
 }
 
+class gb_inputs {
+    constructor() {
+        this.a = 0;
+        this.b = 0;
+        this.start = 0;
+        this.select = 0;
+        this.up = 0;
+        this.down = 0;
+        this.left = 0;
+        this.right = 0;
+    }
+}
+
 class GB_CPU {
     /**
      * @param {Number} variant
@@ -113,7 +126,6 @@ class GB_CPU {
         this.FFregs = new Uint8Array(256); // For unimplemented FF-regs
 
         this.timer = new GB_timer(this.raise_TIMA.bind(this));
-
 
         this.tracing = false;
 
@@ -133,7 +145,7 @@ class GB_CPU {
             last_write: 0
         }
 
-        input_config.connect_controller('gb');
+        //input_config.connect_controller('gb');
         this.input_buffer = {
             'a': 0,
             'b': 0,
@@ -144,13 +156,22 @@ class GB_CPU {
             'start': 0,
             'select': 0
         }
-        this.joymap = input_config.controller_els.gb;
-
     }
 
     // TODO: emulate bug for Road Rash
     force_IRQ_latch() {
 
+    }
+
+    update_inputs(inp1) {
+        this.input_buffer['a'] = inp1.a;
+        this.input_buffer['b'] = inp1.b;
+        this.input_buffer['up'] = inp1.up;
+        this.input_buffer['down'] = inp1.down;
+        this.input_buffer['left'] = inp1.left;
+        this.input_buffer['right'] = inp1.right;
+        this.input_buffer['start'] = inp1.start;
+        this.input_buffer['select'] = inp1.select;
     }
 
     raise_TIMA() {
@@ -231,17 +252,17 @@ class GB_CPU {
     }
 
     get_input() {
-        this.input_buffer = this.joymap.latch();
+        //this.input_buffer = this.joymap.latch();
         let out1;
         let out3 = 0x0F;
         if (this.io.JOYP.action_select === 0) {
-            out1 = this.input_buffer['a'] | (this.input_buffer['b'] << 1) | (this.input_buffer['select'] << 2) | (this.input_buffer['start'] << 3);
+            out1 = this.input_buffer.a | (this.input_buffer.b << 1) | (this.input_buffer.select << 2) | (this.input_buffer.start << 3);
             out1 ^= 0x0F;
             out3 &= out1;
         }
 
         if (this.io.JOYP.direction_select === 0) {
-            out1 = this.input_buffer['right'] | (this.input_buffer['left'] << 1) | (this.input_buffer['up'] << 2) | (this.input_buffer['down'] << 3);
+            out1 = this.input_buffer.right | (this.input_buffer.left << 1) | (this.input_buffer.up << 2) | (this.input_buffer.down << 3);
             out1 ^= 0x0F;
             out3 &= out1;
         }

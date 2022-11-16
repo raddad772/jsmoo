@@ -28,6 +28,17 @@ importScripts(
 	'/system/sms_gg/sms_gg_mapper_sega.js', '/system/sms_gg/sms_gg_vdp.js'
 	)
 
+// GameBoy
+importScripts(
+	'/component/cpu/sm83/sm83_disassembler.js', '/component/cpu/sm83/sm83_opcodes.js',
+	'/component/cpu/sm83/sm83.js', '/component/cpu/sm83/sm83_generated_opcodes.js',
+	'/system/gb/gb_cart.js', '/system/gb/gb_ppu_fifo.js',
+	'/system/gb/mappers/nomapper.js', '/system/gb/mappers/mbc1.js',
+	'/system/gb/mappers/mbc2.js', '/system/gb/mappers/mbc3.js',
+	'/system/gb/mappers/mbc5.js', '/system/gb/gb_cpu.js',
+	'/system/gb/gb.js'
+)
+
 class js_wrapper_t {
     constructor() {
         /**
@@ -60,7 +71,7 @@ class js_wrapper_t {
 				//load_bios('/gg/roms/bios.gg');
 				break;
 			case 'gb':
-				this.system = new GameBoy(this.bios_manager.bioses['gb'], GB_variants.DMG);
+				this.system = new GameBoy(bios, GB_variants.DMG);
 				break;
 			case 'sms':
 				this.system = new SMSGG(bios, SMSGG_variants.SMS2, REGION.NTSC);

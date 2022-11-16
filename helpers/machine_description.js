@@ -16,7 +16,8 @@ const MD_TIMING = {
 
 const MD_STANDARD = {
     NSTC: 0,
-    PAL: 1
+    PAL: 1,
+    LCD: 2
 }
 
 const SCREENVAR_FIELDS = {
