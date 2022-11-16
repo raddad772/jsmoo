@@ -73,8 +73,8 @@ class NES_ppu {
 
         this.CGRAM = new Uint8Array(0x20);   // 32 byes of "color RAM"
 
-        this.output_shared_buffers = [new SharedArrayBuffer(256*240), new SharedArrayBuffer(256*240)];
-        this.output = [new Uint8Array(this.output_shared_buffers[0]), new Uint8Array(this.output_shared_buffers[1])];
+        this.output_shared_buffers = [new SharedArrayBuffer(256*240*2), new SharedArrayBuffer(256*240*2)];
+        this.output = [new Uint16Array(this.output_shared_buffers[0]), new Uint16Array(this.output_shared_buffers[1])];
         this.cur_output_num = 1;
         this.cur_output = this.output[1];
         this.last_used_buffer = 1;
@@ -110,6 +110,11 @@ class NES_ppu {
             sprite_hide_left_8: 0,
             bg_enable: 0,
             sprite_enable: 0,
+
+            emph_r: 0,
+            emph_g: 0,
+            emph_b: 0,
+            emph_bits: 0,
 
             OAM_addr: 0
         }
@@ -213,6 +218,10 @@ class NES_ppu {
                 this.io.sprite_hide_left_8 = (val & 4) >>> 2;
                 this.io.bg_enable = (val & 8) >>> 3;
                 this.io.sprite_enable = (val & 0x10) >>> 4;
+                this.io.emph_r = (val & 0x20) >>> 5;
+                this.io.emph_g = (val & 0x40) >>> 6;
+                this.io.emph_b = (val & 0x80) >>> 7;
+                this.io.emph_bits = (val & 0xE0) << 1;
                 // NOTFINISHED: emphasizes
                 return;
             case 0x2003: // OAMADDR
@@ -683,7 +692,7 @@ class NES_ppu {
             }
         }
 
-        this.cur_output[bo] = out_color;
+        this.cur_output[bo] = out_color | this.io.emph_bits;
         //this.scanline_timer.record_split('color_out');
         //this.scanline_timer.end_sample();
     }

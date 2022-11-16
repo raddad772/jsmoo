@@ -11,7 +11,7 @@
  * @param {number} overscan_bottom
  */
 function NES_present(data, imgdata, NES_output_buffer, correct_overscan, overscan_left, overscan_right, overscan_top, overscan_bottom) {
-    let neso = new Uint8Array(NES_output_buffer);
+    let neso = new Uint16Array(NES_output_buffer);
     if (!correct_overscan) { overscan_left = overscan_bottom = overscan_top = overscan_right = 0; }
     let w = 256 - (overscan_left + overscan_right);
     let img32 = new Uint32Array(imgdata.buffer);
