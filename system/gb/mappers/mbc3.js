@@ -1,5 +1,7 @@
 "use strict";
 
+const RTC_START_TIME = 1000 * 1668634714;
+
 class GB_MAPPER_MBC3 {
     /**
      * @param {GB_bus} bus
@@ -80,12 +82,21 @@ class GB_MAPPER_MBC3 {
         this.regs.ROM_bank_hi %= this.num_ROM_banks;
 
         this.ROM_bank_offset_hi = this.regs.ROM_bank_hi * 16384;
-        if (this.regs.RAM_bank <= 3) this.regs.RAM_bank %= this.num_RAM_banks;
         let rb = this.regs.RAM_bank;
-        if (rb <= 3) {
+        if (this.cart.header.timer_present) {
+            if (this.regs.RAM_bank <= 3) this.regs.RAM_bank %= this.num_RAM_banks;
+            if (rb <= 3) {
+                if (this.has_RAM) this.RAM_bank_offset = rb * 8192;
+            } else {
+                console.log('SET TO RTC!', rb);
+                // RTC registers handled during read/write ops to the area
+            }
             if (this.has_RAM) this.RAM_bank_offset = rb * 8192;
-        } else {
-            // RTC registers handled during read/write ops to the area
+
+        }
+        else {
+            rb &= 3;
+            if (this.has_RAM) this.RAM_bank_offset = rb * 8192;
         }
     }
 
@@ -213,9 +224,12 @@ class GB_MAPPER_MBC3 {
         this.BIOS = BIOS;
         this.BIOS_big = this.BIOS.byteLength > 256;
         this.ROM = new Uint8Array(cart.header.ROM_size);
+        this.num_ROM_banks = cart.header.ROM_size >>> 14;
         this.ROM.set(cart.ROM);
         this.cartRAM = new Uint8Array(cart.header.RAM_size);
         this.RAM_mask = cart.header.RAM_mask;
         this.has_RAM = this.cartRAM.byteLength > 0;
+        this.num_RAM_banks = cart.header.RAM_size / 8192;
+        console.log('RAM amount', cart.header.RAM_size, this.RAM_mask, this.has_RAM, this.RAM_bank_offset);
     }
 }

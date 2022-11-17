@@ -347,6 +347,10 @@ class SMSGG {
         current_x.innerHTML = this.clock.hpos;
     }
 
+    get_framevars() {
+        return {master_frame: this.clock.frames_since_restart, x: this.clock.hpos, scanline: this.clock.vpos};
+    }
+
     run_frame() {
         let current_frame = this.clock.frames_since_restart;
         let scanlines_done = 0;

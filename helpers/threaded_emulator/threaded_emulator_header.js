@@ -15,16 +15,18 @@ const emulator_messages = Object.freeze({
     step2_done: 1002,
     step3_done: 1003,
 
+    ui_event: 200,
 
     // Child to parent
     frame_complete: 50,
     status_update: 51,
-
+    render_traces: 300,
+    mstep_complete: 301
 });
 
 class threaded_emulator_t {
     constructor(onmsg) {
-        console.log('EMULATOR WORKER THREAD CONSTRUCTOR!');
+        //console.log('EMULATOR WORKER THREAD CONSTRUCTOR!');
         this.thread = new Worker('/helpers/threaded_emulator/threaded_emulator_worker.js');
         this.thread.onmessage = this.on_child_message.bind(this);
         this.thread.onerror = function(a,b,c) { console.log('ERR', a, b, c);}
@@ -96,13 +98,16 @@ class threaded_emulator_t {
         this.thread.postMessage({kind: emulator_messages.load_rom, ROM: ROM});
     }
 
+    send_ui_event(uie) {
+        this.thread.postMessage({kind: emulator_messages.ui_event, data: uie});
+    }
+
     send_request_frame(keymap) {
         //console.log('MT: REQUEST FRAME');
         this.thread.postMessage({kind: emulator_messages.frame_requested, keymap: keymap});
     }
 
     send_startup_message() {
-        console.log('POSTING STARTUP MESSAGE', this.thread);
         this.step1_done = false;
         this.thread.postMessage({kind: emulator_messages.startup, general_sab: this.general_sab});
     }

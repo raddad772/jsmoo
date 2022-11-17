@@ -13,6 +13,9 @@ const USE_ASSEMBLYSCRIPT = false;
 importScripts('/helpers/as_wrapper.js')
 importScripts('/helpers/js_wrapper.js')
 
+var ui = {
+}
+
 const emulator_messages = Object.freeze({
     unknown: 0,
     // Parent to child
@@ -28,9 +31,13 @@ const emulator_messages = Object.freeze({
     step2_done: 1002,
     step3_done: 1003,
 
+    ui_event: 200,
+
     // Child to parent
     frame_complete: 50,
     status_update: 51,
+    render_traces: 300,
+    mstep_complete: 301
 
 });
 
@@ -95,9 +102,65 @@ class threaded_emulator_worker_t {
                 this.do_set_system(e.kind_str, e.bios)
                 this.step_done(emulator_messages.step2_done);
                 return;
+            case emulator_messages.ui_event:
+                this.process_ui_event(e.data);
+                return;
             default:
                 console.log('EMULATION MAIN THREAD UNHANDLED MESSAGE', e);
                 break;
+        }
+    }
+
+    master_step(howmany) {
+        let on = this.js_wrapper.step_master(howmany);
+        this.send_mstep_done(on);
+    }
+
+    process_ui_event(event) {
+        switch(event.target) {
+            case 'button_click':
+                switch(event.data.id) {
+                    case 'master_step':
+                        this.master_step(event.data.steps);
+                        break;
+                    default:
+                        console.log('UNKNOWN BUTTON CLICKED', event);
+                        break;
+                }
+                break;
+            case 'dbg':
+                dbg.ui_event(event.data);
+                break;
+            case 'startup':
+                let v = event.data;
+                switch(v[0]) {
+                    case 'button':
+                        break;
+                    case 'input':
+                    case 'output':
+                        ui[v[1]] = v[2];
+                        break;
+                    case 'select':
+                        break;
+                    case 'checkbox':
+                        switch(v[1]) {
+                            case 'tracingCPU':
+                                dbg.ui_event({'tracingCPU': v[2] || false});
+                                break;
+                            case 'brknmirq':
+                                dbg.ui_event({'brk_on_NMIRQ': v[2] || false})
+                                break;
+                            default:
+                                ui[v[1]] = v[2];
+                                break;
+                        }
+                        break;
+                    default:
+                        console.log('unhandled UI element!', v);
+                }
+                break;
+            default:
+                console.log('UNKNOWN UI EVENT', event);
         }
     }
 
@@ -115,7 +178,7 @@ class threaded_emulator_worker_t {
             let ts = performance.now();
             let on = this.js_wrapper.run_frame();
             let span = performance.now() - ts;
-            console.log('TIME PER FRAME:', span.toFixed(4));
+            //console.log('TIME PER FRAME:', span.toFixed(4));
             this.send_frame_done(on);
         }
     }
@@ -130,6 +193,10 @@ class threaded_emulator_worker_t {
             this.tech_specs = this.js_wrapper.get_specs();
         }
         this.send_specs(this.tech_specs)
+    }
+
+    send_mstep_done(data) {
+        postMessage({kind: emulator_messages.mstep_complete, data: data})
     }
 
     send_frame_done(data) {

@@ -64,7 +64,7 @@ class js_wrapper_t {
 		if (typeof to !== 'undefined') {
 			this.system_kind = to;
 		}
-		console.log('SETTING SYSTEM', this.system_kind, bios)
+		//console.log('SETTING SYSTEM', this.system_kind, bios)
 		switch(this.system_kind) {
 			case 'gg':
 				this.system = new SMSGG(bios, SMSGG_variants.GG, REGION.NTSC);
@@ -89,19 +89,24 @@ class js_wrapper_t {
 				alert('system not found');
 				return;
 		}
-		console.log('SET DONE');
     }
 
     load_ROM_from_RAM(ROM) {
         this.system.load_ROM_from_RAM(ROM);
     }
 
+	step_master(howmany) {
+		//let r = this.system.step_master(howmany);
+		this.system.step_master(howmany);
+		return this.system.get_framevars();
+	}
+
     run_frame() {
-        return this.system.run_frame();
+        let r = this.system.run_frame();
+		return Object.assign({}, r, this.system.get_framevars());
     }
 
     get_specs() {
-		console.log("GET DESC");
         return this.system.get_description();
     }
 }

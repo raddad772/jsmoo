@@ -220,7 +220,12 @@ class GB_pixel_slice_fetcher {
                             this.fetch_bp1 <<= 1;
                         }
                         this.bg_request_x += 8;
-                        if ((this.ppu.line_cycle < 88) && (!this.ppu.in_window())) this.bg_request_x -= 8;
+                        if ((this.ppu.line_cycle < 88) && (!this.ppu.in_window())) {
+                            this.bg_request_x -= 8;
+                            // Now discard some pixels for scrolling!
+                            let sx = this.ppu.io.SCX & 7;
+                            this.bg_FIFO.discard(sx);
+                        }
                         this.fetch_cycle = 0; // Restart fetching
                     }
                 }
@@ -318,6 +323,13 @@ class GB_FIFO_t {
                     this.items[i].cgb_priority = sp_priority;
                 }
             }
+        }
+    }
+
+    // Discard up to num pixels
+    discard(num) {
+        for (let i = 0; i < num; i++) {
+            this.pop();
         }
     }
 

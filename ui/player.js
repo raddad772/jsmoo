@@ -15,9 +15,9 @@ const GENERICZ80_STR = 'genericz80'
 
 //const DEFAULT_SYSTEM = GENERICZ80_STR;
 //const DEFAULT_SYSTEM = SPECTRUM_STR;
-const DEFAULT_SYSTEM = NES_STR;
+//const DEFAULT_SYSTEM = NES_STR;
 //const DEFAULT_SYSTEM = SMS_STR;
-//const DEFAULT_SYSTEM = GB_STR;
+const DEFAULT_SYSTEM = GB_STR;
 //const DEFAULT_SYSTEM = GG_STR;
 
 class input_provider_t {
@@ -46,6 +46,23 @@ class input_provider_t {
 				this.poll = function(){};
 				this.latch = function(){};
 				console.log('NO INPUT FOR', this.system_kind);
+				break;
+		}
+	}
+
+	disconnect() {
+		switch(this.system_kind) {
+			case 'sms':
+				this.disconnect_sms();
+				break;
+			case 'gg':
+				this.disconnect_gg();
+				break;
+			case 'gb':
+				this.disconnect_gb();
+				break;
+			case 'nes':
+				this.disconnect_nes();
 				break;
 		}
 	}
@@ -105,6 +122,11 @@ class input_provider_t {
 		this.input_buffer2 = this.joymap2.latch();
 	}
 
+	disconnect_sms() {
+		input_config.disconnect_controller('sms1');
+		input_config.disconnect_controller('sms2');
+	}
+
 	setup_sms() {
 		this.latch = this.latch_sms.bind(this);
 		this.poll = this.poll_sms.bind(this);
@@ -142,6 +164,10 @@ class input_provider_t {
 		this.input_buffer1 = this.joymap1.latch();
 	}
 
+	disconnect_gg() {
+		input_config.disconnect_controller('gg');
+	}
+
 	setup_gg() {
 		this.latch = this.latch_gg.bind(this);
 		this.poll = this.poll_gg.bind(this);
@@ -169,6 +195,10 @@ class input_provider_t {
 		return this.keymap;
 	}
 
+	disconnect_gb() {
+		input_config.disconnect_controller('gb');
+	}
+
 	setup_gb() {
 		this.latch = this.latch_gb.bind(this);
 		this.poll = this.poll_gb.bind(this);
@@ -184,6 +214,11 @@ class input_provider_t {
 			'start': 0,
 		}
 		this.joymap1 = input_config.controller_els.gb;
+	}
+
+	disconnect_nes() {
+		input_config.disconnect_controller('nes1');
+		input_config.disconnect_controller('nes2');
 	}
 
 	setup_nes() {
@@ -239,6 +274,11 @@ class global_player_t {
 		this.queued_load_state = -1;
 		this.frame_present = 0;
 
+		/**
+		 * @type {input_provider_t|null}
+		 */
+		this.input_provider = null;
+
 
 		/**
 		 * @type {bios_manager_t}
@@ -262,6 +302,12 @@ class global_player_t {
 		}
 	}
 
+	ui_event(target, data) {
+		if (USE_THREADED_PLAYER) {
+			this.player_thread.send_ui_event({target: target, data: data});
+		}
+	}
+
 	save_state(num) {
 		this.queued_save_state = num;
 		if (!this.playing)
@@ -281,7 +327,9 @@ class global_player_t {
 
 	update_status() {
 		if (this.system === null) return;
-		this.system.update_status(ui_el.current_frame, ui_el.current_scanline, ui_el.current_x);
+		if (!USE_THREADED_PLAYER) {
+			this.system.update_status(ui_el.current_frame, ui_el.current_scanline, ui_el.current_x);
+		}
 	}
 
 	after_break(whodidit) {
@@ -320,13 +368,6 @@ class global_player_t {
 		ui_el.system_select.disabled = false;
 		ui_el.play_button.innerHTML = "Play";
 		input_config.emu_input.between_frames();
-		if (this.system !== null) {
-			switch (this.system_kind) {
-				case 'gb':
-					this.system.pprint_palette();
-					break;
-			}
-		}
 	}
 
 	play() {
@@ -338,9 +379,14 @@ class global_player_t {
 
     step_master(howmany) {
         dbg.do_break = false;
-        this.system.step_master(howmany);
+        if (USE_THREADED_PLAYER) {
+			this.ui_event('button_click', {'id': 'master_step', 'steps': howmany})
+		}
+		else {
+			this.system.step_master(howmany);
+        	this.after_step();
+		}
         //this.system.present();
-        this.after_step();
     }
 
     step_scanlines(howmany) {
@@ -395,22 +441,30 @@ class global_player_t {
 			case emulator_messages.frame_complete:
 				this.present(e.data);
 				break;
+			case emulator_messages.mstep_complete:
+				this.mstep_complete(e.data);
+				break;
 
 		}
+	}
+
+	mstep_complete(data) {
+		this.update_framevars(data)
 	}
 
 	update_tech_specs() {
 		this.canvas_manager.set_size(this.tech_specs.x_resolution, this.tech_specs.y_resolution, this.tech_specs.xrh, this.tech_specs.xrw);
 		this.canvas_manager.set_overscan(this.tech_specs.overscan_left, this.tech_specs.overscan_right, this.tech_specs.overscan_top, this.tech_specs.overscan_bottom);
-		console.log('TECH SPECS UPDATE', this.tech_specs);
 		this.shared_output_buffers[0] = this.tech_specs.output_buffer[0];
 		this.shared_output_buffers[1] = this.tech_specs.output_buffer[1];
-		console.log('SHARED OUTPUT BUFFERS!', this.shared_output_buffers);
 		this.set_fps_target(this.tech_specs.fps);
 		this.set_input(this.tech_specs.keymap);
 	}
 
 	set_input(keymap) {
+		if (this.input_provider !== null) {
+			this.input_provider.disconnect();
+		}
 		this.input_provider = new input_provider_t(this.system_kind, keymap);
 	}
 
@@ -436,9 +490,18 @@ class global_player_t {
 			}
 			else {
 				this.present_system(data);
+				this.update_framevars(data);
 			}
 		}
 		else this.system.present()
+	}
+
+	update_framevars(data) {
+		// curframe, curline, curx
+		//		this.system.update_status(ui_el.current_frame, ui_el.current_scanline, ui_el.current_x);
+		ui_el.current_frame.innerHTML = data.master_frame;
+        ui_el.current_scanline.innerHTML = data.scanline;
+        ui_el.current_x.innerHTML = data.x;
 	}
 
 	present_system(data) {

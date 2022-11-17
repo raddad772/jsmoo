@@ -1,6 +1,6 @@
 "use strict";
 
-const GB_QUICK_BOOT = true;
+const GB_QUICK_BOOT = false;
 
 // number of 16KB banks
 const GB_ROMBANKS = Object.freeze({

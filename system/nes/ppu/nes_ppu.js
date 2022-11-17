@@ -548,17 +548,18 @@ class NES_ppu {
     // Get tile info into shifters using screen X, Y coordinates
     scanline_prerender() {
         // 261
-        if ((this.clock.frame_odd) && (this.line_cycle === 0)) this.line_cycle++;
+        let re = this.rendering_enabled()
+        if ((this.clock.frame_odd) && (this.line_cycle === 0) && re) this.line_cycle++;
         if (this.line_cycle === 1) {
             this.io.sprite0_hit = 0;
             this.io.sprite_overflow = 0;
             this.status.nmi_out = 0;
             this.update_nmi();
         }
-        if (this.rendering_enabled()) {
+        if (re) {
             // Reload horizontal scroll 258-320
-            if ((this.line_cycle === 257) && this.rendering_enabled()) this.io.v = (this.io.v & 0xFBE0) | (this.io.t & 0x41F);
-            if ((this.rendering_enabled()) && (this.line_cycle >= 280) && (this.line_cycle <= 304)) {
+            if ((this.line_cycle === 257) && re) this.io.v = (this.io.v & 0xFBE0) | (this.io.t & 0x41F);
+            if ((re) && (this.line_cycle >= 280) && (this.line_cycle <= 304)) {
                 this.io.v = (this.io.v & 0x041F) | (this.io.t & 0x7BE0);
             }
         }
@@ -711,14 +712,23 @@ class NES_ppu {
         // LITERALLY DO NOTHING
     }
 
+    new_frame() {
+        this.clock.ppu_y = 0;
+        this.clock.frames_since_restart++;
+        this.clock.frame_odd = (this.clock.frame_odd + 1) & 1;
+        this.clock.master_frame++;
+        this.clock.cpu_frame_cycle = 0;
+        this.last_used_buffer = this.cur_output_num;
+        this.cur_output_num ^= 1;
+        this.cur_output = this.output[this.cur_output_num];
+    }
+
     new_scanline() {
-        if (this.clock.ppu_y === this.clock.timing.ppu_pre_render) {
-            this.clock.advance_frame();
-            this.last_used_buffer = this.cur_output_num;
-            this.cur_output_num ^= 1;
-            this.cur_output = this.output[this.cur_output_num];
+        if (this.clock.ppu_y === this.clock.timing.ppu_pre_render)
+            this.new_frame()
+        else {
+            this.clock.ppu_y++;
         }
-        else this.clock.advance_scanline();
 
         if (this.clock.ppu_y === this.clock.timing.vblank_start) {
             this.clock.vblank = 1;
