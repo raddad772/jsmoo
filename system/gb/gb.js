@@ -247,6 +247,12 @@ class GameBoy {
         current_x.innerHTML = this.clock.lx;
     }
 
+    get_framevars() {
+        let r = {master_frame: this.clock.master_frame, x: this.clock.lx, scanline: this.clock.ly};
+        console.log(this.clock);
+        return r;
+    }
+
     run_frame() {
         let current_frame = this.clock.frames_since_restart;
         while (this.clock.frames_since_restart === current_frame) {

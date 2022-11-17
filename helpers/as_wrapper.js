@@ -21,7 +21,7 @@ class gp_wrapper_t {
         this.global_player = null;
 
         this.out_ptr = 0;
-        console.log('GP WRAPPER LOAD!');
+        //console.log('GP WRAPPER LOAD!');
     }
 
     async onload() {

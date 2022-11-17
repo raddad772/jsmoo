@@ -130,7 +130,7 @@ async function load_selected_rom() {
 	}
 	await set_last_rom(ui_el.rom_select.value);
 	f = str2ab(f);
-	console.log('TELL PLAYER TO LOAD ROM');
+	//console.log('TELL PLAYER TO LOAD ROM');
 	global_player.load_rom(f);
 }
 
@@ -531,6 +531,7 @@ async function init_ui() {
 				if (default_value !== null) ui_el[k].checked = default_value;
 				break;
 		}
+		global_player.ui_event('startup', v);
 	}
 
 	ui_el.log_hdma_checkbox.addEventListener('change', (event) => {
@@ -538,10 +539,12 @@ async function init_ui() {
 	});
 
 	ui_el.watching_checkbox.addEventListener('change', (event) => {
+		global_player.ui_event('dbg', {'watch_on': !!event.currentTarget.checked})
 		dbg.watch_on = !!event.currentTarget.checked;
 	});
 
 	ui_el.brknmirq_checkbox.addEventListener('change', (event) => {
+		global_player.ui_event('dbg', {'brk_on_NMIRQ': !!event.currentTarget.checked});
 		dbg.brk_on_NMIRQ = !!event.currentTarget.checked;
 	});
 
@@ -558,6 +561,7 @@ async function init_ui() {
 
 
 	ui_el.tracing_CPU_checkbox.addEventListener('change', (event) => {
+		global_player.ui_event('dbg', {'tracingCPU': !!event.currentTarget.checked});
 		if (event.currentTarget.checked) {
 			console.log('ENABLE FOR!', global_player.system_kind);
 			switch(global_player.system_kind) {

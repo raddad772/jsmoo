@@ -215,6 +215,7 @@ class GB_CPU {
                 break;
             case 0xFF02: // SC
                 this.FFregs[2] = val;
+                //this.cycles_til_serial_interrupt =
                 return;
             case 0xFF04: // DIV
             case 0xFF05: // TIMA
@@ -275,7 +276,8 @@ class GB_CPU {
                 // return not pressed=1 in bottom 4 bits
                 return this.get_input() | (this.io.JOYP.action_select << 5) | (this.io.JOYP.direction_select << 6);
             case 0xFF01: // SB serial
-                return this.FFregs[1];
+                //return this.FFregs[1];
+                return 0xFF;
             case 0xFF02: // SC
                 return val;
             case 0xFF04: // DIV
@@ -362,11 +364,7 @@ class GB_CPU {
     cycle() {
         // Update timers
         if (this.cpu.pins.RD && this.cpu.pins.MRQ) {
-            /*if ((this.dma.running) && (this.cpu.pins.Addr < 0xFF00)) {
-                console.log('DMA BLOCK R!');
-                this.cpu.pins.D = 0xFF;
-            }
-            else*/ this.cpu.pins.D = this.bus.mapper.CPU_read(this.cpu.pins.Addr, 0xCC);
+            this.cpu.pins.D = this.bus.mapper.CPU_read(this.cpu.pins.Addr, 0xCC);
             if (this.tracing) {
                 dbg.traces.add(TRACERS.SM83, this.cpu.trace_cycles, trace_format_read('SM83', SM83_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
             }

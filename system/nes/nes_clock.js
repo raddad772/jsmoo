@@ -118,16 +118,4 @@ class NES_clock {
                 break;
         }
     }
-
-    advance_frame() {
-        this.ppu_y = 0;
-        this.frames_since_restart++;
-        this.frame_odd = +(!this.frame_odd);
-        this.master_frame++;
-        this.cpu_frame_cycle = 0;
-    }
-
-    advance_scanline() {
-        this.ppu_y++;
-    }
 }

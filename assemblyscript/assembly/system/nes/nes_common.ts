@@ -146,14 +146,6 @@ export class NES_clock implements systemEmulatorStandardClock {
         this.frame_odd = 0;
     }
 
-    advance_frame(): void {
-        this.ppu_y = 0;
-        this.frames_since_restart++;
-        this.frame_odd = (this.frame_odd + 1) & 1;
-        this.master_frame++;
-        this.cpu_frame_cycle = 0;
-    }
-
     advance_scanline(): void {
         this.ppu_y++;
     }

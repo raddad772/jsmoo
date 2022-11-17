@@ -136,6 +136,10 @@ class NES {
             this.ppu.present();
     }
 
+    get_framevars() {
+        return {master_frame: this.clock.master_frame, x: this.ppu.line_cycle, scanline: this.clock.ppu_y};
+    }
+
     run_frame() {
         let current_frame = this.clock.master_frame;
         while (this.clock.master_frame === current_frame) {
