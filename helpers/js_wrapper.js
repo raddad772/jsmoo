@@ -73,7 +73,7 @@ class js_wrapper_t {
 		if (typeof to !== 'undefined') {
 			this.system_kind = to;
 		}
-		//console.log('SETTING SYSTEM', this.system_kind, bios)
+		console.log('SETTING SYSTEM', this.system_kind, bios)
 		switch(this.system_kind) {
 			case 'gg':
 				this.system = new SMSGG(bios, SMSGG_variants.GG, REGION.NTSC);

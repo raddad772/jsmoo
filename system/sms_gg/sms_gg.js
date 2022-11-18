@@ -312,16 +312,16 @@ class SMSGG {
         if (this.variant === SMSGG_variants.GG) {
             d.x_resolution = 160;
             d.y_resolution = 144;
-            d.xrh = 4;
             d.xrw = 3;
+            d.xrh = 4;
             for (let i = 0; i < GG_inputmap.length; i++) {
                 d.keymap.push(GG_inputmap[i]);
             }
         } else {
             d.x_resolution = 256;
             d.y_resolution = 240; // Max
-            d.xrh = 8;
-            d.xrw = 7;
+            d.xrw = 4;
+            d.xrh = 3;
             for (let i = 0; i < SMS_inputmap.length; i++) {
                 d.keymap.push(SMS_inputmap[i]);
             }
