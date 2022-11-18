@@ -15,13 +15,18 @@ const emulator_messages = Object.freeze({
     step2_done: 1002,
     step3_done: 1003,
 
+    request_savestate: 500,
+    send_loadstate: 502,
+
     ui_event: 200,
 
     // Child to parent
     frame_complete: 50,
     status_update: 51,
     render_traces: 300,
-    mstep_complete: 301
+    mstep_complete: 301,
+
+    savestate_return: 501,
 });
 
 class threaded_emulator_t {
@@ -83,6 +88,14 @@ class threaded_emulator_t {
         }
         this.system_kind = kind;
         this.thread.postMessage({kind: emulator_messages.change_system, kind_str: kind, bios: bios});
+    }
+
+    send_save_state_request() {
+        this.thread.postMessage({kind: emulator_messages.request_savestate});
+    }
+
+    send_load_state(ss) {
+        this.thread.postMessage({kind: emulator_messages.send_loadstate, ss: ss})
     }
 
     /**

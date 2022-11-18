@@ -201,56 +201,11 @@ function click_step_seconds() {
 }
 
 function click_bg_dump(which) {
-	let bg;
-	switch(global_player.system_kind) {
-		case 'gb':
-			global_player.system.ppu.dump_bg(bg_canvas, 0x9800, 0x8000);
-			break;
-		case 'sms':
-		case 'gg':
-			global_player.system.vdp.dump_bg(bg_canvas);
-			break;
-		case 'snes':
-			switch(which) {
-				case 1:
-					bg = global_player.system.ppu.io.bg1;
-					break;
-				case 2:
-					bg = global_player.system.ppu.io.bg2;
-					break;
-				case 3:
-					bg = global_player.system.ppu.io.bg3;
-					break;
-				case 4:
-					bg = global_player.system.ppu.io.bg4;
-					break;
-			}
-			//global_player.system.ppu.render_bg1_from_memory(0, 260, bg);
-			console.log(hex4(global_player.system.ppu.io.bg3.get_tile(global_player.system.ppu.VRAM, global_player.system.ppu.io, global_player.system.ppu.io.bg3, 10*8, 5*8)))
-			global_player.system.ppu.present();
-			break;
-		case 'nes':
-			global_player.system.ppu.render_bgtables_from_memory(0, 260);
-			break;
-		case 'spectrum':
-			global_player.system.ula.dump_bg(0, 370);
-			break;
-		default:
-			console.log('HUH?', global_player.system_kind);
-			break;
-	}
+	global_player.dump_bg(bg_canvas, {which: which})
 }
 
 function click_tile_dump() {
-	switch(global_player.system_kind) {
-		case 'gg':
-		case 'sms':
-			global_player.system.vdp.dump_tiles(tile_canvas);
-			break;
-		case 'gb':
-			global_player.system.ppu.dump_tiles(tile_canvas);
-			break;
-	}
+	global_player.dump_tiles(tile_canvas)
 }
 
 function click_sprite_dump() {
@@ -300,6 +255,8 @@ function click_dump_ram() {
 	let iaddr = get_addr_from_dump_box();
 	let MDUMP_COLS = 16;
 	let NUM_BYTES = 256;
+	global_player.dump_RAM(iaddr, NUM_BYTES);
+	return;
 	for (let addr = iaddr; addr < (iaddr + NUM_BYTES); addr += MDUMP_COLS) {
 		let ln = hex6(addr) + ' ';
 		for (let baddr = addr; baddr < (addr + MDUMP_COLS); baddr++) {

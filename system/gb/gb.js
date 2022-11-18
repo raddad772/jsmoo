@@ -249,7 +249,6 @@ class GameBoy {
 
     get_framevars() {
         let r = {master_frame: this.clock.master_frame, x: this.clock.lx, scanline: this.clock.ly};
-        console.log(this.clock);
         return r;
     }
 
