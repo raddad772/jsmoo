@@ -52,8 +52,7 @@ class threaded_emulator_worker_t {
             this.step_done(emulator_messages.step3_done);
         }
         else {
-            this.js_wrapper.load_ROM_from_RAM(e.ROM);
-            console.log('ROM load!');
+            this.js_wrapper.load_ROM_from_RAM(e.name, e.ROM);
             this.step_done(emulator_messages.step3_done);
         }
     }

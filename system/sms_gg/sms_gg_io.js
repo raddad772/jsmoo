@@ -439,7 +439,7 @@ class SMSGG_bus {
         this.mapper.write(addr, val);
     }
 
-    load_ROM_from_RAM(inbuf) {
-        this.mapper.load_ROM_from_RAM(inbuf);
+    load_ROM_from_RAM(name, inbuf) {
+        this.mapper.load_ROM_from_RAM(name, inbuf);
     }
 }

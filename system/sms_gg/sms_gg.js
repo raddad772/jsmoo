@@ -368,8 +368,8 @@ class SMSGG {
         this.step_master(cycles_left);
     }
 
-    load_ROM_from_RAM(what) {
-        this.bus.load_ROM_from_RAM(what);
+    load_ROM_from_RAM(name, what) {
+        this.bus.load_ROM_from_RAM(name, what);
         this.reset();
     }
 

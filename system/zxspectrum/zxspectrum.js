@@ -215,9 +215,6 @@ class ZXSpectrum {
 
     map_inputs(buffer) {
         for (let i in SPECTRUM_KEYS) {
-            if (buffer[i] !== 0) {
-                console.log(SPECTRUM_KEYS[i]);
-            }
             this.kb[SPECTRUM_KEYS[i]] = buffer[i];
         }
     }
@@ -279,14 +276,18 @@ class ZXSpectrum {
         }
     }
 
-    load_ROM_from_RAM(what) {
-        // Oops!
-        this.tape_deck.load_ROM_from_RAM(what);
-        //this.load_SNA_file(what);
+    load_ROM_from_RAM(name, what) {
+        if (name.toLowerCase().indexOf('.tap') !== -1) {
+            console.log('DETECT TAP')
+            this.tape_deck.load_ROM_from_RAM(what);
+        }
+        else {
+            console.log('DETECT SNA')
+            this.load_SNA_file(what);
+        }
     }
 
     load_SNA_file(what) {
-        console.log('loading SNA');
         let infil = new Uint8Array(what);
 
         /* Load CPU registers */

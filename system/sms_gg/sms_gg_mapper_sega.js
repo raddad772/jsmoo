@@ -192,7 +192,7 @@ class SMSGG_mapper_sega {
         console.log('Loaded BIOS of size', this.BIOS.byteLength);
     }
 
-    load_ROM_from_RAM(inbuf) {
+    load_ROM_from_RAM(name, inbuf) {
         let ibuf = new Uint8Array(inbuf);
         this.ROM = new Uint8Array(ibuf.byteLength);
         console.log('LOADING CART...', this.ROM.byteLength, 'bytes!');

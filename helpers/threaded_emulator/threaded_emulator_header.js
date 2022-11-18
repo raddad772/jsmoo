@@ -20,6 +20,7 @@ class threaded_emulator_t {
         this.queued_step_2 = null;
         this.queued_bios = null;
         this.queued_step_3 = null;
+        this.queued_name = null;
     }
 
     onload() {
@@ -43,8 +44,9 @@ class threaded_emulator_t {
             case emulator_messages.step2_done:
                 this.step2_done = true;
                 if (this.queued_step_3 !== null) {
-                    this.thread.postMessage({kind: emulator_messages.load_rom, ROM: this.queued_step_3});
+                    this.thread.postMessage({kind: emulator_messages.load_rom, name: this.queued_name, ROM: this.queued_step_3});
                     this.queued_step_3 = null;
+                    this.queued_name = null;
                 }
                 break;
         }
@@ -70,16 +72,18 @@ class threaded_emulator_t {
     }
 
     /**
+     * @param {string} name
      * @param {Uint8Array} ROM
      */
-    send_load_ROM(ROM) {
+    send_load_ROM(name, ROM) {
         if (!this.step2_done) {
             console.log('STEP2 NOT DONE!')
             this.queued_step_3 = ROM;
+            this.queued_name = name;
             return;
         }
         console.log('SENDING ROM...')
-        this.thread.postMessage({kind: emulator_messages.load_rom, ROM: ROM});
+        this.thread.postMessage({kind: emulator_messages.load_rom, name: name, ROM: ROM});
     }
 
     send_ui_event(uie) {

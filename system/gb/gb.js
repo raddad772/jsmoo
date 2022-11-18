@@ -345,7 +345,7 @@ class GameBoy {
 
     }
 
-    load_ROM_from_RAM(ROM) {
+    load_ROM_from_RAM(name, ROM) {
         console.log('GB Loading ROM...');
         this.cart.load_ROM_from_RAM(ROM);
         this.reset();

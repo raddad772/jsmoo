@@ -656,9 +656,9 @@ class global_player_t {
 		this.ready = true;
 	}
 
-	load_rom(what) {
+	load_rom(name, what) {
 		if (USE_THREADED_PLAYER)
-			this.player_thread.send_load_ROM(new Uint8Array(what));
+			this.player_thread.send_load_ROM(name, new Uint8Array(what));
 		else
 			this.system.load_ROM_from_RAM(what);
 	}
