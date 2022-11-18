@@ -1,14 +1,14 @@
 "use strict";
 
 const ZXSpectrum_keyboard_halfrows = Object.freeze({
-    0xF7: ['1', '2', '3', '4', '5'],
-    0xEF: ['0', '9', '8', '7', '6'],
-    0xFB: ['q', 'w', 'e', 'r', 't'],
-    0xDF: ['p', 'o', 'i', 'u', 'y'],
-    0xFD: ['a', 's', 'd', 'f', 'g'],
-    0xBF: ['enter', 'l', 'k', 'j', 'h'],
-    0xFE: ['caps', 'z', 'x', 'c', 'v'],
-    0x7F: ['space', 'shift', 'm', 'n', 'b']
+    0x08: ['1', '2', '3', '4', '5'],  // 1111 0111 = 0x08
+    0x10: ['0', '9', '8', '7', '6'],  // 1110 1111 = 0x10
+    0x04: ['q', 'w', 'e', 'r', 't'],  // 1111 1011 = 0x04
+    0x20: ['p', 'o', 'i', 'u', 'y'],  // 1101 1111 = 0x20
+    0x02: ['a', 's', 'd', 'f', 'g'],  //             0x02
+    0x40: ['enter', 'l', 'k', 'j', 'h'], // 0x40
+    0x01: ['caps', 'z', 'x', 'c', 'v'], // 0x01
+    0x80: ['space', 'shift', 'm', 'n', 'b'] // 0x80
 });
 
 class ZXSpectrum_ULA {
@@ -53,12 +53,9 @@ class ZXSpectrum_ULA {
      * @param {Array} row
      */
     kb_scan_row(row) {
-        let out = 0;
+        let out = 0xE0;
         for (let i = 0; i < 5; i++) {
             let key = row[i];
-            //let kp = +(!CHECK_KEY_PRESSED(key));
-            //let kp = 1; // no keys pressed ATM
-            //let kp = keyboard_input.keys[key].value;
             let kp = this.kb_buffer[key];
             if (typeof kp === 'undefined') {
                 console.log('WHAT NO', key, i, row, row[i]);
@@ -88,14 +85,12 @@ class ZXSpectrum_ULA {
     reg_read(addr, val, has_effect=false) {
         if ((addr & 1) === 1) {
             console.log('UHOH IN TO', hex4(addr));
-            return;
+            return 0xFF;
         }
-        let hi = addr >>> 8;
-        let row = ZXSpectrum_keyboard_halfrows[hi];
-
-        let out = 0;
-        if (typeof row !== 'undefined') {
-            out = this.kb_scan_row(row);
+        let hi = (addr >>> 8) ^ 0xFF;
+        let out = 0xFF;
+        for (let i in ZXSpectrum_keyboard_halfrows) {
+            if (hi & i) out &= this.kb_scan_row(ZXSpectrum_keyboard_halfrows[i]);
         }
 
         return out; // no keys selected ATM
