@@ -2,7 +2,9 @@
 
 /* Wrap JavaScript emulators like as_wrapper.js does AS ones. */
 // General functions and classes
-importScripts('/debugging.js', '/helpers/machine_description.js', '/helpers/thread_consoles.js', '/helpers.js');
+importScripts(
+	'/debugging.js', '/helpers/machine_description.js', '/helpers/thread_consoles.js',
+	'/helpers.js', '/helpers/base64codec.js', '/helpers/serialization_service.js');
 
 // m6502 (NES)
 importScripts(
@@ -96,12 +98,13 @@ class js_wrapper_t {
     }
 
 	step_master(howmany) {
-		//let r = this.system.step_master(howmany);
+		dbg.do_break = false;
 		this.system.step_master(howmany);
 		return this.system.get_framevars();
 	}
 
     run_frame() {
+		dbg.do_break = false;
         let r = this.system.run_frame();
 		return Object.assign({}, r, this.system.get_framevars());
     }

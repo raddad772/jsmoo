@@ -421,14 +421,24 @@ class global_player_t {
 
 	do_save_state() {
 		if (this.queued_save_state === -1) return;
-		this.ss = this.system.serialize();
-		console.log(this.ss);
+		if (USE_THREADED_PLAYER) {
+			this.player_thread.send_save_state_request();
+		}
+		else {
+			this.ss = this.system.serialize();
+			console.log(this.ss);
+		}
 		this.queued_save_state = -1;
 	}
 
 	do_load_state() {
 		if (this.queued_load_state === -1) return;
-		this.system.deserialize(this.ss);
+		if (USE_THREADED_PLAYER) {
+			this.player_thread.send_load_state(this.ss);
+		}
+		else {
+			this.system.deserialize(this.ss);
+		}
 		this.queued_load_state = -1;
 	}
 
@@ -444,7 +454,9 @@ class global_player_t {
 			case emulator_messages.mstep_complete:
 				this.mstep_complete(e.data);
 				break;
-
+			case emulator_messages.savestate_return:
+				this.ss = e.ss;
+				break;
 		}
 	}
 
