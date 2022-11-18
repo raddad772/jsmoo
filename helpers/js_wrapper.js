@@ -16,7 +16,8 @@ importScripts(
     '/system/nes/cpu/rp2a03.js', '/component/controller/nes_joypad.js', '/system/nes/cpu/r2a03.js',
     '/system/nes/nes_bus.js', '/system/nes/nes_cart.js', '/system/nes/nes_clock.js',
     '/system/nes/ppu/nes_ppu.js', '/system/nes/mappers/nomapper.js', '/system/nes/mappers/mmc3b.js',
-    '/system/nes/mappers/vrc2b_4e_4f.js', '/system/nes/mappers/mmc1.js', '/system/nes/nes.js')
+    '/system/nes/mappers/vrc2b_4e_4f.js', '/system/nes/mappers/mmc1.js', '/system/nes/nes.js'
+)
 
 // Z80 (Spectrum, SMS/GG)
 importScripts(
@@ -28,7 +29,12 @@ importScripts(
 importScripts(
 	'/component/controller/sms_joypad.js', '/system/sms_gg/sms_gg.js', '/system/sms_gg/sms_gg_io.js',
 	'/system/sms_gg/sms_gg_mapper_sega.js', '/system/sms_gg/sms_gg_vdp.js'
-	)
+)
+
+// ZX Spectrum
+importScripts(
+	'/system/zxspectrum/ula.js', '/system/zxspectrum/tape_deck.js', '/system/zxspectrum/zxspectrum.js'
+)
 
 // GameBoy
 importScripts(
@@ -51,7 +57,8 @@ class js_wrapper_t {
     }
 
     update_keymap(keymap) {
-		for (let i in keymap) {
+		for (let i in keymap)
+		{
 			this.input_buffer[keymap[i].buf_pos] = keymap[i].value;
 		}
 		this.system.map_inputs(this.input_buffer);
@@ -85,7 +92,7 @@ class js_wrapper_t {
 				this.system = new NES();
 				break;
 			case 'spectrum':
-				this.system = new ZXSpectrum(this.bios_manager.bioses['spectrum'], ZXSpectrum_variants.s48k);
+				this.system = new ZXSpectrum(bios, ZXSpectrum_variants.s48k);
 				break;
 			default:
 				alert('system not found');

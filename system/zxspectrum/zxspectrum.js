@@ -1,5 +1,18 @@
 "use strict";
 
+let ZXSpectrum_inputmap = [];
+function fill_ZXSpectrum_inputmap() {
+    for (let i in SPECTRUM_KEYS) {
+        let kp = new md_input_map_keypoint();
+        kp.internal_code = i;
+        kp.uber = 1;
+        kp.buf_pos = i;
+        kp.name = SPECTRUM_KEYS[i];
+        ZXSpectrum_inputmap[i] = kp;
+    }
+}
+fill_ZXSpectrum_inputmap();
+
 class ZXSpectrum_clock {
     constructor() {
         this.frames_since_restart = 0;
@@ -64,13 +77,13 @@ const ZXSpectrum_variants = {
 
 class ZXSpectrum {
     /**
-     * @param {canvas_manager_t} canvas_manager
      * @param {bios_t} bios
      * @param {number} variant
      */
-    constructor(canvas_manager, bios, variant) {
+    constructor(bios, variant) {
         this.clock = new ZXSpectrum_clock();
         this.bios = bios;
+        this.kb = {};
         this.tape_deck = new ZXSpectrum_tape_deck();
 
         this.cpu = new z80_t();
@@ -80,19 +93,11 @@ class ZXSpectrum {
         this.bus = new ZXSpectrum_bus(this.clock, 48);
 
         this.bus.notify_IRQ = this.cpu.notify_IRQ.bind(this.cpu);
-        this.ula = new ZXSpectrum_ULA(canvas_manager, this.clock, this.bus);
+        this.ula = new ZXSpectrum_ULA(this.clock, this.bus, this.kb);
 
         this.display_enabled = true;
         dbg.add_cpu(D_RESOURCE_TYPES.Z80, this.cpu);
 
-        switch(variant) {
-            case ZXSpectrum_variants.s48k:
-                input_config.emu_kb_input.connect(KBKINDS.spectrum48);
-                break;
-            default:
-                console.log('unknown keyboard for spectrum variant');
-                break;
-        }
         this.load_bios();
     }
 
@@ -208,13 +213,42 @@ class ZXSpectrum {
         }
     }
 
+    map_inputs(buffer) {
+        for (let i in SPECTRUM_KEYS) {
+            if (buffer[i] !== 0) {
+                console.log(SPECTRUM_KEYS[i]);
+            }
+            this.kb[SPECTRUM_KEYS[i]] = buffer[i];
+        }
+    }
+
+    get_framevars() {
+        return {master_frame: this.clock.frames_since_restart, x: this.clock.ula_x, scanline: this.clock.ula_y};
+    }
+
+
     get_description() {
-        let d = new machine_description('ZX Spectrum');
-        d.technical.standard = 'PAL';
-        d.technical.fps = 50;
+        let d = new machine_description();
+        d.name = 'ZX Spectrum';
+        d.standard = MD_STANDARD.PAL;
+        d.fps = 50;
         d.input_types = [INPUT_TYPES.KEYBOARD];
-        d.technical.x_resolution = 352;
-        d.technical.y_resolution = 304;
+        let md = new md_input_map_keypoint();
+        md.buf_pos = -1;
+        md.internal_code = KBKINDS.spectrum48 ;
+        md.name = 'Spectrum Keyboard';
+        for (let i = 0; i < ZXSpectrum_inputmap.length; i++) {
+            d.keymap.push(ZXSpectrum_inputmap[i]);
+        }
+        d.x_resolution = 352;
+        d.y_resolution = 304;
+        d.xrh = 352;
+        d.xrw = 304;
+
+        d.overscan_top = d.overscan_bottom = d.overscan_left = d.overscan_right = 0;
+
+        d.output_buffer[0] = this.ula.output_shared_buffers[0];
+        d.output_buffer[1] = this.ula.output_shared_buffers[1];
         return d;
     }
 
@@ -231,6 +265,7 @@ class ZXSpectrum {
             this.finish_scanline();
             if (dbg.do_break) return;
         }
+        return {buffer_num: this.ula.last_used_buffer}
     }
 
     finish_scanline() {
@@ -246,8 +281,8 @@ class ZXSpectrum {
 
     load_ROM_from_RAM(what) {
         // Oops!
-        //this.tape_deck.load_ROM_from_RAM(what);
-        this.load_SNA_file(what);
+        this.tape_deck.load_ROM_from_RAM(what);
+        //this.load_SNA_file(what);
     }
 
     load_SNA_file(what) {
