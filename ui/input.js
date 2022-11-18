@@ -165,11 +165,6 @@ const QWERTYVALS = [
     [57, '9'],
 ]
 
-const KBKINDS = {
-    none: 0,
-    spectrum48: 1
-}
-
 class emu_kb_input_key_t {
     constructor(name, key, keycode, customizable) {
         this.name = name;

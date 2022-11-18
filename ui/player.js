@@ -14,11 +14,12 @@ const SPECTRUM_STR = 'spectrum';
 const GENERICZ80_STR = 'genericz80'
 
 //const DEFAULT_SYSTEM = GENERICZ80_STR;
-//const DEFAULT_SYSTEM = SPECTRUM_STR;
+const DEFAULT_SYSTEM = SPECTRUM_STR;
 //const DEFAULT_SYSTEM = NES_STR;
 //const DEFAULT_SYSTEM = SMS_STR;
-const DEFAULT_SYSTEM = GB_STR;
+//const DEFAULT_SYSTEM = GB_STR;
 //const DEFAULT_SYSTEM = GG_STR;
+
 
 class input_provider_t {
 	constructor(system_kind, keymap) {
@@ -42,6 +43,9 @@ class input_provider_t {
 			case 'gb':
 				this.setup_gb();
 				break;
+			case 'spectrum':
+				this.setup_spectrum();
+				break;
 			default:
 				this.poll = function(){};
 				this.latch = function(){};
@@ -64,7 +68,33 @@ class input_provider_t {
 			case 'nes':
 				this.disconnect_nes();
 				break;
+			case 'spectrum':
+				this.disconnect_spectrum();
+				break;
 		}
+	}
+
+	disconnect_spectrum() {
+		input_config.emu_kb_input.disconnect();
+	}
+
+	latch_spectrum() {
+		for (let i in this.keymap) {
+			this.keymap[i].value = input_config.emu_kb_input.get_state(this.keymap[i].name);
+		}
+	}
+
+	poll_spectrum() {
+		return this.keymap;
+	}
+
+	setup_spectrum() {
+		/*for (let i in SPECTRUM_KEYS) {
+			this.keymap[SPECTRUM_KEYS[i]].value = 0;
+		}*/
+		input_config.emu_kb_input.connect(KBKINDS.spectrum48);
+		this.latch = this.latch_spectrum.bind(this);
+		this.poll = this.poll_spectrum.bind(this);
 	}
 
 	latch_nes() {
@@ -190,8 +220,9 @@ class input_provider_t {
 	}
 
 	poll_gb() {
-		for (let i in this.keymap)
+		for (let i in this.keymap) {
 			this.keymap[i].value = this.input_buffer1[this.keymap[i].name];
+		}
 		return this.keymap;
 	}
 
@@ -483,7 +514,8 @@ class global_player_t {
 	run_frame() {
 		if (USE_THREADED_PLAYER) {
 			this.input_provider.latch();
-			this.player_thread.send_request_frame(this.input_provider.poll());
+			let r = this.input_provider.poll();
+			this.player_thread.send_request_frame(r);
 		}
 		else {
 			let t = performance.now();
@@ -536,6 +568,9 @@ class global_player_t {
 				break;
 			case 'gb':
 				GB_present(data, imgdata.data, buf);
+				break;
+			case 'spectrum':
+				ZXSpectrum_present(data, imgdata.data,buf);
 				break;
 			default:
 				console.log('NO PRESENTATION CODE FOR', this.system_kind);

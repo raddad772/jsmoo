@@ -1,17 +1,5 @@
 "use strict";
 
-// 0-7, or 8-15 for bright ones
-const ZXSpectrum_palette = Object.freeze({
-    0: {0: [0, 0, 0], 1: [0, 0, 0xD8],
-        2: [0xD8, 0, 0], 3: [0xD8, 0, 0xD8],
-        4: [0, 0xD8, 0], 5: [0, 0xD8, 0xD8],
-        6: [0xD8, 0xD8, 0], 7: [0xD8, 0xD8, 0xD8]},
-    1: {0: [0, 0, 0], 1: [0, 0, 0xFF],
-        2: [0xFF, 0, 0], 3: [0xFF, 0, 0xFF],
-        4: [0, 0xFF, 0], 5: [0, 0xFF, 0xFF],
-        6: [0xFF, 0xFF, 0], 7: [0xFF, 0xFF, 0xFF]}
-})
-
 const ZXSpectrum_keyboard_halfrows = Object.freeze({
     0xF7: ['1', '2', '3', '4', '5'],
     0xEF: ['0', '9', '8', '7', '6'],
@@ -25,14 +13,14 @@ const ZXSpectrum_keyboard_halfrows = Object.freeze({
 
 class ZXSpectrum_ULA {
     /**
-     * @param {canvas_manager_t} canvas_manager
      * @param {ZXSpectrum_clock} clock
      * @param {ZXSpectrum_bus} bus
+     * @param kb_buffer
      */
-    constructor(canvas_manager, clock, bus) {
-        this.canvas_manager = canvas_manager;
+    constructor(clock, bus, kb_buffer) {
         this.clock = clock;
         this.bus = bus;
+        this.kb_buffer = kb_buffer;
         this.scanline_func = this.scanline_vblank.bind(this);
         this.first_vblank = true;
 
@@ -47,7 +35,11 @@ class ZXSpectrum_ULA {
         };
         this.next_attr = 0;
 
-        this.output = new Uint8Array(352*304);
+        this.output_shared_buffers = [new SharedArrayBuffer(352*304), new SharedArrayBuffer(352*304)];
+        this.output = [new Uint8Array(this.output_shared_buffers[0]), new Uint8Array(this.output_shared_buffers[1])];
+        this.cur_output_num = 1;
+        this.cur_output = this.output[1];
+        this.last_used_buffer = 1;
 
         this.bus.cpu_ula_read = this.reg_read.bind(this);
         this.bus.cpu_ula_write = this.reg_write.bind(this);
@@ -67,7 +59,7 @@ class ZXSpectrum_ULA {
             //let kp = +(!CHECK_KEY_PRESSED(key));
             //let kp = 1; // no keys pressed ATM
             //let kp = keyboard_input.keys[key].value;
-            let kp = input_config.emu_kb_input.get_state(key);
+            let kp = this.kb_buffer[key];
             if (typeof kp === 'undefined') {
                 console.log('WHAT NO', key, i, row, row[i]);
                 kp = 0;
@@ -145,14 +137,14 @@ class ZXSpectrum_ULA {
     scanline_border_top() {
         if ((this.screen_x >= 0) && (this.screen_x < 352)) {
             let bo = (352 * this.screen_y) + this.screen_x;
-            this.output[bo] = this.io.border_color;
+            this.cur_output[bo] = this.io.border_color;
         }
     }
 
     scanline_border_bottom() {
         if ((this.screen_x >= 0) && (this.screen_x < 352)) {
             let bo = (352 * this.screen_y) + this.screen_x;
-            this.output[bo] = this.io.border_color;
+            this.cur_output[bo] = this.io.border_color;
         }
     }
 
@@ -162,7 +154,6 @@ class ZXSpectrum_ULA {
     48 pixels of border
     256 pixels of draw (read pattern bg, attrib, bg+1, attrib, none, none, none, none)
     48 pixels of border
-
     */
         // Border
         if (this.screen_x < 0) return;
@@ -170,7 +161,7 @@ class ZXSpectrum_ULA {
         if (((this.screen_x >= 0) && (this.screen_x < 48)) ||
             (this.screen_x >= 304)) {
             this.clock.contended = false;
-            this.output[bo] = this.io.border_color;
+            this.cur_output[bo] = this.io.border_color;
             return;
         }
         // OK we are in drawing area
@@ -212,7 +203,7 @@ class ZXSpectrum_ULA {
 
         let out_bit = ((this.bg_shift & 0x80) >>> 7) ^ this.attr.flash;
         this.bg_shift <<= 1;
-        this.output[bo] = this.attr.colors[out_bit];
+        this.cur_output[bo] = this.attr.colors[out_bit];
     }
 
     new_scanline() {
@@ -231,6 +222,11 @@ class ZXSpectrum_ULA {
                 this.clock.flash.count = 16;
                 this.clock.flash.bit ^= 1;
             }
+
+            // Swap buffer we're drawing to...
+            this.last_used_buffer = this.cur_output_num;
+            this.cur_output_num ^= 1;
+            this.cur_output = this.output[this.cur_output_num];
         }
 
         /*lines 0-7 are vblank
