@@ -37,7 +37,7 @@ class ZXSpectrum_tape_deck {
         this.head_pos = 0;
     }
 
-    load_ROM_from_RAM(what) {
+    load_ROM_from_RAM(name, what) {
         this.reset();
         let ubi = new Uint8Array(what);
         let pos = 0;
@@ -83,18 +83,18 @@ class ZXSpectrum_tape_deck {
         this.head_pos++;
         if (this.head_pos >= this.TAPE.byteLength) this.head_pos = 0;
         if ((A ^ cpu.regs.H) !== 0) { // Early-return
-            console.log('EARLY RETURN!', A, cpu.regs.H);
             return;
         }
         let DE = (cpu.regs.D << 8) | cpu.regs.E;
         let IX = cpu.regs.IX;
-        DE = (DE - 2) & 0xFFFF;
         while(DE > 0) {
             cpu.regs.L = this.TAPE[this.head_pos];
             this.head_pos++;
             if (this.head_pos >= this.TAPE.byteLength) this.head_pos = 0;
             cpu.regs.H ^= cpu.regs.L;
-            if (actually_load) write_func(IX, cpu.regs.L);
+            if (actually_load) {
+                write_func(IX, cpu.regs.L);
+            }
             DE = (DE - 1) & 0xFFFF;
             IX = (IX + 1) & 0xFFFF;
         }
@@ -104,10 +104,20 @@ class ZXSpectrum_tape_deck {
         if (this.head_pos >= this.TAPE.byteLength) this.head_pos = 0;
         cpu.regs.H ^= cpu.regs.L;
 
-        cpu.regs.D = cpu.regs.E = 0;
+        cpu.regs.D = cpu.regs.E = 0xFF;
         cpu.regs.IX = IX;
         cpu.regs.A = cpu.regs.H;
-        cpu.regs.F.C = +(cpu.regs.A === 0);
+        cpu.regs.F.setbyte(0x93);
+        if (cpu.regs.A === 0) {
+            // No error!
+        } else {
+            // Error!
+            cpu.regs.A = cpu.regs.H = 0xFF;
+            cpu.regs.F.C = +(cpu.regs.A === 0);
+            console.log('FAST LOAD ERROR!')
+        }
+
+
         console.log('Fast load finish!');
     }
 }

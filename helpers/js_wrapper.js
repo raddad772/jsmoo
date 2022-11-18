@@ -100,8 +100,8 @@ class js_wrapper_t {
 		}
     }
 
-    load_ROM_from_RAM(ROM) {
-        this.system.load_ROM_from_RAM(ROM);
+    load_ROM_from_RAM(name, ROM) {
+        this.system.load_ROM_from_RAM(name, ROM);
     }
 
 	step_master(howmany) {

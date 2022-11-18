@@ -131,7 +131,7 @@ async function load_selected_rom() {
 	await set_last_rom(ui_el.rom_select.value);
 	f = str2ab(f);
 	//console.log('TELL PLAYER TO LOAD ROM');
-	global_player.load_rom(f);
+	global_player.load_rom(ui_el.rom_select.value, f);
 }
 
 async function reload_roms(where) {

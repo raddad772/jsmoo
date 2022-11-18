@@ -110,7 +110,7 @@ class SNES {
 			this.ppu.present();
 	}
 
-	load_ROM_from_RAM(ROM) {
+	load_ROM_from_RAM(name, ROM) {
 		console.log('Loading ROM...', ROM);
 		this.cart.load_cart_from_RAM(new Uint8Array(ROM));
 		//this.mem = new snes_mem(this.cart);

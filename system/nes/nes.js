@@ -214,7 +214,7 @@ class NES {
         this.cart.mapper.reset();
     }
 
-    load_ROM_from_RAM(ROM) {
+    load_ROM_from_RAM(name, ROM) {
         console.log('Loading ROM...');
         this.cart.load_cart_from_RAM(ROM);
         this.reset();
