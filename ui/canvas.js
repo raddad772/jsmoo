@@ -136,15 +136,15 @@ class canvas_manager_t {
      * @returns {ImageData}
      */
     get_imgdata() {
-        this.get_context();
         this.fixup_dimensions();
+        this.get_context();
         return this.context.getImageData(0, 0, this.pa_w, this.pa_h);
     }
 
     put_imgdata(data) {
         //this.get_context();
         this.context.putImageData(data, 0, 0);
-        if ((this.scale !== 1) || (this.xmul !== 1)) {
+        if ((this.scale !== 1) || (this.xmul !== 1) || (this.ymul !== 1)) {
             this.context.globalCompositeOperation = 'copy';
             this.context.drawImage(this.el, 0, 0, this.pa_w, this.pa_h, 0, 0, Math.floor(this.pa_w*this.scale*this.xmul), Math.floor(this.pa_h*this.scale*this.ymul));
         }

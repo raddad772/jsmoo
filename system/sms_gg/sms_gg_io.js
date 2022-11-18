@@ -319,8 +319,6 @@ class SMSGG_bus {
         switch(addr) {
             case 0: // Various stuff
                 // TODO: make this more complete
-                console.log(this.gg_joymap);
-                console.log(this.gg_joymap.start);
                 return 0x40 | (this.gg_joymap.start ? 0x80 : 0);
             case 1:
             case 2:

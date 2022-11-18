@@ -116,9 +116,9 @@ var mconsole = new console_t('memdumpconsole', 1, 30, false, false);
 
 
 async function load_selected_rom() {
-	if (!global_player.ready) {
-		return;
-	}
+	//if (!global_player.ready) {
+	//	return;
+	//}
 	if (ui_el.rom_select.value === '') {
 		//alert('No ROM selected');
 		return;

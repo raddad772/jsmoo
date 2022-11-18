@@ -14,9 +14,9 @@ const SPECTRUM_STR = 'spectrum';
 const GENERICZ80_STR = 'genericz80'
 
 //const DEFAULT_SYSTEM = GENERICZ80_STR;
-const DEFAULT_SYSTEM = SPECTRUM_STR;
+//const DEFAULT_SYSTEM = SPECTRUM_STR;
 //const DEFAULT_SYSTEM = NES_STR;
-//const DEFAULT_SYSTEM = SMS_STR;
+const DEFAULT_SYSTEM = SMS_STR;
 //const DEFAULT_SYSTEM = GB_STR;
 //const DEFAULT_SYSTEM = GG_STR;
 
@@ -609,6 +609,11 @@ class global_player_t {
 	}
 
 	set_system(to) {
+		if (USE_THREADED_PLAYER) {
+			this.system_kind = to;
+			this.player_thread.send_set_system(to, this.bios_manager.bioses[this.system_kind])
+			return;
+		}
 		if (!USE_THREADED_PLAYER) {
 			if (this.system !== null) {
 				this.system.killall();
@@ -657,6 +662,7 @@ class global_player_t {
 	}
 
 	load_rom(name, what) {
+		console.log('GOT COMMADN TO LOAD ROM', name, what);
 		if (USE_THREADED_PLAYER)
 			this.player_thread.send_load_ROM(name, new Uint8Array(what));
 		else
