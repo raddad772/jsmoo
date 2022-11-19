@@ -9,13 +9,11 @@ const PPU_USE_BLOBWORKERS = true;
 
 class SNES_slow_1st_PPU {
 	/**
-	 * @param {canvas_manager_t} canvas_manager
 	 * @param {number} version
 	 * @param {snes_memmap} mem_map
 	 * @param {SNES_clock} clock
 	 */
-	constructor(canvas_manager, version, mem_map, clock) {
-		this.canvas_manager = canvas_manager;
+	constructor(version, mem_map, clock) {
 		this.version = version;
 		this.mem_map = mem_map;
 		this.clock = clock;
@@ -54,7 +52,11 @@ class SNES_slow_1st_PPU {
 			this.below[i] = new PPU_pixel();
 		}
 
-		this.output = new Uint16Array(512 * 512);
+        this.output_shared_buffers = [new SharedArrayBuffer(256*240*2), new SharedArrayBuffer(256*240*2)];
+        this.output = [new Uint16Array(this.output_shared_buffers[0]), new Uint16Array(this.output_shared_buffers[1])];
+        this.cur_output_num = 1;
+        this.cur_output = this.output[1];
+        this.last_used_buffer = 1;
 
 		this.latch = {
 			ppu1: {
@@ -155,11 +157,9 @@ class SNES_slow_1st_PPU {
 
 	mode7_mul() {
 		return mksigned16(this.cache.mode7.a) * mksigned8(this.cache.mode7.b >> 8);
-		//return ((this.cache.mode7.a & 0xFFFF) * ((this.cache.mode7.b >>> 8) & 0xFF));
 	}
 
 	reg_read(addr, val, has_effect= true) {
-		//if ((addr - 0x3F) & 0x3F) { return this.mem_map.read_apu(addr, val); }
 		if (addr >= 0x2140 && addr < 0x217F) { return this.mem_map.read_apu(addr, val, has_effect); }
 		let addre, result;
 		//console.log('PPU read', hex0x6(addr));

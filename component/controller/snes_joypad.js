@@ -4,30 +4,31 @@
 Joypad register emulation classes and functions.
  */
 
+class snespad_inputs {
+    constructor() {
+        this.a = 0;
+        this.b = 0;
+        this.x = 0;
+        this.y = 0;
+        this.l = 0;
+        this.r = 0;
+        this.start = 0;
+        this.select = 0;
+        this.up = 0;
+        this.down = 0;
+        this.left = 0;
+        this.right = 0;
+    }
+}
+
 class SNES_joypad {
     constructor(joynum) {
         this.counter = 0;
         this.latched = 0;
         this.joynum = joynum;
-        if (this.joynum === 1) this.joymap = input_config.controller_els.snes1;
-        else this.joymap = input_config.controller_els.snes2;
 
-        this.button_b = this.joymap.buttons.b;
-
-        this.input_buffer = {
-            'a': 0,
-            'b': 0,
-            'x': 0,
-            'y': 0,
-            'up': 0,
-            'down': 0,
-            'left': 0,
-            'right': 0,
-            'start': 0,
-            'select': 0,
-            'l': 0,
-            'r': 0
-        }
+        this.input_buffer = new snespad_inputs();
+        this.input_waiting = new snespad_inputs();
     }
 
     latch(what) {
@@ -35,8 +36,37 @@ class SNES_joypad {
         this.latched = what;
         this.counter = 0;
         if (this.latched === 0) {
-            this.input_buffer = this.joymap.latch();
+            this.input_buffer.up = this.input_waiting.up;
+            this.input_buffer.down = this.input_waiting.down;
+            this.input_buffer.left = this.input_waiting.left;
+            this.input_buffer.right = this.input_waiting.right;
+            this.input_buffer.a = this.input_waiting.a;
+            this.input_buffer.b = this.input_waiting.b;
+            this.input_buffer.x = this.input_waiting.x;
+            this.input_buffer.y = this.input_waiting.y;
+            this.input_buffer.l = this.input_waiting.l;
+            this.input_buffer.r = this.input_waiting.r;
+            this.input_buffer.start = this.input_waiting.start;
+            this.input_buffer.select = this.input_waiting.select;
         }
+    }
+
+    /**
+     * @param {snespad_inputs} from
+     */
+    buffer_input(from) {
+        this.input_waiting.up = from.up;
+        this.input_waiting.down = from.down;
+        this.input_waiting.left = from.left;
+        this.input_waiting.right = from.right;
+        this.input_waiting.a = from.a;
+        this.input_waiting.b = from.b;
+        this.input_waiting.x = from.x;
+        this.input_waiting.y = from.y;
+        this.input_waiting.l = from.l;
+        this.input_waiting.r = from.r;
+        this.input_waiting.start = from.start;
+        this.input_waiting.select = from.select;
     }
 
     textrep() {
@@ -64,8 +94,7 @@ class SNES_joypad {
 
     data() {
         if (this.latched === 1) {
-            this.update_b();
-            return this.input_buffer['b'];
+            return this.input_buffer.b;
         }
 
         switch(this.counter++) {
@@ -90,11 +119,5 @@ class SNES_joypad {
 
         this.counter = 16;
         return 1;
-    }
-
-    update_b() {
-        let key = this.joymap['b'];
-        if (key === null) { this.input_buffer['b'] = 0; return; }
-        this.input_buffer['b'] = this.button_b.read();
     }
 }

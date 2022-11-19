@@ -125,12 +125,6 @@ class NES {
         return d;
 	}
 
-    update_status(current_frame, current_scanline, current_x) {
-        current_frame.innerHTML = this.clock.frames_since_restart;
-        current_scanline.innerHTML = this.clock.ppu_y;
-        current_x.innerHTML = this.ppu.line_cycle;
-    }
-
     present() {
         if (this.display_enabled)
             this.ppu.present();

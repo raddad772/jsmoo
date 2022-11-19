@@ -47,6 +47,25 @@ importScripts(
 	'/system/gb/gb.js'
 )
 
+// SNES
+importScripts(
+	'/component/cpu/wdc65816/wdc65816_opcodes.js', '/component/cpu/wdc65816/wdc65816_t.js',
+	'/component/cpu/wdc65816/wdc65816_generated_opcodes.js', '/system/snes/cpu/dma.js',
+	'/component/controller/snes_joypad.js', '/system/snes/cpu/r5a22.js', '/component/cpu/spc700/spc700_opcodes.js',
+	'/component/cpu/spc700/spc700_boot_rom.js', '/component/cpu/spc700/spc700_disassembler.js',
+	'/system/snes/apu/sdsp.js', '/component/cpu/spc700/spc700.js',
+	'/component/cpu/spc700/spc700_generated_opcodes.js', '/system/snes/snes_memory.js',
+	'/system/snes/snes_clock.js', '/system/snes/snes_clock_generator.js',
+	'/system/snes/snes_cart.js', '/system/snes/ppu/snes_ppu.js',
+	'/system/snes/snes.js'
+);
+
+// SNES multithreading
+/*importScripts(
+	'/system/snes/ppu/snes_ppu_shader_project.js', '/system/snes/ppu/snes_ppu_worker.js',
+	'/system/snes/ppu/ppufast_funcs.js'
+)*/
+
 class js_wrapper_t {
     constructor() {
         /**

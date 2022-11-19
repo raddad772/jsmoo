@@ -1058,7 +1058,8 @@ function PPUF_render_mode7(self, ppuy, source, io, VRAM, CGRAM, above, below) {
     }
 }
 
-if (window !== self) PPU_worker_function();
+// TODO: thissss
+PPU_worker_function();
 
 class SNES_PPU_worker {
     constructor() {
