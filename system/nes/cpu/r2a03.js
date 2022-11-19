@@ -73,7 +73,6 @@ class ricoh2A03 {
 		this.joypad2 = new NES_joypad(2);
 		this.controller_port1.device = this.joypad1;
 		this.controller_port2.device = this.joypad2;
-
     }
 
     serialize() {

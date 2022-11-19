@@ -207,9 +207,9 @@ class ricoh5A22 {
 		this.controller_port2 = new SNES_controllerport(2);
 
 		this.joypad1 = new SNES_joypad(1);
-		//this.joypad2 = new SNES_joypad(2);
+		this.joypad2 = new SNES_joypad(2);
 		this.controller_port1.device = this.joypad1;
-		//this.controller_port2.device = this.joypad2;
+		this.controller_port2.device = this.joypad2;
 	}
 
 	read_trace(bank, addr) {
@@ -966,5 +966,15 @@ class ricoh5A22 {
 			if (dbg.do_break) return;
 		}
 	}
+
+	/**
+     * @param {snespad_inputs} inp1
+     * @param {snespad_inputs} inp2
+     */
+    update_inputs(inp1, inp2) {
+        this.joypad1.buffer_input(inp1);
+        this.joypad2.buffer_input(inp2);
+    }
+
 }
 
