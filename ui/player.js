@@ -571,7 +571,10 @@ class global_player_t {
 				GB_present(data, imgdata.data, buf);
 				break;
 			case 'spectrum':
-				ZXSpectrum_present(data, imgdata.data,buf);
+				ZXSpectrum_present(data, imgdata.data, buf);
+				break;
+			case 'snes':
+				SNES_present(data, imgdata.data, buf);
 				break;
 			default:
 				console.log('NO PRESENTATION CODE FOR', this.system_kind);

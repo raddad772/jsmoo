@@ -1,6 +1,6 @@
 "use strict";
 
-function SNES_presenter(data, imgdata, SNES_output_buffer) {
+function SNES_present(data, imgdata, SNES_output_buffer) {
     let buf = new Uint16Array(SNES_output_buffer);
     for (let y = 0; y < 224; y++) {
         for (let x = 0; x < 256; x++) {
