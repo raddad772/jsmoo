@@ -176,7 +176,7 @@ class GB_CPU {
 
     raise_TIMA() {
         this.cpu.regs.IF |= 4;
-        console.log('raising TIMA', this.cpu.regs.IE, this.cpu.regs.IF);
+        //console.log('raising TIMA', this.cpu.regs.IE, this.cpu.regs.IF);
     }
 
     enable_tracing() {

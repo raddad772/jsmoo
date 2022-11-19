@@ -14,17 +14,16 @@ const SPECTRUM_STR = 'spectrum';
 const GENERICZ80_STR = 'genericz80'
 
 //const DEFAULT_SYSTEM = SPECTRUM_STR;
-const DEFAULT_SYSTEM = NES_STR;
+//const DEFAULT_SYSTEM = NES_STR;
 //const DEFAULT_SYSTEM = SNES_STR;
 //const DEFAULT_SYSTEM = SMS_STR;
-//const DEFAULT_SYSTEM = GB_STR;
+const DEFAULT_SYSTEM = GB_STR;
 //const DEFAULT_SYSTEM = GG_STR;
 
 
 class input_provider_t {
 	constructor(system_kind, keymap) {
 		this.system_kind = system_kind;
-		console.log('INPUT PROVIDER SYSTEM KIND', system_kind);
 		this.keymap = keymap;
 
 		for (let i in this.keymap) {

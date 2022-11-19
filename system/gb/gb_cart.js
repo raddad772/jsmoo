@@ -281,7 +281,6 @@ class GB_cart {
                 return;
         }
         //this.bus.load_bios(this.bios);
-        console.log('SETTING CART!', this);
         this.mapper.set_cart(this, this.bus.BIOS);
     }
 }
