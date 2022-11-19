@@ -148,7 +148,6 @@ class GB_MAPPER_none {
      * @param {Uint8Array} BIOS
      */
     set_cart(cart, BIOS) {
-        console.log('GOT CART', cart);
         this.cart = cart;
         this.BIOS = BIOS;
         this.BIOS_big = this.BIOS.byteLength > 256;

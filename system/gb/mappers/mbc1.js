@@ -82,7 +82,7 @@ class GB_MAPPER_MBC1 {
         if (addr < 0x8000) // ROM hi bank
             return this.ROM[(addr & 0x3FFF) + this.ROM_bank_hi_offset];
         if (addr < 0xA000) { // VRAM, banked
-            //if (this.clock.CPU_can_VRAM)
+            if (this.clock.CPU_can_VRAM)
                 return this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset];
             return 0xFF;
         } // cart RAM if it's there
@@ -148,15 +148,15 @@ class GB_MAPPER_MBC1 {
             }
         }
         if (addr < 0xA000) { // VRAM
-            //if (this.clock.CPU_can_VRAM) {
+            if (this.clock.CPU_can_VRAM) {
                 this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset] = val;
-            /*}
+            }
             else {
-                //console.log('VRAM WRITE BLOCKED!', this.clock.ly, this.bus.ppu.line_cycle);
+                console.log('VRAM WRITE BLOCKED!', this.bus.ppu.enabled, this.clock.frames_since_restart, this.clock.ly, this.bus.ppu.line_cycle);
                 //if (this.clock.ly === 0) dbg.break();
                 //console.log('YAR.')
                 //this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset] = val;
-            }*/
+            }
             return;
         }
         if (addr < 0xC000) { // cart RAM
@@ -197,7 +197,6 @@ class GB_MAPPER_MBC1 {
      * @param {Uint8Array} BIOS
      */
     set_cart(cart, BIOS) {
-        console.log('GOT CART', cart);
         this.cart = cart;
         this.BIOS = BIOS;
         this.BIOS_big = this.BIOS.byteLength > 256;

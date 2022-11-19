@@ -6,6 +6,8 @@ const GB_variants = Object.freeze({
     SGB: 2
 })
 
+const GB_CYCLES_PER_FRAME = 70224
+const GB_CYCLES_PER_SCANLINE = GB_CYCLES_PER_FRAME / 154;
 let GB_inputmap = [];
 function fill_GB_inputmap() {
     for (let i = 0; i < 8; i++) {
@@ -49,6 +51,8 @@ class GB_clock {
         this.ppu_mode = 2; // PPU mode. OAM search, etc.
         this.frames_since_restart = 0;
         this.master_frame = 0;
+
+        this.cycles_left_this_frame = GB_CYCLES_PER_FRAME;
 
         this.trace_cycles = 0;
 
@@ -230,8 +234,8 @@ class GameBoy {
         d.input_types = [INPUT_TYPES.GB_CONTROLLER];
         d.x_resolution = 160;
         d.y_resolution = 144;
-        d.xrh = 1;
-        d.xrw = 1;
+        d.xrh = 160;
+        d.xrw = 144;
         for (let i = 0; i < GB_inputmap.length; i++) {
             d.keymap.push(GB_inputmap[i]);
         }
@@ -253,11 +257,8 @@ class GameBoy {
     }
 
     run_frame() {
-        let current_frame = this.clock.frames_since_restart;
-        while (this.clock.frames_since_restart === current_frame) {
-            this.finish_scanline();
-            if (dbg.do_break) break;
-        }
+        let cycles_left = this.clock.cycles_left_this_frame;
+        this.run_cycles(cycles_left);
         return {buffer_num: this.ppu.last_used_buffer};
     }
 
@@ -287,26 +288,8 @@ class GameBoy {
     }
 
     finish_scanline() {
-        let cpu_step = this.clock.timing.cpu_divisor;
-        let ppu_step = this.clock.timing.ppu_divisor;
-        let done = 0>>>0;
-        let start_y = this.clock.ly;
-        while (this.clock.ly === start_y) {
-            this.clock.master_clock += cpu_step;
-            this.cpu.cycle();
-            this.clock.cpu_frame_cycle++;
-            this.clock.cpu_master_clock += cpu_step;
-            let ppu_left = this.clock.master_clock - this.clock.ppu_master_clock;
-            done = 0;
-            while (ppu_left >= ppu_step) {
-                ppu_left -= ppu_step;
-                done++;
-            }
-            this.ppu.run_cycles(done);
-            this.clock.ppu_master_clock += done * ppu_step;
-            this.cycles_left -= cpu_step;
-            if (dbg.do_break) break;
-        }
+        let steps_left_this_scanline = this.clock.cycles_left_this_frame % GB_CYCLES_PER_SCANLINE;
+        this.run_cycles(steps_left_this_scanline);
     }
 
     run_cycles(howmany) {
@@ -314,20 +297,18 @@ class GameBoy {
         let cpu_step = this.clock.timing.cpu_divisor;
         let ppu_step = this.clock.timing.ppu_divisor;
         let done = 0>>>0;
-        while (this.cycles_left >= cpu_step) {
-            this.clock.master_clock += cpu_step;
-            this.cpu.cycle();
-            this.clock.cpu_frame_cycle++;
-            this.clock.cpu_master_clock += cpu_step;
-            let ppu_left = this.clock.master_clock - this.clock.ppu_master_clock;
-            done = 0;
-            while (ppu_left >= ppu_step) {
-                ppu_left -= ppu_step;
-                done++;
+        while (this.cycles_left > 0) {
+            this.clock.cycles_left_this_frame--;
+            if (this.clock.cycles_left_this_frame <= 0) this.clock.cycles_left_this_frame += GB_CYCLES_PER_FRAME;
+            if ((this.clock.master_clock & 3) === 0) {
+                this.cpu.cycle();
+                this.clock.cpu_frame_cycle++;
+                this.clock.cpu_master_clock += cpu_step;
             }
-            this.ppu.run_cycles(done);
-            this.clock.ppu_master_clock += done * ppu_step;
-            this.cycles_left -= cpu_step;
+            this.clock.master_clock++;
+            this.ppu.run_cycles(1);
+            this.clock.ppu_master_clock += 1;
+            this.cycles_left--;
             if (dbg.do_break) break;
         }
     }

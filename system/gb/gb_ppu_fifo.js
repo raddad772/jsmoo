@@ -768,12 +768,23 @@ class GB_PPU_FIFO {
         console.log('DISABLE PPU')
         this.clock.CPU_can_VRAM = 1;
         this.clock.setCPU_can_OAM(1);
+        this.io.STAT_IF = 0;
+        this.eval_STAT();
     }
 
     enable() {
         if (this.enabled) return;
         console.log('ENABLE PPU');
-        this.enable_next_frame = true;
+        this.enabled = true;
+        this.advance_frame(false)
+        this.clock.lx = 0;
+        this.clock.ly = 0;
+        this.line_cycle = 0;
+        this.cycles_til_vblank = 0;
+        this.io.STAT_IF = 0;
+        this.set_mode(GB_PPU_modes.OAM_search);
+        this.eval_lyc();
+        this.eval_STAT();
     }
 
     set_mode(which) {
@@ -815,14 +826,17 @@ class GB_PPU_FIFO {
         // We don't do anything, and in fact are off, if LCD is off
         for (let i = 0; i < howmany; i++) {
             // TODO: make this enabled on frame AFTER enable happens
-            if (this.enabled) this.cycle();
+            //console.log(this.clock.ly, this.clock.lx, this.line_cycle);
             if (this.cycles_til_vblank) {
                 this.cycles_til_vblank--;
                 if (this.cycles_til_vblank === 0)
                     this.bus.IRQ_vblank_up();
             }
-            this.line_cycle++;
-            if (this.line_cycle === 456) this.advance_line();
+            if (this.enabled) {
+                this.cycle();
+                this.line_cycle++;
+                if (this.line_cycle === 456) this.advance_line();
+            }
             if (dbg.do_break) break;
         }
     }
@@ -912,12 +926,7 @@ class GB_PPU_FIFO {
         this.io.old_mask = mask;
     }
 
-    advance_frame() {
-        if (this.enable_next_frame) {
-            this.enabled = true;
-            this.reset();
-            this.enable_next_frame = false;
-        }
+    advance_frame(update_buffer=true) {
         this.clock.ly = 0;
         this.clock.wly = 0;
         if (this.enabled) {
@@ -926,9 +935,11 @@ class GB_PPU_FIFO {
         this.clock.frames_since_restart++;
         this.clock.master_frame++;
         this.is_window_line = false;
-        this.last_used_buffer = this.cur_output_num;
-        this.cur_output_num ^= 1;
-        this.cur_output = this.output[this.cur_output_num];
+        if (update_buffer) {
+            this.last_used_buffer = this.cur_output_num;
+            this.cur_output_num ^= 1;
+            this.cur_output = this.output[this.cur_output_num];
+        }
     }
 
     /********************/
@@ -1037,7 +1048,6 @@ class GB_PPU_FIFO {
         switch(this.variant) {
             case GB_variants.DMG:
                 this.enabled = true;
-                this.enable_next_frame = false;
                 let val = 0xFC;
                 //this.clock.ly = 90;
                 this.write_IO(0xFF47, 0xFC);
