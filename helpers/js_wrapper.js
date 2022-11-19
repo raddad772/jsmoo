@@ -62,9 +62,12 @@ importScripts(
 
 // SNES multithreading
 /*importScripts(
-	'/system/snes/ppu/snes_ppu_shader_project.js', '/system/snes/ppu/snes_ppu_worker.js',
+	, '/system/snes/ppu/snes_ppu_worker.js',
 	'/system/snes/ppu/ppufast_funcs.js'
 )*/
+
+importScripts('/system/snes/ppu/ppufast_funcs.js', '/system/snes/ppu/snes_ppu_shader_project.js');
+importScripts('/system/snes/ppu/snes_ppu_worker.js');
 
 class js_wrapper_t {
     constructor() {
