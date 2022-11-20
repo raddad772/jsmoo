@@ -49,7 +49,7 @@ class ConsoleAudioProcessor extends AudioWorkletProcessor {
       this.lastPlayedSample = this.sampleBuffer[desired_length - 1];
       // Remove those contents from the buffer
       this.sampleBuffer = this.sampleBuffer.slice(desired_length);
-      // Finally, tell the main thread so it can adjust its totals
+      // Finally, tell the main player_thread so it can adjust its totals
       this.port.postMessage({"type": "samplesPlayed", "count": desired_length});
     } else {
       // Queue up nothing! Specifically, *repeat* the last sample, to hold the level; this won't
@@ -59,7 +59,7 @@ class ConsoleAudioProcessor extends AudioWorkletProcessor {
           channel[i] = (this.lastPlayedSample / 37268);
         }
       })
-      // Tell the main thread that we've run behind
+      // Tell the main player_thread that we've run behind
       this.port.postMessage({"type": "audioUnderrun", "count": output[0].length});
     }
 

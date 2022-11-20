@@ -5,6 +5,7 @@
 //const USE_THREADED_PLAYER = true;
 const SNES_STR = 'snes';
 const NES_STR = 'nes';
+const NES_STR = 'nes_as';
 const COMMODORE64_STR = 'c64';
 const GG_STR = 'gg';
 const SMS_STR = 'sms';
@@ -17,8 +18,9 @@ const GENERICZ80_STR = 'genericz80'
 //const DEFAULT_SYSTEM = NES_STR;
 //const DEFAULT_SYSTEM = SNES_STR;
 //const DEFAULT_SYSTEM = SMS_STR;
-const DEFAULT_SYSTEM = GB_STR;
+//const DEFAULT_SYSTEM = GB_STR;
 //const DEFAULT_SYSTEM = GG_STR;
+const DEFAULT_SYSTEM = NES_AS_STR;
 
 
 class input_provider_t {
@@ -292,9 +294,23 @@ class global_player_t {
 		this.system = null;
 		this.timing_thread = new timing_thread_t(this.on_timing_message.bind(this));
 		this.audio = new ConsoleAudioContext();
-		this.player_thread = new threaded_emulator_t(this.on_player_message.bind(this));
 		this.shared_output_buffers = [null, null];
 		this.ready = false;
+
+        this.player_thread = new Worker('/helpers/threaded_emulator_worker.js');
+        this.player_thread.onmessage = this.on_player_message.bind(this);
+        this.player_thread.onerror = function(a, b, c) { console.log('ERR', a, b, c);}
+
+        this.step1_done = false;
+        this.step2_done = false;
+        this.queued_step_2 = null;
+        this.queued_bios = null;
+        this.queued_step_3 = null;
+        this.queued_name = null;
+        this.general_sab = new SharedArrayBuffer(64);
+
+
+
 		/**
 		 * @type {machine_description}
 		 */
@@ -325,12 +341,40 @@ class global_player_t {
 	async onload() {
 		this.bios_manager = new bios_manager_t();
 		await this.bios_manager.onload();
-		this.player_thread.onload();
-		this.player_thread.send_set_system(this.system_kind, this.bios_manager.bioses[this.system_kind]);
+        console.log('SEND STARTUP MSG');
+		this.step1_done = false;
+        this.player_thread.postMessage({kind: emulator_messages.startup, general_sab: this.general_sab});
+		this.send_set_system(this.system_kind, this.bios_manager.bioses[this.system_kind]);
 	}
 
+	send_set_system(kind, bios) {
+		console.log('REQ SEND SET SYSTEM')
+        if (!this.step1_done) {
+			console.log('QUEUE SET SYSTEM')
+            this.queued_step_2 = kind;
+            this.queued_bios = bios;
+            return;
+        }
+		console.log('ACTUAL SEND SET SYSTEM');
+        this.system_kind = kind;
+        this.player_thread.postMessage({kind: emulator_messages.change_system, kind_str: kind, bios: bios});
+    }
+
+	/**
+     * @param {string} name
+     * @param {Uint8Array} ROM
+     */
+    send_load_ROM(name, ROM) {
+		if (!this.step2_done) {
+            this.queued_step_3 = ROM;
+            this.queued_name = name;
+            return;
+        }
+        this.player_thread.postMessage({kind: emulator_messages.load_rom, name: name, ROM: ROM});
+    }
+
 	ui_event(target, data) {
-		this.player_thread.send_ui_event({target: target, data: data});
+		this.player_thread.postMessage({kind: emulator_messages.ui_event, data: {target: target, data: data}});
 	}
 
 	save_state(num) {
@@ -394,21 +438,38 @@ class global_player_t {
 
 	do_save_state() {
 		if (this.queued_save_state === -1) return;
-		this.player_thread.send_save_state_request();
+        this.player_thread.postMessage({kind: emulator_messages.request_savestate});
 	}
 
 	do_load_state() {
 		if (this.queued_load_state === -1) return;
-		this.player_thread.send_load_state(this.ss);
+        this.player_thread.postMessage({kind: emulator_messages.send_loadstate, ss: this.ss})
 		this.queued_load_state = -1;
 	}
 
 	on_player_message(e) {
+		e = e.data;
 		switch(e.kind) {
 			case emulator_messages.specs:
 				this.tech_specs = e.specs;
 				this.update_tech_specs();
 				break;
+            case emulator_messages.step1_done:
+				this.step1_done = true;
+                if (this.queued_step_2 !== null) {
+                    this.system_kind = this.queued_step_2;
+                    this.player_thread.postMessage({kind: emulator_messages.change_system, kind_str: this.queued_step_2, bios: this.queued_bios});
+                    this.queued_step_2 = null;
+                }
+                break;
+            case emulator_messages.step2_done:
+                this.step2_done = true;
+                if (this.queued_step_3 !== null) {
+                    this.player_thread.postMessage({kind: emulator_messages.load_rom, name: this.queued_name, ROM: this.queued_step_3});
+                    this.queued_step_3 = null;
+                    this.queued_name = null;
+                }
+                break;
 			case emulator_messages.frame_complete:
 				this.present(e.data);
 				break;
@@ -428,7 +489,6 @@ class global_player_t {
 	update_tech_specs() {
 		this.canvas_manager.set_size(this.tech_specs.x_resolution, this.tech_specs.y_resolution, this.tech_specs.xrh, this.tech_specs.xrw);
 		this.canvas_manager.set_overscan(this.tech_specs.overscan_left, this.tech_specs.overscan_right, this.tech_specs.overscan_top, this.tech_specs.overscan_bottom);
-		console.log(this.tech_specs);
 		this.shared_output_buffers[0] = this.tech_specs.output_buffer[0];
 		this.shared_output_buffers[1] = this.tech_specs.output_buffer[1];
 		this.set_fps_target(this.tech_specs.fps);
@@ -436,6 +496,7 @@ class global_player_t {
 	}
 
 	set_input(keymap) {
+		console.log('SETTING INPUT!');
 		if (this.input_provider !== null) {
 			this.input_provider.disconnect();
 		}
@@ -444,8 +505,7 @@ class global_player_t {
 
 	run_frame() {
 		this.input_provider.latch();
-		let r = this.input_provider.poll();
-		this.player_thread.send_request_frame(r);
+        this.player_thread.postMessage({kind: emulator_messages.frame_requested, keymap: this.input_provider.poll()});
 	}
 
 	present(data) {
@@ -470,6 +530,7 @@ class global_player_t {
 		let imgdata = this.canvas_manager.get_imgdata();
 		let buf = this.shared_output_buffers[data.buffer_num];
 		switch(this.system_kind) {
+			case 'nes_as':
 			case 'nes':
 				NES_present(data, imgdata.data, buf, this.canvas_manager.correct_overscan, this.tech_specs.overscan_left, this.tech_specs.overscan_right, this.tech_specs.overscan_top, this.tech_specs.overscan_bottom);
 				break;
@@ -521,12 +582,12 @@ class global_player_t {
 
 	set_system(to) {
 		this.system_kind = to;
-		this.player_thread.send_set_system(to, this.bios_manager.bioses[this.system_kind])
+		this.send_set_system(to, this.bios_manager.bioses[this.system_kind])
 	}
 
 	load_rom(name, what) {
 		console.log('GOT COMMADN TO LOAD ROM', name, what);
-		this.player_thread.send_load_ROM(name, new Uint8Array(what));
+		this.send_load_ROM(name, new Uint8Array(what));
 	}
 
 	load_bios(what) {

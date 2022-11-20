@@ -8466,14 +8466,14 @@ function inflateInit(strm) {
  thereafter.  This reduces the size of the code by about 2K bytes, in
  exchange for a little execution time.  However, BUILDFIXED should not be
  used for threaded applications, since the rewriting of the tables and virgin
- may not be thread-safe.
+ may not be player_thread-safe.
  */
 var virgin = true;
 
 var lenfix, distfix; // We have no pointers in JS, so keep tables separate
 
 function fixedtables(state) {
-  /* build fixed huffman tables if first call (may not be thread safe) */
+  /* build fixed huffman tables if first call (may not be player_thread safe) */
   if (virgin) {
     var sym;
 
