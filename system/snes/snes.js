@@ -128,10 +128,10 @@ class SNES {
 		d.xrh = 8;
 		d.xrw = 7;
 
-		d.overscan_top = 0;
-		d.overscan_bottom = 0;
-		d.overscan_left = 0;
-		d.overscan_right = 0;
+		d.overscan.top = 0;
+		d.overscan.bottom = 0;
+		d.overscan.left = 0;
+		d.overscan.right = 0;
 
         d.output_buffer[0] = this.ppu.output_shared_buffers[0];
         d.output_buffer[1] = this.ppu.output_shared_buffers[1];

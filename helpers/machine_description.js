@@ -46,10 +46,12 @@ class machine_description {
         this.xrw = 4
         this.xrh = 3
 
-        this.overscan_top = 0;
-        this.overscan_bottom = 0;
-        this.overscan_left = 0;
-        this.overscan_right = 0;
+        this.overscan = {
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0
+        }
 
         this.output_buffer = [];
         /**

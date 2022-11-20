@@ -242,7 +242,7 @@ class ZXSpectrum {
         d.xrh = 352;
         d.xrw = 304;
 
-        d.overscan_top = d.overscan_bottom = d.overscan_left = d.overscan_right = 0;
+        d.overscan.top = d.overscan.bottom = d.overscan.left = d.overscan.right = 0;
 
         d.output_buffer[0] = this.ula.output_shared_buffers[0];
         d.output_buffer[1] = this.ula.output_shared_buffers[1];

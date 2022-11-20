@@ -1,94 +1,6 @@
 import {NES_VARIANTS, NES_clock, NES_bus} from "./nes_common";
 import {perf_timer_t} from "../../helpers/helpers";
 
-
-class RGBval {
-    r: u32
-    g: u32
-    b: u32
-    constructor(r: u32, g: u32, b: u32) {
-        this.r = r;
-        this.g = g;
-        this.b = b;
-    }
-}
-
-export const NES_palette = new StaticArray<u32>(64);
-function NES_get_RGB(i: u32): RGBval {
-    switch(i) {
-        case 0: return new RGBval(0x54, 0x54, 0x54);
-        case 1: return new RGBval(0x00, 0x1E, 0x74);
-        case 2: return new RGBval(0x08, 0x10, 0x90);
-        case 3: return new RGBval(0x30, 0x00, 0x88);
-        case 4: return new RGBval(0x44, 0x00, 0x64);
-        case 5: return new RGBval(0x5C, 0x00, 0x30);
-        case 6: return new RGBval(0x54, 0x04, 0x00);
-        case 7: return new RGBval(0x3C, 0x18, 0x00);
-        case 8: return new RGBval(0x20, 0x2A, 0x00);
-        case 9: return new RGBval(0x08, 0x3A, 0x00);
-        case 10: return new RGBval(0x00, 0x40, 0x00);
-        case 11: return new RGBval(0x00, 0x3C, 0x00);
-        case 12: return new RGBval(0x00, 0x32, 0x3C);
-        case 13: return new RGBval(0x00, 0x00, 0x00);
-        case 14: return new RGBval(0x00, 0x00, 0x00);
-        case 15: return new RGBval(0x00, 0x00, 0x00);
-        case 16: return new RGBval(0x98, 0x96, 0x98);
-        case 17: return new RGBval(0x08, 0x4C, 0xC4);
-        case 18: return new RGBval(0x30, 0x32, 0xEC);
-        case 19: return new RGBval(0x5C, 0x1E, 0xE4);
-        case 20: return new RGBval(0x88, 0x14, 0xB0);
-        case 21: return new RGBval(0xA0, 0x14, 0x64);
-        case 22: return new RGBval(0x98, 0x22, 0x20);
-        case 23: return new RGBval(0x78, 0x3C, 0x00);
-        case 24: return new RGBval(0x54, 0x5A, 0x00);
-        case 25: return new RGBval(0x28, 0x72, 0x00);
-        case 26: return new RGBval(0x08, 0x7C, 0x00);
-        case 27: return new RGBval(0x00, 0x76, 0x28);
-        case 28: return new RGBval(0x00, 0x66, 0x78);
-        case 29: return new RGBval(0x00, 0x00, 0x00);
-        case 30: return new RGBval(0x00, 0x00, 0x00);
-        case 31: return new RGBval(0x00, 0x00, 0x00);
-        case 32: return new RGBval(0xEC, 0xEE, 0xEC);
-        case 33: return new RGBval(0x4C, 0x9A, 0xEC);
-        case 34: return new RGBval(0x78, 0x7C, 0xEC);
-        case 35: return new RGBval(0xB0, 0x62, 0xEC);
-        case 36: return new RGBval(0xE4, 0x54, 0xEC);
-        case 37: return new RGBval(0xEC, 0x58, 0xB4);
-        case 38: return new RGBval(0xEC, 0x6A, 0x64);
-        case 39: return new RGBval(0xD4, 0x88, 0x20);
-        case 40: return new RGBval(0xA0, 0xAA, 0x00);
-        case 41: return new RGBval(0x74, 0xC4, 0x00);
-        case 42: return new RGBval(0x4C, 0xD0, 0x20);
-        case 43: return new RGBval(0x38, 0xCC, 0x6C);
-        case 44: return new RGBval(0x38, 0xB4, 0xCC);
-        case 45: return new RGBval(0x3C, 0x3C, 0x3C);
-        case 46: return new RGBval(0x00, 0x00, 0x00);
-        case 47: return new RGBval(0x00, 0x00, 0x00);
-        case 48: return new RGBval(0xEC, 0xEE, 0xEC);
-        case 49: return new RGBval(0xA8, 0xCC, 0xEC);
-        case 50: return new RGBval(0xBC, 0xBC, 0xEC);
-        case 51: return new RGBval(0xD4, 0xB2, 0xEC);
-        case 52: return new RGBval(0xEC, 0xAE, 0xEC);
-        case 53: return new RGBval(0xEC, 0xAE, 0xD4);
-        case 54: return new RGBval(0xEC, 0xB4, 0xB0);
-        case 55: return new RGBval(0xE4, 0xC4, 0x90);
-        case 56: return new RGBval(0xCC, 0xD2, 0x78);
-        case 57: return new RGBval(0xB4, 0xDE, 0x78);
-        case 58: return new RGBval(0xA8, 0xE2, 0x90);
-        case 59: return new RGBval(0x98, 0xE2, 0xB4);
-        case 60: return new RGBval(0xA0, 0xD6, 0xE4);
-        case 61: return new RGBval(0xA0, 0xA2, 0xA0);
-        case 62: return new RGBval(0x00, 0x00, 0x00);
-        case 63: return new RGBval(0x00, 0x00, 0x00);
-    }
-    return new RGBval(0, 0, 0);
-}
-for (let i = 0; i < 64; i++) {
-    let r: RGBval = NES_get_RGB(i);
-    //NES_palette[i] = (r.r << 24) | (r.g << 16) | (r.b << 8) | 0xFF;
-    NES_palette[i] = 0xFF000000 | (r.b << 16) | (r.g << 8) | r.r;
-}
-
 class PPU_effect_buffer {
     length: i32
     items: StaticArray<i64>
@@ -132,6 +44,12 @@ class NES_PPU_io {
     bg_enable: u32 = 0
     sprite_enable: u32 = 0
     OAM_addr: u32 = 0
+
+    emph_r: u32 = 0
+    emph_g: u32 = 0
+    emph_b: u32 = 0
+    emph_bits: u16 = 0
+
 }
 
 class NES_PPU_status {
@@ -173,7 +91,7 @@ export class NES_ppu {
     sprite0_on_this_line: bool = false;
 
     CGRAM: StaticArray<u32> = new StaticArray<u32>(32);
-    output: StaticArray<u8> = new StaticArray<u8>(256*256);
+    output: StaticArray<u16> = new StaticArray<u16>(256*256);
 
     bg_fetches0: u32 = 0
     bg_fetches1: u32 = 0
@@ -206,25 +124,6 @@ export class NES_ppu {
         this.bus.ppu = this;
     }
 
-    present(ab: usize): void {
-        let TOP_OVERSCAN: u32 = 8;
-        let BOTTOM_OVERSCAN: u32 = 240;
-        let LEFT_OVERSCAN: u32 = 8;
-        let RIGHT_OVERSCAN: u32 = 248;
-        /*let out_width: u32 = 256 - (LEFT_OVERSCAN + (256 - RIGHT_OVERSCAN));
-        let out_height: u32 = 240 - (TOP_OVERSCAN + (240 - BOTTOM_OVERSCAN));*/
-        /*for (let ry: u32 = TOP_OVERSCAN; ry < BOTTOM_OVERSCAN; ry++) {
-            let y: u32 = ry - TOP_OVERSCAN;
-            for (let rx: u32 = LEFT_OVERSCAN; rx < RIGHT_OVERSCAN; rx++) {*/
-        for (let y = 0; y < 240; y++) {
-            for (let rx = 0; rx < 256; rx++) {
-                //let ap: usize = (y * 256) + (rx - LEFT_OVERSCAN);
-                let ap: usize = (y * 256) + rx;
-                store<u32>(ab+(ap*4), unchecked(NES_palette[unchecked(this.output[<u32>ap])]));
-            }
-        }
-    }
-
     reset(): void {
         this.line_cycle = 0;
         this.io.w = 0;
@@ -252,11 +151,20 @@ export class NES_ppu {
         return this.io.bg_enable || this.io.sprite_enable;
     }
 
+    new_frame(): void {
+        this.clock.ppu_y = 0;
+        this.clock.frames_since_restart++;
+        this.clock.frame_odd = (this.clock.frame_odd + 1) & 1;
+        this.clock.master_frame++;
+        this.clock.cpu_frame_cycle = 0;
+    }
+
     new_scanline(): void {
         if (this.clock.ppu_y === this.clock.timing.ppu_pre_render)
-            this.clock.advance_frame();
-        else
-            this.clock.advance_scanline();
+            this.new_frame();
+        else {
+            this.clock.ppu_y++;
+        }
 
         if (this.clock.ppu_y == this.clock.timing.vblank_start) {
             this.clock.vblank = 1;
@@ -619,7 +527,7 @@ export class NES_ppu {
             }
         }
 
-        unchecked(this.output[bo] = <u8>out_color);
+        unchecked(this.output[bo] = <u16>out_color | this.io.emph_bits);
     }
 
     cycle_postrender(): void {
@@ -742,7 +650,11 @@ export class NES_ppu {
                 this.io.sprite_hide_left_8 = (val & 4) >>> 2;
                 this.io.bg_enable = (val & 8) >>> 3;
                 this.io.sprite_enable = (val & 0x10) >>> 4;
-                // NOTFINISHED: emphasizes
+
+                this.io.emph_r = ((val & 0x20) >>> 5);
+                this.io.emph_g = ((val & 0x40) >>> 6);
+                this.io.emph_b = ((val & 0x80) >>> 7);
+                this.io.emph_bits = <u16>((val & 0xE0) << 1);
                 return;
             case 0x2003: // OAMADDR
                 this.io.OAM_addr = val;

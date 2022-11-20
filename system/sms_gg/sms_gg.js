@@ -330,7 +330,7 @@ class SMSGG {
         d.output_buffer[0] = this.vdp.output_shared_buffers[0];
         d.output_buffer[1] = this.vdp.output_shared_buffers[1];
 
-        d.overscan_top = d.overscan_left = d.overscan_right = d.overscan_bottom = 0;
+        d.overscan.top = d.overscan.left = d.overscan.right = d.overscan.bottom = 0;
         return d;
     }
 

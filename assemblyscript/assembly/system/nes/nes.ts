@@ -5,6 +5,7 @@ import {NES_ppu} from "./nes_ppu";
 import {NES_cart} from "./nes_cart";
 import {ricoh2A03} from "./cpu/r2a03";
 import {dbg} from "../../helpers/debug";
+import {framevars_t} from "../../glue/global_player";
 
 let NES_inputmap: Array<input_map_keypoint> = new Array<input_map_keypoint>(16);
 // p1                                    p2
@@ -78,6 +79,7 @@ export class NES implements systemEmulator {
     decode_array: StaticArray<u32> = new StaticArray<u32>(16);
     controller1_in: nespad_inputs = new nespad_inputs();
     controller2_in: nespad_inputs = new nespad_inputs();
+    framevars: framevars_t = new framevars_t();
 
     constructor(variant: NES_VARIANTS) {
         this.variant = variant
@@ -92,7 +94,7 @@ export class NES implements systemEmulator {
     }
 
     present(ab: usize): void {
-        this.ppu.present(ab)
+        console.log('ASKED TO PRESENT BUT TOO BAD!');
     }
 
     map_inputs(bufptr: usize): void {
@@ -116,18 +118,35 @@ export class NES implements systemEmulator {
         this.cpu.update_inputs(this.controller1_in, this.controller2_in);
     }
 
+    get_framevars(): framevars_t {
+        this.framevars.master_frame = this.clock.master_frame;
+        this.framevars.x = this.ppu.line_cycle;
+        this.framevars.scanline = this.clock.ppu_y;
+        return this.framevars;
+    }
+
     get_description(): machine_description {
-        let md = new machine_description();
-        md.name = 'Nintendo Entertainment System';
-        md.fps = 60;
-        md.timing = MD_TIMING.frame;
-        md.standard = MD_STANDARD.NSTC;
-        md.x_resolution = 256;
-        md.y_resolution = 240;
+        let d = new machine_description();
+        d.name = 'Nintendo Entertainment System';
+        d.fps = 60;
+        d.timing = MD_TIMING.frame;
+        d.standard = MD_STANDARD.NSTC;
+        d.x_resolution = 256;
+        d.y_resolution = 240;
+        d.xrh = 8;
+        d.xrw = 7;
+
+        d.overscan.top = 8;
+        d.overscan.bottom = 8;
+        d.overscan.left = 8;
+        d.overscan.right = 8;
+
+        d.out_size = (256*240*2);
+
         for (let i = 0, k = NES_inputmap.length; i < k; i++) {
-            md.keymap.push(NES_inputmap[i]);
+            d.keymap.push(NES_inputmap[i]);
         }
-        return md;
+        return d;
     }
 
     killall(): void {
