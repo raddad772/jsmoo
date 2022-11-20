@@ -2,6 +2,12 @@ import {machine_description, systemEmulator} from "../system/interface";
 import {NES_VARIANTS} from "../system/nes/nes_common";
 import {NES} from "../system/nes/nes";
 
+export class framevars_t {
+    master_frame: u64 = 0
+    x: u32 = 0
+    scanline: u32 = 0
+}
+
 export enum JSMOO_SYSTEMS {
     NONE = 0,
     NES_USA,
@@ -17,23 +23,14 @@ export enum input_types {
     KEYBOARD
 }
 
-class bios_manager_t {
-
-}
-
 export class global_player_t {
     system_kind: JSMOO_SYSTEMS = JSMOO_SYSTEMS.NONE
     playing: bool = false
     system!: systemEmulator
     ready: bool = false;
     tech_specs: machine_description = new machine_description();
-    bios_manager: bios_manager_t
     output_buffer: usize = heap.alloc(256*256*4);
     input_buffer: usize = heap.alloc(1024*1024*2);
-
-    constructor() {
-        this.bios_manager = new bios_manager_t();
-    }
 
     set_system(to: JSMOO_SYSTEMS): void {
         if (this.system_kind == to) {
@@ -57,7 +54,7 @@ export class global_player_t {
 
     ext_set_system(to: String): bool {
         let ct: JSMOO_SYSTEMS = JSMOO_SYSTEMS.NONE;
-        if (to == 'nes') {
+        if (to == 'nes_as') {
             ct = JSMOO_SYSTEMS.NES_USA;
         }
         switch(ct) {
@@ -72,8 +69,12 @@ export class global_player_t {
     }
 
     load_rom(sz: u32): void {
-        let r: usize = this.input_buffer;
+        //let r: usize = this.input_buffer;
         this.system.load_ROM(this.input_buffer, sz);
+    }
+
+    get_framevars(): framevars_t {
+        return this.system.get_framevars();
     }
 
     run_frame(): void {
@@ -81,10 +82,6 @@ export class global_player_t {
             this.system.map_inputs(this.input_buffer);
             this.system.finish_frame();
         }
-    }
-
-    present(): void {
-        this.system.present(this.output_buffer);
     }
 }
 
@@ -102,7 +99,6 @@ export function gp_load_ROM_from_RAM(player: global_player_t, sz: u32): void {
 
 export function gp_run_frame(player: global_player_t): void {
     player.run_frame();
-    player.present();
 }
 
 export function gp_get_specs(player: global_player_t): machine_description {
@@ -111,4 +107,8 @@ export function gp_get_specs(player: global_player_t): machine_description {
 
 export function gp_get_input_buffer(player: global_player_t): usize {
     return player.input_buffer;
+}
+
+export function gp_get_framevars(player: global_player_t): framevars_t {
+    return player.get_framevars();
 }

@@ -79,36 +79,46 @@ class js_wrapper_t {
 		this.input_buffer = new Int32Array(256);
 
 		// JS wraps the AS! yay?
+		this.emu_wasm = false;
 		this.as_wrapper = new gp_wrapper_t();
 		this.tech_specs = null;
-
-		this.as_framebuffer = [new SharedArrayBuffer(0), new SharedArrayBuffer(0)];
+		this.out_ptr = 0;
     }
 
     update_keymap(keymap) {
-		if (!USE_ASSEMBLYSCRIPT) {
+		if (this.emu_wasm) {
+			let obuf = new Uint32Array(this.as_wrapper.wasm.memory.buffer)
+			let startpos = this.as_wrapper.input_buffer_ptr >>> 2;
+			for (let i in keymap) {
+				obuf[startpos + keymap[i].buf_pos] = keymap[i].value;
+			}
+		} else {
 			for (let i in keymap)
 				this.input_buffer[keymap[i].buf_pos] = keymap[i].value;
 			this.system.map_inputs(this.input_buffer);
-		} else {
-            let obuf = new Uint32Array(this.as_wrapper.wasm.memory.buffer)
-            let startpos = this.as_wrapper.input_buffer_ptr >>> 2;
-            for (let i in keymap) {
-                obuf[startpos + keymap[i].buf_pos] = keymap[i].value;
-            }
 		}
     }
 
+	async do_as_setup() {
+		await this.as_wrapper.do_setup();
+	}
+
     set_system(to, bios) {
-		if (this.system !== null) {
-			this.system.killall();
-			delete this.system;
-			this.system = null;
+		if (!this.emu_wasm) {
+			if (this.system !== null) {
+				this.system.killall();
+				delete this.system;
+				this.system = null;
+			}
+		} else {
+			console.log('add gp_killall?');
+			//this.as_wrapper.wasm.gp_
 		}
 		if (typeof to !== 'undefined') {
 			this.system_kind = to;
 		}
 		console.log('SETTING SYSTEM', this.system_kind, bios)
+		this.emu_wasm = false;
 		switch(this.system_kind) {
 			case 'gg':
 				this.system = new SMSGG(bios, SMSGG_variants.GG, REGION.NTSC);
@@ -126,6 +136,11 @@ class js_wrapper_t {
 			case 'nes':
 				this.system = new NES();
 				break;
+			case 'nes_as':
+				this.emu_wasm = true;
+				console.log('GP!', this.as_wrapper.global_player)
+            	this.as_wrapper.wasm.gp_set_system(this.as_wrapper.global_player, to);
+				break;
 			case 'spectrum':
 				this.system = new ZXSpectrum(bios, ZXSpectrum_variants.s48k);
 				break;
@@ -136,11 +151,11 @@ class js_wrapper_t {
     }
 
     load_ROM_from_RAM(name, ROM) {
-		if (!USE_ASSEMBLYSCRIPT) {
-			this.system.load_ROM_from_RAM(name, ROM);
+		if (this.emu_wasm) {
+            this.as_wrapper.copy_to_input_buffer(ROM);
+            this.as_wrapper.wasm.gp_load_ROM_from_RAM(this.as_wrapper.global_player, ROM.byteLength);
 		} else {
-            this.as_wrapper.copy_to_input_buffer(e.ROM);
-            this.as_wrapper.wasm.gp_load_ROM_from_RAM(this.as_wrapper.global_player, e.ROM.byteLength);
+			this.system.load_ROM_from_RAM(name, ROM);
 		}
     }
 
@@ -151,23 +166,29 @@ class js_wrapper_t {
 	}
 
     run_frame() {
-		if (!USE_ASSEMBLYSCRIPT) {
+		if (this.emu_wasm) {
+			dbg.do_break = false;
+            this.as_wrapper.wasm.gp_run_frame(this.as_wrapper.global_player);
+            let rd = new Uint32Array(this.as_wrapper.wasm.memory.buffer);
+            let to_copy = Math.ceil((this.tech_specs.x_resolution * this.tech_specs.y_resolution) / 2);
+			let cbuf = new Uint32Array(this.shared_buf1);
+            cbuf.set(rd.slice(this.out_ptr >>> 2, (this.out_ptr>>>2)+to_copy))
+			return Object.assign({}, {buffer_num: 0}, this.as_wrapper.wasm.gp_get_framevars());
+		} else {
 			dbg.do_break = false;
 			let r = this.system.run_frame();
 			return Object.assign({}, r, this.system.get_framevars());
-		} else {
-            this.as_wrapper.wasm.gp_run_frame(this.as_wrapper.global_player);
-            let rd = new Uint32Array(this.as_wrapper.wasm.memory.buffer);
-            let to_copy = Math.ceil((this.tech_specs.x_resolution * this.tech_specs.y_resolution) / 4) * 4;
-            this.as_framebuffer.set(rd.slice(this.out_ptr >>> 2, (this.out_ptr>>>2)+to_copy));
 		}
     }
 
     get_specs() {
-        this.tech_specs = this.system.get_description();
-		if (USE_ASSEMBLYSCRIPT) {
-			console.log('HERE2!');
-			//let fb1 = new SharedArrayBuffer(this.tech_specs.)
+		if (this.emu_wasm) {
+			this.tech_specs = this.as_wrapper.wasm.gp_get_specs(this.as_wrapper.global_player);
+            this.shared_buf1 = new SharedArrayBuffer(this.tech_specs.out_size);
+            this.shared_buf2 = new SharedArrayBuffer(this.tech_specs.out_size);
+            this.tech_specs.output_buffer = [this.shared_buf1, this.shared_buf2];
+		} else {
+			this.tech_specs = this.system.get_description();
 		}
 		return this.tech_specs;
     }

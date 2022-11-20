@@ -76,14 +76,14 @@ let default_system_options = {
 }
 
 async function get_ui_system_options() {
-	let r = await bfs.read_file('/config/' + global_player.system_kind + '.json');
+	let r = await bfs.read_file('/config/' + ROMKIND + '.json');
 	if (r === null)
 		return structuredClone(default_system_options);
 	return r;
 }
 
 async function set_ui_system_options(g) {
-	await bfs.write_file('/config/' + global_player.system_kind + '.json', g);
+	await bfs.write_file('/config/' + ROMKIND + '.json', g);
 }
 
 async function set_last_system(whichone) {
@@ -156,9 +156,18 @@ async function reload_roms(where) {
 	await load_selected_rom();
 }
 
+let ROMKIND = DEFAULT_SYSTEM;
+if (ROMKIND.indexOf('_as') !== -1) {
+	ROMKIND = ROMKIND.replace('_as', '');
+}
+
 async function system_selected(where) {
 	ui_el.system_select.value = where;
-	await reload_roms(where);
+	ROMKIND = where;
+	if (ROMKIND.indexOf('_as') !== -1) {
+		ROMKIND = ROMKIND.replace('_as', '');
+	}
+	await reload_roms(ROMKIND);
 }
 
 function click_enable_tracing() {

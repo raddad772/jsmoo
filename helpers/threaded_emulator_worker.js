@@ -9,7 +9,6 @@
     memory}
     from "/assemblyscript/build/release_stable.js";*/
 const DO_WASM_IMPORTS = true;
-const USE_ASSEMBLYSCRIPT = false
 importScripts('/helpers/thread_common.js');
 //importScripts('/helpers/as_wrapper.js');
 importScripts('/helpers/js_wrapper.js');
@@ -23,11 +22,11 @@ class threaded_emulator_worker_t {
         this.frames_since_reset = 0;
         this.setup = false;
         this.tech_specs = null;
-        this.as_wrapper = new gp_wrapper_t();
         this.js_wrapper = new js_wrapper_t();
         this.framebuffer_sab = null;
         this.framebuffer = new Uint8Array(1);
         this.general_sab = null;
+
 
         this.step = 0;
     }
@@ -42,10 +41,9 @@ class threaded_emulator_worker_t {
     }
 
     async onmessage(e) {
-        await this.as_wrapper.do_setup();
+        await this.js_wrapper.do_as_setup();
         switch(e.kind) {
             case emulator_messages.startup:
-                //this.framebuffer_sab = e.framebuffer_sab;
                 this.general_sab = e.general_sab;
                 this.step_done(emulator_messages.step1_done);
                 return;
@@ -146,14 +144,8 @@ class threaded_emulator_worker_t {
     }
 
     do_set_system(kind, bios) {
-        if (USE_ASSEMBLYSCRIPT) {
-            this.as_wrapper.wasm.gp_set_system(this.as_wrapper.global_player, kind);
-            this.tech_specs = this.as_wrapper.wasm.gp_get_specs(this.as_wrapper.global_player);
-            this.out_ptr = this.tech_specs.out_ptr;
-        } else {
-            this.js_wrapper.set_system(kind, bios);
-            this.tech_specs = this.js_wrapper.get_specs();
-        }
+        this.js_wrapper.set_system(kind, bios);
+        this.tech_specs = this.js_wrapper.get_specs();
         this.send_specs(this.tech_specs)
     }
 

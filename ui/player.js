@@ -5,7 +5,7 @@
 //const USE_THREADED_PLAYER = true;
 const SNES_STR = 'snes';
 const NES_STR = 'nes';
-const NES_STR = 'nes_as';
+const NES_AS_STR = 'nes_as';
 const COMMODORE64_STR = 'c64';
 const GG_STR = 'gg';
 const SMS_STR = 'sms';
@@ -32,6 +32,7 @@ class input_provider_t {
 			this.keymap[i].value = 0;
 		}
 		switch(this.system_kind) {
+			case 'nes_as':
 			case 'nes':
 				this.setup_nes();
 				break;
@@ -309,7 +310,7 @@ class global_player_t {
         this.queued_name = null;
         this.general_sab = new SharedArrayBuffer(64);
 
-
+		this.emu_wasm = false;
 
 		/**
 		 * @type {machine_description}
@@ -452,6 +453,7 @@ class global_player_t {
 		switch(e.kind) {
 			case emulator_messages.specs:
 				this.tech_specs = e.specs;
+				console.log('GOT TECH SPECS', this.tech_specs);
 				this.update_tech_specs();
 				break;
             case emulator_messages.step1_done:
@@ -487,8 +489,9 @@ class global_player_t {
 	}
 
 	update_tech_specs() {
+		console.log(this.tech_specs);
 		this.canvas_manager.set_size(this.tech_specs.x_resolution, this.tech_specs.y_resolution, this.tech_specs.xrh, this.tech_specs.xrw);
-		this.canvas_manager.set_overscan(this.tech_specs.overscan_left, this.tech_specs.overscan_right, this.tech_specs.overscan_top, this.tech_specs.overscan_bottom);
+		this.canvas_manager.set_overscan(this.tech_specs.overscan.left, this.tech_specs.overscan.right, this.tech_specs.overscan.top, this.tech_specs.overscan.bottom);
 		this.shared_output_buffers[0] = this.tech_specs.output_buffer[0];
 		this.shared_output_buffers[1] = this.tech_specs.output_buffer[1];
 		this.set_fps_target(this.tech_specs.fps);

@@ -110,10 +110,10 @@ class NES {
         d.xrh = 8;
         d.xrw = 7;
 
-        d.overscan_top = 8;
-        d.overscan_bottom = 8;
-        d.overscan_left = 8;
-        d.overscan_right = 8;
+        d.overscan.top = 8;
+        d.overscan.bottom = 8;
+        d.overscan.left = 8;
+        d.overscan.right = 8;
 
         d.output_buffer[0] = this.ppu.output_shared_buffers[0];
         d.output_buffer[1] = this.ppu.output_shared_buffers[1];

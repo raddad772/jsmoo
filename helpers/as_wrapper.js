@@ -16,6 +16,7 @@ class gp_wrapper_t {
         this.wasm = null;
         this.wasm_raw = null;
         this.setup = false;
+        this.in_setup = false;
         this.input_buffer_ptr = null;
 
         this.global_player = null;
@@ -29,11 +30,14 @@ class gp_wrapper_t {
     }
 
     async do_setup() {
-        if (this.setup) return;
+        if ((this.setup) || (this.in_setup)) return
+        this.in_setup = true;
         await this.fetch_wasm();
         await this.instantiate();
         this.global_player = this.wasm.new_global_player();
+        console.log('GP!', this.global_player);
         this.input_buffer_ptr = this.wasm.gp_get_input_buffer(this.global_player);
+        this.in_setup = false;
         this.setup = true;
     }
 

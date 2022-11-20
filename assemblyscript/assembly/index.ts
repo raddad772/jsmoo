@@ -13,5 +13,6 @@ export {
     gp_set_system,
     new_global_player,
     gp_get_specs,
-    gp_get_input_buffer
+    gp_get_input_buffer,
+    gp_get_framevars,
 } from "./glue/global_player";

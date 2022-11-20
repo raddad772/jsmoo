@@ -222,7 +222,6 @@ class NES_ppu {
                 this.io.emph_g = (val & 0x40) >>> 6;
                 this.io.emph_b = (val & 0x80) >>> 7;
                 this.io.emph_bits = (val & 0xE0) << 1;
-                // NOTFINISHED: emphasizes
                 return;
             case 0x2003: // OAMADDR
                 this.io.OAM_addr = val;
