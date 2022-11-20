@@ -535,7 +535,7 @@ class global_player_t {
 		switch(this.system_kind) {
 			case 'nes_as':
 			case 'nes':
-				NES_present(data, imgdata.data, buf, this.canvas_manager.correct_overscan, this.tech_specs.overscan_left, this.tech_specs.overscan_right, this.tech_specs.overscan_top, this.tech_specs.overscan_bottom);
+				NES_present(data, imgdata.data, buf, this.canvas_manager.correct_overscan, this.tech_specs.overscan);
 				break;
 			case 'gg':
 				GG_present(data, imgdata.data, buf);
