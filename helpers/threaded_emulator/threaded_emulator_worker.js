@@ -9,9 +9,9 @@
     memory}
     from "/assemblyscript/build/release_stable.js";*/
 const DO_WASM_IMPORTS = true;
-const USE_ASSEMBLYSCRIPT = false;
+const USE_ASSEMBLYSCRIPT = false
 importScripts('/helpers/thread_common.js');
-importScripts('/helpers/as_wrapper.js');
+//importScripts('/helpers/as_wrapper.js');
 importScripts('/helpers/js_wrapper.js');
 
 var ui = {
@@ -33,28 +33,12 @@ class threaded_emulator_worker_t {
     }
 
     output_input(keymap) {
-        if (!USE_ASSEMBLYSCRIPT) {
-            this.js_wrapper.update_keymap(keymap);
-        }
-        else {
-            let obuf = new Uint32Array(this.as_wrapper.wasm.memory.buffer)
-            let startpos = this.as_wrapper.input_buffer_ptr >>> 2;
-            for (let i in keymap) {
-                obuf[startpos + keymap[i].buf_pos] = keymap[i].value;
-            }
-        }
+        this.js_wrapper.update_keymap(keymap);
     }
 
     async process_load_ROM(e) {
-        if (USE_ASSEMBLYSCRIPT) {
-            this.as_wrapper.copy_to_input_buffer(e.ROM);
-            this.as_wrapper.wasm.gp_load_ROM_from_RAM(this.as_wrapper.global_player, e.ROM.byteLength);
-            this.step_done(emulator_messages.step3_done);
-        }
-        else {
-            this.js_wrapper.load_ROM_from_RAM(e.name, e.ROM);
-            this.step_done(emulator_messages.step3_done);
-        }
+        this.js_wrapper.load_ROM_from_RAM(e.name, e.ROM);
+        this.step_done(emulator_messages.step3_done);
     }
 
     async onmessage(e) {
@@ -154,22 +138,11 @@ class threaded_emulator_worker_t {
     }
 
     run_frame() {
-        if (USE_ASSEMBLYSCRIPT) {
-            let ts = performance.now();
-            this.as_wrapper.wasm.gp_run_frame(this.as_wrapper.global_player);
-            let span = performance.now() - ts;
-            console.log('TIME PER FRAME:', span.toFixed(4));
-            let rd = new Uint32Array(this.as_wrapper.wasm.memory.buffer);
-            let to_copy = Math.ceil((this.tech_specs.x_resolution * this.tech_specs.y_resolution) / 4) * 4;
-            //this.framebuffer.set(rd.slice(this.out_ptr >>> 2, (this.out_ptr>>>2)+to_copy));
-            this.send_frame_done();
-        } else {
-            let ts = performance.now();
-            let on = this.js_wrapper.run_frame();
-            let span = performance.now() - ts;
-            //console.log('TIME PER FRAME:', span.toFixed(4));
-            this.send_frame_done(on);
-        }
+        let ts = performance.now();
+        let on = this.js_wrapper.run_frame();
+        let span = performance.now() - ts;
+        //console.log('TIME PER FRAME:', span.toFixed(4));
+        this.send_frame_done(on);
     }
 
     do_set_system(kind, bios) {

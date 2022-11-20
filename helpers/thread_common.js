@@ -1,5 +1,15 @@
 "use strict";
 
+const AUDIOWORKER_STATE = Object.freeze({
+    wait_for_init: 0,
+    paused: 1,
+    play: 2
+});
+
+class audio_description_t {
+
+}
+
 const SPECTRUM_KEYS = Object.freeze([
     '1', '2', '3', '4', '5', '0', '9', '8', '7', '6', 'q', 'w', 'e', 'r', 't',
     'p', 'o', 'i', 'u', 'y', 'a', 's', 'd', 'f', 'g', 'enter', 'l', 'k', 'j', 'h',

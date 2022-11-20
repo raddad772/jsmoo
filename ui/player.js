@@ -1,8 +1,8 @@
 'use strict';
 
 
-const USE_ASSEMBLYSCRIPT = false;
-const USE_THREADED_PLAYER = true;
+//const USE_ASSEMBLYSCRIPT = false;
+//const USE_THREADED_PLAYER = true;
 const SNES_STR = 'snes';
 const NES_STR = 'nes';
 const COMMODORE64_STR = 'c64';
@@ -291,10 +291,9 @@ class global_player_t {
 		this.playing = false;
 		this.system = null;
 		this.timing_thread = new timing_thread_t(this.on_timing_message.bind(this));
-		if (USE_THREADED_PLAYER) {
-			this.player_thread = new threaded_emulator_t(this.on_player_message.bind(this));
-			this.shared_output_buffers = [null, null];
-		}
+		this.audio = new ConsoleAudioContext();
+		this.player_thread = new threaded_emulator_t(this.on_player_message.bind(this));
+		this.shared_output_buffers = [null, null];
 		this.ready = false;
 		/**
 		 * @type {machine_description}
@@ -326,16 +325,12 @@ class global_player_t {
 	async onload() {
 		this.bios_manager = new bios_manager_t();
 		await this.bios_manager.onload();
-		if (USE_THREADED_PLAYER) {
-			this.player_thread.onload();
-			this.player_thread.send_set_system(this.system_kind, this.bios_manager.bioses[this.system_kind]);
-		}
+		this.player_thread.onload();
+		this.player_thread.send_set_system(this.system_kind, this.bios_manager.bioses[this.system_kind]);
 	}
 
 	ui_event(target, data) {
-		if (USE_THREADED_PLAYER) {
-			this.player_thread.send_ui_event({target: target, data: data});
-		}
+		this.player_thread.send_ui_event({target: target, data: data});
 	}
 
 	save_state(num) {
@@ -355,43 +350,6 @@ class global_player_t {
 		this.timing_thread.set_fps_target(to);
 	}
 
-	update_status() {
-		if (this.system === null) return;
-		if (!USE_THREADED_PLAYER) {
-			this.system.update_status(ui_el.current_frame, ui_el.current_scanline, ui_el.current_x);
-		}
-	}
-
-	after_break(whodidit) {
-		switch(this.system_kind) {
-			case 'gb':
-				this.system.cycles_left = 0;
-				break;
-			case 'nes':
-				this.system.cycles_left = 0;
-				break;
-			case 'snes':
-				let overflow = this.system.clock.cpu_deficit;
-				console.log('BREAK AT PPU Y', this.system.clock.scanline.ppu_y);
-				this.system.clock.cpu_deficit = 0;
-				if (whodidit === D_RESOURCE_TYPES.SPC700) {
-					this.system.ppu.catch_up();
-				} else {
-					this.system.apu.catch_up();
-					this.system.ppu.catch_up();
-				}
-				console.log('AFTER BREAK deficits', this.system.clock.cpu_deficit, this.system.clock.apu_deficit, this.system.clock.ppu_deficit)
-				break;
-			case 'spectrum':
-				break;
-			case 'genericz80':
-				break;
-			case 'gg':
-			case 'sms':
-				break;
-		}
-	}
-
 	pause() {
 		this.playing = false;
 		this.timing_thread.pause();
@@ -400,34 +358,29 @@ class global_player_t {
 		input_config.emu_input.between_frames();
 	}
 
-	play() {
+	async play() {
 		this.playing = true;
+		await this.audio.grab_context();
 		this.timing_thread.play();
 		ui_el.system_select.disabled = true;
 		ui_el.play_button.innerHTML = "Pause";
 	}
 
     step_master(howmany) {
-        dbg.do_break = false;
-        if (USE_THREADED_PLAYER) {
-			this.ui_event('button_click', {'id': 'master_step', 'steps': howmany})
-		}
-		else {
-			this.system.step_master(howmany);
-        	this.after_step();
-		}
-        //this.system.present();
+		dbg.do_break = false;
+		this.ui_event('button_click', {'id': 'master_step', 'steps': howmany})
     }
 
     step_scanlines(howmany) {
-        dbg.do_break = false;
+        /*dbg.do_break = false;
         this.system.step_scanlines(howmany);
         this.system.present();
-        this.after_step();
+        this.after_step();*/
+		debugger;
     }
 
     step_seconds(howmany) {
-        let frames = this.tech_specs.fps * howmany;
+        /*let frames = this.tech_specs.fps * howmany;
         this.system.enable_display(false);
         for (let i = 0; i < frames; i++) {
             this.system.run_frame();
@@ -435,40 +388,18 @@ class global_player_t {
         }
         this.system.enable_display(true);
         this.system.present();
-		this.after_step();
-    }
-
-    after_step() {
-        this.system.catch_up();
-        this.update_status();
-        if (dbg.tracing) {
-            dbg.traces.draw(dconsole);
-        }
-        if (WDC_LOG_DMAs) {
-		    dbg.console_DMA_logs();
-	    }
+		this.after_step();*/
+		debugger;
     }
 
 	do_save_state() {
 		if (this.queued_save_state === -1) return;
-		if (USE_THREADED_PLAYER) {
-			this.player_thread.send_save_state_request();
-		}
-		else {
-			this.ss = this.system.serialize();
-			console.log(this.ss);
-		}
-		this.queued_save_state = -1;
+		this.player_thread.send_save_state_request();
 	}
 
 	do_load_state() {
 		if (this.queued_load_state === -1) return;
-		if (USE_THREADED_PLAYER) {
-			this.player_thread.send_load_state(this.ss);
-		}
-		else {
-			this.system.deserialize(this.ss);
-		}
+		this.player_thread.send_load_state(this.ss);
 		this.queued_load_state = -1;
 	}
 
@@ -497,6 +428,7 @@ class global_player_t {
 	update_tech_specs() {
 		this.canvas_manager.set_size(this.tech_specs.x_resolution, this.tech_specs.y_resolution, this.tech_specs.xrh, this.tech_specs.xrw);
 		this.canvas_manager.set_overscan(this.tech_specs.overscan_left, this.tech_specs.overscan_right, this.tech_specs.overscan_top, this.tech_specs.overscan_bottom);
+		console.log(this.tech_specs);
 		this.shared_output_buffers[0] = this.tech_specs.output_buffer[0];
 		this.shared_output_buffers[1] = this.tech_specs.output_buffer[1];
 		this.set_fps_target(this.tech_specs.fps);
@@ -511,37 +443,19 @@ class global_player_t {
 	}
 
 	run_frame() {
-		if (USE_THREADED_PLAYER) {
-			this.input_provider.latch();
-			let r = this.input_provider.poll();
-			this.player_thread.send_request_frame(r);
-		}
-		else {
-			let t = performance.now();
-			this.system.run_frame();
-			let span = performance.now() - t;
-			//console.log('FRAMETIME', span.toFixed(2));
-		}
+		this.input_provider.latch();
+		let r = this.input_provider.poll();
+		this.player_thread.send_request_frame(r);
 	}
 
 	present(data) {
 		this.frame_present++;
-		if (USE_THREADED_PLAYER) {
-			this.timing_thread.frame_done();
-			if (USE_ASSEMBLYSCRIPT) {
-				this.player_thread.present(this.canvas_manager)
-			}
-			else {
-				this.present_system(data);
-				this.update_framevars(data);
-			}
-		}
-		else this.system.present()
+		this.timing_thread.frame_done();
+		this.present_system(data);
+		this.update_framevars(data);
 	}
 
 	update_framevars(data) {
-		// curframe, curline, curx
-		//		this.system.update_status(ui_el.current_frame, ui_el.current_scanline, ui_el.current_x);
 		ui_el.current_frame.innerHTML = data.master_frame;
         ui_el.current_scanline.innerHTML = data.scanline;
         ui_el.current_x.innerHTML = data.x;
@@ -586,15 +500,10 @@ class global_player_t {
 			case timing_messages.frame_request:
 				if (this.playing) {
 					this.run_frame();
-					if (!USE_THREADED_PLAYER)
-						this.timing_thread.frame_done();
 					if (this.queued_save_state !== -1)
 						this.do_save_state();
 					if (this.queued_load_state !== -1)
 						this.do_load_state();
-					//this.system.present();
-					if (!USE_THREADED_PLAYER) this.present();
-					this.update_status();
 					input_config.emu_input.between_frames();
 				}
 				else {
@@ -611,64 +520,13 @@ class global_player_t {
 	}
 
 	set_system(to) {
-		if (USE_THREADED_PLAYER) {
-			this.system_kind = to;
-			this.player_thread.send_set_system(to, this.bios_manager.bioses[this.system_kind])
-			return;
-		}
-		if (!USE_THREADED_PLAYER) {
-			if (this.system !== null) {
-				this.system.killall();
-				delete this.system;
-				this.system = null;
-			}
-		}
-		if (to === null) {
-			console.log('CANNOT CHANGE SysTEM TO NULL?');
-			return;
-		}
-		if (typeof to !== 'undefined') {
-			this.system_kind = to;
-		}
-		if (!USE_THREADED_PLAYER) {
-			switch (this.system_kind) {
-				case 'gg':
-					this.system = new SMSGG(this.canvas_manager, this.bios_manager.bioses['gg'], SMSGG_variants.GG, REGION.NTSC);
-					//load_bios('/gg/roms/bios.gg');
-					break;
-				case 'gb':
-					this.system = new GameBoy(this.canvas_manager, this.bios_manager.bioses['gb'], GB_variants.DMG);
-					break;
-				case 'sms':
-					this.system = new SMSGG(this.canvas_manager, this.bios_manager.bioses['sms'], SMSGG_variants.SMS2, REGION.NTSC);
-					break;
-				case 'snes':
-					this.system = new SNES(this.canvas_manager);
-					break;
-				case 'nes':
-					this.system = new NES(this.canvas_manager);
-					break;
-				case 'spectrum':
-					this.system = new ZXSpectrum(this.canvas_manager, this.bios_manager.bioses['spectrum'], ZXSpectrum_variants.s48k);
-					break;
-				case 'genericz80':
-					this.system = new generic_z80_computer();
-					break;
-				default:
-					alert('system not found');
-					return;
-			}
-			this.tech_specs = this.system.get_description();
-		}
-		this.ready = true;
+		this.system_kind = to;
+		this.player_thread.send_set_system(to, this.bios_manager.bioses[this.system_kind])
 	}
 
 	load_rom(name, what) {
 		console.log('GOT COMMADN TO LOAD ROM', name, what);
-		if (USE_THREADED_PLAYER)
-			this.player_thread.send_load_ROM(name, new Uint8Array(what));
-		else
-			this.system.load_ROM_from_RAM(what);
+		this.player_thread.send_load_ROM(name, new Uint8Array(what));
 	}
 
 	load_bios(what) {

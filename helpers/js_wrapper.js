@@ -57,17 +57,18 @@ importScripts(
 	'/component/cpu/spc700/spc700_generated_opcodes.js', '/system/snes/snes_memory.js',
 	'/system/snes/snes_clock.js', '/system/snes/snes_clock_generator.js',
 	'/system/snes/snes_cart.js', '/system/snes/ppu/snes_ppu.js',
-	'/system/snes/snes.js'
+	'/system/snes/snes.js', '/system/snes/ppu/ppufast_funcs.js', '/system/snes/ppu/snes_ppu_shader_project.js',
+	'/system/snes/ppu/snes_ppu_worker.js'
 );
+
+// AssemblyScript cores
+importScripts('/helpers/as_wrapper.js')
 
 // SNES multithreading
 /*importScripts(
 	, '/system/snes/ppu/snes_ppu_worker.js',
-	'/system/snes/ppu/ppufast_funcs.js'
 )*/
 
-importScripts('/system/snes/ppu/ppufast_funcs.js', '/system/snes/ppu/snes_ppu_shader_project.js');
-importScripts('/system/snes/ppu/snes_ppu_worker.js');
 
 class js_wrapper_t {
     constructor() {
@@ -76,14 +77,26 @@ class js_wrapper_t {
          */
         this.system = null;
 		this.input_buffer = new Int32Array(256);
+
+		// JS wraps the AS! yay?
+		this.as_wrapper = new gp_wrapper_t();
+		this.tech_specs = null;
+
+		this.as_framebuffer = [new SharedArrayBuffer(0), new SharedArrayBuffer(0)];
     }
 
     update_keymap(keymap) {
-		for (let i in keymap)
-		{
-			this.input_buffer[keymap[i].buf_pos] = keymap[i].value;
+		if (!USE_ASSEMBLYSCRIPT) {
+			for (let i in keymap)
+				this.input_buffer[keymap[i].buf_pos] = keymap[i].value;
+			this.system.map_inputs(this.input_buffer);
+		} else {
+            let obuf = new Uint32Array(this.as_wrapper.wasm.memory.buffer)
+            let startpos = this.as_wrapper.input_buffer_ptr >>> 2;
+            for (let i in keymap) {
+                obuf[startpos + keymap[i].buf_pos] = keymap[i].value;
+            }
 		}
-		this.system.map_inputs(this.input_buffer);
     }
 
     set_system(to, bios) {
@@ -123,7 +136,12 @@ class js_wrapper_t {
     }
 
     load_ROM_from_RAM(name, ROM) {
-        this.system.load_ROM_from_RAM(name, ROM);
+		if (!USE_ASSEMBLYSCRIPT) {
+			this.system.load_ROM_from_RAM(name, ROM);
+		} else {
+            this.as_wrapper.copy_to_input_buffer(e.ROM);
+            this.as_wrapper.wasm.gp_load_ROM_from_RAM(this.as_wrapper.global_player, e.ROM.byteLength);
+		}
     }
 
 	step_master(howmany) {
@@ -133,12 +151,24 @@ class js_wrapper_t {
 	}
 
     run_frame() {
-		dbg.do_break = false;
-        let r = this.system.run_frame();
-		return Object.assign({}, r, this.system.get_framevars());
+		if (!USE_ASSEMBLYSCRIPT) {
+			dbg.do_break = false;
+			let r = this.system.run_frame();
+			return Object.assign({}, r, this.system.get_framevars());
+		} else {
+            this.as_wrapper.wasm.gp_run_frame(this.as_wrapper.global_player);
+            let rd = new Uint32Array(this.as_wrapper.wasm.memory.buffer);
+            let to_copy = Math.ceil((this.tech_specs.x_resolution * this.tech_specs.y_resolution) / 4) * 4;
+            this.as_framebuffer.set(rd.slice(this.out_ptr >>> 2, (this.out_ptr>>>2)+to_copy));
+		}
     }
 
     get_specs() {
-        return this.system.get_description();
+        this.tech_specs = this.system.get_description();
+		if (USE_ASSEMBLYSCRIPT) {
+			console.log('HERE2!');
+			//let fb1 = new SharedArrayBuffer(this.tech_specs.)
+		}
+		return this.tech_specs;
     }
 }

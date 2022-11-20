@@ -406,7 +406,6 @@ function click_play() {
 		global_player.play();
 	} else {
 		global_player.pause();
-		global_player.update_status();
 		stop_fps_count();
 	}
 }
