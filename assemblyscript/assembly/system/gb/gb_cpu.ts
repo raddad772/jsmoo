@@ -144,14 +144,13 @@ export class GB_CPU {
         this.variant = variant;
 
         this.cpu = new SM83_t(variant, clock, bus);
-        this.bus.cpu = this;
-
         this.timer = new GB_timer(this.cpu.regs);
-
         this.tracing = false;
+
+        this.bus.cpu = this;
     }
 
-    update_inputs(inp1: gb_inputs) {
+    update_inputs(inp1: gb_inputs): void {
         this.input_buffer.a = inp1.a;
         this.input_buffer.b = inp1.b;
         this.input_buffer.up = inp1.up;
@@ -192,10 +191,10 @@ export class GB_CPU {
                 this.io.JOYP.direction_select = (val & 0x10) >>> 4;
                 return;
             case 0xFF01: // SB serial
-                this.FFregs[1] = val;
+                this.FFregs[1] = <u8>val;
                 break;
             case 0xFF02: // SC
-                this.FFregs[2] = val;
+                this.FFregs[2] = <u8>val;
                 //this.cycles_til_serial_interrupt =
                 return;
             case 0xFF04: // DIV
@@ -249,7 +248,7 @@ export class GB_CPU {
         return out3;
     }
 
-    read_IO(addr: u32, val: u32, has_effect: bool = true) {
+    read_IO(addr: u32, val: u32, has_effect: bool = true): u32 {
         switch(addr) {
             case 0xFF00: // JOYP
                 // return not pressed=1 in bottom 4 bits
@@ -338,7 +337,7 @@ export class GB_CPU {
         }
     }
 
-    cycle() {
+    cycle(): void {
         // Update timers
         if (this.cpu.pins.RD && this.cpu.pins.MRQ) {
             this.cpu.pins.D = this.bus.mapper.CPU_read(this.cpu.pins.Addr, 0xCC);

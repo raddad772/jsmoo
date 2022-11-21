@@ -78,7 +78,7 @@ export class SM83_regs_t {
     prefix: u32 = 0;
     poll_IRQ: bool = false;
 
-    stoppable() {
+    stoppable(): bool {
         return false;
     }
 }
@@ -100,7 +100,7 @@ export class SM83_t {
     variant: GB_variants
 
     trace_on: bool = false;
-    trace_peek: null = null
+    //trace_peek: null = null
 
     trace_cycles: u64 = 0
     current_instruction: SM83_opcode_functions = SM83_decoded_opcodes.get(SM83_S_RESET);
@@ -112,15 +112,15 @@ export class SM83_t {
         this.variant = variant;
     }
 
-    enable_tracing(trace_peek: null = null): void {
+    /*enable_tracing(trace_peek: null = null): void {
         console.log('ENABLE THIS ENABLE TRACING')
         this.trace_on = true;
         if (trace_peek !== null)
             this.trace_peek = trace_peek;
         console.log('TRACING ENABLED HERE!')
-    }
+    }*/
 
-    disable_tracing() {
+    disable_tracing(): void {
         console.log('ENABLE THIS DISABLE TRACING');
         if (!this.trace_on) return;
         this.trace_on = false;

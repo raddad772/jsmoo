@@ -27,7 +27,7 @@ class GB_FIFO_item_t {
     palette: u32
     cgb_priority: u32
     sprite_priority: u32
-    sprite_obj: null|GB_PPU_sprite_t = null
+    sprite_obj: GB_PPU_sprite_t|null = null
 
     constructor(pixel: u32 = 0, palette: u32 = 0, cgb_priority: u32 = 0, sprite_priority: u32 = 0) {
         this.pixel = pixel;
@@ -122,7 +122,7 @@ class GB_FIFO_t {
         }
     }
 
-    push(): null|GB_FIFO_item_t {
+    push(): GB_FIFO_item_t|null {
         if (this.num_items >= 8) {
             console.log('NO!');
             return null;
@@ -133,12 +133,12 @@ class GB_FIFO_t {
         return r;
     }
 
-    peek(): null|GB_FIFO_item_t {
+    peek(): GB_FIFO_item_t|null {
         if (this.num_items === 0) return null;
         return this.items[this.head];
     }
 
-    pop(): null|GB_FIFO_item_t {
+    pop(): GB_FIFO_item_t|null {
         if (this.num_items === 0) return null;
         let r = this.items[this.head];
         this.head = (this.head + 1) & 7;
@@ -158,14 +158,14 @@ class GB_px {
 
 class GB_pixel_slice_fetcher {
     variant: GB_variants
-    ppu: GB_PPU
+    ppu: GB_PPU|null = null
     clock: GB_clock
     bus: GB_bus
 
     fetch_cycle: u32 = 0
     fetch_addr: u32 = 0
 
-    fetch_obj: null|GB_PPU_sprite_t = null;
+    fetch_obj: GB_PPU_sprite_t|null = null;
     fetch_bp0: u32 = 0;
     fetch_bp1: u32 = 0;
 
@@ -178,9 +178,8 @@ class GB_pixel_slice_fetcher {
     sprites_queue: GB_FIFO_t
     out_px: GB_px = new GB_px()
 
-    constructor(variant: GB_variants, clock: GB_clock, bus: GB_bus, ppu: GB_PPU) {
+    constructor(variant: GB_variants, clock: GB_clock, bus: GB_bus) {
         this.variant = variant
-        this.ppu = ppu;
 
         this.clock = clock;
         this.bus = bus;
@@ -195,7 +194,7 @@ class GB_pixel_slice_fetcher {
         this.bg_FIFO.clear();
         this.obj_FIFO.clear();
         this.sprites_queue.clear();
-        this.bg_request_x = this.ppu.io.SCX;
+        this.bg_request_x = this.ppu!.io.SCX;
         this.sp_request = 0;
         this.sp_min = 0;
     }
@@ -217,20 +216,20 @@ class GB_pixel_slice_fetcher {
         this.out_px.bg_or_sp = -1;
         if ((this.sp_request == 0) && (!this.bg_FIFO.empty())) {
             this.out_px.had_pixel = true;
-            let has_bg = this.ppu.io.bg_window_enable
+            let has_bg = this.ppu!.io.bg_window_enable
             let bg = this.bg_FIFO.pop();
             let bg_color: u32 = bg!.pixel;
             let has_sp: bool = false;
-            let sp_color: null|u32=null, sp_palette: u32;
+            let sp_color: i32 = -1, sp_palette: u32;
             let use_what:u32; // 0 for BG, 1 for OBJ
-            let obj: null|GB_FIFO_item_t;
+            let obj: GB_FIFO_item_t|null;
 
             if (!this.obj_FIFO.empty()) {
                 obj = this.obj_FIFO.pop();
-                sp_color = obj!.pixel;
+                sp_color = <i32>obj!.pixel;
                 sp_palette = obj!.palette;
             }
-            if (this.ppu.io.obj_enable && (sp_color !== null)) has_sp = true;
+            if (this.ppu!.io.obj_enable && (sp_color !== -1)) has_sp = true;
 
             if ((has_bg) && (!has_sp)) {
                 use_what = 1;
@@ -256,8 +255,8 @@ class GB_pixel_slice_fetcher {
                 this.out_px.palette = 0;
             } else {
                 this.out_px.bg_or_sp = 1;
-                this.out_px.color = sp_color!;
-                this.out_px.palette = sp_palette!;
+                this.out_px.color = sp_color;
+                this.out_px.palette = sp_palette;
             }
         }
         return this.out_px;
@@ -265,12 +264,13 @@ class GB_pixel_slice_fetcher {
 
     run_fetch_cycle(): void {
         // Scan any sprites
-        for (let i: u32 = 0; i < this.ppu.sprites.num; i++) {
-            if ((!this.ppu.OBJ[i].in_q) && (this.ppu.OBJ[i].x == this.clock.lx)) {
+        for (let i: u32 = 0; i < this.ppu!.sprites.num; i++) {
+            let ppuo: GB_PPU_sprite_t = this.ppu!.OBJ[i];
+            if ((!ppuo.in_q) && (ppuo.x == this.clock.lx)) {
                 this.sp_request++;
                 let p = this.sprites_queue.push();
-                p!.sprite_obj = this.ppu.OBJ[i];
-                this.ppu.OBJ[i].in_q = 1;
+                p!.sprite_obj = ppuo;
+                ppuo.in_q = 1;
             }
         }
 
@@ -280,13 +280,13 @@ class GB_pixel_slice_fetcher {
                 this.fetch_cycle = 1;
                 break;
             case 1: // tile
-                if (this.ppu.in_window()) {
-                    tn = this.bus.mapper!.PPU_read(this.ppu.bg_tilemap_addr_window(this.bg_request_x));
-                    this.fetch_addr = this.ppu.bg_tile_addr_window(tn);
+                if (this.ppu!.in_window()) {
+                    tn = this.bus.mapper.PPU_read(this.ppu!.bg_tilemap_addr_window(this.bg_request_x));
+                    this.fetch_addr = this.ppu!.bg_tile_addr_window(tn);
                 }
                 else {
-                    tn = this.bus.mapper.PPU_read(this.ppu.bg_tilemap_addr_nowindow(this.bg_request_x));
-                    this.fetch_addr = this.ppu.bg_tile_addr_nowindow(tn);
+                    tn = this.bus.mapper.PPU_read(this.ppu!.bg_tilemap_addr_nowindow(this.bg_request_x));
+                    this.fetch_addr = this.ppu!.bg_tile_addr_nowindow(tn);
                 }
                 this.fetch_cycle = 2;
                 break;
@@ -310,7 +310,7 @@ class GB_pixel_slice_fetcher {
                 if (this.sp_request > 0) { // SPRITE HIJACK!
                     this.fetch_cycle = 7;
                     this.fetch_obj = this.sprites_queue.peek()!.sprite_obj;
-                    this.fetch_addr = GB_sp_tile_addr(this.fetch_obj!.tile, this.clock.ly - this.fetch_obj!.y, this.ppu.io.sprites_big, this.fetch_obj!.attr & 0x40);
+                    this.fetch_addr = GB_sp_tile_addr(this.fetch_obj!.tile, this.clock.ly - this.fetch_obj!.y, this.ppu!.io.sprites_big, this.fetch_obj!.attr & 0x40);
                 } else { // attempt to push to BG FIFO, which only accepts when empty.
                     if (this.bg_FIFO.empty()) {
                         // Push to FIFO
@@ -321,10 +321,10 @@ class GB_pixel_slice_fetcher {
                             this.fetch_bp1 <<= 1;
                         }
                         this.bg_request_x += 8;
-                        if ((this.ppu.line_cycle < 88) && (!this.ppu.in_window())) {
+                        if ((this.ppu!.line_cycle < 88) && (!this.ppu!.in_window())) {
                             this.bg_request_x -= 8;
                             // Now discard some pixels for scrolling!
-                            let sx = this.ppu.io.SCX & 7;
+                            let sx = this.ppu!.io.SCX & 7;
                             this.bg_FIFO.discard(sx);
                         }
                         this.fetch_cycle = 0; // Restart fetching
@@ -413,7 +413,7 @@ export class GB_PPU {
 
     last_used_buffer: u32 = 0
     cur_output_num: u32 = 0
-    cur_buffer: u32 = 0
+    cur_buffer: usize = 0
 
     constructor(out_buffer: usize, variant: GB_variants, clock: GB_clock, bus: GB_bus) {
         this.out_buffer[0] = out_buffer;
@@ -422,9 +422,8 @@ export class GB_PPU {
         this.variant = variant;
         this.clock = clock;
         this.bus = bus;
-        this.bus.ppu = this;
 
-        this.slice_fetcher = new GB_pixel_slice_fetcher(variant, clock, bus, this);
+        this.slice_fetcher = new GB_pixel_slice_fetcher(variant, clock, bus);
         this.bg_palette[0] = this.bg_palette[1] = this.bg_palette[2] = this.bg_palette[3] = 0;
         this.sp_palette[0] = new StaticArray<u8>(4);
         this.sp_palette[1] = new StaticArray<u8>(4);
@@ -436,6 +435,8 @@ export class GB_PPU {
             this.OBJ[i] = new GB_PPU_sprite_t();
         }
 
+        this.bus.ppu = this;
+        this.slice_fetcher.ppu = this;
         this.disable();
     }
 
@@ -474,7 +475,7 @@ export class GB_PPU {
     }
 
     write_OAM(addr: u32, val: u32): void {
-        if (addr < 0xFEA0) this.OAM[addr - 0xFE00] = val;
+        if (addr < 0xFEA0) this.OAM[addr - 0xFE00] = <u8>val;
     }
 
     read_OAM(addr: u32): u32 {
@@ -533,30 +534,30 @@ export class GB_PPU {
                 return;
             case 0xFF47: // BGP pallete
                 //if (!this.clock.CPU_can_VRAM) return;
-                this.bg_palette[0] = val & 3;
-                this.bg_palette[1] = (val >>> 2) & 3;
-                this.bg_palette[2] = (val >>> 4) & 3;
-                this.bg_palette[3] = (val >>> 6) & 3;
+                this.bg_palette[0] = <u8>(val & 3);
+                this.bg_palette[1] = <u8>((val >>> 2) & 3);
+                this.bg_palette[2] = <u8>((val >>> 4) & 3);
+                this.bg_palette[3] = <u8>((val >>> 6) & 3);
                 return;
             case 0xFF48: // OBP0 sprite palette 0
                 //if (!this.clock.CPU_can_VRAM) return;
-                this.sp_palette[0][0] = val & 3;
-                this.sp_palette[0][1] = (val >>> 2) & 3;
-                this.sp_palette[0][2] = (val >>> 4) & 3;
-                this.sp_palette[0][3] = (val >>> 6) & 3;
+                this.sp_palette[0][0] = <u8>(val & 3);
+                this.sp_palette[0][1] = <u8>((val >>> 2) & 3);
+                this.sp_palette[0][2] = <u8>((val >>> 4) & 3);
+                this.sp_palette[0][3] = <u8>((val >>> 6) & 3);
                 return;
             case 0xFF49: // OBP1 sprite palette 1
                 //if (!this.clock.CPU_can_VRAM) return;
-                this.sp_palette[1][0] = val & 3;
-                this.sp_palette[1][1] = (val >>> 2) & 3;
-                this.sp_palette[1][2] = (val >>> 4) & 3;
-                this.sp_palette[1][3] = (val >>> 6) & 3;
+                this.sp_palette[1][0] = <u8>(val & 3);
+                this.sp_palette[1][1] = <u8>((val >>> 2) & 3);
+                this.sp_palette[1][2] = <u8>((val >>> 4) & 3);
+                this.sp_palette[1][3] = <u8>((val >>> 6) & 3);
                 return;
 
         }
     }
 
-    read_IO(addr: u32, val: u32, has_effect: bool = true) {
+    read_IO(addr: u32, val: u32, has_effect: bool = true): u32 {
         switch(addr) {
             case 0xFF40: // LCDC LCD Control
                 let e: u32 = this.enabled ? 0x80: 0;
@@ -665,7 +666,7 @@ export class GB_PPU {
 
     run_cycles(howmany: u32): void {
         // We don't do anything, and in fact are off, if LCD is off
-        for (let i = 0; i < howmany; i++) {
+        for (let i: u32 = 0; i < howmany; i++) {
             if (this.cycles_til_vblank) {
                 this.cycles_til_vblank--;
                 if (this.cycles_til_vblank === 0)
@@ -684,7 +685,7 @@ export class GB_PPU {
         if (this.window_triggered_on_line) this.clock.wly++;
         this.clock.lx = 0;
         this.clock.ly++;
-        this.is_window_line ||= this.clock.ly === this.io.wy;
+        this.is_window_line = this.is_window_line | (this.clock.ly == this.io.wy);
         this.window_triggered_on_line = false;
         this.line_cycle = 0;
         if (this.clock.ly >= 154)
@@ -826,7 +827,7 @@ export class GB_PPU {
 
         if (p.had_pixel) {
             if (this.clock.lx > 7) {
-                let cv;
+                let cv: u8;
                 if (p.bg_or_sp === 0) {
                     cv = this.bg_palette[p.color];
                 } else {

@@ -38,7 +38,7 @@ export class NES_bus {
         this.mapper.CPU_write(addr, val);
     }
 
-    PPU_reg_read(addr: u32, val: u32): u32 {
+    PPU_reg_read(addr: u32, val: u32, has_effect: u32): u32 {
         return this.ppu.reg_read(addr, val);
     }
 

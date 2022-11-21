@@ -47,14 +47,14 @@ export class GB_mapper_none implements GB_mapper{
         this.WRAM_bank_offset = 0x1000;
     }
 
-    CPU_read(addr: u32, val: u32) {
+    CPU_read(addr: u32, val: u32): u32 {
         if (this.clock.bootROM_enabled) {
             if (addr < 0x100) {
-                let r = this.bus.BIOS[addr];
+                let r: u32 = this.BIOS[addr];
                 return r;
             }
             if (this.BIOS_big && (addr >= 0x200) && (addr < 0x900))
-                return this.bus.BIOS[addr - 0x100];
+                return this.BIOS[addr - 0x100];
         }
         if (addr < 0x4000) // ROM lo bank
             return this.ROM[addr];
@@ -89,23 +89,23 @@ export class GB_mapper_none implements GB_mapper{
             return;
         if (addr < 0xA000) { // VRAM
             if (this.clock.CPU_can_VRAM)
-                this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset] = val;
+                this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset] = <u8>val;
             return;
         }
         if (addr < 0xC000) { // cart RAM
             if (!this.has_RAM) return;
-            this.cartRAM[(addr - 0xA000) & this.RAM_mask] = val;
+            this.cartRAM[(addr - 0xA000) & this.RAM_mask] = <u8>val;
             return;
         }
         // adjust address for mirroring
         if ((addr > 0xE000) && (addr < 0xFE00)) addr -= 0x2000;
 
         if (addr < 0xD000) { // WRAM lo bank
-            this.WRAM[addr & 0xFFF] = val;
+            this.WRAM[addr & 0xFFF] = <u8>val;
             return;
         }
         if (addr < 0xE000) { // WRAM hi bank
-            this.WRAM[(addr & 0xFFF) + this.WRAM_bank_offset] = val;
+            this.WRAM[(addr & 0xFFF) + this.WRAM_bank_offset] = <u8>val;
             return;
         }
         if (addr < 0xFF00) // OAM
@@ -113,7 +113,7 @@ export class GB_mapper_none implements GB_mapper{
         if (addr < 0xFF80) // registers
             return this.bus.CPU_write_IO(addr, val);
         if (addr < 0xFFFF) { // HRAM always accessible
-            this.HRAM[addr - 0xFF80] = val;
+            this.HRAM[addr - 0xFF80] = <u8>val;
             return;
         }
         this.bus.CPU_write_IO(addr, val); // 0xFFFF register
@@ -135,7 +135,7 @@ export class GB_mapper_none implements GB_mapper{
         this.BIOS_big = +(BIOS.byteLength > 256);
 
         this.ROM = new StaticArray<u8>(cart.header.ROM_size);
-        for (let i = 0, k = cart.header.ROM_size; i < k; i++) {
+        for (let i: u32 = 0, k: u32 = cart.header.ROM_size; i < k; i++) {
             this.ROM[i] = cart.ROM[i];
         }
 

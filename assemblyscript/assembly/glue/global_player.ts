@@ -1,6 +1,8 @@
 import {machine_description, systemEmulator} from "../system/interface";
 import {NES_VARIANTS} from "../system/nes/nes_common";
 import {NES} from "../system/nes/nes";
+import {GB_variants} from "../system/gb/gb_common";
+import {GameBoy} from "../system/gb/gb";
 
 export class framevars_t {
     master_frame: u64 = 0
@@ -15,7 +17,10 @@ export enum JSMOO_SYSTEMS {
     SPECTRUM48,
     SNES_USA,
 
-    TEST_NESM6502
+    TEST_NESM6502,
+
+    DMG,
+    GBC
 }
 
 export enum input_types {
@@ -47,6 +52,9 @@ export class global_player_t {
             case JSMOO_SYSTEMS.NES_USA:
                 this.system = new NES(NES_VARIANTS.NTSCU, this.video_output_buffer);
                 break;
+            case JSMOO_SYSTEMS.DMG:
+                this.system = new GameBoy(GB_variants.DMG, this.video_output_buffer);
+                break;
             default:
                 console.log('UNIMPLEMENTED SYSTEM');
                 return;
@@ -61,9 +69,15 @@ export class global_player_t {
         if (to == 'nes_as') {
             ct = JSMOO_SYSTEMS.NES_USA;
         }
+        if (to === 'gb_as') {
+            ct = JSMOO_SYSTEMS.DMG;
+        }
         switch(ct) {
             case JSMOO_SYSTEMS.NES_USA:
                 this.set_system(JSMOO_SYSTEMS.NES_USA);
+                return true;
+            case JSMOO_SYSTEMS.DMG:
+                this.set_system(JSMOO_SYSTEMS.DMG);
                 return true;
             default:
                 console.log('UNKNOWN SYSTEM ' + to);
@@ -80,11 +94,12 @@ export class global_player_t {
         return this.system.get_framevars();
     }
 
-    run_frame(): void {
+    run_frame(): u32 {
         if (this.system !== null) {
             this.system.map_inputs(this.input_buffer);
-            this.system.finish_frame();
+            return this.system.finish_frame();
         }
+        return 0;
     }
 }
 
@@ -100,8 +115,8 @@ export function gp_load_ROM_from_RAM(player: global_player_t, sz: u32): void {
     player.load_rom(sz);
 }
 
-export function gp_run_frame(player: global_player_t): void {
-    player.run_frame();
+export function gp_run_frame(player: global_player_t): u32 {
+    return player.run_frame();
 }
 
 export function gp_get_specs(player: global_player_t): machine_description {

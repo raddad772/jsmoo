@@ -38,14 +38,14 @@ export class NES_mapper_none implements NES_mapper {
 
     @inline a12_watch(addr: u32): void {}
 
-    @inline CPU_read(addr: u32, val: u32): u32 {
+    @inline CPU_read(addr: u32, val: u32, has_effect: u32): u32 {
         addr &= 0xFFFF;
         if (addr < 0x2000)
             return unchecked(this.CPU_RAM[addr & 0x7FF]);
         if (addr < 0x3FFF)
-            return this.bus.PPU_reg_read(addr, val);
+            return this.bus.PPU_reg_read(addr, val, has_effect);
         if (addr < 0x4020)
-            return this.bus.CPU_reg_read(addr, val);
+            return this.bus.CPU_reg_read(addr, val, has_effect);
         if (addr >= 0x8000)
             return unchecked(this.PRG_ROM[(addr - 0x8000) % this.PRG_ROM_size]);
         return val;
