@@ -93,10 +93,6 @@ export class NES implements systemEmulator {
         this.cycles_left = 0;
     }
 
-    present(ab: usize): void {
-        console.log('ASKED TO PRESENT BUT TOO BAD!');
-    }
-
     map_inputs(bufptr: usize): void {
         // Hardcoded yo!
         this.controller1_in.up = load<u32>(bufptr);
@@ -130,7 +126,7 @@ export class NES implements systemEmulator {
         d.name = 'Nintendo Entertainment System';
         d.fps = 60;
         d.timing = MD_TIMING.frame;
-        d.standard = MD_STANDARD.NSTC;
+        d.standard = MD_STANDARD.NTSC;
         d.x_resolution = 256;
         d.y_resolution = 240;
         d.xrh = 8;
@@ -153,24 +149,16 @@ export class NES implements systemEmulator {
 
     }
 
-    get_screenvars(): Uint32Array {
-        let r = new Uint32Array(3);
-        return r;
-    }
-
-    update_inputs(): void {
-
-    }
-
-    finish_frame(): void {
+    finish_frame(): u32 {
         let current_frame: u64 = this.clock.master_frame;
         while (this.clock.master_frame === current_frame) {
             this.finish_scanline();
             if (dbg.do_break) break;
         }
+        return 0;
     }
 
-    finish_scanline(): void {
+    finish_scanline(): u32 {
         let cpu_step: u32 = this.clock.timing.cpu_divisor;
         let ppu_step: u32 = this.clock.timing.ppu_divisor;
         let done: u32 = 0;
@@ -191,10 +179,12 @@ export class NES implements systemEmulator {
             this.cycles_left -= cpu_step;
             if (dbg.do_break) break;
         }
+        return 0;
     }
 
-    step_master(cycles: u32): void {
-
+    step_master(cycles: u32): u32 {
+        console.log('MASTER STEPS NOT SUPPORTED NES AS YET');
+        return 0;
     }
 
     reset(): void {
@@ -205,7 +195,7 @@ export class NES implements systemEmulator {
     }
 
     // NES has no BIOS
-    load_BIOS(): void {
+    load_BIOS(what: usize, sz: u32): void {
     }
 
     load_ROM(what: usize, sz: u32): void {

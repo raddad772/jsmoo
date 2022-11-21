@@ -1,6 +1,6 @@
 "use strict";
 
-/*const SM83_MN_LIST = Object.freeze([
+const SM83_MN_LIST = Object.freeze([
     'ADC_di_da', 'ADC_di_di', 'ADC_di_ind',
     'ADD_di_da', 'ADD_di_di', 'ADD16_di_di', 'ADD_di_ind', 'ADD_di_rel',
     'AND_di_da', 'AND_di_di', 'AND_di_ind', 
@@ -69,7 +69,21 @@ function sm83_mn_gen() {
     }
     return mn + '\n});\n\n' + mn_r + '\n});\n';
 }
-console.log(sm83_mn_gen());*/
+
+//console.log(sm83_mn_gen());*/
+function sm83_mn_gen_as() {
+    let mn = 'export enum SM83_MN = {';
+    //let mn_r = 'const SM83_MN_R = Object.freeze({';
+    let cnt = 0;
+    for (let i in SM83_MN_LIST) {
+        mn += '    ' + SM83_MN_LIST[i] + ',\n';
+        //mn_r += cnt + ": '" + SM83_MN_LIST[i] + "', ";
+
+        cnt++;
+    }
+    return mn + '\n}\n\n';
+}
+console.log(sm83_mn_gen_as());
 
 const SM83_MN = Object.freeze({
     ADC_di_da: 0, ADC_di_di: 1, ADC_di_ind: 2, ADD_di_da: 3, ADD_di_di: 4,
@@ -190,7 +204,7 @@ const SM83_opcode_matrix = Object.freeze({
     0x1E: new SM83_opcode_info(0x1E, SM83_MN.LD_di_da, 'E'),
     0x1F: new SM83_opcode_info(0x1F, SM83_MN.RRA),
 
-    0x20: new SM83_opcode_info(0x20, SM83_MN.JR_cond_rel, 'regs.F.Z === 0'),
+    0x20: new SM83_opcode_info(0x20, SM83_MN.JR_cond_rel, 'regs.F.Z ' + GENEQO + ' 0'),
     0x21: new SM83_opcode_info(0x21, SM83_MN.LD16_di_da, 'HL'),
     0x22: new SM83_opcode_info(0x22, SM83_MN.LD_ind_inc_di, 'HL', 'A'),
     0x23: new SM83_opcode_info(0x23, SM83_MN.INC16_di, 'HL'),
@@ -198,7 +212,7 @@ const SM83_opcode_matrix = Object.freeze({
     0x25: new SM83_opcode_info(0x25, SM83_MN.DEC_di, 'H'),
     0x26: new SM83_opcode_info(0x26, SM83_MN.LD_di_da, 'H'),
     0x27: new SM83_opcode_info(0x27, SM83_MN.DAA),
-    0x28: new SM83_opcode_info(0x28, SM83_MN.JR_cond_rel, 'regs.F.Z === 1'),
+    0x28: new SM83_opcode_info(0x28, SM83_MN.JR_cond_rel, 'regs.F.Z ' + GENEQO + ' 1'),
     0x29: new SM83_opcode_info(0x29, SM83_MN.ADD16_di_di, 'HL', 'HL'),
     0x2A: new SM83_opcode_info(0x2A, SM83_MN.LD_di_ind_inc, 'A', 'HL'),
     0x2B: new SM83_opcode_info(0x2B, SM83_MN.DEC16_di, 'HL'),
@@ -207,7 +221,7 @@ const SM83_opcode_matrix = Object.freeze({
     0x2E: new SM83_opcode_info(0x2E, SM83_MN.LD_di_da, 'L'),
     0x2F: new SM83_opcode_info(0x2F, SM83_MN.CPL),
 
-    0x30: new SM83_opcode_info(0x30, SM83_MN.JR_cond_rel, 'regs.F.C === 0'),
+    0x30: new SM83_opcode_info(0x30, SM83_MN.JR_cond_rel, 'regs.F.C ' + GENEQO + ' 0'),
     0x31: new SM83_opcode_info(0x31, SM83_MN.LD16_di_da, 'SP'),
     0x32: new SM83_opcode_info(0x32, SM83_MN.LD_ind_dec_di, 'HL', 'A'),
     0x33: new SM83_opcode_info(0x33, SM83_MN.INC16_di, 'SP'),
@@ -215,7 +229,7 @@ const SM83_opcode_matrix = Object.freeze({
     0x35: new SM83_opcode_info(0x35, SM83_MN.DEC_ind, 'HL'),
     0x36: new SM83_opcode_info(0x36, SM83_MN.LD_ind_da, 'HL'),
     0x37: new SM83_opcode_info(0x37, SM83_MN.SCF),
-    0x38: new SM83_opcode_info(0x38, SM83_MN.JR_cond_rel, 'regs.F.C === 1'),
+    0x38: new SM83_opcode_info(0x38, SM83_MN.JR_cond_rel, 'regs.F.C ' + GENEQO + ' 1'),
     0x39: new SM83_opcode_info(0x39, SM83_MN.ADD16_di_di, 'HL', 'SP'),
     0x3A: new SM83_opcode_info(0x3A, SM83_MN.LD_di_ind_dec, 'A', 'HL'),
     0x3B: new SM83_opcode_info(0x3B, SM83_MN.DEC16_di, 'SP'),
@@ -360,36 +374,36 @@ const SM83_opcode_matrix = Object.freeze({
     0xBE: new SM83_opcode_info(0xBE, SM83_MN.CP_di_ind, 'A', 'HL'),
     0xBF: new SM83_opcode_info(0xBF, SM83_MN.CP_di_di, 'A', 'A'),
 
-    0xC0: new SM83_opcode_info(0xC0, SM83_MN.RET_cond, 'regs.F.Z === 0'),
+    0xC0: new SM83_opcode_info(0xC0, SM83_MN.RET_cond, 'regs.F.Z ' + GENEQO + ' 0'),
     0xC1: new SM83_opcode_info(0xC1, SM83_MN.POP_di, 'BC'),
-    0xC2: new SM83_opcode_info(0xC2, SM83_MN.JP_cond_addr, 'regs.F.Z === 0'),
+    0xC2: new SM83_opcode_info(0xC2, SM83_MN.JP_cond_addr, 'regs.F.Z ' + GENEQO + ' 0'),
     0xC3: new SM83_opcode_info(0xC3, SM83_MN.JP_cond_addr, "1"),
-    0xC4: new SM83_opcode_info(0xC4, SM83_MN.CALL_cond_addr, 'regs.F.Z === 0'),
+    0xC4: new SM83_opcode_info(0xC4, SM83_MN.CALL_cond_addr, 'regs.F.Z ' + GENEQO + ' 0'),
     0xC5: new SM83_opcode_info(0xC5, SM83_MN.PUSH_di, 'BC'),
     0xC6: new SM83_opcode_info(0xC6, SM83_MN.ADD_di_da, 'A'),
     0xC7: new SM83_opcode_info(0xC7, SM83_MN.RST_imp, 0),
-    0xC8: new SM83_opcode_info(0xC8, SM83_MN.RET_cond, 'regs.F.Z === 1'),
+    0xC8: new SM83_opcode_info(0xC8, SM83_MN.RET_cond, 'regs.F.Z ' + GENEQO + ' 1'),
     0xC9: new SM83_opcode_info(0xC9, SM83_MN.RET),
-    0xCA: new SM83_opcode_info(0xCA, SM83_MN.JP_cond_addr, 'regs.F.Z === 1'),
+    0xCA: new SM83_opcode_info(0xCA, SM83_MN.JP_cond_addr, 'regs.F.Z ' + GENEQO + ' 1'),
     //0xCB: new SM83_opcode_info(0xCB, SM83_MN.CB),
-    0xCC: new SM83_opcode_info(0xCC, SM83_MN.CALL_cond_addr, 'regs.F.Z === 1'),
+    0xCC: new SM83_opcode_info(0xCC, SM83_MN.CALL_cond_addr, 'regs.F.Z ' + GENEQO + ' 1'),
     0xCD: new SM83_opcode_info(0xCD, SM83_MN.CALL_cond_addr, '1'),
     0xCE: new SM83_opcode_info(0xCE, SM83_MN.ADC_di_da, 'A'),
     0xCF: new SM83_opcode_info(0xCF, SM83_MN.RST_imp, 8),
 
-    0xD0: new SM83_opcode_info(0xD0, SM83_MN.RET_cond, 'regs.F.C === 0'),
+    0xD0: new SM83_opcode_info(0xD0, SM83_MN.RET_cond, 'regs.F.C ' + GENEQO + ' 0'),
     0xD1: new SM83_opcode_info(0xD1, SM83_MN.POP_di, 'DE'),
-    0xD2: new SM83_opcode_info(0xD2, SM83_MN.JP_cond_addr, 'regs.F.C === 0'),
+    0xD2: new SM83_opcode_info(0xD2, SM83_MN.JP_cond_addr, 'regs.F.C ' + GENEQO + ' 0'),
     //0xD3: new SM83_opcode_info(0xD3, SM83_MN.),
-    0xD4: new SM83_opcode_info(0xD4, SM83_MN.CALL_cond_addr, 'regs.F.C === 0'),
+    0xD4: new SM83_opcode_info(0xD4, SM83_MN.CALL_cond_addr, 'regs.F.C ' + GENEQO + ' 0'),
     0xD5: new SM83_opcode_info(0xD5, SM83_MN.PUSH_di, 'DE'),
     0xD6: new SM83_opcode_info(0xD6, SM83_MN.SUB_di_da, 'A'),
     0xD7: new SM83_opcode_info(0xD7, SM83_MN.RST_imp, 0x10),
-    0xD8: new SM83_opcode_info(0xD8, SM83_MN.RET_cond, 'regs.F.C === 1'),
+    0xD8: new SM83_opcode_info(0xD8, SM83_MN.RET_cond, 'regs.F.C ' + GENEQO + ' 1'),
     0xD9: new SM83_opcode_info(0xD9, SM83_MN.RETI),
-    0xDA: new SM83_opcode_info(0xDA, SM83_MN.JP_cond_addr, 'regs.F.C === 1'),
+    0xDA: new SM83_opcode_info(0xDA, SM83_MN.JP_cond_addr, 'regs.F.C ' + GENEQO + ' 1'),
     //0xDB: new SM83_opcode_info(0xDB, SM83_MN.),
-    0xDC: new SM83_opcode_info(0xDC, SM83_MN.CALL_cond_addr, 'regs.F.C === 1'),
+    0xDC: new SM83_opcode_info(0xDC, SM83_MN.CALL_cond_addr, 'regs.F.C ' + GENEQO + ' 1'),
     //0xDD: new SM83_opcode_info(0xDD, SM83_MN.),
     0xDE: new SM83_opcode_info(0xDE, SM83_MN.SBC_di_da, 'A'),
     0xDF: new SM83_opcode_info(0xDF, SM83_MN.RST_imp, 0x18),
