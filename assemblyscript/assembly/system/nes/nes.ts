@@ -81,12 +81,12 @@ export class NES implements systemEmulator {
     controller2_in: nespad_inputs = new nespad_inputs();
     framevars: framevars_t = new framevars_t();
 
-    constructor(variant: NES_VARIANTS) {
+    constructor(variant: NES_VARIANTS, out_buffer: usize) {
         this.variant = variant
         this.clock = new NES_clock(variant);
         this.bus = new NES_bus();
         this.cpu = new ricoh2A03(this.clock, this.bus);
-        this.ppu = new NES_ppu(variant, this.clock, this.bus)
+        this.ppu = new NES_ppu(out_buffer, variant, this.clock, this.bus)
         this.cart = new NES_cart(this.clock, this.bus);
         this.bus.ppu = this.ppu;
         this.bus.cpu = this.cpu;
@@ -168,7 +168,6 @@ export class NES implements systemEmulator {
             this.finish_scanline();
             if (dbg.do_break) break;
         }
-
     }
 
     finish_scanline(): void {

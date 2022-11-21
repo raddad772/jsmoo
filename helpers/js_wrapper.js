@@ -170,9 +170,12 @@ class js_wrapper_t {
 			dbg.do_break = false;
             this.as_wrapper.wasm.gp_run_frame(this.as_wrapper.global_player);
             let rd = new Uint32Array(this.as_wrapper.wasm.memory.buffer);
-            let to_copy = Math.ceil((this.tech_specs.x_resolution * this.tech_specs.y_resolution) / 2);
+            let to_copy = this.tech_specs.out_size >>> 2;
 			let cbuf = new Uint32Array(this.shared_buf1);
             cbuf.set(rd.slice(this.out_ptr >>> 2, (this.out_ptr>>>2)+to_copy))
+			/*for (let i = 0; i < to_copy; i++) {
+				cbuf[i] = rd[i+(this.out_ptr)];
+			}*/
 			return Object.assign({}, {buffer_num: 0}, this.as_wrapper.wasm.gp_get_framevars(this.as_wrapper.global_player));
 		} else {
 			dbg.do_break = false;
@@ -184,9 +187,10 @@ class js_wrapper_t {
     get_specs() {
 		if (this.emu_wasm) {
 			this.tech_specs = this.as_wrapper.wasm.gp_get_specs(this.as_wrapper.global_player);
-            this.shared_buf1 = new SharedArrayBuffer(this.tech_specs.out_size);
-            this.shared_buf2 = new SharedArrayBuffer(this.tech_specs.out_size);
+            this.shared_buf1 = new SharedArrayBuffer(this.tech_specs.out_size*2);
+            this.shared_buf2 = new SharedArrayBuffer(this.tech_specs.out_size*2);
             this.tech_specs.output_buffer = [this.shared_buf1, this.shared_buf2];
+			this.out_ptr = this.tech_specs.out_ptr;
 		} else {
 			this.tech_specs = this.system.get_description();
 		}

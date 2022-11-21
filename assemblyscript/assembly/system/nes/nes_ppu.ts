@@ -111,13 +111,15 @@ export class NES_ppu {
     status: NES_PPU_status = new NES_PPU_status();
     latch: NES_PPU_latch = new NES_PPU_latch();
     scanline_timer: perf_timer_t = new perf_timer_t('scanline timer', 60*240, scanline_splits);
+    out_buffer: usize
 
     w2006_buffer: PPU_effect_buffer
 
-    constructor(variant: NES_VARIANTS, clock: NES_clock, bus: NES_bus) {
+    constructor(out_buffer: usize, variant: NES_VARIANTS, clock: NES_clock, bus: NES_bus) {
         this.variant = variant;
         this.clock = clock;
         this.bus = bus;
+        this.out_buffer = out_buffer;
 
         this.w2006_buffer = new PPU_effect_buffer(4*this.clock.timing.ppu_divisor);
 
@@ -527,7 +529,7 @@ export class NES_ppu {
             }
         }
 
-        unchecked(this.output[bo] = <u16>out_color | this.io.emph_bits);
+        store<u16>(this.out_buffer+(bo*2), <u16>out_color | this.io.emph_bits);
     }
 
     cycle_postrender(): void {
