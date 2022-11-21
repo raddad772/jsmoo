@@ -7,8 +7,9 @@ export enum MD_TIMING {
 }
 
 export enum MD_STANDARD {
-    NSTC = 0,
-    PAL = 1
+    NTSC = 0,
+    PAL = 1,
+    LCD
 }
 
 export enum SCREENVAR_FIELDS {
@@ -35,7 +36,7 @@ export class machine_description {
     name: String = '';
     timing: MD_TIMING = MD_TIMING.frame
     fps: u32 = 60
-    standard: MD_STANDARD = MD_STANDARD.NSTC
+    standard: MD_STANDARD = MD_STANDARD.NTSC
     x_resolution: u32 = 256
     y_resolution: u32 = 256
     xrw: u32 = 4;
@@ -53,16 +54,13 @@ export interface systemEmulator {
     //serialize(): funcref,
     //deserialize()
     get_description(): machine_description;
-    get_screenvars(): Uint32Array;
-    finish_frame(): void;
-    finish_scanline(): void;
-    update_inputs(): void;
-    step_master(cycles: u32): void;
+    finish_frame(): u32;
+    finish_scanline(): u32;
+    step_master(cycles: u32): u32;
     reset(): void;
     load_ROM(what: usize, sz: u32): void;
-    load_BIOS(): void;
+    load_BIOS(what: usize, sz: u32): void;
     killall(): void;
-    present(ab: usize): void;
     map_inputs(bufptr: usize): void;
     get_framevars(): framevars_t;
 }

@@ -455,7 +455,7 @@ class SM83_switchgen {
     }
 
     setz(what) {
-        this.addl('regs.F.Z = +((' + what + ') === 0);');
+        this.addl('regs.F.Z = +((' + what + ') ' + GENEQO + ' 0);');
     }
 
     ADD(target, source, carry=false, output='regs.TR') {
@@ -498,14 +498,14 @@ class SM83_switchgen {
 
     DEC(target) {
         this.addl(target + ' = ((' + target + ') - 1) & 0xFF;');
-        this.addl('regs.F.H = +(((' + target + ') & 0x0F) === 0x0F);');
+        this.addl('regs.F.H = +(((' + target + ') & 0x0F) ' + GENEQO + ' 0x0F);');
         this.addl('regs.F.N = 1;');
         this.setz(target);
     }
 
     INC(target) {
         this.addl(target + ' = ((' + target + ') + 1) & 0xFF;');
-        this.addl('regs.F.H = +(((' + target + ') & 0x0F) === 0);');
+        this.addl('regs.F.H = +(((' + target + ') & 0x0F) ' + GENEQO + ' 0);');
         this.addl('regs.F.N = 0;');
         this.setz(target);
     }

@@ -9,7 +9,7 @@ import {NES_mapper_DXROM} from "./mappers/dxrom";
 import {NES_PPU_mirror_modes} from "./mappers/interface";
 import {NES_mapper_AXROM} from "./mappers/axrom";
 
-class heapArray {
+export class heapArray {
 	ptr: usize = 0;
 	sz: u32 = 0;
 
@@ -24,7 +24,7 @@ class heapArray {
 	}
 
 	@operator("[]=")
-	__set(key: number, value: u8): void {
+	__set(key: u32, value: u8): void {
 		store<u8>(this.ptr+key, value);
 	}
 }

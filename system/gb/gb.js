@@ -63,12 +63,7 @@ class GB_clock {
         this.ly = 0;
         this.lx = 0;
 
-        // "virtual" x and y for syncing to main program when screen is off
-        this.vx = 0;
-        this.vy = 0;
-
         this.wly = 0;
-        this.wlx = 0;
 
         this.cpu_frame_cycle = 0;
         this.ppu_frame_cycle = 0;
@@ -99,7 +94,6 @@ class GB_clock {
     reset() {
         this.ppu_mode = 2;
         this.frames_since_restart = 0;
-        this.hblank_pending = 0;
         this.master_clock = 0;
         this.cpu_master_clock = 0;
         this.ppu_master_clock = 0;
@@ -124,7 +118,7 @@ class GB_bus {
     /**
      * @param {bios_t} bios
      */
-    constructor(bios) {
+    constructor() {
         this.cart = null;
         this.mapper = null;
         this.ppu = null;
@@ -139,7 +133,6 @@ class GB_bus {
         this.CPU_write_OAM = function(addr, val) {debugger;}
         this.PPU_read = function(addr) {debugger; return 40;};
 
-        this.bios = bios;
         this.BIOS = new Uint8Array(0);
     }
 
@@ -220,6 +213,7 @@ class GameBoy {
 
     get_description() {
         let d = new machine_description();
+        d.name = 'GameBoy';
         switch(this.variant) {
             case GB_variants.GBC:
                 d.name = 'GameBoy Color';
@@ -228,7 +222,6 @@ class GameBoy {
                 d.name = 'Super GameBoy';
                 break;
         }
-        d.name = 'GameBoy';
         d.standard = MD_STANDARD.LCD;
         d.fps = 60;
         d.input_types = [INPUT_TYPES.GB_CONTROLLER];

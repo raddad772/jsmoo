@@ -597,17 +597,17 @@ export class NES_ppu {
         }
     }
 
-    reg_read(addr: u32, val: u32, has_effect: u32 = 1): u32 {
+    reg_read(addr: u32, val: u32): u32 {
         let output: u32 = val;
         switch((addr & 7) | 0x2000) {
             case 0x2002:
                 output = (this.io.sprite_overflow << 5) | (this.io.sprite0_hit << 6) | (this.status.nmi_out << 7);
-                if (has_effect) {
+                //if (has_effect) {
                     this.status.nmi_out = 0;
                     this.update_nmi();
 
                     this.io.w = 0;
-                }
+                //}
                 break;
             case 0x2004: // OAMDATA
                 output = unchecked(this.OAM[this.io.OAM_addr]);
