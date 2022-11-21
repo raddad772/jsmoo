@@ -1,113 +1,217 @@
+import {SM83_pins_t, SM83_regs_t} from "./sm83";
+
 export enum SM83_MN {
-    NONE,
-    ADC_di_da,
-    ADC_di_di,
-    ADC_di_ind,
-    ADD_di_da,
-    ADD_di_di,
-    ADD16_di_di,
-    ADD_di_ind,
-    ADD_di_rel,
-    AND_di_da,
-    AND_di_di,
-    AND_di_ind,
-    BIT_idx_di,
-    BIT_idx_ind,
-    CALL_cond_addr,
-    CCF,
-    CP_di_da,
-    CP_di_di,
-    CP_di_ind,
-    CPL,
-    DAA,
-    DEC_di,
-    DEC16_di,
-    DEC_ind,
-    DI,
-    EI,
-    HALT,
-    INC_di,
-    INC16_di,
-    INC_ind,
-    JP_cond_addr,
-    JP_di,
-    JR_cond_rel,
-    LD_addr_di,
-    LD16_addr_di,
-    LD_di_addr,
-    LD_di_da,
-    LD16_di_da,
-    LD_di_di,
-    LD16_di_di,
-    LD_di_di_rel,
-    LD_di_ind,
-    LD_di_ind_dec,
-    LD_di_ind_inc,
-    LD_ind_da,
-    LD_ind_di,
-    LD_ind_dec_di,
-    LD_ind_inc_di,
-    LDH_addr_di,
-    LDH_di_addr,
-    LDH_di_ind,
-    LDH_ind_di,
-    NOP,
-    OR_di_da,
-    OR_di_di,
-    OR_di_ind,
-    POP_di,
-    POP_di_AF,
-    PUSH_di,
-    RES_idx_di,
-    RES_idx_ind,
-    RET,
-    RET_cond,
-    RETI,
-    RL_di,
-    RL_ind,
-    RLA,
-    RLC_di,
-    RLC_ind,
-    RLCA,
-    RR_di,
-    RR_ind,
-    RRA,
-    RRC_di,
-    RRC_ind,
-    RRCA,
-    RST_imp,
-    SBC_di_da,
-    SBC_di_di,
-    SBC_di_ind,
-    SCF,
-    SET_idx_di,
-    SET_idx_ind,
-    SLA_di,
-    SLA_ind,
-    SRA_di,
-    SRA_ind,
-    SRL_di,
-    SRL_ind,
-    SUB_di_da,
-    SUB_di_di,
-    SUB_di_ind,
-    SWAP_di,
-    SWAP_ind,
-    STOP,
-    XOR_di_da,
-    XOR_di_di,
-    XOR_di_ind,
-    RESET,
-    S_IRQ
+    NONE = 0,
+    ADC_di_da = 1,
+    ADC_di_di = 2,
+    ADC_di_ind = 3,
+    ADD_di_da = 4,
+    ADD_di_di = 5,
+    ADD16_di_di = 6,
+    ADD_di_ind = 7,
+    ADD_di_rel = 8,
+    AND_di_da = 9,
+    AND_di_di = 10,
+    AND_di_ind = 11,
+    BIT_idx_di = 12,
+    BIT_idx_ind = 13,
+    CALL_cond_addr = 14,
+    CCF = 15,
+    CP_di_da = 16,
+    CP_di_di = 17,
+    CP_di_ind = 18,
+    CPL = 19,
+    DAA = 20,
+    DEC_di = 21,
+    DEC16_di = 22,
+    DEC_ind = 23,
+    DI = 24,
+    EI = 25,
+    HALT = 26,
+    INC_di = 27,
+    INC16_di = 28,
+    INC_ind = 29,
+    JP_cond_addr = 30,
+    JP_di = 31,
+    JR_cond_rel = 32,
+    LD_addr_di = 33,
+    LD16_addr_di = 34,
+    LD_di_addr = 35,
+    LD_di_da = 36,
+    LD16_di_da = 37,
+    LD_di_di = 38,
+    LD16_di_di = 39,
+    LD_di_di_rel = 40,
+    LD_di_ind = 41,
+    LD_di_ind_dec = 42,
+    LD_di_ind_inc = 43,
+    LD_ind_da = 44,
+    LD_ind_di = 45,
+    LD_ind_dec_di = 46,
+    LD_ind_inc_di = 47,
+    LDH_addr_di = 48,
+    LDH_di_addr = 49,
+    LDH_di_ind = 50,
+    LDH_ind_di = 51,
+    NOP = 52,
+    OR_di_da = 53,
+    OR_di_di = 54,
+    OR_di_ind = 55,
+    POP_di = 56,
+    POP_di_AF = 57,
+    PUSH_di = 58,
+    RES_idx_di = 59,
+    RES_idx_ind = 60,
+    RET = 61,
+    RET_cond = 62,
+    RETI = 63,
+    RL_di = 64,
+    RL_ind = 65,
+    RLA = 66,
+    RLC_di = 67,
+    RLC_ind = 68,
+    RLCA = 69,
+    RR_di = 70,
+    RR_ind = 71,
+    RRA = 72,
+    RRC_di = 73,
+    RRC_ind = 74,
+    RRCA = 75,
+    RST_imp = 76,
+    SBC_di_da = 77,
+    SBC_di_di = 78,
+    SBC_di_ind = 79,
+    SCF = 80,
+    SET_idx_di = 81,
+    SET_idx_ind = 82,
+    SLA_di = 83,
+    SLA_ind = 84,
+    SRA_di = 85,
+    SRA_ind = 86,
+    SRL_di = 87,
+    SRL_ind = 88,
+    SUB_di_da = 89,
+    SUB_di_di = 90,
+    SUB_di_ind = 91,
+    SWAP_di = 92,
+    SWAP_ind = 93,
+    STOP = 94,
+    XOR_di_da = 95,
+    XOR_di_di = 96,
+    XOR_di_ind = 97,
+    RESET = 98,
+    S_IRQ = 99,
 }
 
+export var SM83_MN_R: Map<u32, string> = new Map<u32, string>();
+SM83_MN_R.set(0, 'NONE');
+SM83_MN_R.set(1, 'ADC_di_da');
+SM83_MN_R.set(2, 'ADC_di_di');
+SM83_MN_R.set(3, 'ADC_di_ind');
+SM83_MN_R.set(4, 'ADD_di_da');
+SM83_MN_R.set(5, 'ADD_di_di');
+SM83_MN_R.set(6, 'ADD16_di_di');
+SM83_MN_R.set(7, 'ADD_di_ind');
+SM83_MN_R.set(8, 'ADD_di_rel');
+SM83_MN_R.set(9, 'AND_di_da');
+SM83_MN_R.set(10, 'AND_di_di');
+SM83_MN_R.set(11, 'AND_di_ind');
+SM83_MN_R.set(12, 'BIT_idx_di');
+SM83_MN_R.set(13, 'BIT_idx_ind');
+SM83_MN_R.set(14, 'CALL_cond_addr');
+SM83_MN_R.set(15, 'CCF');
+SM83_MN_R.set(16, 'CP_di_da');
+SM83_MN_R.set(17, 'CP_di_di');
+SM83_MN_R.set(18, 'CP_di_ind');
+SM83_MN_R.set(19, 'CPL');
+SM83_MN_R.set(20, 'DAA');
+SM83_MN_R.set(21, 'DEC_di');
+SM83_MN_R.set(22, 'DEC16_di');
+SM83_MN_R.set(23, 'DEC_ind');
+SM83_MN_R.set(24, 'DI');
+SM83_MN_R.set(25, 'EI');
+SM83_MN_R.set(26, 'HALT');
+SM83_MN_R.set(27, 'INC_di');
+SM83_MN_R.set(28, 'INC16_di');
+SM83_MN_R.set(29, 'INC_ind');
+SM83_MN_R.set(30, 'JP_cond_addr');
+SM83_MN_R.set(31, 'JP_di');
+SM83_MN_R.set(32, 'JR_cond_rel');
+SM83_MN_R.set(33, 'LD_addr_di');
+SM83_MN_R.set(34, 'LD16_addr_di');
+SM83_MN_R.set(35, 'LD_di_addr');
+SM83_MN_R.set(36, 'LD_di_da');
+SM83_MN_R.set(37, 'LD16_di_da');
+SM83_MN_R.set(38, 'LD_di_di');
+SM83_MN_R.set(39, 'LD16_di_di');
+SM83_MN_R.set(40, 'LD_di_di_rel');
+SM83_MN_R.set(41, 'LD_di_ind');
+SM83_MN_R.set(42, 'LD_di_ind_dec');
+SM83_MN_R.set(43, 'LD_di_ind_inc');
+SM83_MN_R.set(44, 'LD_ind_da');
+SM83_MN_R.set(45, 'LD_ind_di');
+SM83_MN_R.set(46, 'LD_ind_dec_di');
+SM83_MN_R.set(47, 'LD_ind_inc_di');
+SM83_MN_R.set(48, 'LDH_addr_di');
+SM83_MN_R.set(49, 'LDH_di_addr');
+SM83_MN_R.set(50, 'LDH_di_ind');
+SM83_MN_R.set(51, 'LDH_ind_di');
+SM83_MN_R.set(52, 'NOP');
+SM83_MN_R.set(53, 'OR_di_da');
+SM83_MN_R.set(54, 'OR_di_di');
+SM83_MN_R.set(55, 'OR_di_ind');
+SM83_MN_R.set(56, 'POP_di');
+SM83_MN_R.set(57, 'POP_di_AF');
+SM83_MN_R.set(58, 'PUSH_di');
+SM83_MN_R.set(59, 'RES_idx_di');
+SM83_MN_R.set(60, 'RES_idx_ind');
+SM83_MN_R.set(61, 'RET');
+SM83_MN_R.set(62, 'RET_cond');
+SM83_MN_R.set(63, 'RETI');
+SM83_MN_R.set(64, 'RL_di');
+SM83_MN_R.set(65, 'RL_ind');
+SM83_MN_R.set(66, 'RLA');
+SM83_MN_R.set(67, 'RLC_di');
+SM83_MN_R.set(68, 'RLC_ind');
+SM83_MN_R.set(69, 'RLCA');
+SM83_MN_R.set(70, 'RR_di');
+SM83_MN_R.set(71, 'RR_ind');
+SM83_MN_R.set(72, 'RRA');
+SM83_MN_R.set(73, 'RRC_di');
+SM83_MN_R.set(74, 'RRC_ind');
+SM83_MN_R.set(75, 'RRCA');
+SM83_MN_R.set(76, 'RST_imp');
+SM83_MN_R.set(77, 'SBC_di_da');
+SM83_MN_R.set(78, 'SBC_di_di');
+SM83_MN_R.set(79, 'SBC_di_ind');
+SM83_MN_R.set(80, 'SCF');
+SM83_MN_R.set(81, 'SET_idx_di');
+SM83_MN_R.set(82, 'SET_idx_ind');
+SM83_MN_R.set(83, 'SLA_di');
+SM83_MN_R.set(84, 'SLA_ind');
+SM83_MN_R.set(85, 'SRA_di');
+SM83_MN_R.set(86, 'SRA_ind');
+SM83_MN_R.set(87, 'SRL_di');
+SM83_MN_R.set(88, 'SRL_ind');
+SM83_MN_R.set(89, 'SUB_di_da');
+SM83_MN_R.set(90, 'SUB_di_di');
+SM83_MN_R.set(91, 'SUB_di_ind');
+SM83_MN_R.set(92, 'SWAP_di');
+SM83_MN_R.set(93, 'SWAP_ind');
+SM83_MN_R.set(94, 'STOP');
+SM83_MN_R.set(95, 'XOR_di_da');
+SM83_MN_R.set(96, 'XOR_di_di');
+SM83_MN_R.set(97, 'XOR_di_ind');
+SM83_MN_R.set(98, 'RESET');
+SM83_MN_R.set(99, 'S_IRQ');
 class SM83_opcode_info {
     opcode: u32
     ins: SM83_MN
-    arg1: string|u32|null
+    mnemonic: string = ''
+    arg1: string|null
     arg2: string|null
 
-    constructor(opcode: u32, ins: SM83_MN, arg1: string|u32|null=null, arg2:string|null =null) {
+    constructor(opcode: u32, ins: SM83_MN, arg1: string|null=null, arg2:string|null=null) {
         this.opcode = opcode;
         this.ins = ins;
         this.arg1 = arg1;
@@ -125,9 +229,14 @@ export var SM83_opcode_matrix: Map<u32, SM83_opcode_info> = new Map<u32, SM83_op
 export var SM83_opcode_matrixCB: Map<u32, SM83_opcode_info> = new Map<u32, SM83_opcode_info>();
 
 for (let i = 0; i < 0x102; i++) {
-    SM83_opcode_matrix.set(i, SM83_get_matrix_item(i));
-    if (i < 0x100)
-        SM83_opcode_matrixCB.set(i, SM83_get_matrixCB_item(i));
+    let x = SM83_get_matrix_item(i);
+    x.mnemonic = SM83_MN_R.get(x.ins);
+    SM83_opcode_matrix.set(i, x);
+    if (i < 0x100) {
+        x = SM83_get_matrixCB_item(i);
+        x.mnemonic = SM83_MN_R.get(x.ins);
+        SM83_opcode_matrixCB.set(i, x);
+    }
 }
 
 function SM83_get_matrix_item(i: u32): SM83_opcode_info {
@@ -343,7 +452,7 @@ function SM83_get_matrix_item(i: u32): SM83_opcode_info {
         case 0xC4: return new SM83_opcode_info(0xC4, SM83_MN.CALL_cond_addr, 'regs.F.Z == 0');
         case 0xC5: return new SM83_opcode_info(0xC5, SM83_MN.PUSH_di, 'BC');
         case 0xC6: return new SM83_opcode_info(0xC6, SM83_MN.ADD_di_da, 'A');
-        case 0xC7: return new SM83_opcode_info(0xC7, SM83_MN.RST_imp, 0);
+        case 0xC7: return new SM83_opcode_info(0xC7, SM83_MN.RST_imp, '0');
         case 0xC8: return new SM83_opcode_info(0xC8, SM83_MN.RET_cond, 'regs.F.Z == 1');
         case 0xC9: return new SM83_opcode_info(0xC9, SM83_MN.RET);
         case 0xCA: return new SM83_opcode_info(0xCA, SM83_MN.JP_cond_addr, 'regs.F.Z == 1');
@@ -351,7 +460,7 @@ function SM83_get_matrix_item(i: u32): SM83_opcode_info {
         case 0xCC: return new SM83_opcode_info(0xCC, SM83_MN.CALL_cond_addr, 'regs.F.Z == 1');
         case 0xCD: return new SM83_opcode_info(0xCD, SM83_MN.CALL_cond_addr, '1');
         case 0xCE: return new SM83_opcode_info(0xCE, SM83_MN.ADC_di_da, 'A');
-        case 0xCF: return new SM83_opcode_info(0xCF, SM83_MN.RST_imp, 8);
+        case 0xCF: return new SM83_opcode_info(0xCF, SM83_MN.RST_imp, '8');
 
         case 0xD0: return new SM83_opcode_info(0xD0, SM83_MN.RET_cond, 'regs.F.C == 0');
         case 0xD1: return new SM83_opcode_info(0xD1, SM83_MN.POP_di, 'DE');
@@ -360,7 +469,7 @@ function SM83_get_matrix_item(i: u32): SM83_opcode_info {
         case 0xD4: return new SM83_opcode_info(0xD4, SM83_MN.CALL_cond_addr, 'regs.F.C == 0');
         case 0xD5: return new SM83_opcode_info(0xD5, SM83_MN.PUSH_di, 'DE');
         case 0xD6: return new SM83_opcode_info(0xD6, SM83_MN.SUB_di_da, 'A');
-        case 0xD7: return new SM83_opcode_info(0xD7, SM83_MN.RST_imp, 0x10);
+        case 0xD7: return new SM83_opcode_info(0xD7, SM83_MN.RST_imp, '0x10');
         case 0xD8: return new SM83_opcode_info(0xD8, SM83_MN.RET_cond, 'regs.F.C == 1');
         case 0xD9: return new SM83_opcode_info(0xD9, SM83_MN.RETI);
         case 0xDA: return new SM83_opcode_info(0xDA, SM83_MN.JP_cond_addr, 'regs.F.C == 1');
@@ -368,7 +477,7 @@ function SM83_get_matrix_item(i: u32): SM83_opcode_info {
         case 0xDC: return new SM83_opcode_info(0xDC, SM83_MN.CALL_cond_addr, 'regs.F.C == 1');
         //0xDD: return new SM83_opcode_info(0xDD, SM83_MN.);
         case 0xDE: return new SM83_opcode_info(0xDE, SM83_MN.SBC_di_da, 'A');
-        case 0xDF: return new SM83_opcode_info(0xDF, SM83_MN.RST_imp, 0x18);
+        case 0xDF: return new SM83_opcode_info(0xDF, SM83_MN.RST_imp, '0x18');
 
         case 0xE0: return new SM83_opcode_info(0xE0, SM83_MN.LDH_addr_di, 'A');
         case 0xE1: return new SM83_opcode_info(0xE1, SM83_MN.POP_di, 'HL');
@@ -377,7 +486,7 @@ function SM83_get_matrix_item(i: u32): SM83_opcode_info {
         //0xE4: return new SM83_opcode_info(0xE4, SM83_MN.);
         case 0xE5: return new SM83_opcode_info(0xE5, SM83_MN.PUSH_di, 'HL');
         case 0xE6: return new SM83_opcode_info(0xE6, SM83_MN.AND_di_da, 'A');
-        case 0xE7: return new SM83_opcode_info(0xE7, SM83_MN.RST_imp, 0x20);
+        case 0xE7: return new SM83_opcode_info(0xE7, SM83_MN.RST_imp, '0x20');
         case 0xE8: return new SM83_opcode_info(0xE8, SM83_MN.ADD_di_rel, 'SP');
         case 0xE9: return new SM83_opcode_info(0xE9, SM83_MN.JP_di, 'HL');
         case 0xEA: return new SM83_opcode_info(0xEA, SM83_MN.LD_addr_di, 'A');
@@ -385,7 +494,7 @@ function SM83_get_matrix_item(i: u32): SM83_opcode_info {
         //0xEC: return new SM83_opcode_info(0xEC, SM83_MN.);
         //0xED: return new SM83_opcode_info(0xED, SM83_MN.);
         case 0xEE: return new SM83_opcode_info(0xEE, SM83_MN.XOR_di_da, 'A');
-        case 0xEF: return new SM83_opcode_info(0xEF, SM83_MN.RST_imp, 0x28);
+        case 0xEF: return new SM83_opcode_info(0xEF, SM83_MN.RST_imp, '0x28');
 
         case 0xF0: return new SM83_opcode_info(0xF0, SM83_MN.LDH_di_addr, 'A');
         case 0xF1: return new SM83_opcode_info(0xF1, SM83_MN.POP_di_AF, 'AF');
@@ -394,7 +503,7 @@ function SM83_get_matrix_item(i: u32): SM83_opcode_info {
         //0xF4: return new SM83_opcode_info(0xF4, SM83_MN.);
         case 0xF5: return new SM83_opcode_info(0xF5, SM83_MN.PUSH_di, 'AF');
         case 0xF6: return new SM83_opcode_info(0xF6, SM83_MN.OR_di_da, 'A');
-        case 0xF7: return new SM83_opcode_info(0xF7, SM83_MN.RST_imp, 0x30);
+        case 0xF7: return new SM83_opcode_info(0xF7, SM83_MN.RST_imp, '0x30');
         case 0xF8: return new SM83_opcode_info(0xF8, SM83_MN.LD_di_di_rel, 'HL', 'SP');
         case 0xF9: return new SM83_opcode_info(0xF9, SM83_MN.LD16_di_di, 'SP', 'HL');
         case 0xFA: return new SM83_opcode_info(0xFA, SM83_MN.LD_di_addr, 'A');
@@ -402,7 +511,7 @@ function SM83_get_matrix_item(i: u32): SM83_opcode_info {
         //0xFC: return new SM83_opcode_info(0xFC, SM83_MN.);
         //0xFD: return new SM83_opcode_info(0xFD, SM83_MN.);
         case 0xFE: return new SM83_opcode_info(0xFE, SM83_MN.CP_di_da, 'A');
-        case 0xFF: return new SM83_opcode_info(0xFF, SM83_MN.RST_imp, 0x38);
+        case 0xFF: return new SM83_opcode_info(0xFF, SM83_MN.RST_imp, '0x38');
         case SM83_S_RESET: return new SM83_opcode_info(SM83_S_RESET, SM83_MN.RESET);
         case SM83_S_IRQ: return new SM83_opcode_info(SM83_S_IRQ, SM83_MN.S_IRQ)
     }
@@ -479,210 +588,210 @@ function SM83_get_matrixCB_item(i: u32): SM83_opcode_info {
         case 0x3D: return new SM83_opcode_info(0x3D, SM83_MN.SRL_di, 'L');
         case 0x3E: return new SM83_opcode_info(0x3E, SM83_MN.SRL_ind, 'HL');
         case 0x3F: return new SM83_opcode_info(0x3F, SM83_MN.SRL_di, 'A');
+        
+        case 0x40: return new SM83_opcode_info(0x40, SM83_MN.BIT_idx_di, '0', 'B');
+        case 0x41: return new SM83_opcode_info(0x41, SM83_MN.BIT_idx_di, '0', 'C');
+        case 0x42: return new SM83_opcode_info(0x42, SM83_MN.BIT_idx_di, '0', 'D');
+        case 0x43: return new SM83_opcode_info(0x43, SM83_MN.BIT_idx_di, '0', 'E');
+        case 0x44: return new SM83_opcode_info(0x44, SM83_MN.BIT_idx_di, '0', 'H');
+        case 0x45: return new SM83_opcode_info(0x45, SM83_MN.BIT_idx_di, '0', 'L');
+        case 0x46: return new SM83_opcode_info(0x46, SM83_MN.BIT_idx_ind, '0', 'HL');
+        case 0x47: return new SM83_opcode_info(0x47, SM83_MN.BIT_idx_di, '0', 'A');
+        case 0x48: return new SM83_opcode_info(0x48, SM83_MN.BIT_idx_di, '1', 'B');
+        case 0x49: return new SM83_opcode_info(0x49, SM83_MN.BIT_idx_di, '1', 'C');
+        case 0x4A: return new SM83_opcode_info(0x4A, SM83_MN.BIT_idx_di, '1', 'D');
+        case 0x4B: return new SM83_opcode_info(0x4B, SM83_MN.BIT_idx_di, '1', 'E');
+        case 0x4C: return new SM83_opcode_info(0x4C, SM83_MN.BIT_idx_di, '1', 'H');
+        case 0x4D: return new SM83_opcode_info(0x4D, SM83_MN.BIT_idx_di, '1', 'L');
+        case 0x4E: return new SM83_opcode_info(0x4E, SM83_MN.BIT_idx_ind, '1', 'HL');
+        case 0x4F: return new SM83_opcode_info(0x4F, SM83_MN.BIT_idx_di, '1', 'A');
 
-        case 0x40: return new SM83_opcode_info(0x40, SM83_MN.BIT_idx_di, 0, 'B');
-        case 0x41: return new SM83_opcode_info(0x41, SM83_MN.BIT_idx_di, 0, 'C');
-        case 0x42: return new SM83_opcode_info(0x42, SM83_MN.BIT_idx_di, 0, 'D');
-        case 0x43: return new SM83_opcode_info(0x43, SM83_MN.BIT_idx_di, 0, 'E');
-        case 0x44: return new SM83_opcode_info(0x44, SM83_MN.BIT_idx_di, 0, 'H');
-        case 0x45: return new SM83_opcode_info(0x45, SM83_MN.BIT_idx_di, 0, 'L');
-        case 0x46: return new SM83_opcode_info(0x46, SM83_MN.BIT_idx_ind, 0, 'HL');
-        case 0x47: return new SM83_opcode_info(0x47, SM83_MN.BIT_idx_di, 0, 'A');
-        case 0x48: return new SM83_opcode_info(0x48, SM83_MN.BIT_idx_di, 1, 'B');
-        case 0x49: return new SM83_opcode_info(0x49, SM83_MN.BIT_idx_di, 1, 'C');
-        case 0x4A: return new SM83_opcode_info(0x4A, SM83_MN.BIT_idx_di, 1, 'D');
-        case 0x4B: return new SM83_opcode_info(0x4B, SM83_MN.BIT_idx_di, 1, 'E');
-        case 0x4C: return new SM83_opcode_info(0x4C, SM83_MN.BIT_idx_di, 1, 'H');
-        case 0x4D: return new SM83_opcode_info(0x4D, SM83_MN.BIT_idx_di, 1, 'L');
-        case 0x4E: return new SM83_opcode_info(0x4E, SM83_MN.BIT_idx_ind, 1, 'HL');
-        case 0x4F: return new SM83_opcode_info(0x4F, SM83_MN.BIT_idx_di, 1, 'A');
+        case 0x50: return new SM83_opcode_info(0x50, SM83_MN.BIT_idx_di, '2', 'B');
+        case 0x51: return new SM83_opcode_info(0x51, SM83_MN.BIT_idx_di, '2', 'C');
+        case 0x52: return new SM83_opcode_info(0x52, SM83_MN.BIT_idx_di, '2', 'D');
+        case 0x53: return new SM83_opcode_info(0x53, SM83_MN.BIT_idx_di, '2', 'E');
+        case 0x54: return new SM83_opcode_info(0x54, SM83_MN.BIT_idx_di, '2', 'H');
+        case 0x55: return new SM83_opcode_info(0x55, SM83_MN.BIT_idx_di, '2', 'L');
+        case 0x56: return new SM83_opcode_info(0x56, SM83_MN.BIT_idx_ind, '2', 'HL');
+        case 0x57: return new SM83_opcode_info(0x57, SM83_MN.BIT_idx_di, '2', 'A');
+        case 0x58: return new SM83_opcode_info(0x58, SM83_MN.BIT_idx_di, '3', 'B');
+        case 0x59: return new SM83_opcode_info(0x59, SM83_MN.BIT_idx_di, '3', 'C');
+        case 0x5A: return new SM83_opcode_info(0x5A, SM83_MN.BIT_idx_di, '3', 'D');
+        case 0x5B: return new SM83_opcode_info(0x5B, SM83_MN.BIT_idx_di, '3', 'E');
+        case 0x5C: return new SM83_opcode_info(0x5C, SM83_MN.BIT_idx_di, '3', 'H');
+        case 0x5D: return new SM83_opcode_info(0x5D, SM83_MN.BIT_idx_di, '3', 'L');
+        case 0x5E: return new SM83_opcode_info(0x5E, SM83_MN.BIT_idx_ind, '3', 'HL');
+        case 0x5F: return new SM83_opcode_info(0x5F, SM83_MN.BIT_idx_di, '3', 'A');
 
-        case 0x50: return new SM83_opcode_info(0x50, SM83_MN.BIT_idx_di, 2, 'B');
-        case 0x51: return new SM83_opcode_info(0x51, SM83_MN.BIT_idx_di, 2, 'C');
-        case 0x52: return new SM83_opcode_info(0x52, SM83_MN.BIT_idx_di, 2, 'D');
-        case 0x53: return new SM83_opcode_info(0x53, SM83_MN.BIT_idx_di, 2, 'E');
-        case 0x54: return new SM83_opcode_info(0x54, SM83_MN.BIT_idx_di, 2, 'H');
-        case 0x55: return new SM83_opcode_info(0x55, SM83_MN.BIT_idx_di, 2, 'L');
-        case 0x56: return new SM83_opcode_info(0x56, SM83_MN.BIT_idx_ind, 2, 'HL');
-        case 0x57: return new SM83_opcode_info(0x57, SM83_MN.BIT_idx_di, 2, 'A');
-        case 0x58: return new SM83_opcode_info(0x58, SM83_MN.BIT_idx_di, 3, 'B');
-        case 0x59: return new SM83_opcode_info(0x59, SM83_MN.BIT_idx_di, 3, 'C');
-        case 0x5A: return new SM83_opcode_info(0x5A, SM83_MN.BIT_idx_di, 3, 'D');
-        case 0x5B: return new SM83_opcode_info(0x5B, SM83_MN.BIT_idx_di, 3, 'E');
-        case 0x5C: return new SM83_opcode_info(0x5C, SM83_MN.BIT_idx_di, 3, 'H');
-        case 0x5D: return new SM83_opcode_info(0x5D, SM83_MN.BIT_idx_di, 3, 'L');
-        case 0x5E: return new SM83_opcode_info(0x5E, SM83_MN.BIT_idx_ind, 3, 'HL');
-        case 0x5F: return new SM83_opcode_info(0x5F, SM83_MN.BIT_idx_di, 3, 'A');
+        case 0x60: return new SM83_opcode_info(0x60, SM83_MN.BIT_idx_di, '4', 'B');
+        case 0x61: return new SM83_opcode_info(0x61, SM83_MN.BIT_idx_di, '4', 'C');
+        case 0x62: return new SM83_opcode_info(0x62, SM83_MN.BIT_idx_di, '4', 'D');
+        case 0x63: return new SM83_opcode_info(0x63, SM83_MN.BIT_idx_di, '4', 'E');
+        case 0x64: return new SM83_opcode_info(0x64, SM83_MN.BIT_idx_di, '4', 'H');
+        case 0x65: return new SM83_opcode_info(0x65, SM83_MN.BIT_idx_di, '4', 'L');
+        case 0x66: return new SM83_opcode_info(0x66, SM83_MN.BIT_idx_ind, '4', 'HL');
+        case 0x67: return new SM83_opcode_info(0x67, SM83_MN.BIT_idx_di, '4', 'A');
+        case 0x68: return new SM83_opcode_info(0x68, SM83_MN.BIT_idx_di, '5', 'B');
+        case 0x69: return new SM83_opcode_info(0x69, SM83_MN.BIT_idx_di, '5', 'C');
+        case 0x6A: return new SM83_opcode_info(0x6A, SM83_MN.BIT_idx_di, '5', 'D');
+        case 0x6B: return new SM83_opcode_info(0x6B, SM83_MN.BIT_idx_di, '5', 'E');
+        case 0x6C: return new SM83_opcode_info(0x6C, SM83_MN.BIT_idx_di, '5', 'H');
+        case 0x6D: return new SM83_opcode_info(0x6D, SM83_MN.BIT_idx_di, '5', 'L');
+        case 0x6E: return new SM83_opcode_info(0x6E, SM83_MN.BIT_idx_ind, '5', 'HL');
+        case 0x6F: return new SM83_opcode_info(0x6F, SM83_MN.BIT_idx_di, '5', 'A');
 
-        case 0x60: return new SM83_opcode_info(0x60, SM83_MN.BIT_idx_di, 4, 'B');
-        case 0x61: return new SM83_opcode_info(0x61, SM83_MN.BIT_idx_di, 4, 'C');
-        case 0x62: return new SM83_opcode_info(0x62, SM83_MN.BIT_idx_di, 4, 'D');
-        case 0x63: return new SM83_opcode_info(0x63, SM83_MN.BIT_idx_di, 4, 'E');
-        case 0x64: return new SM83_opcode_info(0x64, SM83_MN.BIT_idx_di, 4, 'H');
-        case 0x65: return new SM83_opcode_info(0x65, SM83_MN.BIT_idx_di, 4, 'L');
-        case 0x66: return new SM83_opcode_info(0x66, SM83_MN.BIT_idx_ind, 4, 'HL');
-        case 0x67: return new SM83_opcode_info(0x67, SM83_MN.BIT_idx_di, 4, 'A');
-        case 0x68: return new SM83_opcode_info(0x68, SM83_MN.BIT_idx_di, 5, 'B');
-        case 0x69: return new SM83_opcode_info(0x69, SM83_MN.BIT_idx_di, 5, 'C');
-        case 0x6A: return new SM83_opcode_info(0x6A, SM83_MN.BIT_idx_di, 5, 'D');
-        case 0x6B: return new SM83_opcode_info(0x6B, SM83_MN.BIT_idx_di, 5, 'E');
-        case 0x6C: return new SM83_opcode_info(0x6C, SM83_MN.BIT_idx_di, 5, 'H');
-        case 0x6D: return new SM83_opcode_info(0x6D, SM83_MN.BIT_idx_di, 5, 'L');
-        case 0x6E: return new SM83_opcode_info(0x6E, SM83_MN.BIT_idx_ind, 5, 'HL');
-        case 0x6F: return new SM83_opcode_info(0x6F, SM83_MN.BIT_idx_di, 5, 'A');
+        case 0x70: return new SM83_opcode_info(0x70, SM83_MN.BIT_idx_di, '6', 'B');
+        case 0x71: return new SM83_opcode_info(0x71, SM83_MN.BIT_idx_di, '6', 'C');
+        case 0x72: return new SM83_opcode_info(0x72, SM83_MN.BIT_idx_di, '6', 'D');
+        case 0x73: return new SM83_opcode_info(0x73, SM83_MN.BIT_idx_di, '6', 'E');
+        case 0x74: return new SM83_opcode_info(0x74, SM83_MN.BIT_idx_di, '6', 'H');
+        case 0x75: return new SM83_opcode_info(0x75, SM83_MN.BIT_idx_di, '6', 'L');
+        case 0x76: return new SM83_opcode_info(0x76, SM83_MN.BIT_idx_ind, '6', 'HL');
+        case 0x77: return new SM83_opcode_info(0x77, SM83_MN.BIT_idx_di, '6', 'A');
+        case 0x78: return new SM83_opcode_info(0x78, SM83_MN.BIT_idx_di, '7', 'B');
+        case 0x79: return new SM83_opcode_info(0x79, SM83_MN.BIT_idx_di, '7', 'C');
+        case 0x7A: return new SM83_opcode_info(0x7A, SM83_MN.BIT_idx_di, '7', 'D');
+        case 0x7B: return new SM83_opcode_info(0x7B, SM83_MN.BIT_idx_di, '7', 'E');
+        case 0x7C: return new SM83_opcode_info(0x7C, SM83_MN.BIT_idx_di, '7', 'H');
+        case 0x7D: return new SM83_opcode_info(0x7D, SM83_MN.BIT_idx_di, '7', 'L');
+        case 0x7E: return new SM83_opcode_info(0x7E, SM83_MN.BIT_idx_ind, '7', 'HL');
+        case 0x7F: return new SM83_opcode_info(0x7F, SM83_MN.BIT_idx_di, '7', 'A');
 
-        case 0x70: return new SM83_opcode_info(0x70, SM83_MN.BIT_idx_di, 6, 'B');
-        case 0x71: return new SM83_opcode_info(0x71, SM83_MN.BIT_idx_di, 6, 'C');
-        case 0x72: return new SM83_opcode_info(0x72, SM83_MN.BIT_idx_di, 6, 'D');
-        case 0x73: return new SM83_opcode_info(0x73, SM83_MN.BIT_idx_di, 6, 'E');
-        case 0x74: return new SM83_opcode_info(0x74, SM83_MN.BIT_idx_di, 6, 'H');
-        case 0x75: return new SM83_opcode_info(0x75, SM83_MN.BIT_idx_di, 6, 'L');
-        case 0x76: return new SM83_opcode_info(0x76, SM83_MN.BIT_idx_ind, 6, 'HL');
-        case 0x77: return new SM83_opcode_info(0x77, SM83_MN.BIT_idx_di, 6, 'A');
-        case 0x78: return new SM83_opcode_info(0x78, SM83_MN.BIT_idx_di, 7, 'B');
-        case 0x79: return new SM83_opcode_info(0x79, SM83_MN.BIT_idx_di, 7, 'C');
-        case 0x7A: return new SM83_opcode_info(0x7A, SM83_MN.BIT_idx_di, 7, 'D');
-        case 0x7B: return new SM83_opcode_info(0x7B, SM83_MN.BIT_idx_di, 7, 'E');
-        case 0x7C: return new SM83_opcode_info(0x7C, SM83_MN.BIT_idx_di, 7, 'H');
-        case 0x7D: return new SM83_opcode_info(0x7D, SM83_MN.BIT_idx_di, 7, 'L');
-        case 0x7E: return new SM83_opcode_info(0x7E, SM83_MN.BIT_idx_ind, 7, 'HL');
-        case 0x7F: return new SM83_opcode_info(0x7F, SM83_MN.BIT_idx_di, 7, 'A');
+        case 0x80: return new SM83_opcode_info(0x80, SM83_MN.RES_idx_di, '0', 'B');
+        case 0x81: return new SM83_opcode_info(0x81, SM83_MN.RES_idx_di, '0', 'C');
+        case 0x82: return new SM83_opcode_info(0x82, SM83_MN.RES_idx_di, '0', 'D');
+        case 0x83: return new SM83_opcode_info(0x83, SM83_MN.RES_idx_di, '0', 'E');
+        case 0x84: return new SM83_opcode_info(0x84, SM83_MN.RES_idx_di, '0', 'H');
+        case 0x85: return new SM83_opcode_info(0x85, SM83_MN.RES_idx_di, '0', 'L');
+        case 0x86: return new SM83_opcode_info(0x86, SM83_MN.RES_idx_ind, '0', 'HL');
+        case 0x87: return new SM83_opcode_info(0x87, SM83_MN.RES_idx_di, '0', 'A');
+        case 0x88: return new SM83_opcode_info(0x88, SM83_MN.RES_idx_di, '1', 'B');
+        case 0x89: return new SM83_opcode_info(0x89, SM83_MN.RES_idx_di, '1', 'C');
+        case 0x8A: return new SM83_opcode_info(0x8A, SM83_MN.RES_idx_di, '1', 'D');
+        case 0x8B: return new SM83_opcode_info(0x8B, SM83_MN.RES_idx_di, '1', 'E');
+        case 0x8C: return new SM83_opcode_info(0x8C, SM83_MN.RES_idx_di, '1', 'H');
+        case 0x8D: return new SM83_opcode_info(0x8D, SM83_MN.RES_idx_di, '1', 'L');
+        case 0x8E: return new SM83_opcode_info(0x8E, SM83_MN.RES_idx_ind, '1', 'HL');
+        case 0x8F: return new SM83_opcode_info(0x8F, SM83_MN.RES_idx_di, '1', 'A');
 
-        case 0x80: return new SM83_opcode_info(0x80, SM83_MN.RES_idx_di, 0, 'B');
-        case 0x81: return new SM83_opcode_info(0x81, SM83_MN.RES_idx_di, 0, 'C');
-        case 0x82: return new SM83_opcode_info(0x82, SM83_MN.RES_idx_di, 0, 'D');
-        case 0x83: return new SM83_opcode_info(0x83, SM83_MN.RES_idx_di, 0, 'E');
-        case 0x84: return new SM83_opcode_info(0x84, SM83_MN.RES_idx_di, 0, 'H');
-        case 0x85: return new SM83_opcode_info(0x85, SM83_MN.RES_idx_di, 0, 'L');
-        case 0x86: return new SM83_opcode_info(0x86, SM83_MN.RES_idx_ind, 0, 'HL');
-        case 0x87: return new SM83_opcode_info(0x87, SM83_MN.RES_idx_di, 0, 'A');
-        case 0x88: return new SM83_opcode_info(0x88, SM83_MN.RES_idx_di, 1, 'B');
-        case 0x89: return new SM83_opcode_info(0x89, SM83_MN.RES_idx_di, 1, 'C');
-        case 0x8A: return new SM83_opcode_info(0x8A, SM83_MN.RES_idx_di, 1, 'D');
-        case 0x8B: return new SM83_opcode_info(0x8B, SM83_MN.RES_idx_di, 1, 'E');
-        case 0x8C: return new SM83_opcode_info(0x8C, SM83_MN.RES_idx_di, 1, 'H');
-        case 0x8D: return new SM83_opcode_info(0x8D, SM83_MN.RES_idx_di, 1, 'L');
-        case 0x8E: return new SM83_opcode_info(0x8E, SM83_MN.RES_idx_ind, 1, 'HL');
-        case 0x8F: return new SM83_opcode_info(0x8F, SM83_MN.RES_idx_di, 1, 'A');
+        case 0x90: return new SM83_opcode_info(0x90, SM83_MN.RES_idx_di, '2', 'B');
+        case 0x91: return new SM83_opcode_info(0x91, SM83_MN.RES_idx_di, '2', 'C');
+        case 0x92: return new SM83_opcode_info(0x92, SM83_MN.RES_idx_di, '2', 'D');
+        case 0x93: return new SM83_opcode_info(0x93, SM83_MN.RES_idx_di, '2', 'E');
+        case 0x94: return new SM83_opcode_info(0x94, SM83_MN.RES_idx_di, '2', 'H');
+        case 0x95: return new SM83_opcode_info(0x95, SM83_MN.RES_idx_di, '2', 'L');
+        case 0x96: return new SM83_opcode_info(0x96, SM83_MN.RES_idx_ind, '2', 'HL');
+        case 0x97: return new SM83_opcode_info(0x97, SM83_MN.RES_idx_di, '2', 'A');
+        case 0x98: return new SM83_opcode_info(0x98, SM83_MN.RES_idx_di, '3', 'B');
+        case 0x99: return new SM83_opcode_info(0x99, SM83_MN.RES_idx_di, '3', 'C');
+        case 0x9A: return new SM83_opcode_info(0x9A, SM83_MN.RES_idx_di, '3', 'D');
+        case 0x9B: return new SM83_opcode_info(0x9B, SM83_MN.RES_idx_di, '3', 'E');
+        case 0x9C: return new SM83_opcode_info(0x9C, SM83_MN.RES_idx_di, '3', 'H');
+        case 0x9D: return new SM83_opcode_info(0x9D, SM83_MN.RES_idx_di, '3', 'L');
+        case 0x9E: return new SM83_opcode_info(0x9E, SM83_MN.RES_idx_ind, '3', 'HL');
+        case 0x9F: return new SM83_opcode_info(0x9F, SM83_MN.RES_idx_di, '3', 'A');
 
-        case 0x90: return new SM83_opcode_info(0x90, SM83_MN.RES_idx_di, 2, 'B');
-        case 0x91: return new SM83_opcode_info(0x91, SM83_MN.RES_idx_di, 2, 'C');
-        case 0x92: return new SM83_opcode_info(0x92, SM83_MN.RES_idx_di, 2, 'D');
-        case 0x93: return new SM83_opcode_info(0x93, SM83_MN.RES_idx_di, 2, 'E');
-        case 0x94: return new SM83_opcode_info(0x94, SM83_MN.RES_idx_di, 2, 'H');
-        case 0x95: return new SM83_opcode_info(0x95, SM83_MN.RES_idx_di, 2, 'L');
-        case 0x96: return new SM83_opcode_info(0x96, SM83_MN.RES_idx_ind, 2, 'HL');
-        case 0x97: return new SM83_opcode_info(0x97, SM83_MN.RES_idx_di, 2, 'A');
-        case 0x98: return new SM83_opcode_info(0x98, SM83_MN.RES_idx_di, 3, 'B');
-        case 0x99: return new SM83_opcode_info(0x99, SM83_MN.RES_idx_di, 3, 'C');
-        case 0x9A: return new SM83_opcode_info(0x9A, SM83_MN.RES_idx_di, 3, 'D');
-        case 0x9B: return new SM83_opcode_info(0x9B, SM83_MN.RES_idx_di, 3, 'E');
-        case 0x9C: return new SM83_opcode_info(0x9C, SM83_MN.RES_idx_di, 3, 'H');
-        case 0x9D: return new SM83_opcode_info(0x9D, SM83_MN.RES_idx_di, 3, 'L');
-        case 0x9E: return new SM83_opcode_info(0x9E, SM83_MN.RES_idx_ind, 3, 'HL');
-        case 0x9F: return new SM83_opcode_info(0x9F, SM83_MN.RES_idx_di, 3, 'A');
+        case 0xA0: return new SM83_opcode_info(0xA0, SM83_MN.RES_idx_di, '4', 'B');
+        case 0xA1: return new SM83_opcode_info(0xA1, SM83_MN.RES_idx_di, '4', 'C');
+        case 0xA2: return new SM83_opcode_info(0xA2, SM83_MN.RES_idx_di, '4', 'D');
+        case 0xA3: return new SM83_opcode_info(0xA3, SM83_MN.RES_idx_di, '4', 'E');
+        case 0xA4: return new SM83_opcode_info(0xA4, SM83_MN.RES_idx_di, '4', 'H');
+        case 0xA5: return new SM83_opcode_info(0xA5, SM83_MN.RES_idx_di, '4', 'L');
+        case 0xA6: return new SM83_opcode_info(0xA6, SM83_MN.RES_idx_ind, '4', 'HL');
+        case 0xA7: return new SM83_opcode_info(0xA7, SM83_MN.RES_idx_di, '4', 'A');
+        case 0xA8: return new SM83_opcode_info(0xA8, SM83_MN.RES_idx_di, '5', 'B');
+        case 0xA9: return new SM83_opcode_info(0xA9, SM83_MN.RES_idx_di, '5', 'C');
+        case 0xAA: return new SM83_opcode_info(0xAA, SM83_MN.RES_idx_di, '5', 'D');
+        case 0xAB: return new SM83_opcode_info(0xAB, SM83_MN.RES_idx_di, '5', 'E');
+        case 0xAC: return new SM83_opcode_info(0xAC, SM83_MN.RES_idx_di, '5', 'H');
+        case 0xAD: return new SM83_opcode_info(0xAD, SM83_MN.RES_idx_di, '5', 'L');
+        case 0xAE: return new SM83_opcode_info(0xAE, SM83_MN.RES_idx_ind, '5', 'HL');
+        case 0xAF: return new SM83_opcode_info(0xAF, SM83_MN.RES_idx_di, '5', 'A');
 
-        case 0xA0: return new SM83_opcode_info(0xA0, SM83_MN.RES_idx_di, 4, 'B');
-        case 0xA1: return new SM83_opcode_info(0xA1, SM83_MN.RES_idx_di, 4, 'C');
-        case 0xA2: return new SM83_opcode_info(0xA2, SM83_MN.RES_idx_di, 4, 'D');
-        case 0xA3: return new SM83_opcode_info(0xA3, SM83_MN.RES_idx_di, 4, 'E');
-        case 0xA4: return new SM83_opcode_info(0xA4, SM83_MN.RES_idx_di, 4, 'H');
-        case 0xA5: return new SM83_opcode_info(0xA5, SM83_MN.RES_idx_di, 4, 'L');
-        case 0xA6: return new SM83_opcode_info(0xA6, SM83_MN.RES_idx_ind, 4, 'HL');
-        case 0xA7: return new SM83_opcode_info(0xA7, SM83_MN.RES_idx_di, 4, 'A');
-        case 0xA8: return new SM83_opcode_info(0xA8, SM83_MN.RES_idx_di, 5, 'B');
-        case 0xA9: return new SM83_opcode_info(0xA9, SM83_MN.RES_idx_di, 5, 'C');
-        case 0xAA: return new SM83_opcode_info(0xAA, SM83_MN.RES_idx_di, 5, 'D');
-        case 0xAB: return new SM83_opcode_info(0xAB, SM83_MN.RES_idx_di, 5, 'E');
-        case 0xAC: return new SM83_opcode_info(0xAC, SM83_MN.RES_idx_di, 5, 'H');
-        case 0xAD: return new SM83_opcode_info(0xAD, SM83_MN.RES_idx_di, 5, 'L');
-        case 0xAE: return new SM83_opcode_info(0xAE, SM83_MN.RES_idx_ind, 5, 'HL');
-        case 0xAF: return new SM83_opcode_info(0xAF, SM83_MN.RES_idx_di, 5, 'A');
+        case 0xB0: return new SM83_opcode_info(0xB0, SM83_MN.RES_idx_di, '6', 'B');
+        case 0xB1: return new SM83_opcode_info(0xB1, SM83_MN.RES_idx_di, '6', 'C');
+        case 0xB2: return new SM83_opcode_info(0xB2, SM83_MN.RES_idx_di, '6', 'D');
+        case 0xB3: return new SM83_opcode_info(0xB3, SM83_MN.RES_idx_di, '6', 'E');
+        case 0xB4: return new SM83_opcode_info(0xB4, SM83_MN.RES_idx_di, '6', 'H');
+        case 0xB5: return new SM83_opcode_info(0xB5, SM83_MN.RES_idx_di, '6', 'L');
+        case 0xB6: return new SM83_opcode_info(0xB6, SM83_MN.RES_idx_ind, '6', 'HL');
+        case 0xB7: return new SM83_opcode_info(0xB7, SM83_MN.RES_idx_di, '6', 'A');
+        case 0xB8: return new SM83_opcode_info(0xB8, SM83_MN.RES_idx_di, '7', 'B');
+        case 0xB9: return new SM83_opcode_info(0xB9, SM83_MN.RES_idx_di, '7', 'C');
+        case 0xBA: return new SM83_opcode_info(0xBA, SM83_MN.RES_idx_di, '7', 'D');
+        case 0xBB: return new SM83_opcode_info(0xBB, SM83_MN.RES_idx_di, '7', 'E');
+        case 0xBC: return new SM83_opcode_info(0xBC, SM83_MN.RES_idx_di, '7', 'H');
+        case 0xBD: return new SM83_opcode_info(0xBD, SM83_MN.RES_idx_di, '7', 'L');
+        case 0xBE: return new SM83_opcode_info(0xBE, SM83_MN.RES_idx_ind, '7', 'HL');
+        case 0xBF: return new SM83_opcode_info(0xBF, SM83_MN.RES_idx_di, '7', 'A');
 
-        case 0xB0: return new SM83_opcode_info(0xB0, SM83_MN.RES_idx_di, 6, 'B');
-        case 0xB1: return new SM83_opcode_info(0xB1, SM83_MN.RES_idx_di, 6, 'C');
-        case 0xB2: return new SM83_opcode_info(0xB2, SM83_MN.RES_idx_di, 6, 'D');
-        case 0xB3: return new SM83_opcode_info(0xB3, SM83_MN.RES_idx_di, 6, 'E');
-        case 0xB4: return new SM83_opcode_info(0xB4, SM83_MN.RES_idx_di, 6, 'H');
-        case 0xB5: return new SM83_opcode_info(0xB5, SM83_MN.RES_idx_di, 6, 'L');
-        case 0xB6: return new SM83_opcode_info(0xB6, SM83_MN.RES_idx_ind, 6, 'HL');
-        case 0xB7: return new SM83_opcode_info(0xB7, SM83_MN.RES_idx_di, 6, 'A');
-        case 0xB8: return new SM83_opcode_info(0xB8, SM83_MN.RES_idx_di, 7, 'B');
-        case 0xB9: return new SM83_opcode_info(0xB9, SM83_MN.RES_idx_di, 7, 'C');
-        case 0xBA: return new SM83_opcode_info(0xBA, SM83_MN.RES_idx_di, 7, 'D');
-        case 0xBB: return new SM83_opcode_info(0xBB, SM83_MN.RES_idx_di, 7, 'E');
-        case 0xBC: return new SM83_opcode_info(0xBC, SM83_MN.RES_idx_di, 7, 'H');
-        case 0xBD: return new SM83_opcode_info(0xBD, SM83_MN.RES_idx_di, 7, 'L');
-        case 0xBE: return new SM83_opcode_info(0xBE, SM83_MN.RES_idx_ind, 7, 'HL');
-        case 0xBF: return new SM83_opcode_info(0xBF, SM83_MN.RES_idx_di, 7, 'A');
+        case 0xC0: return new SM83_opcode_info(0xC0, SM83_MN.SET_idx_di, '0', 'B');
+        case 0xC1: return new SM83_opcode_info(0xC1, SM83_MN.SET_idx_di, '0', 'C');
+        case 0xC2: return new SM83_opcode_info(0xC2, SM83_MN.SET_idx_di, '0', 'D');
+        case 0xC3: return new SM83_opcode_info(0xC3, SM83_MN.SET_idx_di, '0', 'E');
+        case 0xC4: return new SM83_opcode_info(0xC4, SM83_MN.SET_idx_di, '0', 'H');
+        case 0xC5: return new SM83_opcode_info(0xC5, SM83_MN.SET_idx_di, '0', 'L');
+        case 0xC6: return new SM83_opcode_info(0xC6, SM83_MN.SET_idx_ind, '0', 'HL');
+        case 0xC7: return new SM83_opcode_info(0xC7, SM83_MN.SET_idx_di, '0', 'A');
+        case 0xC8: return new SM83_opcode_info(0xC8, SM83_MN.SET_idx_di, '1', 'B');
+        case 0xC9: return new SM83_opcode_info(0xC9, SM83_MN.SET_idx_di, '1', 'C');
+        case 0xCA: return new SM83_opcode_info(0xCA, SM83_MN.SET_idx_di, '1', 'D');
+        case 0xCB: return new SM83_opcode_info(0xCB, SM83_MN.SET_idx_di, '1', 'E');
+        case 0xCC: return new SM83_opcode_info(0xCC, SM83_MN.SET_idx_di, '1', 'H');
+        case 0xCD: return new SM83_opcode_info(0xCD, SM83_MN.SET_idx_di, '1', 'L');
+        case 0xCE: return new SM83_opcode_info(0xCE, SM83_MN.SET_idx_ind, '1', 'HL');
+        case 0xCF: return new SM83_opcode_info(0xCF, SM83_MN.SET_idx_di, '1', 'A');
 
-        case 0xC0: return new SM83_opcode_info(0xC0, SM83_MN.SET_idx_di, 0, 'B');
-        case 0xC1: return new SM83_opcode_info(0xC1, SM83_MN.SET_idx_di, 0, 'C');
-        case 0xC2: return new SM83_opcode_info(0xC2, SM83_MN.SET_idx_di, 0, 'D');
-        case 0xC3: return new SM83_opcode_info(0xC3, SM83_MN.SET_idx_di, 0, 'E');
-        case 0xC4: return new SM83_opcode_info(0xC4, SM83_MN.SET_idx_di, 0, 'H');
-        case 0xC5: return new SM83_opcode_info(0xC5, SM83_MN.SET_idx_di, 0, 'L');
-        case 0xC6: return new SM83_opcode_info(0xC6, SM83_MN.SET_idx_ind, 0, 'HL');
-        case 0xC7: return new SM83_opcode_info(0xC7, SM83_MN.SET_idx_di, 0, 'A');
-        case 0xC8: return new SM83_opcode_info(0xC8, SM83_MN.SET_idx_di, 1, 'B');
-        case 0xC9: return new SM83_opcode_info(0xC9, SM83_MN.SET_idx_di, 1, 'C');
-        case 0xCA: return new SM83_opcode_info(0xCA, SM83_MN.SET_idx_di, 1, 'D');
-        case 0xCB: return new SM83_opcode_info(0xCB, SM83_MN.SET_idx_di, 1, 'E');
-        case 0xCC: return new SM83_opcode_info(0xCC, SM83_MN.SET_idx_di, 1, 'H');
-        case 0xCD: return new SM83_opcode_info(0xCD, SM83_MN.SET_idx_di, 1, 'L');
-        case 0xCE: return new SM83_opcode_info(0xCE, SM83_MN.SET_idx_ind, 1, 'HL');
-        case 0xCF: return new SM83_opcode_info(0xCF, SM83_MN.SET_idx_di, 1, 'A');
+        case 0xD0: return new SM83_opcode_info(0xD0, SM83_MN.SET_idx_di, '2', 'B');
+        case 0xD1: return new SM83_opcode_info(0xD1, SM83_MN.SET_idx_di, '2', 'C');
+        case 0xD2: return new SM83_opcode_info(0xD2, SM83_MN.SET_idx_di, '2', 'D');
+        case 0xD3: return new SM83_opcode_info(0xD3, SM83_MN.SET_idx_di, '2', 'E');
+        case 0xD4: return new SM83_opcode_info(0xD4, SM83_MN.SET_idx_di, '2', 'H');
+        case 0xD5: return new SM83_opcode_info(0xD5, SM83_MN.SET_idx_di, '2', 'L');
+        case 0xD6: return new SM83_opcode_info(0xD6, SM83_MN.SET_idx_ind, '2', 'HL');
+        case 0xD7: return new SM83_opcode_info(0xD7, SM83_MN.SET_idx_di, '2', 'A');
+        case 0xD8: return new SM83_opcode_info(0xD8, SM83_MN.SET_idx_di, '3', 'B');
+        case 0xD9: return new SM83_opcode_info(0xD9, SM83_MN.SET_idx_di, '3', 'C');
+        case 0xDA: return new SM83_opcode_info(0xDA, SM83_MN.SET_idx_di, '3', 'D');
+        case 0xDB: return new SM83_opcode_info(0xDB, SM83_MN.SET_idx_di, '3', 'E');
+        case 0xDC: return new SM83_opcode_info(0xDC, SM83_MN.SET_idx_di, '3', 'H');
+        case 0xDD: return new SM83_opcode_info(0xDD, SM83_MN.SET_idx_di, '3', 'L');
+        case 0xDE: return new SM83_opcode_info(0xDE, SM83_MN.SET_idx_ind, '3', 'HL');
+        case 0xDF: return new SM83_opcode_info(0xDF, SM83_MN.SET_idx_di, '3', 'A');
 
-        case 0xD0: return new SM83_opcode_info(0xD0, SM83_MN.SET_idx_di, 2, 'B');
-        case 0xD1: return new SM83_opcode_info(0xD1, SM83_MN.SET_idx_di, 2, 'C');
-        case 0xD2: return new SM83_opcode_info(0xD2, SM83_MN.SET_idx_di, 2, 'D');
-        case 0xD3: return new SM83_opcode_info(0xD3, SM83_MN.SET_idx_di, 2, 'E');
-        case 0xD4: return new SM83_opcode_info(0xD4, SM83_MN.SET_idx_di, 2, 'H');
-        case 0xD5: return new SM83_opcode_info(0xD5, SM83_MN.SET_idx_di, 2, 'L');
-        case 0xD6: return new SM83_opcode_info(0xD6, SM83_MN.SET_idx_ind, 2, 'HL');
-        case 0xD7: return new SM83_opcode_info(0xD7, SM83_MN.SET_idx_di, 2, 'A');
-        case 0xD8: return new SM83_opcode_info(0xD8, SM83_MN.SET_idx_di, 3, 'B');
-        case 0xD9: return new SM83_opcode_info(0xD9, SM83_MN.SET_idx_di, 3, 'C');
-        case 0xDA: return new SM83_opcode_info(0xDA, SM83_MN.SET_idx_di, 3, 'D');
-        case 0xDB: return new SM83_opcode_info(0xDB, SM83_MN.SET_idx_di, 3, 'E');
-        case 0xDC: return new SM83_opcode_info(0xDC, SM83_MN.SET_idx_di, 3, 'H');
-        case 0xDD: return new SM83_opcode_info(0xDD, SM83_MN.SET_idx_di, 3, 'L');
-        case 0xDE: return new SM83_opcode_info(0xDE, SM83_MN.SET_idx_ind, 3, 'HL');
-        case 0xDF: return new SM83_opcode_info(0xDF, SM83_MN.SET_idx_di, 3, 'A');
+        case 0xE0: return new SM83_opcode_info(0xE0, SM83_MN.SET_idx_di, '4', 'B');
+        case 0xE1: return new SM83_opcode_info(0xE1, SM83_MN.SET_idx_di, '4', 'C');
+        case 0xE2: return new SM83_opcode_info(0xE2, SM83_MN.SET_idx_di, '4', 'D');
+        case 0xE3: return new SM83_opcode_info(0xE3, SM83_MN.SET_idx_di, '4', 'E');
+        case 0xE4: return new SM83_opcode_info(0xE4, SM83_MN.SET_idx_di, '4', 'H');
+        case 0xE5: return new SM83_opcode_info(0xE5, SM83_MN.SET_idx_di, '4', 'L');
+        case 0xE6: return new SM83_opcode_info(0xE6, SM83_MN.SET_idx_ind, '4', 'HL');
+        case 0xE7: return new SM83_opcode_info(0xE7, SM83_MN.SET_idx_di, '4', 'A');
+        case 0xE8: return new SM83_opcode_info(0xE8, SM83_MN.SET_idx_di, '5', 'B');
+        case 0xE9: return new SM83_opcode_info(0xE9, SM83_MN.SET_idx_di, '5', 'C');
+        case 0xEA: return new SM83_opcode_info(0xEA, SM83_MN.SET_idx_di, '5', 'D');
+        case 0xEB: return new SM83_opcode_info(0xEB, SM83_MN.SET_idx_di, '5', 'E');
+        case 0xEC: return new SM83_opcode_info(0xEC, SM83_MN.SET_idx_di, '5', 'H');
+        case 0xED: return new SM83_opcode_info(0xED, SM83_MN.SET_idx_di, '5', 'L');
+        case 0xEE: return new SM83_opcode_info(0xEE, SM83_MN.SET_idx_ind, '5', 'HL');
+        case 0xEF: return new SM83_opcode_info(0xEF, SM83_MN.SET_idx_di, '5', 'A');
 
-        case 0xE0: return new SM83_opcode_info(0xE0, SM83_MN.SET_idx_di, 4, 'B');
-        case 0xE1: return new SM83_opcode_info(0xE1, SM83_MN.SET_idx_di, 4, 'C');
-        case 0xE2: return new SM83_opcode_info(0xE2, SM83_MN.SET_idx_di, 4, 'D');
-        case 0xE3: return new SM83_opcode_info(0xE3, SM83_MN.SET_idx_di, 4, 'E');
-        case 0xE4: return new SM83_opcode_info(0xE4, SM83_MN.SET_idx_di, 4, 'H');
-        case 0xE5: return new SM83_opcode_info(0xE5, SM83_MN.SET_idx_di, 4, 'L');
-        case 0xE6: return new SM83_opcode_info(0xE6, SM83_MN.SET_idx_ind, 4, 'HL');
-        case 0xE7: return new SM83_opcode_info(0xE7, SM83_MN.SET_idx_di, 4, 'A');
-        case 0xE8: return new SM83_opcode_info(0xE8, SM83_MN.SET_idx_di, 5, 'B');
-        case 0xE9: return new SM83_opcode_info(0xE9, SM83_MN.SET_idx_di, 5, 'C');
-        case 0xEA: return new SM83_opcode_info(0xEA, SM83_MN.SET_idx_di, 5, 'D');
-        case 0xEB: return new SM83_opcode_info(0xEB, SM83_MN.SET_idx_di, 5, 'E');
-        case 0xEC: return new SM83_opcode_info(0xEC, SM83_MN.SET_idx_di, 5, 'H');
-        case 0xED: return new SM83_opcode_info(0xED, SM83_MN.SET_idx_di, 5, 'L');
-        case 0xEE: return new SM83_opcode_info(0xEE, SM83_MN.SET_idx_ind, 5, 'HL');
-        case 0xEF: return new SM83_opcode_info(0xEF, SM83_MN.SET_idx_di, 5, 'A');
-
-        case 0xF0: return new SM83_opcode_info(0xF0, SM83_MN.SET_idx_di, 6, 'B');
-        case 0xF1: return new SM83_opcode_info(0xF1, SM83_MN.SET_idx_di, 6, 'C');
-        case 0xF2: return new SM83_opcode_info(0xF2, SM83_MN.SET_idx_di, 6, 'D');
-        case 0xF3: return new SM83_opcode_info(0xF3, SM83_MN.SET_idx_di, 6, 'E');
-        case 0xF4: return new SM83_opcode_info(0xF4, SM83_MN.SET_idx_di, 6, 'H');
-        case 0xF5: return new SM83_opcode_info(0xF5, SM83_MN.SET_idx_di, 6, 'L');
-        case 0xF6: return new SM83_opcode_info(0xF6, SM83_MN.SET_idx_ind, 6, 'HL');
-        case 0xF7: return new SM83_opcode_info(0xF7, SM83_MN.SET_idx_di, 6, 'A');
-        case 0xF8: return new SM83_opcode_info(0xF8, SM83_MN.SET_idx_di, 7, 'B');
-        case 0xF9: return new SM83_opcode_info(0xF9, SM83_MN.SET_idx_di, 7, 'C');
-        case 0xFA: return new SM83_opcode_info(0xFA, SM83_MN.SET_idx_di, 7, 'D');
-        case 0xFB: return new SM83_opcode_info(0xFB, SM83_MN.SET_idx_di, 7, 'E');
-        case 0xFC: return new SM83_opcode_info(0xFC, SM83_MN.SET_idx_di, 7, 'H');
-        case 0xFD: return new SM83_opcode_info(0xFD, SM83_MN.SET_idx_di, 7, 'L');
-        case 0xFE: return new SM83_opcode_info(0xFE, SM83_MN.SET_idx_ind, 7, 'HL');
-        case 0xFF: return new SM83_opcode_info(0xFF, SM83_MN.SET_idx_di, 7, 'A');
+        case 0xF0: return new SM83_opcode_info(0xF0, SM83_MN.SET_idx_di, '6', 'B');
+        case 0xF1: return new SM83_opcode_info(0xF1, SM83_MN.SET_idx_di, '6', 'C');
+        case 0xF2: return new SM83_opcode_info(0xF2, SM83_MN.SET_idx_di, '6', 'D');
+        case 0xF3: return new SM83_opcode_info(0xF3, SM83_MN.SET_idx_di, '6', 'E');
+        case 0xF4: return new SM83_opcode_info(0xF4, SM83_MN.SET_idx_di, '6', 'H');
+        case 0xF5: return new SM83_opcode_info(0xF5, SM83_MN.SET_idx_di, '6', 'L');
+        case 0xF6: return new SM83_opcode_info(0xF6, SM83_MN.SET_idx_ind, '6', 'HL');
+        case 0xF7: return new SM83_opcode_info(0xF7, SM83_MN.SET_idx_di, '6', 'A');
+        case 0xF8: return new SM83_opcode_info(0xF8, SM83_MN.SET_idx_di, '7', 'B');
+        case 0xF9: return new SM83_opcode_info(0xF9, SM83_MN.SET_idx_di, '7', 'C');
+        case 0xFA: return new SM83_opcode_info(0xFA, SM83_MN.SET_idx_di, '7', 'D');
+        case 0xFB: return new SM83_opcode_info(0xFB, SM83_MN.SET_idx_di, '7', 'E');
+        case 0xFC: return new SM83_opcode_info(0xFC, SM83_MN.SET_idx_di, '7', 'H');
+        case 0xFD: return new SM83_opcode_info(0xFD, SM83_MN.SET_idx_di, '7', 'L');
+        case 0xFE: return new SM83_opcode_info(0xFE, SM83_MN.SET_idx_ind, '7', 'HL');
+        case 0xFF: return new SM83_opcode_info(0xFF, SM83_MN.SET_idx_di, '7', 'A');
     }
     return new SM83_opcode_info(i, SM83_MN.NONE);
 }
@@ -690,7 +799,7 @@ function SM83_get_matrixCB_item(i: u32): SM83_opcode_info {
 export const SM83_MAX_OPCODE = 0x101;
 
 export const SM83_prefixes: StaticArray<u32> = [0, 0xCB]
-export const SM83_prefix_to_codemap: Map<u32, u32> = new Map<u32, u32>;
+export const SM83_prefix_to_codemap: Map<u32, u32> = new Map<u32, u32>();
 SM83_prefix_to_codemap.set(0, 0);
 SM83_prefix_to_codemap.set(1, SM83_MAX_OPCODE + 1);
 
@@ -698,11 +807,11 @@ export class SM83_opcode_functions {
     opcode: u32
     ins: SM83_MN = 0
     mnemonic: String = ''
-    exec_func: (regs: SM83_regs, pins: SM83_pins) => void;
-    constructor(opcode_info: SM83_opcode_info, exec_func: (regs: SM83_regs, pins: SM83_pins) => void) {
+    exec_func: (regs: SM83_regs_t, pins: SM83_pins_t) => void;
+    constructor(opcode_info: SM83_opcode_info, exec_func: (regs: SM83_regs_t, pins: SM83_pins_t) => void) {
         this.opcode = opcode_info.opcode;
         this.ins = opcode_info.ins;
-        //this.mnemonic = opcode_info.mnemonic;
+        this.mnemonic = opcode_info.mnemonic;
         this.exec_func = exec_func;
     }
 }

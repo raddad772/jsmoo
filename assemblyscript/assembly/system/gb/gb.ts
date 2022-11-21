@@ -1,7 +1,7 @@
 import {GB_PPU_modes, GB_variants} from "./gb_common";
 import {GB_cart} from "./gb_cart";
 import {GB_mapper} from "./mappers/interface";
-import {GB_CPU} from "./gp_cpu";
+import {GB_CPU} from "./gb_cpu";
 import {hex4} from "../../helpers/helpers";
 import {GB_PPU} from "./gb_ppu";
 import {framevars_t} from "../../glue/global_player";
@@ -93,7 +93,7 @@ export class GB_clock {
     bootROM_enabled: bool = true;
 
     //irq = new GB_clock_irq();
-    timing = new GB_clock_timing();
+    timing: GB_clock_timing = new GB_clock_timing();
 
     reset(): void {
         this.ppu_mode = 2;
@@ -144,24 +144,24 @@ export class GBmappernull implements GB_mapper {
 }
 
 export class GB_bus {
-    cart: null|GB_cart = null;
+    cart: GB_cart|null = null;
     mapper: GB_mapper = new GBmappernull()
-    ppu: null|GB_PPU = null;
-    cpu: null|GB_CPU = null;
+    ppu: GB_PPU|null = null;
+    cpu: GB_CPU|null = null;
 
     BIOS: Uint8Array = new Uint8Array(0)
 
     constructor() {
     }
 
-    load_BIOS_from_RAM(what: usize, sz: u32) {
+    load_BIOS_from_RAM(what: usize, sz: u32): void {
         this.BIOS = new Uint8Array(sz);
         for (let i = 0; i < sz; i++) {
             this.BIOS[i] = load<u8>(what+i);
         }
     }
 
-    CPU_read_IO(addr: u32, val: u32, has_effect: bool = true) {
+    CPU_read_IO(addr: u32, val: u32, has_effect: bool = true): u32 {
         let out = 0xFF;
         out &= this.cpu!.read_IO(addr, val, has_effect);
         out &= this.ppu!.read_IO(addr, val, has_effect);
@@ -317,7 +317,7 @@ export class GameBoy implements systemEmulator {
 
     load_ROM(what: usize, sz: u32): void {
         this.cart.load_ROM_from_RAM(what, sz);
-        this.reset(0);
+        this.reset();
     }
 
     load_BIOS(what: usize, sz: u32): void {

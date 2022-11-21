@@ -262,14 +262,14 @@ export class GB_cart {
         this.setup_mapper();
     }
 
-    read_ROM(inp: heapArray) {
+    read_ROM(inp: heapArray): void {
 		//this.ROM.set(inp.slice(0, this.header.ROM_size));
         for (let i: u32 = 0, k: u32 = this.header.ROM_size; i < k; i++) {
             this.ROM[i] = inp[i];
         }
     }
 
-    setup_mapper() {
+    setup_mapper(): void {
         switch(this.header.mapper) {
             case GB_MAPPERS.none:
                 this.mapper = new GB_mapper_none(this.clock, this.bus);

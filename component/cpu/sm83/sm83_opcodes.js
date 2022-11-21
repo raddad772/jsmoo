@@ -1,6 +1,7 @@
 "use strict";
 
 const SM83_MN_LIST = Object.freeze([
+    'none',
     'ADC_di_da', 'ADC_di_di', 'ADC_di_ind',
     'ADD_di_da', 'ADD_di_di', 'ADD16_di_di', 'ADD_di_ind', 'ADD_di_rel',
     'AND_di_da', 'AND_di_di', 'AND_di_ind', 
@@ -72,18 +73,18 @@ function sm83_mn_gen() {
 
 //console.log(sm83_mn_gen());*/
 function sm83_mn_gen_as() {
-    let mn = 'export enum SM83_MN = {';
-    //let mn_r = 'const SM83_MN_R = Object.freeze({';
+    let mn = 'export enum SM83_MN {\n';
+    let mn_r = 'export var SM83_MN_R: Map<u32, string> = new Map<u32, string>();\n';
     let cnt = 0;
     for (let i in SM83_MN_LIST) {
-        mn += '    ' + SM83_MN_LIST[i] + ',\n';
-        //mn_r += cnt + ": '" + SM83_MN_LIST[i] + "', ";
-
+        mn += '    ' + SM83_MN_LIST[i] + ' = ' + i.toString() + ',\n';
+        mn_r += 'SM83_MN_R.set(' + cnt + ", '" + SM83_MN_LIST[i] + "');\n";
         cnt++;
     }
-    return mn + '\n}\n\n';
+    return mn + '}\n\n' + mn_r + '\n\n';
+
 }
-console.log(sm83_mn_gen_as());
+//console.log(sm83_mn_gen_as());
 
 const SM83_MN = Object.freeze({
     ADC_di_da: 0, ADC_di_di: 1, ADC_di_ind: 2, ADD_di_da: 3, ADD_di_di: 4,
