@@ -32,6 +32,10 @@ export class global_player_t {
     output_buffer: usize = heap.alloc(256*256*4);
     input_buffer: usize = heap.alloc(1024*1024*2);
 
+    constructor() {
+        this.ready = false;
+    }
+
     set_system(to: JSMOO_SYSTEMS): void {
         if (this.system_kind == to) {
             this.system.reset();
