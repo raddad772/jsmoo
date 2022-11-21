@@ -310,8 +310,6 @@ class global_player_t {
         this.queued_name = null;
         this.general_sab = new SharedArrayBuffer(64);
 
-		this.emu_wasm = false;
-
 		/**
 		 * @type {machine_description}
 		 */
@@ -342,21 +340,17 @@ class global_player_t {
 	async onload() {
 		this.bios_manager = new bios_manager_t();
 		await this.bios_manager.onload();
-        console.log('SEND STARTUP MSG');
 		this.step1_done = false;
         this.player_thread.postMessage({kind: emulator_messages.startup, general_sab: this.general_sab});
 		this.send_set_system(this.system_kind, this.bios_manager.bioses[this.system_kind]);
 	}
 
 	send_set_system(kind, bios) {
-		console.log('REQ SEND SET SYSTEM')
         if (!this.step1_done) {
-			console.log('QUEUE SET SYSTEM')
             this.queued_step_2 = kind;
             this.queued_bios = bios;
             return;
         }
-		console.log('ACTUAL SEND SET SYSTEM');
         this.system_kind = kind;
         this.player_thread.postMessage({kind: emulator_messages.change_system, kind_str: kind, bios: bios});
     }
@@ -453,7 +447,6 @@ class global_player_t {
 		switch(e.kind) {
 			case emulator_messages.specs:
 				this.tech_specs = e.specs;
-				console.log('GOT TECH SPECS', this.tech_specs);
 				this.update_tech_specs();
 				break;
             case emulator_messages.step1_done:
@@ -489,7 +482,6 @@ class global_player_t {
 	}
 
 	update_tech_specs() {
-		console.log(this.tech_specs);
 		this.canvas_manager.set_size(this.tech_specs.x_resolution, this.tech_specs.y_resolution, this.tech_specs.xrh, this.tech_specs.xrw);
 		this.canvas_manager.set_overscan(this.tech_specs.overscan.left, this.tech_specs.overscan.right, this.tech_specs.overscan.top, this.tech_specs.overscan.bottom);
 		this.shared_output_buffers[0] = this.tech_specs.output_buffer[0];
@@ -499,7 +491,6 @@ class global_player_t {
 	}
 
 	set_input(keymap) {
-		console.log('SETTING INPUT!');
 		if (this.input_provider !== null) {
 			this.input_provider.disconnect();
 		}

@@ -63,7 +63,6 @@ export class global_player_t {
         }
         switch(ct) {
             case JSMOO_SYSTEMS.NES_USA:
-                console.log('SETTING SYSTEM TO NES');
                 this.set_system(JSMOO_SYSTEMS.NES_USA);
                 return true;
             default:

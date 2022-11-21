@@ -117,7 +117,7 @@ class js_wrapper_t {
 		if (typeof to !== 'undefined') {
 			this.system_kind = to;
 		}
-		console.log('SETTING SYSTEM', this.system_kind, bios)
+		console.log('SETTING SYSTEM', this.system_kind)
 		this.emu_wasm = false;
 		switch(this.system_kind) {
 			case 'gg':
@@ -138,7 +138,6 @@ class js_wrapper_t {
 				break;
 			case 'nes_as':
 				this.emu_wasm = true;
-				console.log('GP!', this.as_wrapper.global_player)
             	this.as_wrapper.wasm.gp_set_system(this.as_wrapper.global_player, to);
 				break;
 			case 'spectrum':
