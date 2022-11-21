@@ -29,7 +29,7 @@ export class global_player_t {
     system!: systemEmulator
     ready: bool = false;
     tech_specs: machine_description = new machine_description();
-    output_buffer: usize = heap.alloc(256*256*4);
+    video_output_buffer: usize = heap.alloc(1024*1024*2);
     input_buffer: usize = heap.alloc(1024*1024*2);
 
     constructor() {
@@ -45,14 +45,14 @@ export class global_player_t {
 
         switch(to) {
             case JSMOO_SYSTEMS.NES_USA:
-                this.system = new NES(NES_VARIANTS.NTSCU);
+                this.system = new NES(NES_VARIANTS.NTSCU, this.video_output_buffer);
                 break;
             default:
                 console.log('UNIMPLEMENTED SYSTEM');
                 return;
         }
         this.tech_specs = this.system.get_description();
-        this.tech_specs.out_ptr = this.output_buffer;
+        this.tech_specs.out_ptr = this.video_output_buffer;
         this.ready = true;
     }
 

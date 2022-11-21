@@ -96,7 +96,7 @@ class NES {
 
     killall() {
         dbg.remove_cpu(D_RESOURCE_TYPES.M6502);
-        input_config.disconnect_controller('nes1');
+        //input_config.disconnect_controller('nes1');
     }
 
 	get_description() {
