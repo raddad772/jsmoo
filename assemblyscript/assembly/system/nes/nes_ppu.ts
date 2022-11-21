@@ -443,7 +443,12 @@ export class NES_ppu {
     }
 
     cycle_visible(): void {
+        let sx: i32 = this.line_cycle-1;
+        let sy: i32 = this.clock.ppu_y;
+        let bo: u32 = (sy * 256) + sx;
         if (!this.rendering_enabled()) {
+            if (this.line_cycle < 256)
+                store<u16>(this.out_buffer+(bo*2), <u16>this.CGRAM[0] | this.io.emph_bits);
             return;
         }
 
@@ -454,9 +459,6 @@ export class NES_ppu {
         }
 
         //this.scanline_timer.record_split('startup');
-        let sx: i32 = this.line_cycle-1;
-        let sy: i32 = this.clock.ppu_y;
-        let bo: u32 = (sy * 256) + sx;
 
         this.cycle_scanline_addr();
         this.oam_evaluate_slow();

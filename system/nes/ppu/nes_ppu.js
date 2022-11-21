@@ -602,16 +602,21 @@ class NES_ppu {
     }
 
     scanline_visible() {
-        //this.scanline_timer.start_sample();
+        let sx = this.line_cycle-1;
+        let sy = this.clock.ppu_y;
+        let bo = (sy * 256) + sx;
         if (!this.rendering_enabled()) {
+            if (this.line_cycle < 256) {
+                this.cur_output[bo] = this.CGRAM[0] | this.io.emph_bits;
+            }
             return;
        }
-        if ((this.line_cycle < 1) && (this.clock.ppu_y === 0)) {
-            this.clock.ppu_frame_cycle = 0;
-        }
         if (this.line_cycle < 1) {
-            return;
+             if (this.clock.ppu_y === 0)
+                this.clock.ppu_frame_cycle = 0;
+             return;
         }
+
         if ((this.line_cycle === 1) && (this.clock.ppu_y === 32)) { // Capture scroll info for display
             this.dbg.v = this.io.v;
             this.dbg.t = this.io.t;
@@ -619,9 +624,6 @@ class NES_ppu {
             this.dbg.w = this.io.w;
         }
         //this.scanline_timer.record_split('startup');
-        let sx = this.line_cycle-1;
-        let sy = this.clock.ppu_y;
-        let bo = (sy * 256) + sx;
         //this.scanline_timer.record_split('startup2');
 
         this.cycle_scanline_addr();
