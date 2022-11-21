@@ -194,7 +194,6 @@ class NES_mapper_MMC3b {
 
     a12_watch(addr) {
         if (this.a12_watcher.update(addr) === this.a12_watcher.rise) {
-            let count = this.irq_counter;
             if ((this.irq_counter === 0) || (this.irq_reload)) {
                 this.irq_counter = this.regs.rC000;
             } else {
@@ -202,7 +201,7 @@ class NES_mapper_MMC3b {
                 if (this.irq_counter < 0) this.irq_counter = 0;
             }
 
-            if ((this.irq_counter === 0) && (this.irq_enable)) {
+            if ((this.irq_counter === 0) && this.irq_enable) {
                 this.bus.CPU_notify_IRQ(1);
             }
             this.irq_reload = false;

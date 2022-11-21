@@ -221,21 +221,23 @@ export class NES_ppu {
         return output | o;
     }
 
-    perform_bg_fetches(): void { // Only called from prerender and visible scanlines
+    @inline perform_bg_fetches(): void { // Only called from prerender and visible scanlines
         const lc = this.line_cycle;
 
         // Only do things on odd cycles
         if ((lc & 1) === 0) return;
 
-        const in_tile_y: u32 = (this.io.v >>> 12) & 7; // Y position inside tile
+        let v = this.io.v;
+
+        const in_tile_y: u32 = (v >>> 12) & 7; // Y position inside tile
 
         if (((lc > 0) && (lc <= 256)) || (lc > 320)) {
             // Do memory accesses and shifters
             switch (lc & 7) {
                 case 1: // nametable, tile #
-                    this.bg_fetches0 = this.bus.mapper.PPU_read_effect(0x2000 | (this.io.v & 0xFFF));
+                    this.bg_fetches0 = this.bus.mapper.PPU_read_effect(0x2000 | (v & 0xFFF));
                     this.bg_tile_fetch_addr = this.fetch_chr_addr(this.io.bg_pattern_table, this.bg_fetches0, in_tile_y);
-                    this.bg_tile_fetch_buffer = 0;
+                    //this.bg_tile_fetch_buffer = 0;
                     // Reload shifters if needed
                     if (lc !== 1) { // reload shifter at interval #9 9....257
                         this.bg_shifter = (this.bg_shifter >>> 16) | (this.bg_fetches2 << 16) | (this.bg_fetches3 << 24);
@@ -243,8 +245,8 @@ export class NES_ppu {
                     }
                     return;
                 case 3: // attribute table
-                    let attrib_addr: u32 = 0x23C0 | (this.io.v & 0x0C00) | ((this.io.v >>> 4) & 0x38) | ((this.io.v >>> 2) & 7);
-                    let shift: u32 = ((this.io.v >>> 4) & 0x04) | (this.io.v & 0x02);
+                    let attrib_addr: u32 = 0x23C0 | (v & 0x0C00) | ((v >>> 4) & 0x38) | ((v >>> 2) & 7);
+                    let shift: u32 = ((v >>> 4) & 0x04) | (v & 0x02);
                     this.bg_fetches1 = (this.bus.mapper.PPU_read_effect(attrib_addr) >>> shift) & 3;
                     return;
                 case 5: // low buffer
@@ -445,11 +447,9 @@ export class NES_ppu {
             return;
         }
 
-        if ((this.line_cycle < 1) && (this.clock.ppu_y == 0)) {
-            this.clock.ppu_frame_cycle = 0;
-        }
         if (this.line_cycle < 1) {
-            // Do nothing on pixel 0
+            if (this.clock.ppu_y == 0)
+                this.clock.ppu_frame_cycle = 0;
             return;
         }
 
@@ -461,8 +461,7 @@ export class NES_ppu {
         this.cycle_scanline_addr();
         this.oam_evaluate_slow();
         this.perform_bg_fetches();
-
-        //this.scanline_timer.record_split('maint');
+        if (this.line_cycle >= 256) return;
 
         // Shift out some bits for backgrounds
         let bg_shift: u32 = 0, bg_color: u32 = 0;
@@ -490,8 +489,7 @@ export class NES_ppu {
         for (let m: i32 = 7; m >= 0; m--) {
             let sxc: i32 = unchecked(this.sprite_x_counters[m]);
             if ((sxc >= -8) &&
-                (sxc <= -1) &&
-                (this.line_cycle < 256)) {
+                (sxc <= -1)) {
                 let sal: u32 = unchecked(this.sprite_attribute_latches[m]);
                 let sps: u32 = unchecked(this.sprite_pattern_shifters[m]);
                 let s_x_flip: u32 = (sal & 0x40) >>> 6;
@@ -575,7 +573,7 @@ export class NES_ppu {
     cycle(howmany: u32): u32 {
         for (let i: u32 = 0; i < howmany; i++) {
             let r: i64 = this.w2006_buffer.get((this.clock.ppu_master_clock / this.clock.timing.ppu_divisor));
-            if (r > 0) {
+            if (r >= 0) {
                 this.io.v = <u32>r;
                 this.bus.mapper.a12_watch(<u32>r);
             }
@@ -634,7 +632,7 @@ export class NES_ppu {
     }
 
     reg_write(addr: u32, val: u32): void {
-        switch((addr & 7) | 0x2000) {
+        switch ((addr & 7) | 0x2000) {
             case 0x2000: // PPUCTRL
                 this.io.sprite_pattern_table = (val & 8) >>> 3;
                 this.io.bg_pattern_table = (val & 0x10) >>> 4;
@@ -693,6 +691,7 @@ export class NES_ppu {
                 }
                 this.mem_write(this.io.v, val);
                 this.io.v = (this.io.v + this.io.vram_increment) & 0x7FFF;
+                this.bus.mapper.a12_watch(this.io.v & 0x3FFF);
                 return;
         }
     }

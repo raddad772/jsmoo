@@ -35,7 +35,6 @@ class as_wrapper_t {
         await this.fetch_wasm();
         await this.instantiate();
         this.global_player = this.wasm.new_global_player();
-        console.log('GP IS!' + this.global_player);
         this.input_buffer_ptr = this.wasm.gp_get_input_buffer(this.global_player);
         this.in_setup = false;
         this.setup = true;
@@ -65,6 +64,6 @@ class as_wrapper_t {
             ob[i+this.input_buffer_ptr] = what[i];
         }
         t = performance.now() - t;
-        console.log('COPY TOOK', t.toFixed(2), 'ms');
+        //console.log('COPY TOOK', t.toFixed(2), 'ms');
     }
 }

@@ -95,7 +95,7 @@ export class NES_MMC3b implements NES_mapper {
                 if (this.irq_counter < 0) this.irq_counter = 0;
             }
 
-            if ((this.irq_counter === 0) && (this.irq_enable))
+            if ((this.irq_counter === 0) && this.irq_enable)
                 this.bus.CPU_notify_IRQ(1);
             this.irq_reload = false;
         }
@@ -252,7 +252,7 @@ export class NES_MMC3b implements NES_mapper {
     @inline PPU_write(addr: u32, val: u32): void {
         this.a12_watch(addr);
         if (addr < 0x2000) {
-            if (this.has_chr_ram) unchecked(this.CHR_RAM[addr] = <u8> val)
+            if (this.has_chr_ram) unchecked(this.CHR_RAM[addr] = <u8>val)
             return;
         }
         unchecked(this.CIRAM[this.mirror_ppu_addr(addr)] = <u8>val);

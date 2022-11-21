@@ -42,7 +42,7 @@ export class NES_a12_watcher_t {
 
     constructor(clock: NES_clock) {
         this.clock = clock;
-        this.delay = 10;
+        this.delay = this.clock.timing.ppu_divisor * 3;
     }
 
     @inline update(addr: u32): NES_a12_watcher_edge {
