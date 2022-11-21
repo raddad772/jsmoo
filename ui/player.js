@@ -366,11 +366,14 @@ class global_player_t {
      * @param {Uint8Array} ROM
      */
     send_load_ROM(name, ROM) {
+		console.log('ROM REQ')
 		if (!this.step2_done) {
+			console.log('STEp2 NOT DONE')
             this.queued_step_3 = ROM;
             this.queued_name = name;
             return;
         }
+		console.log('STEP2 DONE');
         this.player_thread.postMessage({kind: emulator_messages.load_rom, name: name, ROM: ROM});
     }
 
@@ -585,6 +588,7 @@ class global_player_t {
 
 	set_system(to) {
 		this.system_kind = to;
+		console.log('STEP1, STEP2', this.step1_done, this.step2_done)
 		this.send_set_system(to, this.bios_manager.bioses[this.system_kind])
 	}
 

@@ -303,7 +303,7 @@ async function AS_test_pt_m6502(opcodes, skip65c02brr=false) {
      let read8 = function(addr) {
         return AS_M6502testRAM[addr];
     }
-    let as = new gp_wrapper_t();
+    let as = new as_wrapper_t();
     await as.do_setup();
     //let cpu = new m6502_t(opcodes, {});
 

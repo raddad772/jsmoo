@@ -80,7 +80,7 @@ class js_wrapper_t {
 
 		// JS wraps the AS! yay?
 		this.emu_wasm = false;
-		this.as_wrapper = new gp_wrapper_t();
+		this.as_wrapper = new as_wrapper_t();
 		this.tech_specs = null;
 		this.out_ptr = 0;
     }
@@ -173,7 +173,7 @@ class js_wrapper_t {
             let to_copy = Math.ceil((this.tech_specs.x_resolution * this.tech_specs.y_resolution) / 2);
 			let cbuf = new Uint32Array(this.shared_buf1);
             cbuf.set(rd.slice(this.out_ptr >>> 2, (this.out_ptr>>>2)+to_copy))
-			return Object.assign({}, {buffer_num: 0}, this.as_wrapper.wasm.gp_get_framevars());
+			return Object.assign({}, {buffer_num: 0}, this.as_wrapper.wasm.gp_get_framevars(this.as_wrapper.global_player));
 		} else {
 			dbg.do_break = false;
 			let r = this.system.run_frame();

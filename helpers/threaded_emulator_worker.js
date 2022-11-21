@@ -41,10 +41,10 @@ class threaded_emulator_worker_t {
     }
 
     async onmessage(e) {
-        await this.js_wrapper.do_as_setup();
         switch(e.kind) {
             case emulator_messages.startup:
                 this.general_sab = e.general_sab;
+                await this.js_wrapper.do_as_setup();
                 this.step_done(emulator_messages.step1_done);
                 return;
             case emulator_messages.load_rom:
