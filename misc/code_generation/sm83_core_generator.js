@@ -1146,7 +1146,11 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             ag.addl('regs.PC = regs.IV;');
             break;
    }
-   return 'function(regs, pins) { //' + SM83_MN_R[opcode_info.ins] + '\n' + ag.finished() + indent + '}';
+   if (GENTARGET === 'js')
+       return 'function(regs, pins) { //' + SM83_MN_R[opcode_info.ins] + '\n' + ag.finished() + indent + '}';
+   else {
+       return 'function(regs: SM83_regs_t, pins: SM83_pins_t): void { // ' + SM83_MN_R[opcode_info.ins] + '\n' + ag.finished() + indent + '}';
+   }
 }
 
 function SM83_get_opc_by_prefix(prfx, i) {
@@ -1170,6 +1174,56 @@ function SM83_get_matrix_by_prefix(prfx, i) {
     }
 }
 
+function str_sm83_opcode_matrix(prefix, ins) {
+    switch(prefix) {
+        case 0:
+            return 'SM83_opcode_matrix.get(' + hex0x2(ins) + ')';
+        case 0xCB:
+            return 'SM83_opcode_matrixCB.get(' + hex0x2(ins) + ')';
+        default:
+            console.log('WHAT!?!?!?');
+            debugger;
+    }
+}
+
+function generate_sm83_core_as(output_name='sm83_decoded_opcodes') {
+    let outstr = 'import {SM83_opcode_functions, SM83_opcode_matrix, SM83_opcode_matrixCB, SM83_MAX_OPCODE, SM83_S_DECODE} from "../../../component/cpu/sm83/sm83_opcodes";\n' +
+        'import {SM83_pins_t, SM83_regs_t} from "../../../component/cpu/sm83/sm83";\n'
+    outstr += 'import {mksigned8} from "../../../helpers/helpers"\n'
+    outstr += '\nexport var ' + output_name + ': Array<SM83_opcode_functions> = new Array<SM83_opcode_functions>(SM83_MAX_OPCODE+0xFF);';
+    outstr += '\n\nfunction sm83_get_opcode_function(opcode: u32): SM83_opcode_functions {';
+    outstr += '\n    switch(opcode) {\n'
+    let indent = '        ';
+    let firstin = false;
+    for (let p in SM83_prefixes) {
+        let prfx = SM83_prefixes[p];
+        for (let i = 0; i <= SM83_MAX_OPCODE; i++) {
+            if ((p === 1) && (i > 0xFF)) continue;
+            let matrix_code = SM83_prefix_to_codemap[prfx] + i;
+            let mystr = indent + 'case ' + hex0x2(matrix_code) + ': return new SM83_opcode_functions(';
+            let r = SM83_get_opc_by_prefix(prfx, i);
+            if (typeof r === 'undefined') {
+                mystr += str_sm83_opcode_matrix(0, 0) + ',\n';
+                r = SM83_generate_instruction_function(indent, SM83_get_opc_by_prefix(0, 0));
+            } else {
+                mystr += str_sm83_opcode_matrix(prfx, i) + ',\n';
+                r = SM83_generate_instruction_function(indent, r);
+            }
+            mystr += '            ' + r + ');';
+            if (firstin)
+                outstr += '\n';
+            firstin = true;
+            outstr += mystr;
+        }
+    }
+        outstr += '\n    }';
+    outstr += "\n    return new SM83_opcode_functions(SM83_opcode_matrix.get(0), function(regs: SM83_regs_t, pins: SM83_pins_t): void { console.log('INVALID OPCODE');});";
+    outstr += '\n}'
+    outstr += '\n\nfor (let i = 0; i <= (SM83_MAX_OPCODE+0xFF); i++) {';
+    outstr += '\n    ' + output_name + '[i] = sm83_get_opcode_function(i);';
+    outstr += '\n}\n'
+    return outstr;
+}
 
 function generate_sm83_core() {
     let outstr = '"use strict";\n\nconst sm83_decoded_opcodes = Object.freeze({\n';

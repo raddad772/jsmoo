@@ -1,6 +1,10 @@
 'use strict';
 
 
+const GENEQO = '===';
+
+
+
 //const USE_ASSEMBLYSCRIPT = false;
 //const USE_THREADED_PLAYER = true;
 const SNES_STR = 'snes';
@@ -11,14 +15,16 @@ const GG_STR = 'gg';
 const SMS_STR = 'sms';
 const GENESIS_STR = 'megadrive';
 const GB_STR = 'gb';
+const GB_AS_STR = 'gb_as';
 const SPECTRUM_STR = 'spectrum';
 const GENERICZ80_STR = 'genericz80'
 
 //const DEFAULT_SYSTEM = SPECTRUM_STR;
-const DEFAULT_SYSTEM = NES_STR;
+//const DEFAULT_SYSTEM = NES_STR;
 //const DEFAULT_SYSTEM = SNES_STR;
 //const DEFAULT_SYSTEM = SMS_STR;
 //const DEFAULT_SYSTEM = GB_STR;
+const DEFAULT_SYSTEM = GB_AS_STR;
 //const DEFAULT_SYSTEM = GG_STR;
 //const DEFAULT_SYSTEM = NES_AS_STR;
 
@@ -42,6 +48,7 @@ class input_provider_t {
 			case 'gg':
 				this.setup_gg();
 				break;
+			case 'gb_as':
 			case 'gb':
 				this.setup_gb();
 				break;
@@ -534,6 +541,7 @@ class global_player_t {
 			case 'sms':
 				SMS_present(data, imgdata.data, buf);
 				break;
+			case 'gb_as':
 			case 'gb':
 				GB_present(data, imgdata.data, buf);
 				break;

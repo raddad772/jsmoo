@@ -58,7 +58,7 @@ function generate_nes6502_js() {
 
 function generate_nes6502_as() {
     set_gentarget('as');
-    save_js('nesm6502_generated_opcodes.ts', generate_nes6502_core_as());
+    save_js('nesm6502_generated_opcodes.ts', generate_sm83_core_as());
 }
 
 function generate_65c02_js() {
@@ -78,7 +78,7 @@ function generate_sm83_js() {
 
 function generate_sm83_as() {
     set_gentarget('as');
-    save_js('sm83_generated_opcodes.ts', generate_sm83_core());
+    save_js('sm83_generated_opcodes.ts', generate_sm83_core_as());
 }
 
 

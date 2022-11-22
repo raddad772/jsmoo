@@ -802,6 +802,7 @@ export const SM83_prefixes: StaticArray<u32> = [0, 0xCB]
 export const SM83_prefix_to_codemap: Map<u32, u32> = new Map<u32, u32>();
 SM83_prefix_to_codemap.set(0, 0);
 SM83_prefix_to_codemap.set(1, SM83_MAX_OPCODE + 1);
+SM83_prefix_to_codemap.set(0xCB, SM83_MAX_OPCODE + 1);
 
 export class SM83_opcode_functions {
     opcode: u32

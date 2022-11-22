@@ -6,6 +6,7 @@ import {GB_mapper} from "./mappers/interface";
 import {heapArray} from "../nes/nes_cart";
 import {GB_mapper_none} from "./mappers/nomapper";
 import {hex2} from "../../helpers/helpers";
+import {GB_mapper_MBC1} from "./mappers/mbc1";
 
 const GB_QUICK_BOOT = true;
 
@@ -79,15 +80,18 @@ export class GB_cart {
         let inp: heapArray = new heapArray(ibuf, sz);
 
         // Look for header
+        // @ts-ignore
         if ((inp[0x104] !== 0xCE) || (inp[0x105] !== 0xED)) {
             console.log('Did not detect Nintendo header');
             return;
         }
 
+        // @ts-ignore
         this.header.ROM_banks = GB_ROMBANKS.get(inp[0x0148]);
         this.header.ROM_size = (this.header.ROM_banks ? (this.header.ROM_banks * 16384) : 32768);
         this.ROM = new StaticArray<u8>(this.header.ROM_size);
 
+        // @ts-ignore
         switch(inp[0x149]) {
             case 0:
                 this.header.RAM_size = 0;
@@ -120,6 +124,7 @@ export class GB_cart {
                 this.header.RAM_banks = 8;
                 break;
             default:
+                // @ts-ignore
                 console.log('UNKNOWN RAM SIZE ' + inp[0x149].toString())
                 break;
         }
@@ -128,6 +133,7 @@ export class GB_cart {
         this.header.timer_present = 0;
         this.header.rumble_present = 0;
         this.header.sensor_present = 0;
+        // @ts-ignore
         let mn: u32 = inp[0x0147];
         this.header.mapper = GB_MAPPERS.none;
         console.log('MAPPER ' + hex2(mn))
@@ -198,9 +204,11 @@ export class GB_cart {
             case 0x06: // MBC2+BATTERY
                 this.header.battery_present = 1;
                 break;
+            // @ts-ignore
             case 0x08: // ROM+RAM
                 this.header.ram_present = 1;
                 break;
+            // @ts-ignore
             case 0x09: // ROM+RAM+BATTERY
                 this.header.battery_present = 1;
                 this.header.ram_present = 1;
@@ -265,6 +273,7 @@ export class GB_cart {
     read_ROM(inp: heapArray): void {
 		//this.ROM.set(inp.slice(0, this.header.ROM_size));
         for (let i: u32 = 0, k: u32 = this.header.ROM_size; i < k; i++) {
+            // @ts-ignore
             this.ROM[i] = inp[i];
         }
     }
@@ -272,11 +281,12 @@ export class GB_cart {
     setup_mapper(): void {
         switch(this.header.mapper) {
             case GB_MAPPERS.none:
+                console.log('TRYING TO DO NONE!');
                 this.mapper = new GB_mapper_none(this.clock, this.bus);
                 break;
-            /*case GB_MAPPERS.MBC1:
-                this.mapper = new GB_MAPPER_MBC1(this.clock, this.bus);
-                break;
+            case GB_MAPPERS.MBC1:
+                this.mapper = new GB_mapper_MBC1(this.clock, this.bus);
+                break;/*
             case GB_MAPPERS.MBC2:
                 this.mapper = new GB_MAPPER_MBC2(this.clock, this.bus);
                 break;
@@ -291,6 +301,7 @@ export class GB_cart {
                 return;
         }
         //this.bus.load_bios(this.bios);
+        this.bus.mapper = this.mapper;
         this.mapper.set_cart(this, this.bus.BIOS);
     }
 }
