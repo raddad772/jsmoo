@@ -1,5 +1,8 @@
 "use strict";
 
+const GENEQO = '===';
+
+
 /* Wrap JavaScript emulators like as_wrapper.js does AS ones. */
 // General functions and classes
 importScripts(
@@ -125,9 +128,6 @@ class js_wrapper_t {
 				this.system = new SMSGG(bios, SMSGG_variants.GG, REGION.NTSC);
 				//load_bios('/gg/roms/bios.gg');
 				break;
-			case 'gb':
-				this.system = new GameBoy(bios, GB_variants.DMG);
-				break;
 			case 'sms':
 				this.system = new SMSGG(bios, SMSGG_variants.SMS2, REGION.NTSC);
 				break;
@@ -140,6 +140,13 @@ class js_wrapper_t {
 			case 'nes_as':
 				this.emu_wasm = true;
             	this.as_wrapper.wasm.gp_set_system(this.as_wrapper.global_player, to);
+				break;
+			case 'gb':
+				this.system = new GameBoy(bios, GB_variants.DMG);
+				break;
+			case 'gb_as':
+				this.emu_wasm = true;
+				this.as_wrapper.wasm.gp_set_system(this.as_wrapper.global_player, to);
 				break;
 			case 'spectrum':
 				this.system = new ZXSpectrum(bios, ZXSpectrum_variants.s48k);

@@ -256,6 +256,7 @@ class GB_pixel_slice_fetcher {
             } else {
                 this.out_px.bg_or_sp = 1;
                 this.out_px.color = sp_color;
+                // @ts-ignore
                 this.out_px.palette = sp_palette;
             }
         }
@@ -417,7 +418,7 @@ export class GB_PPU {
 
     constructor(out_buffer: usize, variant: GB_variants, clock: GB_clock, bus: GB_bus) {
         this.out_buffer[0] = out_buffer;
-        this.out_buffer[1] = (160*144);
+        this.out_buffer[1] = out_buffer+(160*144);
         this.cur_buffer = this.out_buffer[this.cur_output_num];
         this.variant = variant;
         this.clock = clock;
@@ -685,6 +686,7 @@ export class GB_PPU {
         if (this.window_triggered_on_line) this.clock.wly++;
         this.clock.lx = 0;
         this.clock.ly++;
+        // @ts-ignore
         this.is_window_line = this.is_window_line | (this.clock.ly == this.io.wy);
         this.window_triggered_on_line = false;
         this.line_cycle = 0;

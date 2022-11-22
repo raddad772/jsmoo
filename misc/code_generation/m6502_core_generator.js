@@ -14,8 +14,6 @@ List of differences between original NMOS 6502 and CMOS version
  */
 
 //let GENTARGET = 'js'; // JavaScript
-let GENTARGET = 'as'; // AssemblyScript
-let GENEQO = (GENTARGET === 'as') ? '==' : '===';
 
 function M65C02_TEST_ABS_Xm(ins) {
     return ((ins === M6502_MN.DEC) || (ins === M6502_MN.INC));
@@ -1596,7 +1594,7 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
     if (GENTARGET === 'js')
         return 'function(regs, pins) { //' + opcode_info.mnemonic + '\n' + ag.finished() + indent + '}';
     else {
-        return 'function(regs: m6502_regs, pins: m6502_pins): void { //' + opcode_info.mnemonic + '\n' + ag.finished() + indent + '}';
+        return 'function(regs: m6502_regs, pins: m6502_pins): void { // ' + opcode_info.mnemonic + '\n' + ag.finished() + indent + '}';
     }
 }
 

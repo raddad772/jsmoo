@@ -10,6 +10,7 @@ import {
 } from "./sm83_opcodes";
 import {GB_bus, GB_clock} from "../../../system/gb/gb";
 import {dbg} from "../../../helpers/debug";
+import {sm83_decoded_opcodes} from "./sm83_generated_opcodes";
 
 export var SM83_PC_BRK: i32 = -1;
 
@@ -103,7 +104,7 @@ export class SM83_t {
     //trace_peek: null = null
 
     trace_cycles: u64 = 0
-    current_instruction: SM83_opcode_functions = SM83_decoded_opcodes.get(SM83_S_RESET);
+    current_instruction: SM83_opcode_functions = sm83_decoded_opcodes[SM83_S_RESET];
 
     constructor(variant: GB_variants, clock: GB_clock, bus: GB_bus) {
         this.clock = clock;
@@ -243,6 +244,7 @@ export class SM83_t {
                         this.regs.IF &= imask;
                         this.regs.HLT = 0;
                         this.regs.IR = SM83_S_IRQ;
+                        console.log('SETTING IRQ!');
                         this.current_instruction = sm83_decoded_opcodes[SM83_S_IRQ];
                     }
                 }
@@ -256,6 +258,7 @@ export class SM83_t {
             this.ins_cycles();
         } else {
             // Execute an actual opcode
+            //console.log('EXEC IDX:' + this.current_instruction.exec_func.index.toString() + ' ' + hex4(this.regs.PC) + ' ' + this.current_instruction.mnemonic + ' ' + this.current_instruction.ins.toString());
             this.current_instruction.exec_func(this.regs, this.pins);
         }
         if (this.regs.PC === SM83_PC_BRK) {
