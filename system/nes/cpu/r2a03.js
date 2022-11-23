@@ -92,6 +92,7 @@ class ricoh2A03 {
     }
 
     enable_tracing() {
+        console.log('R2A03 got enable signal');
         if (this.tracing) return;
         this.cpu.enable_tracing(this.read_trace.bind(this));
         this.tracing = true;

@@ -446,7 +446,7 @@ class wdc65816_t {
 
 	enable_tracing(peek_func) {
 		this.trace_peek = peek_func;
-		this.trace_cycles = 0;
+		//this.trace_cycles = 0;
 		this.trace_on = true;
 	}
 

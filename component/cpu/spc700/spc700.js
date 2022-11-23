@@ -170,7 +170,7 @@ class spc700 {
 
     enable_tracing() {
         if (this.trace_on) return;
-        this.trace_cycles = 0;
+        //this.trace_cycles = 0;
         this.trace_on = true;
         this.setup_rw();
     }

@@ -1,16 +1,7 @@
 "use strict";
 
-/*import {
-    gp_load_ROM_from_RAM,
-    gp_run_frame,
-    gp_get_specs,
-    gp_set_system,
-    new_global_player,
-    memory}
-    from "/assemblyscript/build/release_stable.js";*/
 const DO_WASM_IMPORTS = true;
 importScripts('/helpers/thread_common.js');
-//importScripts('/helpers/as_wrapper.js');
 importScripts('/helpers/js_wrapper.js');
 
 var ui = {
@@ -85,6 +76,7 @@ class threaded_emulator_worker_t {
     master_step(howmany) {
         let on = this.js_wrapper.step_master(howmany);
         this.send_mstep_done(on);
+        dbg.traces.draw(dconsole);
     }
 
     process_ui_event(event) {
@@ -163,6 +155,10 @@ class threaded_emulator_worker_t {
 
     send_specs(specs) {
         postMessage({kind: emulator_messages.specs, specs: specs})
+    }
+
+    send_textconsole_message(msg) {
+        postMessage({kind: emulator_messages.text_transmit, data: msg})
     }
 
     reset() {
