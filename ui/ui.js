@@ -527,6 +527,7 @@ async function init_ui() {
 
 	ui_el.tracing_CPU_checkbox.addEventListener('change', (event) => {
 		global_player.ui_event('dbg', {'tracingCPU': !!event.currentTarget.checked});
+		return;
 		if (event.currentTarget.checked) {
 			console.log('ENABLE FOR!', global_player.system_kind);
 			switch(global_player.system_kind) {

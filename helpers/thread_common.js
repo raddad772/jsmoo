@@ -25,6 +25,7 @@ const emulator_messages = Object.freeze({
     load_bios: 4,
     reset: 5,
     specs: 6,
+    text_transmit: 9,
     startup: 100,
 
     step1_done: 1001,
@@ -50,3 +51,23 @@ const KBKINDS = {
     spectrum48: 1
 }
 
+const SNES_STR = 'snes';
+const NES_STR = 'nes';
+const NES_AS_STR = 'nes_as';
+const COMMODORE64_STR = 'c64';
+const GG_STR = 'gg';
+const SMS_STR = 'sms';
+const GENESIS_STR = 'megadrive';
+const GB_STR = 'gb';
+const GB_AS_STR = 'gb_as';
+const SPECTRUM_STR = 'spectrum';
+const GENERICZ80_STR = 'genericz80'
+
+//const DEFAULT_SYSTEM = SPECTRUM_STR;
+//const DEFAULT_SYSTEM = SNES_STR;
+//const DEFAULT_SYSTEM = SMS_STR;
+//const DEFAULT_SYSTEM = GB_STR;
+//const DEFAULT_SYSTEM = GB_AS_STR;
+//const DEFAULT_SYSTEM = GG_STR;
+const DEFAULT_SYSTEM = NES_STR;
+//const DEFAULT_SYSTEM = NES_AS_STR;

@@ -1,6 +1,6 @@
 "use strict";
 
-let CPU_DO_TRACING_AT_START = false;
+let CPU_DO_TRACING_AT_START = true;
 let APU_DO_TRACING_AT_START = false;
 let TRACE_COLOR = true;
 let SPC_TRACING_START = 20 * 68 * 262 * 9;
@@ -244,9 +244,68 @@ class debugger_t {
         this.frames_til_pause = 0;
     }
 
+    process_CPU_trace(set_to) {
+		let syskind = emulator_worker.js_wrapper.system_kind;
+        if (set_to) {
+			console.log('ENABLE FOR!', emulator_worker.js_wrapper.system_kind);
+            this.enable_tracing();
+			switch(syskind) {
+				case 'gb':
+					dbg.enable_tracing_for(D_RESOURCE_TYPES.SM83);
+					break;
+				case 'nes':
+					dbg.enable_tracing_for(D_RESOURCE_TYPES.M6502);
+					break;
+				case 'snes':
+					dbg.enable_tracing_for(D_RESOURCE_TYPES.R5A22);
+					break;
+				case 'genericz80':
+					dbg.enable_tracing_for(D_RESOURCE_TYPES.Z80);
+					break;
+				case 'gg':
+				case 'sms':
+				case 'spectrum':
+					dbg.enable_tracing_for(D_RESOURCE_TYPES.Z80);
+					break;
+			}
+		}
+		else {
+            this.disable_tracing();
+			switch(syskind) {
+				case 'gb':
+					dbg.disable_tracing_for(D_RESOURCE_TYPES.SM83);
+					break;
+				case 'nes':
+					dbg.disable_tracing_for(D_RESOURCE_TYPES.M6502);
+					break;
+				case 'snes':
+					dbg.disable_tracing_for(D_RESOURCE_TYPES.R5A22);
+					break;
+				case 'genericz80':
+					dbg.disable_tracing_for(D_RESOURCE_TYPES.Z80);
+					break;
+				case 'gg':
+				case 'sms':
+				case 'spectrum':
+					dbg.disable_tracing_for(D_RESOURCE_TYPES.Z80);
+					break;
+			}
+		}
+    }
+
     ui_event(event) {
         for (let i in event) {
-            this[i] = event[i];
+            switch(i) {
+                case 'tracingCPU':
+                    this.process_CPU_trace(event[i]);
+                    break;
+                case 'brk_on_NMIRQ':
+                    this.brk_on_NMIRQ = event[i];
+                    break;
+                default:
+                    console.log('UNHANDLED DBG EVENT', i);
+                    break;
+            }
         }
     }
 
@@ -261,33 +320,38 @@ class debugger_t {
     cpu_refresh_tracing() {
         for (let k in this.cpus) {
             if (!this.tracing) {
+                console.log('WE GONNA DISABLE')
                 this.cpus[k].disable_tracing();
                 continue;
             }
             if (this.tracing_for[k]) {
+                console.log('WE GONNA ENABLE')
                 this.cpus[k].enable_tracing();
             }
-            else
+            else {
+                console.log('WHAT WAT')
                 this.cpus[k].disable_tracing();
+            }
         }
     }
 
     enable_tracing() {
-        //console.log('ENABLE!');
+        console.log('ENABLE!');
         this.tracing = true;
         this.cpu_refresh_tracing();
     }
 
     disable_tracing() {
         this.tracing = false;
-        //console.log('DISABLE!');
+        console.log('DISABLE!');
         this.cpu_refresh_tracing();
     }
 
     enable_tracing_for(kind) {
         let old = this.tracing_for[kind];
         this.tracing_for[kind] = true;
-        if (old === false)  this.cpu_refresh_tracing();
+        console.log('OLD?', old, this.tracing_for);
+        if (!old)  this.cpu_refresh_tracing();
     }
 
     disable_tracing_for(kind) {
@@ -348,8 +412,6 @@ class debugger_t {
         console.log('DOING BREAK');
         this.state = DBG_STATES.PAUSE;
         this.do_break = true;
-        global_player.pause();
-        global_player.after_break(whodidit);
         if (this.tracing) {
             this.traces.draw(dconsole);
         }

@@ -3,32 +3,6 @@
 
 const GENEQO = '===';
 
-
-
-//const USE_ASSEMBLYSCRIPT = false;
-//const USE_THREADED_PLAYER = true;
-const SNES_STR = 'snes';
-const NES_STR = 'nes';
-const NES_AS_STR = 'nes_as';
-const COMMODORE64_STR = 'c64';
-const GG_STR = 'gg';
-const SMS_STR = 'sms';
-const GENESIS_STR = 'megadrive';
-const GB_STR = 'gb';
-const GB_AS_STR = 'gb_as';
-const SPECTRUM_STR = 'spectrum';
-const GENERICZ80_STR = 'genericz80'
-
-//const DEFAULT_SYSTEM = SPECTRUM_STR;
-//const DEFAULT_SYSTEM = NES_STR;
-//const DEFAULT_SYSTEM = SNES_STR;
-//const DEFAULT_SYSTEM = SMS_STR;
-//const DEFAULT_SYSTEM = GB_STR;
-const DEFAULT_SYSTEM = GB_AS_STR;
-//const DEFAULT_SYSTEM = GG_STR;
-//const DEFAULT_SYSTEM = NES_AS_STR;
-
-
 class input_provider_t {
 	constructor(system_kind, keymap) {
 		this.system_kind = system_kind;
@@ -443,15 +417,48 @@ class global_player_t {
         this.player_thread.postMessage({kind: emulator_messages.request_savestate});
 	}
 
-	do_load_state() {
+	do_lod_state() {
 		if (this.queued_load_state === -1) return;
         this.player_thread.postMessage({kind: emulator_messages.send_loadstate, ss: this.ss})
 		this.queued_load_state = -1;
 	}
 
+	parse_text_transmitted(e) {
+		let opt = e.options
+		let cmd = e.cmd
+		let args = e.args
+		let target = opt. elname
+		let p;
+		switch(target) {
+			case 'tconsole':
+				p = tconsole;
+				break;
+			case 'dconsole':
+				p = dconsole;
+				break;
+			default:
+				console.log('WHAT TO DO WITH CONSOLE', target);
+				return;
+		}
+		switch(cmd) {
+			case 'clear':
+				p.clear(args.draw);
+				break;
+			case 'draw':
+				p.draw();
+				break;
+			case 'addl':
+				p.addl(args.order, args.line, args.bgcolor, args.draw);
+				break;
+		}
+	}
+
 	on_player_message(e) {
 		e = e.data;
 		switch(e.kind) {
+			case emulator_messages.text_transmit:
+				this.parse_text_transmitted(e.data);
+				break;
 			case emulator_messages.specs:
 				this.tech_specs = e.specs;
 				this.update_tech_specs();

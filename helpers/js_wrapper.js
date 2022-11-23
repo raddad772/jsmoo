@@ -81,6 +81,7 @@ class js_wrapper_t {
          */
         this.system = null;
 		this.input_buffer = new Int32Array(256);
+		this.system_kind = DEFAULT_SYSTEM;
 
 		// JS wraps the AS! yay?
 		this.emu_wasm = false;

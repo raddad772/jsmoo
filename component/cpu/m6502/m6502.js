@@ -374,7 +374,7 @@ class m6502_t {
 
     enable_tracing(peek_func) {
         this.trace_peek = peek_func;
-        this.clock.trace_cycles = 0;
+        //this.clock.trace_cycles = 0;
         this.trace_on = true;
     }
 
