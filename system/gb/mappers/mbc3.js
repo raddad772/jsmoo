@@ -150,7 +150,7 @@ class GB_MAPPER_MBC3 {
                     this.regs.ext_RAM_enable = val === 0x0A;
                     return;
                 case 0x2000: // 16KB hi ROM bank number, 7 bits. 0 = 1, otherwise it's normal
-                    val &= 0x7F;
+                    val &= 0xFF;
                     if (val === 0) val = 1;
                     this.regs.ROM_bank_hi = val;
                     this.remap();

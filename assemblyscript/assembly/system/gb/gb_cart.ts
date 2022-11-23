@@ -7,6 +7,9 @@ import {heapArray} from "../nes/nes_cart";
 import {GB_mapper_none} from "./mappers/nomapper";
 import {hex2} from "../../helpers/helpers";
 import {GB_mapper_MBC1} from "./mappers/mbc1";
+import {GB_mapper_MBC2} from "./mappers/mbc2";
+import {GB_mapper_MBC3} from "./mappers/mbc3";
+import {GB_mapper_MBC5} from "./mappers/mbc5";
 
 const GB_QUICK_BOOT = true;
 
@@ -89,6 +92,7 @@ export class GB_cart {
         // @ts-ignore
         this.header.ROM_banks = GB_ROMBANKS.get(inp[0x0148]);
         this.header.ROM_size = (this.header.ROM_banks ? (this.header.ROM_banks * 16384) : 32768);
+        console.log(this.header.ROM_size.toString());
         this.ROM = new StaticArray<u8>(this.header.ROM_size);
 
         // @ts-ignore
@@ -286,16 +290,16 @@ export class GB_cart {
                 break;
             case GB_MAPPERS.MBC1:
                 this.mapper = new GB_mapper_MBC1(this.clock, this.bus);
-                break;/*
+                break;
             case GB_MAPPERS.MBC2:
-                this.mapper = new GB_MAPPER_MBC2(this.clock, this.bus);
+                this.mapper = new GB_mapper_MBC2(this.clock, this.bus);
                 break;
             case GB_MAPPERS.MBC3:
-                this.mapper = new GB_MAPPER_MBC3(this.clock, this.bus);
+                this.mapper = new GB_mapper_MBC3(this.clock, this.bus);
                 break;
             case GB_MAPPERS.MBC5:
-                this.mapper = new GB_MAPPER_MBC5(this.clock, this.bus);
-                break;*/
+                this.mapper = new GB_mapper_MBC5(this.clock, this.bus);
+                break;
             default:
                 console.log('UNSUPPORTED MAPPER SO FAR ' + hex2(this.header.mapper));
                 return;
