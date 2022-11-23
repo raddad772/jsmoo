@@ -8,8 +8,8 @@ class ConsoleAudioContext {
     }
 
     async grab_context() {
-        console.log('Setting up audio context')
         if ((this.setup) || (this.in_setup)) return;
+        console.log('Setting up audio context')
         this.in_setup = true;
         this.audio_context = new AudioContext({
             latencyHint: 'interactive',

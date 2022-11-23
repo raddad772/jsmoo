@@ -35,7 +35,7 @@ export class global_player_t {
     ready: bool = false;
     tech_specs: machine_description = new machine_description();
     video_output_buffer: usize = heap.alloc(1024*1024*2);
-    input_buffer: usize = heap.alloc(1024*1024*2);
+    input_buffer: usize = heap.alloc(1024*1024*6);
 
     constructor() {
         this.ready = false;

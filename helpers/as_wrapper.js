@@ -2,7 +2,7 @@
 
 /* Wrap AssemblyScript GlobalPlayer object */
 
-const USE_DEBUG = false;
+const USE_DEBUG = true
 if (DO_WASM_IMPORTS) {
     if (USE_DEBUG)
         importScripts('/assemblyscript/build/debug_stable.js');
