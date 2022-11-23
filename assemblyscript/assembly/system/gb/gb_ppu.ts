@@ -51,7 +51,7 @@ class GB_FIFO_t {
         this.compat_mode = 1;
 
         for (let i: u32 = 0; i < 8; i++) {
-            this.items[i] = new GB_FIFO_item_t();
+            unchecked(this.items[i] = new GB_FIFO_item_t());
         }
     }
 
@@ -95,22 +95,23 @@ class GB_FIFO_t {
             if (flip) r = 7 - r;
             let i: u32 = (r + this.head) & 7;
             let px: u32 = ((bp0 & 0x80) >>> 7) | ((bp1 & 0x80) >>> 6);
+            let item = unchecked(this.items[i]);
             bp0 <<= 1;
             bp1 <<= 1;
             if (this.compat_mode == 1) {
                 // DMG/CGB compatability
-                if (this.items[i].pixel === 0) {
-                    this.items[i].palette = sp_palette;
-                    this.items[i].sprite_priority = sp_priority;
-                    this.items[i].pixel = px;
-                    this.items[i].cgb_priority = 0;
+                if (item.pixel === 0) {
+                    item.palette = sp_palette;
+                    item.sprite_priority = sp_priority;
+                    item.pixel = px;
+                    item.cgb_priority = 0;
                 }
             } else {
-                if (this.items[i].cgb_priority < sp_priority) {
-                    this.items[i].palette = sp_palette;
-                    this.items[i].sprite_priority = sp_priority;
-                    this.items[i].pixel = px;
-                    this.items[i].cgb_priority = sp_priority;
+                if (item.cgb_priority < sp_priority) {
+                    item.palette = sp_palette;
+                    item.sprite_priority = sp_priority;
+                    item.pixel = px;
+                    item.cgb_priority = sp_priority;
                 }
             }
         }
@@ -128,7 +129,7 @@ class GB_FIFO_t {
             console.log('NO!');
             return null;
         }
-        let r = this.items[this.tail];
+        let r = unchecked(this.items[this.tail]);
         this.tail = (this.tail + 1) & 7;
         this.num_items++;
         return r;
@@ -136,12 +137,12 @@ class GB_FIFO_t {
 
     peek(): GB_FIFO_item_t|null {
         if (this.num_items === 0) return null;
-        return this.items[this.head];
+        return unchecked(this.items[this.head]);
     }
 
     pop(): GB_FIFO_item_t|null {
         if (this.num_items === 0) return null;
-        let r = this.items[this.head];
+        let r = unchecked(this.items[this.head]);
         this.head = (this.head + 1) & 7;
         this.num_items--;
         return r;
@@ -267,7 +268,7 @@ class GB_pixel_slice_fetcher {
     run_fetch_cycle(): void {
         // Scan any sprites
         for (let i: u32 = 0; i < this.ppu!.sprites.num; i++) {
-            let ppuo: GB_PPU_sprite_t = this.ppu!.OBJ[i];
+            let ppuo: GB_PPU_sprite_t = unchecked(this.ppu!.OBJ[i]);
             if ((!ppuo.in_q) && (ppuo.x == this.clock.lx)) {
                 this.sp_request++;
                 let p = this.sprites_queue.push();
@@ -477,13 +478,12 @@ export class GB_PPU {
     }
 
     write_OAM(addr: u32, val: u32): void {
-        if ((addr >= 0xFE00) && (addr < 0xFEA0)) this.OAM[addr - 0xFE00] = <u8>val;
-        else console.log('BAD ADDR OAM ' + hex4(addr));
+        if ((addr >= 0xFE00) && (addr < 0xFEA0)) unchecked(this.OAM[addr - 0xFE00] = <u8>val);
     }
 
     read_OAM(addr: u32): u32 {
-        if (addr >= 0xFEA0) return 0xFF;
-        return this.OAM[addr - 0xFE00];
+        if ((addr >= 0xFE00) && (addr < 0xFEA0)) return unchecked(this.OAM[addr - 0xFE00]);
+        return 0xFF;
     }
 
     write_IO(addr: u32, val: u32): void {
@@ -537,24 +537,24 @@ export class GB_PPU {
                 return;
             case 0xFF47: // BGP pallete
                 //if (!this.clock.CPU_can_VRAM) return;
-                this.bg_palette[0] = <u8>(val & 3);
-                this.bg_palette[1] = <u8>((val >>> 2) & 3);
-                this.bg_palette[2] = <u8>((val >>> 4) & 3);
-                this.bg_palette[3] = <u8>((val >>> 6) & 3);
+                unchecked(this.bg_palette[0] = <u8>(val & 3));
+                unchecked(this.bg_palette[1] = <u8>((val >>> 2) & 3));
+                unchecked(this.bg_palette[2] = <u8>((val >>> 4) & 3));
+                unchecked(this.bg_palette[3] = <u8>((val >>> 6) & 3));
                 return;
             case 0xFF48: // OBP0 sprite palette 0
                 //if (!this.clock.CPU_can_VRAM) return;
-                this.sp_palette[0][0] = <u8>(val & 3);
-                this.sp_palette[0][1] = <u8>((val >>> 2) & 3);
-                this.sp_palette[0][2] = <u8>((val >>> 4) & 3);
-                this.sp_palette[0][3] = <u8>((val >>> 6) & 3);
+                unchecked(this.sp_palette[0][0] = <u8>(val & 3));
+                unchecked(this.sp_palette[0][1] = <u8>((val >>> 2) & 3));
+                unchecked(this.sp_palette[0][2] = <u8>((val >>> 4) & 3));
+                unchecked(this.sp_palette[0][3] = <u8>((val >>> 6) & 3));
                 return;
             case 0xFF49: // OBP1 sprite palette 1
                 //if (!this.clock.CPU_can_VRAM) return;
-                this.sp_palette[1][0] = <u8>(val & 3);
-                this.sp_palette[1][1] = <u8>((val >>> 2) & 3);
-                this.sp_palette[1][2] = <u8>((val >>> 4) & 3);
-                this.sp_palette[1][3] = <u8>((val >>> 6) & 3);
+                unchecked(this.sp_palette[1][0] = <u8>(val & 3));
+                unchecked(this.sp_palette[1][1] = <u8>((val >>> 2) & 3));
+                unchecked(this.sp_palette[1][2] = <u8>((val >>> 4) & 3));
+                unchecked(this.sp_palette[1][3] = <u8>((val >>> 6) & 3));
                 return;
 
         }
@@ -596,13 +596,13 @@ export class GB_PPU {
                 return this.io.wx;
             case 0xFF47: // BGP
                 //if (!this.clock.CPU_can_VRAM) return 0xFF;
-                return this.bg_palette[0] | (this.bg_palette[1] << 2) | (this.bg_palette[2] << 4) | (this.bg_palette[3] << 6);
+                return unchecked(this.bg_palette[0]) | (unchecked(this.bg_palette[1]) << 2) | (unchecked(this.bg_palette[2]) << 4) | (unchecked(this.bg_palette[3]) << 6);
             case 0xFF48: // OBP0
                 //if (!this.clock.CPU_can_VRAM) return 0xFF;
-                return this.sp_palette[0][0] | (this.sp_palette[0][1] << 2) | (this.sp_palette[0][2] << 4) | (this.sp_palette[0][3] << 6);
+                return unchecked(this.sp_palette[0][0]) | (unchecked(this.sp_palette[0][1]) << 2) | (unchecked(this.sp_palette[0][2]) << 4) | (unchecked(this.sp_palette[0][3]) << 6);
             case 0xFF49: // OBP1
                 //if (!this.clock.CPU_can_VRAM) return 0xFF;
-                return this.sp_palette[1][0] | (this.sp_palette[1][1] << 2) | (this.sp_palette[1][2] << 4) | (this.sp_palette[1][3] << 6);
+                return unchecked(this.sp_palette[1][0]) | (unchecked(this.sp_palette[1][1]) << 2) | (unchecked(this.sp_palette[1][2]) << 4) | (unchecked(this.sp_palette[1][3]) << 6);
         }
         return 0xFF;
     }
@@ -787,30 +787,32 @@ export class GB_PPU {
 
     /********************/
     OAM_search(): void {
-        if (this.line_cycle !== 75) return;
+        if (this.line_cycle != 75) return;
 
         // Check if a sprite is at the right place
         this.sprites.num = 0;
         this.sprites.index = 0;
         this.sprites.search_index = 0;
         for (let i = 0; i < 10; i++) {
-            this.OBJ[i].x = 0;
-            this.OBJ[i].y = 0;
-            this.OBJ[i].in_q = 0;
+            let o = unchecked(this.OBJ[i]);
+            o.x = 0;
+            o.y = 0;
+            o.in_q = 0;
         }
 
         let cly: i32 = <i32>this.clock.ly;
 
         for (let i = 0; i < 40; i++) {
             if (this.sprites.num === 10) break;
-            let sy: i32 = <i32>(this.OAM[this.sprites.search_index] - 16);
+            let sy: i32 = <i32>(unchecked(this.OAM[this.sprites.search_index]) - 16);
             let sy_bottom: i32 = sy + (this.io.sprites_big ? 16 : 8);
             if ((cly >= sy) && (cly < sy_bottom)) {
-                this.OBJ[this.sprites.num].y = sy;
-                this.OBJ[this.sprites.num].x = this.OAM[this.sprites.search_index + 1] - 1;
-                this.OBJ[this.sprites.num].tile = this.OAM[this.sprites.search_index + 2];
-                this.OBJ[this.sprites.num].attr = this.OAM[this.sprites.search_index + 3];
-                this.OBJ[this.sprites.num].in_q = 0;
+                let o_sn = unchecked(this.OBJ[this.sprites.num]);
+                o_sn.y = sy;
+                o_sn.x = unchecked(this.OAM[this.sprites.search_index + 1] - 1);
+                o_sn.tile = unchecked(this.OAM[this.sprites.search_index + 2]);
+                o_sn.attr = unchecked(this.OAM[this.sprites.search_index + 3]);
+                o_sn.in_q = 0;
 
                 this.sprites.num++;
             }
@@ -818,7 +820,7 @@ export class GB_PPU {
         }
     }
 
-    in_window(): bool {
+    @inline in_window(): bool {
         return this.io.window_enable && this.is_window_line && (this.clock.lx >= this.io.wx);
     }
 
@@ -833,9 +835,9 @@ export class GB_PPU {
             if (this.clock.lx > 7) {
                 let cv: u8;
                 if (p.bg_or_sp === 0) {
-                    cv = this.bg_palette[p.color];
+                    cv = unchecked(this.bg_palette[p.color]);
                 } else {
-                    cv = this.sp_palette[p.palette][p.color];
+                    cv = unchecked(this.sp_palette[p.palette][p.color]);
                 }
                 store<u16>(this.cur_buffer+(((this.clock.ly * 160) + (this.clock.lx - 8))*2), <u8>cv);
             }
