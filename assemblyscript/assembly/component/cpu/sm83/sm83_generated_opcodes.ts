@@ -4973,7 +4973,7 @@ function sm83_get_opcode_function(opcode: u32): SM83_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.IME = 0;
-                    console.log('DI!');
+                    //console.log('DI!');
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
