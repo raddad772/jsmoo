@@ -1,6 +1,7 @@
 import {GB_PPU_modes, GB_variants} from "./gb_common";
 import {GB_bus, GB_clock} from "./gb";
 import {dbg} from "../../helpers/debug";
+import {hex4} from "../../helpers/helpers";
 
 function GB_sp_tile_addr(tn: u32, y: u32, big_sprites: u32, y_flip: u32): u32 {
     if (big_sprites) {
@@ -418,7 +419,7 @@ export class GB_PPU {
 
     constructor(out_buffer: usize, variant: GB_variants, clock: GB_clock, bus: GB_bus) {
         this.out_buffer[0] = out_buffer;
-        this.out_buffer[1] = out_buffer+(160*144);
+        this.out_buffer[1] = out_buffer+((160*144)*2);
         this.cur_buffer = this.out_buffer[this.cur_output_num];
         this.variant = variant;
         this.clock = clock;
@@ -476,7 +477,8 @@ export class GB_PPU {
     }
 
     write_OAM(addr: u32, val: u32): void {
-        if (addr < 0xFEA0) this.OAM[addr - 0xFE00] = <u8>val;
+        if ((addr >= 0xFE00) && (addr < 0xFEA0)) this.OAM[addr - 0xFE00] = <u8>val;
+        else console.log('BAD ADDR OAM ' + hex4(addr));
     }
 
     read_OAM(addr: u32): u32 {
@@ -703,9 +705,9 @@ export class GB_PPU {
 
     // TODO: trigger IRQ if enabled properly
     @inline eval_lyc(): void {
-        let cly = this.clock.ly;
-        if ((cly === 153) && (this.line_cycle > 1)) cly = 0;
-        if (this.clock.ly === this.io.lyc) {
+        let cly: u32 = this.clock.ly;
+        if ((cly === 153) && (this.io.lyc !== 153)) cly = 0;
+        if (cly === this.io.lyc) {
             this.IRQ_lylyc_up();
         }
         else
@@ -835,7 +837,7 @@ export class GB_PPU {
                 } else {
                     cv = this.sp_palette[p.palette][p.color];
                 }
-                store<u8>(this.cur_buffer+(this.clock.ly * 160) + (this.clock.lx - 8), <u8>cv);
+                store<u16>(this.cur_buffer+(((this.clock.ly * 160) + (this.clock.lx - 8))*2), <u8>cv);
             }
             this.clock.lx++;
         }

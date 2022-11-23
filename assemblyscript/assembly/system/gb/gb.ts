@@ -260,7 +260,7 @@ export class GameBoy implements systemEmulator {
         d.overscan.left = 0;
         d.overscan.right = 0;
 
-        d.out_size = (160*144*2);
+        d.out_size = (160*144*4);
 
         for (let i = 0, k = GB_inputmap.length; i < k; i++) {
             d.keymap.push(GB_inputmap[i]);

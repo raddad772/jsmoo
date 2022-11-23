@@ -48,6 +48,7 @@ export class GB_mapper_none implements GB_mapper{
     }
 
     CPU_read(addr: u32, val: u32): u32 {
+        if ((addr >= 0xE000) && (addr < 0xFE00)) addr -= 0x2000; // WRAM mirror
         if (this.clock.bootROM_enabled) {
             if (addr < 0x100) {
                 let r: u32 = this.BIOS[addr];
@@ -85,6 +86,7 @@ export class GB_mapper_none implements GB_mapper{
     }
 
     CPU_write(addr: u32, val: u32): void {
+        if ((addr >= 0xE000) && (addr < 0xFE00)) addr -= 0x2000; // WRAM mirror
         if (addr < 0x8000) // ROMs
             return;
         if (addr < 0xA000) { // VRAM

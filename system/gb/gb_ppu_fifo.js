@@ -862,8 +862,8 @@ class GB_PPU_FIFO {
     // TODO: trigger IRQ if enabled properly
     eval_lyc() {
         let cly = this.clock.ly;
-        if ((cly === 153) && (this.line_cycle > 1)) cly = 0;
-        if (this.clock.ly === this.io.lyc) {
+        if ((cly === 153) && (this.io.lyc !== 153)) cly = 0;
+        if (cly === this.io.lyc) {
             this.IRQ_lylyc_up();
         }
         else
