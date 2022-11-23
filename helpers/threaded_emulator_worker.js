@@ -139,7 +139,7 @@ class threaded_emulator_worker_t {
         let ts = performance.now();
         let on = this.js_wrapper.run_frame();
         let span = performance.now() - ts;
-        console.log('TIME PER FRAME:', span.toFixed(4));
+        //console.log('TIME PER FRAME:', span.toFixed(4));
         this.send_frame_done(on);
     }
 

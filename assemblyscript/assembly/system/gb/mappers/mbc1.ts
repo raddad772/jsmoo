@@ -63,6 +63,7 @@ export class GB_mapper_MBC1 implements GB_mapper {
     }
 
     CPU_read(addr: u32, val: u32): u32 {
+        if ((addr >= 0xE000) && (addr < 0xFE00)) addr -= 0x2000; // WRAM mirror
         if (this.clock.bootROM_enabled) {
             if (addr < 0x100)
                 return this.bus.BIOS[addr];
@@ -110,12 +111,14 @@ export class GB_mapper_MBC1 implements GB_mapper {
         } else {
             // Mode 1, hard-mode!
             this.ROM_bank_lo_offset = ((32 * this.regs.BANK2) % this.num_ROM_banks) * 16384;
-            this.cartRAM_offset = (this.regs.BANK2 % this.num_RAM_banks) * 8192;
+            if (this.num_RAM_banks > 0)
+                this.cartRAM_offset = (this.regs.BANK2 % this.num_RAM_banks) * 8192;
         }
         this.ROM_bank_hi_offset = (((this.regs.BANK2 << 5) | this.regs.BANK1) % this.num_ROM_banks) * 16384;
     }
 
     CPU_write(addr: u32, val: u32): void {
+        if ((addr >= 0xE000) && (addr < 0xFE00)) addr -= 0x2000; // WRAM mirror
         if (addr < 0x8000) {
             switch(addr & 0xE000) {
                 case 0x0000: // RAM write enable

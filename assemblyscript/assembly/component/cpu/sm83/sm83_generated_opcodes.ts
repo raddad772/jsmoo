@@ -1,6 +1,6 @@
 import {SM83_opcode_functions, SM83_opcode_matrix, SM83_opcode_matrixCB, SM83_MAX_OPCODE, SM83_S_DECODE} from "../../../component/cpu/sm83/sm83_opcodes";
 import {SM83_pins_t, SM83_regs_t} from "../../../component/cpu/sm83/sm83";
-import {mksigned8} from "../../../helpers/helpers"
+import {hex4, mksigned8} from "../../../helpers/helpers"
 
 export var sm83_decoded_opcodes: Array<SM83_opcode_functions> = new Array<SM83_opcode_functions>(SM83_MAX_OPCODE+0xFF);
 
@@ -2178,7 +2178,7 @@ function sm83_get_opcode_function(opcode: u32): SM83_opcode_functions {
             function(regs: SM83_regs_t, pins: SM83_pins_t): void { // HALT
             switch(regs.TCU) {
                 case 1:
-                    console.log('HALT!');
+                    //console.log('HALT!');
                     if ((!regs.IME) && (regs.interrupt_latch !== 0)) regs.halt_bug = 1; 
                     regs.HLT = 1;
                     if (regs.HLT) { regs.poll_IRQ = true; regs.TCU--; }
@@ -4380,6 +4380,7 @@ function sm83_get_opcode_function(opcode: u32): SM83_opcode_functions {
                     regs.TR = pins.D;
                     regs.TA |= (regs.TR << 8);
                     regs.PC = regs.TA;
+                    //console.log(hex4(regs.PC));
                     regs.IME = 1;
                     // Following is auto-generated code for instruction finish
                     pins.RD = 0; pins.MRQ = 0;
@@ -5158,7 +5159,7 @@ function sm83_get_opcode_function(opcode: u32): SM83_opcode_functions {
             function(regs: SM83_regs_t, pins: SM83_pins_t): void { // EI
             switch(regs.TCU) {
                 case 1: // cleanup_custom
-                    console.log('EI!');
+                    //console.log('EI!');
                     regs.IME_DELAY = 2;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
@@ -5255,7 +5256,6 @@ function sm83_get_opcode_function(opcode: u32): SM83_opcode_functions {
             function(regs: SM83_regs_t, pins: SM83_pins_t): void { // S_IRQ
             switch(regs.TCU) {
                 case 1:
-                    console.log('IRQ TRIGGER');
                     regs.IME = 0;
                     pins.RD = 0; pins.MRQ = 0;
                     break;
@@ -9553,6 +9553,6 @@ function sm83_get_opcode_function(opcode: u32): SM83_opcode_functions {
     return new SM83_opcode_functions(SM83_opcode_matrix.get(0), function(regs: SM83_regs_t, pins: SM83_pins_t): void { console.log('INVALID OPCODE');});
 }
 
-for (let i = 0; i <= (SM83_MAX_OPCODE+0xFF); i++) {
+for (let i = 0; i <= (SM83_MAX_OPCODE+1+0xFF); i++) {
     sm83_decoded_opcodes[i] = sm83_get_opcode_function(i);
 }

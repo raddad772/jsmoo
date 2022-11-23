@@ -53,7 +53,7 @@ export class SM83_regs_t {
     SP: u32 = 0;
     PC: u32 = 0;
 
-    IV: u32 = 0; // interrupt vector to execute
+    IV: i32 = 0; // interrupt vector to execute
     IME_DELAY: i32 = 0;
 
     IE: u32 = 0; // Enable interrupt?
@@ -213,8 +213,8 @@ export class SM83_t {
                     imask = 0xFE;
                     this.regs.IV = 0x40;
                 } else if (mask & 2) { // STAT interrupt
-                    if (this.bus.ppu!.enabled)
-                        imask = 0xFD;
+                    //if (this.bus.ppu!.enabled)
+                    imask = 0xFD;
                     this.regs.IV = 0x48;
                 } else if (mask & 4) { // Timer interrupt
                     imask = 0xFB;
@@ -233,7 +233,10 @@ export class SM83_t {
                     }
                     else {
                         //console.log('SO IRQ ACTUALLY GOING TO HAPPEN!', hex2(this.regs.IV));
-                        if (dbg.brk_on_NMIRQ) dbg.break();
+                        if (dbg.brk_on_NMIRQ) {
+                            console.log('NMIRQ BRK!');
+                            dbg.break();
+                        }
                         // Right here, the STAT is not supposed to be cleared if LCD disabled
                         if (this.regs.HLT) {
                             //console.log('HALT BUSTER!');
@@ -244,7 +247,7 @@ export class SM83_t {
                         this.regs.IF &= imask;
                         this.regs.HLT = 0;
                         this.regs.IR = SM83_S_IRQ;
-                        console.log('SETTING IRQ!');
+                        //console.log('SETTING IRQ!');
                         this.current_instruction = sm83_decoded_opcodes[SM83_S_IRQ];
                     }
                 }
@@ -261,9 +264,10 @@ export class SM83_t {
             //console.log('EXEC IDX:' + this.current_instruction.exec_func.index.toString() + ' ' + hex4(this.regs.PC) + ' ' + this.current_instruction.mnemonic + ' ' + this.current_instruction.ins.toString());
             this.current_instruction.exec_func(this.regs, this.pins);
         }
-        if (this.regs.PC === SM83_PC_BRK) {
+        /*if (this.regs.PC === SM83_PC_BRK) {
             SM83_PC_BRK = -1;
+            console.log('PCBRK!');
             dbg.break();
-        }
+        }*/
     }
 }
