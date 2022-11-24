@@ -10,24 +10,10 @@ class timing_worker_t {
         this.frames_since_reset = 0;
 
         this.fps_target = 0;
-        this.sleep_target = 0;
-        this.frame_time_target = 0;
-        this.frame_time_full = 0;
-        this.next_frame_start = 0;
         this.set_fps_target(60);
-        this.sleep_start = 0;
-        this.frame_start = 0;
 
         this.fps_counter = 0;
         this.fps = 0;
-    }
-
-    set_fps_target(to) {
-        //console.log('FPS target set to', to);
-        this.fps_target = to;
-        this.frame_time_full = (1000 / this.fps_target);
-        this.sleep_target = this.frame_time_full * .80; // Sleep 80% of the time
-        this.frame_time_target = this.frame_time_full *.9; // Wait until 90% of the time
     }
 
     onmessage(e) {
@@ -59,37 +45,48 @@ class timing_worker_t {
     // 4. sleep until next frame using Atomics.wait()?
     // 5.
 
-    play_request() {
-        if (this.status === timing_status.playing) return;
-        this.status = timing_status.playing;
-        this.frame_start = performance.now() + (this.frame_time_full);
-        this.request_frame();
-    }
-
     pause_request() {
         if (this.status === timing_status.paused) return;
         this.status = timing_status.paused;
     }
 
+    set_fps_target(to) {
+        //console.log('FPS target set to', to);
+        this.fps_target = to;
+        this.frame_time_full = (1000 / this.fps_target);
+        this.pin_target = this.pin_start + this.frame_time_full;
+    }
+
+    play_request() {
+        if (this.status === timing_status.playing) return;
+        this.status = timing_status.playing;
+        this.pin_start = performance.now();
+        this.pin_target = this.pin_start + this.frame_time_full;
+        this.request_frame();
+    }
+
     frame_complete_and_wait() {
         let ft = performance.now() - this.frame_start;
         Atomics.store(this.shared_counters, timing_sab.frame_counter, this.frames_since_reset);
-
         if (this.status !== timing_status.playing) return;
-        let time_to_sleep = this.sleep_target - ft;
-        if (time_to_sleep > 0) {
-            this.shared_counters[timing_sab.waiter] = 0;
-            Atomics.wait(this.shared_counters, timing_sab.waiter, 0, time_to_sleep);
+        if (ft > this.pin_target) {
+            console.log('OVERRUN BY', ft - this.pin_target)
+            this.pin_start = performance.now();
+            this.pin_target = this.pin_start + this.frame_time_full;
         }
-
-        let time_to_spin = this.frame_time_target - (ft + time_to_sleep);
-        if (time_to_spin > 0) {
+        else {
+            //let time_to_sleep = this.sleep_target - ft;
+            /*if (time_to_sleep > 0) {
+                this.shared_counters[timing_sab.waiter] = 0;
+                Atomics.wait(this.shared_counters, timing_sab.waiter, 0, time_to_sleep);
+            }*/
             let i = 0;
-            while((performance.now() - this.frame_start) < this.frame_time_target) {
+            while(performance.now() < this.pin_target) {
                 i++;
             }
+            this.pin_target += this.frame_time_full;
         }
-        this.frame_start = Math.max(performance.now(), this.frame_start+this.frame_time_full);
+
         this.request_frame();
     }
 
