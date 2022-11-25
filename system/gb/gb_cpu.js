@@ -145,6 +145,13 @@ class GB_CPU {
             last_write: 0
         }
 
+        this.hdma = {
+            source: 0,  // bits 16-4 respected only.
+            dest: 0, // bits 12-4 respected only. | 0x8000
+            length: 0, // * 16
+            enabled: false
+        }
+
         //input_config.connect_controller('gb');
         this.input_buffer = {
             'a': 0,
@@ -224,13 +231,17 @@ class GB_CPU {
                 this.timer.write_IO(addr, val);
                 return;
             case 0xFF46: // OAM DMA
-                //this.dma.cycles_til = 2;
-                ////this.dma.running = 1;
-                //this.dma.new_high = (val << 8);
-                //this.dma.last_write = val;
-                this.dma.high = (val << 8);
-                for (let i = 0; i < 160; i++) {
-                    this.bus.CPU_write_OAM(0xFE00 | i, this.bus.DMA_read(this.dma.high | i, 0));
+                if (GB_INSTANT_OAM) {
+                    this.dma.high = (val << 8);
+                    for (let i = 0; i < 160; i++) {
+                        this.bus.CPU_write_OAM(0xFE00 | i, this.bus.DMA_read(this.dma.high | i, 0));
+                    }
+                }
+                else {
+                    this.dma.cycles_til = 2;
+                    ////this.dma.running = 1;
+                    this.dma.new_high = (val << 8);
+                    this.dma.last_write = val;
                 }
                 break;
             case 0xFF50: // Boot ROM disable. Cannot re-enable
@@ -240,6 +251,8 @@ class GB_CPU {
                     this.clock.bootROM_enabled = false;
                 }
                 break;
+            case 0xFF51: // HDMA1
+                this.dma.
             case 0xFF0F:
                 console.log('WRITE IF', val & 0x1F);
                 this.cpu.regs.IF = val & 0x1F;

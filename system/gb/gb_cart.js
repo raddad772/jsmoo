@@ -1,5 +1,6 @@
 "use strict";
 
+const GB_INSTANT_OAM = false;
 const GB_QUICK_BOOT = true;
 
 // number of 16KB banks
@@ -79,6 +80,8 @@ class GB_cart {
         this.header.ROM_banks = GB_ROMBANKS[inp[0x0148]];
         this.header.ROM_size = (this.header.ROM_banks ? (this.header.ROM_banks * 16384) : 32768);
         this.ROM = new Uint8Array(this.header.ROM_size);
+
+        this.clock.cgb_enable = (inp[0x143] === 0x80) || (inp[0x143] === 0xC0);
 
         switch(inp[0x149]) {
             case 0:
