@@ -160,12 +160,18 @@ let ROMKIND = DEFAULT_SYSTEM;
 if (ROMKIND.indexOf('_as') !== -1) {
 	ROMKIND = ROMKIND.replace('_as', '');
 }
+if (ROMKIND.indexOf('gbc') !== -1) {
+	ROMKIND = ROMKIND.replace('gbc', 'gb');
+}
 
 async function system_selected(where) {
 	ui_el.system_select.value = where;
 	ROMKIND = where;
 	if (ROMKIND.indexOf('_as') !== -1) {
 		ROMKIND = ROMKIND.replace('_as', '');
+	}
+	if (ROMKIND.indexOf('gbc') !== -1) {
+		ROMKIND = ROMKIND.replace('gbc', 'gb');
 	}
 	await reload_roms(ROMKIND);
 }

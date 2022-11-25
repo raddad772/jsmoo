@@ -61,6 +61,7 @@ class GB_clock {
         this.cpu_master_clock = 0;
 
         this.cgb_enable = false;
+        this.turbo = false;
 
         this.ly = 0;
         this.lx = 0;
@@ -108,6 +109,8 @@ class GB_clock {
         this.CPU_can_VRAM = 1;
         this.CPU_can_OAM = 0;
         this.bootROM_enabled = true;
+        this.turbo = false;
+        this.cgb_enable = false;
     }
 
     setCPU_can_OAM(to) {
@@ -190,7 +193,7 @@ class GameBoy {
         this.clock = new GB_clock();
         this.cart = new GB_cart(this.variant, this.bios, this.clock, this.bus);
         this.cpu = new GB_CPU(this.variant, this.clock, this.bus);
-        this.ppu = new GB_PPU_FIFO(this.variant, this.clock, this.bus);
+        this.ppu = new Gb_ppu(this.variant, this.clock, this.bus);
 
         this.cycles_left = 0;
         this.display_enabled = true;
@@ -329,7 +332,7 @@ class GameBoy {
 
     load_bios() {
         if (!this.bios.loaded) {
-            alert('Please upload or select a Master System BIOS under Tools/Bios');
+            //alert('Please upload or select a Master System BIOS under Tools/Bios');
             return;
         }
         this.bus.load_BIOS_from_RAM(this.bios.BIOS);

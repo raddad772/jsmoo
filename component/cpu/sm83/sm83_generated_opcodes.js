@@ -20,14 +20,12 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // Do read
                 regs.TR = pins.D;
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 3: // cleanup_custom
                 regs.RR = pins.D;
@@ -123,8 +121,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
@@ -160,14 +157,12 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // Do read
                 regs.TA = pins.D;
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 3: // Do write
                 regs.RR = pins.D;
@@ -296,8 +291,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
@@ -356,14 +350,12 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // Do read
                 regs.TR = pins.D;
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 3: // cleanup_custom
                 regs.RR = pins.D;
@@ -459,8 +451,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
@@ -497,8 +488,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 if (!(1)) { regs.TCU += 1; break; } // CHECKHERE
                 break;
             case 2:
@@ -622,8 +612,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
@@ -660,8 +649,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 if (!(regs.F.Z === 0)) { regs.TCU += 1; break; } // CHECKHERE
                 break;
             case 2:
@@ -685,14 +673,12 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // Do read
                 regs.TR = pins.D;
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 3: // cleanup_custom
                 regs.RR = pins.D;
@@ -791,8 +777,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
@@ -837,8 +822,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 if (!(regs.F.Z === 1)) { regs.TCU += 1; break; } // CHECKHERE
                 break;
             case 2:
@@ -965,8 +949,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
@@ -999,8 +982,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 if (!(regs.F.C === 0)) { regs.TCU += 1; break; } // CHECKHERE
                 break;
             case 2:
@@ -1024,14 +1006,12 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // Do read
                 regs.TR = pins.D;
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 3: // cleanup_custom
                 regs.RR = pins.D;
@@ -1150,8 +1130,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TA = (regs.H << 8) | regs.L;
                 break;
             case 2: // Do write
@@ -1191,8 +1170,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 if (!(regs.F.C === 1)) { regs.TCU += 1; break; } // CHECKHERE
                 break;
             case 2:
@@ -1318,8 +1296,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 // Following is auto-generated code for instruction finish
                 break;
             case 2: // cleanup_custom
@@ -2173,7 +2150,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //HALT
         switch(regs.TCU) {
             case 1:
-                //console.log('HALT!', regs.IME, regs.IE, regs.IF);
+                console.log('HALT!');
                 if ((!regs.IME) && (regs.interrupt_latch !== 0)) regs.halt_bug = 1; 
                 regs.HLT = 1;
                 if (regs.HLT) { regs.poll_IRQ = true; regs.TCU--; }
@@ -3662,23 +3639,22 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // Do read
                 regs.TA = pins.D;
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
+                if (!(regs.F.Z === 0)) { regs.TCU++; }
                 break;
             case 3:
                 regs.RR = pins.D;
                 regs.TA |= (regs.RR << 8);
-                if (regs.F.Z === 0) { regs.PC = regs.TA; } // CHECKHERE
-                // Following is auto-generated code for instruction finish
+                regs.PC = regs.TA
                 pins.RD = 0; pins.MRQ = 0;
                 break;
             case 4: // cleanup_custom
+                // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -3693,19 +3669,17 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // Do read
                 regs.TA = pins.D;
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 3:
                 regs.RR = pins.D;
                 regs.TA |= (regs.RR << 8);
-                if (1) { regs.PC = regs.TA; } // CHECKHERE
+                regs.PC = regs.TA;
                 // Following is auto-generated code for instruction finish
                 pins.RD = 0; pins.MRQ = 0;
                 break;
@@ -3724,19 +3698,17 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // Do read
                 regs.TA = pins.D;
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
+                if (!(regs.F.Z === 0)) { regs.TCU += 3; break; } // CHECKHERE
                 break;
             case 3:
                 regs.RR = pins.D;
                 regs.TA |= (regs.RR << 8);
-                if (!(regs.F.Z === 0)) { regs.TCU += 2; break; } // CHECKHERE
                 regs.SP = (regs.SP - 1) & 0xFFFF;
                 pins.RD = 0; pins.MRQ = 0;
                 break;
@@ -3795,8 +3767,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D;
@@ -3914,23 +3885,22 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // Do read
                 regs.TA = pins.D;
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
+                if (!(regs.F.Z === 1)) { regs.TCU++; }
                 break;
             case 3:
                 regs.RR = pins.D;
                 regs.TA |= (regs.RR << 8);
-                if (regs.F.Z === 1) { regs.PC = regs.TA; } // CHECKHERE
-                // Following is auto-generated code for instruction finish
+                regs.PC = regs.TA
                 pins.RD = 0; pins.MRQ = 0;
                 break;
             case 4: // cleanup_custom
+                // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -3959,19 +3929,17 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // Do read
                 regs.TA = pins.D;
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
+                if (!(regs.F.Z === 1)) { regs.TCU += 3; break; } // CHECKHERE
                 break;
             case 3:
                 regs.RR = pins.D;
                 regs.TA |= (regs.RR << 8);
-                if (!(regs.F.Z === 1)) { regs.TCU += 2; break; } // CHECKHERE
                 regs.SP = (regs.SP - 1) & 0xFFFF;
                 pins.RD = 0; pins.MRQ = 0;
                 break;
@@ -4002,19 +3970,17 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // Do read
                 regs.TA = pins.D;
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
+                if (!(1)) { regs.TCU += 3; break; } // CHECKHERE
                 break;
             case 3:
                 regs.RR = pins.D;
                 regs.TA |= (regs.RR << 8);
-                if (!(1)) { regs.TCU += 2; break; } // CHECKHERE
                 regs.SP = (regs.SP - 1) & 0xFFFF;
                 pins.RD = 0; pins.MRQ = 0;
                 break;
@@ -4045,8 +4011,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D;
@@ -4158,23 +4123,22 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // Do read
                 regs.TA = pins.D;
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
+                if (!(regs.F.C === 0)) { regs.TCU++; }
                 break;
             case 3:
                 regs.RR = pins.D;
                 regs.TA |= (regs.RR << 8);
-                if (regs.F.C === 0) { regs.PC = regs.TA; } // CHECKHERE
-                // Following is auto-generated code for instruction finish
+                regs.PC = regs.TA
                 pins.RD = 0; pins.MRQ = 0;
                 break;
             case 4: // cleanup_custom
+                // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -4203,19 +4167,17 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // Do read
                 regs.TA = pins.D;
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
+                if (!(regs.F.C === 0)) { regs.TCU += 3; break; } // CHECKHERE
                 break;
             case 3:
                 regs.RR = pins.D;
                 regs.TA |= (regs.RR << 8);
-                if (!(regs.F.C === 0)) { regs.TCU += 2; break; } // CHECKHERE
                 regs.SP = (regs.SP - 1) & 0xFFFF;
                 pins.RD = 0; pins.MRQ = 0;
                 break;
@@ -4274,8 +4236,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D;
@@ -4380,7 +4341,6 @@ const sm83_decoded_opcodes = Object.freeze({
                 pins.RD = 0; pins.MRQ = 0;
                 break;
             case 4: // cleanup_custom
-                //console.log('RETI! IE, IF', regs.IE, regs.IF)
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -4395,23 +4355,22 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // Do read
                 regs.TA = pins.D;
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
+                if (!(regs.F.C === 1)) { regs.TCU++; }
                 break;
             case 3:
                 regs.RR = pins.D;
                 regs.TA |= (regs.RR << 8);
-                if (regs.F.C === 1) { regs.PC = regs.TA; } // CHECKHERE
-                // Following is auto-generated code for instruction finish
+                regs.PC = regs.TA
                 pins.RD = 0; pins.MRQ = 0;
                 break;
             case 4: // cleanup_custom
+                // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;
@@ -4440,19 +4399,17 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // Do read
                 regs.TA = pins.D;
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
+                if (!(regs.F.C === 1)) { regs.TCU += 3; break; } // CHECKHERE
                 break;
             case 3:
                 regs.RR = pins.D;
                 regs.TA |= (regs.RR << 8);
-                if (!(regs.F.C === 1)) { regs.TCU += 2; break; } // CHECKHERE
                 regs.SP = (regs.SP - 1) & 0xFFFF;
                 pins.RD = 0; pins.MRQ = 0;
                 break;
@@ -4497,8 +4454,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D;
@@ -4553,8 +4509,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // Do write
                 regs.TA = pins.D;
@@ -4678,8 +4633,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D;
@@ -4731,8 +4685,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2:
                 regs.TR = pins.D;
@@ -4776,14 +4729,12 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // Do read
                 regs.TA = pins.D;
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 3: // Do write
                 regs.RR = pins.D;
@@ -4850,8 +4801,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D;
@@ -4902,8 +4852,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // Do read
                 regs.TA = pins.D;
@@ -4968,7 +4917,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.IME = 0;
-                //console.log('DI!');
+                console.log('DI!');
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -5025,8 +4974,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D;
@@ -5077,8 +5025,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2:
                 regs.TR = pins.D;
@@ -5125,14 +5072,12 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // Do read
                 regs.TA = pins.D;
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 3: // Do read
                 regs.RR = pins.D;
@@ -5154,7 +5099,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //EI
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                //console.log('EI!');
+                console.log('EI!');
                 regs.IME_DELAY = 2;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
@@ -5198,8 +5143,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // Do read
                 pins.Addr = (regs.PC);
-                if (regs.halt_bug) regs.halt_bug = 0;
-                else regs.PC = (regs.PC + 1) & 0xFFFF;
+                regs.PC = (regs.PC + 1) & 0xFFFF;
                 break;
             case 2: // cleanup_custom
                 regs.TR = pins.D;
@@ -5251,7 +5195,6 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //S_IRQ
         switch(regs.TCU) {
             case 1:
-                //console.log('IRQ TRIGGER');
                 regs.IME = 0;
                 pins.RD = 0; pins.MRQ = 0;
                 break;
