@@ -1,5 +1,6 @@
 import {M6502_AM, M6502_OP_IRQ, M6502_OP_NMI, M6502_OP_RESET, M6502_opcode_functions} from "./m6502_opcodes";
 import {dbg} from "../../../helpers/debug";
+import {hex2, hex4} from "../../../helpers/helpers";
 
 class m6502_P {
     C: u32
@@ -26,6 +27,18 @@ class m6502_P {
 
     getbyte(): u32 {
         return this.C | (this.Z << 1) | (this.I << 2) | (this.D << 3) | (this.B << 4) | 0x20 | (this.V << 6) | (this.N << 7);
+    }
+
+    formatbyte(): string {
+		let outstr: string = '';
+		outstr += this.N ? 'N' : 'n';
+		outstr += this.V ? 'V-' : 'v-';
+		outstr += this.B ? 'B' : 'b';
+		outstr += this.D ? 'D' : 'd';
+		outstr += this.I ? 'I' : 'i';
+		outstr += this.Z ? 'Z' : 'z';
+		outstr += this.C ? 'C' : 'c';
+		return outstr;
     }
 }
 
@@ -79,6 +92,11 @@ export class m6502 {
         this.pins = new m6502_pins();
         this.opcode_set = opcode_set;
         this.current_instruction = opcode_set[0];
+    }
+
+    trace_peek(addr: u32): u32 {
+        console.log('IMPLEMENT TRACEP EEK DOAG')
+        return 0;
     }
 
     reset(): void {

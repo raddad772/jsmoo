@@ -42,10 +42,10 @@ class M6502_opcode_info {
     opcode: u32 = 0
     ins: u32 = 0
     addr_mode: M6502_AM = M6502_AM.NONE
-    mnemonic: String = ''
+    mnemonic: string = ''
     variant: M6502_VARIANTS = M6502_VARIANTS.STOCK
 
-    constructor(opcode: u32, ins: u32, addr_mode: M6502_AM, mnemonic: String, variant: M6502_VARIANTS = M6502_VARIANTS.STOCK) {
+    constructor(opcode: u32, ins: u32, addr_mode: M6502_AM, mnemonic: string, variant: M6502_VARIANTS = M6502_VARIANTS.STOCK) {
         this.opcode = opcode;
         this.ins = ins;
         this.addr_mode = addr_mode;
@@ -58,7 +58,7 @@ export class M6502_opcode_functions {
     ins: u32 = 0
     opcode: u32 = 0
     addr_mode: M6502_AM = M6502_AM.NONE
-    mnemonic: String = ''
+    mnemonic: string = ''
     exec_func: (regs: m6502_regs, pins: m6502_pins) => void;
     constructor(opcode_info: M6502_opcode_info, exec_func: (regs: m6502_regs, pins: m6502_pins) => void) {
         this.opcode = opcode_info.opcode;
