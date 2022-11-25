@@ -145,6 +145,9 @@ class js_wrapper_t {
 			case 'gb':
 				this.system = new GameBoy(bios, GB_variants.DMG);
 				break;
+			case 'gbc':
+				this.system = new GameBoy(bios, GB_variants.GBC);
+				break;
 			case 'gb_as':
 				this.emu_wasm = true;
 				this.as_wrapper.wasm.gp_set_system(this.as_wrapper.global_player, to);

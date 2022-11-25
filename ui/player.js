@@ -23,6 +23,7 @@ class input_provider_t {
 				this.setup_gg();
 				break;
 			case 'gb_as':
+			case 'gbc':
 			case 'gb':
 				this.setup_gb();
 				break;
@@ -549,6 +550,7 @@ class global_player_t {
 				SMS_present(data, imgdata.data, buf);
 				break;
 			case 'gb_as':
+			case 'gbc':
 			case 'gb':
 				GB_present(data, imgdata.data, buf);
 				break;

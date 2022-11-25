@@ -220,6 +220,9 @@ export class GB_CPU {
                     this.clock.bootROM_enabled = false;
                 }
                 break;
+            case 0xFF51: // HDMA1
+
+                break;
             case 0xFF0F:
                 console.log('WRITE IF ' + (val & 0x1F).toString());
                 this.cpu.regs.IF = val & 0x1F;
@@ -330,6 +333,23 @@ export class GB_CPU {
                 pins.MRQ = pins.RD = 1;
                 pins.WR = 0;
                 regs.poll_IRQ = true;
+                break;
+            case GB_variants.GBC:
+                regs.A = 0x11;
+                regs.F.Z = 1;
+                regs.F.N = regs.F.H = regs.F.C = 0;
+                regs.B = 0;
+                regs.C = 0;
+                regs.D = 0xFF;
+                regs.E = 0x56;
+                regs.H = 0;
+                regs.L = 0x0D;
+                regs.SP = 0xFFFE;
+                this.timer.TIMA = 0;
+                this.timer.TMA = 0;
+                this.timer.TAC = 0xF8;
+                regs.IF = 0xE1;
+                regs.IE = 0;
                 break;
             default:
                 console.log('FAST BOOT NOT ENABLED FOR THIS VARIANT!');

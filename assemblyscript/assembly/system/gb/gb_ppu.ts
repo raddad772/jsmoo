@@ -1,7 +1,6 @@
 import {GB_PPU_modes, GB_variants} from "./gb_common";
 import {GB_bus, GB_clock} from "./gb";
 import {dbg} from "../../helpers/debug";
-import {hex4} from "../../helpers/helpers";
 
 function GB_sp_tile_addr(tn: u32, y: u32, big_sprites: u32, y_flip: u32): u32 {
     if (big_sprites) {
@@ -896,13 +895,21 @@ export class GB_PPU {
                 this.enabled = true;
                 //let val = 0xFC;
                 //this.clock.ly = 90;
-                this.write_IO(0xFF47, 0xFC);
                 this.write_IO(0xFF40, 0x91);
                 this.write_IO(0xFF41, 0x85);
+                this.write_IO(0xFF47, 0xFC);
                 this.io.lyc = 0;
                 this.io.SCX = this.io.SCY = 0;
 
                 this.advance_frame();
+                break;
+            case GB_variants.GBC:
+                this.write_IO(0xFF40, 0x91);
+                this.write_IO(0xFF47, 0xFC);
+
+                this.io.lyc = 0;
+                this.io.SCX = this.io.SCY = 0;
+
                 break;
             default:
                 console.log('QUICKBOOT NOT SUPPROTEDO N THSI GAMEBOY MODEL');

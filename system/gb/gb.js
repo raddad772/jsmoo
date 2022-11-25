@@ -60,6 +60,8 @@ class GB_clock {
         this.ppu_master_clock = 0;
         this.cpu_master_clock = 0;
 
+        this.cgb_enable = false;
+
         this.ly = 0;
         this.lx = 0;
 
