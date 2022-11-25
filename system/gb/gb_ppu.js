@@ -54,7 +54,7 @@ class GB_pixel_slice_fetcher {
      * @param {number} variant
      * @param {GB_clock} clock
      * @param {GB_bus} bus
-     * @param {GB_PPU_FIFO} ppu
+     * @param {Gb_ppu} ppu
      */
     constructor(variant, clock, bus, ppu) {
         this.variant = variant
@@ -359,7 +359,7 @@ class GB_FIFO_t {
     }
 }
 
-class GB_PPU_FIFO {
+class Gb_ppu {
     /**
      * @param {Number} variant
      * @param {GB_clock} clock

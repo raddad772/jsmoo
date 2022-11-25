@@ -197,6 +197,10 @@ class SM83_switchgen {
         this.addl('regs.TA |= (regs.TR << 8);');
     }
 
+    force_noq(what) {
+        this.outstr += this.indent3 + what + '\n';
+    }
+
     force_q() {
         this.force_queue = true;
     }
@@ -316,8 +320,8 @@ class SM83_switchgen {
 
     operand(what) {
         this.read('regs.PC', what)
-        this.addl('if (regs.halt_bug) regs.halt_bug = 0;');
-        this.addl('else regs.PC = (regs.PC + 1) & 0xFFFF;');
+        //this.addl('if (regs.halt_bug) regs.halt_bug = 0;');
+        this.addl('regs.PC = (regs.PC + 1) & 0xFFFF;');
     }
 
     operands(what) {
@@ -692,8 +696,11 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             ag.BIT(arg1, 'regs.TR');
             break;
         case SM83_MN.CALL_cond_addr:
+            // 3 M if false, 6 M if true
+            // 1 is already taken before getting here
+            // 2 by operands
             ag.operands('regs.TA');
-            ag.addl('if (!(' + arg1 + ')) { regs.TCU += 2; break; } // CHECKHERE');
+            ag.force_noq('if (!(' + arg1 + ')) { regs.TCU += 3; break; } // CHECKHERE');
             ag.addcycle();
             ag.push('regs.PC');
             ag.addl('regs.PC = regs.TA;');
@@ -785,9 +792,25 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             ag.write('regs.TA', 'regs.TR');
             break;
         case SM83_MN.JP_cond_addr:
-            ag.operands('regs.TA');
-            ag.addl('if (' + arg1 + ') { regs.PC = regs.TA; } // CHECKHERE');
-            ag.addcycle();
+            if (opcode_info.opcode === 0xC3) {
+                ag.operands('regs.TA');
+                ag.addl('regs.PC = regs.TA;');
+                ag.addcycle();
+            }
+            else {
+                // 3 cycles false, 4 true
+                // 1 already taken
+                // so
+                // read
+                // read
+                // extra if taken
+                // cleanup
+                ag.operands('regs.TA');
+                ag.force_noq('if (!(' + arg1 + ')) { regs.TCU++; }')
+                ag.addcycle();
+                ag.addl('regs.PC = regs.TA');
+                ag.cleanup();
+            }
             break;
         case SM83_MN.JP_di:
             ag.addl('regs.PC = ' + ag.getreg16(arg1) + ';');
@@ -1137,7 +1160,7 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             break;
         case SM83_MN.S_IRQ:
             ag.addcycle();
-            ag.addl("console.log('IRQ TRIGGER');");
+            //ag.addl("console.log('IRQ TRIGGER');");
             ag.addl('regs.IME = 0;');
             ag.addcycle();
             ag.addl('regs.PC = (regs.PC - 1) & 0xFFFF;');

@@ -149,7 +149,15 @@ class GB_CPU {
             source: 0,  // bits 16-4 respected only.
             dest: 0, // bits 12-4 respected only. | 0x8000
             length: 0, // * 16
-            enabled: false
+            mode: 0, // 0 = GPDMA, 1 = HDMA
+            source_index: 0,
+            dest_index: 0,
+            waiting: false,
+            completed: false,
+            enabled: false,
+            active: false,
+
+            til_next_byte: 4
         }
 
         //input_config.connect_controller('gb');
@@ -251,14 +259,43 @@ class GB_CPU {
                     this.clock.bootROM_enabled = false;
                 }
                 break;
-            case 0xFF51: // HDMA1
-                this.dma.
+            case 0xFF51: // HDMA1   bits 15-8 of dest
+                if (!this.clock.cgb_enable) return;
+                //this.hdma.source = (this.hdma.source & 0xF0) | (val << 8);
+                this.hdma.source = (this.hdma.source & 0xFF) | (val << 8);
+                return;
+            case 0xFF52: // HDMA2   bits 7-4 of dest
+                if (!this.clock.cgb_enable) return;
+                this.hdma.source = (this.hdma.source & 0xFF00) | val;
+                //this.hdma.source = (this.hdma.source & 0xFF00) | (val & 0xF0);
+                return;
+            case 0xFF53: // HDMA3  bits 12-8 of dest
+                if (!this.clock.cgb_enable) return;
+                this.hdma.dest = (this.hdma.dest & 0xFF) | (val << 8);
+                //this.hdma.dest = 0x8000 | (this.hdma.dest & 0x1F00) | (val & 0xF0);
+                return;
+            case 0xFF54: // HDMA4 bits
+                if (!this.clock.cgb_enable) return;
+                this.hdma.dest = (this.hdma.dest & 0xFF00) | val;
+                //this.hdma.dest = 0x8000 | (this.hdma.dest & 0xF0) | ((val & 0x1F) << 8);
+                return;
+            case 0xFF55: // HDMA5 transfer stuff!
+                if (!this.clock.cgb_enable) return;
+                this.hdma.mode = (val & 0x80) >>> 7;
+                this.hdma.length = (val & 0x7F) + 1; // up to 128 blocks of 16 bytes.
+                this.hdma.enabled = true;
+                this.hdma.dest_index = (this.hdma.dest & 0x1FF0) | 0x8000;
+                this.hdma.source_index = this.hdma.source & 0xFFF0;
+
+                this.hdma.til_next_byte = this.clock.turbo ? 2 : 1; // If we're at turbo-speed, we need to wait 2 M-cycles in between transfer. If not, 1.
+                if (this.hdma.mode === 0) this.hdma.active = true;
+                return;
             case 0xFF0F:
-                console.log('WRITE IF', val & 0x1F);
+                //console.log('WRITE IF', val & 0x1F);
                 this.cpu.regs.IF = val & 0x1F;
                 return;
             case 0xFFFF: // IE: Interrupt Enable
-                console.log('WRITE IE', val & 0x1F);
+                //console.log('WRITE IE', val & 0x1F);
                 if ((val & 0x1F) === 30) dbg.break();
                 this.cpu.regs.IE = val & 0x1F;
                 return;
@@ -310,11 +347,6 @@ class GB_CPU {
                 //return this.clock.irq.vblank_enable | (this.clock.irq.lcd_stat_enable << 1) | (this.clock.irq.timer_enable << 2) | (this.clock.irq.serial_enable << 3) | (this.clock.irq.joypad_enable << 4);
         }
         return 0xFF;
-    }
-
-    // perform one cycle of HDMA eval
-    hdma_eval() {
-
     }
 
     dma_eval() {
@@ -374,8 +406,42 @@ class GB_CPU {
         }
     }
 
+    hdma_eval() {
+        let hdma = this.hdma;
+        hdma.til_next_byte--;
+        if (hdma.til_next_byte === 0) {
+            // Copy byte
+            this.bus.CPU_write(hdma.dest_index, this.bus.CPU_read(hdma.source_index, 0xFF));
+            hdma.dest_index = ((hdma.dest_index + 1) & 0x1FFF) | 0x8000;
+            hdma.source_index = (hdma.source_index + 1) & 0xFFFF;
+            // A 16-byte block has finished
+            if ((hdma.dest_index & 0x0F) === 0) {
+                hdma.length = (hdma.length - 1) & 0xFF;
+                if (hdma.length === 0xFF) { // Terminate HDMA
+                    hdma.enabled = false;
+                    hdma.waiting = false;
+                    hdma.completed = true;
+                    hdma.active = false;
+                }
+            }
+        }
+    }
+
     cycle() {
-        // Update timers
+        // Service GBC HDMA
+        if ((this.clock.cgb_enable) && (this.hdma.enabled)) {
+            if (this.hdma.mode === 0) {
+                this.hdma_eval();
+                return;
+            } else {
+                if (this.hdma.active) { // This will be set true by PPU during HDMA transfer
+                    this.timer.SYSCLK_change(0);
+                    return;
+                }
+            }
+        }
+
+        // Service CPU reads and writes
         if (this.cpu.pins.RD && this.cpu.pins.MRQ) {
             this.cpu.pins.D = this.bus.mapper.CPU_read(this.cpu.pins.Addr, 0xCC);
             if (this.tracing) {
@@ -385,8 +451,6 @@ class GB_CPU {
         if (this.cpu.pins.WR && this.cpu.pins.MRQ) {
             if ((!this.dma.running) || (this.cpu.pins.Addr >= 0xFF00))
                 this.bus.mapper.CPU_write(this.cpu.pins.Addr, this.cpu.pins.D);
-            //else
-             //   console.log('DMA BLOCK W!');
 
             if (this.tracing) {
                 dbg.traces.add(TRACERS.SM83, this.cpu.trace_cycles, trace_format_write('SM83', SM83_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
