@@ -545,8 +545,7 @@ class Z80_switchgen {
                 this.addl('// JUNKVAR set here to ' + val);
                 break;
             case 'AFs':
-                this.addl('regs.As = (' + val + ' & 0xFF00) >>> 8;');
-                this.addl('regs.Fs = (' + val + ' & 0xFF);');
+                this.addl('regs.AF_ = ((' + val + ') << 8) | (regs.IX & 0xFF);');
                 break;
             case 'IXH':
                 this.addl('regs.IX = ((' + val + ') << 8) | (regs.IX & 0xFF);');
@@ -682,7 +681,7 @@ class Z80_switchgen {
         this.addl('regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;');
         this.setXY('y');
         this.addl('regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;');
-        this.addl('regs.F.Z = +((z & 0xFF) === 0);');
+        this.addl('regs.F.Z = +((z & 0xFF) ' + GENEQO + ' 0);');
         this.setS8('z');
     }
 
@@ -702,7 +701,7 @@ class Z80_switchgen {
         this.addl('regs.F.H = ((regs.A ^ regs.TR ^ n) & 0x10) >>> 4;');
         this.addl('regs.F.X = ((n - regs.F.H) & 8) >>> 3;');
         this.addl('regs.F.Y = ((n - regs.F.H) & 2) >>> 1;');
-        this.addl('regs.F.Z = +(n === 0);');
+        this.addl('regs.F.Z = +(n ' + GENEQO + ' 0);');
         this.setS8('n');
     }
 
@@ -724,16 +723,16 @@ class Z80_switchgen {
         this.addl('regs.TR = (n - regs.F.H) & 0xFF;');
         this.addl('regs.F.X = (regs.TR & 8) >>> 3;');
         this.addl('regs.F.Y = (regs.TR & 2) >>> 1;')
-        this.addl('regs.F.Z = +(n === 0);');
+        this.addl('regs.F.Z = +(n ' + GENEQO + ' 0);');
         this.setS8('n');
     }
 
     DEC(what) {
         this.addl('regs.TR = ((' + what + ') - 1) & 0xFF;');
         this.addl('regs.F.N = 1;');
-        this.addl('regs.F.PV = +(regs.TR === 0x7F);');
+        this.addl('regs.F.PV = +(regs.TR ' + GENEQO + ' 0x7F);');
         this.setXY('regs.TR');
-        this.addl('regs.F.H = +((regs.TR & 0x0F) === 0x0F);');
+        this.addl('regs.F.H = +((regs.TR & 0x0F) ' + GENEQO + ' 0x0F);');
         this.setZ('regs.TR');
         this.setS8('regs.TR');
     }
@@ -749,10 +748,10 @@ class Z80_switchgen {
     INC(x) {
         this.addl('regs.TR = ((' + x + ') + 1) & 0xFF;');
         this.addl('regs.F.N = 0;');
-        this.addl('regs.F.PV = +(regs.TR === 0x80);');
+        this.addl('regs.F.PV = +(regs.TR ' + GENEQO + ' 0x80);');
         this.setXY('regs.TR');
-        this.addl('regs.F.H = +((regs.TR & 0x0F) === 0);');
-        this.addl('regs.F.Z = +(regs.TR === 0);');
+        this.addl('regs.F.H = +((regs.TR & 0x0F) ' + GENEQO + ' 0);');
+        this.addl('regs.F.Z = +(regs.TR ' + GENEQO + ' 0);');
         this.setS8('regs.TR');
     }
 
@@ -1041,7 +1040,7 @@ class Z80_switchgen {
         this.addl('regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;');
         this.setXY('z');
         this.addl('regs.F.H = ((x ^ y ^ z) & 0x10) >>> 4;');
-        this.addl('regs.F.Z = +((z & 0xFF) === 0);')
+        this.addl('regs.F.Z = +((z & 0xFF) ' + GENEQO + ' 0);')
         this.setS8('z');
         if (out !== null) this.addl(out + ' = z & 0xFF;');
     }
@@ -1070,7 +1069,7 @@ class Z80_switchgen {
     }
 
     setZ(what) {
-        this.addl('regs.F.Z = +((' + what + ') === 0);');
+        this.addl('regs.F.Z = +((' + what + ') ' + GENEQO + ' 0);');
     }
 
     setX(what) {
@@ -1150,7 +1149,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.addl('case 0:');
             ag.addl('    regs.t[0] = 0;')
             ag.addl('    regs.WZ = pins.D;');
-            ag.addl('    wait = 12 - (((pins.D | 0x38) === 0xFF) ? 6 : 7);');
+            ag.addl('    wait = 12 - (((pins.D | 0x38) ' + GENEQO + ' 0xFF) ? 6 : 7);');
             ag.addl('    regs.TCU += wait;');
             ag.addl('    break;')
             ag.addl('case 1:');
@@ -1168,7 +1167,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.read('regs.TA', 'regs.WZ');
             ag.addl('regs.TA = (regs.TA + 1) & 0xFFFF;');
             ag.read('regs.TA', 'regs.TR');
-            ag.addl('if (regs.t[0] === 1) { regs.WZ |= regs.TR << 8; }');
+            ag.addl('if (regs.t[0] ' + GENEQO + ' 1) { regs.WZ |= regs.TR << 8; }');
             ag.addcycles(6);
 
             ag.addl('regs.PC = regs.WZ;');
@@ -1216,7 +1215,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.ADD('regs.L', argL, 'regs.F.C', 'regs.L', false);
             ag.addcycles(3);
             ag.ADD('regs.H', argH, 'regs.F.C', 'regs.H', false);
-            ag.addl('regs.F.Z = +((regs.H === 0) && (regs.L === 0));');
+            ag.addl('regs.F.Z = +((regs.H ' + GENEQO + ' 0) && (regs.L ' + GENEQO + ' 0));');
             break;
         case Z80_MN.ADD_a_irr:  //n16&
             ag.Q(1);
@@ -1360,7 +1359,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
         case Z80_MN.CPDR:  //
             ag.Q(1)
             ag.CPD();
-            ag.addl('if (((regs.B === 0) && (regs.C === 0)) || (regs.F.Z)) {regs.TCU += 5; break; }');
+            ag.addl('if (((regs.B ' + GENEQO + ' 0) && (regs.C ' + GENEQO + ' 0)) || (regs.F.Z)) {regs.TCU += 5; break; }');
 
             ag.addl('regs.PC = (regs.PC - 2) & 0xFFFF;');
             ag.addl('regs.WZ = (regs.PC + 1) & 0xFFFF;');
@@ -1371,7 +1370,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.CPIR:  //
             ag.CPI();
-            ag.addl('if (((regs.B === 0) && (regs.C === 0)) || (regs.F.Z)) {regs.TCU += 5; break; }');
+            ag.addl('if (((regs.B ' + GENEQO + ' 0) && (regs.C ' + GENEQO + ' 0)) || (regs.F.Z)) {regs.TCU += 5; break; }');
 
             ag.addl('regs.PC = (regs.PC - 2) & 0xFFFF;');
             ag.addl('regs.WZ = (regs.PC + 1) & 0xFFFF;');
@@ -1392,7 +1391,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.addl('regs.F.PV = Z80_parity(regs.A);');
             ag.setXY('regs.A');
             ag.addl('regs.F.H = ((a ^ regs.A) & 0x10) >>> 4;');
-            ag.addl('regs.F.Z = +(regs.A === 0);');
+            ag.addl('regs.F.Z = +(regs.A ' + GENEQO + ' 0);');
             ag.setS8('regs.A');
             break;
         case Z80_MN.DEC_irr:  //n16&
@@ -1456,7 +1455,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.operand8('regs.TR');
             ag.addl('regs.TR = mksigned8(regs.TR);');
             ag.addl('regs.B = (regs.B - 1) & 0xFF;');
-            ag.addl('if (regs.B === 0) { regs.TCU += 5; break; }');
+            ag.addl('if (regs.B ' + GENEQO + ' 0) { regs.TCU += 5; break; }');
             ag.addl('regs.WZ = (regs.PC + regs.TR) & 0xFFFF;');
             ag.addl('regs.PC = regs.WZ;');
             ag.addcycles(5);
@@ -1582,7 +1581,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.INDR:  //
             ag.IND();
-            ag.addl('if (regs.B === 0) { regs.TCU += 5; break; }');
+            ag.addl('if (regs.B ' + GENEQO + ' 0) { regs.TCU += 5; break; }');
             ag.addl('regs.PC = (regs.PC - 2) & 0xFFFF;');
             ag.addcycles(5);
             break;
@@ -1591,7 +1590,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             break;
         case Z80_MN.INIR:  //
             ag.INI();
-            ag.addl('if (regs.B === 0) { regs.TCU += 5; break; }');
+            ag.addl('if (regs.B ' + GENEQO + ' 0) { regs.TCU += 5; break; }');
             ag.addcycles(3);
             ag.addl('regs.PC = (regs.PC - 2) & 0xFFFF;');
             ag.addcycles(2);
@@ -1722,7 +1721,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.Q(1);
             ag.LDD();
 
-            ag.addl('if ((regs.B === 0) && (regs.C === 0)) { regs.TCU += 5; break; }');
+            ag.addl('if ((regs.B ' + GENEQO + ' 0) && (regs.C ' + GENEQO + ' 0)) { regs.TCU += 5; break; }');
             ag.addl('regs.PC = (regs.PC - 2) & 0xFFFF;');
             ag.addl('regs.WZ = (regs.PC + 1) & 0xFFFF;');
             ag.addcycles(5);
@@ -1734,7 +1733,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
         case Z80_MN.LDIR:  //
             ag.Q(1);
             ag.LDI();
-            ag.addl('if ((regs.B === 0) && (regs.C === 0)) { regs.TCU += 5; break; }');
+            ag.addl('if ((regs.B ' + GENEQO + ' 0) && (regs.C ' + GENEQO + ' 0)) { regs.TCU += 5; break; }');
             ag.addl('regs.PC = (regs.PC - 2) & 0xFFFF;');
             ag.addl('regs.WZ = (regs.PC + 1) & 0xFFFF;');
             ag.addcycles(5);
@@ -1764,14 +1763,14 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
         case Z80_MN.OTDR:  //
             ag.Q(1);
             ag.OUTD();
-            ag.addl('if (regs.B === 0) { regs.TCU += 5; break; }');
+            ag.addl('if (regs.B ' + GENEQO + ' 0) { regs.TCU += 5; break; }');
             ag.addl('regs.PC = (regs.PC - 2) & 0xFFFF;');
             ag.addcycles(5);
             break;
         case Z80_MN.OTIR:  //
             ag.Q(1);
             ag.OUTI();
-            ag.addl('if (regs.B === 0) { regs.TCU += 5; break; }');
+            ag.addl('if (regs.B ' + GENEQO + ' 0) { regs.TCU += 5; break; }');
             ag.addl('regs.PC = (regs.PC - 2) & 0xFFFF;');
             ag.addcycles(5);
             break;
@@ -2044,7 +2043,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.SUB('regs.H', ag.readregH(arg1), 'regs.F.C', 'regs.t[1]', false);
             ag.addl('regs.H = regs.t[1];');
             ag.addl('regs.L = regs.t[0];');
-            ag.addl('regs.F.Z = +((regs.H === 0) && (regs.L === 0));');
+            ag.addl('regs.F.Z = +((regs.H ' + GENEQO + ' 0) && (regs.L ' + GENEQO + ' 0));');
             break;
         case Z80_MN.SCF:  //
             ag.addl('if (regs.Q) { regs.F.X = 0; regs.F.Y = 0; }');
@@ -2214,6 +2213,19 @@ function Z80_get_matrix_by_prefix(prfx, i) {
         case 0xFDCB:
             return 'Z80_CBd_opcode_matrix[' + hex0x2(i) + '], // CB FD ' + hex2(i) + '\n';
     }
+}
+
+function generate_z80_core_as(CMOS) {
+    let output_name = 'z80_decoded_opcodes';
+    let outstr = 'import {Z80_opcode_functions, Z80_opcode_matrix, Z80_opcode_matrixCB, Z80_MAX_OPCODE, Z80_S_DECODE} from "../../../component/cpu/z80/z80_opcodes";\n' +
+    'import {Z80_pins_t, Z80_regs_t} from "../../../component/cpu/z80/z80";\n'
+    outstr += 'import {mksigned8} from "../../../helpers/helpers"\n'
+    outstr += '\nexport var ' + output_name + ': Array<Z80_opcode_functions> = new Array<Z80_opcode_functions>(((Z80_MAX_OPCODE+1)*7));';
+    outstr += '\n\nfunction z80_get_opcode_function(opcode: u32): Z80_opcode_functions {';
+    outstr += '\n    switch(opcode) {\n'
+    let indent = '        ';
+    let firstin = false;
+
 }
 
 function generate_z80_core(CMOS) {

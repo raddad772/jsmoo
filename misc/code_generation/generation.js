@@ -71,6 +71,11 @@ function generate_z80_js() {
     save_js('z80_generated_opcodes.js', generate_z80_core(false));
 }
 
+function generate_z80_as() {
+    set_gentarget('as');
+    save_js('z80_generated_opcodes.ts', generate_z80_core_as(false));
+}
+
 function generate_sm83_js() {
     set_gentarget('js');
     save_js('sm83_generated_opcodes.js', generate_sm83_core());
