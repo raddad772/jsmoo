@@ -157,22 +157,24 @@ async function reload_roms(where) {
 }
 
 let ROMKIND = DEFAULT_SYSTEM;
-if (ROMKIND.indexOf('_as') !== -1) {
-	ROMKIND = ROMKIND.replace('_as', '');
+function romkind_sub(what) {
+	if (what.indexOf('_as') !== -1) {
+		what = what.replace('_as', '');
+	}
+	if (what.indexOf('gbc') !== -1) {
+		what = what.replace('gbc', 'gb');
+	}
+	return what;
+
 }
-if (ROMKIND.indexOf('gbc') !== -1) {
-	ROMKIND = ROMKIND.replace('gbc', 'gb');
-}
+
+ROMKIND = romkind_sub(ROMKIND);
+
+
 
 async function system_selected(where) {
 	ui_el.system_select.value = where;
-	ROMKIND = where;
-	if (ROMKIND.indexOf('_as') !== -1) {
-		ROMKIND = ROMKIND.replace('_as', '');
-	}
-	if (ROMKIND.indexOf('gbc') !== -1) {
-		ROMKIND = ROMKIND.replace('gbc', 'gb');
-	}
+	ROMKIND = romkind_sub(where);
 	await reload_roms(ROMKIND);
 }
 
@@ -615,7 +617,9 @@ async function init_ui() {
 	ui_el.system_select.addEventListener('change', async (event) => {
 		console.log('CHANGING SYSTEM...');
 		global_player.set_system(ui_el.system_select.value);
-		await reload_roms(ui_el.system_select.value);
+		ROMKIND = romkind_sub(ui_el.system_select.value)
+
+		await reload_roms(ROMKIND);
 		await load_selected_rom();
 	})
 
