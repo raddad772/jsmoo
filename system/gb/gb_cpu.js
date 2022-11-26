@@ -134,6 +134,7 @@ class GB_CPU {
                 action_select: 0,
                 direction_select: 0
             },
+            speed_switch_prepare: 0
         }
 
         this.dma = {
@@ -156,6 +157,7 @@ class GB_CPU {
             completed: false,
             enabled: false,
             active: false,
+            notify_hblank: false, // Set by PPU to let us know we entered mode2
 
             til_next_byte: 4
         }
@@ -252,6 +254,14 @@ class GB_CPU {
                     this.dma.last_write = val;
                 }
                 break;
+            case 0xFF4D: // Speed switch enable
+                if (!this.clock.cgb_enable) return;
+                this.io.speed_switch_prepare = val & 1;
+                break;
+            case 0xFF4F: // VRAM bank
+                if (!this.clock.cgb_enable) return;
+                this.bus.mapper.VRAM_bank_offset = 8192 * (val & 1);
+                return;
             case 0xFF50: // Boot ROM disable. Cannot re-enable
                 if (val > 0) {
                     console.log('Disable boot ROM!');
@@ -286,9 +296,20 @@ class GB_CPU {
                 this.hdma.enabled = true;
                 this.hdma.dest_index = (this.hdma.dest & 0x1FF0) | 0x8000;
                 this.hdma.source_index = this.hdma.source & 0xFFF0;
+                this.hdma.last_ly = 250;
 
                 this.hdma.til_next_byte = this.clock.turbo ? 2 : 1; // If we're at turbo-speed, we need to wait 2 M-cycles in between transfer. If not, 1.
                 if (this.hdma.mode === 0) this.hdma.active = true;
+                return;
+            case 0xFF6C:
+                if (!this.clock.cgb_enable) return;
+                console.log('OBJPRIOR WRITE!', hex2(val));
+                return;
+            case 0xFF70: // WRAM bank
+                if (!this.clock.cgb_enable) return;
+                val &= 0x07;
+                if (val === 0) val = 1;
+                this.bus.mapper.WRAM_bank_offset = 4096 * val;
                 return;
             case 0xFF0F:
                 //console.log('WRITE IF', val & 0x1F);
@@ -341,6 +362,30 @@ class GB_CPU {
                 //return this.clock.irq.vblank_request | (this.clock.irq.lcd_stat_request << 1) | (this.clock.irq.timer_request << 2) | (this.clock.irq.serial_request << 3) | (this.clock.irq.joypad_request << 4);
             case 0xFF46: // OAM DMA
                 return this.dma.last_write;
+            case 0xFF4D: // Speed switch enable
+                if (!this.clock.cgb_enable) return 0xFF;
+                return this.io.speed_switch_prepare | (this.clock.turbo ? 0x80 : 0);
+            case 0xFF4F: // VRAM bank
+                if (!this.clock.cgb_enable) return 0xFF;
+                return this.bus.mapper.VRAM_bank_offset / 8192;
+            case 0xFF51: // HDMA1 MSB
+                if (!this.clock.cgb_enable) return 0xFF;
+                return (this.hdma.source & 0xFF00) >>> 8;
+            case 0xFF52: // HDMA2 LSB
+                if (!this.clock.cgb_enable) return 0xFF;
+                return this.hdma.source & 0xFF;
+            case 0xFF53: // HDMA3 MSB
+                if (!this.clock.cgb_enable) return 0xFF;
+                return (this.hdma.dest & 0xFF00) >>> 8;
+            case 0xFF54: // HDMA4 LSB
+                if (!this.clock.cgb_enable) return 0xFF;
+                return this.hdma.dest & 0xFF;
+            case 0xFF55: // HDMA5
+                if (!this.clock.cgb_enable) return 0xFF;
+                return (this.hdma.enabled ? 0 : 0x80) | this.hdma.length;
+            case 0xFF70: // WRAM bank
+                if (!this.clock.cgb_enable) return 0xFF;
+                return this.bus.mapper.WRAM_bank_offset / 4096;
             case 0xFFFF: // IE Interrupt Enable
                 //return this.cpu.regs.IE & 0x1F;
                 return this.cpu.regs.IE | 0xE0;
@@ -406,10 +451,58 @@ class GB_CPU {
         }
     }
 
+    hdma_run() {
+        let hdma = this.hdma;
+        // If we're enabled and in the right lines
+        if ((this.clock.ppu_mode === GB_PPU_modes.HBLANK) && (this.clock.ly < 144)) {
+            // If we're in the middle of a 16-byte block, or we have been notified of HBLANK
+            if (((hdma.dest_index & 0xFF) !== 0) || (hdma.notify_hblank)) {
+                hdma.til_next_byte--;
+                if (hdma.til_next_byte < 1) {
+                    hdma.notify_hblank = false;
+                    console.log('RUN HDMA!', hex4(hdma.dest_index), hex4(hdma.source_index));
+                    this.bus.CPU_write(hdma.dest_index, this.bus.CPU_read(hdma.source_index, 0xFF));
+                    hdma.dest_index = ((hdma.dest_index + 1) & 0x1FFF) | 0x8000;
+                    hdma.source_index = (hdma.source_index + 1) & 0xFFFF;
+                    // A 16-byte block has finished
+                    if ((hdma.dest_index & 0x0F) === 0) {
+                        hdma.length = (hdma.length - 1) & 0xFF;
+                        if (hdma.length === 0xFF) { // Terminate HDMA
+                            hdma.enabled = false;
+                            hdma.waiting = false;
+                            hdma.completed = true;
+                            hdma.active = false;
+                        }
+                        else {
+                            hdma.completed = false;
+                            hdma.enabled = true;
+                            hdma.waiting = true;
+                        }
+                    }
+                    hdma.til_next_byte = this.clock.turbo ? 2 : 1; // If we're at turbo-speed, we need to wait 2 M-cycles in between transfer. If not, 1.
+                }
+                return true; // we RAN so we RETURN TRUE
+            }
+        }
+        return false;
+    }
+
     hdma_eval() {
+        if ((this.clock.cgb_enable) && (this.hdma.enabled)) {
+            if (this.hdma.mode === 0) {
+                this.ghdma_run();
+                return true;
+            } else {
+                return this.hdma_run();
+            }
+        }
+        return false;
+    }
+
+    ghdma_run() {
         let hdma = this.hdma;
         hdma.til_next_byte--;
-        if (hdma.til_next_byte === 0) {
+        if (hdma.til_next_byte < 1) {
             // Copy byte
             this.bus.CPU_write(hdma.dest_index, this.bus.CPU_read(hdma.source_index, 0xFF));
             hdma.dest_index = ((hdma.dest_index + 1) & 0x1FFF) | 0x8000;
@@ -424,21 +517,14 @@ class GB_CPU {
                     hdma.active = false;
                 }
             }
+            this.hdma.til_next_byte = this.clock.turbo ? 2 : 1; // If we're at turbo-speed, we need to wait 2 M-cycles in between transfer. If not, 1.
         }
     }
 
     cycle() {
-        // Service GBC HDMA
-        if ((this.clock.cgb_enable) && (this.hdma.enabled)) {
-            if (this.hdma.mode === 0) {
-                this.hdma_eval();
-                return;
-            } else {
-                if (this.hdma.active) { // This will be set true by PPU during HDMA transfer
-                    this.timer.SYSCLK_change(0);
-                    return;
-                }
-            }
+        if (this.hdma_eval()) {
+            this.timer.inc();
+            return;
         }
 
         // Service CPU reads and writes

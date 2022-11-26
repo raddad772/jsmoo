@@ -1,4 +1,4 @@
 "use strict";
 
-let GENTARGET = 'js'; // AssemblyScript
+let GENTARGET = 'as'; // AssemblyScript
 let GENEQO = (GENTARGET === 'as') ? '==' : '===';

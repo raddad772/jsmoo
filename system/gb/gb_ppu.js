@@ -808,6 +808,7 @@ class Gb_ppu {
                 this.slice_fetcher.advance_line();
                 break;
             case GB_PPU_modes.HBLANK: // 0, comes after 3
+                this.bus.cpu.hdma.notify_hblank = true;
                 this.IRQ_mode0_up();
                 this.clock.CPU_can_VRAM = 1;
                 this.clock.setCPU_can_OAM(1);
