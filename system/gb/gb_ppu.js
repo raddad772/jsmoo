@@ -9,15 +9,20 @@ const GB_PPU_modes = Object.freeze({
     pixel_transfer: 3
 });
 
-function GB_sp_tile_addr(tn, y, big_sprites, y_flip) {
+function GB_sp_tile_addr(tn, y, big_sprites, attr, cgb) {
+    let y_flip = attr & 0x40;
     if (big_sprites) {
         tn &= 0xFE;
         if (y_flip) y = 15 - y;
         if (y > 7) tn++;
         return (0x8000 | (tn << 4) | ((y & 7) << 1));
     }
+    let hbits = 0;
     if (y_flip) y = 7 - y;
-    return (0x8000 | (tn << 4) | (y << 1));
+    if (cgb) {
+        if (attr & 8) hbits = 0x2000;
+    }
+    return (0x8000 | (tn << 4) | (y << 1)) + hbits;
 }
 
 
@@ -28,6 +33,7 @@ class GB_PPU_sprite_t {
         this.tile = 0;
         this.attr = 0;
         this.in_q = 0;
+        this.num = 60;
     }
 }
 
@@ -47,6 +53,17 @@ class GB_px {
         this.bg_or_sp = 0; // 0 for BG
         this.palette = 0; // palette #
     }
+}
+
+function GBC_resolve_priority(LCDC0, OAM7, BG7, bg_color, sp_color, sp_num) {
+    // 1 = BG
+    // 2 = OBJ
+    // 0, 1, 1, bg1, sp0/3
+    if (sp_color === 0) return 1;
+    if (!LCDC0) return 2;
+    if ((!OAM7) && (!BG7)) return 2;
+    if (bg_color > 0) return 1;
+    return 2;
 }
 
 class GB_pixel_slice_fetcher {
@@ -116,7 +133,7 @@ class GB_pixel_slice_fetcher {
         this.out_px.bg_or_sp = -1;
         if ((this.sp_request === 0) && (!this.bg_FIFO.empty())) {
             this.out_px.had_pixel = true;
-            let has_bg = this.ppu.io.bg_window_enable
+            let has_bg = this.clock.cgb_enable? true : this.ppu.io.bg_window_enable
             let bg_pal = 0;
             let bg = this.bg_FIFO.pop();
             let bg_color = bg.pixel;
@@ -135,18 +152,25 @@ class GB_pixel_slice_fetcher {
             }
             if (this.ppu.io.obj_enable && (sp_color !== null)) has_sp = true;
 
+            // DMG resolve
             if ((has_bg) && (!has_sp)) {
                 use_what = 1;
             } else if ((!has_bg) && (has_sp)) {
                 use_what = 1;
             } else if (has_bg && has_sp) {
-                if (obj.sprite_priority && (bg_color !== 0)) // "If the OBJ pixel has its priority bit set, and the BG pixel's ID is not 0, pick the BG pixel."
-                    use_what = 1; // BG
-                else if (sp_color === 0) // "If the OBJ pixel is 0, pick the BG pixel; "
-                    use_what = 1; // BG
-                else // "otherwise, pick the OBJ pixel"
-                {
-                    use_what = 2; // sprite
+                if (this.clock.cgb_enable) {
+                    //GBC_resolve_priority(LCDC0, OAM7, BG7, bg_color) {
+                    use_what = GBC_resolve_priority(this.ppu.io.bg_window_enable, obj.sprite_priority, bg.sprite_priority, bg_color, sp_color);
+                } else {
+                    if (obj.sprite_priority && (bg_color !== 0)) // "If the OBJ pixel has its priority bit set, and the BG pixel's ID is not 0, pick the BG pixel."
+                        use_what = 1; // BG
+                    else if (sp_color === 0) // "If the OBJ pixel is 0, pick the BG pixel; "
+                        use_what = 1; // BG
+                    else // "otherwise, pick the OBJ pixel"
+                    {
+                        use_what = 2; // sprite
+                    }
+
                 }
             } else {
                 use_what = 0;
@@ -226,7 +250,7 @@ class GB_pixel_slice_fetcher {
                 if (this.sp_request) { // SPRITE HIJACK!
                     this.fetch_cycle = 7;
                     this.fetch_obj = this.sprites_queue[0];
-                    this.fetch_addr = GB_sp_tile_addr(this.fetch_obj.tile, this.clock.ly - this.fetch_obj.y, this.ppu.io.sprites_big, this.fetch_obj.attr & 0x40);
+                    this.fetch_addr = GB_sp_tile_addr(this.fetch_obj.tile, this.clock.ly - this.fetch_obj.y, this.ppu.io.sprites_big, this.fetch_obj.attr, this.clock.cgb_enable);
                 } else { // attempt to push to BG FIFO, which only accepts when empty.
                     if (this.bg_FIFO.empty()) {
                         // Push to FIFO
@@ -247,7 +271,7 @@ class GB_pixel_slice_fetcher {
                             b.palette = 0;
                             if (this.clock.cgb_enable) {
                                 b.palette = this.fetch_cgb_attr & 7;
-                                b.cgb_priority = (this.fetch_cgb_attr & 0x80) >>> 7;
+                                b.sprite_priority = (this.fetch_cgb_attr & 0x80) >>> 7;
                             }
                         }
                         this.bg_request_x += 8;
@@ -271,7 +295,7 @@ class GB_pixel_slice_fetcher {
                 break;
             case 9: // sprite bp1 fetch, mix, & restart
                 this.fetch_bp1 = this.bus.PPU_read(this.fetch_addr+1);
-                this.obj_FIFO.sprite_mix(this.fetch_bp0, this.fetch_bp1, (this.fetch_obj.attr & 0x80) >>> 7, (this.fetch_obj.attr & 0x10) >>> 4, (this.fetch_obj.attr & 0x20));
+                this.obj_FIFO.sprite_mix(this.fetch_bp0, this.fetch_bp1, this.fetch_obj.attr, this.fetch_obj.num);
                 this.sp_request--;
                 this.sprites_queue.shift();
                 this.fetch_cycle = 0;
@@ -284,6 +308,7 @@ class GB_FIFO_t {
     constructor(variant) {
         this.variant = variant;
         this.compat_mode = 1; // 1 for DMG or GBC compatability
+        if (this.variant === GB_variants.GBC) { console.log('GBC MODE!'); this.compat_mode = 0; }
         /**
          * @type {GB_FIFO_item_t[]}
          */
@@ -321,12 +346,21 @@ class GB_FIFO_t {
     }
 
     // This is for "mixing" on sprite encounter
-    sprite_mix(bp0, bp1, sp_priority, sp_palette, flip) {
+    sprite_mix(bp0, bp1, attr, sprite_num=0) { //sp_priority, sp_palette, flip) {
+        let sp_palette;
+        let sp_priority = (attr & 0x80) >>> 7;
+        if (this.compat_mode === 1) {
+            sp_palette = (attr & 0x10) >>> 4;
+        }
+        else {
+            sp_palette = attr & 7;
+        }
+        let flip = attr & 0x20;
         // First fill with transparent pixels
         while(this.num_items < 8) {
             let b = this.push();
             b.sprite_priority = 0;
-            b.cgb_priority = 0;
+            b.cgb_priority = 60;
             b.pixel = 0;
             b.palette = 0;
         }
@@ -347,11 +381,12 @@ class GB_FIFO_t {
                     this.items[i].cgb_priority = 0;
                 }
             } else {
-                if (this.items[i].cgb_priority < sp_priority) {
+                // GBC mode
+                if (sprite_num < this.items[i].cgb_priority) {
                     this.items[i].palette = sp_palette;
                     this.items[i].sprite_priority = sp_priority;
                     this.items[i].pixel = px;
-                    this.items[i].cgb_priority = sp_priority;
+                    this.items[i].cgb_priority = sprite_num;
                 }
             }
         }
@@ -473,6 +508,19 @@ class GB_PPU {
         this.bus.CPU_read_OAM = this.read_OAM.bind(this);
         this.bus.CPU_write_OAM = this.write_OAM.bind(this);
         this.disable();
+    }
+
+    dump_sprites(imgdata, canvas_width, canvas_height) {
+        // 160 bytes of OAM
+        let outstr = '';
+        let idx = 0;
+        for (let i = 0; i < 40; i++) {
+            let OBJ = this.OBJ[i];
+            //  y x tile attr
+            outstr += i + ': ' + hex2(this.OAM[idx]) + ' ' + hex2(this.OAM[idx+1]) + ' ' + hex2(this.OAM[idx+2]) + ' ' + hex2(this.OAM[idx+3]) + '\n';
+            idx += 4;
+        }
+        console.log(outstr);
     }
 
     dump_bg(cm, map_base_addr, tile_base_addr) {
@@ -767,10 +815,7 @@ class GB_PPU {
                 this.io.cram_bg_addr = val & 0x3F;
                 return;
             case 0xFF69: // BG pal write
-                console.log('BG CRAM WRITE', hex2(this.io.cram_bg_addr), hex2(val));
                 if (!this.clock.cgb_enable) return;
-                console.log('ACTUALLY ENABLED');
-                console.log('BG CRAM WRITE2', hex2(this.io.cram_bg_addr), hex2(val));
                 this.bg_CRAM[this.io.cram_bg_addr] = val;
                 if (this.io.cram_bg_increment) this.io.cram_bg_addr = (this.io.cram_bg_addr + 1) & 0x3F;
                 return;
@@ -1039,6 +1084,7 @@ class GB_PPU {
             this.OBJ[i].x = 0;
             this.OBJ[i].y = 0;
             this.OBJ[i].in_q = 0;
+            this.OBJ[i].num = 60;
         }
 
         for (let i = 0; i < 40; i++) {
@@ -1051,6 +1097,7 @@ class GB_PPU {
                 this.OBJ[this.sprites.num].tile = this.OAM[this.sprites.search_index + 2];
                 this.OBJ[this.sprites.num].attr = this.OAM[this.sprites.search_index + 3];
                 this.OBJ[this.sprites.num].in_q = 0;
+                this.OBJ[this.sprites.num].num = i;
 
                 this.sprites.num++;
             }
@@ -1082,7 +1129,8 @@ class GB_PPU {
                         //if ((this.clock.ly === 0) && (this.clock.lx === 9))
                         //    console.log('HEREDATA', n, this.bg_CRAM[n+1], this.bg_CRAM[n]);
                     } else {
-                        cv = 0;
+                        let n = ((p.palette * 4) + p.color) * 2;
+                        cv = (this.obj_CRAM[n+1] << 8) | this.obj_CRAM[n];
                         //cv = this.sp_palette[p.palette][p.color];
                     }
 

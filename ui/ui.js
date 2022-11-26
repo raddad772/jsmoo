@@ -226,24 +226,7 @@ function click_tile_dump() {
 }
 
 function click_sprite_dump() {
-	switch(global_player.system_kind) {
-		case 'snes':
-			global_player.system.ppu.render_sprites_from_memory(0, 520, false);
-			for (let y = 1; y < 224; y++) {
-				PPUF_render_objects(global_player.system.ppu, global_player.system.ppu.cachelines.lines[y], y, true);
-			}
-			break;
-		case 'nes':
-			global_player.system.ppu.render_sprites_from_memory(0, 520, false);
-			console.log('SPRITE, BG ENABLE:', global_player.system.ppu.io.sprite_enable, global_player.system.ppu.io.bg_enable)
-			break;
-		case 'sms':
-		case 'gg':
-			global_player.system.vdp.dump_sprites(0, 520);
-			console.log('DUMP SPRITES BRO');
-			break;
-	}
-	global_player.system.ppu.present();
+	global_player.dump_sprites(sprite_canvas);
 }
 
 function click_render_scr() {
