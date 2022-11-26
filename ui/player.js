@@ -549,8 +549,10 @@ class global_player_t {
 			case 'sms':
 				SMS_present(data, imgdata.data, buf);
 				break;
-			case 'gb_as':
 			case 'gbc':
+				GBC_present(data, imgdata.data, buf);
+				break;
+			case 'gb_as':
 			case 'gb':
 				GB_present(data, imgdata.data, buf);
 				break;

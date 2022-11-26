@@ -169,6 +169,7 @@ class GB_pixel_slice_fetcher {
     fetch_obj: GB_PPU_sprite_t|null = null;
     fetch_bp0: u32 = 0;
     fetch_bp1: u32 = 0;
+    fetch_cgb_attr: u32 = 0;
 
     bg_FIFO: GB_FIFO_t
     obj_FIFO: GB_FIFO_t

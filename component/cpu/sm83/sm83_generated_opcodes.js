@@ -2150,7 +2150,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //HALT
         switch(regs.TCU) {
             case 1:
-                console.log('HALT!');
+                //console.log('HALT!');
                 if ((!regs.IME) && (regs.interrupt_latch !== 0)) regs.halt_bug = 1; 
                 regs.HLT = 1;
                 if (regs.HLT) { regs.poll_IRQ = true; regs.TCU--; }
