@@ -622,6 +622,11 @@ class global_player_t {
 	set_overscan(to) {
 		emu_canvas.set_overscan_correct(to);
 	}
+
+	dump_sprites(canvas) {
+		canvas.set_size(200, 200, 200, 200);
+		this.player_thread.postMessage({kind: emulator_messages.dump_something, what: 'sprites', imgdata: canvas.get_imgdata().data.buffer, width: 200, height: 200 })
+	}
 }
 
 const global_player = new global_player_t();

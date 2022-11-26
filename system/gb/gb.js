@@ -248,6 +248,10 @@ class GameBoy {
         current_x.innerHTML = this.clock.lx;
     }
 
+    dump_sprites(imgdata, width, height) {
+        this.ppu.dump_sprites(imgdata, width, height);
+    }
+
     get_framevars() {
         let r = {master_frame: this.clock.master_frame, x: this.clock.lx, scanline: this.clock.ly};
         return r;

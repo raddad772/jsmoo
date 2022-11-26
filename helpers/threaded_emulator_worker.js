@@ -31,8 +31,22 @@ class threaded_emulator_worker_t {
         this.step_done(emulator_messages.step3_done);
     }
 
+    dump_something(e) {
+        switch(e.what) {
+            case 'sprites':
+                // {kind: emulator_messages.dump_something, what: 'sprites', imgdata: canvas.get_imgdata().data.buffer, width: 200, height: 200 }
+                this.js_wrapper.dump_sprites(e.imgdata, e.width, e.height);
+                break;
+            default:
+                console.log('NO DUMP AVAILABLE?');
+        }
+    }
+
     async onmessage(e) {
         switch(e.kind) {
+            case emulator_messages.dump_something:
+                this.dump_something(e);
+                return;
             case emulator_messages.startup:
                 this.general_sab = e.general_sab;
                 await this.js_wrapper.do_as_setup();
