@@ -31,7 +31,7 @@ class GB_MAPPER_none {
         this.HRAM = new Uint8Array(128);
         this.RAM_mask = 0;
         this.has_RAM = false;
-        this.VRAM = new Uint8Array(32768);
+        this.VRAM = new Uint8Array(16384);
 
         this.bus.mapper = this;
         /**
@@ -52,11 +52,11 @@ class GB_MAPPER_none {
     }
 
     PPU_read(addr) {
-        if ((addr < 0x8000) || (addr > 0xA000)) {
+        if ((addr < 0x8000) || (addr >= 0xC000)) {
             console.log('WAIT WHAT BAD READ?');
-            return null;
+            return 0xFF;
         }
-        return this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset];
+        return this.VRAM[(addr - 0x8000) & 0x3FFF];
     }
 
     CPU_read(addr, val, has_effect=true) {
@@ -73,7 +73,7 @@ class GB_MAPPER_none {
         if (addr < 0x8000) // ROM hi bank
             return this.ROM[(addr & 0x3FFF) + this.ROM_bank_offset];
         if (addr < 0xA000) { // VRAM, banked
-            //if (this.clock.CPU_can_VRAM)
+            if (this.clock.CPU_can_VRAM)
                 return this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset];
             return 0xFF;
         } // cart RAM if it's there
@@ -100,15 +100,15 @@ class GB_MAPPER_none {
         if (addr < 0x8000) // ROMs
             return;
         if (addr < 0xA000) { // VRAM
-            //if (this.clock.CPU_can_VRAM) {
+            if (this.clock.CPU_can_VRAM) {
                 this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset] = val;
-            /*}
+            }
             else {
                 console.log('VRAM WRITE BLOCKED!', this.bus.ppu.enabled, this.bus.ppu.io.bg_window_enable, this.clock.ly, this.bus.ppu.line_cycle);
                 //if (this.clock.ly === 0) dbg.break();
                 //console.log('YAR.')
                 //this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset] = val;
-            }*/
+            }
             return;
         }
         if (addr < 0xC000) { // cart RAM
@@ -136,11 +136,6 @@ class GB_MAPPER_none {
             return;
         }
         this.bus.CPU_write_IO(addr, val); // 0xFFFF register
-    }
-
-    PPU_read(addr) {
-        if ((addr < 0x8000) || (addr > 0x9FFF)) return 0xFF;
-        return this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset];
     }
 
     /**

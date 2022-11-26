@@ -110,7 +110,6 @@ class GB_clock {
         this.CPU_can_OAM = 0;
         this.bootROM_enabled = true;
         this.turbo = false;
-        this.cgb_enable = false;
     }
 
     setCPU_can_OAM(to) {

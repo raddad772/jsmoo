@@ -67,6 +67,7 @@ class GB_pixel_slice_fetcher {
         this.fetch_obj = null;
         this.fetch_bp0 = 0;
         this.fetch_bp1 = 0;
+        this.fetch_cgb_attr = 0;
 
         this.clock = clock;
         this.bus = bus;
@@ -116,12 +117,16 @@ class GB_pixel_slice_fetcher {
         if ((this.sp_request === 0) && (!this.bg_FIFO.empty())) {
             this.out_px.had_pixel = true;
             let has_bg = this.ppu.io.bg_window_enable
+            let bg_pal = 0;
             let bg = this.bg_FIFO.pop();
             let bg_color = bg.pixel;
             let has_sp = false;
             let sp_color=null, sp_palette;
             let use_what = 0; // 0 for BG, 1 for OBJ
             let obj;
+            if (this.clock.cgb_enable) {
+                bg_pal = bg.palette;
+            }
 
             if (!this.obj_FIFO.empty()) {
                 obj = this.obj_FIFO.pop();
@@ -153,7 +158,7 @@ class GB_pixel_slice_fetcher {
             else if (use_what === 1) {
                 this.out_px.bg_or_sp = 0;
                 this.out_px.color = bg_color;
-                this.out_px.palette = 0;
+                this.out_px.palette = bg_pal;
             } else {
                 this.out_px.bg_or_sp = 1;
                 this.out_px.color = sp_color;
@@ -179,13 +184,25 @@ class GB_pixel_slice_fetcher {
                 this.fetch_cycle = 1;
                 break;
             case 1: // tile
+                let addr;
                 if (this.ppu.in_window()) {
-                    tn = this.bus.PPU_read(this.ppu.bg_tilemap_addr_window(this.bg_request_x));
-                    this.fetch_addr = this.ppu.bg_tile_addr_window(tn);
+                    addr = this.ppu.bg_tilemap_addr_window(this.bg_request_x);
+                    if (this.clock.cgb_enable) {
+                        this.fetch_cgb_attr = this.bus.PPU_read(addr + 0x2000);
+                    }
+                    tn = this.bus.PPU_read(addr);
+                    this.fetch_addr = this.ppu.bg_tile_addr_window(tn, this.fetch_cgb_attr);
                 }
                 else {
-                    tn = this.bus.PPU_read(this.ppu.bg_tilemap_addr_nowindow(this.bg_request_x));
-                    this.fetch_addr = this.ppu.bg_tile_addr_nowindow(tn);
+                    addr = this.ppu.bg_tilemap_addr_nowindow(this.bg_request_x);
+                    if (this.clock.cgb_enable) {
+                        this.fetch_cgb_attr = this.bus.PPU_read(addr + 0x2000);
+                    }
+                    tn = this.bus.PPU_read(addr);
+                    /*if ((this.bg_request_x === 0) && (this.clock.ly === 0)) {
+                        console.log('ATTRIBUTE!', hex4(addr + 0x2000), hex2(this.fetch_cgb_attr));
+                    }*/
+                    this.fetch_addr = this.ppu.bg_tile_addr_nowindow(tn, this.fetch_cgb_attr);
                 }
                 this.fetch_cycle = 2;
                 break;
@@ -215,9 +232,23 @@ class GB_pixel_slice_fetcher {
                         // Push to FIFO
                         for (let i = 0; i < 8; i++) {
                             let b = this.bg_FIFO.push();
-                            b.pixel = ((this.fetch_bp0 & 0x80) >>> 7) | ((this.fetch_bp1 & 0x80) >>> 6);
-                            this.fetch_bp0 <<= 1;
-                            this.fetch_bp1 <<= 1;
+                            if ((this.clock.cgb_enable) && (this.fetch_cgb_attr & 0x20)) {
+                                // Flipped X
+                                b.pixel = (this.fetch_bp0 & 1) | ((this.fetch_bp1 & 1) << 1);
+                                this.fetch_bp0 >>= 1;
+                                this.fetch_bp1 >>= 1;
+                            }
+                            else {
+                                // For regular, X not flipped
+                                b.pixel = ((this.fetch_bp0 & 0x80) >>> 7) | ((this.fetch_bp1 & 0x80) >>> 6);
+                                this.fetch_bp0 <<= 1;
+                                this.fetch_bp1 <<= 1;
+                            }
+                            b.palette = 0;
+                            if (this.clock.cgb_enable) {
+                                b.palette = this.fetch_cgb_attr & 7;
+                                b.cgb_priority = (this.fetch_cgb_attr & 0x80) >>> 7;
+                            }
                         }
                         this.bg_request_x += 8;
                         if ((this.ppu.line_cycle < 88) && (!this.ppu.in_window())) {
@@ -595,24 +626,36 @@ class GB_PPU {
         );
     }
 
-    bg_tile_addr_window(tn) {
+    bg_tile_addr_window(tn, attr = 0) {
         let b12;
+        let hbits = 0, ybits;
         if (this.io.bg_window_tile_data_base) b12 = 0;
         else b12 = ((tn & 0x80) ^ 0x80) << 5;
+        ybits = this.clock.wly & 7;
+        if (this.clock.cgb_enable) {
+            if (attr & 8) hbits = 0x2000;
+            if (attr & 0x40) ybits = (7 - ybits);
+        }
         return (0x8000 | b12 |
             (tn << 4) |
-            ((this.clock.wly & 7) << 1)
-        );
+            (ybits << 1)
+        ) + hbits;
     }
 
-    bg_tile_addr_nowindow(tn) {
+    bg_tile_addr_nowindow(tn, attr = 0) {
         let b12;
+        let hbits = 0, ybits;
         if (this.io.bg_window_tile_data_base) b12 = 0;
         else b12 = ((tn & 0x80) ^ 0x80) << 5;
+        ybits = (this.clock.ly + this.io.SCY) & 7;
+        if (this.clock.cgb_enable) {
+            if (attr & 8) hbits = 0x2000;
+            if (attr & 0x40) ybits = (7 - ybits);
+        }
         return (0x8000 | b12 |
             (tn << 4) |
-            ((((this.clock.ly + this.io.SCY) & 0xFF) & 7) << 1)
-        );
+            (ybits << 1)
+        ) + hbits;
     }
 
     draw_lines_around_screen(imgdata) {
@@ -724,7 +767,10 @@ class GB_PPU {
                 this.io.cram_bg_addr = val & 0x3F;
                 return;
             case 0xFF69: // BG pal write
+                console.log('BG CRAM WRITE', hex2(this.io.cram_bg_addr), hex2(val));
                 if (!this.clock.cgb_enable) return;
+                console.log('ACTUALLY ENABLED');
+                console.log('BG CRAM WRITE2', hex2(this.io.cram_bg_addr), hex2(val));
                 this.bg_CRAM[this.io.cram_bg_addr] = val;
                 if (this.io.cram_bg_increment) this.io.cram_bg_addr = (this.io.cram_bg_addr + 1) & 0x3F;
                 return;
@@ -1026,10 +1072,26 @@ class GB_PPU {
         if (p.had_pixel) {
             if (this.clock.lx > 7) {
                 let cv;
-                if (p.bg_or_sp === 0) {
-                    cv = this.bg_palette[p.color];
+                if (this.clock.cgb_enable) {
+                    if (p.bg_or_sp === 0) {
+                        // there are 8 BG palettes
+                        // each pixel is 0-4
+                        // so it's (4 * palette #) + color
+                        let n = ((p.palette * 4) + p.color) * 2;
+                        cv = (this.bg_CRAM[n+1] << 8) | this.bg_CRAM[n];
+                        //if ((this.clock.ly === 0) && (this.clock.lx === 9))
+                        //    console.log('HEREDATA', n, this.bg_CRAM[n+1], this.bg_CRAM[n]);
+                    } else {
+                        cv = 0;
+                        //cv = this.sp_palette[p.palette][p.color];
+                    }
+
                 } else {
-                    cv = this.sp_palette[p.palette][p.color];
+                    if (p.bg_or_sp === 0) {
+                        cv = this.bg_palette[p.color];
+                    } else {
+                        cv = this.sp_palette[p.palette][p.color];
+                    }
                 }
                 this.cur_output[(this.clock.ly * 160) + (this.clock.lx - 8)] = cv;
             }
@@ -1106,7 +1168,6 @@ class GB_PPU {
                 this.io.lyc = 0;
                 this.io.SCX = this.io.SCY = 0;
 
-                console.log('QUICKBOOT NOT SUPPROTEDO N THSI GAMEBOY MODEL');
                 break;
         }
    }
