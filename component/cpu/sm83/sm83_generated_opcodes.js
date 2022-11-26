@@ -4917,7 +4917,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1: // cleanup_custom
                 regs.IME = 0;
-                console.log('DI!');
+                //console.log('DI!');
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -5099,7 +5099,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //EI
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                console.log('EI!');
+                //console.log('EI!');
                 regs.IME_DELAY = 2;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;

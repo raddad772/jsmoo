@@ -623,6 +623,10 @@ class global_player_t {
 		emu_canvas.set_overscan_correct(to);
 	}
 
+	dump_RAM(kind, addr) {
+		this.player_thread.postMessage({kind: emulator_messages.dump_something, what: kind, addr: addr});
+	}
+
 	dump_sprites(canvas) {
 		canvas.set_size(200, 200, 200, 200);
 		this.player_thread.postMessage({kind: emulator_messages.dump_something, what: 'sprites', imgdata: canvas.get_imgdata().data.buffer, width: 200, height: 200 })

@@ -82,6 +82,7 @@ class GB_cart {
         this.ROM = new Uint8Array(this.header.ROM_size);
 
         this.clock.cgb_enable = (inp[0x143] === 0x80) || (inp[0x143] === 0xC0);
+        if (this.variant !== GB_variants.GBC) this.clock.cgb_enable = false;
         console.log('CGB ENABLE?', this.clock.cgb_enable);
 
         switch(inp[0x149]) {

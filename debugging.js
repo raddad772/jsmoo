@@ -250,7 +250,8 @@ class debugger_t {
 			console.log('ENABLE FOR!', emulator_worker.js_wrapper.system_kind);
             this.enable_tracing();
 			switch(syskind) {
-				case 'gb':
+                case 'gbc':
+                case 'gb':
 					dbg.enable_tracing_for(D_RESOURCE_TYPES.SM83);
 					break;
 				case 'nes':
@@ -329,7 +330,7 @@ class debugger_t {
                 this.cpus[k].enable_tracing();
             }
             else {
-                console.log('WHAT WAT')
+                console.log('WHAT WAT', k, this.cpus, this.tracing_for);
                 this.cpus[k].disable_tracing();
             }
         }

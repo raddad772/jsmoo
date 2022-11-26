@@ -260,7 +260,7 @@ class GB_CPU {
                 break;
             case 0xFF4F: // VRAM bank
                 if (!this.clock.cgb_enable) return;
-                this.bus.mapper.VRAM_bank_offset = 8192 * (val & 1);
+                this.bus.set_VRAM_bank(val);
                 return;
             case 0xFF50: // Boot ROM disable. Cannot re-enable
                 if (val > 0) {
@@ -307,9 +307,7 @@ class GB_CPU {
                 return;
             case 0xFF70: // WRAM bank
                 if (!this.clock.cgb_enable) return;
-                val &= 0x07;
-                if (val === 0) val = 1;
-                this.bus.mapper.WRAM_bank_offset = 4096 * val;
+                this.bus.set_WRAM_bank(val);
                 return;
             case 0xFF0F:
                 //console.log('WRITE IF', val & 0x1F);
@@ -367,7 +365,8 @@ class GB_CPU {
                 return this.io.speed_switch_prepare | (this.clock.turbo ? 0x80 : 0);
             case 0xFF4F: // VRAM bank
                 if (!this.clock.cgb_enable) return 0xFF;
-                return this.bus.mapper.VRAM_bank_offset / 8192;
+                return this.bus.get_VRAM_bank();
+                //return this.bus.mapper.VRAM_bank_offset / 8192;
             case 0xFF51: // HDMA1 MSB
                 if (!this.clock.cgb_enable) return 0xFF;
                 return (this.hdma.source & 0xFF00) >>> 8;
@@ -385,7 +384,7 @@ class GB_CPU {
                 return (this.hdma.enabled ? 0 : 0x80) | this.hdma.length;
             case 0xFF70: // WRAM bank
                 if (!this.clock.cgb_enable) return 0xFF;
-                return this.bus.mapper.WRAM_bank_offset / 4096;
+                return this.bus.get_WRAM_bank();
             case 0xFFFF: // IE Interrupt Enable
                 //return this.cpu.regs.IE & 0x1F;
                 return this.cpu.regs.IE | 0xE0;
@@ -474,6 +473,8 @@ class GB_CPU {
                 this.hdma.length = 0x7F;
                 this.hdma.mode = 1;
                 this.hdma.enabled = false;
+                //this.bus.mapper.VRAM_bank_offset = 0;
+                //this.bus.mapper.WRAM_bank_offset = 4096;
                 this.bus.mapper.VRAM_bank_offset = 8192; // 0xFF startup register value
                 this.bus.mapper.WRAM_bank_offset = 4096 * 7; // 0xFF startup register value
                 pins.Addr = 0x100;
@@ -561,18 +562,20 @@ class GB_CPU {
         }
 
         // Service CPU reads and writes
-        if (this.cpu.pins.RD && this.cpu.pins.MRQ) {
-            this.cpu.pins.D = this.bus.mapper.CPU_read(this.cpu.pins.Addr, 0xCC);
-            if (this.tracing) {
-                dbg.traces.add(TRACERS.SM83, this.cpu.trace_cycles, trace_format_read('SM83', SM83_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
+        if (this.cpu.pins.MRQ) {
+            if (this.cpu.pins.RD) {
+                this.cpu.pins.D = this.bus.mapper.CPU_read(this.cpu.pins.Addr, 0xCC);
+                if (this.tracing) {
+                    dbg.traces.add(TRACERS.SM83, this.cpu.trace_cycles, trace_format_read('SM83', SM83_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
+                }
             }
-        }
-        if (this.cpu.pins.WR && this.cpu.pins.MRQ) {
-            if ((!this.dma.running) || (this.cpu.pins.Addr >= 0xFF00))
-                this.bus.mapper.CPU_write(this.cpu.pins.Addr, this.cpu.pins.D);
+            if (this.cpu.pins.WR) {
+                if ((!this.dma.running) || (this.cpu.pins.Addr >= 0xFF00))
+                    this.bus.mapper.CPU_write(this.cpu.pins.Addr, this.cpu.pins.D);
 
-            if (this.tracing) {
-                dbg.traces.add(TRACERS.SM83, this.cpu.trace_cycles, trace_format_write('SM83', SM83_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
+                if (this.tracing) {
+                    dbg.traces.add(TRACERS.SM83, this.cpu.trace_cycles, trace_format_write('SM83', SM83_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
+                }
             }
         }
         this.cpu.cycle();
