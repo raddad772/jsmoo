@@ -193,7 +193,7 @@ class GameBoy {
         this.clock = new GB_clock();
         this.cart = new GB_cart(this.variant, this.bios, this.clock, this.bus);
         this.cpu = new GB_CPU(this.variant, this.clock, this.bus);
-        this.ppu = new Gb_ppu(this.variant, this.clock, this.bus);
+        this.ppu = new GB_PPU(this.variant, this.clock, this.bus);
 
         this.cycles_left = 0;
         this.display_enabled = true;

@@ -54,7 +54,7 @@ class GB_pixel_slice_fetcher {
      * @param {number} variant
      * @param {GB_clock} clock
      * @param {GB_bus} bus
-     * @param {Gb_ppu} ppu
+     * @param {GB_PPU} ppu
      */
     constructor(variant, clock, bus, ppu) {
         this.variant = variant
@@ -359,7 +359,7 @@ class GB_FIFO_t {
     }
 }
 
-class Gb_ppu {
+class GB_PPU {
     /**
      * @param {Number} variant
      * @param {GB_clock} clock
@@ -371,6 +371,8 @@ class Gb_ppu {
         this.bus = bus;
         this.bus.ppu = this;
 
+        this.bg_CRAM = new Uint8Array(64);
+        this.obj_CRAM = new Uint8Array(64);
 
         this.slice_fetcher = new GB_pixel_slice_fetcher(variant, clock, bus, this);
 
@@ -419,6 +421,11 @@ class Gb_ppu {
             SCY: 0, // Y scroll
             wx: 0, // Window X
             wy: 0, // Window Y
+
+            cram_bg_increment: 0,
+            cram_bg_addr: 0,
+            cram_obj_increment: 0,
+            cram_obj_addr: 0
         }
 
         this.output_shared_buffers = [new SharedArrayBuffer(160*144*2), new SharedArrayBuffer(160*144*2)];
@@ -711,7 +718,26 @@ class Gb_ppu {
                 this.sp_palette[1][2] = (val >>> 4) & 3;
                 this.sp_palette[1][3] = (val >>> 6) & 3;
                 return;
-
+            case 0xFF68: // BCPS/BGPI
+                if (!this.clock.cgb_enable) return;
+                this.io.cram_bg_increment = (val & 0x80) >>> 7;
+                this.io.cram_bg_addr = val & 0x3F;
+                return;
+            case 0xFF69: // BG pal write
+                if (!this.clock.cgb_enable) return;
+                this.bg_CRAM[this.io.cram_bg_addr] = val;
+                if (this.io.cram_bg_increment) this.io.cram_bg_addr = (this.io.cram_bg_addr + 1) & 0x3F;
+                return;
+            case 0xFF6A: // OPS/OPI
+                if (!this.clock.cgb_enable) return;
+                this.io.cram_obj_increment = (val & 0x80) >>> 7;
+                this.io.cram_obj_addr = val & 0x3F;
+                return;
+            case 0xFF6B: // OBJ pal write
+                if (!this.clock.cgb_enable) return;
+                this.obj_CRAM[this.io.cram_obj_addr] = val;
+                if (this.io.cram_obj_increment) this.io.cram_obj_addr = (this.io.cram_obj_addr + 1) & 0x3F;
+                return;
         }
     }
 
@@ -758,6 +784,18 @@ class Gb_ppu {
             case 0xFF49: // OBP1
                 //if (!this.clock.CPU_can_VRAM) return 0xFF;
                 return this.sp_palette[1][0] | (this.sp_palette[1][1] << 2) | (this.sp_palette[1][2] << 4) | (this.sp_palette[1][3] << 6);
+            case 0xFF68: // BCPS/BGPI
+                if (!this.clock.cgb_enable) return 0xFF;
+                return this.io.cram_bg_addr | (this.io.cram_bg_increment << 7);
+            case 0xFF69: // BG pal read
+                if (!this.clock.cgb_enable) return 0xFF;
+                return this.io.bg_CRAM[this.io.cram_bg_addr];
+            case 0xFF6A: // OPS/OPI
+                if (!this.clock.cgb_enable) return 0xFF;
+                return this.io.cram_obj_addr | (this.io.cram_obj_increment << 7);
+            case 0xFF6B: // OBJ pal read
+                if (!this.clock.cgb_enable) return 0xFF;
+                return this.io.obj_CRAM[this.io.cram_obj_addr];
         }
         return 0xFF;
     }
@@ -1049,7 +1087,6 @@ class Gb_ppu {
         switch(this.variant) {
             case GB_variants.DMG:
                 this.enabled = true;
-                let val = 0xFC;
                 //this.clock.ly = 90;
                 this.write_IO(0xFF47, 0xFC);
                 this.write_IO(0xFF40, 0x91);
@@ -1060,6 +1097,15 @@ class Gb_ppu {
                 this.advance_frame();
                 break;
             default:
+                for (let i = 0; i < 0x3F; i++) {
+                    this.bg_CRAM[i] = 0xFF;
+                }
+                this.write_IO(0xFF47, 0xFC);
+                this.write_IO(0xFF40, 0x91);
+                this.write_IO(0xFF41, 0x85);
+                this.io.lyc = 0;
+                this.io.SCX = this.io.SCY = 0;
+
                 console.log('QUICKBOOT NOT SUPPROTEDO N THSI GAMEBOY MODEL');
                 break;
         }

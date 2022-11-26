@@ -439,6 +439,10 @@ class GB_CPU {
                 regs.IME = 0;
                 regs.IE = 0;
                 regs.IF = 1;
+                this.hdma.enabled = false;
+                this.timer.TIMA = 0;
+                this.timer.TMA = 0;
+                this.timer.TAC = 0xF8;
                 this.clock.bootROM_enabled = false;
                 pins.Addr = 0x100;
                 pins.MRQ = pins.RD = 1;
@@ -446,7 +450,36 @@ class GB_CPU {
                 regs.poll_IRQ = true;
                 break;
             default:
-                console.log('FAST BOOT NOT ENABLED FOR THIS VARIANT!');
+                regs.A = 0x11;
+                regs.F.Z = 1;
+                regs.SP = 0xFFFE;
+                regs.B = 0;
+                regs.C = 0;
+                regs.D = 0xFF;
+                regs.E = 0x56;
+                regs.H = 0x00;
+                regs.L = 0x0D;
+                regs.PC = 0x101;
+                regs.TCU = 0;
+                regs.IR = SM83_S_DECODE;
+                regs.IME = 0;
+                regs.IE = 0;
+                regs.IF = 1;
+                this.timer.TIMA = 0;
+                this.timer.TMA = 0;
+                this.timer.TAC = 0xF8;
+                this.clock.bootROM_enabled = false;
+                this.hdma.dest = 0xFFFF;
+                this.hdma.source = 0xFFFF;
+                this.hdma.length = 0x7F;
+                this.hdma.mode = 1;
+                this.hdma.enabled = false;
+                this.bus.mapper.VRAM_bank_offset = 8192; // 0xFF startup register value
+                this.bus.mapper.WRAM_bank_offset = 4096 * 7; // 0xFF startup register value
+                pins.Addr = 0x100;
+                pins.MRQ = pins.RD = 1;
+                pins.WR = 0;
+                regs.poll_IRQ = true;
                 break;
         }
     }

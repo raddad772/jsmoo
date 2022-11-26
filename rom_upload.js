@@ -27,10 +27,11 @@ function initDb(func) {
 const bfs = new basic_fs();
 
 async function uploadFile(fileId) {
-    let path = '/' + global_player.system_kind + '/roms/';
+    let rk = romkind_sub(global_player.system_kind)
+    let path = '/' + rk + '/roms/';
     let el = document.getElementById('fileUpload');
     do_upload_file('test', el, path)
-    await reload_roms(global_player.system_kind);
+    await reload_roms(rk);
 }
 
 async function do_upload_file(fileId, el, path) {
