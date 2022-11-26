@@ -37,6 +37,9 @@ class threaded_emulator_worker_t {
                 // {kind: emulator_messages.dump_something, what: 'sprites', imgdata: canvas.get_imgdata().data.buffer, width: 200, height: 200 }
                 this.js_wrapper.dump_sprites(e.imgdata, e.width, e.height);
                 break;
+            case 'VRAM':
+                this.js_wrapper.dump_RAM(e.what, e.addr);
+                break;
             default:
                 console.log('NO DUMP AVAILABLE?');
         }

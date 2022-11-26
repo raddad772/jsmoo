@@ -119,9 +119,6 @@ class GB_clock {
 }
 
 class GB_bus {
-    /**
-     * @param {bios_t} bios
-     */
     constructor() {
         this.cart = null;
         this.mapper = null;
@@ -138,6 +135,14 @@ class GB_bus {
         this.PPU_read = function(addr) {debugger; return 40;};
 
         this.BIOS = new Uint8Array(0);
+
+        this.WRAM_bank = 0xFF;
+        this.VRAM_bank = 0xFF;
+    }
+
+    reset() {
+        this.set_VRAM_bank(0);
+        this.set_WRAM_bank(0);
     }
 
     /**
@@ -146,6 +151,28 @@ class GB_bus {
     load_BIOS_from_RAM(inp) {
         this.BIOS = new Uint8Array(inp.byteLength);
         this.BIOS.set(new Uint8Array(inp));
+    }
+
+    set_VRAM_bank(val) {
+        this.VRAM_bank = val;
+        if (this.mapper === null) return;
+        this.mapper.generic.VRAM_bank_offset = 8192 * (val & 1);
+    }
+
+    set_WRAM_bank(val) {
+        this.WRAM_bank = val;
+        if (this.mapper === null) return;
+        val &= 0x07;
+        if (val === 0) val = 1;
+        this.mapper.generic.WRAM_bank_offset = 4096 * val;
+    }
+
+    get_VRAM_bank() {
+        return this.VRAM_bank;
+    }
+
+    get_WRAM_bank() {
+        return this.WRAM_bank;
     }
 
     CPU_read_IO(addr, val, has_effect=true) {
@@ -248,6 +275,10 @@ class GameBoy {
         current_x.innerHTML = this.clock.lx;
     }
 
+    dump_RAM(kind, addr) {
+        console.log(kind, addr);
+    }
+
     dump_sprites(imgdata, width, height) {
         this.ppu.dump_sprites(imgdata, width, height);
     }
@@ -318,6 +349,7 @@ class GameBoy {
         this.clock.reset();
         this.cpu.reset();
         this.ppu.reset();
+        this.bus.reset();
         if (this.cart.mapper !== null)
             this.cart.mapper.reset();
         if (GB_QUICK_BOOT) {

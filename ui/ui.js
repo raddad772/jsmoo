@@ -321,33 +321,7 @@ function click_dump_chrom() {
 
 function click_dump_vram() {
 	let iaddr = get_addr_from_dump_box();
-	let MDUMP_COLS = 16;
-	let NUM_BYTES = 256;
-	for (let addr = iaddr; addr < (iaddr + NUM_BYTES); addr += MDUMP_COLS) {
-		let ln = hex6(addr) + ' ';
-		for (let baddr = addr; baddr < (addr + MDUMP_COLS); baddr++) {
-			let rd;
-			switch(global_player.system_kind) {
-				case 'snes':
-					rd = hex2(global_player.system.mem_map.dispatch_read(baddr, 0, false));
-					break;
-				case 'nes':
-					rd = hex2(global_player.system.bus.PPU_read(baddr, 0, false));
-					break;
-				case 'gg':
-				case 'sms':
-					rd = hex2(global_player.system.vdp.VRAM[baddr & 0x3FFF]);
-					break;
-				case 'gb':
-					rd = hex2(global_player.system.bus.mapper.VRAM[addr & 0x1FFF]);
-					break;
-			}
-			ln += rd + ' ';
-		}
-		mconsole.addl(ln);
-		console.log(ln);
-	}
-	mconsole.draw();
+	global_player.dump_RAM('VRAM', iaddr);
 }
 
 class js_animator {

@@ -58,7 +58,6 @@ class GB_px {
 function GBC_resolve_priority(LCDC0, OAM7, BG7, bg_color, sp_color, sp_num) {
     // 1 = BG
     // 2 = OBJ
-    // 0, 1, 1, bg1, sp0/3
     if (sp_color === 0) return 1;
     if (!LCDC0) return 2;
     if ((!OAM7) && (!BG7)) return 2;
@@ -111,6 +110,7 @@ class GB_pixel_slice_fetcher {
     }
 
     trigger_window() {
+        console.log('TRIGGER WINDOW!', this.clock.ly, this.ppu.io.wy, this.ppu.io.wx);
         this.bg_FIFO.clear();
         this.bg_request_x = 0;
         this.fetch_cycle = 0;
@@ -382,7 +382,7 @@ class GB_FIFO_t {
                 }
             } else {
                 // GBC mode
-                if (sprite_num < this.items[i].cgb_priority) {
+                if (((sprite_num < this.items[i].cgb_priority) && px !== 0) || (this.items[i].pixel === 0)) {
                     this.items[i].palette = sp_palette;
                     this.items[i].sprite_priority = sp_priority;
                     this.items[i].pixel = px;
@@ -894,7 +894,7 @@ class GB_PPU {
     disable() {
         if (!this.enabled) return;
         this.enabled = false;
-        console.log('DISABLE PPU')
+        //console.log('DISABLE PPU')
         this.clock.CPU_can_VRAM = 1;
         this.clock.setCPU_can_OAM(1);
         this.io.STAT_IF = 0;
@@ -903,7 +903,7 @@ class GB_PPU {
 
     enable() {
         if (this.enabled) return;
-        console.log('ENABLE PPU');
+        //console.log('ENABLE PPU');
         this.enabled = true;
         this.advance_frame(false)
         this.clock.lx = 0;

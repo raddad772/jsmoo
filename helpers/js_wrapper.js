@@ -94,6 +94,10 @@ class js_wrapper_t {
 		this.system.dump_sprites(imgdata, width, height);
 	}
 
+	dump_RAM(kind, addr) {
+		this.system.dump_RAM(kind, addr);
+	}
+
     update_keymap(keymap) {
 		if (this.emu_wasm) {
 			let obuf = new Uint32Array(this.as_wrapper.wasm.memory.buffer)

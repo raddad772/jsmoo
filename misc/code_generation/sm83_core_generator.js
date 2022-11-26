@@ -760,10 +760,10 @@ function SM83_generate_instruction_function(indent, opcode_info) {
             break;
         case SM83_MN.DI:
             ag.addl('regs.IME = 0;');
-            ag.addl("console.log('DI!');");
+            ag.addl("//console.log('DI!');");
             break;
         case SM83_MN.EI:
-            ag.addl("console.log('EI!');");
+            ag.addl("//console.log('EI!');");
             ag.addl('regs.IME_DELAY = 2;');
             break;
         case SM83_MN.HALT:

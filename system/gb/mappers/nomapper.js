@@ -1,50 +1,24 @@
 "use strict";
 
-class GB_MAPPER_none {
+class GB_GENERIC_MEM {
     /**
-     * @param {GB_cart} cart
-     * @param {bios_t} bios
      * @param {GB_bus} bus
      * @param {GB_clock} clock
      */
     constructor(clock, bus) {
         this.clock = clock;
         this.bus = bus;
-
-        this.bus.CPU_read = this.CPU_read.bind(this);
-        this.bus.CPU_write = this.CPU_write.bind(this);
-        this.bus.PPU_read = this.PPU_read.bind(this);
-
-        this.ROM = new Uint8Array(0);
-
-        this.BIOS_big = 0;
-
-        // This changes on other mappers for banking
-        this.ROM_bank_offset = 16384;
-        // This changes on CGB
-        this.VRAM_bank_offset = 0;
-        // This changes on CGB
-        this.WRAM_bank_offset = 0x1000;
-
-        this.cartRAM = new Uint8Array(0)
-        this.WRAM = new Uint8Array(8192*8);
+        this.WRAM = new Uint8Array(8192 * 8);
         this.HRAM = new Uint8Array(128);
-        this.RAM_mask = 0;
-        this.has_RAM = false;
         this.VRAM = new Uint8Array(16384);
 
-        this.bus.mapper = this;
-        /**
-         * @type {null|GB_cart}
-         */
-        this.cart = null;
+        this.VRAM_bank_offset = 0;
+        this.WRAM_bank_offset = 0x1000;
 
-        this.BIOS = new Uint8Array(0);
+        this.BIOS_big = false;
     }
 
     reset() {
-        // This changes on other mappers for banking
-        this.ROM_bank_offset = 16384;
         // This changes on CGB
         this.VRAM_bank_offset = 0;
         // This changes on CGB
@@ -59,83 +33,76 @@ class GB_MAPPER_none {
         return this.VRAM[(addr - 0x8000) & 0x3FFF];
     }
 
+    CPU_write(addr, val) {
+        if ((addr >= 0xE000) && (addr < 0xFE00)) addr -= 0x2000;  // Mirror WRAM
+
+        if ((addr >= 0x8000) && (addr < 0xA000)) { // VRAM
+            //if (this.clock.CPU_can_VRAM) {
+                this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset] = val;
+                return true;
+            /*} else {
+                console.log('VRAM WRITE BLOCKED!', this.bus.ppu.enabled, this.bus.ppu.io.bg_window_enable, this.clock.ly, this.bus.ppu.line_cycle);
+                return true;
+            }*/
+        }
+
+        if ((addr >= 0xC000) && (addr < 0xD000)) { // WRAM lo bank
+            this.WRAM[addr & 0xFFF] = val;
+            return true;
+        }
+        if ((addr >= 0xD000) && (addr < 0xE000)) { // WRAM hi bank
+            this.WRAM[(addr & 0xFFF) + this.WRAM_bank_offset] = val;
+            return true;
+        }
+        if ((addr >= 0xFE00) && (addr < 0xFF00)) { // OAM
+            this.bus.CPU_write_OAM(addr, val);
+            return true;
+        }
+        if ((addr >= 0xFF00) && (addr < 0xFF80)) {// registers
+            this.bus.CPU_write_IO(addr, val);
+            return true;
+        }
+        if ((addr >= 0xFF80) && (addr < 0xFFFF)) { // HRAM always accessible
+            this.HRAM[addr - 0xFF80] = val;
+            return true;
+        }
+        if (addr === 0xFFFF) {  // 0xFFFF register
+            this.bus.CPU_write_IO(addr, val);
+            return true;
+        }
+        return false;
+    }
+
     CPU_read(addr, val, has_effect=true) {
+        if ((addr >= 0xE000) && (addr < 0xFE00)) addr -= 0x2000; // Mirror WRAM
         if (this.clock.bootROM_enabled) {
             if (addr < 0x100) {
-                let r = this.bus.BIOS[addr];
-                return r;
+                return this.bus.BIOS[addr];
             }
             if (this.BIOS_big && (addr >= 0x200) && (addr < 0x900))
                 return this.bus.BIOS[addr - 0x100];
         }
-        if (addr < 0x4000) // ROM lo bank
-            return this.ROM[addr];
-        if (addr < 0x8000) // ROM hi bank
-            return this.ROM[(addr & 0x3FFF) + this.ROM_bank_offset];
-        if (addr < 0xA000) { // VRAM, banked
+
+        if ((addr >= 0x8000) && (addr < 0xA000)) { // VRAM, banked
             if (this.clock.CPU_can_VRAM)
                 return this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset];
             return 0xFF;
-        } // cart RAM if it's there
-        if (addr < 0xC000) {
-            if (!this.has_RAM) return 0xFF;
-            return this.cartRAM[(addr - 0xA000) & this.RAM_mask];
         }
-        // Adjust address for mirroring
-        if ((addr > 0xE000) && (addr < 0xFE00)) addr -= 0x2000;
-        if (addr < 0xD000) // WRAM lo bank
+
+        if ((addr >= 0xC000) && (addr < 0xD000)) // WRAM lo bank
             return this.WRAM[addr & 0xFFF];
-        if (addr < 0xE000) // WRAM hi bank
+        if ((addr >= 0xD000) && (addr < 0xE000)) // WRAM hi bank
             return this.WRAM[(addr & 0xFFF) + this.WRAM_bank_offset]
-        if (addr < 0xFF00) // OAM
+        if ((addr >= 0xFE00) && (addr < 0xFF00)) // OAM
             return this.bus.CPU_read_OAM(addr, val, has_effect);
-        if (addr < 0xFF80) // registers
+        if ((addr >= 0xFF00) && (addr < 0xFF80)) // registers
             return this.bus.CPU_read_IO(addr, val, has_effect);
-        if (addr < 0xFFFF) // HRAM always accessible
+        if ((addr >= 0xFF80) && (addr < 0xFFFF)) // HRAM always accessible
             return this.HRAM[addr - 0xFF80];
-        return this.bus.CPU_read_IO(addr, val, has_effect); // 0xFFFF register
-    }
+        if (addr === 0xFFFF)
+            return this.bus.CPU_read_IO(0xFFFF, val, has_effect); // 0xFFFF register
 
-    CPU_write(addr, val) {
-        if (addr < 0x8000) // ROMs
-            return;
-        if (addr < 0xA000) { // VRAM
-            if (this.clock.CPU_can_VRAM) {
-                this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset] = val;
-            }
-            else {
-                console.log('VRAM WRITE BLOCKED!', this.bus.ppu.enabled, this.bus.ppu.io.bg_window_enable, this.clock.ly, this.bus.ppu.line_cycle);
-                //if (this.clock.ly === 0) dbg.break();
-                //console.log('YAR.')
-                //this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset] = val;
-            }
-            return;
-        }
-        if (addr < 0xC000) { // cart RAM
-            if (!this.has_RAM) return;
-            this.cartRAM[(addr - 0xA000) & this.RAM_mask] = val;
-            return;
-        }
-        // adjust address for mirroring
-        if ((addr > 0xE000) && (addr < 0xFE00)) addr -= 0x2000;
-
-        if (addr < 0xD000) { // WRAM lo bank
-            this.WRAM[addr & 0xFFF] = val;
-            return;
-        }
-        if (addr < 0xE000) { // WRAM hi bank
-            this.WRAM[(addr & 0xFFF) + this.WRAM_bank_offset] = val;
-            return;
-        }
-        if (addr < 0xFF00) // OAM
-            return this.bus.CPU_write_OAM(addr, val);
-        if (addr < 0xFF80) // registers
-            return this.bus.CPU_write_IO(addr, val);
-        if (addr < 0xFFFF) { // HRAM always accessible
-            this.HRAM[addr - 0xFF80] = val;
-            return;
-        }
-        this.bus.CPU_write_IO(addr, val); // 0xFFFF register
+        return null;
     }
 
     /**
@@ -144,8 +111,83 @@ class GB_MAPPER_none {
      */
     set_cart(cart, BIOS) {
         this.cart = cart;
-        this.BIOS = BIOS;
-        this.BIOS_big = this.BIOS.byteLength > 256;
+        this.BIOS_big = this.bus.BIOS.byteLength > 256;
+    }
+}
+
+class GB_MAPPER_none {
+    /**
+     * @param {GB_bus} bus
+     * @param {GB_clock} clock
+     */
+    constructor(clock, bus) {
+        this.clock = clock;
+        this.bus = bus;
+
+        this.bus.CPU_read = this.CPU_read.bind(this);
+        this.bus.CPU_write = this.CPU_write.bind(this);
+
+        this.ROM = new Uint8Array(0);
+
+        this.BIOS_big = 0;
+
+        // This changes on other mappers for banking
+        this.ROM_bank_offset = 16384;
+
+        this.generic = new GB_GENERIC_MEM(clock, bus);
+        this.bus.PPU_read = this.generic.PPU_read.bind(this.generic);
+
+        this.cartRAM = new Uint8Array(0)
+        this.RAM_mask = 0;
+        this.has_RAM = false;
+
+        this.bus.mapper = this;
+        /**
+         * @type {null|GB_cart}
+         */
+        this.cart = null;
+    }
+
+    reset() {
+        // This changes on other mappers for banking
+        this.ROM_bank_offset = 16384;
+        this.generic.reset()
+    }
+
+    CPU_read(addr, val, has_effect=true) {
+        let f = this.generic.CPU_read(addr, val, has_effect);
+        if (f === null) {
+            if (addr < 0x4000) // ROM lo bank
+                return this.ROM[addr];
+            if (addr < 0x8000) // ROM hi bank
+                return this.ROM[(addr & 0x3FFF) + this.ROM_bank_offset];
+            if ((addr >= 0xA000) && (addr < 0xC000)) { // // cart RAM if it's there
+                if (!this.has_RAM) return 0xFF;
+                return this.cartRAM[(addr - 0xA000) & this.RAM_mask];
+            }
+            debugger;
+            return 0xFF;
+        }
+        return f;
+    }
+
+    CPU_write(addr, val) {
+        if (!this.generic.CPU_write(addr, val)) {
+           if ((addr >= 0xA000) && (addr < 0xC000)) { // cart RAM
+                if (!this.has_RAM) return;
+                this.cartRAM[(addr - 0xA000) & this.RAM_mask] = val;
+                return;
+            }
+        }
+    }
+
+    /**
+     * @param {GB_cart} cart
+     * @param {Uint8Array} BIOS
+     */
+    set_cart(cart, BIOS) {
+        this.cart = cart;
+        this.generic.set_cart(cart, BIOS);
         this.ROM = new Uint8Array(cart.header.ROM_size);
         this.ROM.set(cart.ROM);
         this.cartRAM = new Uint8Array(cart.header.RAM_size);
