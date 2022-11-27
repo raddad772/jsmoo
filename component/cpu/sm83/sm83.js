@@ -75,7 +75,7 @@ class SM83_regs_t {
     }
 
     stoppable() {
-        return false;
+        return true;
     }
 }
 

@@ -451,7 +451,11 @@ export class GB_PPU {
     }
 
     bg_tilemap_addr_nowindow(lx: u32): u32 {
-        return (0x9800 | (this.io.bg_tile_map_base << 10) |
+        // LCDC3 enabled and X coord NOT inside window, 9c00 used
+        // OR
+        // LCDC6 enabled and inside window, 9C00 used
+
+        return (0x9800 | ((this.io.bg_tile_map_base | this.io.bg_window_tile_data_base) << 10) |
             ((((this.clock.ly + this.io.SCY) & 0xFF) >>> 3) << 5) |
             (((lx) & 0xFF) >>> 3)
         );
