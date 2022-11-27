@@ -855,8 +855,6 @@ class GB_PPU {
             case 0xFF43: // SCX
                 return this.io.SCX;
             case 0xFF44: // LY
-                /*console.log('READ FF44!', this.clock.ly);
-                if (this.clock.ly === 0x90) dbg.break();*/
                 let ly = this.clock.ly;
                 if ((ly === 153) && (this.line_cycle > 1)) ly = 0;
                 return ly;
