@@ -42,7 +42,6 @@ class GB_MAPPER_MBC3 {
             RTC_start: Date.now()
         }
         this.RAM_bank_offset = 0;
-        this.ROM_bank_offset_lo = 0;
         this.num_ROM_banks = 0;
         this.num_RAM_banks = 0;
     }
@@ -55,7 +54,6 @@ class GB_MAPPER_MBC3 {
         this.regs.ext_RAM_enable = false;
         this.regs.ROM_bank_hi = 1;
         this.regs.ROM_bank_lo = 0;
-        this.ROM_bank_offset_lo = 0;
         this.regs.RAM_bank = 0;
         this.RAM_bank_offset = 0;
         this.regs.last_RTC_latch_write = 0xFF;
@@ -91,16 +89,17 @@ class GB_MAPPER_MBC3 {
         let f = this.generic.CPU_read(addr, val, has_effect);
         if (f === null) {
             if (addr < 0x4000) // ROM lo bank
-                return this.ROM[(addr & 0x3FFF) + this.ROM_bank_offset_lo];
+                return this.ROM[addr & 0x3FFF];
             if (addr < 0x8000) // ROM hi bank
                 return this.ROM[(addr & 0x3FFF) + this.ROM_bank_offset_hi];
             if ((addr >= 0xA000) && (addr < 0xC000)) { // cartRAM if there
-                if (!this.has_RAM) return 0xFF;
-                if (this.regs.RAM_bank < 4)
+                if (!this.regs.ext_RAM_enable) return 0xFF;
+                if (this.regs.RAM_bank < 4) {
+                    if (!this.has_RAM) return 0xFF;
                     return this.cartRAM[(addr & 0x1FFF) + this.RAM_bank_offset];
-                else if ((this.regs.RAM_bank >= 8) && (this.regs.RAM_bank <= 0x0C) && this.cart.header.timer_present) {
-                    return this.regs.last_RTC_latch_write[this.regs.RAM_bank - 8];
                 }
+                if ((this.regs.RAM_bank >= 8) && (this.regs.RAM_bank <= 0x0C) && this.cart.header.timer_present)
+                    return this.regs.last_RTC_latch_write[this.regs.RAM_bank - 8];
                 return 0xFF;
             }
             debugger;
@@ -111,28 +110,28 @@ class GB_MAPPER_MBC3 {
 
     CPU_write(addr, val) {
         if (!this.generic.CPU_write(addr, val)) {
-            if (addr < 0x8000) { // ROMs {
-                switch (addr & 0xE000) {
-                    case 0x0000: // RAM and timer enable, write-only
-                        // A on, 0 off
-                        this.regs.ext_RAM_enable = val === 0x0A;
-                        return;
-                    case 0x2000: // 16KB hi ROM bank number, 7 bits. 0 = 1, otherwise it's normal
-                        val &= 0xFF;
-                        if (val === 0) val = 1;
-                        this.regs.ROM_bank_hi = val;
-                        this.remap();
-                        return;
-                    case 0x4000: // RAM bank, 0-3. 8-C maps RTC in the same range
-                        this.regs.RAM_bank = val & 0x0F;
-                        this.remap();
-                        return;
-                    case 0x6000: // Write 0 then 1 to latch RTC clock data, no effect if no clock
-                        if ((this.regs.last_RTC_latch_write === 0) && (val === 1))
-                            this.latch_RTC();
-                        this.regs.last_RTC_latch_write = val;
-                        return;
-                }
+            if (addr < 0x2000) { // RAM and timer enable, write-only
+                this.regs.ext_RAM_enable = (val & 0x0F) === 0x0A;
+                return;
+            }
+            if ((addr >= 0x2000) && (addr < 0x4000)) {
+                // 16KB hi ROM bank number, 7 bits. 0 = 1, otherwise it's normal
+                val &= 0x7F;
+                if (val === 0) val = 1;
+                this.regs.ROM_bank_hi = val;
+                this.remap();
+                return;
+            }
+            if ((addr >= 0x4000) && (addr < 0x6000)) { // RAM bank, 0-3. 8-C maps RTC in the same range
+                this.regs.RAM_bank = val;
+                this.remap();
+                return;
+            }
+            if ((addr >= 0x6000) && (addr < 0x8000)) { // // Write 0 then 1 to latch RTC clock data, no effect if no clock
+                if ((this.regs.last_RTC_latch_write === 0) && (val === 1))
+                    this.latch_RTC();
+                this.regs.last_RTC_latch_write = val;
+                return;
             }
 
             if ((addr >= 0xA000) && (addr < 0xC000)) { // cart RAM

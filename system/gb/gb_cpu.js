@@ -317,7 +317,6 @@ class GB_CPU {
                 return;
             case 0xFFFF: // IE: Interrupt Enable
                 //console.log('WRITE IE', val & 0x1F);
-                if ((val & 0x1F) === 30) dbg.break();
                 this.cpu.regs.IE = val & 0x1F;
                 return;
         }

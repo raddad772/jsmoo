@@ -233,7 +233,6 @@ class SM83_t {
                 }
                 if (this.regs.IV > 0) {
                     if (is_halt && (this.regs.IME === 0)) {
-                        console.log('HLT EJECT!');
                         this.regs.HLT = 0;
                         this.regs.TCU++;
                     }
@@ -266,6 +265,7 @@ class SM83_t {
             this.current_instruction.exec_func(this.regs, this.pins);
         }
         if (this.regs.PC === SM83_PC_BRK) {
+            console.log('PC BRK!');
             SM83_PC_BRK = -1;
             dbg.break();
         }
