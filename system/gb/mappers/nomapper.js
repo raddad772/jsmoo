@@ -37,13 +37,13 @@ class GB_GENERIC_MEM {
         if ((addr >= 0xE000) && (addr < 0xFE00)) addr -= 0x2000;  // Mirror WRAM
 
         if ((addr >= 0x8000) && (addr < 0xA000)) { // VRAM
-            //if (this.clock.CPU_can_VRAM) {
+            if (this.clock.CPU_can_VRAM) {
                 this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset] = val;
                 return true;
-            /*} else {
+            } else {
                 console.log('VRAM WRITE BLOCKED!', this.bus.ppu.enabled, this.bus.ppu.io.bg_window_enable, this.clock.ly, this.bus.ppu.line_cycle);
                 return true;
-            }*/
+            }
         }
 
         if ((addr >= 0xC000) && (addr < 0xD000)) { // WRAM lo bank

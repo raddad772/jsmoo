@@ -327,7 +327,7 @@ const sm83_decoded_opcodes = Object.freeze({
         switch(regs.TCU) {
             case 1:
                 if (!regs.stoppable()) {break;}
-                console.log('STP!');
+                console.log('STP!!!');
                 regs.STP = 1;
                 pins.RD = 0; pins.MRQ = 0;
                 break;
@@ -336,6 +336,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 // Following is auto-generated code for instruction finish
                 break;
             case 3: // cleanup_custom
+                console.log('BREAKIN OUT!');
                 pins.Addr = regs.PC;
                 regs.PC = (regs.PC + 1) & 0xFFFF;
                 regs.TCU = 0;

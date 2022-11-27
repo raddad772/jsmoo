@@ -134,7 +134,8 @@ class GB_CPU {
                 action_select: 0,
                 direction_select: 0
             },
-            speed_switch_prepare: 0
+            speed_switch_prepare: 0,
+            speed_switch_cnt: -1
         }
 
         this.dma = {
@@ -256,6 +257,7 @@ class GB_CPU {
                 break;
             case 0xFF4D: // Speed switch enable
                 if (!this.clock.cgb_enable) return;
+                console.log('PREPARE SPEED SWITCH');
                 this.io.speed_switch_prepare = val & 1;
                 break;
             case 0xFF4F: // VRAM bank
@@ -555,10 +557,34 @@ class GB_CPU {
         }
     }
 
+    switch_speed() {
+        if (!this.clock.cgb_enable) return;
+        if (this.clock.timing.cpu_divisor === 4) {
+            console.log('TURBO ON');
+            this.clock.timing.cpu_divisor = 2;
+        }
+        else {
+            console.log('TURBO OFF');
+            this.clock.timing.cpu_divisor = 4;
+        }
+    }
+
     cycle() {
         if (this.hdma_eval()) {
             this.timer.inc();
             return;
+        }
+
+        if ((this.cpu.regs.STP) && (this.io.speed_switch_prepare)) {
+            if (this.io.speed_switch_cnt < 0) {
+                this.io.speed_switch_cnt = 2050;
+            }
+            this.io.speed_switch_cnt--;
+            if (this.io.speed_switch_cnt === 0) {
+                this.switch_speed();
+                this.cpu.regs.TCU++;
+                this.cpu.regs.STP = 0;
+            }
         }
 
         // Service CPU reads and writes
