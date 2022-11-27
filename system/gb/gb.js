@@ -254,7 +254,7 @@ class GameBoy {
                 break;
         }
         d.standard = MD_STANDARD.LCD;
-        d.fps = 240;
+        d.fps = 60;
         d.input_types = [INPUT_TYPES.GB_CONTROLLER];
         d.x_resolution = 160;
         d.y_resolution = 144;

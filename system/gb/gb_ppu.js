@@ -110,7 +110,7 @@ class GB_pixel_slice_fetcher {
     }
 
     trigger_window() {
-        //console.log('TRIGGER WINDOW!', this.clock.ly, this.ppu.io.wy, this.ppu.io.wx);
+        console.log('TRIGGER WINDOW!', this.clock.ly, this.ppu.io.wy, this.ppu.io.wx);
         this.bg_FIFO.clear();
         this.bg_request_x = 0;
         this.fetch_cycle = 0;
@@ -751,7 +751,6 @@ class GB_PPU {
                 this.io.window_tile_map_base = (val & 0x40) >>> 6;
                 this.io.window_enable = (val & 0x20) >>> 5;
                 this.io.bg_window_tile_data_base = (val & 0x10) >>> 4;
-                console.log('BG WINDOW TILE BASE', this.io.bg_window_tile_data_base);
                 this.io.bg_tile_map_base = (val & 8) >>> 3;
                 this.io.sprites_big = (val & 4) >>> 2;
                 this.io.obj_enable = (val & 2) >>> 1;
@@ -1060,12 +1059,13 @@ class GB_PPU {
     advance_frame(update_buffer=true) {
         this.clock.ly = 0;
         this.clock.wly = 0;
+        this.is_window_line = this.clock.ly === this.io.wy;
         if (this.enabled) {
+            this.eval_lyc();
             this.display_update = true;
         }
         this.clock.frames_since_restart++;
         this.clock.master_frame++;
-        this.is_window_line = false;
         if (update_buffer) {
             this.last_used_buffer = this.cur_output_num;
             this.cur_output_num ^= 1;
