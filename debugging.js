@@ -337,14 +337,14 @@ class debugger_t {
     }
 
     enable_tracing() {
-        console.log('ENABLE!');
+        //console.log('ENABLE!');
         this.tracing = true;
         this.cpu_refresh_tracing();
     }
 
     disable_tracing() {
         this.tracing = false;
-        console.log('DISABLE!');
+        //console.log('DISABLE!');
         this.cpu_refresh_tracing();
     }
 
