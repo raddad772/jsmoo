@@ -612,10 +612,6 @@ class SMSGG_VDP {
     }
 
     write_data(val) {
-        //if (val !== 0) console.log('WRITE!', this.io.code, hex4(this.io.address), hex0x2(val));
-        /*if (this.io.address === 0x3FFF) {
-            dbg.break();
-        }*/
         this.latch.control = 0;
         this.latch.vram = val;
         if (this.io.code <= 2) {
