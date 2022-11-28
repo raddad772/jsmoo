@@ -123,7 +123,7 @@ class GB_MAPPER_MBC3 {
                 return;
             }
             if ((addr >= 0x4000) && (addr < 0x6000)) { // RAM bank, 0-3. 8-C maps RTC in the same range
-                this.regs.RAM_bank = val;
+                this.regs.RAM_bank = val & 0x0F;
                 this.remap();
                 return;
             }
