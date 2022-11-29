@@ -127,6 +127,7 @@ class GB_MAPPER_MBC5 {
         this.ROM.set(cart.ROM);
         this.cartRAM = new Uint8Array(cart.header.RAM_size);
         this.num_RAM_banks = (cart.header.RAM_size / 8192);
+        console.log('CART RAM', this.num_RAM_banks);
         this.RAM_mask = cart.header.RAM_mask;
         this.has_RAM = this.cartRAM.byteLength > 0;
         this.num_ROM_banks = this.ROM.byteLength / 16384;
