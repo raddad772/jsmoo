@@ -110,7 +110,6 @@ class GB_pixel_slice_fetcher {
     }
 
     trigger_window() {
-        console.log('TRIGGER WINDOW!', this.clock.ly, this.ppu.io.wy, this.ppu.io.wx);
         this.bg_FIFO.clear();
         this.bg_request_x = 0;
         this.fetch_cycle = 0;

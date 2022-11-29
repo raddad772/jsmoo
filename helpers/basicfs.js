@@ -78,6 +78,7 @@ class basic_fs {
 
     async file_exists(path) {
         let allfiles = await this._get_files();
+        console.log('ALLFILES!', allfiles);
         return allfiles.indexOf(path) !== -1;
     }
 
