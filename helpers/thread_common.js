@@ -32,6 +32,8 @@ const emulator_messages = Object.freeze({
     step2_done: 1002,
     step3_done: 1003,
 
+    dbg_break: 1048,
+
     request_savestate: 500,
     send_loadstate: 502,
 
@@ -68,9 +70,9 @@ const GENERICZ80_STR = 'genericz80'
 //const DEFAULT_SYSTEM = SPECTRUM_STR;
 //const DEFAULT_SYSTEM = SNES_STR;
 //const DEFAULT_SYSTEM = SMS_STR;
-//const DEFAULT_SYSTEM = GB_STR;
+const DEFAULT_SYSTEM = GB_STR;
 //const DEFAULT_SYSTEM = GB_AS_STR;
-const DEFAULT_SYSTEM = GBC_STR;
+//const DEFAULT_SYSTEM = GBC_STR;
 //const DEFAULT_SYSTEM = GG_STR;
 //const DEFAULT_SYSTEM = NES_STR;
 //const DEFAULT_SYSTEM = NES_AS_STR;

@@ -862,7 +862,7 @@ class GB_PPU {
             case 0xFF4A: // window Y
                 return this.io.wy;
             case 0xFF4B: // window x + 7
-                return this.io.wx;
+                return (this.io.wx-1);
             case 0xFF47: // BGP
                 //if (!this.clock.CPU_can_VRAM) return 0xFF;
                 return this.bg_palette[0] | (this.bg_palette[1] << 2) | (this.bg_palette[2] << 4) | (this.bg_palette[3] << 6);

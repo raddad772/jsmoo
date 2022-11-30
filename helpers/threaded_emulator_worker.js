@@ -174,6 +174,10 @@ class threaded_emulator_worker_t {
         postMessage({kind: emulator_messages.specs, specs: specs})
     }
 
+    send_debug_break() {
+        postMessage({kind: emulator_messages.dbg_break});
+    }
+
     send_textconsole_message(msg) {
         postMessage({kind: emulator_messages.text_transmit, data: msg})
     }

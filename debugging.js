@@ -413,6 +413,7 @@ class debugger_t {
         console.log('DOING BREAK');
         this.state = DBG_STATES.PAUSE;
         this.do_break = true;
+        emulator_worker.send_debug_break();
         if (this.tracing) {
             this.traces.draw(dconsole);
         }

@@ -457,6 +457,9 @@ class global_player_t {
 	on_player_message(e) {
 		e = e.data;
 		switch(e.kind) {
+			case emulator_messages.dbg_break:
+				this.pause();
+				break;
 			case emulator_messages.text_transmit:
 				this.parse_text_transmitted(e.data);
 				break;

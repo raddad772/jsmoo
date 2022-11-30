@@ -602,21 +602,3 @@ class ARMpins_t {
     }
 }
 
-class ARM_proc_t {
-    constructor(variant) {
-        this.variant = variant;
-        this.regs = new ARMregsbank_t();
-        this.pins = new ARMpins_t();
-    }
-
-    reset() {
-        this.regs.set_regs_mode(ARM_modes.SVC);
-        this.regs.CPSR.I = this.regs.CPSR.F = 1;
-        this.set_ARM_mode();
-        this.regs.PC = 0;
-
-    }
-}
-
-
-
