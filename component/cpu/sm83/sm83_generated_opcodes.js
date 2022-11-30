@@ -4337,6 +4337,7 @@ const sm83_decoded_opcodes = Object.freeze({
                 regs.TR = pins.D;
                 regs.TA |= (regs.TR << 8);
                 regs.PC = regs.TA;
+                //console.log('RETI setting IME 1')
                 regs.IME = 1;
                 // Following is auto-generated code for instruction finish
                 pins.RD = 0; pins.MRQ = 0;
@@ -5100,7 +5101,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //EI
         switch(regs.TCU) {
             case 1: // cleanup_custom
-                //console.log('EI!');
+                //console.log('EI! setting IME_DELAY');
                 regs.IME_DELAY = 2;
                 // Following is auto-generated code for instruction finish
                 pins.Addr = regs.PC;
@@ -5196,6 +5197,7 @@ const sm83_decoded_opcodes = Object.freeze({
         function(regs, pins) { //S_IRQ
         switch(regs.TCU) {
             case 1:
+                //console.log('IRQ SETTING IME 0');
                 regs.IME = 0;
                 pins.RD = 0; pins.MRQ = 0;
                 break;

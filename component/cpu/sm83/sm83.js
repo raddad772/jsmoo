@@ -179,6 +179,7 @@ class SM83_t {
             case 2:
                 this.regs.IR = this.pins.D;
                 this.current_instruction = sm83_decoded_opcodes[SM83_prefix_to_codemap[0xCB] + this.regs.IR];
+                this.regs.IR |= 0xCB00;
                 if (this.trace_on) {
                     dbg.traces.add(TRACERS.SM83, this.trace_cycles, this.trace_format(SM83_disassemble((this.pins.Addr-1) & 0xFFFF, this.trace_peek), this.pins.Addr));
                 }
@@ -195,6 +196,7 @@ class SM83_t {
         if (this.regs.IME_DELAY > 0) {
             this.regs.IME_DELAY--;
             if (this.regs.IME_DELAY <= 0) {
+                //console.log('IME delay setting IME 1', this.regs.IME_DELAY);
                 this.regs.IME = 1;
             }
         }

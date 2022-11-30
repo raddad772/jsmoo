@@ -60,6 +60,7 @@ class threaded_emulator_worker_t {
                 return;
             case emulator_messages.frame_requested:
                 //console.log('ET: running frame...');
+                dbg.do_break = false;
                 this.output_input(e.keymap);
                 this.run_frame();
                 return;
