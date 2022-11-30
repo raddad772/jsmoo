@@ -590,6 +590,7 @@ class GB_CPU {
         if (this.cpu.pins.MRQ) {
             if (this.cpu.pins.RD) {
                 this.cpu.pins.D = this.bus.mapper.CPU_read(this.cpu.pins.Addr, 0xCC);
+                //if (this.cpu.pins.Addr === 0xC030) dbg.break();
                 if (this.tracing) {
                     dbg.traces.add(TRACERS.SM83, this.cpu.trace_cycles, trace_format_read('SM83', SM83_COLOR, this.cpu.trace_cycles, this.cpu.pins.Addr, this.cpu.pins.D));
                 }
