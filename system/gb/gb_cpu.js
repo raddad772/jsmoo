@@ -294,14 +294,22 @@ class GB_CPU {
             case 0xFF55: // HDMA5 transfer stuff!
                 if (!this.clock.cgb_enable) return;
                 this.hdma.mode = (val & 0x80) >>> 7;
-                this.hdma.length = (val & 0x7F) + 1; // up to 128 blocks of 16 bytes.
-                this.hdma.enabled = true;
+                this.hdma.length = (val + 1) & 0x7F; // up to 128 blocks of 16 bytes.
+                if (!this.hdma.enabled) {
+                    this.hdma.enabled = true;
+                    if (this.hdma.mode === 0) this.hdma.active = true;
+                } else {
+                    if ((val & 0x80) === 0) {
+                        console.log('HDMA TRANSFER CANCEL!');
+                        this.hdma.enabled = false;
+                        this.hdma.active = false;
+                    }
+                }
                 this.hdma.dest_index = (this.hdma.dest & 0x1FF0) | 0x8000;
                 this.hdma.source_index = this.hdma.source & 0xFFF0;
                 this.hdma.last_ly = 250;
 
                 this.hdma.til_next_byte = this.clock.turbo ? 2 : 1; // If we're at turbo-speed, we need to wait 2 M-cycles in between transfer. If not, 1.
-                if (this.hdma.mode === 0) this.hdma.active = true;
                 return;
             case 0xFF6C:
                 if (!this.clock.cgb_enable) return;
