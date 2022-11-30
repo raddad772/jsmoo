@@ -30,7 +30,6 @@ async function uploadFile(fileId) {
     let rk = romkind_sub(global_player.system_kind)
     let path = '/' + rk + '/roms/';
     let el = document.getElementById('fileUpload');
-    console.log('DO UPLOAD FILE!', el, path);
     await do_upload_file('test', el, path)
     await reload_roms(rk);
 }
@@ -50,21 +49,14 @@ async function do_upload_file(fileId, el, path) {
                 data: bits
             };
             path = path + file_name;
-            console.log('NEW PATH', path);
             if (await bfs.file_exists(path)) {
                 alert('File already exists!');
                 return;
             }
 
-            console.log('ABOUT TO BFS WRITE')
-
             await bfs.write_file(path, e.target.result);
-            console.log('BFS WROTE!');
         };
         await reader.readAsBinaryString(fileIn.files[0])
-    }
-    else {
-        console.log('WHAT?');
     }
 }
 

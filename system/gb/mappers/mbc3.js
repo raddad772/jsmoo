@@ -33,7 +33,7 @@ class GB_MAPPER_MBC3 {
         this.cart = null;
 
         this.regs = {
-            ext_RAM_enable: false,
+            ext_RAM_enable: true,
             ROM_bank_lo: 0,
             ROM_bank_hi: 1,
             RAM_bank: 0,
@@ -51,7 +51,7 @@ class GB_MAPPER_MBC3 {
         this.ROM_bank_offset_hi = 16384;
         this.generic.reset();
 
-        this.regs.ext_RAM_enable = false;
+        this.regs.ext_RAM_enable = true;
         this.regs.ROM_bank_hi = 1;
         this.regs.ROM_bank_lo = 0;
         this.regs.RAM_bank = 0;
