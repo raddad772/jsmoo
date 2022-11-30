@@ -877,13 +877,13 @@ class GB_PPU {
                 return this.io.cram_bg_addr | (this.io.cram_bg_increment << 7);
             case 0xFF69: // BG pal read
                 if (!this.clock.cgb_enable) return 0xFF;
-                return this.io.bg_CRAM[this.io.cram_bg_addr];
+                return this.bg_CRAM[this.io.cram_bg_addr];
             case 0xFF6A: // OPS/OPI
                 if (!this.clock.cgb_enable) return 0xFF;
                 return this.io.cram_obj_addr | (this.io.cram_obj_increment << 7);
             case 0xFF6B: // OBJ pal read
                 if (!this.clock.cgb_enable) return 0xFF;
-                return this.io.obj_CRAM[this.io.cram_obj_addr];
+                return this.obj_CRAM[this.io.cram_obj_addr];
         }
         return 0xFF;
     }
