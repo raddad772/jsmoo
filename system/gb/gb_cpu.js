@@ -561,10 +561,12 @@ class GB_CPU {
         if (this.clock.timing.cpu_divisor === 4) {
             console.log('TURBO ON');
             this.clock.timing.cpu_divisor = 2;
+            this.clock.turbo = true;
         }
         else {
             console.log('TURBO OFF');
             this.clock.timing.cpu_divisor = 4;
+            this.clock.turbo = false;
         }
     }
 
