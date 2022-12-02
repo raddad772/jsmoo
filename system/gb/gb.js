@@ -298,6 +298,7 @@ class GameBoy {
     catch_up() {}
 
     step_master(howmany) {
+        this.cycles_left = 0;
         this.run_cycles(howmany);
     }
 
@@ -333,7 +334,7 @@ class GameBoy {
         while (this.cycles_left > 0) {
             this.clock.cycles_left_this_frame--;
             if (this.clock.cycles_left_this_frame <= 0) this.clock.cycles_left_this_frame += GB_CYCLES_PER_FRAME;
-            if ((this.clock.master_clock & 3) === 0) {
+            if ((this.clock.turbo && ((this.clock.master_clock & 1) === 0)) || ((this.clock.master_clock & 3) === 0)) {
                 this.cpu.cycle();
                 this.clock.cpu_frame_cycle++;
                 this.clock.cpu_master_clock += cpu_step;

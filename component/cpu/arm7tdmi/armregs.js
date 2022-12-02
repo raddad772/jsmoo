@@ -180,6 +180,7 @@ class ARMregsbank_t {
         // Temporary variables for functions
         this.rn = 0;
         this.rd = 0;
+        this.rm = 0;
         this.word = 0;
         this.addr = 0;
         this.mode = 0;

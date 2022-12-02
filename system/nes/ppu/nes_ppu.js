@@ -562,9 +562,9 @@ class NES_ppu {
                 this.io.v = (this.io.v & 0x041F) | (this.io.t & 0x7BE0);
             }
         }
-        if (this.io.sprite_enable && (this.line_cycle >= 257)) {
+        /*if (this.io.sprite_enable && (this.line_cycle >= 257)) {
             this.oam_evaluate_slow();
-        }
+        }*/
     }
 
     perform_bg_fetches() { // Only called from prerender and visible scanlines

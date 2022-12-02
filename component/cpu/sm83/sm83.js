@@ -219,7 +219,7 @@ class SM83_t {
                     //if (this.bus.ppu.enabled)
                     imask = 0xFD;
                     this.regs.IV = 0x48;
-                    //console.log('STAT IRQ');
+                    //console.log('STAT IRQ!', this.clock.master_frame, this.clock.ly);
                 } else if (mask & 4) { // Timer interrupt
                     imask = 0xFB;
                     this.regs.IV = 0x50;

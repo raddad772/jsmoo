@@ -138,7 +138,7 @@ function test_it_automated(cpu, tests) {
     for (let i in tests) {
     //if (true) {
     //for (let i = 0; i < 300; i++) {
-        //console.log(fmt_test(tests[i]));
+        //console.log(JAMESfmt_test(tests[i]));
         let initial = tests[i].initial;
         let final = tests[i].final;
         cpu.regs.PC = (initial.pc+1) & 0xFFFF;

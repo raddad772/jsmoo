@@ -247,8 +247,7 @@ class GB_CPU {
                     for (let i = 0; i < 160; i++) {
                         this.bus.CPU_write_OAM(0xFE00 | i, this.bus.DMA_read(this.dma.high | i, 0));
                     }
-                }
-                else {
+                } else {
                     this.dma.cycles_til = 2;
                     ////this.dma.running = 1;
                     this.dma.new_high = (val << 8);
@@ -293,6 +292,14 @@ class GB_CPU {
                 return;
             case 0xFF55: // HDMA5 transfer stuff!
                 if (!this.clock.cgb_enable) return;
+                console.log('HDMA5 TRANSFER START', this.clock.trace_cycles, hex2(val));
+                // if LCD ON...
+                if (this.bus.ppu.enabled) {
+                    this.hdma.notify_hblank = (this.clock.ppu_mode === 0);
+                } else {// if LCD OFF... {
+                    this.hdma.notify_hblank = true;
+                    console.log('LCD OFF SO NOTIFY HBLANK!');
+                }
                 this.hdma.mode = (val & 0x80) >>> 7;
                 this.hdma.length = (val + 1) & 0x7F; // up to 128 blocks of 16 bytes.
                 if (!this.hdma.enabled) {
@@ -497,14 +504,15 @@ class GB_CPU {
     hdma_run() {
         let hdma = this.hdma;
         // If we're enabled and in the right lines
-        if ((this.clock.ppu_mode === GB_PPU_modes.HBLANK) && (this.clock.ly < 144)) {
+        if (((this.clock.ppu_mode === GB_PPU_modes.HBLANK) && (this.clock.ly < 144)) || (!this.bus.ppu.enabled)) {
             // If we're in the middle of a 16-byte block, or we have been notified of HBLANK
-            if (((hdma.dest_index & 0xFF) !== 0) || (hdma.notify_hblank)) {
+            if (((hdma.dest_index & 0x0F) !== 0) || (hdma.notify_hblank)) {
                 hdma.til_next_byte--;
                 if (hdma.til_next_byte < 1) {
                     hdma.notify_hblank = false;
-                    console.log('RUN HDMA!', hex4(hdma.dest_index), hex4(hdma.source_index));
-                    this.bus.CPU_write(hdma.dest_index, this.bus.CPU_read(hdma.source_index, 0xFF));
+                    let r = this.bus.CPU_read(hdma.source_index, 0xFF);
+                    //console.log('RUN HDMA!', hex4(hdma.dest_index), hex4(hdma.source_index), hex2(r), this.clock.trace_cycles);
+                    this.bus.CPU_write(hdma.dest_index, r);
                     hdma.dest_index = ((hdma.dest_index + 1) & 0x1FFF) | 0x8000;
                     hdma.source_index = (hdma.source_index + 1) & 0xFFFF;
                     // A 16-byte block has finished
@@ -579,6 +587,7 @@ class GB_CPU {
     }
 
     cycle() {
+        this.clock.trace_cycles++;
         if (this.hdma_eval()) {
             this.timer.inc();
             return;

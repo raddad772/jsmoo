@@ -62,7 +62,7 @@ let ui_el = {
 
 
 //window.onload = test_pathstuff
-window.onload = init_ui;
+//window.onload = init_ui;
 
 async function init_fs() {
 }
@@ -584,7 +584,7 @@ async function init_ui() {
 	input_config = new input_config_t();
 	await input_config.load();
 	await system_selected(DEFAULT_SYSTEM);
-	after_js();
+	await after_js();
 }
 
 function open_tab_side(tablname, tabgrp, evt, tab_name) {
