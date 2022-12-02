@@ -413,6 +413,104 @@ function ARM_armLoadImmediate(regs, pins, immediate, half, d, n, writeback, up, 
     }
 }
 
+/**
+ * @param {ARMregsbank_t} regs
+ * @param {ARMpins_t} pins
+ * @param {number} m
+ * @param {number} half
+ * @param {number} d
+ * @param {number} n
+ * @param {number} writeback
+ * @param {number} up
+ * @param {number} pre
+ */
+function ARM_armLoadRegister(regs, pins, m, half, d, n, writeback, up, pre) {
+    switch(regs.TCU) {
+        case 1:
+            regs.rn = regs.cur[n];
+            regs.rm = regs.cur[m];
+            regs.rd = regs.cur[d];
+            if (pre === 1) regs.rn = (up ? (regs.rn + regs.rm) : (regs.rn - regs.rm)) & 0xFFFFFFFF;
+            regs.addr = regs.rn;
+            regs.mode = (half ? ARMe.Half : ARMe.Byte) | ARMe.Nonsequential | ARMe.Signed;
+            regs.pipe.nonsequential = true;
+            pins.Addr = regs.addr;
+            pins.get_hint = regs.mode;
+            regs.reenter = 2;
+            break;
+        case 2:
+            regs.reenter = 0;
+            regs.word = pins.D;
+            if (regs.mode & ARMe.Half) {
+                regs.addr &= 1;
+                regs.word = (regs.mode & ARMe.Signed) ? mksigned16(word) : mkunsigned16(word);
+            }
+            if (regs.mode & ARMe.Byte) {
+                regs.addr = 0;
+                regs.word = (regs.mode & ARMe.Signed) ? mksigned8(word) : mkunsigned8(word);
+            }
+            if (regs.mode & ARMe.Signed)
+                regs.word = ARM_ASR(regs, regs.word, (regs.addr & 3) << 3);
+            else
+                regs.word = ARM_ROR(regs, regs.word, (regs.addr & 3) << 3);
+            regs.rd = regs.word;
+            if (pre === 0) regs.rn = (up ? (regs.rn + regs.rm) : (regs.rn - regs.rm)) & 0xFFFFFFFF;
+
+            if ((pre === 0) || writeback) regs.cur[n] = regs.rn;
+            regs.cur[d] = regs.rd;
+            break;
+    }
+}
+
+/**
+ * @param {ARMregsbank_t} regs
+ * @param {ARMpins_t} pins
+ * @param {number} m
+ * @param {number} d
+ * @param {number} n
+ * @param {number} byte
+ */
+function ARM_armMemSwap(regs, pins, m ,d, n, byte) {
+    switch(regs.TCU) {
+        case 1:
+            regs.addr = regs.cur[n];
+            regs.mode = (byte ? ARMe.Half : ARMe.Byte) | ARMe.Nonsequential;
+            regs.pipe.nonsequential = true;
+            pins.Addr = regs.addr;
+            pins.get_hint = ARMe.Load | regs.mode;
+            regs.reenter = 2;
+            break;
+        case 2:
+            regs.reenter = 0;
+            regs.word = pins.D;
+            if (regs.mode & ARMe.Half) {
+                regs.addr &= 1;
+                regs.word = (regs.mode & ARMe.Signed) ? mksigned16(word) : mkunsigned16(word);
+            }
+            if (regs.mode & ARMe.Byte) {
+                regs.addr = 0;
+                regs.word = (regs.mode & ARMe.Signed) ? mksigned8(word) : mkunsigned8(word);
+            }
+            if (regs.mode & ARMe.Signed)
+                regs.word = ARM_ASR(regs, regs.word, (regs.addr & 3) << 3);
+            else
+                regs.word = ARM_ROR(regs, regs.word, (regs.addr & 3) << 3);
+            regs.word = regs.cur[m];
+            regs.mode = (byte ? ARMe.Byte : ARMe.Word) | ARMe.Nonsequential;
+            regs.pipe.nonsequential = true;
+            pins.Addr = regs.cur[n];
+            if (regs.mode & ARMe.Half) { regs.word &= 0xFFFF; regs.word |= (regs.word << 16); }
+            if (regs.mode & ARMe.Byte) { regs.word &= 0xFF; regs.word |= (regs.word << 8); regs.word |= (regs.word << 16); }            pins.Addr = regs.cur[n];
+            pins.D = regs.cur[m];
+            pins.get_hint = ARMe.Store | regs.mode;
+            regs.reenter = 3;
+            break;
+        case 3:
+            regs.cur[d] = regs.word;
+            break;
+    }
+}
+
 function ARM_fill_opcodes(variant) {
     /*
     Data Processing/PSR
@@ -468,7 +566,13 @@ function ARM_fill_opcodes(variant) {
 
     let bind_table = ARMtable;
 
-    function bind(opcodei, func) {
+    function bind(opcodeo, func) {
+        if ((opcodeo & 0x0FF000F0) !== 0) {
+            console.log('OPCODE PROBLEM!');
+            debugger;
+            return;
+        }
+        let opcodei = ((opcodeo & 0xF0) >>> 4) | ((opcodeo & 0x0FF00000) >>> 16);
         if (typeof bind_table[opcodei] !== 'undefined') {
             console.log('HMM?');
             debugger;
@@ -482,7 +586,7 @@ function ARM_fill_opcodes(variant) {
     for (let dhi = 0; dhi < 16; dhi++) {
         for (let dlo = 0; dlo < 16; dlo++) {
             for (let link = 0; link < 2; link++) {
-                bind(0xA00 | (link << 8) | (dhi << 4) | dlo,
+                bind(0xA000000 | (link << 24) | (dhi << 20) | (dlo << 4),
                     function (opcode, regs, pins) {
                         ARM_armBranch(regs, pins,
                             opcode & 0xFFF,
@@ -492,7 +596,7 @@ function ARM_fill_opcodes(variant) {
         }
     }
 
-    bind(0b0001_0010_0001, function (opcode, regs, pins) {
+    bind(0x1200001, function (opcode, regs, pins) {
         ARM_armBranchExR(regs, pins, opcode & 15)
     });
 
@@ -500,7 +604,7 @@ function ARM_fill_opcodes(variant) {
         for (let mode = 0; mode < 16; mode++) {
             for (let shift = 0; shift < 16; shift++) {
                 if ((!save) && (mode >= 8) && (mode <= 11)) continue; // CMP, CMN, TST, and TEQ
-                bind(0x200 | (shift << 4) | (save << 20) | (mode << 21),
+                bind(0x2000000 | (shift << 4) | (save << 20) | (mode << 21),
                     function (opcode, regs, pins) {
                         ARM_armDataProcImmediate(regs, pins,
                             opcode & 0xFF,
@@ -539,7 +643,7 @@ function ARM_fill_opcodes(variant) {
         for (let mode = 0; mode < 16; mode++) {
             for (let mtype = 0; mtype < 4; mtype++) {
                 if ((!save) && (mode >= 8) && (mode <= 11)) continue; // CMP, CMN, TST, and TEQ
-                bind(1 | (mtype << 5) | (save << 20) | (mode << 21),
+                bind(0x10 | (mtype << 5) | (save << 20) | (mode << 21),
                     function (opcode, regs, pins) {
                         ARM_armDataProcReg(regs, pins,
                             opcode & 0x0F,
@@ -559,7 +663,7 @@ function ARM_fill_opcodes(variant) {
         for (let p = 0; p < 2; p++) {
             for (let wb = 0; wb < 2; wb++) {
                 for (let h = 0; h < 2; h++) {
-                    bind(0x50D | (h << 5) | (wb << 21) | (p << 23) | (w << 24),
+                    bind(0x050000D0 | (h << 5) | (wb << 21) | (p << 23) | (w << 24),
                         function (opcode, regs, pins) {
                             ARM_armLoadImmediate(regs, pins,
                                 (opcode & 0x0F) | ((opcode >>> 4) & 0xF0),
@@ -570,12 +674,35 @@ function ARM_fill_opcodes(variant) {
                                 (opcode >>> 23) & 1,
                                 (opcode >>> 24) & 1
                             );
-                        })
+                        });
+                    // 1D
+                    bind(0x1000D0 | (h << 5) | (w << 21) | (p << 23) | (wb << 24),
+                        function(opcode, regs, pins) {
+                            ARM_armLoadRegister(regs, pins,
+                                opcode & 0x0F,
+                                (opcode >>> 5) & 1,
+                                (opcode >>> 12) & 0x0F,
+                                (opcode >>> 16) & 0x0F,
+                                (opcode >>> 21) & 1,
+                                (opcode >>> 23) & 1,
+                                (opcode >>> 24) & 1
+                            );
+                        });
                 }
             }
         }
-
     }
+
+    for (let byte = 0; byte < 2; byte++) {
+        bind(0x1000090 | (byte << 22),
+            function(opcode, regs, pins) {
+                ARM_armMemSwap(regs, pins,
+                    (opcode >>> 22) & 1
+                );
+            });
+    }
+
+
 }
 
 let ARM7_armopcodes = [];

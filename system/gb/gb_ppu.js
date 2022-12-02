@@ -774,6 +774,9 @@ class GB_PPU {
                 this.io.SCY = val;
                 return;
             case 0xFF43: // SCX
+                //console.log('SCX!', this.clock.master_frame, 'LY', this.clock.ly, this.clock.lx, 'TO', val);
+                //  1553 LY 0 83 TO 0
+                // SCX! 1552 LY 153 0 TO 15
                 this.io.SCX = val;
                 return;
             case 0xFF45: // LYC
@@ -891,6 +894,7 @@ class GB_PPU {
     disable() {
         if (!this.enabled) return;
         this.enabled = false;
+        this.clock.ppu_mode = 0;
         //console.log('DISABLE PPU')
         this.clock.CPU_can_VRAM = 1;
         this.clock.setCPU_can_OAM(1);
