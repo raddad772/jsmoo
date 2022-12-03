@@ -292,13 +292,13 @@ class GB_CPU {
                 return;
             case 0xFF55: // HDMA5 transfer stuff!
                 if (!this.clock.cgb_enable) return;
-                console.log('HDMA5 TRANSFER START', this.clock.trace_cycles, hex2(val));
+                //console.log('HDMA5 TRANSFER START', this.clock.trace_cycles, hex2(val));
                 // if LCD ON...
                 if (this.bus.ppu.enabled) {
                     this.hdma.notify_hblank = (this.clock.ppu_mode === 0);
                 } else {// if LCD OFF... {
                     this.hdma.notify_hblank = true;
-                    console.log('LCD OFF SO NOTIFY HBLANK!');
+                    //console.log('LCD OFF SO NOTIFY HBLANK!');
                 }
                 this.hdma.mode = (val & 0x80) >>> 7;
                 this.hdma.length = (val + 1) & 0x7F; // up to 128 blocks of 16 bytes.
@@ -307,7 +307,7 @@ class GB_CPU {
                     if (this.hdma.mode === 0) this.hdma.active = true;
                 } else {
                     if ((val & 0x80) === 0) {
-                        console.log('HDMA TRANSFER CANCEL!');
+                        //console.log('HDMA TRANSFER CANCEL!');
                         this.hdma.enabled = false;
                         this.hdma.active = false;
                     }

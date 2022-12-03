@@ -60,7 +60,7 @@ export default class MCS6502 extends Cpu {
 		//console.log('TEST ',op,this.pc)
 		switch (op) {
 		case 0x00: // BRK
-			return this.fetch(), this.push16(this.pc), this.push(this.ccr |= 0x10), this.ccr |= 0x04, void(this.pc = this.read16(0xfffe));
+			return this.fetch(), this.push16(this.pc), this.push(this.ccr | 0x10), this.ccr |= 0x04, this.ccr &= 0xF7, void(this.pc = this.read16(0xfffe));
 		case 0x01: // ORA (n,X)
 			return void(this.a = this.mov8(this.a | this.read(this.read16z(this.fetch() + this.ix & 0xff))));
 		case 0x05: // ORA n
@@ -68,7 +68,7 @@ export default class MCS6502 extends Cpu {
 		case 0x06: // ASL n
 			return ea = this.fetch(), this.write(ea, this.asl8(this.read(ea)));
 		case 0x08: // PHP
-			return this.push(this.ccr);
+			return this.push(this.ccr | 0x30);
 		case 0x09: // ORA #n
 			return void(this.a = this.mov8(this.a | this.fetch()));
 		case 0x0a: // ASLA
@@ -94,7 +94,7 @@ export default class MCS6502 extends Cpu {
 		case 0x1e: // ASL nn,X
 			return ea = this.fetch16() + this.ix & 0xffff, this.write(ea, this.asl8(this.read(ea)));
 		case 0x20: // JSR nn
-			return ea = this.fetch16(), this.push16(this.pc), void(this.pc = ea);
+			return ea = this.fetch16(), this.push16((this.pc-1)&0xFFFF), void(this.pc = ea);
 		case 0x21: // AND (n,X)
 			return void(this.a = this.mov8(this.a & this.read(this.read16z(this.fetch() + this.ix & 0xff))));
 		case 0x24: // BIT n
@@ -104,7 +104,7 @@ export default class MCS6502 extends Cpu {
 		case 0x26: // ROL n
 			return ea = this.fetch(), this.write(ea, this.rol8(this.read(ea)));
 		case 0x28: // PLP
-			return void(this.ccr = this.pull() | 0x20);
+			return void(this.ccr = (this.pull() | 0x20) & 0xEF);
 		case 0x29: // AND #n
 			return void(this.a = this.mov8(this.a & this.fetch()));
 		case 0x2a: // ROLA
@@ -132,7 +132,7 @@ export default class MCS6502 extends Cpu {
 		case 0x3e: // ROL nn,X
 			return ea = this.fetch16() + this.ix & 0xffff, this.write(ea, this.rol8(this.read(ea)));
 		case 0x40: // RTI
-			return this.ccr = this.pull() | 0x20, void(this.pc = this.pull16());
+			return this.ccr = (this.pull() & 0xEF) | 0x20, void(this.pc = this.pull16());
 		case 0x41: // EOR (n,X)
 			return void(this.a = this.mov8(this.a ^ this.read(this.read16z(this.fetch() + this.ix & 0xff))));
 		case 0x45: // EOR n
@@ -168,39 +168,39 @@ export default class MCS6502 extends Cpu {
 		case 0x5e: // LSR nn,X
 			return ea = this.fetch16() + this.ix & 0xffff, this.write(ea, this.lsr8(this.read(ea)));
 		case 0x60: // RTS
-			return void(this.pc = this.pull16());
+			return void(this.pc = (this.pull16()+1) & 0xFFFF);
 		case 0x61: // ADC (n,X)
-			return void(this.a = this.adc8(this.a, this.read(this.read16z(this.fetch() + this.ix & 0xff))));
+			return void(this.a = this.adc8(this.read(this.read16z(this.fetch() + this.ix & 0xff))));
 		case 0x65: // ADC n
-			return void(this.a = this.adc8(this.a, this.read(this.fetch())));
+			return void(this.a = this.adc8(this.read(this.fetch())));
 		case 0x66: // ROR n
 			return ea = this.fetch(), this.write(ea, this.ror8(this.read(ea)));
 		case 0x68: // PLA
-			return void(this.a = this.pull());
+			return this.a = this.pull(), this.ccr = (this.ccr & 0x7D) | (+(this.a === 0) << 1) | (this.a & 0x80);
 		case 0x69: // ADC #n
-			return void(this.a = this.adc8(this.a, this.fetch()));
+			return void(this.a = this.adc8(this.fetch()));
 		case 0x6a: // RORA
 			return void(this.a = this.ror8(this.a));
 		case 0x6c: // JMP (nn)
 			return void(this.pc = this.read16(this.fetch16()));
 		case 0x6d: // ADC nn
-			return void(this.a = this.adc8(this.a, this.read(this.fetch16())));
+			return void(this.a = this.adc8(this.read(this.fetch16())));
 		case 0x6e: // ROR nn
 			return ea = this.fetch16(), this.write(ea, this.ror8(this.read(ea)));
 		case 0x70: // BVS
 			return this.ccr & 0x40 && (this.cycle -= 1), this.bcc((this.ccr & 0x40) !== 0);
 		case 0x71: // ADC (n),Y
-			return void(this.a = this.adc8(this.a, this.read(this.read16z(this.fetch()) + this.iy & 0xffff)));
+			return void(this.a = this.adc8(this.read(this.read16z(this.fetch()) + this.iy & 0xffff)));
 		case 0x75: // ADC n,X
-			return void(this.a = this.adc8(this.a, this.read(this.fetch() + this.ix & 0xff)));
+			return void(this.a = this.adc8(this.read(this.fetch() + this.ix & 0xff)));
 		case 0x76: // ROR n,X
 			return ea = this.fetch() + this.ix & 0xff, this.write(ea, this.ror8(this.read(ea)));
 		case 0x78: // SEI
 			return void(this.ccr |= 4);
 		case 0x79: // ADC nn,Y
-			return void(this.a = this.adc8(this.a, this.read(this.fetch16() + this.iy & 0xffff)));
+			return void(this.a = this.adc8(this.read(this.fetch16() + this.iy & 0xffff)));
 		case 0x7d: // ADC nn,X
-			return void(this.a = this.adc8(this.a, this.read(this.fetch16() + this.ix & 0xffff)));
+			return void(this.a = this.adc8(this.read(this.fetch16() + this.ix & 0xffff)));
 		case 0x7e: // ROR nn,X
 			return ea = this.fetch16() + this.ix & 0xffff, this.write(ea, this.ror8(this.read(ea)));
 		case 0x81: // STA (n,X)
@@ -326,39 +326,39 @@ export default class MCS6502 extends Cpu {
 		case 0xe0: // CPX #n
 			return this.cmp8(this.ix, this.fetch());
 		case 0xe1: // SBC (n,X)
-			return void(this.a = this.sbc8(this.a, this.read(this.read16z(this.fetch() + this.ix & 0xff))));
+			return void(this.a = this.sbc8(this.read(this.read16z(this.fetch() + this.ix & 0xff))));
 		case 0xe4: // CPX n
 			return this.cmp8(this.ix, this.read(this.fetch()));
 		case 0xe5: // SBC n
-			return void(this.a = this.sbc8(this.a, this.read(this.fetch())));
+			return void(this.a = this.sbc8(this.read(this.fetch())));
 		case 0xe6: // INC n
 			return ea = this.fetch(), this.write(ea, this.mov8(this.read(ea) + 1 & 0xff));
 		case 0xe8: // INX
 			return void(this.ix = this.mov8(this.ix + 1 & 0xff));
 		case 0xe9: // SBC #n
-			return void(this.a = this.sbc8(this.a, this.fetch()));
+			return void(this.a = this.sbc8(this.fetch()));
 		case 0xea: // NOP
 			return;
 		case 0xec: // CPX nn
 			return this.cmp8(this.ix, this.read(this.fetch16()));
 		case 0xed: // SBC nn
-			return void(this.a = this.sbc8(this.a, this.read(this.fetch16())));
+			return void(this.a = this.sbc8(this.read(this.fetch16())));
 		case 0xee: // INC nn
 			return ea = this.fetch16(), this.write(ea, this.mov8(this.read(ea) + 1 & 0xff));
 		case 0xf0: // BEQ
 			return this.ccr & 2 && (this.cycle -= 1), this.bcc((this.ccr & 2) !== 0);
 		case 0xf1: // SBC (n),Y
-			return void(this.a = this.sbc8(this.a, this.read(this.read16z(this.fetch()) + this.iy & 0xffff)));
+			return void(this.a = this.sbc8(this.read(this.read16z(this.fetch()) + this.iy & 0xffff)));
 		case 0xf5: // SBC n,X
-			return void(this.a = this.sbc8(this.a, this.read(this.fetch() + this.ix & 0xff)));
+			return void(this.a = this.sbc8(this.read(this.fetch() + this.ix & 0xff)));
 		case 0xf6: // INC n,X
 			return ea = this.fetch() + this.ix & 0xff, this.write(ea, this.mov8(this.read(ea) + 1 & 0xff));
 		case 0xf8: // SED
 			return void(this.ccr |= 8);
 		case 0xf9: // SBC nn,Y
-			return void(this.a = this.sbc8(this.a, this.read(this.fetch16() + this.iy & 0xffff)));
+			return void(this.a = this.sbc8(this.read(this.fetch16() + this.iy & 0xffff)));
 		case 0xfd: // SBC nn,X
-			return void(this.a = this.sbc8(this.a, this.read(this.fetch16() + this.ix & 0xffff)));
+			return void(this.a = this.sbc8(this.read(this.fetch16() + this.ix & 0xffff)));
 		case 0xfe: // INC nn,X
 			return ea = this.fetch16() + this.ix & 0xffff, this.write(ea, this.mov8(this.read(ea) + 1 & 0xff));
 		default:
@@ -392,16 +392,28 @@ export default class MCS6502 extends Cpu {
 		return this.ccr = this.ccr & ~0x83 | !r << 1 | c, r;
 	}
 
-	adc8(dst, src) {
-		let r = dst + src + (this.ccr & 1) & 0xff, v = dst & src & ~r | ~dst & ~src & r, c = dst & src | src & ~r | ~r & dst, cf = 0;
+	adc8(src) {
+		let o;
+		let cf = this.ccr & 1;
+		let v;
 		if (this.ccr & 8) {
-			if (c & 8 || (r & 0xf) > 9)
-				cf += 6;
-			if (c & 0x80 || (r & 0xf0) > 0x90 || (r & 0xf0) > 0x80 && (r & 0xf) > 9)
-				cf += 0x60, c |= 0x80;
-			r = r + cf & 0xff;
+			o = (this.a & 0x0F) + (src & 0x0F) + cf;
+			if (o > 9) o += 6;
+			cf = +(o > 0x0F)
+			o = (this.a & 0xF0) + (src & 0xF0) + (cf << 4) + (o & 0x0F)
+			v = +(o>0x7F);
+			if (o > 0x9F) o += 0x60;
+			cf = +(o > 0x99);
+			// Note: V may not strictly be correctly calculated,
+			// but is technically meaningless in 6502
+		} else {
+			o =  this.a + src + cf;
+			v = ((this.a ^ src ^ 0xFF) & (this.a ^ o) & 0x80) >>> 7;
+			cf = (o & 0x100) >>> 8;
 		}
-		return this.ccr = this.ccr & ~0xc3 | r & 0x80 | v >> 1 & 0x40 | !r << 1 | c >> 7 & 1, r;
+
+		this.ccr = (this.ccr & ~0xc3) | o & 0x80 | (v << 6) | +(!(o & 0xFF)) << 1 | cf, o;
+		return o & 0xFF;
 	}
 
 	ror8(dst) {
@@ -414,16 +426,25 @@ export default class MCS6502 extends Cpu {
 		this.ccr = this.ccr & ~0x83 | r & 0x80 | !r << 1 | c >> 7 & 1;
 	}
 
-	sbc8(dst, src) {
-		let r = dst + ~src + (this.ccr & 1) & 0xff, v = dst & ~src & ~r | ~dst & src & r, c = dst & ~src | ~src & ~r | ~r & dst, cf = 0;
+	sbc8(i) {
+		i ^= 0xFF;
+		let o;
+		let cf = this.ccr & 1;
+		let v = (this.ccr >>> 6) & 1;
 		if (this.ccr & 8) {
-			if (~c & 8 || (r & 0x0f) > 9)
-				cf -= 6;
-			if (~c & 0x80 || (r & 0xf0) > 0x90)
-				cf -= 0x60, c &= ~0x80;
-			r = r + cf & 0xff;
+			o = (this.a & 0x0F) + (i & 0x0F) + (this.ccr & 1);
+			if (o <= 0x0F) o -= 0x06;
+			cf = +(o > 0x0F);
+			o = (this.a & 0xF0) + (i & 0xF0) + (cf << 4) + (o & 0x0F);
+			if (o <= 0xFF) o -= 0x60;
 		}
-		return this.ccr = this.ccr & ~0xc3 | r & 0x80 | v >> 1 & 0x40 | !r << 1 | c >> 7 & 1, r;
+		else {
+			o = this.a + i + cf;
+			v = ((this.a ^ i ^ 0x1FF) & (this.a ^ o) & 0x80) >>> 7;
+		}
+		cf = (o & 0x1FF) >>> 8;
+		this.ccr = (this.ccr & ~0xc3) | (o & 0x80) | (v << 6) | +(!(o & 0xFF)) << 1 | cf;
+		return o & 0xFF;
 	}
 
 	bcc(cond) {
@@ -436,7 +457,8 @@ export default class MCS6502 extends Cpu {
 	}
 
 	pull() {
-		return this.sp = this.sp + 1 & 0xff, this.read(this.sp | 0x100);
+		this.sp = (this.sp + 1) & 0xff
+		return this.read(this.sp | 0x100);
 	}
 
 	push16(r) {

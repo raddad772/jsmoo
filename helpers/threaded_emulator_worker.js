@@ -40,6 +40,12 @@ class threaded_emulator_worker_t {
             case 'VRAM':
                 this.js_wrapper.dump_RAM(e.what, e.addr);
                 break;
+            case 'bg1':
+            case 'bg2':
+            case 'bg3':
+            case 'bg4':
+                this.js_wrapper.dump_bg(e.imgdata, e.what, e.width, e.height)
+                break;
             default:
                 console.log('NO DUMP AVAILABLE?');
         }

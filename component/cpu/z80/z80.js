@@ -122,6 +122,8 @@ class z80_registers_t {
         this.IM = 0; // Interrupt Mode
         this.HALT = 0; // If HALT was executed
 
+        this.data = 0;
+
         // Internal registers
         this.IRQ_vec = null;
         this.rprefix = Z80P.HL;

@@ -10,7 +10,8 @@ class timing_worker_t {
         this.frames_since_reset = 0;
 
         this.fps_target = 0;
-        this.set_fps_target(60);
+        this.fps_cap = true; // Yes cap those FPS
+        this.set_fps_target(60); // Default to 60fps because
 
         this.fps_counter = 0;
         this.fps = 0;
@@ -18,6 +19,9 @@ class timing_worker_t {
 
     onmessage(e) {
         switch(e.kind) {
+            case timing_messages.set_fps_cap:
+                this.set_fps_cap(e.to);
+                break;
             case timing_messages.startup:
                 this.sab = e.sab;
                 this.shared_counters = new Int32Array(this.sab);
@@ -45,13 +49,21 @@ class timing_worker_t {
     // 4. sleep until next frame using Atomics.wait()?
     // 5.
 
+    set_fps_cap(to) {
+        // If we're turning on, recalculate pinned time
+        if ((!this.fps_cap) && to) {
+            this.pin_start = performance.now();
+            this.pin_target = this.pin_start + this.frame_time_full;
+        }
+        this.fps_cap = to;
+    }
+
     pause_request() {
         if (this.status === timing_status.paused) return;
         this.status = timing_status.paused;
     }
 
     set_fps_target(to) {
-        //console.log('FPS target set to', to);
         this.fps_target = to;
         this.frame_time_full = (1000 / this.fps_target);
         this.pin_target = this.pin_start + this.frame_time_full;
@@ -69,6 +81,7 @@ class timing_worker_t {
         let ft = performance.now() - this.frame_start;
         Atomics.store(this.shared_counters, timing_sab.frame_counter, this.frames_since_reset);
         if (this.status !== timing_status.playing) return;
+        if (!this.fps_cap) { this.request_frame(); return; }
         if (ft > this.pin_target) {
             console.log('OVERRUN BY', ft - this.pin_target)
             this.pin_start = performance.now();

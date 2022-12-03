@@ -1660,8 +1660,10 @@ class Z80_test_generator {
         this.Q(0);
         let addr = this.operands();
         let d = this.read(addr);
-        d |= this.read((addr + 1) & 0xFFFF) << 8;
+        addr = (addr + 1) & 0xFFFF
+        d |= this.read(addr) << 8;
         this.writereg(x, d);
+        this.writereg('WZ', addr);
     }
 
     LD_rr_nn(x) {

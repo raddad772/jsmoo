@@ -24,6 +24,7 @@ let ui_el = {
 	tracing_CPU_checkbox: ['checkbox', 'tracingCPU', CPU_DO_TRACING_AT_START],
 	tracing_APU_checkbox: ['checkbox', 'tracingAPU', APU_DO_TRACING_AT_START],
 	zoom_video_checkbox: ['checkbox','zoom_checkbox', false],
+	fps_cap_checkbox: ['checkbox','fps_cap_checkbox', true],
 	par_checkbox: ['checkbox','par_checkbox', true],
 	overscan_checkbox: ['checkbox','overscan_checkbox', true],
 	watching_checkbox: ['checkbox', 'watchpt', null],
@@ -480,6 +481,10 @@ async function init_ui() {
 
 	ui_el.zoom_video_checkbox.addEventListener('change', (event) => {
 		global_player.set_zoom(!!event.currentTarget.checked);
+	})
+
+	ui_el.fps_cap_checkbox.addEventListener('change', (event) => {
+		global_player.set_fps_cap(!!event.currentTarget.checked);
 	})
 
 	ui_el.par_checkbox.addEventListener('change', (event) => {
