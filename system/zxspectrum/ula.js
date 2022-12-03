@@ -268,10 +268,10 @@ class ZXSpectrum_ULA {
         //this.dump_bg(0, 370);
     }
 
-    dump_bg(y_origin, x_origin) {
-        let ctx = this.canvas.getContext('2d');
+    dump_bg(imgdata, width, y_origin, x_origin) {
+        //let ctx = this.canvas.getContext('2d');
         let pattern_base = this.io.bg_pattern_table * 0x1000;
-        let imgdata = ctx.getImageData(x_origin, y_origin, 256, 192);
+        //let imgdata = ctx.getImageData(x_origin, y_origin, 256, 192);
         let addr = 0x3FFF;
         let color;
         for (let sy = 0; sy < 192; sy++) {
@@ -287,14 +287,13 @@ class ZXSpectrum_ULA {
                 //if (color !== 0) console.log(color);
                 //color = 0;
 
-                let di = ((sy * 256) + sx) * 4;
-                imgdata.data[di] = color;
-                imgdata.data[di+1] = color;
-                imgdata.data[di+2] = color;
-                imgdata.data[di+3] = 255;
+                let di = ((sy * width) + sx) * 4;
+                imgdata[di] = color;
+                imgdata[di+1] = color;
+                imgdata[di+2] = color;
+                imgdata[di+3] = 255;
             }
         }
-        ctx.putImageData(imgdata, x_origin, y_origin);
     }
 }
 

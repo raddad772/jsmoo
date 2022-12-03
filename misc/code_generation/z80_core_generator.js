@@ -225,6 +225,24 @@ class Z80_switchgen {
         return this.outstr;
     }
 
+    post_IN_O_R() {
+        this.addl('regs.F.X = (regs.PC >>> 11) & 1;');
+        this.addl('regs.F.Y = (regs.PC >>> 13) & 1;');
+        this.addl('if (regs.F.C) {');
+        this.addl('    if (regs.data & 0x80) {')
+        this.addl('        regs.F.P ^= Z80_parity((regs.B - 1) & 7) ^ 1;');
+        this.addl('        regs.F.H = +((regs.B & 0x0F) === 0);');
+        this.addl('    }')
+        this.addl('    else {')
+        this.addl('        regs.F.P ^= Z80_parity((regs.B + 1) & 7) ^ 1;');
+        this.addl('        regs.F.H = +((regs.B & 0x0F) === 0x0F);');
+        this.addl('    }');
+        this.addl('}');
+        this.addl('else {');
+        this.addl('    regs.F.P ^= Z80_parity(regs.B & 7) ^ 1;');
+        this.addl('}');
+    }
+
     addcycles(howmany) {
         this.RWMIO(0, 0, 0, 0);
         let first = true;
@@ -280,6 +298,7 @@ class Z80_switchgen {
         this.RWMIO(0, 0, 0, 0)
         this.addl('pins.Addr = ' + addr + ';');
         this.addl('pins.D = ' + from + ';');
+        this.addl('regs.data = pins.D;');
 
         this.addcycle('OUT continues')
         this.RWMIO(0, 0, 0, 0);
@@ -315,6 +334,7 @@ class Z80_switchgen {
         this.addcycle('IN end/latch');
         this.RWMIO(0, 0, 0, 0);
         this.addl(to + ' = pins.D;');
+        this.addl('regs.data = pins.D;');
     }
 
     operand8(what) {
@@ -1360,10 +1380,12 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.Q(1)
             ag.CPD();
             ag.addl('if (((regs.B ' + GENEQO + ' 0) && (regs.C ' + GENEQO + ' 0)) || (regs.F.Z)) {regs.TCU += 5; break; }');
-
+            ag.addcycle();
             ag.addl('regs.PC = (regs.PC - 2) & 0xFFFF;');
             ag.addl('regs.WZ = (regs.PC + 1) & 0xFFFF;');
-            ag.addcycles(5);
+            ag.addl('regs.F.X = (regs.PC >>> 11) & 1;');
+            ag.addl('regs.F.Y = (regs.PC >>> 13) & 1;')
+            ag.addcycles(4);
             break;
         case Z80_MN.CPI:  //
             ag.CPI();
@@ -1371,10 +1393,12 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
         case Z80_MN.CPIR:  //
             ag.CPI();
             ag.addl('if (((regs.B ' + GENEQO + ' 0) && (regs.C ' + GENEQO + ' 0)) || (regs.F.Z)) {regs.TCU += 5; break; }');
-
+            ag.addcycle();
             ag.addl('regs.PC = (regs.PC - 2) & 0xFFFF;');
             ag.addl('regs.WZ = (regs.PC + 1) & 0xFFFF;');
-            ag.addcycles(5);
+            ag.addl('regs.F.X = (regs.PC >>> 11) & 1;');
+            ag.addl('regs.F.Y = (regs.PC >>> 13) & 1;')
+            ag.addcycles(4);
             break;
         case Z80_MN.CPL:  //
             ag.Q(1);
@@ -1582,8 +1606,10 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
         case Z80_MN.INDR:  //
             ag.IND();
             ag.addl('if (regs.B ' + GENEQO + ' 0) { regs.TCU += 5; break; }');
+            ag.addcycle();
             ag.addl('regs.PC = (regs.PC - 2) & 0xFFFF;');
-            ag.addcycles(5);
+            ag.post_IN_O_R();
+            ag.addcycles(4);
             break;
         case Z80_MN.INI:  //
             ag.INI();
@@ -1591,9 +1617,10 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
         case Z80_MN.INIR:  //
             ag.INI();
             ag.addl('if (regs.B ' + GENEQO + ' 0) { regs.TCU += 5; break; }');
-            ag.addcycles(3);
+            ag.addcycle();
             ag.addl('regs.PC = (regs.PC - 2) & 0xFFFF;');
-            ag.addcycles(2);
+            ag.post_IN_O_R();
+            ag.addcycles(4);
             break;
        case Z80_MN.JP_c_nn:  //bool
            ag.Q(0);
@@ -1700,6 +1727,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.read('regs.TA', 'regs.TR');
             ag.writeregL(arg1, 'regs.TR');
             ag.addl('regs.TA = (regs.TA + 1) & 0xFFFF;');
+            ag.addl('regs.WZ = regs.TA;');
             ag.read('regs.TA', 'regs.TR');
             ag.writeregH(arg1, 'regs.TR');
             break;
@@ -1722,9 +1750,13 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.LDD();
 
             ag.addl('if ((regs.B ' + GENEQO + ' 0) && (regs.C ' + GENEQO + ' 0)) { regs.TCU += 5; break; }');
+            ag.addcycle();
             ag.addl('regs.PC = (regs.PC - 2) & 0xFFFF;');
             ag.addl('regs.WZ = (regs.PC + 1) & 0xFFFF;');
-            ag.addcycles(5);
+            ag.addl('regs.F.X = (regs.PC >>> 11) & 1;');
+            ag.addl('regs.F.Y = (regs.PC >>> 13) & 1;')
+
+            ag.addcycles(4);
             break;
         case Z80_MN.LDI:  //
             ag.Q(1);
@@ -1734,9 +1766,12 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.Q(1);
             ag.LDI();
             ag.addl('if ((regs.B ' + GENEQO + ' 0) && (regs.C ' + GENEQO + ' 0)) { regs.TCU += 5; break; }');
+            ag.addcycle()
             ag.addl('regs.PC = (regs.PC - 2) & 0xFFFF;');
             ag.addl('regs.WZ = (regs.PC + 1) & 0xFFFF;');
-            ag.addcycles(5);
+            ag.addl('regs.F.X = (regs.PC >>> 11) & 1;');
+            ag.addl('regs.F.Y = (regs.PC >>> 13) & 1;')
+            ag.addcycles(4);
             break;
         case Z80_MN.NEG:  //
             ag.Q(1);
@@ -1764,15 +1799,19 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.Q(1);
             ag.OUTD();
             ag.addl('if (regs.B ' + GENEQO + ' 0) { regs.TCU += 5; break; }');
+            ag.addcycle();
             ag.addl('regs.PC = (regs.PC - 2) & 0xFFFF;');
-            ag.addcycles(5);
+            ag.post_IN_O_R();
+            ag.addcycles(4);
             break;
         case Z80_MN.OTIR:  //
             ag.Q(1);
             ag.OUTI();
             ag.addl('if (regs.B ' + GENEQO + ' 0) { regs.TCU += 5; break; }');
+            ag.addcycle();
             ag.addl('regs.PC = (regs.PC - 2) & 0xFFFF;');
-            ag.addcycles(5);
+            ag.post_IN_O_R();
+            ag.addcycles(4);
             break;
         case Z80_MN.OUT_ic_r:  //n8&
             ag.Q(0);

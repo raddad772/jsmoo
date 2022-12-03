@@ -31,7 +31,7 @@ async function uploadFile(fileId) {
     let path = '/' + rk + '/roms/';
     let el = document.getElementById('fileUpload');
     await do_upload_file('test', el, path)
-    await reload_roms(rk);
+    //await reload_roms(rk);
 }
 
 async function do_upload_file(fileId, el, path) {

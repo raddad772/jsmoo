@@ -37,7 +37,7 @@ class ZXSpectrum_tape_deck {
         this.head_pos = 0;
     }
 
-    load_ROM_from_RAM(name, what) {
+    load_ROM_from_RAM(what) {
         this.reset();
         let ubi = new Uint8Array(what);
         let pos = 0;

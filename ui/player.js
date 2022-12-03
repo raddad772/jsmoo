@@ -609,6 +609,10 @@ class global_player_t {
 		this.system.load_BIOS_from_RAM(what);
 	}
 
+	set_fps_cap(to) {
+		this.timing_thread.set_fps_cap(to);
+	}
+
 	set_zoom(to) {
 		if (!to) {
 			emu_canvas.set_scale(1);
@@ -628,6 +632,11 @@ class global_player_t {
 
 	dump_RAM(kind, addr) {
 		this.player_thread.postMessage({kind: emulator_messages.dump_something, what: kind, addr: addr});
+	}
+
+	dump_bg(canvas, which) {
+		canvas.set_size(256, 256, 256, 256);
+		this.player_thread.postMessage({kind: emulator_messages.dump_something, what: 'bg' + which, imgdata: canvas.get_imgdata().data.buffer, width: 256, height: 256 }, )
 	}
 
 	dump_sprites(canvas) {

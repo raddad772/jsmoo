@@ -9,6 +9,7 @@ const timing_messages = Object.freeze({
     reset_request: 4,
     frame_complete: 6,
     set_fps_target: 7,
+    set_fps_cap: 8,
 
     startup: 100,
 
@@ -65,6 +66,10 @@ class timing_thread_t {
         }
 		this.timing_thread.postMessage({kind: timing_messages.frame_complete});
 	}
+
+    set_fps_cap(to) {
+        this.timing_thread.postMessage({kind: timing_messages.set_fps_cap, to: to})
+    }
 
     set_fps_target(to) {
         this.timing_thread.postMessage({kind: timing_messages.set_fps_target, target: to});
