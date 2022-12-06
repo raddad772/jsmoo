@@ -63,7 +63,7 @@ let ui_el = {
 
 
 //window.onload = test_pathstuff
-//window.onload = init_ui;
+window.onload = init_ui;
 
 async function init_fs() {
 }
