@@ -688,4 +688,4 @@ async function JAMEStest_pt_m6502(opcodes, skip65c02brr=false) {
     if (JAMESM6502_io_mismatches.length > 0) console.log('IO mismatches occured for', JAMESM6502_io_mismatches);
 }
 
-window.onload = JAMEStest_pt_m65c02();
+//window.onload = JAMEStest_pt_m65c02();
