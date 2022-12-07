@@ -1,5 +1,10 @@
 "use strict";
 
+const SMSGG_voltable = Object.freeze([
+    8191, 6507, 5168, 4105, 3261, 2590, 2057, 1642,
+    1298, 1031, 819, 650, 516, 410, 326, 0
+    ]);
+
 class SN76489_SW {
     constructor() {
         this.counter = 0;
@@ -112,6 +117,7 @@ class SN76489 {
 
         }
     }
+
     cycle(current_clock) {
         // We are not mixing samples here, we're changing tone outputs.
         // Tick the noise
@@ -126,13 +132,15 @@ class SN76489 {
     sample() {
         let sample = 0;
         for (let i = 0; i < 3; i++) {
-            let intensity = 8192 * ((0x0F - this.vol[i]) / 0x0F);
+            //let intensity = 8192 * ((0x0F - this.vol[i]) / 0x0F);
+            let intensity = SMSGG_voltable[this.vol[i]];
             if (this.sw[i].freq > 7) { // 5 and lower are basically off, and 8-6 should be muted anyway cuz reasons
                 sample += ((this.polarity[i] * 2) - 1) * intensity;
             }
         }
 
-        let intensity = 8192 * ((0x0F - this.vol[3]) / 7);
+        //let intensity = 8192 * ((0x0F - this.vol[3]) / 7);
+        let intensity = SMSGG_voltable[this.vol[3]];
         sample += ((this.polarity[3] * 2) - 1) * intensity;
 
         // Mix
