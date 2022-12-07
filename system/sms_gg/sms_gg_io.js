@@ -305,7 +305,6 @@ class SMSGG_bus {
             return;
         }
         if  (addr <= 0x7F) {
-            // writes go to PSG, not implemented yet
             this.sn76489.write_data(val);
             return;
         }
@@ -379,7 +378,7 @@ class SMSGG_bus {
             return;
         }
         if  (addr <= 0x7F) {
-            // writes go to PSG, not implemented yet
+            this.sn76489.write_data(val);
             return;
         }
         if (addr <= 0xBF) {
@@ -422,7 +421,7 @@ class SMSGG_bus {
             return;
         }
         if  (addr <= 0x7F) {
-            // writes go to PSG, not implemented yet
+            this.sn76489.write_data(val);
             return;
         }
         if (addr <= 0xBF) {
