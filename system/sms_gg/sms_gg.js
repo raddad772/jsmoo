@@ -314,7 +314,8 @@ class SMSGG {
     }
 
     get_description() {
-        this.sn76489.set_audio_params(48000, 800, 5);
+        //         this.cycles_per_frame = 179208
+        this.sn76489.output.set_audio_params(179208, 48000, 800, 5);
         let nm = 'Master System v1';
         if (this.variant === SMSGG_variants.SMS2) nm = 'Master System v2';
         if (this.variant === SMSGG_variants.GG) nm = 'GameGear';
@@ -375,7 +376,7 @@ class SMSGG {
             this.finish_scanline();
             if (dbg.do_break) return;
         }
-        return {buffer_num: this.vdp.last_used_buffer, bottom_rendered_line: this.clock.timing.bottom_rendered_line+1, sound_buffer: this.sn76489.get_buffer()};
+        return {buffer_num: this.vdp.last_used_buffer, bottom_rendered_line: this.clock.timing.bottom_rendered_line+1, sound_buffer: this.sn76489.output.get_buffer()};
     }
 
     finish_scanline() {
