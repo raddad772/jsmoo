@@ -67,9 +67,9 @@ const GBC_STR = 'gbc';
 const SPECTRUM_STR = 'spectrum';
 const GENERICZ80_STR = 'genericz80'
 
-const DEFAULT_SYSTEM = SPECTRUM_STR;
+//const DEFAULT_SYSTEM = SPECTRUM_STR;
 //const DEFAULT_SYSTEM = SNES_STR;
-//const DEFAULT_SYSTEM = SMS_STR;
+const DEFAULT_SYSTEM = SMS_STR;
 //const DEFAULT_SYSTEM = GB_STR;
 //const DEFAULT_SYSTEM = GB_AS_STR;
 //const DEFAULT_SYSTEM = GBC_STR;

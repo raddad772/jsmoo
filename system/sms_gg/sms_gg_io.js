@@ -126,6 +126,11 @@ class SMSGG_bus {
          */
         this.system = null;
 
+        /**
+         * @type {SN76489}
+         */
+        this.sn76489 = null;
+
         this.mapper = new SMSGG_mapper_sega(variant);
 
         this.notify_IRQ = function(level) { debugger; }
@@ -301,6 +306,7 @@ class SMSGG_bus {
         }
         if  (addr <= 0x7F) {
             // writes go to PSG, not implemented yet
+            this.sn76489.write_data(val);
             return;
         }
         if (addr <= 0xBF) {
