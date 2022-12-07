@@ -187,6 +187,7 @@ class SN76489 {
             }
         }
         else {  // Data byte
+            let data = val & 0x0F;
             if (this.io.kind) { // volume
                 this.vol[this.io.reg] = data;
             } else {
