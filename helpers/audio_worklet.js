@@ -21,6 +21,7 @@ class ConsoleAudioProcessor extends AudioWorkletProcessor {
   constructor (...args) {
     super(...args)
     this.sampleBuffer = new Int16Array(0);
+    this.next_soundbuf = null;
     this.lastPlayedSample = 0;
     this.port.onmessage = (e) => {
       if (e.data.type === "samples") {

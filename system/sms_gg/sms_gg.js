@@ -98,15 +98,18 @@ class SMSGG_clock {
     constructor(variant, region) {
         this.variant = variant;
         this.region = region;
-        this.master_clock_speed = 10738580 // 10.73858MHz
+        this.master_clock_speed = 10752480
+        this.master_cycles = 0
 
         this.cpu_master_clock = 0;
         this.vdp_master_clock = 0;
+        this.apu_master_clock = 0;
 
         this.frames_since_restart = 0;
 
         this.cpu_divisor = 3;
         this.vdp_divisor = 2;
+        this.apu_divisor = 48;
 
         this.trace_cycles = 0;
 
@@ -176,6 +179,10 @@ class SMSGG {
         this.vdp = new SMSGG_VDP(this.variant, this.clock, this.bus);
         this.vdp.reset();
 
+        this.sn76489 = new SN76489(this.variant, this.clock, this.bus)
+        this.bus.sn76489 = this.sn76489;
+        this.sn76489.reset()
+
         this.bus.vdp = this.vdp;
 
         this.bus.mapper.cpu = this.cpu;
@@ -224,6 +231,7 @@ class SMSGG {
         this.cpu.reset();
         this.vdp.reset();
         this.bus.reset();
+        this.sn76489.reset();
         this.last_frame = 0;
     }
 
@@ -256,6 +264,7 @@ class SMSGG {
             }
             this.clock.cpu_master_clock++;
             this.clock.vdp_master_clock++;
+            this.clock.apu_master_clock += 1;
             if (this.clock.cpu_master_clock > this.clock.cpu_divisor) {
                 this.cpu_cycle();
                 this.clock.cpu_master_clock -= this.clock.cpu_divisor;
@@ -264,11 +273,16 @@ class SMSGG {
                 this.vdp.cycle();
                 this.clock.vdp_master_clock -= this.clock.vdp_divisor;
             }
+            if (this.clock.apu_master_clock > this.clock.apu_divisor) {
+                this.sn76489.cycle(this.clock.master_cycles);
+                this.clock.apu_master_clock -= this.clock.apu_divisor;
+            }
             if (this.clock.frames_since_restart !== this.last_frame) {
                 this.last_frame = this.clock.frames_since_restart;
                 this.poll_pause();
             }
             if (dbg.do_break) return;
+            this.clock.master_cycles++;
         }
     }
 
@@ -300,6 +314,7 @@ class SMSGG {
     }
 
     get_description() {
+        this.sn76489.set_audio_params(48000, 800, 5);
         let nm = 'Master System v1';
         if (this.variant === SMSGG_variants.SMS2) nm = 'Master System v2';
         if (this.variant === SMSGG_variants.GG) nm = 'GameGear';
@@ -360,7 +375,7 @@ class SMSGG {
             this.finish_scanline();
             if (dbg.do_break) return;
         }
-        return {buffer_num: this.vdp.last_used_buffer, bottom_rendered_line: this.clock.timing.bottom_rendered_line+1};
+        return {buffer_num: this.vdp.last_used_buffer, bottom_rendered_line: this.clock.timing.bottom_rendered_line+1, sound_buffer: this.sn76489.get_buffer()};
     }
 
     finish_scanline() {

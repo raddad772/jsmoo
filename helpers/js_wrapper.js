@@ -32,7 +32,7 @@ importScripts(
 // SMS/GG
 importScripts(
 	'/component/controller/sms_joypad.js', '/system/sms_gg/sms_gg.js', '/system/sms_gg/sms_gg_io.js',
-	'/system/sms_gg/sms_gg_mapper_sega.js', '/system/sms_gg/sms_gg_vdp.js'
+	'/system/sms_gg/sms_gg_mapper_sega.js', '/system/sms_gg/sms_gg_vdp.js', '/component/audio/sn76489/sn76489.js'
 )
 
 // ZX Spectrum

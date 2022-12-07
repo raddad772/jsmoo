@@ -280,6 +280,8 @@ class global_player_t {
 		this.shared_output_buffers = [null, null];
 		this.ready = false;
 
+		this.next_soundbuf = null;
+
         this.player_thread = new Worker('/helpers/threaded_emulator_worker.js');
         this.player_thread.onmessage = this.on_player_message.bind(this);
         this.player_thread.onerror = function(a, b, c) { console.log('ERR', a, b, c);}
@@ -525,6 +527,8 @@ class global_player_t {
 		this.timing_thread.frame_done();
 		this.present_system(data);
 		this.update_framevars(data);
+		if (typeof data.sound_buffer !== 'undefined')
+			this.audio.audio_node.port.postMessage({"type": "samples", "samples": data.sound_buffer});
 	}
 
 	update_framevars(data) {
