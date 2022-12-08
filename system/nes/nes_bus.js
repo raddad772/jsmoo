@@ -18,5 +18,9 @@ class NES_bus {
 
         this.ppu = null;
         this.mapper = null
+        /**
+         * @type {NES_APU}
+         */
+        this.apu = null;
     }
 }

@@ -58,6 +58,7 @@ class NES {
         this.cart = new NES_cart(this.clock, this.bus);
         this.cpu = new ricoh2A03(this.clock, this.bus);
         this.ppu = new NES_ppu(this.clock, this.bus);
+        this.apu = new NES_APU(this.clock, this.bus);
         this.cycles_left = 0;
 
         this.display_enabled = true;
@@ -165,6 +166,7 @@ class NES {
             this.clock.master_clock += cpu_step;
             this.cpu.run_cycle();
             this.cart.mapper.cycle();
+            this.apu.cycle();
             this.clock.cpu_frame_cycle++;
             this.clock.cpu_master_clock += cpu_step;
             let ppu_left = this.clock.master_clock - this.clock.ppu_master_clock;

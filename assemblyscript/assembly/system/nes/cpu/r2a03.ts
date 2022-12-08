@@ -115,7 +115,7 @@ export class ricoh2A03 {
                 return;
             case 0x4016: // JOYSER0
                 this.controller_port1.latch(val & 1);
-                break;
+                return;
        }
     }
 }

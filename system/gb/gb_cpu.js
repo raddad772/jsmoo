@@ -26,7 +26,7 @@ class GB_timer {
                 this.TIMA_reload_cycle = true
             }
         }
-            this.SYSCLK_change((this.SYSCLK + 4) & 0xFFFF);
+        this.SYSCLK_change((this.SYSCLK + 1) & 0xFFFF);
     }
 
     SYSCLK_change(new_value) {
@@ -38,27 +38,21 @@ class GB_timer {
         let this_bit;
         switch(this.TAC & 3) {
             case 0: // using bit 9
-                this_bit = (this.SYSCLK & 0x200) >>> 9;
+                this_bit = (this.SYSCLK >>> 7) & 1;
                 break;
             case 3: // using bit 7
-                this_bit = (this.SYSCLK & 0x80) >>> 7;
+                this_bit = (this.SYSCLK >>> 5) & 1;
                 break;
             case 2: // using bit 5
-                this_bit = (this.SYSCLK & 0x20) >>> 5;
+                this_bit = (this.SYSCLK >>> 3) & 1;
                 break;
             case 1: // using bit 3
-                this_bit = (this.SYSCLK & 0x08) >>> 3;
+                this_bit = (this.SYSCLK >>> 1) & 1;
                 break;
         }
         this_bit &= ((this.TAC & 4) >>> 2);
 
-        // Detect falling edge...
-        if ((this.last_bit === 1) && (this_bit === 0)) {
-            this.TIMA = (this.TIMA + 1) & 0xFF; // Increment TIMA
-            if (this.TIMA === 0) { // If we overflow, schedule IRQ
-                this.cycles_til_TIMA_IRQ = 1;
-            }
-        }
+        this.detect_edge(this.last_bit, this_bit);
         this.last_bit = this_bit;
     }
 
@@ -78,15 +72,28 @@ class GB_timer {
                 this.TMA = val;
                 break;
             case 0xFF07: // TAC, the timer control
+                let last_bit = this.last_bit;
+                this.last_bit &= ((val & 4) >>> 2);
+
+                this.detect_edge(last_bit, this.last_bit);
                 this.TAC = val;
                 break;
         }
     }
 
+    detect_edge(before, after) {
+        if ((before === 1) && (after === 0)) {
+            this.TIMA = (this.TIMA + 1) & 0xFF; // Increment TIMA
+            if (this.TIMA === 0) { // If we overflow, schedule IRQ
+                this.cycles_til_TIMA_IRQ = 1;
+            }
+        }
+    }
+
     read_IO(addr) {
         switch(addr) {
-            case 0xFF04: // DIV, upper 8 bits of SYSCLK
-                return (this.SYSCLK & 0xFF00) >>> 8;
+            case 0xFF04: // DIV, bits 6-13 of SYSCLK
+                return (this.SYSCLK >>> 6) & 0xFF;
             case 0xFF05:
                 return this.TIMA;
             case 0xFF06:
@@ -595,13 +602,14 @@ class GB_CPU {
 
         if ((this.cpu.regs.STP) && (this.io.speed_switch_prepare)) {
             if (this.io.speed_switch_cnt < 0) {
-                this.io.speed_switch_cnt = 2050;
+                this.io.speed_switch_cnt = 0xFFFF - this.clock.SYSCLK; // Speed switchover actually happens at rollover of SYSCLK
             }
             this.io.speed_switch_cnt--;
             if (this.io.speed_switch_cnt === 0) {
                 this.switch_speed();
                 this.cpu.regs.TCU++;
                 this.cpu.regs.STP = 0;
+                this.clock.SYSCLK = 0;
             }
         }
 
