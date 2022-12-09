@@ -202,7 +202,7 @@ class NES_mapper_MMC3b {
             }
 
             if ((this.irq_counter === 0) && this.irq_enable) {
-                this.bus.CPU_notify_IRQ(1);
+                this.bus.CPU_notify_IRQ(1, NES_IRQ_sources.MMC);
             }
             this.irq_reload = false;
         }
@@ -366,6 +366,7 @@ class NES_mapper_MMC3b {
                 break;
             case 0xE000:
                 this.irq_enable = 0;
+                this.bus.CPU_notify_IRQ(0, NES_IRQ_sources.MMC);
                 break;
             case 0xE001:
                 this.irq_enable = 1;

@@ -6,7 +6,7 @@ class IRQ_source_t {
     }
 }
 
-class IRQ_multiplexer_t {
+class aIRQ_multiplexer_t {
     IRQ_source_map: Map<String, u32> = new Map<String, u32>();
     IRQ_sources: Array<IRQ_source_t> = new Array<IRQ_source_t>;
     current_level: u32 = 0

@@ -14,7 +14,7 @@ class NES_bus {
         this.CPU_reg_read = function(addr, val, has_effect=true) { return 0xCC; }
         this.CPU_reg_write = function(addr, val) {};
         this.CPU_notify_NMI = function(level) {};
-        this.CPU_notify_IRQ = function(level) {};
+        this.CPU_notify_IRQ = function(level, from) {};
 
         this.ppu = null;
         this.mapper = null

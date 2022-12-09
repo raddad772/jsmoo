@@ -48,7 +48,7 @@ class ricoh2A03 {
         this.bus = bus;
         this.clock = clock;
 
-        this.apu = new rp2a03(clock, bus, this);
+        this.apu = new NES_APU(clock, bus, this);
 
         this.tracing = false;
 
@@ -56,6 +56,7 @@ class ricoh2A03 {
         this.bus.CPU_reg_read = this.reg_read.bind(this);
         this.bus.CPU_notify_NMI = this.notify_NMI.bind(this);
         this.bus.CPU_notify_IRQ = this.notify_IRQ.bind(this);
+        this.irq = new IRQ_multiplexer_t();
         this.cpu.reset();
 
         this.io = {
@@ -108,17 +109,18 @@ class ricoh2A03 {
         this.cpu.pins.NMI = +level;
     }
 
-    notify_IRQ(level) {
-        //this.cpu.pins.IRQ = +level;
-        if ((+level) === 0) this.cpu.IRQ_ack = true;
-        else if ((+level) !== this.cpu.pins.IRQ) this.cpu.IRQ_ack = false;
-        this.cpu.pins.IRQ = +level;
+    notify_IRQ(level, from) {
+        if (typeof from === 'undefined')
+            debugger;
+        this.cpu.pins.IRQ = this.irq.set_level(level, from)
     }
 
     reset() {
         this.cpu.reset();
         this.apu.reset();
+        this.irq.clear();
         this.clock.cpu_frame_cycle = 0;
+        this.clock.cpu_master_clock = 0;
         this.io.dma.running = 0;
     }
 

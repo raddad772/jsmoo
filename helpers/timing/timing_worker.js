@@ -11,6 +11,7 @@ class timing_worker_t {
 
         this.fps_target = 0;
         this.fps_cap = true; // Yes cap those FPS
+        this.pin_start = 0;
         this.set_fps_target(60); // Default to 60fps because
 
         this.fps_counter = 0;
