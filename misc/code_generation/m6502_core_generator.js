@@ -293,7 +293,7 @@ class m6502_switchgen {
 
         this.addcycle();
         this.addl('regs.P.B = 1; // Confirmed via Visual6502 that this bit is actually set always during NMI, IRQ, and BRK');
-        this.addl('regs.P.I = 1;');
+        this.addl('regs.new_I = 1;');
         if (this.CMOS) this.addl('regs.P.D = 0;'); // for 65C02
         this.RW(0);
         this.addr_to(vector);
@@ -323,7 +323,7 @@ class m6502_switchgen {
         this.addcycle();
         this.addr_to_S_then_dec();
         this.addl('pins.D = regs.P.getbyte() | 0x20;');
-        this.addl('regs.P.I = 1;');
+        this.addl('regs.new_I = 1;');
 
         this.addcycle();
         this.RW(0);
@@ -405,7 +405,10 @@ class m6502_switchgen {
         this.addcycle();
         this.addl('pins.Addr = regs.S | 0x100;');
         this.cleanup();
+        this.addl('let old_I = regs.P.I');
         this.addl('regs.P.setbyte(pins.D);');
+        this.addl('regs.new_I = regs.P.I;');
+        this.addl('regs.P.I = old_I;')
     }
 
     PushP() {
@@ -429,6 +432,7 @@ class m6502_switchgen {
 
         this.addcycle('Read PCL');
         this.addl('regs.P.setbyte(pins.D);');
+        this.addl('regs.new_I = regs.P.I;');
         this.addr_to_S_after_inc();
 
         this.addcycle('read PCH');
@@ -880,7 +884,8 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
                 case M6502_MN.CLI:
                     ag.addcycle();
                     ag.addr_to_PC();
-                    ag.addl('regs.P.I = 0;');
+                    ag.cleanup();
+                    ag.addl('regs.new_I = 0;');
                     break;
                 case M6502_MN.RTS:
                     ag.RTS();
@@ -891,7 +896,8 @@ function m6502_generate_instruction_function(indent, opcode_info, BCD_support=tr
                 case M6502_MN.SEI:
                     ag.addcycle();
                     ag.addr_to_PC();
-                    ag.addl('regs.P.I = 1;');
+                    ag.cleanup();
+                    ag.addl('regs.new_I = 1;');
                     break;
                 case M6502_MN.DEY:
                     ag.addcycle();
