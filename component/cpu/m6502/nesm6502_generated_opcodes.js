@@ -28,7 +28,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 5:
                     regs.P.B = 1; // Confirmed via Visual6502 that this bit is actually set always during NMI, IRQ, and BRK
-                    regs.P.I = 1;
+                    regs.new_I = 1;
                     pins.RW = 0;
                     pins.Addr = (0xFFFE);
                     break;
@@ -686,7 +686,10 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     pins.Addr = regs.S | 0x100;
                     break;
                 case 4: // cleanup_custom
+                    let old_I = regs.P.I
                     regs.P.setbyte(pins.D);
+                    regs.new_I = regs.P.I;
+                    regs.P.I = old_I;
                     // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
@@ -1103,6 +1106,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 4: // Read PCL
                     regs.P.setbyte(pins.D);
+                    regs.new_I = regs.P.I;
                     regs.S = (regs.S + 1) & 0xFF;
                     pins.Addr = regs.S | 0x100;
                     break;
@@ -1493,10 +1497,10 @@ const nesm6502_opcodes_decoded = Object.freeze({
             switch(regs.TCU) {
                 case 1:
                     pins.Addr = regs.PC;
-                    regs.P.I = 0;
-                    // Following is auto-generated code for instruction finish
                     break;
-                case 2: // cleanup
+                case 2: // cleanup_custom
+                    regs.new_I = 0;
+                    // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     regs.TCU = 0;
@@ -2067,10 +2071,10 @@ const nesm6502_opcodes_decoded = Object.freeze({
             switch(regs.TCU) {
                 case 1:
                     pins.Addr = regs.PC;
-                    regs.P.I = 1;
-                    // Following is auto-generated code for instruction finish
                     break;
-                case 2: // cleanup
+                case 2: // cleanup_custom
+                    regs.new_I = 1;
+                    // Following is auto-generated code for instruction finish
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     regs.TCU = 0;
@@ -4433,7 +4437,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 5:
                     regs.P.B = 1; // Confirmed via Visual6502 that this bit is actually set always during NMI, IRQ, and BRK
-                    regs.P.I = 1;
+                    regs.new_I = 1;
                     pins.RW = 0;
                     pins.Addr = (0xFFFA);
                     break;
@@ -4477,7 +4481,7 @@ const nesm6502_opcodes_decoded = Object.freeze({
                     break;
                 case 5:
                     regs.P.B = 1; // Confirmed via Visual6502 that this bit is actually set always during NMI, IRQ, and BRK
-                    regs.P.I = 1;
+                    regs.new_I = 1;
                     pins.RW = 0;
                     pins.Addr = (0xFFFE);
                     break;

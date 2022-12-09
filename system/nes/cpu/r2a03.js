@@ -110,8 +110,6 @@ class ricoh2A03 {
     }
 
     notify_IRQ(level, from) {
-        if (typeof from === 'undefined')
-            debugger;
         this.cpu.pins.IRQ = this.irq.set_level(level, from)
     }
 

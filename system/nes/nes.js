@@ -153,6 +153,7 @@ class NES {
     catch_up() {}
 
     step_master(howmany) {
+        this.cycles_left = 0;
         this.run_cycles(howmany);
     }
 

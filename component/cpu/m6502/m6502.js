@@ -59,7 +59,7 @@ class m6502_P {
     }
 }
 
-const SER_6502_REG = ['TCU', 'IR', 'TA', 'TR', 'skipped_cycle', 'HLT', 'A', 'X', 'Y', 'P', 'PC', 'S', 'IRQ_pending', 'NMI_pending', 'old_I', 'STP', 'WAIT'];
+const SER_6502_REG = ['TCU', 'IR', 'TA', 'TR', 'skipped_cycle', 'HLT', 'A', 'X', 'Y', 'P', 'PC', 'S', 'IRQ_pending', 'NMI_pending', 'new_I', 'STP', 'WAIT'];
 // register file
 class m6502_registers_t {
     constructor() {
@@ -80,7 +80,7 @@ class m6502_registers_t {
 
         this.IRQ_pending = false;
         this.NMI_pending = false;
-        this.old_I = 0; // for tracking interrupt
+        this.new_I = 0; // for tracking interrupt
 
         // For 65C02, STP and WAI
         this.STP = false;
@@ -182,12 +182,9 @@ class m6502_t {
         // Perform 1 processor cycle
         this.clock.trace_cycles++;
         if (this.regs.HLT || this.regs.STP) return;
-        if (this.pins.IRQ) {
+        if ((this.pins.IRQ) && (this.regs.P.I === 0)) {
             this.IRQ_count++;
-            if (!this.regs.old_I)
-                this.regs.IRQ_pending = this.IRQ_count >= 1;
-            else
-                this.regs.IRQ_pending = false;
+            this.regs.IRQ_pending ||= this.IRQ_count >= 1;
         }
         else {
             this.IRQ_count = 0;
@@ -201,6 +198,7 @@ class m6502_t {
             this.NMI_old = this.pins.NMI;
         }
 
+        this.regs.P.I = this.regs.new_I;
         this.regs.TCU++;
         if (this.regs.TCU === 1) {
             this.PCO = this.pins.Addr; // Capture PC before it runs away
@@ -211,12 +209,10 @@ class m6502_t {
                 this.regs.IR = M6502_OP_NMI;
                 if (dbg.brk_on_NMIRQ) dbg.break(D_RESOURCE_TYPES.M6502);
             } else if (this.regs.IRQ_pending) {
-                console.log('IRQ PEND!', this.clock.ppu_y, this.clock.ppu.line_cycle);
-
+                this.regs.IRQ_pending = false;
                 this.regs.IR = M6502_OP_IRQ;
                 if (dbg.brk_on_NMIRQ) dbg.break(D_RESOURCE_TYPES.M6502);
             }
-            this.regs.old_I = this.regs.P.I;
             if (typeof this.regs.IR === 'undefined') {
                 dbg.break();
                 return;
