@@ -9,25 +9,20 @@ class IRQ_source_t {
 
 class IRQ_multiplexer_t {
     constructor() {
-        this.IRQ_sources = {};
+        this.IF = 0;
         this.current_level = 0;
     }
 
-    add_source(name) {
-        this.IRQ_sources[name] = new IRQ_source_t(name);
+    set_level(level, from) {
+        if (level === 0)
+            this.IF &= (from ^ 0xFFFF);
+        else
+            this.IF |= from;
+        return this.current_level = +(this.IF !== 0);
     }
 
-    set_level(name, level) {
-        this.IRQ_sources[name].level = level;
-        this.update_level();
-    }
-
-    update_level() {
-        let level = 0;
-        for (let i in this.IRQ_sources) {
-            level |= this.IRQ_sources[i].level;
-        }
-        this.current_level = level;
+    clear() {
+        this.IF = 0;
     }
 
     query_level() {

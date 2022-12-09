@@ -91,7 +91,7 @@ class NES_mapper_VRC2B_4E_4F {
             if (this.irq.cycle_mode || ((this.irq.prescaler <= 0) && !this.irq.cycle_mode)) {
                 if (this.irq.counter === 0xFF) {
                     this.irq.counter = this.irq.reload;
-                    this.bus.CPU_notify_IRQ(1);
+                    this.bus.CPU_notify_IRQ(1, NES_IRQ_sources.MMC);
                 } else {
                     this.irq.counter++;
                 }
@@ -300,6 +300,7 @@ class NES_mapper_VRC2B_4E_4F {
             case 0xF003: // IRQ ack
                 if (!this.is_vrc4) return;
                 this.irq.enable = this.irq.enable_after_ack;
+                this.bus.CPU_notify_IRQ(0, NES_IRQ_sources.MMC);
                 return;
         }
         // Thanks Messen! NESdev wiki was wrong here...

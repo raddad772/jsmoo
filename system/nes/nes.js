@@ -4,6 +4,11 @@ const SER_NES = ['clock', 'cart', 'cpu', 'ppu', 'cycles_left']
 
 let NES_inputmap = [];
 
+const NES_IRQ_sources = {
+    MMC: 1,
+    APU: 2
+}
+
 function fill_NES_inputmap() {
     for (let i = 0; i < 16; i++) {
         let kp = new md_input_map_keypoint();
@@ -102,6 +107,7 @@ class NES {
 
 	get_description() {
         let d = new machine_description();
+        this.apu.output.set_audio_params(29780.754, 48000, 800, 5);
         d.name = 'Nintendo Entertainment System';
         d.standard = MD_STANDARD.NTSC;
         d.fps = 60;
@@ -141,7 +147,7 @@ class NES {
             this.finish_scanline();
             if (dbg.do_break) break;
         }
-        return {buffer_num: this.ppu.last_used_buffer}
+        return {buffer_num: this.ppu.last_used_buffer, sound_buffer: this.apu.output.get_buffer()}
     }
 
     catch_up() {}
@@ -163,10 +169,10 @@ class NES {
         let done = 0>>>0;
         let start_y = this.clock.ppu_y;
         while (this.clock.ppu_y === start_y) {
+            this.apu.cycle(this.clock.master_clock);
             this.clock.master_clock += cpu_step;
             this.cpu.run_cycle();
             this.cart.mapper.cycle();
-            this.apu.cycle();
             this.clock.cpu_frame_cycle++;
             this.clock.cpu_master_clock += cpu_step;
             let ppu_left = this.clock.master_clock - this.clock.ppu_master_clock;

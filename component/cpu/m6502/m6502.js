@@ -132,7 +132,7 @@ class m6502_pins_t {
     }
 }
 
-const SER_6502 = ['PCO', 'NMI_old', 'NMI_ack', 'IRQ_ack', 'IRQ_count', 'first_reset', 'pins', 'regs']
+const SER_6502 = ['PCO', 'NMI_old', 'NMI_ack', 'IRQ_count', 'first_reset', 'pins', 'regs']
 class m6502_t {
     /**
      * @param opcode_table
@@ -152,9 +152,7 @@ class m6502_t {
 
         this.NMI_old = 0;
         this.NMI_ack = false;
-        this.NMI_count = 0;
 
-        this.IRQ_ack = false;
         this.IRQ_count = 0;
 
         this.first_reset = true;
@@ -186,46 +184,22 @@ class m6502_t {
         if (this.regs.HLT || this.regs.STP) return;
         if (this.pins.IRQ) {
             this.IRQ_count++;
-            if (this.IRQ_count >= 1) {
-                this.pins.IRQ = 0;
-                this.IRQ_count = 0;
-                this.regs.IRQ_pending = true;
-                this.IRQ_ack = false;
-            }
+            if (!this.regs.old_I)
+                this.regs.IRQ_pending = this.IRQ_count >= 1;
+            else
+                this.regs.IRQ_pending = false;
         }
-        else this.IRQ_count = 0;
+        else {
+            this.IRQ_count = 0;
+            this.regs.IRQ_pending = false;
+        }
 
         // Edge-sensitive 0->1
         if (this.pins.NMI !== this.NMI_old) {
-            if (this.pins.NMI === 0) { // Reset NMI status
-                this.NMI_ack = false;
-            }
-            else { // Make NMI pending
-                this.NMI_ack = false;
-                this.regs.NMI_pending = true;
-            }
+            if (this.pins.NMI === 1) this.regs.NMI_pending = true;
+            this.NMI_ack = false;
             this.NMI_old = this.pins.NMI;
         }
-        /*if (this.pins.NMI) {
-            this.NMI_count++;
-            if (this.NMI_count >= 2) {
-                this.pins.NMI = 0;
-                this.NMI_count = 0;
-                this.regs.NMI_pending = true;
-                this.NMI_ack = false;
-            }
-        }*/
-
-        /*if (this.pins.NMI === this.NMI_old)
-            this.NMI_count = 0;
-        else
-            this.NMI_count++;
-        if (this.NMI_count > 1) {
-            this.NMI_old = this.pins.NMI;
-            this.NMI_ack = false;
-            this.NMI_count = 0;
-            this.regs.NMI_pending = true;
-        }*/
 
         this.regs.TCU++;
         if (this.regs.TCU === 1) {
@@ -236,9 +210,9 @@ class m6502_t {
                 this.regs.NMI_pending = false;
                 this.regs.IR = M6502_OP_NMI;
                 if (dbg.brk_on_NMIRQ) dbg.break(D_RESOURCE_TYPES.M6502);
-            } else if (this.regs.IRQ_pending && !this.IRQ_ack && !this.regs.old_I) {
-                this.IRQ_ack = true;
-                this.regs.IRQ_pending = false;
+            } else if (this.regs.IRQ_pending) {
+                console.log('IRQ PEND!', this.clock.ppu_y, this.clock.ppu.line_cycle);
+
                 this.regs.IR = M6502_OP_IRQ;
                 if (dbg.brk_on_NMIRQ) dbg.break(D_RESOURCE_TYPES.M6502);
             }
@@ -260,7 +234,6 @@ class m6502_t {
                 dbg.traces.add(TRACERS.M6502, this.clock.trace_cycles-1, this.trace_format(this.disassemble(), this.PCO));
             }
         }
-        this.IRQ_ack = false;
         this.NMI_ack = false;
 
         this.current_instruction.exec_func(this.regs, this.pins);

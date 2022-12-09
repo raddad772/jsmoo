@@ -602,7 +602,7 @@ class GB_CPU {
 
         if ((this.cpu.regs.STP) && (this.io.speed_switch_prepare)) {
             if (this.io.speed_switch_cnt < 0) {
-                this.io.speed_switch_cnt = 0xFFFF - this.clock.SYSCLK; // Speed switchover actually happens at rollover of SYSCLK
+                this.io.speed_switch_cnt = 0x10000 - this.clock.SYSCLK; // Speed switchover actually happens at rollover of SYSCLK
             }
             this.io.speed_switch_cnt--;
             if (this.io.speed_switch_cnt === 0) {
