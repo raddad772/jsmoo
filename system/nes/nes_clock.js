@@ -23,6 +23,7 @@ class NES_clock {
         // "Master" positions
         this.master_clock = 0;
         this.master_frame = 0;
+        this.lclock = 0;
 
         this.frames_since_restart = 0;
 

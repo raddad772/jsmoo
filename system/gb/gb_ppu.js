@@ -234,7 +234,6 @@ class GB_pixel_slice_fetcher {
                 break;
             case 3: // bp0
                 this.fetch_bp0 = this.bus.PPU_read(this.fetch_addr);
-                //if (this.ppu.in_window()) this.fetch_bp0 = 0x55;
                 this.fetch_cycle = 4;
                 break;
             case 4: // nothing

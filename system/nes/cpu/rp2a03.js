@@ -101,6 +101,20 @@ class NES_APU {
     }
 
     read_IO(addr, val, has_effect) {
+        console.log('READ!', hex4(addr));
+        switch(addr) {
+            case 0x4015: // Status stuff
+                val = +(this.sw1.length_counter > 0);
+                val |= (+(this.sw2.length_counter > 0)) << 1;
+                val |= (+(this.triangle.length_counter > 0)) << 2;
+                val |= (+(this.noise.length_counter > 0)) << 3;
+                val |= (+(this.noise.length_counter > 0)) << 4;
+                val |= (+(this.fc.irq_pending)) << 6;
+                val |= (+(this.dmc.irq_pending)) << 7;
+                // no more IRQ
+                // set IRQ
+                return val;
+        }
         return val;
     }
 
@@ -113,6 +127,7 @@ class NES_APU {
                 this.sw1.envelope.loop_mode = (val >>> 5) & 1;
                 this.sw1.duty = (val >>> 6) & 3;
                 break;
+                console.log('ENVELOPE?', val);
             case 0x4001: // sw1 more stuff
                 this.sw1.sweep.shift = val & 7;
                 this.sw1.sweep.decrement = (val >>> 3) & 1;
@@ -123,10 +138,12 @@ class NES_APU {
             case 0x4002: // sw1 mooore stuf
                 this.sw1.period = (this.sw1.period & 0x700) | val;
                 this.sw1.sweep.pulse_period = (this.sw1.sweep.pulse_period & 0x700) | val;
+                console.log('PERIOD!', this.sw1.period);
                 return;
             case 0x4003: // sw1 even mooore stuff
                 this.sw1.period = (this.sw1.period & 0xFF) | ((val & 7) << 8);
                 this.sw1.sweep.pulse_period = (this.sw1.sweep.pulse_period & 0xFF) | ((val & 7) << 8);
+                console.log('PERIOD!', this.sw1.period);
 
                 this.sw1.duty_counter = 0;
                 this.sw1.envelope.reload_decay = 1;
@@ -169,8 +186,6 @@ class NES_APU {
                 //if (!(val & 16)) this.dmc.stop();
                 //else this.dmc.start();
 
-                console.log('CHANNELS ENABLE', hex2(val & 0x1F));
-
                 //this.dmc.irq_pending = 0;
                 //this.eval_IRQ();
                 this.enabled_channels = val & 0x1F;
@@ -179,5 +194,10 @@ class NES_APU {
     }
 
     cycle(master_clock) {
+        if (master_clock >= this.output.next_buf_sample) {
+            this.output.sample(master_clock, this.mix_sample());
+        }
+
+        this.sw1.cycle();
     }
 }

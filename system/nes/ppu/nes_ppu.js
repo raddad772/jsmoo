@@ -548,7 +548,7 @@ class NES_ppu {
     scanline_prerender() {
         // 261
         let re = this.rendering_enabled()
-        if ((this.clock.frame_odd) && (this.line_cycle === 0) && re) this.line_cycle++;
+        //if ((this.clock.frame_odd) && (this.line_cycle === 0) && re) this.line_cycle++;
         if (this.line_cycle === 1) {
             this.io.sprite0_hit = 0;
             this.io.sprite_overflow = 0;
@@ -714,6 +714,8 @@ class NES_ppu {
     }
 
     new_frame() {
+        console.log('NEw FRAME', this.clock.master_clock - this.clock.lclock);6
+        this.clock.lclock = this.clock.master_clock;
         this.clock.ppu_y = 0;
         this.clock.frames_since_restart++;
         this.clock.frame_odd = (this.clock.frame_odd + 1) & 1;
