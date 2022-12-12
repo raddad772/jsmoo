@@ -107,7 +107,8 @@ class NES {
 
 	get_description() {
         let d = new machine_description();
-        this.apu.output.set_audio_params(29780.754, 48000, 800, 5);
+        // 29780.754
+        this.apu.output.set_audio_params(357372, 48000, 800, 5);
         d.name = 'Nintendo Entertainment System';
         d.standard = MD_STANDARD.NTSC;
         d.fps = 60;
@@ -170,8 +171,8 @@ class NES {
         let done = 0>>>0;
         let start_y = this.clock.ppu_y;
         while (this.clock.ppu_y === start_y) {
-            this.apu.cycle(this.clock.master_clock);
             this.clock.master_clock += cpu_step;
+            this.apu.cycle(this.clock.master_c6lock);
             this.cpu.run_cycle();
             this.cart.mapper.cycle();
             this.clock.cpu_frame_cycle++;
@@ -194,8 +195,10 @@ class NES {
         let ppu_step = this.clock.timing.ppu_divisor;
         let done = 0>>>0;
         while (this.cycles_left >= cpu_step) {
+            this.apu.cycle(this.clock.master_clock);
             this.clock.master_clock += cpu_step;
             this.cpu.run_cycle();
+            this.cart.mapper.cycle();
             this.clock.cpu_frame_cycle++;
             this.clock.cpu_master_clock += cpu_step;
             let ppu_left = this.clock.master_clock - this.clock.ppu_master_clock;

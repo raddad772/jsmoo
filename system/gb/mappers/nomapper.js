@@ -34,6 +34,9 @@ class GB_GENERIC_MEM {
     }
 
     CPU_write(addr, val) {
+        if ((addr >= 0x4000) && (addr < 0x4020)) {
+            console.log('W!', hex4(addr), hex2(val));
+        }
         if ((addr >= 0xE000) && (addr < 0xFE00)) addr -= 0x2000;  // Mirror WRAM
 
         if ((addr >= 0x8000) && (addr < 0xA000)) { // VRAM
@@ -74,6 +77,9 @@ class GB_GENERIC_MEM {
     }
 
     CPU_read(addr, val, has_effect=true) {
+        if ((addr >= 0x4000) && (addr < 0x4020)) {
+            console.log('R!', hex4(addr), hex2(val));
+        }
         if ((addr >= 0xE000) && (addr < 0xFE00)) addr -= 0x2000; // Mirror WRAM
         if (this.clock.bootROM_enabled) {
             if (addr < 0x100) {

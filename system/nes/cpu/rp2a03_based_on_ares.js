@@ -108,7 +108,7 @@ class NES_APU_squarewave {
         }
 
         this.output = NES_APU_SW_duties[this.duty][this.duty_counter] ? this.envelope.volume() : 0;
-        if (this.sweep.pulse_period < 0x800) this.output = 0;
+        //if (this.sweep.pulse_period < 0x800) this.output = 0;
 
         if (--this.period_counter === 0) {
             this.period_counter = (this.sweep.pulse_period + 1) * 2;
@@ -540,7 +540,9 @@ class NES_APU {
     mix_sample() {
         let output = 0;
         output += this.pulseDAC[this.sw1.output + this.sw2.output];
-        output += this.dmc_triangle_noise_DAC[this.dmc.output][this.triangle.output][this.noise.output];
+        if (output !== 0) console.log('SW1or2');
+        //output += this.dmc_triangle_noise_DAC[this.dmc.output][this.triangle.output][this.noise.output];
+        if (output !== 0) console.log('DMC');
         output = Math.floor(output) & 0xFFFF;
         return output;
     }
