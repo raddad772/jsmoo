@@ -714,8 +714,7 @@ class NES_ppu {
     }
 
     new_frame() {
-        console.log('NEw FRAME', this.clock.master_clock - this.clock.lclock);6
-        this.clock.lclock = this.clock.master_clock;
+        this.clock.lclock = this.clock.cpu_master_clock;
         this.clock.ppu_y = 0;
         this.clock.frames_since_restart++;
         this.clock.frame_odd = (this.clock.frame_odd + 1) & 1;

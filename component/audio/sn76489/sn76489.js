@@ -48,7 +48,7 @@ class JSM_audiobuffer {
 
         this.current_buf[this.buf_pos] = sample;
         this.buf_pos++;
-        if (this.buf_pos > this.buf_size) {
+        if (this.buf_pos >= this.buf_size) {
             this.advance_buf()
         }
     }
@@ -159,7 +159,7 @@ class SN76489 {
         this.cycle_noise();
         this.cycle_squares();
         if (current_clock >= this.output.next_buf_sample) {
-            this.output.sample(current_clock, this.mix_sample());
+            this.output.sample(this.mix_sample());
         }
     }
 
