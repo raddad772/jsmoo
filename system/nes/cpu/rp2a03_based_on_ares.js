@@ -102,17 +102,20 @@ class NES_APU_squarewave {
     }
 
     cycle() {
+        if (dbg.watch_on) console.log('HERE!')
         if ((!this.sweep.check_period()) || (this.length_counter === 0)) {
             this.output = 0;
             return;
         }
 
+        if (dbg.watch_on) console.log('YO DAWG!', this.duty, this.duty_counter, this.period_counter, this.envelope.volume());
         this.output = NES_APU_SW_duties[this.duty][this.duty_counter] ? this.envelope.volume() : 0;
-        //if (this.sweep.pulse_period < 0x800) this.output = 0;
+        if (this.sweep.pulse_period < 8) this.output = 0;
 
-        if (--this.period_counter === 0) {
-            this.period_counter = (this.sweep.pulse_period + 1) * 2;
-            this.duty_counter--;
+        this.period_counter = (this.period_counter - 1) & 0xFFFF;
+        if (this.period_counter === 0) {
+            this.period_counter = ((this.sweep.pulse_period + 1) * 2) & 0xFFFF;
+            this.duty_counter = (this.duty_counter - 1) & 7;
         }
     }
 }
@@ -365,7 +368,6 @@ class NES_APU {
     }
 
     write_IO(addr, val) {
-        console.log(hex4(addr), hex2(val));
         switch(addr) {
             case 0x4000: // sw1 stuff
                 this.sw1.envelope.speed = val & 15;
@@ -525,7 +527,7 @@ class NES_APU {
 
     cycle(current_clock) {
         if (current_clock >= this.output.next_buf_sample) {
-            this.output.sample(current_clock, this.mix_sample());
+            this.output.sample(this.mix_sample());
         }
 
         this.sw1.cycle();
@@ -540,9 +542,7 @@ class NES_APU {
     mix_sample() {
         let output = 0;
         output += this.pulseDAC[this.sw1.output + this.sw2.output];
-        if (output !== 0) console.log('SW1or2');
-        //output += this.dmc_triangle_noise_DAC[this.dmc.output][this.triangle.output][this.noise.output];
-        if (output !== 0) console.log('DMC');
+        output += this.dmc_triangle_noise_DAC[this.dmc.output][this.triangle.output][this.noise.output];
         output = Math.floor(output) & 0xFFFF;
         return output;
     }

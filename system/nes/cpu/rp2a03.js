@@ -194,10 +194,9 @@ class NES_APU {
     }
 
     cycle(master_clock) {
-        if (master_clock >= this.output.next_buf_sample) {
-            this.output.sample(master_clock, this.mix_sample());
-        }
-
         this.sw1.cycle();
+        if (master_clock >= this.output.next_buf_sample) {
+            this.output.sample(this.mix_sample());
+        }
     }
 }

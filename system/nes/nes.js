@@ -172,7 +172,7 @@ class NES {
         let start_y = this.clock.ppu_y;
         while (this.clock.ppu_y === start_y) {
             this.clock.master_clock += cpu_step;
-            this.apu.cycle(this.clock.master_c6lock);
+            this.apu.cycle(this.clock.master_clock);
             this.cpu.run_cycle();
             this.cart.mapper.cycle();
             this.clock.cpu_frame_cycle++;

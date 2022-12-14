@@ -303,6 +303,9 @@ class debugger_t {
                 case 'brk_on_NMIRQ':
                     this.brk_on_NMIRQ = event[i];
                     break;
+                case 'watch_on':
+                    this.watch_on = event[i];
+                    break;
                 default:
                     console.log('UNHANDLED DBG EVENT', i);
                     break;
