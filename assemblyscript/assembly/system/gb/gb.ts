@@ -65,6 +65,7 @@ export class gb_inputs {
 class GB_clock_timing {
     ppu_divisor: u32 = 1
     cpu_divisor: u32 = 4
+    apu_divisor: u32 = 4
 }
 
 export class GB_clock {

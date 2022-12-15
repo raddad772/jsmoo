@@ -102,13 +102,11 @@ class NES_APU_squarewave {
     }
 
     cycle() {
-        if (dbg.watch_on) console.log('HERE!')
         if ((!this.sweep.check_period()) || (this.length_counter === 0)) {
             this.output = 0;
             return;
         }
 
-        if (dbg.watch_on) console.log('YO DAWG!', this.duty, this.duty_counter, this.period_counter, this.envelope.volume());
         this.output = NES_APU_SW_duties[this.duty][this.duty_counter] ? this.envelope.volume() : 0;
         if (this.sweep.pulse_period < 8) this.output = 0;
 

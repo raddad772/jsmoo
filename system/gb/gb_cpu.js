@@ -60,24 +60,24 @@ class GB_timer {
         switch(addr) {
             case 0xFF04: // DIV, which is upper 8 bits of SYSCLK
                 this.SYSCLK_change(0);
-                break;
+                return;
             case 0xFF05: // TIMA, the timer counter
                 this.TIMA = val;
                 // "During the strange cycle [A] you can prevent the IF flag from being set and prevent the TIMA from being reloaded from TMA by writing a value to TIMA. That new value will be the one that stays in the TIMA register after the instruction. Writing to DIV, TAC or other registers wont prevent the IF flag from being set or TIMA from being reloaded."
                 if (this.cycles_til_TIMA_IRQ === 1) this.cycles_til_TIMA_IRQ = 0;
-                break;
+                return;
             case 0xFF06: // TMA, the timer modulo
                 // "If TMA is written the same cycle it is loaded to TIMA [B], TIMA is also loaded with that value."
                 if (this.TIMA_reload_cycle) this.TIMA = val;
                 this.TMA = val;
-                break;
+                return;
             case 0xFF07: // TAC, the timer control
                 let last_bit = this.last_bit;
                 this.last_bit &= ((val & 4) >>> 2);
 
                 this.detect_edge(last_bit, this.last_bit);
                 this.TAC = val;
-                break;
+                return;
         }
     }
 
@@ -237,7 +237,7 @@ class GB_CPU {
                 return;
             case 0xFF01: // SB serial
                 this.FFregs[1] = val;
-                break;
+                return;
             case 0xFF02: // SC
                 this.FFregs[2] = val;
                 //this.cycles_til_serial_interrupt =
@@ -260,12 +260,12 @@ class GB_CPU {
                     this.dma.new_high = (val << 8);
                     this.dma.last_write = val;
                 }
-                break;
+                return;
             case 0xFF4D: // Speed switch enable
                 if (!this.clock.cgb_enable) return;
                 console.log('PREPARE SPEED SWITCH');
                 this.io.speed_switch_prepare = val & 1;
-                break;
+                return;
             case 0xFF4F: // VRAM bank
                 if (!this.clock.cgb_enable) return;
                 this.bus.set_VRAM_bank(val);
@@ -276,7 +276,7 @@ class GB_CPU {
                     //dbg.break();
                     this.clock.bootROM_enabled = false;
                 }
-                break;
+                return;
             case 0xFF51: // HDMA1   bits 15-8 of dest
                 if (!this.clock.cgb_enable) return;
                 //this.hdma.source = (this.hdma.source & 0xF0) | (val << 8);
@@ -342,6 +342,7 @@ class GB_CPU {
                 this.cpu.regs.IE = val & 0x1F;
                 return;
         }
+        this.bus.apu.write_IO(addr, val);
     }
 
     get_input() {
@@ -413,7 +414,7 @@ class GB_CPU {
                 return this.cpu.regs.IE | 0xE0;
                 //return this.clock.irq.vblank_enable | (this.clock.irq.lcd_stat_enable << 1) | (this.clock.irq.timer_enable << 2) | (this.clock.irq.serial_enable << 3) | (this.clock.irq.joypad_enable << 4);
         }
-        return 0xFF;
+        return this.bus.apu.read_IO(addr, val);
     }
 
     dma_eval() {
@@ -470,7 +471,7 @@ class GB_CPU {
                 pins.MRQ = pins.RD = 1;
                 pins.WR = 0;
                 regs.poll_IRQ = true;
-                break;
+                return;
             default:
                 regs.A = 0x11;
                 regs.F.Z = 1;
@@ -504,7 +505,7 @@ class GB_CPU {
                 pins.MRQ = pins.RD = 1;
                 pins.WR = 0;
                 regs.poll_IRQ = true;
-                break;
+                return;
         }
     }
 
