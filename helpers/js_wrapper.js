@@ -46,6 +46,7 @@ importScripts(
 	'/component/cpu/sm83/sm83_disassembler.js', '/component/cpu/sm83/sm83_opcodes.js',
 	'/component/cpu/sm83/sm83.js', '/component/cpu/sm83/sm83_generated_opcodes.js',
 	'/system/gb/gb_cart.js', '/system/gb/gb_ppu.js',
+	'/system/gb/gb_apu.js', '/system/gb/mappers/mbc_shared.js',
 	'/system/gb/mappers/nomapper.js', '/system/gb/mappers/mbc1.js',
 	'/system/gb/mappers/mbc2.js', '/system/gb/mappers/mbc3.js',
 	'/system/gb/mappers/mbc5.js', '/system/gb/gb_cpu.js',

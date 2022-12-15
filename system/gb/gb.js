@@ -90,7 +90,8 @@ class GB_clock {
 
     this.timing = {
             ppu_divisor: 1,
-            cpu_divisor: 4
+            cpu_divisor: 4,
+            apu_divisor: 4
         }
     }
 
@@ -123,6 +124,10 @@ class GB_bus {
         this.cart = null;
         this.mapper = null;
         this.ppu = null;
+        /**
+         * @type {null|GB_APU}
+         */
+        this.apu = null;
         /**
          * @type {null|GB_CPU}
          */
@@ -220,6 +225,7 @@ class GameBoy {
         this.cart = new GB_cart(this.variant, this.bios, this.clock, this.bus);
         this.cpu = new GB_CPU(this.variant, this.clock, this.bus);
         this.ppu = new GB_PPU(this.variant, this.clock, this.bus);
+        this.apu = new GB_APU(this.clock, this.bus);
 
         this.cycles_left = 0;
         this.display_enabled = true;
@@ -243,6 +249,7 @@ class GameBoy {
     }
 
     get_description() {
+        this.apu.output.set_audio_params(GB_CYCLES_PER_FRAME, 48000, 800, 5);
         let d = new machine_description();
         d.name = 'GameBoy';
         switch(this.variant) {
@@ -292,7 +299,7 @@ class GameBoy {
     run_frame() {
         let cycles_left = this.clock.cycles_left_this_frame;
         this.run_cycles(cycles_left);
-        return {buffer_num: this.ppu.last_used_buffer};
+        return {buffer_num: this.ppu.last_used_buffer, sound_buffer: this.apu.output.get_buffer()}
     }
 
     catch_up() {}
@@ -330,15 +337,19 @@ class GameBoy {
         this.cycles_left += howmany;
         let cpu_step = this.clock.timing.cpu_divisor;
         let ppu_step = this.clock.timing.ppu_divisor;
+        let apu_step = this.clock.timing.apu_divisor;
         let done = 0>>>0;
         while (this.cycles_left > 0) {
             this.clock.cycles_left_this_frame--;
             if (this.clock.cycles_left_this_frame <= 0) this.clock.cycles_left_this_frame += GB_CYCLES_PER_FRAME;
+            // Every 2 or 4 cycles, cycle the CPU
             if ((this.clock.turbo && ((this.clock.master_clock & 1) === 0)) || ((this.clock.master_clock & 3) === 0)) {
                 this.cpu.cycle();
                 this.clock.cpu_frame_cycle++;
                 this.clock.cpu_master_clock += cpu_step;
             }
+            if ((this.clock.master_clock & 3) === 0)
+                this.apu.cycle(this.clock.master_clock);
             this.clock.master_clock++;
             this.ppu.run_cycles(1);
             this.clock.ppu_master_clock += 1;
