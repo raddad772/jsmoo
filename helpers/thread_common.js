@@ -66,13 +66,15 @@ const GB_AS_STR = 'gb_as';
 const GBC_STR = 'gbc';
 const SPECTRUM_STR = 'spectrum';
 const GENERICZ80_STR = 'genericz80'
+const PS1_STR = 'ps1';
 
 //const DEFAULT_SYSTEM = SPECTRUM_STR;
 //const DEFAULT_SYSTEM = SNES_STR;
 //const DEFAULT_SYSTEM = SMS_STR;
-const DEFAULT_SYSTEM = GB_STR;
+//const DEFAULT_SYSTEM = GB_STR;
 //const DEFAULT_SYSTEM = GB_AS_STR;
 //const DEFAULT_SYSTEM = GBC_STR;
 //const DEFAULT_SYSTEM = GG_STR;
 //const DEFAULT_SYSTEM = NES_STR;
+const DEFAULT_SYSTEM = PS1_STR;
 //const DEFAULT_SYSTEM = NES_AS_STR;

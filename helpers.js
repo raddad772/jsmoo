@@ -190,6 +190,15 @@ function mksigned16(what) {
      return what >= 0x8000 ? -(0x10000 - what) : what;
 }
 
+/**
+ * @param {number} what
+ * @returns {number}
+ */
+function mksigned26(what) {
+     return what >= 0x2000000 ? -(0x4000000 - what) : what;
+}
+
+
 
 /**
  * @param {Number} val
@@ -208,6 +217,21 @@ function hex4(val) {
     if (outstr.length < 4) outstr = '0' + outstr;
     if (outstr.length < 4) outstr = '0' + outstr;
     if (outstr.length < 4) outstr = '0' + outstr;
+    return outstr.toUpperCase();
+}
+
+/**
+ * @param {Number} val
+ */
+function hex8(val) {
+    let outstr = val.toString(16);
+    if (outstr.length < 8) outstr = '0' + outstr;
+    if (outstr.length < 8) outstr = '0' + outstr;
+    if (outstr.length < 8) outstr = '0' + outstr;
+    if (outstr.length < 8) outstr = '0' + outstr;
+    if (outstr.length < 8) outstr = '0' + outstr;
+    if (outstr.length < 8) outstr = '0' + outstr;
+    if (outstr.length < 8) outstr = '0' + outstr;
     return outstr.toUpperCase();
 }
 

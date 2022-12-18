@@ -222,9 +222,6 @@ class GB_pixel_slice_fetcher {
                         this.fetch_cgb_attr = this.bus.PPU_read(addr + 0x2000);
                     }
                     tn = this.bus.PPU_read(addr);
-                    /*if ((this.bg_request_x === 0) && (this.clock.ly === 0)) {
-                        console.log('ATTRIBUTE!', hex4(addr + 0x2000), hex2(this.fetch_cgb_attr));
-                    }*/
                     this.fetch_addr = this.ppu.bg_tile_addr_nowindow(tn, this.fetch_cgb_attr);
                 }
                 this.fetch_cycle = 2;
