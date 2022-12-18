@@ -27,6 +27,9 @@ class input_provider_t {
 			case 'gb':
 				this.setup_gb();
 				break;
+			case 'ps1':
+				this.setup_ps1();
+				break;
 			case 'spectrum':
 				this.setup_spectrum();
 				break;
@@ -46,11 +49,16 @@ class input_provider_t {
 			case 'gg':
 				this.disconnect_gg();
 				break;
+			case 'gb_as':
+			case 'gbc':
 			case 'gb':
 				this.disconnect_gb();
 				break;
 			case 'nes':
 				this.disconnect_nes();
+				break;
+			case 'ps1':
+				this.disconnect_ps1();
 				break;
 			case 'spectrum':
 				this.disconnect_spectrum();
@@ -212,6 +220,74 @@ class input_provider_t {
 
 	disconnect_gb() {
 		input_config.disconnect_controller('gb');
+	}
+
+	latch_ps1() {
+		this.input_buffer1 = this.joymap1.latch();
+		this.input_buffer2 = this.joymap2.latch();
+	}
+
+	poll_ps1() {
+		for (let i in this.keymap) {
+			const km = this.keymap[i];
+			let imap;
+			switch(km.uber) {
+				case 'p1':
+					imap = this.input_buffer1;
+					break;
+				case 'p2':
+					imap = this.input_buffer2;
+					break;
+				default:
+					console.log('WHAT!?!?!?');
+					break;
+			}
+
+			km.value = imap[km.name];
+		}
+		return this.keymap;
+	}
+
+	disconnect_ps1() {
+		input_config.disconnect_controller('ps1p1');
+		input_config.disconnect_controller('ps1p2');
+	}
+
+	setup_ps1() {
+		this.latch = this.latch_ps1.bind(this);
+		this.poll = this.poll_ps1.bind(this);
+		input_config.connect_controller('ps1p1');
+		input_config.connect_controller('ps1p2');
+		this.input_buffer1 = {
+			'circle': 0,
+			'square': 0,
+			'triangle': 0,
+			'x': 0,
+			'l': 0,
+			'r': 0,
+			'up': 0,
+			'down': 0,
+			'left': 0,
+			'right': 0,
+			'select': 0,
+			'start': 0,
+		}
+		this.input_buffer2 = {
+			'circle': 0,
+			'square': 0,
+			'triangle': 0,
+			'x': 0,
+			'l': 0,
+			'r': 0,
+			'up': 0,
+			'down': 0,
+			'left': 0,
+			'right': 0,
+			'select': 0,
+			'start': 0,
+		}
+		this.joymap1 = input_config.controller_els.ps1p1;
+		this.joymap2 = input_config.controller_els.ps1p2;
 	}
 
 	setup_gb() {
@@ -568,6 +644,9 @@ class global_player_t {
 				break;
 			case 'snes':
 				SNES_present(data, imgdata.data, buf);
+				break;
+			case 'ps1':
+				PS1_present(data, imgdata.data, buf);
 				break;
 			default:
 				console.log('NO PRESENTATION CODE FOR', this.system_kind);

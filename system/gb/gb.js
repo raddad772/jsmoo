@@ -225,7 +225,7 @@ class GameBoy {
         this.cart = new GB_cart(this.variant, this.bios, this.clock, this.bus);
         this.cpu = new GB_CPU(this.variant, this.clock, this.bus);
         this.ppu = new GB_PPU(this.variant, this.clock, this.bus);
-        this.apu = new GB_APU(this.clock, this.bus);
+        this.apu = new GB_APU(this.variant, this.clock, this.bus);
 
         this.cycles_left = 0;
         this.display_enabled = true;
@@ -297,8 +297,7 @@ class GameBoy {
     }
 
     run_frame() {
-        let cycles_left = this.clock.cycles_left_this_frame;
-        this.run_cycles(cycles_left);
+        this.run_cycles(this.clock.cycles_left_this_frame;);
         return {buffer_num: this.ppu.last_used_buffer, sound_buffer: this.apu.output.get_buffer()}
     }
 
@@ -336,8 +335,6 @@ class GameBoy {
     run_cycles(howmany) {
         this.cycles_left += howmany;
         let cpu_step = this.clock.timing.cpu_divisor;
-        let ppu_step = this.clock.timing.ppu_divisor;
-        let apu_step = this.clock.timing.apu_divisor;
         let done = 0>>>0;
         while (this.cycles_left > 0) {
             this.clock.cycles_left_this_frame--;

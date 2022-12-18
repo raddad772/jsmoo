@@ -189,7 +189,16 @@ class traces_t {
 
 //let traces = new traces_t();
 
-const D_RESOURCE_TYPES = Object.freeze({R5A22: 0, SPC700: 1, WDC65C816: 2, SNESPPU: 3, M6502: 4, Z80: 5, SM83: 6});
+const D_RESOURCE_TYPES = Object.freeze(
+    {R5A22: 0,  // SNES 65816+extra combo
+        SPC700: 1, // SNES APU
+        WDC65C816: 2, // Generic 65816
+        NESPPU: 3, // NES PPU
+        M6502: 4, // M6502 (NES, Commodore64, more)
+        Z80: 5, // Z80 (SMS, GG, ZX Spectrum, Genesis)
+        SM83: 6, // SM83 (GB)
+        R3000: 7, // R3000 (PS1)
+    });
 
 class breakpoint_t {
     constructor(resource_type, resource) {
@@ -254,6 +263,9 @@ class debugger_t {
                 case 'gb':
 					dbg.enable_tracing_for(D_RESOURCE_TYPES.SM83);
 					break;
+                case 'ps1':
+                    dbg.enable_tracing_for(D_RESOURCE_TYPES.R3000);
+                    break;
 				case 'nes':
 					dbg.enable_tracing_for(D_RESOURCE_TYPES.M6502);
 					break;
@@ -273,9 +285,13 @@ class debugger_t {
 		else {
             this.disable_tracing();
 			switch(syskind) {
+                case 'gbc':
 				case 'gb':
 					dbg.disable_tracing_for(D_RESOURCE_TYPES.SM83);
 					break;
+                case 'ps1':
+                    dbg.disable_tracing_for(D_RESOURCE_TYPES.R3000);
+                    break;
 				case 'nes':
 					dbg.disable_tracing_for(D_RESOURCE_TYPES.M6502);
 					break;

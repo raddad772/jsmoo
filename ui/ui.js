@@ -279,6 +279,7 @@ function click_dump_ram() {
 				case 'gg':
 					rd = hex2(global_player.system.bus.cpu_read(baddr, 0, false));
 					break;
+				case 'gbc':
 				case 'gb':
 					rd = hex2(global_player.system.bus.mapper.CPU_read(baddr, 0, false));
 					break;
@@ -501,6 +502,7 @@ async function init_ui() {
 		if (event.currentTarget.checked) {
 			console.log('ENABLE FOR!', global_player.system_kind);
 			switch(global_player.system_kind) {
+				case 'gbc':
 				case 'gb':
 					dbg.enable_tracing_for(D_RESOURCE_TYPES.SM83);
 					break;
@@ -513,6 +515,9 @@ async function init_ui() {
 				case 'genericz80':
 					dbg.enable_tracing_for(D_RESOURCE_TYPES.Z80);
 					break;
+				case 'ps1':
+					dbg.enable_tracing_for(D_RESOURCE_TYPES.R3000);
+					break;
 				case 'gg':
 				case 'sms':
 				case 'spectrum':
@@ -522,6 +527,10 @@ async function init_ui() {
 		}
 		else {
 			switch(global_player.system_kind) {
+				case 'ps1':
+					dbg.disable_tracing_for(D_RESOURCE_TYPES.R3000);
+					break;
+				case 'gbc':
 				case 'gb':
 					dbg.disable_tracing_for(D_RESOURCE_TYPES.SM83);
 					break;

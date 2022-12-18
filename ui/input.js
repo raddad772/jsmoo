@@ -55,6 +55,35 @@ const DEFAULT_GENESIS = {
     'z': ['d', 68],
 }
 
+const DEFAULT_PS1P1 = {
+    'up': ['arrowUp', 38],
+    'down': ['arrowDown', 40],
+    'left': ['arrowLeft', 37],
+    'right': ['arrowRight', 39],
+    'start': ['f', 70],
+    'select': ['Tab', 9],
+    'circle': ['s', 83],
+    'square': ['z', 90],
+    'triangle': ['a', 65],
+    'x': ['x', 88],
+    'l': ['q', 81],
+    'r': ['w', 87],
+}
+
+const DEFAULT_PS1P2 = {
+    'up': [null, null],
+    'down': [null, null],
+    'left': [null, null],
+    'right': [null, null],
+    'start': [null, null],
+    'select': [null, null],
+    'circle': [null, null],
+    'square': [null, null],
+    'triangle': [null, null],
+    'x': [null, null],
+    'l': [null, null],
+    'r': [null, null],
+}
 
 const DEFAULT_NES2 = {
     'up': [null, null],
@@ -123,7 +152,8 @@ const CONTROLLERS = {
     SMS: 2,
     GAMEBOY: 3,
     GAMEGEAR: 4,
-    GENESIS: 5
+    GENESIS: 5,
+    PS1_DUALSHOCK: 6
 }
 
 const QWERTYVALS = [
@@ -424,6 +454,9 @@ class controller_input_config_t {
             case CONTROLLERS.GENESIS:
                 this.setup_genesis();
                 break;
+            case CONTROLLERS.PS1_DUALSHOCK:
+                this.setup_ps1dualshock();
+                break;
         }
         this.setup_latches();
     }
@@ -553,6 +586,37 @@ class controller_input_config_t {
         this.buttons.b = new controller_button_t(c,'b', 142, 54, 166, 75);
         this.buttons.a = new controller_button_t(c,'a', 172, 54, 194, 75);
     }
+
+    setup_ps1dualshock() {
+        if (typeof this.savedict[this.id] === 'undefined') {
+            this.changed = true;
+            switch(this.id) {
+                case 'ps1p1cfg':
+                    this.savedict[this.id] = DEFAULT_PS1P1;
+                    break;
+                case 'ps1p2cfg':
+                    this.savedict[this.id] = DEFAULT_PS1P2;
+                    break;
+            }
+        }
+        this.arrow_exclude = true;
+        let c = this.savedict[this.id];
+
+        // TODO: NOTCORRECT
+        this.buttons.up = new controller_button_t(c,'up', 63, 58, 79, 73);
+        this.buttons.left = new controller_button_t(c,'left', 42, 75, 59, 93);
+        this.buttons.right = new controller_button_t(c,'right', 80, 75, 94, 94);
+        this.buttons.down = new controller_button_t(c,'down', 63, 93, 78, 108);
+        this.buttons.select = new controller_button_t(c,'select', 117, 82, 140, 105);
+        this.buttons.start = new controller_button_t(c,'start', 151, 82, 171, 105);
+        this.buttons.l = new controller_button_t(c,'l', 37, 1, 105, 32);
+        this.buttons.r = new controller_button_t(c,'r', 206, 1, 278, 32);
+        this.buttons.circle = new controller_button_t(c,'circle', 204, 73, 227, 96);
+        this.buttons.square = new controller_button_t(c,'square', 232, 47, 255, 74);
+        this.buttons.triangle = new controller_button_t(c,'triangle', 231, 95, 255, 118);
+        this.buttons.x = new controller_button_t(c,'x', 260, 69, 282, 96);
+    }
+
 
     setup_gg() {
         if (typeof this.savedict[this.id] === 'undefined') {
@@ -692,6 +756,8 @@ class input_config_t {
             sms2: new controller_input_config_t('SMS player 2', 'sms2cfg', this.savedict, CONTROLLERS.SMS),
             gb: new controller_input_config_t('GameBoy player', 'gbcfg', this.savedict, CONTROLLERS.GAMEBOY),
             gg: new controller_input_config_t('GameGear', 'ggcfg', this.savedict, CONTROLLERS.GAMEGEAR),
+            ps1p1: new controller_input_config_t('PlayStation 1 player 1', 'ps1p1cfg', this.savedict, CONTROLLERS.PS1_DUALSHOCK)
+            ps1p2: new controller_input_config_t('PlayStation 1 player 2', 'ps1p2cfg', this.savedict, CONTROLLERS.PS1_DUALSHOCK)
             //genesis1: new controller_input_config_t('Genesis player 1', 'genesiscfg', this.savedict, CONTROLLERS.GENESIS)
         }
         this.ui_els = {
@@ -764,6 +830,10 @@ class input_config_t {
             case 'settings_tab_input_sms':
                 this.selected_controller = this.controller_els.sms1;
                 this.selected_button = this.selected_controller.buttons.b1;
+                break;
+            case 'settings_tab_input_ps1':
+                this.selected_controller = this.controller_els.ps1p1;
+                this.selected_button = this.selected_controller.buttons.x;
                 break;
             case 'settings_tab_input_emu':
                 this.selected_controller = this.emu_input;

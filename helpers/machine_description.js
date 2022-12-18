@@ -5,7 +5,8 @@ const INPUT_TYPES = Object.freeze({
     SNES_CONTROLLER: 1,
     KEYBOARD: 2,
     SMS_CONTROLLER: 3,
-    GB_CONTROLLER: 4
+    GB_CONTROLLER: 4,
+    PS1_DUALSHOCK: 5
 })
 
 const MD_TIMING = {

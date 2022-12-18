@@ -75,6 +75,13 @@ importScripts('/helpers/as_wrapper.js')
 	, '/system/snes/ppu/snes_ppu_worker.js',
 )*/
 
+// PS1
+importScripts(
+	'/component/cpu/r3000/r3000_opcodes/js', 'component/cpu/r3000/r3000.js',
+	'/component/controller/ps1_dualshock.js', 'system/ps1/ps1_cpu.js',
+	'/system/ps1/gpu/gte2.js', '/system/ps1/ps1.js',
+);
+
 
 class js_wrapper_t {
     constructor() {
@@ -161,6 +168,9 @@ class js_wrapper_t {
 			case 'gb_as':
 				this.emu_wasm = true;
 				this.as_wrapper.wasm.gp_set_system(this.as_wrapper.global_player, to);
+				break;
+			case 'ps1':
+				this.system = new PS1(bios);
 				break;
 			case 'spectrum':
 				this.system = new ZXSpectrum(bios, ZXSpectrum_variants.s48k);
