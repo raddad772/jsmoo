@@ -27,13 +27,15 @@ const TRACERS = Object.freeze({
     WDC: 2,
     M6502: 3,
     Z80: 4,
-    SM83: 5
+    SM83: 5,
+    R3000: 6
 });
 
 const TRACE_BG_COLORS = Object.freeze({
     [TRACERS.R5A22]: '#ddf',
     [TRACERS.WDC]: '#dfd',
     [TRACERS.SPC]: '#fdd',
+    [TRACERS.R3000]: '#dfd',
 })
 
 const WATCH_WHICH = Object.freeze({
@@ -395,6 +397,9 @@ class debugger_t {
             this.tracing_for[kind] = CPU_DO_TRACING_AT_START;
         }
         else if (kind === D_RESOURCE_TYPES.WDC65C816) {
+            this.tracing_for[kind] = CPU_DO_TRACING_AT_START;
+        }
+        else if (kind === D_RESOURCE_TYPES.R3000) {
             this.tracing_for[kind] = CPU_DO_TRACING_AT_START;
         }
         else if (kind === D_RESOURCE_TYPES.SPC700) {

@@ -756,7 +756,7 @@ class input_config_t {
             sms2: new controller_input_config_t('SMS player 2', 'sms2cfg', this.savedict, CONTROLLERS.SMS),
             gb: new controller_input_config_t('GameBoy player', 'gbcfg', this.savedict, CONTROLLERS.GAMEBOY),
             gg: new controller_input_config_t('GameGear', 'ggcfg', this.savedict, CONTROLLERS.GAMEGEAR),
-            ps1p1: new controller_input_config_t('PlayStation 1 player 1', 'ps1p1cfg', this.savedict, CONTROLLERS.PS1_DUALSHOCK)
+            ps1p1: new controller_input_config_t('PlayStation 1 player 1', 'ps1p1cfg', this.savedict, CONTROLLERS.PS1_DUALSHOCK),
             ps1p2: new controller_input_config_t('PlayStation 1 player 2', 'ps1p2cfg', this.savedict, CONTROLLERS.PS1_DUALSHOCK)
             //genesis1: new controller_input_config_t('Genesis player 1', 'genesiscfg', this.savedict, CONTROLLERS.GENESIS)
         }
