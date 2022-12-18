@@ -209,7 +209,7 @@ class PS1 {
     }
 
     run_frame() {
-        this.run_cycles(this.clock.cycles_left_this_frame;);
+        this.run_cycles(this.clock.cycles_left_this_frame);
         return {buffer_num: this.gpu.last_used_buffer }//, sound_buffer: this.apu.output.get_buffer()}
     }
 }

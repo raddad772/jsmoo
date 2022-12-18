@@ -297,7 +297,7 @@ class GameBoy {
     }
 
     run_frame() {
-        this.run_cycles(this.clock.cycles_left_this_frame;);
+        this.run_cycles(this.clock.cycles_left_this_frame);
         return {buffer_num: this.ppu.last_used_buffer, sound_buffer: this.apu.output.get_buffer()}
     }
 

@@ -134,7 +134,7 @@
 
     <meta charset="utf-8">
     <link rel="stylesheet" href="jsmoo.css">
-    <title>JSMoo NES/SNES/SMS/ZX Spectrum Experimental Emulator</title>
+    <title>JSMoo Multi-System Experimental Emulator</title>
 </head>
 
 <body>
@@ -190,6 +190,19 @@
             <div style="width: 220px; margin-left:280px;">
                 Player 2
                 <img src="/img/nes-controller.svg" id="nes2cfg" alt="NES player 2" width="220px"/>
+            </div>
+        </div>
+    </div>
+    <div id="settings_tab_input_ps1" class="ui-tab-settings-input" style="display:none">
+        Click a button to assign key
+        <div style="padding-top: 10px; padding-left: 10px;">
+            <div style="width: 220px; float: left;">
+                Player 1
+                <img src="/img/nes-controller.svg" id="ps1p1cfg" alt="NES player 1" width="220px"/>
+            </div>
+            <div style="width: 220px; margin-left:280px;">
+                Player 2
+                <img src="/img/nes-controller.svg" id="ps1p2cfg" alt="NES player 2" width="220px"/>
             </div>
         </div>
     </div>
@@ -265,14 +278,15 @@
     <div class="grid-child" style="border: 1px solid black; padding: 4px; margin-left: auto; margin-right: 0; min-width: 200px;">
         <span>SYSTEM SELECT<br><select id="systemselect" name="systemselect">
             <option value="snes">SNES</option>
+            <option value="ps1">PSX</option>
             <option value="nes">NES</option>
             <option value="nes_as">NES (AS)</option>
             <option value="gb">Nintendo GameBoy</option>
             <option value="gb_as">Nintendo GameBoy (AS)</option>
             <option value="gbc">Nintendo GameBoy Color</option>
             <option value="gg">Sega GameGear</option>
-            <option value="spectrum">ZX Spectrum 48</option>
             <option value="sms">Sega Master System v2</option>
+            <option value="spectrum">ZX Spectrum 48</option>
             <!--<option value="gg">GameGear</option>-->
             <!--<option value="genericz80">Generic Z80</option>-->
             <!--<option value="genesis">Sega Genesis</option>
