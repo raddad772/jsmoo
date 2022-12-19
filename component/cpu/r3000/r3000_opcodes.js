@@ -7,7 +7,9 @@ const R3000_MNs = [
     // when SPECIAL
     'SLL', 'SRL', 'SRA', 'SLLV', 'SRLV', 'SRAV', 'JR', 'JALR', 'SYSCALL', 'BREAK', 'MFHI', 'MTHI',
     'MFLO', 'MTLO', 'MULT', 'MULTU', 'DIV', 'DIVU', 'ADD', 'ADDU', 'SUB', 'SUBU', 'AND', 'OR', 'XOR',
-    'NOR', 'SLT', 'SLTU', 'NA'
+    'NOR', 'SLT', 'SLTU', 'NA',
+    // COP sub-instructions
+    'MFC', 'CFC', 'MTC', 'CTC', 'BCF', 'BCT', 'COPimm'
 ]
 
 function R3000_MN_gen() {
@@ -46,6 +48,8 @@ const R3000_MN = Object.freeze({
     MULT: 50, MULTU: 51, DIV: 52, DIVU: 53, ADD: 54,
     ADDU: 55, SUB: 56, SUBU: 57, AND: 58, OR: 59,
     XOR: 60, NOR: 61, SLT: 62, SLTU: 63, NA: 64,
+    MFC: 65, CFC: 66, MTC: 67, CTC: 68, BCF: 69,
+    BCT: 70, COPimm: 71,
 });
 
 const R3000_MN_R = Object.freeze({
@@ -62,8 +66,9 @@ const R3000_MN_R = Object.freeze({
     50: 'MULT', 51: 'MULTU', 52: 'DIV', 53: 'DIVU', 54: 'ADD',
     55: 'ADDU', 56: 'SUB', 57: 'SUBU', 58: 'AND', 59: 'OR',
     60: 'XOR', 61: 'NOR', 62: 'SLT', 63: 'SLTU', 64: 'NA',
+    65: 'MFC', 66: 'CFC', 67: 'MTC', 68: 'CTC', 69: 'BCF',
+    70: 'BCT', 71: 'COPimm',
 });
-
 class R3000_opcode {
     constructor(opcode, mnemonic, func) {
         this.opcode = opcode;
@@ -74,10 +79,11 @@ class R3000_opcode {
 
 /**
  * @param {Number} opcode
+ * @param {Number} arg
  * @param {R3000_regs_t} regs
  * @param {R3000_bus_interface_t} bus
  */
-function R3000_fNA(opcode, regs, bus) {
+function R3000_fNA(opcode, arg, regs, bus) {
     console.log('BAD INSTRUCTION', hex8(opcode));
 }
 
@@ -100,10 +106,11 @@ function R3000_fs_reg_write(regs, bus, target, value) {
 
 /**
  * @param {Number} opcode
+ * @param {Number} arg
  * @param {R3000_regs_t} regs
  * @param {R3000_bus_interface_t} bus
  */
-function R3000_fBcondZ(opcode, regs, bus) {
+function R3000_fBcondZ(opcode, arg, regs, bus) {
 /*
   000001 | rs   | 00000| <--immediate16bit--> | bltz
   000001 | rs   | 00001| <--immediate16bit--> | bgez
@@ -142,40 +149,43 @@ function R3000_fBcondZ(opcode, regs, bus) {
 
 /**
  * @param {Number} opcode
+ * @param {Number} arg
  * @param {R3000_regs_t} regs
  * @param {R3000_bus_interface_t} bus
  */
-function R3000_fJ(opcode, regs, bus) {
+function R3000_fJ(opcode, arg, regs, bus) {
 /*
   00001x | <---------immediate26bit---------> | j/jal
   */
     R3000_branch(regs, bus,
-        ((regs.PC & 0xF0000000) + (mksigned26(opcode & 0x3FFFFFF) * 4)) & 0xFFFFFFFF,
+        ((regs.PC & 0xF0000000) + ((opcode & 0x3FFFFFF) * 4)) & 0xFFFFFFFF,
         regs.R[(opcode >>> 21) & 0x1F] !== regs.R[(opcode >>> 16) & 0x1F],
         false);
 }
 
 /**
  * @param {Number} opcode
+ * @param {Number} arg
  * @param {R3000_regs_t} regs
  * @param {R3000_bus_interface_t} bus
  */
-function R3000_fJAL(opcode, regs, bus) {
+function R3000_fJAL(opcode, arg, regs, bus) {
 /*
   00001x | <---------immediate26bit---------> | j/jal
   */
     R3000_branch(regs, bus,
-        ((regs.PC & 0xF0000000) + (mksigned26(opcode & 0x3FFFFFF) * 4)) & 0xFFFFFFFF,
+        ((regs.PC & 0xF0000000) + ((opcode & 0x3FFFFFF) * 4)) & 0xFFFFFFFF,
         regs.R[(opcode >>> 21) & 0x1F] !== regs.R[(opcode >>> 16) & 0x1F],
         true);
 }
 
 /**
  * @param {Number} opcode
+ * @param {Number} arg
  * @param {R3000_regs_t} regs
  * @param {R3000_bus_interface_t} bus
  */
-function R3000_fBEQ(opcode, regs, bus) {
+function R3000_fBEQ(opcode, arg, regs, bus) {
     // 00010x | rs   | rt   | <--immediate16bit--> |
     R3000_branch(regs, bus,
         (regs.PC + (mksigned16(opcode & 0xFFFF))) & 0xFFFFFFFF,
@@ -185,10 +195,11 @@ function R3000_fBEQ(opcode, regs, bus) {
 
 /**
  * @param {Number} opcode
+ * @param {Number} arg
  * @param {R3000_regs_t} regs
  * @param {R3000_bus_interface_t} bus
  */
-function R3000_fBNE(opcode, regs, bus) {
+function R3000_fBNE(opcode, arg, regs, bus) {
     // 00010x | rs   | rt   | <--immediate16bit--> |\
     R3000_branch(regs, bus,
         (regs.PC + (mksigned16(opcode & 0xFFFF))) & 0xFFFFFFFF,
@@ -198,10 +209,11 @@ function R3000_fBNE(opcode, regs, bus) {
 
 /**
  * @param {Number} opcode
+ * @param {Number} arg
  * @param {R3000_regs_t} regs
  * @param {R3000_bus_interface_t} bus
  */
-function R3000_fBLEZ(opcode, regs, bus) {
+function R3000_fBLEZ(opcode, arg, regs, bus) {
     // 00010x | rs   | rt   | <--immediate16bit--> |
     R3000_branch(regs, bus,
         (regs.PC + (mksigned16(opcode & 0xFFFF))) & 0xFFFFFFFF,
@@ -211,10 +223,11 @@ function R3000_fBLEZ(opcode, regs, bus) {
 
 /**
  * @param {Number} opcode
+ * @param {Number} arg
  * @param {R3000_regs_t} regs
  * @param {R3000_bus_interface_t} bus
  */
-function R3000_fBGTZ(opcode, regs, bus) {
+function R3000_fBGTZ(opcode, arg, regs, bus) {
     // 00010x | rs   | rt   | <--immediate16bit--> |
     R3000_branch(regs, bus,
         (regs.PC + (mksigned16(opcode & 0xFFFF))) & 0xFFFFFFFF,
@@ -224,16 +237,64 @@ function R3000_fBGTZ(opcode, regs, bus) {
 
 /**
  * @param {Number} opcode
+ * @param {Number} arg
  * @param {R3000_regs_t} regs
  * @param {R3000_bus_interface_t} bus
  */
-function R3000_fADDI(opcode, regs, bus) {
+function R3000_fADDI(opcode, arg, regs, bus) {
     //   001xxx | rs   | rt   | <--immediate16bit--> | alu-imm
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
     let imm = mksigned16(opcode & 0xFFFF);
 
 }
+
+/**
+ * @param {Number} opcode
+ * @param {Number} arg
+ * @param {R3000_regs_t} regs
+ * @param {R3000_bus_interface_t} bus
+ */
+function R3000_fCOP(opcode, arg, regs, bus) {
+    // argument = COP#
+    let ins;
+    if ((opcode & 0x4000000) === 0) { // MFC, CFC, MTC, CTC, BC.F, BC.T
+        switch ((opcode >>> 21) & 15) {
+            case 0: // MFCn
+                ins = R3000_MN.MFC;
+                break;
+            case 2: // CFCn
+                ins = R3000_MN.CFC;
+                break;
+            case 4: // MTCn
+                ins = R3000_MN.MTC;
+                break;
+            case 6: // CTCn
+                ins = R3000_MN.CTC;
+                break;
+            case 8: // could be a few...
+                switch ((opcode >>> 16) & 0x1F) {
+                    case 0: // BCnF
+                        ins = R3000_MN.BCF;
+                        break;
+                    case 1: // BCnT
+                        ins = R3000_MN.BCT;
+                        break;
+                    default:
+                        console.log('Could not decode COP instruction2', hex8(opcode));
+                        return;
+                }
+                break;
+            default:
+                console.log('Could not decode COP instruction', hex8(opcode));
+                return;
+        }
+    } else { // COPn imm
+
+    }
+
+}
+
 
 
 /**
@@ -309,33 +370,37 @@ function R3000_generate_opcodes() {
                 o = R3000_fADDI;
                 break;
             case 0x09: // ADDIU
-                m = R3000_MN.BcondZ;
-                o = R3000_fBcondZ;
+                m = R3000_MN.ADDIU;
+                o = R3000_fADDIU;
                 break;
             case 0x0A: // SLTI
-                m = R3000_MN.BcondZ;
-                o = R3000_fBcondZ;
+                m = R3000_MN.SLTI;
+                o = R3000_fSLTI;
                 break;
             case 0x0B: // SLTIU
-                m = R3000_MN.BcondZ;
-                o = R3000_fBcondZ;
+                m = R3000_MN.SLTIU;
+                o = R3000_fSLTIU;
                 break;
             case 0x0C: // ANDI
-                m = R3000_MN.BcondZ;
-                o = R3000_fBcondZ;
+                m = R3000_MN.ANDI;
+                o = R3000_fANDI;
                 break;
             case 0x0D: // ORI
-                m = R3000_MN.BcondZ;
-                o = R3000_fBcondZ;
+                m = R3000_MN.ORI;
+                o = R3000_fORI;
                 break;
             case 0x0E: // XORI
-                m = R3000_MN.BcondZ;
-                o = R3000_fBcondZ;
+                m = R3000_MN.XORI;
+                o = R3000_fXORI;
                 break;
             case 0x0F: // LUI
-                m = R3000_MN.BcondZ;
-                o = R3000_fBcondZ;
+                m = R3000_MN.LUI;
+                o = R3000_fLUI;
                 break;
+            case 0x10: // COP0
+                m = R3000_MN.COP0;
+                o = R3000_fCOP;
+                a = (op1 - 0x10);
         }
 
     }

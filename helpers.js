@@ -184,6 +184,27 @@ function mksigned13(what) {
 
 /**
  * @param {number} what
+ * @returns {string}
+ */
+function mksigned16h(what) {
+     what = what >= 0x8000 ? -(0x10000 - what) : what;
+     let o = hex4(Math.abs(what));
+     return (what < 0 ? '-' : '+') + o + 'h';
+}
+
+/**
+ * @param {number} what
+ * @returns {string}
+ */
+function mksigned16h4(what) {
+     what = what >= 0x8000 ? -(0x10000 - what) : what;
+     let o = hex5(Math.abs(what * 4));
+     return (what < 0 ? '-' : '+') + o + 'h';
+}
+
+
+/**
+ * @param {number} what
  * @returns {number}
  */
 function mksigned16(what) {
@@ -217,6 +238,18 @@ function hex4(val) {
     if (outstr.length < 4) outstr = '0' + outstr;
     if (outstr.length < 4) outstr = '0' + outstr;
     if (outstr.length < 4) outstr = '0' + outstr;
+    return outstr.toUpperCase();
+}
+
+/**
+ * @param {Number} val
+ */
+function hex5(val) {
+    let outstr = val.toString(16);
+    if (outstr.length < 5) outstr = '0' + outstr;
+    if (outstr.length < 5) outstr = '0' + outstr;
+    if (outstr.length < 5) outstr = '0' + outstr;
+    if (outstr.length < 5) outstr = '0' + outstr;
     return outstr.toUpperCase();
 }
 

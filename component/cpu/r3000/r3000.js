@@ -2,14 +2,28 @@
 
 class R3000_regs_t {
     constructor() {
-        // MIPS registers
+        // MIPS general-purpose registers, of which there are 32
         this.R = [
             0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0,
         ];
+
+        // Multiply/divide registers
         this.HI = this.LO = 0;
+
+        // Coprocessor registers, of which there are 64
+        this.COP = [
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0
+        ]
 
         // Internal registers
         this.next_addr_decode = 0;
@@ -164,18 +178,20 @@ class R3000_pipeline_t {
 
 }
 
-// Class to hold external interface, including function pointers
-class R3000_bus_interface_t {
-    constructor() {
-        this.pipe = new R3000_pipeline_t();
-        this.pins = new R3000_pins_t();
-    }
-}
-
 class R3000 {
     constructor() {
         this.regs = new R3000_regs_t();
         this.bus = new R3000_bus_interface_t();
+    }
+
+    reset() {
+        this.bus.pipe.clear();
+        this.regs.PC = 0x1FC00000;
+        // Fill instruction pipe with enough instructions
+        this.fetch_and_decode();
+        this.fetch_and_decode();
+        // Setup COP0 registers
+
     }
 
     cycle() {
@@ -213,7 +229,7 @@ class R3000 {
     }
 
     fetch_and_decode() {
-        let IR = this.bus.CPU_read(this.regs.PC);
+        let IR = this.bus.mem.CPU_read(this.regs.PC);
         let current = this.bus.pipe.push();
         this.decode(IR, current);
         this.regs.PC += 4;
