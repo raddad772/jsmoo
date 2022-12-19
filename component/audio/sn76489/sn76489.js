@@ -139,7 +139,7 @@ class SN76489 {
             if (this.noise.countdown) {
                 this.polarity[3] = this.noise.lfsr & 1;
 
-                if (this.noise.mode) { // White nosie mode
+                if (this.noise.mode) { // White noise mode
                     let p = this.noise.lfsr & 9;
                     p ^= (p >>> 8);
                     p ^= (p >>> 4);
