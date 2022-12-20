@@ -130,11 +130,11 @@ function R3000_fBcondZ(opcode, arg, regs, bus) {
             break;
         case 0x10: // BLTZAL
             take = regs.R[rs] < 0;
-            R3000_fs_reg_write(regs, bus, 0xA, regs.PC);
+            R3000_fs_reg_write(regs, bus, 31, regs.PC);
             break;
         case 0x11: // BGEZAL
             take = regs.R[rs] >= 0;
-            R3000_fs_reg_write(regs, bus, 0xA, regs.PC);
+            R3000_fs_reg_write(regs, bus, 31, regs.PC);
             break;
         default:
             console.log('Bad B..Z instruction!', hex8(opcode));
@@ -308,7 +308,7 @@ function R3000_branch(regs, bus, new_addr, doit, link) {
     if (doit)
         bus.pipe.peek().new_PC = new_addr;
     if (link)
-        R3000_fs_reg_write(regs, bus, 0xA, regs.PC);
+        R3000_fs_reg_write(regs, bus, 31, regs.PC);
 }
 
 
