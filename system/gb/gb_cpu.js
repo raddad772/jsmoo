@@ -607,7 +607,9 @@ class GB_CPU {
             }
             this.io.speed_switch_cnt--;
             if (this.io.speed_switch_cnt === 0) {
+                console.log('SWITCHING SPEED!');
                 this.switch_speed();
+                this.io.speed_switch_prepare = 0;
                 this.cpu.regs.TCU++;
                 this.cpu.regs.STP = 0;
                 this.clock.SYSCLK = 0;
@@ -639,5 +641,6 @@ class GB_CPU {
         else {
             this.timer.inc();
         }
+        this.clock.SYSCLK = this.timer.SYSCLK;
     }
 }

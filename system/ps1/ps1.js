@@ -172,9 +172,14 @@ class PS1 {
     }
 
     load_ROM_from_RAM(name, ROM) {
-        console.log('Loading CD....')
-        this.cdrom.load_ROM_from_RAM(ROM);
-        this.reset();
+        if (name.toUpperCase().indexOf('.EXE') !== -1) {
+            this.sideload_EXE(ROM);
+        }
+        else {
+            console.log('Loading CD....')
+            this.cdrom.load_ROM_from_RAM(ROM);
+            this.reset();
+        }
     }
 
     reset() {

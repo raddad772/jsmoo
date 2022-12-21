@@ -32,6 +32,19 @@ const R3000_reg = Object.freeze ({
     t8: 24, t9: 25, k0: 26, k1: 27, gp: 28, sp: 29, fp: 30, ra: 31
 });
 
+const R3000_COP0_reg = Object.freeze({
+    PRId: 15,
+    SR: 12,
+    Cause: 13,
+    EPC: 14,
+    BadVaddr: 8,
+    Config: 3,
+    BusCtrl: 2,
+    PortSize: 10,
+    Count: 9,
+    Compare: 11
+});
+
 const R3000_reg_alias = Object.freeze([
     'zero', 'at', 'v0', 'v1', // r0-3
     'a0', 'a1', 'a2', 'a3', // r4-7

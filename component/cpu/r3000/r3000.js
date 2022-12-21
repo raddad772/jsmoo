@@ -196,8 +196,12 @@ class R3000_pipeline_t {
 
 class R3000 {
     constructor() {
+        this.clock = new PS1_clock();
         this.regs = new R3000_regs_t();
-        this.bus = new R3000_bus_interface_t();
+        this.pipe = new R3000_pipeline_t();
+        this.pins = new R3000_pins_t();
+        this.mem = new PS1_mem();
+        this.multiplier = new R3000_multiplier_t(this.clock);
         this.opcode_table = R3000_generate_opcodes();
     }
 
@@ -230,7 +234,7 @@ class R3000 {
         }
         else {
             if (current.op !== null)
-                current.op.func(current.opcode, current.op, current.op.arg, this.regs, this.bus, current.op.arg);
+                current.op.func(current.opcode, current.op, this);
         }
 
         // Branch delay slot
@@ -257,5 +261,56 @@ class R3000 {
         this.decode(IR, current);
         current.opcode = IR;
         this.regs.PC += 4;
+    }
+
+        /**
+     * @param {number} COP
+     * @param {R3000_regs_t} regs
+     * @param {number} num
+     * @param {number} val
+     * @constructor
+     */
+    COP_write_reg(COP, num, val) {
+        if (COP === 0) {
+            // TODO: add 1-cycle delay
+            this.regs.COP0[num] = val;
+            return;
+        }
+        console.log('write to unimplemented COP');
+    }
+
+    COP_read_reg(COP, num, val) {
+        if (COP === 0) {
+            return this.regs.COP0[num];
+        }
+        console.log('read from unimplemented COP');
+        return 0xFF;
+    }
+
+    exception(code, branch_delay=false) {
+        code <<= 2;
+        let vector = 0x80000800;
+        if (this.regs.COP0[R3000_COP0_reg.SR] & 0x200000) {
+            vector = 0xBFC00180;
+        }
+        let raddr;
+        if (!branch_delay)
+            raddr = (this.regs.PC - 4) & 0xFFFFFFFF;
+        else
+        {
+            raddr = this.regs.PC;
+            code |= 0x80000000;
+        }
+        this.regs.COP0[R3000_COP0_reg.EPC] = raddr;
+        this.flush_pipe();
+        this.regs.PC = vector;
+    }
+
+    // Apply any waiting register changes,
+    //  first in pipe.current, then in later
+    //  ones.
+    // Then clear out the pipe.
+    flush_pipe() {
+
     }
 }

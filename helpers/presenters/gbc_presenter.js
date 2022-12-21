@@ -8,9 +8,6 @@ function GBC_present(data, imgdata, GB_output_buffer) {
             let di = ppui * 4;
             let r, g, b;
             let o = gbo[ppui];
-            /*if (y === 1) {
-                console.log(x, o);
-            }*/
             r = (o & 0x1F);
             g = (o >>> 5) & 0x1F;
             b = (o >>> 10) & 0x1F;
