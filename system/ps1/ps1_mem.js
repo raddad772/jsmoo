@@ -126,12 +126,146 @@ class PS1_mem {
     }
 }
 
+class u32_dual_return {
+    construct() {
+        this.hi = 0;
+        this.lo = 0;
+    }
+
+    hexhi() {
+        return hex4(this.hi);
+    }
+
+    hexlo() {
+        return hex4(this.lo);
+    }
+}
+
+function u32_multiply(a, b) {
+    let ret = new u32_dual_return();
+    let c = BigInt(a >>> 0);
+    let d = BigInt(b >>> 0);
+    let e = c * d;
+    ret.hi = Number(BigInt.asUintN(32, e >> BigInt(32)))
+    ret.lo = Number(BigInt.asUintN(32, e))
+    return ret;
+}
+
+function i32_multiply(a, b) {
+    let ret = new u32_dual_return();
+    let c = BigInt(a & 0xFFFFFFFF);
+    let d = BigInt(b & 0xFFFFFFFF);
+    let e = c * d;
+    let hi = (e >> BigInt(32)) & BigInt(0xFFFFFFFF);
+    let lo = e & BigInt(0xFFFFFFFF);
+    ret.hi = Number(hi)
+    ret.lo = Number(lo);
+    return ret;
+}
+
+
+function i32_divide(a, b)
+{
+    let ret = new u32_dual_return();
+    let c = a & 0xFFFFFFFF;
+    let d = a & 0xFFFFFFFF;
+    ret.lo = (c / d) & 0xFFFFFFFF
+    ret.hi = c % d;
+    return ret;
+}
+
+function u32_divide(a, b) {
+    let ret = new u32_dual_return();
+    let c = a >>> 0;
+    let d = b >>> 0;
+    ret.lo = (c / d) >>> 0;
+    ret.hi = c % d;
+    return ret;
+}
+
+function mtest() {
+    let a = -1;
+    let b = 6;
+    let r = i32_multiply(a, b);
+    console.log('MULTIPLY', hex4(a), 'by', hex4(b) + '.', hex4(r.hi), hex4(r.lo))
+}
+mtest()
+
+class R3000_multiplier_t {
+    constructor() {
+        this.HI = 0;
+        this.LO = 0;
+
+        this.op1 = 0;
+        this.op2 = 0;
+        this.op_going = 0;
+        this.op_kind = 0; // 0 for multiply signed, 1 for multiply unsinged
+                          // 2 for div signed, 2 for div unsigned
+        this.clock_start = 0; // Clock time of start
+        this.clock_end = 0; // Clock time of end
+    }
+    
+    // Finishes up multiply or divide
+    finish() {
+        if (!this.op_going)
+            return;
+
+        let ret;
+        switch(this.op_kind) {
+            case 0: // signed multiply
+                ret = i32_multiply(this.op1, this.op2);
+                break;
+            case 1: // unsigned multiply
+                ret = u32_multiply(this.op1, this.op2);
+                break;
+            case 2: // signed divide
+                ret = i32_divide(this.op1, this.op2);
+                break;
+            case 3: // unsigned divide
+                ret = u32_divide(this.op1, this.op2);
+                break;
+        }
+        this.HI = ret.hi;
+        this.LO = ret.lo;
+
+        this.op_going = 0;
+    }
+}
+
+
 // Class to hold external interface, including function pointers
 class R3000_bus_interface_t {
-    constructor() {
+    constructor(clock) {
         this.pipe = new R3000_pipeline_t();
         this.pins = new R3000_pins_t();
         this.mem = new PS1_mem();
+        this.clock = clock;
+        this.multiplier = new R3000_multiplier_t();
     }
+
+    /**
+     * @param {number} COP
+     * @param {R3000_regs_t} regs
+     * @param {number} num
+     * @param {number} val
+     * @constructor
+     */
+    COP_write_reg(COP, regs, num, val) {
+        if (COP === 0) {
+            // TODO: add 1-cycle delay
+            regs.COP0[num] = val;
+            return;
+        }
+        console.log('write to unimplemented COP');
+    }
+
+    COP_read_reg(COP, regs, num, val) {
+        if (COP === 0) {
+            return regs.COP0;
+        }
+        console.log('read from unimplemented COP');
+        return 0xFF;
+    }
+    
 }
 

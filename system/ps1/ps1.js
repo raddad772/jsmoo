@@ -88,8 +88,8 @@ class PS1_clock {
 
 class PS1 {
     constructor() {
-        this.bus = new PS1_bus();
         this.clock = new PS1_clock();
+        this.bus = new PS1_bus(this.clock);
 
         this.cpu = new PS1_CPU(this.clock, this.bus);
         this.gpu = new PS1_GTE2(this.clock, this.bus);
