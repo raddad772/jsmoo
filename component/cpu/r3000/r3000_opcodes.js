@@ -8,6 +8,8 @@ const R3000_MNs = [
     'SLL', 'SRL', 'SRA', 'SLLV', 'SRLV', 'SRAV', 'JR', 'JALR', 'SYSCALL', 'BREAK', 'MFHI', 'MTHI',
     'MFLO', 'MTLO', 'MULT', 'MULTU', 'DIV', 'DIVU', 'ADD', 'ADDU', 'SUB', 'SUBU', 'AND', 'OR', 'XOR',
     'NOR', 'SLT', 'SLTU', 'NA',
+    // a few missing ones
+    'LWCx', 'SWCx', 'COPx',
     // COP sub-instructions
     'MFC', 'CFC', 'MTC', 'CTC', 'BCF', 'BCT', 'COPimm'
 ]
@@ -48,8 +50,8 @@ const R3000_MN = Object.freeze({
     MULT: 50, MULTU: 51, DIV: 52, DIVU: 53, ADD: 54,
     ADDU: 55, SUB: 56, SUBU: 57, AND: 58, OR: 59,
     XOR: 60, NOR: 61, SLT: 62, SLTU: 63, NA: 64,
-    MFC: 65, CFC: 66, MTC: 67, CTC: 68, BCF: 69,
-    BCT: 70, COPimm: 71,
+    LWCx: 65, SWCx: 66, COPx: 67, MFC: 68, CFC: 69,
+    MTC: 70, CTC: 71, BCF: 72, BCT: 73, COPimm: 74,
 });
 
 const R3000_MN_R = Object.freeze({
@@ -66,249 +68,17 @@ const R3000_MN_R = Object.freeze({
     50: 'MULT', 51: 'MULTU', 52: 'DIV', 53: 'DIVU', 54: 'ADD',
     55: 'ADDU', 56: 'SUB', 57: 'SUBU', 58: 'AND', 59: 'OR',
     60: 'XOR', 61: 'NOR', 62: 'SLT', 63: 'SLTU', 64: 'NA',
-    65: 'MFC', 66: 'CFC', 67: 'MTC', 68: 'CTC', 69: 'BCF',
-    70: 'BCT', 71: 'COPimm',
+    65: 'LWCx', 66: 'SWCx', 67: 'COPx', 68: 'MFC', 69: 'CFC',
+    70: 'MTC', 71: 'CTC', 72: 'BCF', 73: 'BCT', 74: 'COPimm',
 });
+
 class R3000_opcode {
-    constructor(opcode, mnemonic, func) {
+    constructor(opcode, mnemonic, func, arg) {
         this.opcode = opcode;
         this.mnemonic = mnemonic;
         this.func = func;
+        this.arg = arg;
     }
-}
-
-/**
- * @param {Number} opcode
- * @param {Number} arg
- * @param {R3000_regs_t} regs
- * @param {R3000_bus_interface_t} bus
- */
-function R3000_fNA(opcode, arg, regs, bus) {
-    console.log('BAD INSTRUCTION', hex8(opcode));
-}
-
-/**
- * @param {R3000_regs_t} regs
- * @param {R3000_bus_interface_t} bus
- * @param {number} target
- * @param {number} value
- */
-function R3000_fs_reg_write(regs, bus, target, value) {
-    regs.R[target] = value;
-    let p = bus.pipe.peek();
-    if (p === null) {
-        console.log('PIPE EMPTY ERROR!');
-        return;
-    }
-
-    if (p.target === target) p.target = -1;
-}
-
-/**
- * @param {Number} opcode
- * @param {Number} arg
- * @param {R3000_regs_t} regs
- * @param {R3000_bus_interface_t} bus
- */
-function R3000_fBcondZ(opcode, arg, regs, bus) {
-/*
-  000001 | rs   | 00000| <--immediate16bit--> | bltz
-  000001 | rs   | 00001| <--immediate16bit--> | bgez
-  000001 | rs   | 10000| <--immediate16bit--> | bltzal
-  000001 | rs   | 10001| <--immediate16bit--> | bgezal
- */
-    let rs = (opcode >>> 21) & 0x1F;
-    let w = (opcode >>> 16) & 0x1F;
-    let imm = opcode & 0xFFFF;
-    let take = false;
-    switch(w) {
-        case 0: // BLTZ
-            take = regs.R[rs] < 0;
-            break;
-        case 1: // BGEZ
-            take = regs.R[rs] >= 0;
-            break;
-        case 0x10: // BLTZAL
-            take = regs.R[rs] < 0;
-            R3000_fs_reg_write(regs, bus, 31, regs.PC);
-            break;
-        case 0x11: // BGEZAL
-            take = regs.R[rs] >= 0;
-            R3000_fs_reg_write(regs, bus, 31, regs.PC);
-            break;
-        default:
-            console.log('Bad B..Z instruction!', hex8(opcode));
-            return;
-    }
-    R3000_branch(regs, bus,
-        (regs.PC + (mksigned16(imm) * 4)) & 0xFFFFFFFF,
-        true,
-        false
-        )
-}
-
-/**
- * @param {Number} opcode
- * @param {Number} arg
- * @param {R3000_regs_t} regs
- * @param {R3000_bus_interface_t} bus
- */
-function R3000_fJ(opcode, arg, regs, bus) {
-/*
-  00001x | <---------immediate26bit---------> | j/jal
-  */
-    R3000_branch(regs, bus,
-        ((regs.PC & 0xF0000000) + ((opcode & 0x3FFFFFF) * 4)) & 0xFFFFFFFF,
-        regs.R[(opcode >>> 21) & 0x1F] !== regs.R[(opcode >>> 16) & 0x1F],
-        false);
-}
-
-/**
- * @param {Number} opcode
- * @param {Number} arg
- * @param {R3000_regs_t} regs
- * @param {R3000_bus_interface_t} bus
- */
-function R3000_fJAL(opcode, arg, regs, bus) {
-/*
-  00001x | <---------immediate26bit---------> | j/jal
-  */
-    R3000_branch(regs, bus,
-        ((regs.PC & 0xF0000000) + ((opcode & 0x3FFFFFF) * 4)) & 0xFFFFFFFF,
-        regs.R[(opcode >>> 21) & 0x1F] !== regs.R[(opcode >>> 16) & 0x1F],
-        true);
-}
-
-/**
- * @param {Number} opcode
- * @param {Number} arg
- * @param {R3000_regs_t} regs
- * @param {R3000_bus_interface_t} bus
- */
-function R3000_fBEQ(opcode, arg, regs, bus) {
-    // 00010x | rs   | rt   | <--immediate16bit--> |
-    R3000_branch(regs, bus,
-        (regs.PC + (mksigned16(opcode & 0xFFFF))) & 0xFFFFFFFF,
-        regs.R[(opcode >>> 21) & 0x1F] === regs.R[(opcode >>> 16) & 0x1F],
-        false);
-}
-
-/**
- * @param {Number} opcode
- * @param {Number} arg
- * @param {R3000_regs_t} regs
- * @param {R3000_bus_interface_t} bus
- */
-function R3000_fBNE(opcode, arg, regs, bus) {
-    // 00010x | rs   | rt   | <--immediate16bit--> |\
-    R3000_branch(regs, bus,
-        (regs.PC + (mksigned16(opcode & 0xFFFF))) & 0xFFFFFFFF,
-        regs.R[(opcode >>> 21) & 0x1F] !== regs.R[(opcode >>> 16) & 0x1F],
-        false);
-}
-
-/**
- * @param {Number} opcode
- * @param {Number} arg
- * @param {R3000_regs_t} regs
- * @param {R3000_bus_interface_t} bus
- */
-function R3000_fBLEZ(opcode, arg, regs, bus) {
-    // 00010x | rs   | rt   | <--immediate16bit--> |
-    R3000_branch(regs, bus,
-        (regs.PC + (mksigned16(opcode & 0xFFFF))) & 0xFFFFFFFF,
-        regs.R[(opcode >>> 21) & 0x1F] <= 0,
-        false)
-}
-
-/**
- * @param {Number} opcode
- * @param {Number} arg
- * @param {R3000_regs_t} regs
- * @param {R3000_bus_interface_t} bus
- */
-function R3000_fBGTZ(opcode, arg, regs, bus) {
-    // 00010x | rs   | rt   | <--immediate16bit--> |
-    R3000_branch(regs, bus,
-        (regs.PC + (mksigned16(opcode & 0xFFFF))) & 0xFFFFFFFF,
-        regs.R[(opcode >>> 21) & 0x1F] > 0,
-        false)
-}
-
-/**
- * @param {Number} opcode
- * @param {Number} arg
- * @param {R3000_regs_t} regs
- * @param {R3000_bus_interface_t} bus
- */
-function R3000_fADDI(opcode, arg, regs, bus) {
-    //   001xxx | rs   | rt   | <--immediate16bit--> | alu-imm
-    let rs = (opcode >>> 21) & 0x1F;
-    let rt = (opcode >>> 16) & 0x1F;
-    let imm = mksigned16(opcode & 0xFFFF);
-
-}
-
-/**
- * @param {Number} opcode
- * @param {Number} arg
- * @param {R3000_regs_t} regs
- * @param {R3000_bus_interface_t} bus
- */
-function R3000_fCOP(opcode, arg, regs, bus) {
-    // argument = COP#
-    let ins;
-    if ((opcode & 0x4000000) === 0) { // MFC, CFC, MTC, CTC, BC.F, BC.T
-        switch ((opcode >>> 21) & 15) {
-            case 0: // MFCn
-                ins = R3000_MN.MFC;
-                break;
-            case 2: // CFCn
-                ins = R3000_MN.CFC;
-                break;
-            case 4: // MTCn
-                ins = R3000_MN.MTC;
-                break;
-            case 6: // CTCn
-                ins = R3000_MN.CTC;
-                break;
-            case 8: // could be a few...
-                switch ((opcode >>> 16) & 0x1F) {
-                    case 0: // BCnF
-                        ins = R3000_MN.BCF;
-                        break;
-                    case 1: // BCnT
-                        ins = R3000_MN.BCT;
-                        break;
-                    default:
-                        console.log('Could not decode COP instruction2', hex8(opcode));
-                        return;
-                }
-                break;
-            default:
-                console.log('Could not decode COP instruction', hex8(opcode));
-                return;
-        }
-    } else { // COPn imm
-
-    }
-
-}
-
-
-
-/**
- * @param {R3000_regs_t} regs
- * @param {R3000_bus_interface_t} bus
- * @param {number} new_addr
- * @param {boolean} doit
- * @param {boolean} link
- */
-function R3000_branch(regs, bus, new_addr, doit, link) {
-    if (doit)
-        bus.pipe.peek().new_PC = new_addr;
-    if (link)
-        R3000_fs_reg_write(regs, bus, 31, regs.PC);
 }
 
 
@@ -329,14 +99,128 @@ function R3000_generate_opcodes() {
  */
         let o = R3000_fNA;
         let m = R3000_MN.NA;
+        let a = null;
         switch(op1) {
             case 0x00: // SPECIAL
                 for (let op2 = 0; op2 < 0x3F; op2++) {
+                    a = null;
                     switch(op2) {
-
+                        case 0x00: // SLL
+                            m = R3000_MN.J;
+                            o = R3000_fSLL;
+                            break;
+                        case 0x02: // SRL
+                            m = R3000_MN.SRL;
+                            o = R3000_fSRL;
+                            break;
+                        case 0x03: // SRA
+                            m = R3000_MN.SRA;
+                            o = R3000_fSRA;
+                            break;
+                        case 0x4: // SLLV
+                            m = R3000_MN.SLLV;
+                            o = R3000_fSLLV;
+                            break;
+                        case 0x06: // SRLV
+                            m = R3000_MN.SRLV;
+                            o = R3000_fSRLV;
+                            break;
+                        case 0x07: // SRAV
+                            m = R3000_MN.SRAV;
+                            o = R3000_fSRAV;
+                            break;
+                        case 0x08: // JR
+                            m = R3000_MN.JR;
+                            o = R3000_fJR;
+                            break;
+                        case 0x09: // JALR
+                            m = R3000_MN.JALR;
+                            o = R3000_fJALR;
+                            break;
+                        case 0x0C: // SYSCALL
+                            break;
+                        case 0x0D: // BREAK
+                            break;
+                        case 0x10: // MFHI
+                            m = R3000_MN.MFHI;
+                            o = R3000_fMFHI;
+                            break;
+                        case 0x11: // MTHI
+                            m = R3000_MN.MTHI;
+                            o = R3000_fMTHI;
+                            break;
+                        case 0x12: // MFLO
+                            m = R3000_MN.MFLO;
+                            o = R3000_fMFLO;
+                            break;
+                        case 0x13: // MTLO
+                            m = R3000_MN.MTLO;
+                            o = R3000_fMTLO;
+                            break;
+                        case 0x18: // MULT
+                            m = R3000_MN.MULT;
+                            o = R3000_fMULT;
+                            break;
+                        case 0x19: // MULTU
+                            m = R3000_MN.MULTU;
+                            o = R3000_fMULTU;
+                            break;
+                        case 0x1A: // DIV
+                            m = R3000_MN.DIV;
+                            o = R3000_fDIV;
+                            break;
+                        case 0x1B: // DIVU
+                            m = R3000_MN.DIVU;
+                            o = R3000_fDIVU;
+                            break;
+                        case 0x20: // ADD
+                            m = R3000_MN.ADD;
+                            o = R3000_fADD;
+                            break;
+                        case 0x21: // ADDU
+                            m = R3000_MN.ADDU;
+                            o = R3000_fADDU;
+                            break;
+                        case 0x22: // SUB
+                            m = R3000_MN.SUB;
+                            o = R3000_fSUB;
+                            break;
+                        case 0x23: // SUBU
+                            m = R3000_MN.SUBU;
+                            o = R3000_fSUBU;
+                            break;
+                        case 0x24: // AND
+                            m = R3000_MN.AND;
+                            o = R3000_fAND;
+                            break;
+                        case 0x25: // OR
+                            m = R3000_MN.OR;
+                            o = R3000_fOR;
+                            break;
+                        case 0x26: // XOR
+                            m = R3000_MN.XOR;
+                            o = R3000_fXOR;
+                            break;
+                        case 0x27: // NOR
+                            m = R3000_MN.NOR;
+                            o = R3000_fNOR;
+                            break;
+                        case 0x2A: // SLT
+                            m = R3000_MN.SLT;
+                            o = R3000_fSLT;
+                            break;
+                        case 0x2B: // SLTU
+                            m = R3000_MN.SLTU;
+                            o = R3000_fSLTU;
+                            break;
+                        default:
+                            m = R3000_MN.NA;
+                            o = R3000_fNA;
+                            break;
                     }
+                    R3000_table[op2 + 0x3F] = new R3000_opcode(op2, m, o, a);
                 }
-                break;
+                continue;
             case 0x01: // BcondZ
                 m = R3000_MN.BcondZ;
                 o = R3000_fBcondZ;
@@ -397,11 +281,80 @@ function R3000_generate_opcodes() {
                 m = R3000_MN.LUI;
                 o = R3000_fLUI;
                 break;
+            case 0x13: // COP3
+            case 0x12: // COP2
+            case 0x11: // COP1
             case 0x10: // COP0
-                m = R3000_MN.COP0;
+                m = R3000_MN.COPx;
                 o = R3000_fCOP;
                 a = (op1 - 0x10);
+                break;
+            case 0x20: // LB
+                m = R3000_MN.LB;
+                o = R3000_fLB;
+                break;
+            case 0x21: // LH
+                m = R3000_MN.LH;
+                o = R3000_fLH;
+                break;
+            case 0x22: // LWL
+                m = R3000_MN.LWL;
+                o = R3000_fLWL;
+                break;
+            case 0x23: // LW
+                m = R3000_MN.LW;
+                o = R3000_fLW;
+                break;
+            case 0x24: // LBU
+                m = R3000_MN.LBU;
+                o = R3000_fLBU;
+                break;
+            case 0x25: // LHU
+                m = R3000_MN.LHU;
+                o = R3000_fLHU;
+                break;
+            case 0x26: // LWR
+                m = R3000_MN.LWR;
+                o = R3000_fLWR;
+                break;
+            case 0x28: // SB
+                m = R3000_MN.SB;
+                o = R3000_fSB;
+                break;
+            case 0x29: // SH
+                m = R3000_MN.SH;
+                o = R3000_fSH;
+                break;
+            case 0x2A: // SWL
+                m = R3000_MN.SWL;
+                o = R3000_fSWL;
+                break;
+            case 0x2B: // SW
+                m = R3000_MN.SW;
+                o = R3000_fSW;
+                break;
+            case 0x2E: // SWR
+                m = R3000_MN.SWR;
+                o = R3000_fSWR;
+                break;
+            case 0x33: // LWC3
+            case 0x32: // LWC2
+            case 0x31: // LWC1
+            case 0x30: // LWC0
+                m = R3000_MN.LWCx;
+                o = R3000_fLWC;
+                a = op1 - 0x30;
+                break;
+            case 0x3B: // SWC3
+            case 0x3A: // SWC2
+            case 0x39: // SWC1
+            case 0x38: // SWC0
+                m = R3000_MN.SWCx;
+                o = R3000_fSWC;
+                a = op1 - 0x38;
+                break;
         }
-
+        R3000_table[op1] = new R3000_opcode(op1, m, o, a);
     }
+    return R3000_table;
 }
