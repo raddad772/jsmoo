@@ -138,8 +138,12 @@ function R3000_generate_opcodes() {
                             o = R3000_fJALR;
                             break;
                         case 0x0C: // SYSCALL
+                            m = R3000_MN.SYSCALL;
+                            o = R3000_fSYSCALL;
                             break;
                         case 0x0D: // BREAK
+                            m = R3000_MN.BREAK;
+                            o = R3000_fBREAK;
                             break;
                         case 0x10: // MFHI
                             m = R3000_MN.MFHI;

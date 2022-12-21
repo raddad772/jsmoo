@@ -13,4 +13,8 @@ class PS1_CPU {
     disable_tracing() {
 
     }
+
+    cycle() {
+        this.core.cycle();
+    }
 }

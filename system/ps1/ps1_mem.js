@@ -21,21 +21,52 @@ const PS1_MT = Object.freeze({
     u32: 5
 })
 
-class PS1_fastRAM {
-    constructor(arr) {
-        this.i8 = new Int8Array(arr);
-        this.i16 = new Int16Array(arr);
-        this.i32 = new Int32Array(arr);
-        this.u8 = new Uint8Array(arr);
-        this.u16 = new Uint16Array(arr);
-        this.u32 = new Uint32Array(arr);
-
-        this.f = [
-            this.i8, this.i16, this.i32,
-            this.u8, this.u16, this.u32
-        ]
+/**
+ * @param {DataView} buf
+ * @param {Number} addr
+ * @param {Number} sz
+ * @returns {Number}
+ */
+function PS1_read_mem(buf, addr, sz) {
+    switch(sz) {
+        case PS1_MT.i8:
+            return buf.getInt8(addr);
+        case PS1_MT.i16:
+            return buf.getInt16(addr, false);
+        case PS1_MT.i32:
+            return buf.getInt32(addr, false);
+        case PS1_MT.u8:
+            return buf.getUint8(addr);
+        case PS1_MT.u16:
+            return buf.getUint16(addr, false);
+        case PS1_MT.u32:
+            return buf.getUint32(addr, false);
     }
 }
+
+/**
+ * @param {DataView} buf
+ * @param {Number} addr
+ * @param {Number} sz
+ * @param {Number} val
+ */
+function PS1_write_mem(buf, addr, sz, val) {
+    switch(sz) {
+        case PS1_MT.i8:
+            return buf.setInt8(addr, val);
+        case PS1_MT.i16:
+            return buf.setInt16(addr, val,false);
+        case PS1_MT.i32:
+            return buf.setInt32(addr, val,false);
+        case PS1_MT.u8:
+            return buf.setUint8(addr, val);
+        case PS1_MT.u16:
+            return buf.setUint16(addr, val,false);
+        case PS1_MT.u32:
+            return buf.setUint32(addr, val,false);
+    }
+}
+
 
 
 class PS1_mem {
@@ -45,10 +76,10 @@ class PS1_mem {
         this.VRAM_ab = new ArrayBuffer(1024 * 1024);
         this.BIOS_ab = new ArrayBuffer(512 * 1024);
 
-        this.scratchpad = new PS1_fastRAM(this.scratchpad_ab);
-        this.MRAM = new PS1_fastRAM(this.MRAM_ab);
-        this.VRAM = new PS1_fastRAM(this.VRAM_ab);
-        this.BIOS = new PS1_fastRAM(this.BIOS_ab);
+        this.scratchpad = new DataView(this.scratchpad_ab);
+        this.MRAM = new DataView(this.MRAM_ab);
+        this.VRAM = new DataView(this.VRAM_ab);
+        this.BIOS = new DataView(this.BIOS_ab);
     }
 
     deKSEG(addr) {
@@ -66,13 +97,13 @@ class PS1_mem {
             val &= 0xFF;
         switch(kind) {
             case PS1_meme.scratchpad:
-                this.scratchpad.f[size][addr] = val;
+                PS1_write_mem(this.scratchpad, addr, size, val);
                 return;
             case PS1_meme.MRAM:
-                this.MRAM.f[size][addr] = val;
+                PS1_write_mem(this.MRAM, addr, size, val);
                 return;
             case PS1_meme.VRAM:
-                this.VRAM.f[size][addr] = val;
+                PS1_write_mem(this.VRAM, addr, size, val);
                 return;
             default:
                 console.log('UNKNOWN MEM TYPE');
@@ -82,18 +113,18 @@ class PS1_mem {
 
     read_mem_generic(kind, addr, size, val) {
         if ((size === PS1_MT.i16) || (size === PS1_MT.u16))
-            addr >>= 1;
+            addr &= 0xFFFFFFFD;
         else if ((size === PS1_MT.i32) || (size === PS1_MT.u32))
-            addr >>= 2;
+            addr &= 0xFFFFFFFC;
         switch(kind) {
             case PS1_meme.scratchpad:
-                return this.scratchpad.f[size][addr];
+                return PS1_read_mem(this.scratchpad, addr, size);
             case PS1_meme.MRAM:
-                return this.MRAM.f[size][addr];
+                return PS1_read_mem(this.MRAM, addr, size);
             case PS1_meme.VRAM:
-                return this.VRAM.f[size][addr];
+                return PS1_read_mem(this.VRAM, addr, size);
             case PS1_meme.BIOS:
-                return this.BIOS.f[size][addr];
+                return PS1_read_mem(this.BIOS, addr, size);
             default:
                 console.log('UNKNOWN MEM TYPE');
                 return val;
@@ -192,7 +223,8 @@ function mtest() {
 mtest()
 
 class R3000_multiplier_t {
-    constructor() {
+    constructor(clock) {
+        this.clock = clock;
         this.HI = 0;
         this.LO = 0;
 
@@ -205,6 +237,18 @@ class R3000_multiplier_t {
         this.clock_end = 0; // Clock time of end
     }
     
+    set(hi, lo, op1, op2, op_kind, cycles) {
+        this.hi = hi;
+        this.lo = lo;
+        this.op1 = op1;
+        this.op2 = op2;
+    
+        this.op_going = 1;
+        this.op_kind = op_kind;
+        this.clock_start = this.clock.cpu_master_clock;
+        this.clock_end = this.clock.cpu_master_clock+cycles;
+    }
+
     // Finishes up multiply or divide
     finish() {
         if (!this.op_going)
@@ -233,39 +277,4 @@ class R3000_multiplier_t {
 }
 
 
-// Class to hold external interface, including function pointers
-class R3000_bus_interface_t {
-    constructor(clock) {
-        this.pipe = new R3000_pipeline_t();
-        this.pins = new R3000_pins_t();
-        this.mem = new PS1_mem();
-        this.clock = clock;
-        this.multiplier = new R3000_multiplier_t();
-    }
-
-    /**
-     * @param {number} COP
-     * @param {R3000_regs_t} regs
-     * @param {number} num
-     * @param {number} val
-     * @constructor
-     */
-    COP_write_reg(COP, regs, num, val) {
-        if (COP === 0) {
-            // TODO: add 1-cycle delay
-            regs.COP0[num] = val;
-            return;
-        }
-        console.log('write to unimplemented COP');
-    }
-
-    COP_read_reg(COP, regs, num, val) {
-        if (COP === 0) {
-            return regs.COP0;
-        }
-        console.log('read from unimplemented COP');
-        return 0xFF;
-    }
-    
-}
 
