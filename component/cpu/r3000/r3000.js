@@ -124,6 +124,7 @@ class R3000_pipeline_t {
          * @type {R3000_pipeline_item_t|null}
          **/
         this.current = null;
+        this.current_num = 0;
 
         /**
          * @type {R3000_pipeline_item_t[]}
@@ -175,8 +176,9 @@ class R3000_pipeline_t {
     pop() {
         if (this.num_items === 0) return null;
         let r = this.items[this.head];
-        this.head = (this.head + 1) & this.MASK;
+        this.current_num = this.head;
         this.current = r;
+        this.head = (this.head + 1) & this.MASK;
         this.num_items--;
         return r;
     }
@@ -184,12 +186,13 @@ class R3000_pipeline_t {
     /**
      * @returns {null|R3000_pipeline_item_t}
      */
-    peek() {
-        if (this.num_items === 0) return null;
-        let r = this.items[this.head];
-        this.head = (this.head + 1) & this.MASK;
-        this.num_items--;
-        return r;
+    get_current() {
+        return this.current;
+    }
+
+    get_next() {
+        let r = (this.current_num + 1) & this.MASK;
+        return this.items[r];
     }
 
 }
@@ -202,11 +205,11 @@ class R3000 {
         this.pins = new R3000_pins_t();
         this.mem = new PS1_mem();
         this.multiplier = new R3000_multiplier_t(this.clock);
-        this.opcode_table = R3000_generate_opcodes();
+        this.op_table = R3000_generate_opcodes();
     }
 
     reset() {
-        this.bus.pipe.clear();
+        this.pipe.clear();
         this.regs.PC = 0x1FC00000;
         // Fill instruction pipe with enough instructions
         this.fetch_and_decode();
@@ -217,13 +220,17 @@ class R3000 {
 
     cycle() {
         // Pop things off the stack and execute until we get a cycle_advance
-        let current = this.bus.pipe.pop();
-        if ((current === null) || (current.kind === R3000_pipe_kind.empty)) {
-            console.log('PIPE EMPTY!?');
-            return;
+        while(this.pipe.num_items < 2) {
+            console.log('FETCH AND DECODE FROM UNDERSIZED PIPE!?');
+            this.fetch_and_decode();
         }
+        let current = this.pipe.pop();
 
-        // Load delay slot, *OR*. We don't do both.
+
+        if (current.op !== null)
+            current.op.func(current.opcode, current.op, this);
+
+        // Load delay slot from instruction before this one
         if (current.target > 0) {// R0 stays 0
             if (current.lr) {
                 let v = (this.regs.R[current.target] & (current.lr_mask ^ 0xFFFFFFFF)) | current.value;
@@ -231,10 +238,6 @@ class R3000 {
             }
             else
                 this.regs.R[current.target] = current.value;
-        }
-        else {
-            if (current.op !== null)
-                current.op.func(current.opcode, current.op, this);
         }
 
         // Branch delay slot
@@ -250,16 +253,17 @@ class R3000 {
         let p1 = (IR & 0xFC000000) >>> 26;
         let p2 = (IR & 0x3F);
         if (p1 === 0)
-            current.op = this.R3000_op_table[0x3F + p2]
+            current.op = this.op_table[0x3F + p2]
         else
-            current.op = this.R3000_op_table[p1]
+            current.op = this.op_table[p1]
     }
 
     fetch_and_decode() {
-        let IR = this.bus.mem.CPU_read(this.regs.PC);
-        let current = this.bus.pipe.push();
+        let IR = this.mem.CPU_read(this.regs.PC);
+        let current = this.pipe.push();
         this.decode(IR, current);
         current.opcode = IR;
+        current.PC = this.regs.PC;
         this.regs.PC += 4;
     }
 
@@ -287,10 +291,10 @@ class R3000 {
         return 0xFF;
     }
 
-    exception(code, branch_delay=false) {
+    exception(code, branch_delay=false, cop0=false) {
         code <<= 2;
-        let vector = 0x80000800;
-        if (this.regs.COP0[R3000_COP0_reg.SR] & 0x200000) {
+        let vector = 0x80000080;
+        if (this.regs.COP0[R3000_COP0_reg.SR] & 0x400000) {
             vector = 0xBFC00180;
         }
         let raddr;
@@ -303,7 +307,14 @@ class R3000 {
         }
         this.regs.COP0[R3000_COP0_reg.EPC] = raddr;
         this.flush_pipe();
+
+        if (cop0)
+            vector -= 0x40;
+
         this.regs.PC = vector;
+        this.regs.COP0[R3000_COP0_reg.Cause] = code;
+        let lstat = this.regs.COP0[R3000_COP0_reg.SR];
+        this.regs.COP0[R3000_COP0_reg.SR] = (lstat & 0xFFFFFFC0) | ((lstat & 0x0F) << 2);
     }
 
     // Apply any waiting register changes,

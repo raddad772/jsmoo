@@ -21,7 +21,7 @@ function R3000_fNA(opcode,op, core) {
  */
 function R3000_branch(core, new_addr, doit, link, link_reg= 31) {
     if (doit)
-        core.pipe.peek().new_PC = new_addr;
+        core.pipe.get_next().new_PC = new_addr;
     if (link)
         R3000_fs_reg_write(core, link_reg, core.regs.PC);
 }
@@ -35,7 +35,7 @@ function R3000_branch(core, new_addr, doit, link, link_reg= 31) {
  */
 function R3000_fs_reg_write(core, target, value) {
     core.regs.R[target] = value & 0xFFFFFFFF;
-    let p = core.pipe.peek();
+    let p = core.pipe.get_next();
     if (p === null) {
         console.log('PIPE EMPTY ERROR!');
         return;
@@ -51,7 +51,7 @@ function R3000_fs_reg_write(core, target, value) {
  * @param {number} value
  */
 function R3000_fs_reg_delay(core, target, value) {
-    let p = core.pipe.peek();
+    let p = core.pipe.get_next();
     if (p === null) {
         console.log('PIPE EMPTY ERROR!');
         return;
@@ -986,7 +986,7 @@ function R3000_fLWL(opcode,op, core) {
             break;
     }
     let rd = core.mem.CPU_read(addr & 0xFFFFFFFC, PS1_MT.u32, 0) & msk;
-    R3000_merge_lr(core.pipe.current, core.pipe.peek(), rt, msk, rd);
+    R3000_merge_lr(core.pipe.current, core.pipe.get_next(), rt, msk, rd);
 }
 
 /**
@@ -1061,7 +1061,7 @@ function R3000_fLWR(opcode,op, core) {
             break;
     }
     let rd = core.mem.CPU_read(addr & 0xFFFFFFFC, PS1_MT.u32, 0) & msk;
-    R3000_merge_lr(core.pipe.current, core.pipe.peek(), rt, msk, rd);
+    R3000_merge_lr(core.pipe.current, core.pipe.get_next(), rt, msk, rd);
 }
 
 /**
@@ -1129,6 +1129,6 @@ function R3000_merge_lr(current, next, target, mask, value)
  * @param {R3000} core
  */
 function R3000_fSYSCALL(opcode,op, core) {
-    core.exception()
+    core.exception(8)
 }
 
