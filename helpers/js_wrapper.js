@@ -229,5 +229,3 @@ class js_wrapper_t {
 		return this.tech_specs;
     }
 }
-
-console.log(R3000_disassemble(0x3c080013));

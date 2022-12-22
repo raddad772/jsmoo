@@ -220,7 +220,7 @@ function mtest() {
     let r = i32_multiply(a, b);
     console.log('MULTIPLY', hex4(a), 'by', hex4(b) + '.', hex4(r.hi), hex4(r.lo))
 }
-mtest()
+//mtest()
 
 class R3000_multiplier_t {
     constructor(clock) {

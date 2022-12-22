@@ -1,5 +1,11 @@
 "use strict";
 
+const DO_NTSC = true;
+
+let NES_ntsc = new ntsc_NTSC_SETTINGS();
+let NES_crt = new ntsc_CRT();
+
+
 /**
  * @param data
  * @param {ImageData} imgdata
@@ -27,5 +33,17 @@ function NES_present(data, imgdata, NES_output_buffer, correct_overscan, oversca
 
             img32[b_out] = NES_palette[neso[b_nes]];
         }
+    }
+
+    if (DO_NTSC) {
+        NES_crt.init(256, 224, img32);
+        NES_ntsc.rgb = img32;
+        NES_ntsc.w = 256;
+        NES_ntsc.h = 224;
+        NES_ntsc.as_color = 1;
+        NES_ntsc.field = (NES_ntsc.field + 1) & 1;
+
+        NES_crt.crt_2ntsc(NES_ntsc);
+        NES_crt.crt_draw(24);
     }
 }
