@@ -36,10 +36,6 @@ function R3000_branch(core, new_addr, doit, link, link_reg= 31) {
 function R3000_fs_reg_write(core, target, value) {
     core.regs.R[target] = value & 0xFFFFFFFF;
     let p = core.pipe.get_next();
-    if (p === null) {
-        console.log('PIPE EMPTY ERROR!');
-        return;
-    }
 
     if (p.target === target) p.target = -1;
 }
@@ -52,10 +48,6 @@ function R3000_fs_reg_write(core, target, value) {
  */
 function R3000_fs_reg_delay(core, target, value) {
     let p = core.pipe.get_next();
-    if (p === null) {
-        console.log('PIPE EMPTY ERROR!');
-        return;
-    }
 
     p.target = target;
     p.value = value & 0xFFFFFFFF;
@@ -759,15 +751,17 @@ function R3000_fCOP(opcode,op, core) {
                         console.log('Could not decode COP instruction2', hex8(opcode));
                         return;
                 }
-                break;
             default:
                 console.log('Could not decode COP instruction', hex8(opcode));
                 return;
         }
     } else { // COPn imm
-
+        if (((opcode >>> 21) & 15) === 10) {
+            console.log('RFE FOUND! IMPLEMENT!')
+        }
+        console.log('NOTE IMPLEMENTED COPN IMMEDIATE')
     }
-
+    console.log('IMPLEMENT THE COP!', hex8(opcode));
 }
 
 /**
@@ -1129,6 +1123,17 @@ function R3000_merge_lr(current, next, target, mask, value)
  * @param {R3000} core
  */
 function R3000_fSYSCALL(opcode,op, core) {
+    console.log('FIX SYSYCALL!')
     core.exception(8)
 }
 
+
+/**
+ * @param {Number} opcode
+ * @param {R3000_opcode} op
+ * @param {R3000} core
+ */
+function R3000_fBREAK(opcode,op, core) {
+    console.log('FIX BREAK!')
+    core.exception(8)
+}
