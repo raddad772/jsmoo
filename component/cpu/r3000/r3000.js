@@ -102,50 +102,56 @@ class R3000_pipeline_item_t {
         this.new_PC = -1;
     }
 
+    copy(from) {
+        this.kind = from.kind;
+        this.target = from.target;
+        this.value = from.value;
+        this.new_PC = from.new_PC;
+        this.op = from.op;
+        this.lr = from.lr;
+        this.lr_mask = from.lr_mask;
+    }
+
     clear() {
         this.kind = R3000_pipe_kind.empty;
         this.target = this.value = this.new_PC = -1;
         this.op = null;
         this.lr = 0;
-        this.lr_val = 0;
         this.lr_mask = 0;
-        this.left_bits = this.right_bits = 0;
     }
 }
 
 class R3000_pipeline_t {
     constructor() {
-        this.head = this.tail = 0;
+        /**
+         * @type {R3000_pipeline_item_t[]}
+         */
+        this.items = [new R3000_pipeline_item_t(), new R3000_pipeline_item_t()];
+        this.base = 0;
         this.num_items = 0;
-        this.MAX = 4;
-        this.MASK = 3;
 
         /**
          * @type {R3000_pipeline_item_t|null}
          **/
         this.current = null;
-        this.current_num = 0;
 
-        /**
-         * @type {R3000_pipeline_item_t[]}
-         */
-        this.items = [];
-
-        for (let i = 0; i < this.MAX; i++) {
-            this.items[i] = new R3000_pipeline_item_t();
-        }
     }
 
-    any_there() {
-        return this.num_items > 0;
+    /**
+     * @returns {null|R3000_pipeline_item_t}
+     */
+    push() {
+        if (this.num_items === 2) return null;
+        let r = this.items[this.num_items];
+        this.num_items++;
+        return r;
     }
 
     clear() {
-        this.head = this.tail = 0;
-        for (let i = 0; i < this.MAX; i++) {
-            this.items[i].clear()
-        }
+        this.items[0].clear();
+        this.items[1].clear();
         this.num_items = 0;
+        this.current = this.items[0];
     }
 
     empty() {
@@ -153,46 +159,26 @@ class R3000_pipeline_t {
     }
 
     full() {
-        return this.num_items === this.MAX;
+        return this.num_items === 2;
     }
 
     /**
      * @returns {null|R3000_pipeline_item_t}
      */
-    push() {
-        if (this.num_items >= this.MAX) {
-            console.log('PIPE FULL!');
-            return null;
-        }
-        let r = this.items[this.tail];
-        this.tail = (this.tail + 1) & 7;
-        this.num_items++;
-        return r;
-    }
-
-    /**
-     * @returns {null|R3000_pipeline_item_t}
-     */
-    pop() {
-        if (this.num_items === 0) return null;
-        let r = this.items[this.head];
-        this.current_num = this.head;
-        this.current = r;
-        this.head = (this.head + 1) & this.MASK;
-        this.num_items--;
-        return r;
-    }
-
-    /**
-     * @returns {null|R3000_pipeline_item_t}
-     */
-    get_current() {
-        return this.current;
-    }
-
     get_next() {
-        let r = (this.current_num + 1) & this.MASK;
-        return this.items[r];
+        return this.items[1];
+    }
+
+    /**
+     * @returns {R3000_pipeline_item_t}
+     */
+    move_forward() {
+        this.current.copy(this.items[0]);
+        this.items[0].copy(this.items[1]);
+        this.items[1].clear();
+        this.num_items--;
+
+        return this.current;
     }
 
 }
@@ -209,43 +195,46 @@ class R3000 {
     }
 
     reset() {
-        this.pipe.clear();
+        this.pipe.clear()
         this.regs.PC = 0x1FC00000;
         // Fill instruction pipe with enough instructions
-        this.fetch_and_decode();
-        this.fetch_and_decode();
         // Setup COP0 registers
 
     }
 
     cycle() {
         // Pop things off the stack and execute until we get a cycle_advance
-        while(this.pipe.num_items < 2) {
-            console.log('FETCH AND DECODE FROM UNDERSIZED PIPE!?');
+         if (this.pipe.num_items < 1)
             this.fetch_and_decode();
-        }
-        let current = this.pipe.pop();
+        let current = this.pipe.move_forward();
 
+        current.op.func(current.opcode, current.op, this);
 
-        if (current.op !== null)
-            current.op.func(current.opcode, current.op, this);
+        this.delay_slots(current);
 
+        current.clear();
+
+        this.fetch_and_decode();
+    }
+
+    /**
+     * @param {R3000_pipeline_item_t} which
+     */
+    delay_slots(which) {
         // Load delay slot from instruction before this one
-        if (current.target > 0) {// R0 stays 0
-            if (current.lr) {
-                let v = (this.regs.R[current.target] & (current.lr_mask ^ 0xFFFFFFFF)) | current.value;
-                this.regs.R[current.target] = v;
-            }
+        if (which.target > 0) {// R0 stays 0
+            if (which.lr)
+                this.regs.R[which.target] = (this.regs.R[which.target] & (which.lr_mask ^ 0xFFFFFFFF)) | which.value;
             else
-                this.regs.R[current.target] = current.value;
+                this.regs.R[which.target] = which.value;
+            which.target = -1;
         }
 
         // Branch delay slot
-        if (current.new_PC > -1)
-            this.regs.PC = current.new_PC;
-
-        this.fetch_and_decode();
-        current.clear();
+        if (which.new_PC > -1) {
+            which.new_PC = -1;
+            this.regs.PC = which.new_PC;
+        }
     }
 
     decode(IR, current) {
@@ -322,6 +311,10 @@ class R3000 {
     //  ones.
     // Then clear out the pipe.
     flush_pipe() {
-
+        this.delay_slots(this.pipe.current);
+        this.delay_slots(this.pipe.items[0]);
+        this.delay_slots(this.pipe.items[1]);
+        this.pipe.move_forward();
+        this.pipe.move_forward();
     }
 }
