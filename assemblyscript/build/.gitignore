@@ -1,2 +1,10 @@
 *
+!debug.js
+!debug_stable.js
+!release.js
+!release_stable.js
+!debug.wasm
+!debug.wasm.map
+!release.wasm
+!release.wasm.map
 !.gitignore

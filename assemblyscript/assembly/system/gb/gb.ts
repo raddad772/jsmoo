@@ -208,14 +208,18 @@ export class GameBoy implements systemEmulator {
 
     constructor(variant: GB_variants, out_buffer: usize) {
         this.variant = variant;
-        this.clock = new GB_clock();
-        this.bus = new GB_bus();
-        this.cpu = new GB_CPU(variant, this.clock, this.bus)
-        this.ppu = new GB_PPU(out_buffer, variant, this.clock, this.bus)
+        let clock = new GB_clock();
+        let bus = new GB_bus();
+        let cpu = new GB_CPU(variant, clock, bus)
+        let ppu = new GB_PPU(out_buffer, variant, clock, bus)
 
-        this.cart = new GB_cart(this.variant, this.clock, this.bus);
+        this.cart = new GB_cart(variant, clock, bus);
 
         this.out_buffer = out_buffer;
+        this.bus = bus;
+        this.clock = clock;
+        this.cpu = cpu;
+        this.ppu = ppu;
     }
 
     map_inputs(bufptr: usize): void {

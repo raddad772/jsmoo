@@ -83,13 +83,17 @@ export class NES implements systemEmulator {
 
     constructor(variant: NES_VARIANTS, out_buffer: usize) {
         this.variant = variant
-        this.clock = new NES_clock(variant);
-        this.bus = new NES_bus();
-        this.cpu = new ricoh2A03(this.clock, this.bus);
-        this.ppu = new NES_ppu(out_buffer, variant, this.clock, this.bus)
-        this.cart = new NES_cart(this.clock, this.bus);
-        this.bus.ppu = this.ppu;
-        this.bus.cpu = this.cpu;
+        let clock: NES_clock = new NES_clock(variant);
+        let bus: NES_bus = new NES_bus();
+        let cpu = new ricoh2A03(clock, bus);
+        let ppu: NES_ppu = new NES_ppu(out_buffer, variant, clock, bus)
+        this.cart = new NES_cart(clock, bus);
+        bus.ppu = ppu;
+        bus.cpu = cpu;
+        this.clock = clock;
+        this.ppu = ppu;
+        this.bus = bus;
+        this.cpu = cpu;
         this.cycles_left = 0;
     }
 

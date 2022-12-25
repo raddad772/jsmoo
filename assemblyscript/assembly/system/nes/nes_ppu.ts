@@ -121,9 +121,9 @@ export class NES_ppu {
         this.bus = bus;
         this.out_buffer = out_buffer;
 
-        this.w2006_buffer = new PPU_effect_buffer(4*this.clock.timing.ppu_divisor);
+        this.w2006_buffer = new PPU_effect_buffer(4*clock.timing.ppu_divisor);
 
-        this.bus.ppu = this;
+        bus.ppu = this;
     }
 
     reset(): void {
