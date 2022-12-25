@@ -110,19 +110,19 @@ export class NES_mapper_MMC1 implements NES_mapper {
     PPU_write(addr: u32, val: u32): void {
         addr &= 0x3FFF;
         if (addr < 0x2000) {
-            if (this.has_chr_ram) unchecked(this.CHR_RAM[addr] = <u8>val);
+            if (this.has_chr_ram) this.CHR_RAM[addr] = <u8>val;
             return;
         }
-        unchecked(this.CIRAM[this.mirror_ppu_addr(addr)] = <u8>val);
+        this.CIRAM[this.mirror_ppu_addr(addr)] = <u8>val;
     }
 
     @inline PPU_read_effect(addr: u32): u32 {
         addr &= 0x3FFF;
         if (addr < 0x2000) {
-            if (this.has_chr_ram) return unchecked(this.CHR_RAM[addr]);
-            return unchecked(this.CHR_map[addr >>> 12]).read(addr);
+            if (this.has_chr_ram) return this.CHR_RAM[addr];
+            return this.CHR_map[addr >>> 12].read(addr);
         }
-        return unchecked(this.CIRAM[this.mirror_ppu_addr(addr)]);
+        return this.CIRAM[this.mirror_ppu_addr(addr)];
     }
 
     PPU_read_noeffect(addr: u32): u32 {
@@ -132,7 +132,7 @@ export class NES_mapper_MMC1 implements NES_mapper {
     CPU_write(addr: u32, val: u32): void {
         // Conventional CPU map
         if (addr < 0x2000) {
-            unchecked(this.CPU_RAM[addr & 0x7FF] = <u8>val);
+            this.CPU_RAM[addr & 0x7FF] = <u8>val;
             return;
         }
         if (addr < 0x4000)
@@ -141,7 +141,7 @@ export class NES_mapper_MMC1 implements NES_mapper {
             return this.bus.CPU_reg_write(addr, val);
         if (addr < 0x6000) return;
         if (addr < 0x8000) {
-            if (this.has_prg_ram) unchecked(this.PRG_RAM[addr - 0x6000] = <u8>val);
+            if (this.has_prg_ram) this.PRG_RAM[addr - 0x6000] = <u8>val;
             return;
         }
 
@@ -206,17 +206,17 @@ export class NES_mapper_MMC1 implements NES_mapper {
 
     @inline CPU_read(addr: u32, val: u32, has_effect: u32): u32 {
         if (addr < 0x2000)
-            return unchecked(this.CPU_RAM[addr & 0x7FF]);
+            return this.CPU_RAM[addr & 0x7FF];
         if (addr < 0x4000)
             return this.bus.PPU_reg_read(addr, val, has_effect);
         if (addr < 0x4020)
             return this.bus.CPU_reg_read(addr, val, has_effect);
         if (addr < 0x6000) return val;
         if (addr < 0x8000) {
-            if (this.has_prg_ram) return unchecked(this.PRG_RAM[addr - 0x6000]);
+            if (this.has_prg_ram) return this.PRG_RAM[addr - 0x6000];
             return val;
         }
-        return unchecked(this.PRG_map[(addr - 0x8000) >>> 14]).read(addr);
+        return this.PRG_map[(addr - 0x8000) >>> 14].read(addr);
     }
 
     reset(): void {

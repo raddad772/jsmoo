@@ -31,8 +31,8 @@ export class NES_mapper_AXROM implements NES_mapper {
     @inline a12_watch(addr: u32): void {}
 
     @inline PPU_read_effect(addr: u32): u32 {
-        if (addr < 0x2000) return unchecked(this.CHR_RAM[addr]);
-        return unchecked(this.CIRAM[this.mirror_ppu_addr(addr)]);
+        if (addr < 0x2000) return this.CHR_RAM[addr];
+        return this.CIRAM[this.mirror_ppu_addr(addr)];
     }
 
     PPU_read_noeffect(addr: u32): u32 {
@@ -40,26 +40,26 @@ export class NES_mapper_AXROM implements NES_mapper {
     }
 
     PPU_write(addr: u32, val: u32): void {
-        if (addr < 0x2000) unchecked(this.CHR_RAM[addr] = <u8>val);
-        else unchecked(this.CIRAM[this.mirror_ppu_addr(addr)] = <u8>val);
+        if (addr < 0x2000) this.CHR_RAM[addr] = <u8>val;
+        else this.CIRAM[this.mirror_ppu_addr(addr)] = <u8>val;
     }
 
     @inline CPU_read(addr: u32, val: u32, has_effect: u32): u32 {
         addr &= 0xFFFF;
         if (addr < 0x2000)
-            return unchecked(this.CPU_RAM[addr & 0x7FF]);
+            return this.CPU_RAM[addr & 0x7FF];
         if (addr < 0x3FFF)
             return this.bus.PPU_reg_read(addr, val, has_effect);
         if (addr < 0x4020)
             return this.bus.CPU_reg_read(addr, val, has_effect);
         if (addr < 0x8000) return val;
-        return unchecked(this.PRG_ROM[(addr - 0x8000) + this.prg_bank_offset]);
+        return this.PRG_ROM[(addr - 0x8000) + this.prg_bank_offset];
     }
 
     @inline CPU_write(addr: u32, val: u32): void {
         addr &= 0xFFFF;
         if (addr < 0x2000) {
-            unchecked(this.CPU_RAM[addr & 0x7FF] = <u8>val);
+            this.CPU_RAM[addr & 0x7FF] = <u8>val;
             return;
         }
         if (addr < 0x3FFF)

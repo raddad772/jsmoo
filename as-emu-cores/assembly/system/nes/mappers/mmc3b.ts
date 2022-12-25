@@ -103,12 +103,12 @@ export class NES_MMC3b implements NES_mapper {
 
     set_PRG_ROM(addr: u32, bank_num: u32): void {
         let b: u32 = (addr - 0x6000) >>> 13;
-        unchecked(this.PRG_map[b].addr = <i32>addr);
-        unchecked(this.PRG_map[b].offset = (bank_num % this.num_PRG_banks) * 0x2000);
+        this.PRG_map[b].addr = <i32>addr;
+        this.PRG_map[b].offset = (bank_num % this.num_PRG_banks) * 0x2000;
     }
 
     set_CHR_ROM_1k(b: u32, bank_num: u32): void {
-        unchecked(this.CHR_map[b].offset = (bank_num % this.num_CHR_banks) * 0x0400);
+        this.CHR_map[b].offset = (bank_num % this.num_CHR_banks) * 0x0400;
     }
 
     remap(boot: bool = false): void {
@@ -138,54 +138,54 @@ export class NES_MMC3b implements NES_mapper {
             //     C000-DFFF fixed to second-last bank
             // 1 = 8000-9FFF fixed to second-last bank
             //     C000-DFFF swappable
-            this.set_PRG_ROM(0x8000, unchecked(this.regs.bank[6]));
+            this.set_PRG_ROM(0x8000, this.regs.bank[6]);
             this.set_PRG_ROM(0xC000, this.num_PRG_banks-2);
         }
         else {
             this.set_PRG_ROM(0x8000, this.num_PRG_banks-2);
-            this.set_PRG_ROM(0xC000, unchecked(this.regs.bank[6]));
+            this.set_PRG_ROM(0xC000, this.regs.bank[6]);
         }
-        this.set_PRG_ROM(0xA000, unchecked(this.regs.bank[7]));
+        this.set_PRG_ROM(0xA000, this.regs.bank[7]);
 
         if (this.status.CHR_mode === 0) {
             // 2KB CHR banks 0, 1KB CHR banks at 1000
-            this.set_CHR_ROM_1k(0, unchecked(this.regs.bank[0]) & 0xFE);
-            this.set_CHR_ROM_1k(1, unchecked(this.regs.bank[0]) | 0x01);
-            this.set_CHR_ROM_1k(2, unchecked(this.regs.bank[1]) & 0xFE);
-            this.set_CHR_ROM_1k(3, unchecked(this.regs.bank[1]) | 0x01);
-            this.set_CHR_ROM_1k(4, unchecked(this.regs.bank[2]));
-            this.set_CHR_ROM_1k(5, unchecked(this.regs.bank[3]));
-            this.set_CHR_ROM_1k(6, unchecked(this.regs.bank[4]));
-            this.set_CHR_ROM_1k(7, unchecked(this.regs.bank[5]));
+            this.set_CHR_ROM_1k(0, this.regs.bank[0] & 0xFE);
+            this.set_CHR_ROM_1k(1, this.regs.bank[0] | 0x01);
+            this.set_CHR_ROM_1k(2, this.regs.bank[1] & 0xFE);
+            this.set_CHR_ROM_1k(3, this.regs.bank[1] | 0x01);
+            this.set_CHR_ROM_1k(4, this.regs.bank[2]);
+            this.set_CHR_ROM_1k(5, this.regs.bank[3]);
+            this.set_CHR_ROM_1k(6, this.regs.bank[4]);
+            this.set_CHR_ROM_1k(7, this.regs.bank[5]);
         }
         else {
             // 1KB CHR banks at 0, 2KB CHR banks at 1000
-            this.set_CHR_ROM_1k(0, unchecked(this.regs.bank[2]));
-            this.set_CHR_ROM_1k(1, unchecked(this.regs.bank[3]));
-            this.set_CHR_ROM_1k(2, unchecked(this.regs.bank[4]));
-            this.set_CHR_ROM_1k(3, unchecked(this.regs.bank[5]));
-            this.set_CHR_ROM_1k(4, unchecked(this.regs.bank[0]) & 0xFE);
-            this.set_CHR_ROM_1k(5, unchecked(this.regs.bank[0]) | 0x01);
-            this.set_CHR_ROM_1k(6, unchecked(this.regs.bank[1]) & 0xFE);
-            this.set_CHR_ROM_1k(7, unchecked(this.regs.bank[1]) | 0x01);
+            this.set_CHR_ROM_1k(0, this.regs.bank[2]);
+            this.set_CHR_ROM_1k(1, this.regs.bank[3]);
+            this.set_CHR_ROM_1k(2, this.regs.bank[4]);
+            this.set_CHR_ROM_1k(3, this.regs.bank[5]);
+            this.set_CHR_ROM_1k(4, this.regs.bank[0] & 0xFE);
+            this.set_CHR_ROM_1k(5, this.regs.bank[0] | 0x01);
+            this.set_CHR_ROM_1k(6, this.regs.bank[1] & 0xFE);
+            this.set_CHR_ROM_1k(7, this.regs.bank[1] | 0x01);
         }
     }
 
     @inline CPU_read(addr: u32, val: u32, has_effect: u32): u32 {
         if (addr < 0x2000)
-            return unchecked(this.CPU_RAM[addr & 0x7FF]);
+            return this.CPU_RAM[addr & 0x7FF];
         if (addr < 0x4000)
             return this.bus.PPU_reg_read(addr, val, has_effect);
         if (addr < 0x4020)
             return this.bus.CPU_reg_read(addr, val, has_effect);
         if (addr >= 0x6000)
-            return unchecked(this.PRG_map[(addr - 0x6000) >>> 13]).read(addr);
+            return this.PRG_map[(addr - 0x6000) >>> 13].read(addr);
         return val;
     }
 
     @inline CPU_write(addr: u32, val: u32): void {
         if (addr < 0x2000) {
-            unchecked(this.CPU_RAM[addr & 0x7FF] = <u8>val);
+            this.CPU_RAM[addr & 0x7FF] = <u8>val;
             return;
         }
         if (addr < 0x4000)
@@ -196,7 +196,7 @@ export class NES_MMC3b implements NES_mapper {
         if (addr < 0x6000) return;
 
         if (addr < 0x8000)
-            return unchecked(this.PRG_map[(addr - 0x6000) >>> 13]).write(addr, val);
+            return this.PRG_map[(addr - 0x6000) >>> 13].write(addr, val);
 
         switch(addr & 0xE001) {
             case 0x8000:
@@ -233,29 +233,29 @@ export class NES_MMC3b implements NES_mapper {
     @inline PPU_read_effect(addr: u32): u32 {
         this.a12_watch(addr);
         if (addr < 0x2000) {
-            if (this.has_chr_ram) return unchecked(this.CHR_RAM[addr]);
-            return unchecked(this.CHR_map[addr >>> 10]).read(addr);
+            if (this.has_chr_ram) return this.CHR_RAM[addr];
+            return this.CHR_map[addr >>> 10].read(addr);
         }
 
-        return unchecked(this.CIRAM[this.mirror_ppu_addr(addr)]);
+        return this.CIRAM[this.mirror_ppu_addr(addr)];
     }
 
     PPU_read_noeffect(addr: u32): u32 {
         if (addr < 0x2000) {
-            if (this.has_chr_ram) return unchecked(this.CHR_RAM[addr]);
-            return unchecked(this.CHR_map[addr >>> 10]).read(addr);
+            if (this.has_chr_ram) return this.CHR_RAM[addr];
+            return this.CHR_map[addr >>> 10].read(addr);
         }
 
-        return unchecked(this.CIRAM[this.mirror_ppu_addr(addr)]);
+        return this.CIRAM[this.mirror_ppu_addr(addr)];
     }
 
     @inline PPU_write(addr: u32, val: u32): void {
         this.a12_watch(addr);
         if (addr < 0x2000) {
-            if (this.has_chr_ram) unchecked(this.CHR_RAM[addr] = <u8>val)
+            if (this.has_chr_ram) this.CHR_RAM[addr] = <u8>val
             return;
         }
-        unchecked(this.CIRAM[this.mirror_ppu_addr(addr)] = <u8>val);
+        this.CIRAM[this.mirror_ppu_addr(addr)] = <u8>val;
     }
 
     reset(): void {

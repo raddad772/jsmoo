@@ -14,13 +14,13 @@ class PPU_effect_buffer {
 
     get(cycle: u64): i64 {
         let ci: i32 = <i32>cycle % this.length;
-        let r: i64 = unchecked(this.items[ci]);
+        let r: i64 = this.items[ci];
         this.items[ci] = -1;
         return r;
     }
 
     set(cycle: u64, value: u32): void {
-        unchecked(this.items[<i32>(cycle % this.length)] = <i64>value);
+        this.items[<i32>(cycle % this.length)] = <i64>value;
     }
 }
 
@@ -134,12 +134,12 @@ export class NES_ppu {
     write_cgram(addr: u32, val: u32): void {
         this.bus.mapper.a12_watch(addr | 0x3F00)
         if ((addr & 0x13) === 0x10) addr &= 0xEF;
-        unchecked(this.CGRAM[addr & 0x1F] = val & 0x3F);
+        this.CGRAM[addr & 0x1F] = val & 0x3F;
     }
 
     read_cgram(addr: u32): u32 {
       if((addr & 0x13) === 0x10) addr &= 0xEF;
-      let data: u32 = unchecked(this.CGRAM[addr & 0x1F]);
+      let data: u32 = this.CGRAM[addr & 0x1F];
       if(this.io.greyscale) data &= 0x30;
       return data;
     }
@@ -274,7 +274,7 @@ export class NES_ppu {
                 this.OAM_eval_done = 0;
                 this.sprite0_on_next_line = false;
                 for (let n = 0; n < 32; n++) {
-                    unchecked(this.secondary_OAM[n] = 0xFF);
+                    this.secondary_OAM[n] = 0xFF;
                 }
             }
             return;
@@ -282,14 +282,14 @@ export class NES_ppu {
         if (this.line_cycle <= 256) { // and >= 65...
             if (this.OAM_eval_done) return;
             if (!odd) {
-                this.OAM_transfer_latch = unchecked(this.OAM[this.OAM_eval_index]);
+                this.OAM_transfer_latch = this.OAM[this.OAM_eval_index];
                 if (!this.secondary_OAM_lock) {
-                    unchecked(this.secondary_OAM[this.secondary_OAM_index] = this.OAM_transfer_latch);
+                    this.secondary_OAM[this.secondary_OAM_index] = this.OAM_transfer_latch;
                     if ((eval_y >= this.OAM_transfer_latch) && (eval_y < (this.OAM_transfer_latch + this.status.sprite_height))) {
                         if (this.OAM_eval_index === 0) this.sprite0_on_next_line = true;
-                        unchecked(this.secondary_OAM[this.secondary_OAM_index + 1] = unchecked(this.OAM[this.OAM_eval_index + 1]));
-                        unchecked(this.secondary_OAM[this.secondary_OAM_index + 2] = unchecked(this.OAM[this.OAM_eval_index + 2]));
-                        unchecked(this.secondary_OAM[this.secondary_OAM_index + 3] = unchecked(this.OAM[this.OAM_eval_index + 3]));
+                        this.secondary_OAM[this.secondary_OAM_index + 1] = this.OAM[this.OAM_eval_index + 1];
+                        this.secondary_OAM[this.secondary_OAM_index + 2] = this.OAM[this.OAM_eval_index + 2];
+                        this.secondary_OAM[this.secondary_OAM_index + 3] = this.OAM[this.OAM_eval_index + 3];
                         this.secondary_OAM_index += 4;
                         this.secondary_OAM_sprite_total++;
                         //this.secondary_OAM_lock = this.secondary_OAM_index >= 32;
@@ -317,7 +317,7 @@ export class NES_ppu {
                     let m: u32 = 0;
                     let f: u32 = 0;
                     while (n < 64) {
-                        let e: u32 = unchecked(this.OAM[(n * 4) + m]);
+                        let e: u32 = this.OAM[(n * 4) + m];
                         // If value is in range....
                         if ((eval_y >= e) && (eval_y < (e + this.status.sprite_height))) {
                             // Set overflow flag if needed
@@ -342,33 +342,33 @@ export class NES_ppu {
             let sub_cycle = (this.line_cycle - 257) & 0x07;
             switch (sub_cycle) {
                 case 0: // Read Y coordinate.  257
-                    let syl: i32 = eval_y - unchecked(this.secondary_OAM[this.secondary_OAM_index]);
+                    let syl: i32 = eval_y - this.secondary_OAM[this.secondary_OAM_index];
                     if (syl < 0) syl = 0;
                     if (syl > <i32>(this.status.sprite_height - 1)) syl = this.status.sprite_height - 1;
-                    unchecked(this.sprite_y_lines[this.secondary_OAM_sprite_index] = syl);
+                    this.sprite_y_lines[this.secondary_OAM_sprite_index] = syl;
                     this.secondary_OAM_index++;
                     break;
                 case 1: // Read tile number 258, and do garbage NT address
-                    unchecked(this.sprite_pattern_shifters[this.secondary_OAM_sprite_index] = unchecked(this.secondary_OAM[this.secondary_OAM_index]));
+                    this.sprite_pattern_shifters[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index];
                     this.secondary_OAM_index++;
                     this.bus.mapper.a12_watch(this.io.v);
                     break;
                 case 2: // Read attributes 259
-                    unchecked(this.sprite_attribute_latches[this.secondary_OAM_sprite_index] = unchecked(this.secondary_OAM[this.secondary_OAM_index]));
+                    this.sprite_attribute_latches[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index];
                     this.secondary_OAM_index++;
                     break;
                 case 3: // Read X-coordinate 260 and do garbage NT access
-                    unchecked(this.sprite_x_counters[this.secondary_OAM_sprite_index] = unchecked(this.secondary_OAM[this.secondary_OAM_index]));
+                    this.sprite_x_counters[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index];
                     this.secondary_OAM_index++;
                     this.bus.mapper.a12_watch(this.io.v);
                     break;
                 case 4: // Fetch tiles for the shifters 261
                     break;
                 case 5:
-                    let tn: u32 = unchecked(this.sprite_pattern_shifters[this.secondary_OAM_sprite_index]);
-                    let sy: i32 = unchecked(this.sprite_y_lines[this.secondary_OAM_sprite_index]);
+                    let tn: u32 = this.sprite_pattern_shifters[this.secondary_OAM_sprite_index];
+                    let sy: i32 = this.sprite_y_lines[this.secondary_OAM_sprite_index];
                     let table: u32 = this.io.sprite_pattern_table;
-                    let attr: u32 = unchecked(this.sprite_attribute_latches[this.secondary_OAM_sprite_index]);
+                    let attr: u32 = this.sprite_attribute_latches[this.secondary_OAM_sprite_index];
                     // Vertical flip....
                     if (attr & 0x80) sy = (this.status.sprite_height - 1) - sy;
                     if (this.status.sprite_height === 16) {
@@ -379,7 +379,7 @@ export class NES_ppu {
                         sy -= 8;
                         tn += 1;
                     }
-                    unchecked(this.sprite_pattern_shifters[this.secondary_OAM_sprite_index] = this.fetch_chr_line(table, tn, sy));
+                    this.sprite_pattern_shifters[this.secondary_OAM_sprite_index] = this.fetch_chr_line(table, tn, sy);
                     break;
                 case 7:
                     this.bus.mapper.a12_watch(this.last_sprite_addr);
@@ -396,14 +396,14 @@ export class NES_ppu {
         if (this.clock.ppu_y < this.clock.timing.bottom_rendered_line) {
             // Sprites
             if ((lc > 0) && (lc < 257)) {
-                unchecked(this.sprite_x_counters[0]--);
-                unchecked(this.sprite_x_counters[1]--);
-                unchecked(this.sprite_x_counters[2]--);
-                unchecked(this.sprite_x_counters[3]--);
-                unchecked(this.sprite_x_counters[4]--);
-                unchecked(this.sprite_x_counters[5]--);
-                unchecked(this.sprite_x_counters[6]--);
-                unchecked(this.sprite_x_counters[7]--);
+                this.sprite_x_counters[0]--;
+                this.sprite_x_counters[1]--;
+                this.sprite_x_counters[2]--;
+                this.sprite_x_counters[3]--;
+                this.sprite_x_counters[4]--;
+                this.sprite_x_counters[5]--;
+                this.sprite_x_counters[6]--;
+                this.sprite_x_counters[7]--;
             }
         }
         if (!(this.io.bg_enable | this.io.sprite_enable) || (lc === 0)) return;
@@ -477,9 +477,9 @@ export class NES_ppu {
         if (bg_has_pixel) {
             let agb = this.bg_palette_shifter;
             if (this.io.x + (sx & 0x07) < 8) agb >>>= 2;
-            bg_color = unchecked(this.CGRAM[bg_color | ((agb & 3) << 2)]);
+            bg_color = this.CGRAM[bg_color | ((agb & 3) << 2)];
         }
-        else bg_color = unchecked(this.CGRAM[0]);
+        else bg_color = this.CGRAM[0];
 
         //this.scanline_timer.record_split('bgcolor')
 
@@ -489,19 +489,19 @@ export class NES_ppu {
         // Check if any sprites need drawing
         //for (let m = 0; m < 8; m++) {
         for (let m: i32 = 7; m >= 0; m--) {
-            let sxc: i32 = unchecked(this.sprite_x_counters[m]);
+            let sxc: i32 = this.sprite_x_counters[m];
             if ((sxc >= -8) &&
                 (sxc <= -1)) {
-                let sal: u32 = unchecked(this.sprite_attribute_latches[m]);
-                let sps: u32 = unchecked(this.sprite_pattern_shifters[m]);
+                let sal: u32 = this.sprite_attribute_latches[m];
+                let sps: u32 = this.sprite_pattern_shifters[m];
                 let s_x_flip: u32 = (sal & 0x40) >>> 6;
                 let my_color: u32 = 0;
                 if (s_x_flip) {
                     my_color = (sps & 0xC000) >>> 14;
-                    unchecked(this.sprite_pattern_shifters[m] = sps << 2);
+                    this.sprite_pattern_shifters[m] = sps << 2;
                 } else {
                     my_color = sps & 3;
-                    unchecked(this.sprite_pattern_shifters[m] = sps >>> 2);
+                    this.sprite_pattern_shifters[m] = sps >>> 2;
                 }
                 if (my_color !== 0) {
                     sprite_has_pixel = true;
@@ -610,7 +610,7 @@ export class NES_ppu {
                 //}
                 break;
             case 0x2004: // OAMDATA
-                output = unchecked(this.OAM[this.io.OAM_addr]);
+                output = this.OAM[this.io.OAM_addr];
                 // reads do not increment counter
                 break;
             case 0x2007:

@@ -120,9 +120,9 @@ export class NES_mapper_VRC2B_4E_4F implements NES_mapper {
     @inline PPU_read_effect(addr: u32): u32 {
         if (addr < 0x2000){
             const b = this.CHR_map[addr >>> 10];
-            return unchecked(b.data[(addr - b.addr) + b.offset]);
+            return b.data[(addr - b.addr) + b.offset];
         }
-        return unchecked(this.CIRAM[this.mirror_ppu_addr(addr)]);
+        return this.CIRAM[this.mirror_ppu_addr(addr)];
     }
 
     PPU_read_noeffect(addr: u32): u32 {
@@ -131,7 +131,7 @@ export class NES_mapper_VRC2B_4E_4F implements NES_mapper {
 
     PPU_write(addr: u32, val: u32): void {
         if (addr < 0x2000) return;
-        unchecked(this.CIRAM[this.mirror_ppu_addr(addr)] = <u8>val);
+        this.CIRAM[this.mirror_ppu_addr(addr)] = <u8>val;
     }
 
     set_ppu_lo(bank: u32, val: u32): void {
@@ -159,7 +159,7 @@ export class NES_mapper_VRC2B_4E_4F implements NES_mapper {
     @inline CPU_read(addr: u32, val: u32, has_effect: u32): u32 {
         // Conventional RAM addr
         if (addr < 0x2000)
-            return unchecked(this.CPU_RAM[addr & 0x7FF]);
+            return this.CPU_RAM[addr & 0x7FF];
         if (addr < 0x4000)
             return this.bus.PPU_reg_read(addr, val, has_effect);
         if (addr < 0x4020)
@@ -167,17 +167,17 @@ export class NES_mapper_VRC2B_4E_4F implements NES_mapper {
         // VRC mapping
         if (addr < 0x6000) return val;
         if (addr < 0x8000) {
-            if (this.io.wram_enabled) return unchecked(this.PRG_RAM[addr - 0x6000]);
+            if (this.io.wram_enabled) return this.PRG_RAM[addr - 0x6000];
             // HMMMM....
             if (!this.is_vrc4) return (val & 0xFE) | this.io.latch60;
         }
-        return unchecked(this.PRG_map[addr >>> 13]).read(addr);
+        return this.PRG_map[addr >>> 13].read(addr);
     }
 
     CPU_write(addr: u32, val: u32): void {
         // Conventional CPU map
         if (addr < 0x2000) { // 0x0000-0x1FFF 4 mirrors of 2KB banks
-            unchecked(this.CPU_RAM[addr & 0x7FF] = <u8>val);
+            this.CPU_RAM[addr & 0x7FF] = <u8>val;
             return;
         }
         if (addr < 0x4000) // 0x2000-0x3FFF mirrored PPU registers
@@ -187,7 +187,7 @@ export class NES_mapper_VRC2B_4E_4F implements NES_mapper {
         if (addr < 0x6000) return;
         if (addr < 0x8000) {
             if (this.io.wram_enabled) {
-                unchecked(this.PRG_RAM[addr - 0x6000] = <u8>val);
+                this.PRG_RAM[addr - 0x6000] = <u8>val;
             }
             else if (!this.is_vrc4) {
                 this.io.latch60 = val & 1;
