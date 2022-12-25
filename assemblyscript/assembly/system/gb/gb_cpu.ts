@@ -143,11 +143,12 @@ export class GB_CPU {
         this.clock = clock;
         this.variant = variant;
 
-        this.cpu = new SM83_t(variant, clock, bus);
-        this.timer = new GB_timer(this.cpu.regs);
+        let cpu = new SM83_t(variant, clock, bus);
+        this.timer = new GB_timer(cpu.regs);
         this.tracing = false;
 
-        this.bus.cpu = this;
+        this.cpu = cpu;
+        bus.cpu = this;
     }
 
     update_inputs(inp1: gb_inputs): void {

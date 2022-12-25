@@ -44,6 +44,7 @@ class GB_FIFO_t {
     head: u32 = 0;
     tail: u32 = 0;
     num_items: u32 = 0;
+    blank: GB_FIFO_item_t = new GB_FIFO_item_t();
 
     constructor(variant: GB_variants) {
         this.variant = variant;
@@ -139,8 +140,8 @@ class GB_FIFO_t {
         return unchecked(this.items[this.head]);
     }
 
-    pop(): GB_FIFO_item_t|null {
-        if (this.num_items === 0) return null;
+    pop(): GB_FIFO_item_t {
+        if (this.num_items === 0) return this.blank;
         let r = unchecked(this.items[this.head]);
         this.head = (this.head + 1) & 7;
         this.num_items--;
@@ -220,16 +221,17 @@ class GB_pixel_slice_fetcher {
             this.out_px.had_pixel = true;
             let has_bg = this.ppu!.io.bg_window_enable
             let bg = this.bg_FIFO.pop();
-            let bg_color: u32 = bg!.pixel;
+            let bg_color: u32 = bg.pixel;
             let has_sp: bool = false;
-            let sp_color: i32 = -1, sp_palette: u32;
+            let sp_color: i32 = -1;
+            let sp_palette: u32 = 0;
             let use_what:u32; // 0 for BG, 1 for OBJ
-            let obj: GB_FIFO_item_t|null;
+            let obj: GB_FIFO_item_t = this.obj_FIFO.blank;
 
             if (!this.obj_FIFO.empty()) {
                 obj = this.obj_FIFO.pop();
-                sp_color = <i32>obj!.pixel;
-                sp_palette = obj!.palette;
+                sp_color = <i32>obj.pixel;
+                sp_palette = obj.palette;
             }
             if (this.ppu!.io.obj_enable && (sp_color !== -1)) has_sp = true;
 
@@ -238,7 +240,7 @@ class GB_pixel_slice_fetcher {
             } else if ((!has_bg) && (has_sp)) {
                 use_what = 1;
             } else if (has_bg && has_sp) {
-                if (obj!.sprite_priority && (bg_color !== 0)) // "If the OBJ pixel has its priority bit set, and the BG pixel's ID is not 0, pick the BG pixel."
+                if (obj.sprite_priority && (bg_color !== 0)) // "If the OBJ pixel has its priority bit set, and the BG pixel's ID is not 0, pick the BG pixel."
                     use_what = 1; // BG
                 else if (sp_color === 0) // "If the OBJ pixel is 0, pick the BG pixel; "
                     use_what = 1; // BG
@@ -419,9 +421,6 @@ export class GB_PPU {
     cur_buffer: usize = 0
 
     constructor(out_buffer: usize, variant: GB_variants, clock: GB_clock, bus: GB_bus) {
-        this.out_buffer[0] = out_buffer;
-        this.out_buffer[1] = out_buffer+((160*144)*2);
-        this.cur_buffer = this.out_buffer[this.cur_output_num];
         this.variant = variant;
         this.clock = clock;
         this.bus = bus;
@@ -438,7 +437,10 @@ export class GB_PPU {
             this.OBJ[i] = new GB_PPU_sprite_t();
         }
 
-        this.bus.ppu = this;
+        this.cur_buffer = this.out_buffer[this.cur_output_num];
+        this.out_buffer[0] = out_buffer;
+        this.out_buffer[1] = out_buffer+((160*144)*2);
+        bus.ppu = this;
         this.slice_fetcher.ppu = this;
         this.disable();
     }
