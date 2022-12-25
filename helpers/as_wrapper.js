@@ -5,9 +5,9 @@
 const USE_DEBUG = true
 if (DO_WASM_IMPORTS) {
     if (USE_DEBUG)
-        importScripts('/assemblyscript/build/debug_stable.js');
+        importScripts('/as-emu-cores/build/debug_stable.js');
     else
-        importScripts('/assemblyscript/build/release_stable.js');
+        importScripts('/as-emu-cores/build/release_stable.js');
 }
 
 class as_wrapper_t {
@@ -48,9 +48,9 @@ class as_wrapper_t {
     async fetch_wasm() {
         let url = '';
         if (USE_DEBUG)
-            url = '/assemblyscript/build/debug.wasm'
+            url = '/as-emu-cores/build/debug.wasm'
         else
-            url = '/assemblyscript/build/release.wasm'
+            url = '/as-emu-cores/build/release.wasm'
         this.wasm_fetch = await fetch(url);
     }
 
