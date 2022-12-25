@@ -14,6 +14,7 @@
       "outFile": "build/release.wasm",
       "textFile": "build/release.wat",
       "sourceMap": true,
+      "uncheckedBehavior": "always",
       "optimizeLevel": 3,
       "shrinkLevel": 0,
       "converge": true,

@@ -230,4 +230,4 @@ class js_wrapper_t {
     }
 }
 
-console.log(R3000_disassemble(0x3c080013));
+//console.log(R3000_disassemble(0x3c080013));

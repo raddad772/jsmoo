@@ -62,37 +62,37 @@ export class GB_mapper_MBC2 implements GB_mapper {
         if ((addr >= 0xE000) && (addr < 0xFE00)) addr -= 0x2000; // WRAM mirror
         if (this.clock.bootROM_enabled) {
             if (addr < 0x100)
-                return unchecked(this.bus.BIOS[addr]);
+                return this.bus.BIOS[addr];
             if (this.BIOS_big && (addr >= 0x200) && (addr < 0x900))
-                return unchecked(this.bus.BIOS[addr - 0x100]);
+                return this.bus.BIOS[addr - 0x100];
         }
         if (addr < 0x4000) // ROM lo bank
-            return unchecked(this.ROM[addr + this.ROM_bank_lo_offset]);
+            return this.ROM[addr + this.ROM_bank_lo_offset];
         if (addr < 0x8000) // ROM hi bank
-            return unchecked(this.ROM[(addr & 0x3FFF) + this.ROM_bank_hi_offset]);
+            return this.ROM[(addr & 0x3FFF) + this.ROM_bank_hi_offset];
         if (addr < 0xA000) { // VRAM, banked
             if (this.clock.CPU_can_VRAM)
-                return unchecked(this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset]);
+                return this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset];
             return 0xFF;
         } // cart RAM if it's there
         if (addr < 0xC000) {
             if (!this.regs.ext_RAM_enable)
                 return 0xFF;
-            return unchecked(this.cartRAM[addr & 0x1FF] | 0xF0);
+            return this.cartRAM[addr & 0x1FF] | 0xF0;
         }
         // Adjust address for mirroring
         //if ((addr > 0xE000) && (addr < 0xFE00)) return 0xFF; //addr -= 0x2000;
 
         if (addr < 0xD000) // WRAM lo bank
-            return unchecked(this.WRAM[addr & 0xFFF]);
+            return this.WRAM[addr & 0xFFF];
         if (addr < 0xE000) // WRAM hi bank
-            return unchecked(this.WRAM[(addr & 0xFFF) + this.WRAM_bank_offset]);
+            return this.WRAM[(addr & 0xFFF) + this.WRAM_bank_offset];
         if (addr < 0xFF00) // OAM
             return this.bus.ppu!.read_OAM(addr);
         if (addr < 0xFF80) // registers
             return this.bus.CPU_read_IO(addr, val);
         if (addr < 0xFFFF) {// HRAM always accessible
-            return unchecked(this.HRAM[addr - 0xFF80]);
+            return this.HRAM[addr - 0xFF80];
         }
         return this.bus.CPU_read_IO(addr, val); // 0xFFFF register
     }
@@ -120,22 +120,22 @@ export class GB_mapper_MBC2 implements GB_mapper {
         }
         if (addr < 0xA000) { // VRAM
             if (this.clock.CPU_can_VRAM)
-                unchecked(this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset] = <u8>val);
+                this.VRAM[(addr & 0x1FFF) + this.VRAM_bank_offset] = <u8>val;
             return;
         }
         if (addr < 0xC000) { // cart RAM
-            if (this.regs.ext_RAM_enable) unchecked(this.cartRAM[addr & 0x1FF] = <u8>(val & 0x0F))
+            if (this.regs.ext_RAM_enable) this.cartRAM[addr & 0x1FF] = <u8>(val & 0x0F);
             return;
         }
         // adjust address for mirroring
         //if ((addr > 0xE000) && (addr < 0xFE00)) return; //addr -= 0x2000;
 
         if (addr < 0xD000) { // WRAM lo bank
-            unchecked(this.WRAM[addr & 0xFFF] = <u8>val);
+            this.WRAM[addr & 0xFFF] = <u8>val;
             return;
         }
         if (addr < 0xE000) { // WRAM hi bank
-            unchecked(this.WRAM[(addr & 0xFFF) + this.WRAM_bank_offset] = <u8>val);
+            this.WRAM[(addr & 0xFFF) + this.WRAM_bank_offset] = <u8>val;
             return;
         }
         if (addr < 0xFF00) // OAM
@@ -143,7 +143,7 @@ export class GB_mapper_MBC2 implements GB_mapper {
         if (addr < 0xFF80) // registers
             return this.bus.CPU_write_IO(addr, val);
         if (addr < 0xFFFF) { // HRAM always accessible
-            unchecked(this.HRAM[addr - 0xFF80] = <u8>val);
+            this.HRAM[addr - 0xFF80] = <u8>val;
             return;
         }
         this.bus.CPU_write_IO(addr, val); // 0xFFFF register
