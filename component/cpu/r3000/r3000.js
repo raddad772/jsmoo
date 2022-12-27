@@ -13,17 +13,15 @@ class R3000_regs_t {
         // Multiply/divide registers
         this.HI = this.LO = 0;
 
-        // Coprocessor registers, of which there are 64
+        // Coprocessor registers, of which there are 32
         this.COP0 = [
             0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0
         ]
+
+        this.trace_on = false;
 
         // Internal registers
         this.next_addr_decode = 0;
@@ -100,6 +98,7 @@ class R3000_pipeline_item_t {
         this.lr_mask = 0;
         this.opcode = 0;
         this.new_PC = -1;
+        this.addr = 0; // Address of opcode
     }
 
     copy(from) {
@@ -131,9 +130,9 @@ class R3000_pipeline_t {
         this.num_items = 0;
 
         /**
-         * @type {R3000_pipeline_item_t|null}
+         * @type {R3000_pipeline_item_t}
          **/
-        this.current = null;
+        this.current = new R3000_pipeline_item_t();
 
     }
 
@@ -151,7 +150,7 @@ class R3000_pipeline_t {
         this.items[0].clear();
         this.items[1].clear();
         this.num_items = 0;
-        this.current = this.items[0];
+        this.current.clear();
     }
 
     empty() {
@@ -173,6 +172,7 @@ class R3000_pipeline_t {
      * @returns {R3000_pipeline_item_t}
      */
     move_forward() {
+        //console.log('MOVE FORWARD!', this.current, this.items);
         this.current.copy(this.items[0]);
         this.items[0].copy(this.items[1]);
         this.items[1].clear();
@@ -184,31 +184,66 @@ class R3000_pipeline_t {
 }
 
 class R3000 {
-    constructor() {
+    /**
+     * @param {PS1_mem} mem
+     */
+    constructor(mem) {
         this.clock = new PS1_clock();
         this.regs = new R3000_regs_t();
         this.pipe = new R3000_pipeline_t();
         this.pins = new R3000_pins_t();
-        this.mem = new PS1_mem();
+        this.mem = mem;
         this.multiplier = new R3000_multiplier_t(this.clock);
         this.op_table = R3000_generate_opcodes();
+        this.trace_on = false;
+    }
+
+    enable_tracing() {
+        console.log('R3000 ENABLE TRACING')
+        this.trace_on = true;
+        this.regs.trace_on = true;
+    }
+
+    disable_tracing() {
+        console.log('R3000 DISABLE TRACING')
+        this.trace_on = false;
+        this.regs.trace_on = false;
     }
 
     reset() {
+        console.log('RESET R3000')
         this.pipe.clear()
         this.regs.PC = 0x1FC00000;
+        console.log('REGS PC!', this.regs.PC);
         // Fill instruction pipe with enough instructions
         // Setup COP0 registers
+    }
 
+    trace_format(disasm, PCO) {
+        let outstr = trace_start_format('R3K', R3000_COLOR, this.clock.trace_cycles-1, ' ', PCO)
+        outstr += disasm;
+		let sp = disasm.length;
+		while(sp < TRACE_INS_PADDING) {
+			outstr += ' ';
+			sp++;
+		}
+        outstr += ' PC:' + hex8(PCO);
+        return outstr;
     }
 
     cycle() {
         // Pop things off the stack and execute until we get a cycle_advance
-         if (this.pipe.num_items < 1)
+        console.log('PC!', this.regs.PC);
+        this.clock.trace_cycles++;
+        if (this.pipe.num_items < 1)
             this.fetch_and_decode();
         let current = this.pipe.move_forward();
+        //console.log('OP!', current.op)
 
         current.op.func(current.opcode, current.op, this);
+        if (this.trace_on) {
+            dbg.traces.add(TRACERS.R3000, this.clock.trace_cycles-1, this.trace_format(R3000_disassemble(current.opcode).disassembled, current.addr))
+        }
 
         this.delay_slots(current);
 
@@ -241,24 +276,29 @@ class R3000 {
         // SPECIAL
         let p1 = (IR & 0xFC000000) >>> 26;
         let p2 = (IR & 0x3F);
-        if (p1 === 0)
+        if (p1 === 0) {
+            //console.log('GRABBING', 0x3F + p2)
             current.op = this.op_table[0x3F + p2]
-        else
+        }
+        else {
+            //console.log('GRABBING', p1)
             current.op = this.op_table[p1]
+        }
     }
 
     fetch_and_decode() {
-        let IR = this.mem.CPU_read(this.regs.PC);
+        let IR = this.mem.CPU_read(this.regs.PC, PS1_MT.u32);
+        //console.log('FETCH AND DECODE PC:', hex8(this.regs.PC), 'VAL:', hex8(IR))
         let current = this.pipe.push();
         this.decode(IR, current);
         current.opcode = IR;
-        current.PC = this.regs.PC;
+        current.addr = this.regs.PC;
+        //console.log('HEY!', this.pipe);
         this.regs.PC += 4;
     }
 
         /**
      * @param {number} COP
-     * @param {R3000_regs_t} regs
      * @param {number} num
      * @param {number} val
      * @constructor
@@ -281,6 +321,7 @@ class R3000 {
     }
 
     exception(code, branch_delay=false, cop0=false) {
+        console.log('EXCEPTION!');
         code <<= 2;
         let vector = 0x80000080;
         if (this.regs.COP0[R3000_COP0_reg.SR] & 0x400000) {

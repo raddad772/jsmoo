@@ -78,6 +78,8 @@ class PS1_clock {
         this.draw_x = 0;
         this.draw_y = 0;
 
+        this.trace_cycles = 0;
+
         this.cycles_left_this_frame = PS1_CYCLES_PER_FRAME;
 
         this.cpu_frame_cycle = 0;
@@ -90,8 +92,8 @@ class PS1 {
     constructor() {
         this.clock = new PS1_clock();
         this.bus = new PS1_bus(this.clock);
-
-        this.cpu = new PS1_CPU(this.clock, this.bus);
+        this.mem = new PS1_mem();
+        this.cpu = new PS1_CPU(this.clock, this.bus, this.mem);
         this.gpu = new PS1_GTE2(this.clock, this.bus);
 
         this.cycles_left = 0;
@@ -102,6 +104,7 @@ class PS1 {
         this.BIOS = new Uint8Array(0);
 
         dbg.add_cpu(D_RESOURCE_TYPES.R3000, this.cpu);
+        this.cpu.reset();
     }
 
     /**
@@ -168,7 +171,7 @@ class PS1 {
         this.controller2_in.r = buffer[21];
         this.controller2_in.start = buffer[22];
         this.controller2_in.select = buffer[23];
-        this.cpu.update_inputs(this.controller1_in, this.controller2_in);
+        //this.cpu.update_inputs(this.controller1_in, this.controller2_in);
     }
 
     load_ROM_from_RAM(name, ROM) {
@@ -179,6 +182,69 @@ class PS1 {
             console.log('Loading CD....')
             this.cdrom.load_ROM_from_RAM(ROM);
             this.reset();
+        }
+    }
+
+    // Closely followed code from https://github.com/RobertPeip/FPSXApp/blob/main/Project/FPSXApp/Memory.cpp#L71-L132
+    // With permission from author to not be GPL3'd
+    sideload_EXE(mfile) {
+        let r = new DataView(mfile.buffer);
+        // 80 83 45 88 32 69 88 69
+        if ((r.getUint8(0) === 80) && (r.getUint8(1) === 83) && (r.getUint8(2) === 45) &&
+            (r.getUint8(3) === 88) && (r.getUint8(4) === 32) && (r.getUint8(5) === 69) &&
+            (r.getUint8(6) === 88) && (r.getUint8(7) === 69)) {
+            let initial_pc = r.getUint32(0x10, true);
+            let initial_gp = r.getUint32(0x14, true);
+            let load_addr = r.getUint32(0x18, true);
+            let file_size = r.getUint32(0x1C, true);
+            let memfill_start = r.getUint32(0x28);
+            let memfill_size = r.getUint32(0x2C);
+            let initial_sp_base = r.getUint32(0x30);
+            let initial_sp_offset = r.getUint32(0x34);
+            this.mem.BIOS_patch_reset();
+
+            if (file_size >= 4) {
+                file_size = Math.floor((file_size + 3) / 4);
+                let address_read = 0x800;
+                let address_write = load_addr & 0x1FFFFF;
+                for (let i = 0; i < file_size; i++) {
+                    let data = r.getUint32(address_read, true);
+                    this.mem.write_mem_generic(PS1_meme.MRAM, address_write, PS1_MT.u32, data);
+                    address_read += 4;
+                    address_write += 4;
+                }
+            }
+            console.log('Data patched in:', file_size * 4);
+
+            // PC has to  e done first because we can't load it in thedelay slot?
+            this.mem.BIOS_patch(0x6FF0, 0x3C080000 | (initial_pc >>> 16));    // lui $t0, (r_pc >> 16)
+            this.mem.BIOS_patch(0x6FF4, 0x35080000 | (initial_pc & 0xFFFF));  // ori $t0, $t0, (r_pc & 0xFFFF)
+            this.mem.BIOS_patch(0x6FF8, 0x3C1C0000 | (initial_gp >>> 16));    // lui $gp, (r_gp >> 16)
+            this.mem.BIOS_patch(0x6FFC, 0x379C0000 | (initial_gp & 0xFFFF));  // ori $gp, $gp, (r_gp & 0xFFFF)
+
+            let r_sp = initial_sp_base + initial_sp_offset;
+            if (r_sp !== 0) {
+                this.mem.BIOS_patch(0x7000, 0x3C1D0000 | (r_sp >>> 16));   // lui $sp, (r_sp >> 16)
+                this.mem.BIOS_patch(0x7004, 0x37BD0000 | (r_sp & 0xFFFF)); // ori $sp, $sp, (r_sp & 0xFFFF)
+            } else {
+                this.mem.BIOS_patch(0x7000, 0); // NOP
+                this.mem.BIOS_patch(0x7004, 0); // NOP
+            }
+
+            let r_fp = r_sp;
+            if (r_fp !== 0) {
+                this.mem.BIOS_patch(0x7008, 0x3C1E0000 | (r_fp >>> 16));   // lui $fp, (r_fp >> 16)
+                this.mem.BIOS_patch(0x700C, 0x01000008);                   // jr $t0
+                this.mem.BIOS_patch(0x7010, 0x37DE0000 | (r_fp & 0xFFFF)); // // ori $fp, $fp, (r_fp & 0xFFFF)
+            } else {
+                this.mem.BIOS_patch(0x7008, 0);   // nop
+                this.mem.BIOS_patch(0x700C, 0x01000008);                   // jr $t0
+                this.mem.BIOS_patch(0x7010, 0); // // nop
+            }
+            console.log('BIOS patched!');
+        }
+        else {
+            console.log('Could not find valid header')
         }
     }
 
@@ -200,7 +266,7 @@ class PS1 {
 
             this.cpu.cycle();
             this.clock.cpu_frame_cycle++;
-            this.clock.cpu_master_clock += cpu_step;
+            this.clock.cpu_master_clock++;
 
             this.clock.master_clock++;
 

@@ -46,7 +46,7 @@ const R3000_COP0_reg = Object.freeze({
 });
 
 const R3000_reg_alias = Object.freeze([
-    'zero', 'at', 'v0', 'v1', // r0-3
+    'r0', 'at', 'v0', 'v1', // r0-3
     'a0', 'a1', 'a2', 'a3', // r4-7
     't0', 't1', 't2', 't3', // r8-11
     't4', 't5', 't6', 't7', // r12-15
@@ -57,6 +57,10 @@ const R3000_reg_alias = Object.freeze([
 ])
 
 
+/**
+ * @param {number} opcode
+ * @returns {R3000_disassembly_output}
+ */
 function R3000_disassemble(opcode) {
     let output = new R3000_disassembly_output();
     let ostr1 = '', ostr2 = '';

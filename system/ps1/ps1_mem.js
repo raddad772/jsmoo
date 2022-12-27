@@ -32,15 +32,18 @@ function PS1_read_mem(buf, addr, sz) {
         case PS1_MT.i8:
             return buf.getInt8(addr);
         case PS1_MT.i16:
-            return buf.getInt16(addr, false);
+            return buf.getInt16(addr, true);
         case PS1_MT.i32:
-            return buf.getInt32(addr, false);
+            return buf.getInt32(addr, true);
         case PS1_MT.u8:
             return buf.getUint8(addr);
         case PS1_MT.u16:
-            return buf.getUint16(addr, false);
+            return buf.getUint16(addr, true);
         case PS1_MT.u32:
-            return buf.getUint32(addr, false);
+            return buf.getUint32(addr, true);
+        default:
+            console.log('BAD SIZE');
+            return null;
     }
 }
 
@@ -55,15 +58,15 @@ function PS1_write_mem(buf, addr, sz, val) {
         case PS1_MT.i8:
             return buf.setInt8(addr, val);
         case PS1_MT.i16:
-            return buf.setInt16(addr, val,false);
+            return buf.setInt16(addr, val,true);
         case PS1_MT.i32:
-            return buf.setInt32(addr, val,false);
+            return buf.setInt32(addr, val,true);
         case PS1_MT.u8:
             return buf.setUint8(addr, val);
         case PS1_MT.u16:
-            return buf.setUint16(addr, val,false);
+            return buf.setUint16(addr, val,true);
         case PS1_MT.u32:
-            return buf.setUint32(addr, val,false);
+            return buf.setUint32(addr, val,true);
     }
 }
 
@@ -75,6 +78,7 @@ class PS1_mem {
         this.MRAM_ab = new ArrayBuffer(2 * 1024 * 1024);
         this.VRAM_ab = new ArrayBuffer(1024 * 1024);
         this.BIOS_ab = new ArrayBuffer(512 * 1024);
+        this.BIOS_untouched = new ArrayBuffer(512 * 1024);
 
         this.scratchpad = new DataView(this.scratchpad_ab);
         this.MRAM = new DataView(this.MRAM_ab);
@@ -84,6 +88,21 @@ class PS1_mem {
 
     deKSEG(addr) {
         return addr & 0x1FFFFFFF;
+    }
+
+    BIOS_patch(addr, val) {
+        this.BIOS.setUint32(addr, val);
+    }
+
+    BIOS_patch_reset() {
+        let b_src = new Uint32Array(this.BIOS_untouched);
+        let b_dst = new Uint32Array(this.BIOS_ab);
+
+        b_dst.set(b_src);
+    }
+
+    reset() {
+        this.BIOS_patch_reset();
     }
 
     write_mem_generic(kind, addr, size, val) {
@@ -150,8 +169,9 @@ class PS1_mem {
         if ((addr >= 0x1F800000) && (addr < 0x1F800400))
             return this.read_mem_generic(PS1_meme.scratchpad, addr & 0x3FF, size, val);
         // 1FC00000h 512kb BIOS
-        if ((addr >= 0x1FC00000) && (addr < 0x1FC080000))
+        if ((addr >= 0x1FC00000) && (addr < 0x1FC080000)) {
             return this.read_mem_generic(PS1_meme.BIOS, addr & 0x7FFFF, size, val);
+        }
 
         console.log('UNKNOWN READ FROM', hex8(addr));
     }
@@ -220,7 +240,7 @@ function mtest() {
     let r = i32_multiply(a, b);
     console.log('MULTIPLY', hex4(a), 'by', hex4(b) + '.', hex4(r.hi), hex4(r.lo))
 }
-mtest()
+//mtest()
 
 class R3000_multiplier_t {
     constructor(clock) {
