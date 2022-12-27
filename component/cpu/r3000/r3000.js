@@ -107,8 +107,10 @@ class R3000_pipeline_item_t {
         this.value = from.value;
         this.new_PC = from.new_PC;
         this.op = from.op;
+        this.opcode = from.opcode;
         this.lr = from.lr;
         this.lr_mask = from.lr_mask;
+        this.addr = from.addr;
     }
 
     clear() {
@@ -165,7 +167,7 @@ class R3000_pipeline_t {
      * @returns {null|R3000_pipeline_item_t}
      */
     get_next() {
-        return this.items[1];
+        return this.items[0];
     }
 
     /**
@@ -196,6 +198,8 @@ class R3000 {
         this.multiplier = new R3000_multiplier_t(this.clock);
         this.op_table = R3000_generate_opcodes();
         this.trace_on = false;
+
+        this.debug_reg_list = [];
     }
 
     enable_tracing() {
@@ -214,7 +218,7 @@ class R3000 {
         console.log('RESET R3000')
         this.pipe.clear()
         this.regs.PC = 0x1FC00000;
-        console.log('REGS PC!', this.regs.PC);
+        //console.log('REGS PC!', this.regs.PC);
         // Fill instruction pipe with enough instructions
         // Setup COP0 registers
     }
@@ -223,17 +227,24 @@ class R3000 {
         let outstr = trace_start_format('R3K', R3000_COLOR, this.clock.trace_cycles-1, ' ', PCO)
         outstr += disasm;
 		let sp = disasm.length;
-		while(sp < TRACE_INS_PADDING) {
+		while(sp < 30) {
 			outstr += ' ';
 			sp++;
 		}
         outstr += ' PC:' + hex8(PCO);
+        if (this.debug_reg_list.length > 0) {
+            for (let i in this.debug_reg_list) {
+                let rn = this.debug_reg_list[i];
+                outstr += ' ' + R3000_reg_alias[rn] + ':' + hex8(this.regs.R[rn]);
+            }
+        }
+        this.debug_reg_list = [];
         return outstr;
     }
 
     cycle() {
         // Pop things off the stack and execute until we get a cycle_advance
-        console.log('PC!', this.regs.PC);
+        //console.log('PC!', this.regs.PC);
         this.clock.trace_cycles++;
         if (this.pipe.num_items < 1)
             this.fetch_and_decode();
@@ -241,11 +252,12 @@ class R3000 {
         //console.log('OP!', current.op)
 
         current.op.func(current.opcode, current.op, this);
+
+        this.delay_slots(current);
+
         if (this.trace_on) {
             dbg.traces.add(TRACERS.R3000, this.clock.trace_cycles-1, this.trace_format(R3000_disassemble(current.opcode).disassembled, current.addr))
         }
-
-        this.delay_slots(current);
 
         current.clear();
 
@@ -262,13 +274,15 @@ class R3000 {
                 this.regs.R[which.target] = (this.regs.R[which.target] & (which.lr_mask ^ 0xFFFFFFFF)) | which.value;
             else
                 this.regs.R[which.target] = which.value;
+            if (this.trace_on)
+                this.debug_reg_list.append(which.target);
             which.target = -1;
         }
 
         // Branch delay slot
         if (which.new_PC > -1) {
-            which.new_PC = -1;
             this.regs.PC = which.new_PC;
+            which.new_PC = -1;
         }
     }
 
@@ -288,7 +302,7 @@ class R3000 {
 
     fetch_and_decode() {
         let IR = this.mem.CPU_read(this.regs.PC, PS1_MT.u32);
-        //console.log('FETCH AND DECODE PC:', hex8(this.regs.PC), 'VAL:', hex8(IR))
+        console.log('FETCH AND DECODE PC:', hex8(this.regs.PC), 'VAL:', hex8(IR))
         let current = this.pipe.push();
         this.decode(IR, current);
         current.opcode = IR;
