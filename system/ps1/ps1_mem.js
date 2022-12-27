@@ -84,6 +84,7 @@ class PS1_mem {
         this.MRAM = new DataView(this.MRAM_ab);
         this.VRAM = new DataView(this.VRAM_ab);
         this.BIOS = new DataView(this.BIOS_ab);
+        this.cache_isolated = false;
     }
 
     deKSEG(addr) {
@@ -142,21 +143,25 @@ class PS1_mem {
             case PS1_meme.VRAM:
                 return PS1_read_mem(this.VRAM, addr, size);
             case PS1_meme.BIOS:
-                return PS1_read_mem(this.BIOS, addr, size);;
+                return PS1_read_mem(this.BIOS, addr, size);
             default:
                 console.log('UNKNOWN MEM TYPE');
                 return val;
         }
     }
 
+    update_SR(newSR) {
+        this.cache_isolated = +((newSR & 0x10000) === 0x10000);
+    }
+
     CPU_write(addr, size, val) {
         addr = this.deKSEG(addr);
-        if (addr < 0x800000)
+        if ((addr < 0x800000) && !this.cache_isolated)
             return this.write_mem_generic(PS1_meme.MRAM, addr & 0x1FFFFF, size, val)
-        if ((addr >= 0x1F800000) && (addr <= 0x1F800400))
+        if (((addr >= 0x1F800000) && (addr <= 0x1F800400)) && !this.cache_isolated)
             return this.write_mem_generic(PS1_meme.scratchpad, addr & 0x3FF, size, val);
 
-        console.log('WRITE TO UNKNOWN LOCATION', hex8(addr));
+        console.log('WRITE TO UNKNOWN LOCATION', this.cache_isolated, hex8(addr), hex8(val));
     }
 
     CPU_read(addr, size, val, has_effect=true) {

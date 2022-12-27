@@ -139,9 +139,6 @@ function R3000_fJAL(opcode,op, core) {
  */
 function R3000_fJR(opcode,op, core)
 {
-/*
-  00001x | <---------immediate26bit---------> | j/jal
-  */
     let rs = (opcode >>> 21) & 0x1F;
     R3000_branch(core,
         core.regs.R[rs],
@@ -567,7 +564,7 @@ function R3000_fLUI(opcode,op, core) {
     let rt = (opcode >>> 16) & 0x1F;
     let imm16 = opcode & 0xFFFF;
 
-    R3000_fs_reg_write(core, rt, imm16 << 16);
+    R3000_fs_reg_write(core, rt, (imm16 << 16)>>>0);
 }
 
 
@@ -731,6 +728,7 @@ function R3000_fMULTU(opcode,op, core) {
 function R3000_fCOP(opcode,op, core) {
     // argument = COP#
     let ins;
+    let copnum = (opcode >> 26) & 3;
     if ((opcode & 0x4000000) === 0) { // MFC, CFC, MTC, CTC, BC.F, BC.T
         switch ((opcode >>> 21) & 15) {
             case 0: // MFCn
@@ -757,17 +755,37 @@ function R3000_fCOP(opcode,op, core) {
                         console.log('Could not decode COP instruction2', hex8(opcode));
                         return;
                 }
+                break;
             default:
                 console.log('Could not decode COP instruction', hex8(opcode));
                 return;
         }
     } else { // COPn imm
         if (((opcode >>> 21) & 15) === 10) {
-            console.log('RFE FOUND! IMPLEMENT!')
+            ins = R3000_MN.RFE;
         }
-        console.log('NOTE IMPLEMENTED COPN IMMEDIATE')
+        else
+            console.log('NOTE IMPLEMENTED COPN IMMEDIATE')
     }
-    console.log('IMPLEMENT THE COP!', hex8(opcode));
+    if (copnum !== 0) {
+        console.log('ONLY COP0 SUPPORT!', copnum);
+        return;
+    }
+    switch(ins) {
+        case R3000_MN.MTC:
+            // move to cop
+            R3000_fMTC(opcode, op, core, copnum);
+            return;
+        case R3000_MN.MFC:
+            R3000_fMFC(opcode, op, core, copnum);
+            return;
+        case R3000_MN.RFE:
+            R3000_fCOP0_RFE(opcode, op, core);
+            return;
+        default:
+            console.log('UNIMPLEMENTED COP INSTRUCTION!', hex8(opcode), ins);
+            return;
+    }
 }
 
 /**
@@ -1133,7 +1151,6 @@ function R3000_fSYSCALL(opcode,op, core) {
     core.exception(8)
 }
 
-
 /**
  * @param {Number} opcode
  * @param {R3000_opcode} op
@@ -1142,4 +1159,47 @@ function R3000_fSYSCALL(opcode,op, core) {
 function R3000_fBREAK(opcode,op, core) {
     console.log('FIX BREAK!')
     core.exception(8)
+}
+
+/**
+ * @param {Number} opcode
+ * @param {R3000_opcode} op
+ * @param {R3000} core
+ */
+function R3000_fMTC(opcode,op, core, copnum) {
+    // move TO co
+    let rt = (opcode >>> 16) & 0x1F;
+    let rd = (opcode >>> 11) & 0x1F;
+    // cop[rd] = reg[rt]
+    core.COP_write_reg(copnum, rd, core.regs.R[rt]);
+}
+
+
+/**
+ * @param {Number} opcode
+ * @param {R3000_opcode} op
+ * @param {R3000} core
+ */
+function R3000_fMFC(opcode,op, core, copnum) {
+    // move FROM co
+    // rt = cop[rd]
+    let rt = (opcode >>> 16) & 0x1F;
+    let rd = (opcode >>> 11) & 0x1F;
+    R3000_fs_reg_delay(core, rt, core.COP_read_reg(copnum, rd));
+}
+
+/**
+ * @param {Number} opcode
+ * @param {R3000_opcode} op
+ * @param {R3000} core
+ */
+function R3000_fCOP0_RFE(opcode,op, core) {
+    // move FROM co
+    // rt = cop[rd]
+    // The RFE opcode moves some bits in cop0r12 (SR): bit2-3 are copied to bit0-1, all other bits (including bit4-5) are left unchanged.
+    let r12 = core.regs.COP0[12];
+    // bit4-5 are copied to bit2-3
+    let b23 = (r12 >>> 2) & 0x0C; // Move from 4-5 to 2-3
+    let b01 = (r12 >>> 2) & 3; // Move from 2-3 to 0-1
+    core.regs.COP0[12] = (r12 & 0xFFFFFFF0) | b01 | b23;
 }

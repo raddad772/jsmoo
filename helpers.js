@@ -219,7 +219,14 @@ function mksigned26(what) {
      return what >= 0x2000000 ? -(0x4000000 - what) : what;
 }
 
-
+/**
+ * @param {Number} val
+ */
+function dec2(val) {
+    let outstr = val.toString();
+    if (outstr.length === 1) outstr = '0' + outstr;
+    return outstr;
+}
 
 /**
  * @param {Number} val

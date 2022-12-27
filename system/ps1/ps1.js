@@ -120,6 +120,11 @@ class PS1 {
         this.mem.BIOS_patch_reset();
     }
 
+    dump_dbg() {
+        // NOT USED FOR BG DUMP
+        return this.cpu.core.get_debug_file();
+    }
+
     killall() {
         dbg.remove_cpu(D_RESOURCE_TYPES.R3000);
     }

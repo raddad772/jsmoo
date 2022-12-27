@@ -33,6 +33,10 @@ class threaded_emulator_worker_t {
 
     dump_something(e) {
         switch(e.what) {
+            case 'dbg':
+                let r = this.js_wrapper.dump_dbg();
+                this.send_return(e.what, r);
+                break;
             case 'sprites':
                 // {kind: emulator_messages.dump_something, what: 'sprites', imgdata: canvas.get_imgdata().data.buffer, width: 200, height: 200 }
                 this.js_wrapper.dump_sprites(e.imgdata, e.width, e.height);
@@ -47,7 +51,7 @@ class threaded_emulator_worker_t {
                 this.js_wrapper.dump_bg(e.imgdata, e.what, e.width, e.height)
                 break;
             default:
-                console.log('NO DUMP AVAILABLE?');
+                console.log('NO DUMP AVAILABLE?', e.what);
         }
     }
 
@@ -164,6 +168,10 @@ class threaded_emulator_worker_t {
         this.js_wrapper.set_system(kind, bios);
         this.tech_specs = this.js_wrapper.get_specs();
         this.send_specs(this.tech_specs)
+    }
+
+    send_return(kind, data) {
+        postMessage({kind: emulator_messages.return_something, data: data})
     }
 
     send_mstep_done(data) {
