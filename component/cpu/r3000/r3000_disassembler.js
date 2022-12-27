@@ -65,14 +65,19 @@ function R3000_disassemble(opcode) {
     let output = new R3000_disassembly_output();
     let ostr1 = '', ostr2 = '';
 
-    let p_op = (opcode >>> 26) & 31;
-    let s_op = opcode & 31;
+    let p_op = (opcode >>> 26) & 63;
+    let s_op = opcode & 63;
     let imm16 = opcode & 0xFFFF;
     let rs = (opcode >>> 21) & 31;
     let rt = (opcode >>> 16) & 31;
     let rd = (opcode >>> 11) & 31;
     let imm5 = (opcode >>> 6) & 31;
     let num = p_op & 3;
+
+    if (opcode === 0) {
+        output.disassembled = 'nop        ';
+        return output;
+    }
     
     switch(p_op) {
         case 0x00: // SPECIAL
@@ -190,7 +195,7 @@ function R3000_disassemble(opcode) {
                     ostr2 = R3000_reg_alias[rd] + ', ' + R3000_reg_alias[rs] + ', ' + R3000_reg_alias[rt];
                     break;
                 default:
-                    ostr1 = 'UNKNOWN.b ' + hex8(opcode);
+                    ostr1 = 'UNKNOWN.b ' + hex2(s_op) + ' ' + hex8(opcode);
                     break;
             }
             break;

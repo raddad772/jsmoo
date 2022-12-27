@@ -97,7 +97,6 @@ class PS1_mem {
     BIOS_patch_reset() {
         let b_src = new Uint32Array(this.BIOS_untouched);
         let b_dst = new Uint32Array(this.BIOS_ab);
-
         b_dst.set(b_src);
     }
 
@@ -143,7 +142,7 @@ class PS1_mem {
             case PS1_meme.VRAM:
                 return PS1_read_mem(this.VRAM, addr, size);
             case PS1_meme.BIOS:
-                return PS1_read_mem(this.BIOS, addr, size);
+                return PS1_read_mem(this.BIOS, addr, size);;
             default:
                 console.log('UNKNOWN MEM TYPE');
                 return val;

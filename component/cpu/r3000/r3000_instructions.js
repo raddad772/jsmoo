@@ -35,6 +35,8 @@ function R3000_branch(core, new_addr, doit, link, link_reg= 31) {
  */
 function R3000_fs_reg_write(core, target, value) {
     core.regs.R[target] = value & 0xFFFFFFFF;
+    if (core.trace_on) core.debug_reg_list.push(target);
+
     let p = core.pipe.get_next();
 
     if (p.target === target) p.target = -1;
@@ -170,7 +172,7 @@ function R3000_fJALR(opcode,op, core)
 function R3000_fBEQ(opcode,op, core) {
     // 00010x | rs   | rt   | <--immediate16bit--> |
     R3000_branch(core,
-        (core.regs.PC + (mksigned16(opcode & 0xFFFF))) & 0xFFFFFFFF,
+        (core.regs.PC + (mksigned16(opcode & 0xFFFF)*4)) & 0xFFFFFFFF,
         core.regs.R[(opcode >>> 21) & 0x1F] === core.regs.R[(opcode >>> 16) & 0x1F],
         false);
 }
@@ -184,7 +186,7 @@ function R3000_fBEQ(opcode,op, core) {
 function R3000_fBNE(opcode,op, core) {
     // 00010x | rs   | rt   | <--immediate16bit--> |\
     R3000_branch(core,
-        (core.regs.PC + (mksigned16(opcode & 0xFFFF))) & 0xFFFFFFFF,
+        (core.regs.PC + (mksigned16(opcode & 0xFFFF)*4)) & 0xFFFFFFFF,
         core.regs.R[(opcode >>> 21) & 0x1F] !== core.regs.R[(opcode >>> 16) & 0x1F],
         false);
 }
@@ -198,7 +200,7 @@ function R3000_fBNE(opcode,op, core) {
 function R3000_fBLEZ(opcode,op, core) {
     // 00010x | rs   | rt   | <--immediate16bit--> |
     R3000_branch(core,
-        (core.regs.PC + (mksigned16(opcode & 0xFFFF))) & 0xFFFFFFFF,
+        (core.regs.PC + (mksigned16(opcode & 0xFFFF)*4)) & 0xFFFFFFFF,
         core.regs.R[(opcode >>> 21) & 0x1F] <= 0,
         false)
 }
@@ -212,7 +214,7 @@ function R3000_fBLEZ(opcode,op, core) {
 function R3000_fBGTZ(opcode,op, core) {
     // 00010x | rs   | rt   | <--immediate16bit--> |
     R3000_branch(core,
-        (core.regs.PC + (mksigned16(opcode & 0xFFFF))) & 0xFFFFFFFF,
+        (core.regs.PC + (mksigned16(opcode & 0xFFFF)*4)) & 0xFFFFFFFF,
         core.regs.R[(opcode >>> 21) & 0x1F] > 0,
         false)
 }

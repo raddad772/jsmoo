@@ -89,7 +89,10 @@ class PS1_clock {
 }
 
 class PS1 {
-    constructor() {
+    /**
+     * @param {bios_t} BIOS
+     */
+    constructor(BIOS) {
         this.clock = new PS1_clock();
         this.bus = new PS1_bus(this.clock);
         this.mem = new PS1_mem();
@@ -101,9 +104,8 @@ class PS1 {
         this.controller1_in = new ps1_dualshock_inputs();
         this.controller2_in = new ps1_dualshock_inputs();
 
-        this.BIOS = new Uint8Array(0);
-
         dbg.add_cpu(D_RESOURCE_TYPES.R3000, this.cpu);
+        this.load_BIOS_from_RAM(BIOS.BIOS)
         this.cpu.reset();
     }
 
@@ -111,8 +113,11 @@ class PS1 {
      * @param {Uint8Array} inp
      */
     load_BIOS_from_RAM(inp) {
-        this.BIOS = new Uint8Array(inp.byteLength);
-        this.BIOS.set(new Uint8Array(inp));
+        console.log('Loading BIOS...')
+        let src = new Uint32Array(inp);
+        let dst = new Uint32Array(this.mem.BIOS_untouched)
+        dst.set(src);
+        this.mem.BIOS_patch_reset();
     }
 
     killall() {
