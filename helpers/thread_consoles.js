@@ -44,5 +44,5 @@ class threaded_console_t {
     }
 }
 
-const tconsole = new threaded_console_t('tconsole');
-const dconsole = new threaded_console_t('dconsole');
+const tconsole = new threaded_console_t('tconsole', );
+const dconsole = new threaded_console_t('dconsole', 1, 200);

@@ -3,7 +3,7 @@
 let after_js = function() {console.log('NO AFTER JS THING');};
 
 const DEFAULT_STEPS = {
-	master: 2,
+	master: 200,
 	scanlines: 1,
 	frames: 0,
 	seconds: 1,
@@ -109,7 +109,7 @@ function str2ab(str) {
 }
 
 // Top one, going up.
-var dconsole = new console_t('disassembly', -1, 258, false, false);
+var dconsole = new console_t('disassembly', -1, 358, false, false);
 // Bottom one, going down.
 var tconsole = new console_t('textconsole', 1, 20, true, true);
 // Memory dump console
@@ -218,8 +218,13 @@ function click_step_seconds() {
 
 }
 
+function click_dump_dbg() {
+	global_player.dump_dbg();
+}
+
 function click_bg_dump(which) {
-	global_player.dump_bg(bg_canvas, {which: which})
+	console.log(which);
+	global_player.dump_bg(bg_canvas, which)
 }
 
 function click_tile_dump() {

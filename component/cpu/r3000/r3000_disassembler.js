@@ -269,11 +269,11 @@ function R3000_disassemble(opcode) {
             break;
         case 0x0E: // XORI
             ostr1 = 'xori';
-            ostr2 = R3000_reg_alias[rt] + ', ' + R3000_reg_alias[rs] + ', ' + mksigned16h(imm16);
+            ostr2 = R3000_reg_alias[rt] + ', ' + R3000_reg_alias[rs] + ', ' + hex4(imm16);
             break;
         case 0x0F: // LUI
             ostr1 = 'lui';
-            ostr2 = R3000_reg_alias[rt] + ', ' + mksigned16(imm16) + '0000' + 'h';
+            ostr2 = R3000_reg_alias[rt] + ', ' + hex4(imm16) + '0000' + 'h';
             break;
         case 0x13: // COP3
         case 0x12: // COP2

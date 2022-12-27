@@ -39,6 +39,7 @@ const emulator_messages = Object.freeze({
 
     ui_event: 200,
     dump_something: 201,
+    return_something: 202,
 
     // Child to parent
     frame_complete: 50,

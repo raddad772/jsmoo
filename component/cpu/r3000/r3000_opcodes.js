@@ -11,7 +11,7 @@ const R3000_MNs = [
     // a few missing ones
     'LWCx', 'SWCx', 'COPx',
     // COP sub-instructions
-    'MFC', 'CFC', 'MTC', 'CTC', 'BCF', 'BCT', 'COPimm'
+    'MFC', 'CFC', 'MTC', 'CTC', 'BCF', 'BCT', 'COPimm', 'RFE'
 ]
 
 function R3000_MN_gen() {
@@ -52,6 +52,7 @@ const R3000_MN = Object.freeze({
     XOR: 60, NOR: 61, SLT: 62, SLTU: 63, NA: 64,
     LWCx: 65, SWCx: 66, COPx: 67, MFC: 68, CFC: 69,
     MTC: 70, CTC: 71, BCF: 72, BCT: 73, COPimm: 74,
+    RFE: 75
 });
 
 const R3000_MN_R = Object.freeze({
@@ -70,6 +71,7 @@ const R3000_MN_R = Object.freeze({
     60: 'XOR', 61: 'NOR', 62: 'SLT', 63: 'SLTU', 64: 'NA',
     65: 'LWCx', 66: 'SWCx', 67: 'COPx', 68: 'MFC', 69: 'CFC',
     70: 'MTC', 71: 'CTC', 72: 'BCF', 73: 'BCT', 74: 'COPimm',
+    75: 'RFE',
 });
 
 class R3000_opcode {

@@ -15,7 +15,11 @@ class R3000_regs_t {
 
         // Coprocessor registers, of which there are 32
         this.COP0 = [
+            0, 0, 0, 0, 0, 0, 0, 0, // data regs
             0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, // control regs
             0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0,
@@ -200,6 +204,10 @@ class R3000 {
         this.trace_on = false;
 
         this.debug_reg_list = [];
+        this.debug_tracelog = '';
+        this.debug_on = true;
+        this.any_debug = false;
+        this.cache_isolated = false;
     }
 
     enable_tracing() {
@@ -235,6 +243,9 @@ class R3000 {
         if (this.debug_reg_list.length > 0) {
             for (let i in this.debug_reg_list) {
                 let rn = this.debug_reg_list[i];
+                if (this.debug_on) {
+                    this.debug_tracelog += ' R' + dec2(rn) + ' ' + hex8(this.regs.R[rn]>>>0).toLowerCase();
+                }
                 outstr += ' ' + R3000_reg_alias[rn] + ':' + hex8(this.regs.R[rn]);
             }
         }
@@ -251,6 +262,9 @@ class R3000 {
         let current = this.pipe.move_forward();
         //console.log('OP!', current.op)
 
+        if (this.debug_on) {
+            this.debug_add(current.opcode, current.addr)
+        }
         current.op.func(current.opcode, current.op, this);
 
         this.delay_slots(current);
@@ -262,6 +276,26 @@ class R3000 {
         current.clear();
 
         this.fetch_and_decode();
+    }
+
+    get_debug_file() {
+        let o = this.debug_tracelog + '\r\n';
+        this.debug_tracelog = '';
+        this.any_debug = false;
+        let a = 'PC 00000000 OP 00000000 R00 00000000 R01 00000000 R02 00000000 R03 00000000 R04 00000000 R05 00000000 R06 00000000 R07 00000000 R08 00000000 R09 00000000 R10 00000000 R11 00000000 R12 00000000 R13 00000000 R14 00000000 R15 00000000 R16 00000000 R17 00000000 R18 00000000 R19 00000000 R20 00000000 R21 00000000 R22 00000000 R23 00000000 R24 00000000 R25 00000000 R26 00000000 R27 00000000 R28 00000000 R29 00000000 R30 00000000 R31 00000000 CAUSE 00000000 IRQ 0000 D8 00 D16 0000 D32 00000000\r\n';
+        a += 'PC 00000000 OP 00000000\r\n';
+        a += 'PC 00000000 OP 00000000\r\n';
+        a += 'PC 00000000 OP 00000000\r\n';
+        a += 'PC 00000000 OP 00000000';
+        return a + o;
+    }
+
+    /**
+     * @param {R3000_opcode} opcode
+     * @param {number} PC
+     */
+    debug_add(opcode, PC) {
+        this.debug_tracelog += '\r\nPC ' + hex8(PC).toLowerCase() + ' OP ' + hex8(opcode).toLowerCase();
     }
 
     /**
@@ -302,7 +336,7 @@ class R3000 {
 
     fetch_and_decode() {
         let IR = this.mem.CPU_read(this.regs.PC, PS1_MT.u32);
-        console.log('FETCH AND DECODE PC:', hex8(this.regs.PC), 'VAL:', hex8(IR))
+        //console.log('FETCH AND DECODE PC:', hex8(this.regs.PC), 'VAL:', hex8(IR))
         let current = this.pipe.push();
         this.decode(IR, current);
         current.opcode = IR;
@@ -320,17 +354,21 @@ class R3000 {
     COP_write_reg(COP, num, val) {
         if (COP === 0) {
             // TODO: add 1-cycle delay
+            if (num === 12) {
+                console.log('REG12 WRITE!', hex8(val));
+                this.mem.update_SR(val);
+            }
             this.regs.COP0[num] = val;
             return;
         }
-        console.log('write to unimplemented COP');
+        console.log('write to unimplemented COP', COP);
     }
 
     COP_read_reg(COP, num, val) {
         if (COP === 0) {
             return this.regs.COP0[num];
         }
-        console.log('read from unimplemented COP');
+        console.log('read from unimplemented COP', COP);
         return 0xFF;
     }
 

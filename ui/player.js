@@ -535,6 +535,9 @@ class global_player_t {
 	on_player_message(e) {
 		e = e.data;
 		switch(e.kind) {
+			case emulator_messages.return_something:
+				save_js('mdebug.txt', e.data);
+				break;
 			case emulator_messages.dbg_break:
 				this.pause();
 				break;
@@ -714,7 +717,12 @@ class global_player_t {
 	}
 
 	dump_RAM(kind, addr) {
+		console.log(kind, addr);
 		this.player_thread.postMessage({kind: emulator_messages.dump_something, what: kind, addr: addr});
+	}
+
+	dump_dbg() {
+		this.player_thread.postMessage({kind: emulator_messages.dump_something, what: 'dbg'})
 	}
 
 	dump_bg(canvas, which) {
