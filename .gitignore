@@ -4,5 +4,6 @@
 /misc/tests/ProcessorTests
 /misc/tests/gameboy-test-data
 SMS TROUBLESHOOT.txt
+as-emu-cores/.package-lock.json
 as-emu-cores/package-lock.json
 as-emu-cores/node_modules/

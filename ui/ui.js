@@ -3,7 +3,7 @@
 let after_js = function() {console.log('NO AFTER JS THING');};
 
 const DEFAULT_STEPS = {
-	master: 50,
+	master: 2,
 	scanlines: 1,
 	frames: 0,
 	seconds: 1,

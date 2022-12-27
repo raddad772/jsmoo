@@ -1,6 +1,6 @@
 "use strict";
 
-let CPU_DO_TRACING_AT_START = false;
+let CPU_DO_TRACING_AT_START = true;
 let APU_DO_TRACING_AT_START = false;
 let TRACE_COLOR = true;
 let SPC_TRACING_START = 20 * 68 * 262 * 9;
@@ -16,6 +16,7 @@ let TRACE_WRITE = '{b}';
 let SPC_COLOR = '{r}';
 let WDC_COLOR = '{b}';
 let MOS_COLOR = '{g}';
+let R3000_COLOR = '{b}';
 let Z80_COLOR = '{g}';
 let SM83_COLOR = '{g}';
 let WDC_TRACE_IO = false;
@@ -372,7 +373,7 @@ class debugger_t {
     enable_tracing_for(kind) {
         let old = this.tracing_for[kind];
         this.tracing_for[kind] = true;
-        console.log('OLD?', old, this.tracing_for);
+        //console.log('OLD?', old, this.tracing_for);
         if (!old)  this.cpu_refresh_tracing();
     }
 

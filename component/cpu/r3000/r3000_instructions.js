@@ -516,6 +516,10 @@ function R3000_fSRAV(opcode,op, core) {
  * @param {R3000} core
  */
 function R3000_fSLL(opcode,op, core) {
+    if (opcode === 0) {
+        console.log('NOP');
+        return;
+    }
     let rt = (opcode >>> 16) & 0x1F;
     let rd = (opcode >>> 11) & 0x1F;
     let imm5 = (opcode >>> 6) & 0x1F;
