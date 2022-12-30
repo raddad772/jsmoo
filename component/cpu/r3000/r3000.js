@@ -208,7 +208,7 @@ class R3000 {
 
         this.debug_reg_list = [];
         this.debug_tracelog = '';
-        this.debug_on = true;
+        this.debug_on = false;
         this.any_debug = false;
         this.cache_isolated = false;
 
@@ -309,7 +309,6 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
 			outstr += ' ';
 			sp++;
 		}
-        outstr += ' PC:' + hex8(PCO);
         if (this.debug_reg_list.length > 0) {
             for (let i in this.debug_reg_list) {
                 let rn = this.debug_reg_list[i];
@@ -323,6 +322,9 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
         return outstr;
     }
 
+    debug_add_delayed(w) {
+        this.debug_tracelog += 'R' + dec2(w.target) + ' ' + hex8(w.value >>> 0).toLowerCase() + ' ';
+    }
     cycle() {
         // Pop things off the stack and execute until we get a cycle_advance
         //console.log('PC!', this.regs.PC);
@@ -337,6 +339,9 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
         let current = this.pipe.move_forward();
         //console.log('OP!', current.op)
 
+        if (current.target > 0) {
+            this.debug_add_delayed(current);
+        }
         if (this.debug_on) {
             this.debug_add(current.opcode, current.addr)
         }
@@ -383,8 +388,11 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
                 this.regs.R[which.target] = (this.regs.R[which.target] & (which.lr_mask ^ 0xFFFFFFFF)) | which.value;
             else
                 this.regs.R[which.target] = which.value;
-            if (this.trace_on)
+            if (this.trace_on) {
                 this.debug_reg_list.push(which.target);
+                //this.debug_tracelog += 'R' + dec2(which.target) + ' ' + hex8(this.regs.R[which.target]>>>0).toLowerCase() + ' ';
+
+            }
             which.target = -1;
         }
 
@@ -434,7 +442,7 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
         if (COP === 0) {
             // TODO: add 1-cycle delay
             if (num === 12) {
-                console.log('REG12 WRITE!', hex8(val));
+                //console.log('REG12 WRITE!', hex8(val));
                 this.mem.update_SR(val);
             }
             this.regs.COP0[num] = val;
