@@ -85,6 +85,9 @@ class PS1_mem {
         this.VRAM = new DataView(this.VRAM_ab);
         this.BIOS = new DataView(this.BIOS_ab);
         this.cache_isolated = false;
+
+        this.CPU_read_reg = function(addr, size, val, has_effect=true) {debugger;};
+        this.CPU_write_reg = function(addr, size, val) {debugger;};
     }
 
     deKSEG(addr) {
@@ -107,13 +110,11 @@ class PS1_mem {
 
     write_mem_generic(kind, addr, size, val) {
         if ((size === PS1_MT.i16) || (size === PS1_MT.u16)) {
-            addr >>= 1;
             val &= 0xFFFF;
         }
-        else if ((size === PS1_MT.i32) || (size === PS1_MT.u32))
-            addr >>= 2;
-        else
+        else if ((size === PS1_MT.i8) || (size === PS1_MT.u8))
             val &= 0xFF;
+
         switch(kind) {
             case PS1_meme.scratchpad:
                 PS1_write_mem(this.scratchpad, addr, size, val);
@@ -156,19 +157,38 @@ class PS1_mem {
 
     CPU_write(addr, size, val) {
         addr = this.deKSEG(addr);
-        if ((addr < 0x800000) && !this.cache_isolated)
+        if ((addr < 0x800000) && !this.cache_isolated) {
+            if ((addr & 0xFFFFFFFC) === 0x0000e1e8) {
+                console.log('WRITE TO BP', size, hex8(val));
+                //dbg.break()
+            }
             return this.write_mem_generic(PS1_meme.MRAM, addr & 0x1FFFFF, size, val)
+
+        }
         if (((addr >= 0x1F800000) && (addr <= 0x1F800400)) && !this.cache_isolated)
             return this.write_mem_generic(PS1_meme.scratchpad, addr & 0x3FF, size, val);
 
-        console.log('WRITE TO UNKNOWN LOCATION', this.cache_isolated, hex8(addr), hex8(val));
+        if ((addr >= 0x1F801070) && (addr <= 0x1F801074)) {
+            this.CPU_write_reg(addr, size, val);
+            return;
+        }
+
+
+
+        //console.log('WRITE TO UNKNOWN LOCATION', this.cache_isolated, hex8(addr), hex8(val));
     }
 
     CPU_read(addr, size, val, has_effect=true) {
         addr = this.deKSEG(addr);
         // 2MB MRAM mirrored 4 times
-        if (addr < 0x800000)
-            return this.read_mem_generic(PS1_meme.MRAM, addr & 0x1FFFFF, size, val);
+        if (addr < 0x800000) {
+            let r = this.read_mem_generic(PS1_meme.MRAM, addr & 0x1FFFFF, size, val);
+
+            if ((addr & 0xFFFFFFFC) === 0x0000e1e8) {
+                console.log('READ FROM BP', size, hex8(r));
+            }
+            return r;
+        }
         // 1F800000 1024kb of scratchpad
         if ((addr >= 0x1F800000) && (addr < 0x1F800400))
             return this.read_mem_generic(PS1_meme.scratchpad, addr & 0x3FF, size, val);
@@ -177,7 +197,24 @@ class PS1_mem {
             return this.read_mem_generic(PS1_meme.BIOS, addr & 0x7FFFF, size, val);
         }
 
-        console.log('UNKNOWN READ FROM', hex8(addr));
+        if ((addr >= 0x1F801070) && (addr <= 0x1F801074)) {
+            return this.CPU_read_reg(addr, size, val, has_effect);
+        }
+
+
+        //console.log('UNKNOWN READ FROM', hex8(addr));
+        switch(size) {
+            case PS1_MT.u32:
+            case PS1_MT.i32:
+                return 0xFFFFFFFF;
+            case PS1_MT.u16:
+            case PS1_MT.i16:
+                return 0xFFFF;
+            case PS1_MT.u8:
+            case PS1_MT.i8:
+                return 0xFF;
+        }
+
     }
 }
 
