@@ -35,6 +35,8 @@ function R3000_branch(core, new_addr, doit, link, link_reg= 31) {
  */
 function R3000_fs_reg_write(core, target, value) {
     core.regs.R[target] = (value & 0xFFFFFFFF)>>>0;
+    //if ((value>>>0) === 0xFFFFFE3A) dbg.break();
+
     if (core.trace_on) core.debug_reg_list.push(target);
 
     let p = core.pipe.get_next();
@@ -53,6 +55,7 @@ function R3000_fs_reg_delay(core, target, value) {
 
     p.target = target;
     p.value = (value & 0xFFFFFFFF)>>>0;
+    //if (p.value === 0xFFFFFE3A) dbg.break();
 }
 
 
@@ -109,7 +112,6 @@ function R3000_fJ(opcode,op, core) {
 /*
   00001x | <---------immediate26bit---------> | j/jal
   */
-    console.log('DO BRANCH', hex8((((core.regs.PC & 0xF0000000) + ((opcode & 0x3FFFFFF) << 2)) & 0xFFFFFFFF)>>>0))
     R3000_branch(core,
         ((core.regs.PC & 0xF0000000) + ((opcode & 0x3FFFFFF) << 2)) & 0xFFFFFFFF,
         true,
@@ -227,10 +229,10 @@ function R3000_fADDI(opcode,op, core) {
     //   001xxx | rs   | rt   | <--immediate16bit--> | alu-imm
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
-    let imm = mksigned16(opcode & 0xFFFF);
+    let imm = ((opcode & 0xFFFF) << 16) >> 16;
 
     // TODO: add overflow trap
-    R3000_fs_reg_write(core, rt, core.regs.R[rs] + imm);
+    R3000_fs_reg_write(core, rt, (core.regs.R[rs] + imm) & 0xFFFFFFFF);
 }
 
 /**
@@ -243,9 +245,9 @@ function R3000_fADDIU(opcode,op, core) {
     //   001xxx | rs   | rt   | <--immediate16bit--> | alu-imm
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
-    let imm = mksigned16(opcode & 0xFFFF);
+    let imm = ((opcode & 0xFFFF) << 16) >> 16;
 
-    R3000_fs_reg_write(core, rt, core.regs.R[rs] + imm);
+    R3000_fs_reg_write(core, rt, (core.regs.R[rs] + imm) & 0xFFFFFFFF);
 }
 
 /**
@@ -292,7 +294,7 @@ function R3000_fSUB(opcode,op, core) {
     let rd = (opcode >>> 11) & 0x1F;
 
     // TODO: add overflow trap
-    R3000_fs_reg_write(core, rd, core.regs.R[rs] - core.regs.R[rt]);
+    R3000_fs_reg_write(core, rd, ((core.regs.R[rs] & 0xFFFFFFFF) - (core.regs.R[rt] & 0xFFFFFFFF)) >>> 0);
 }
 
 /**
@@ -307,7 +309,7 @@ function R3000_fSUBU(opcode,op, core) {
     let rt = (opcode >>> 16) & 0x1F;
     let rd = (opcode >>> 11) & 0x1F;
 
-    R3000_fs_reg_write(core, rd, core.regs.R[rs] - core.regs.R[rt]);
+    R3000_fs_reg_write(core, rd, ((core.regs.R[rs] & 0xFFFFFFFF) - (core.regs.R[rt] & 0xFFFFFFFF)) >>> 0);
 }
 
 
@@ -334,7 +336,7 @@ function R3000_fAND(opcode,op, core) {
 function R3000_fANDI(opcode,op, core) {
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
-    let imm16 = (0xFFFF0000 | (opcode & 0xFFFF)) >>> 0;
+    let imm16 = (opcode & 0xFFFF);
 
     R3000_fs_reg_write(core, rt, imm16 & core.regs.R[rs]);
 }
@@ -407,7 +409,8 @@ function R3000_fNOR(opcode,op, core) {
     let rt = (opcode >>> 16) & 0x1F;
     let rd = (opcode >>> 11) & 0x1F;
 
-    R3000_fs_reg_write(core, rd, core.regs.R[rs] ^ core.regs.R[rt] ^ 0xFFFFFFFF);
+    // ((regs.R[rs] | regs.R[rt]) ^ 0xFFFFFFFF)>>> 0
+    R3000_fs_reg_write(core, rd, ((core.regs.R[rs] | core.regs.R[rt]) ^ 0xFFFFFFFF)>>> 0);
 }
 
 /**
@@ -804,7 +807,7 @@ function R3000_fLB(opcode,op, core) {
     let addr = (core.regs.R[rs] + imm16) & 0xFFFFFFFF;
 
     let rd = core.mem.CPU_read(addr, PS1_MT.u8, 0);
-    if (rd & 0x80) rd |= 0xFFFFFF00;
+    rd = (rd << 24) >> 24;
     R3000_fs_reg_delay(core, rt, rd>>>0);
 }
 
@@ -840,7 +843,7 @@ function R3000_fLH(opcode,op, core) {
     let addr = (core.regs.R[rs] + imm16) & 0xFFFFFFFF;
 
     let rd = core.mem.CPU_read(addr, PS1_MT.u16, 0);
-    if (rd & 0x8000) rd |= 0xFFFF0000;
+    rd = (rd << 16) >> 16;
     R3000_fs_reg_delay(core, rt, rd);
 }
 

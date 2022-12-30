@@ -91,11 +91,11 @@ class PS1_mem {
     }
 
     deKSEG(addr) {
-        return addr & 0x1FFFFFFF;
+        return (addr & 0x1FFFFFFF)>>>0;
     }
 
     BIOS_patch(addr, val) {
-        this.BIOS.setUint32(addr, val);
+        this.BIOS.setUint32(addr, val, true);
     }
 
     BIOS_patch_reset() {
@@ -136,6 +136,9 @@ class PS1_mem {
             addr &= 0xFFFFFFFD;
         else if ((size === PS1_MT.i32) || (size === PS1_MT.u32))
             addr &= 0xFFFFFFFC;
+        if (addr === 0x1FC06FF0) {
+            console.log('FOUNDITrrrrrrr');
+        }
         switch(kind) {
             case PS1_meme.scratchpad:
                 return PS1_read_mem(this.scratchpad, addr, size);
@@ -144,7 +147,11 @@ class PS1_mem {
             case PS1_meme.VRAM:
                 return PS1_read_mem(this.VRAM, addr, size);
             case PS1_meme.BIOS:
-                return PS1_read_mem(this.BIOS, addr, size);
+                let r = PS1_read_mem(this.BIOS, addr, size);
+                if (addr === 0x6FF0) {
+                    console.log('FOUNDIT4', hex4(r));
+                }
+                return r;
             default:
                 console.log('UNKNOWN MEM TYPE');
                 return val;
@@ -181,17 +188,14 @@ class PS1_mem {
     CPU_read(addr, size, val, has_effect=true) {
         addr = this.deKSEG(addr);
         // 2MB MRAM mirrored 4 times
-        if (addr < 0x800000) {
+        if (addr < 0x00800000) {
             let r = this.read_mem_generic(PS1_meme.MRAM, addr & 0x1FFFFF, size, val);
-
-            if ((addr & 0xFFFFFFFC) === 0x0000e1e8) {
-                console.log('READ FROM BP', size, hex8(r));
-            }
             return r;
         }
         // 1F800000 1024kb of scratchpad
-        if ((addr >= 0x1F800000) && (addr < 0x1F800400))
+        if ((addr >= 0x1F800000) && (addr < 0x1F800400)) {
             return this.read_mem_generic(PS1_meme.scratchpad, addr & 0x3FF, size, val);
+        }
         // 1FC00000h 512kb BIOS
         if ((addr >= 0x1FC00000) && (addr < 0x1FC080000)) {
             return this.read_mem_generic(PS1_meme.BIOS, addr & 0x7FFFF, size, val);
