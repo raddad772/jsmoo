@@ -1,7 +1,8 @@
 "use strict";
 
 // 33.8688 MHz / 60
-const PS1_CYCLES_PER_FRAME = 564480
+const PS1_CYCLES_PER_FRAME_NTSC = 564480
+const PS1_CYCLES_PER_FRAME_PAL = 677376
 
 let PS1_inputmap = [];
 function fill_PS1_inputmap() {
@@ -80,7 +81,7 @@ class PS1_clock {
 
         this.trace_cycles = 0;
 
-        this.cycles_left_this_frame = PS1_CYCLES_PER_FRAME;
+        this.cycles_left_this_frame = PS1_CYCLES_PER_FRAME_NTSC;
 
         this.cpu_frame_cycle = 0;
         this.cpu_master_clock = 0;
@@ -272,7 +273,10 @@ class PS1 {
         this.cycles_left += howmany;
         while (this.cycles_left > 0) {
             this.clock.cycles_left_this_frame--;
-            if (this.clock.cycles_left_this_frame <= 0) this.clock.cycles_left_this_frame += PS1_CYCLES_PER_FRAME;
+            if (this.clock.cycles_left_this_frame <= 0) {
+                this.clock.cycles_left_this_frame += PS1_CYCLES_PER_FRAME_NTSC;
+                this.cpu.core.set_interrupt(1);
+            }
 
             this.cpu.cycle();
             this.clock.cpu_frame_cycle++;

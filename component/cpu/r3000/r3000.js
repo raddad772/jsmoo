@@ -39,6 +39,8 @@ class R3000_pins_t {
         this.D = 0;
         this.RD = 0;
         this.WR = 0;
+
+        this.IRQ = 0;
     }
 }
 
@@ -101,7 +103,7 @@ class R3000_pipeline_item_t {
         this.lr = 0;
         this.lr_mask = 0;
         this.opcode = 0;
-        this.new_PC = -1;
+        this.new_PC = 0;
         this.addr = 0; // Address of opcode
     }
 
@@ -119,7 +121,8 @@ class R3000_pipeline_item_t {
 
     clear() {
         this.kind = R3000_pipe_kind.empty;
-        this.target = this.value = this.new_PC = -1;
+        this.target = this.value = -1;
+        this.new_PC = 0;
         this.op = null;
         this.lr = 0;
         this.lr_mask = 0;
@@ -208,6 +211,72 @@ class R3000 {
         this.debug_on = true;
         this.any_debug = false;
         this.cache_isolated = false;
+
+        this.mem.CPU_write_reg = this.CPU_write_reg.bind(this);
+        this.mem.CPU_read_reg = this.CPU_read_reg.bind(this);
+
+        this.io = {
+            I_STAT: 0,
+            I_MASK: 0
+        }
+    }
+
+    set_interrupt(which) {
+        if (this.io.I_STAT & which) return;
+        this.io.I_STAT |= which;
+        this.update_I_STAT();
+    }
+
+    update_I_STAT() {
+        this.pins.IRQ = (this.io.I_STAT & this.io.I_MASK);
+    }
+
+        /* 1F801070h I_STAT - Interrupt status register (R=Status, W=Acknowledge)
+1F801074h I_MASK - Interrupt mask register (R/W)
+Status: Read I_STAT (0=No IRQ, 1=IRQ)
+Acknowledge: Write I_STAT (0=Clear Bit, 1=No change)
+Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
+
+
+  0     IRQ0 VBLANK (PAL=50Hz, NTSC=60Hz)
+  1     IRQ1 GPU   Can be requested via GP0(1Fh) command (rarely used)
+  2     IRQ2 CDROM
+  3     IRQ3 DMA
+  4     IRQ4 TMR0  Timer 0 aka Root Counter 0 (Sysclk or Dotclk)
+  5     IRQ5 TMR1  Timer 1 aka Root Counter 1 (Sysclk or H-blank)
+  6     IRQ6 TMR2  Timer 2 aka Root Counter 2 (Sysclk or Sysclk/8)
+  7     IRQ7 Controller and Memory Card - Byte Received Interrupt
+  8     IRQ8 SIO
+  9     IRQ9 SPU
+  10    IRQ10 Controller - Lightpen Interrupt. Also shared by PIO and DTL cards.
+  11-15 Not used (always zero)
+  16-31 Garbage
+         */
+    CPU_write_reg(addr, size, val) {
+        switch(addr) {
+            case 0x1F801070: // I_STAT write
+                this.io.I_STAT &= (val>>>0);
+                this.update_I_STAT();
+                return;
+            case 0x1F801074: // I_MASK write
+                this.io.I_MASK = val;
+                this.update_I_STAT();
+                return;
+        }
+        console.log('Unhandled CPU write', hex8(addr), hex8(val));
+    }
+
+    CPU_read_reg(addr, size, val, has_effect=true) {
+        switch(addr) {
+            case 0x1F801070: // I_STAT read
+                return this.io.I_STAT;
+                return;
+            case 0xF1801074: // I_MASK read
+                return this.io.I_MASK;
+                return;
+        }
+        console.log('Unhandled CPU read', hex8(addr));
+        return 0xFFFFFFFF>>>0;
     }
 
     enable_tracing() {
@@ -225,7 +294,8 @@ class R3000 {
     reset() {
         console.log('RESET R3000')
         this.pipe.clear()
-        this.regs.PC = 0x1FC00000;
+        //this.regs.PC =0x1FC00000;
+        this.regs.PC = 0xBFC00000;
         //console.log('REGS PC!', this.regs.PC);
         // Fill instruction pipe with enough instructions
         // Setup COP0 registers
@@ -244,7 +314,7 @@ class R3000 {
             for (let i in this.debug_reg_list) {
                 let rn = this.debug_reg_list[i];
                 if (this.debug_on) {
-                    this.debug_tracelog += ' R' + dec2(rn) + ' ' + hex8(this.regs.R[rn]>>>0).toLowerCase();
+                    this.debug_tracelog += 'R' + dec2(rn) + ' ' + hex8(this.regs.R[rn]>>>0).toLowerCase() + ' ';
                 }
                 outstr += ' ' + R3000_reg_alias[rn] + ':' + hex8(this.regs.R[rn]);
             }
@@ -257,6 +327,11 @@ class R3000 {
         // Pop things off the stack and execute until we get a cycle_advance
         //console.log('PC!', this.regs.PC);
         this.clock.trace_cycles++;
+
+        if (this.pins.IRQ && (this.regs.COP0[12] & 0x400) && (this.regs.COP0[12] & 1)) {
+            this.exception(0, this.pipe.get_next().new_PC !== 0);
+        }
+
         if (this.pipe.num_items < 1)
             this.fetch_and_decode();
         let current = this.pipe.move_forward();
@@ -282,11 +357,11 @@ class R3000 {
         let o = this.debug_tracelog + '\r\n';
         this.debug_tracelog = '';
         this.any_debug = false;
-        let a = 'PC 00000000 OP 00000000 R00 00000000 R01 00000000 R02 00000000 R03 00000000 R04 00000000 R05 00000000 R06 00000000 R07 00000000 R08 00000000 R09 00000000 R10 00000000 R11 00000000 R12 00000000 R13 00000000 R14 00000000 R15 00000000 R16 00000000 R17 00000000 R18 00000000 R19 00000000 R20 00000000 R21 00000000 R22 00000000 R23 00000000 R24 00000000 R25 00000000 R26 00000000 R27 00000000 R28 00000000 R29 00000000 R30 00000000 R31 00000000 CAUSE 00000000 IRQ 0000 D8 00 D16 0000 D32 00000000\r\n';
-        a += 'PC 00000000 OP 00000000\r\n';
-        a += 'PC 00000000 OP 00000000\r\n';
-        a += 'PC 00000000 OP 00000000\r\n';
-        a += 'PC 00000000 OP 00000000';
+        let a = 'PC 00000000 OP 00000000 R00 00000000 R01 00000000 R02 00000000 R03 00000000 R04 00000000 R05 00000000 R06 00000000 R07 00000000 R08 00000000 R09 00000000 R10 00000000 R11 00000000 R12 00000000 R13 00000000 R14 00000000 R15 00000000 R16 00000000 R17 00000000 R18 00000000 R19 00000000 R20 00000000 R21 00000000 R22 00000000 R23 00000000 R24 00000000 R25 00000000 R26 00000000 R27 00000000 R28 00000000 R29 00000000 R30 00000000 R31 00000000 CAUSE 00000000 IRQ 0000 D8 00 D16 0000 D32 00000000 \r\n';
+        a += 'PC 00000000 OP 00000000 \r\n';
+        a += 'PC 00000000 OP 00000000 \r\n';
+        a += 'PC 00000000 OP 00000000 \r\n';
+        a += 'PC 00000000 OP 00000000 ';
         return a + o;
     }
 
@@ -295,7 +370,7 @@ class R3000 {
      * @param {number} PC
      */
     debug_add(opcode, PC) {
-        this.debug_tracelog += '\r\nPC ' + hex8(PC).toLowerCase() + ' OP ' + hex8(opcode).toLowerCase();
+        this.debug_tracelog += '\r\nPC ' + hex8(PC).toLowerCase() + ' OP ' + hex8(opcode).toLowerCase() + ' ';
     }
 
     /**
@@ -309,14 +384,18 @@ class R3000 {
             else
                 this.regs.R[which.target] = which.value;
             if (this.trace_on)
-                this.debug_reg_list.append(which.target);
+                this.debug_reg_list.push(which.target);
             which.target = -1;
         }
 
         // Branch delay slot
-        if (which.new_PC > -1) {
-            this.regs.PC = which.new_PC;
-            which.new_PC = -1;
+        if (which.new_PC !== 0) {
+            this.regs.PC = which.new_PC>>>0;
+            // putchar can be detected when the cpu jumps to 0xA0 with R9 loaded with 0x3C
+            if ((this.regs.PC === 0xA0) && (this.regs.R[9] === 0x3C)) {
+                console.log('putchar!', this.regs[4]);
+            }
+            which.new_PC = 0;
         }
     }
 
@@ -373,7 +452,10 @@ class R3000 {
     }
 
     exception(code, branch_delay=false, cop0=false) {
-        console.log('EXCEPTION!');
+        console.log('EXCEPTION!', this.clock.trace_cycles, code);
+        if (this.trace_on) {
+            dbg.traces.add(TRACERS.R3000, this.clock.trace_cycles-1, this.trace_format(R3000_disassemble(current.opcode).disassembled, current.addr))
+        }
         code <<= 2;
         let vector = 0x80000080;
         if (this.regs.COP0[R3000_COP0_reg.SR] & 0x400000) {
@@ -387,7 +469,8 @@ class R3000 {
             raddr = this.regs.PC;
             code |= 0x80000000;
         }
-        this.regs.COP0[R3000_COP0_reg.EPC] = raddr;
+        this.regs.COP0[R3000_COP0_reg.EPC] = raddr>>>0;
+        console.log('IRQ EPC', hex8(raddr>>>0));
         this.flush_pipe();
 
         if (cop0)
