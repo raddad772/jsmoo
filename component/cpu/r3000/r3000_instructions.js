@@ -1150,7 +1150,6 @@ function R3000_merge_lr(current, next, target, mask, value)
  * @param {R3000} core
  */
 function R3000_fSYSCALL(opcode,op, core) {
-    console.log('FIX SYSYCALL!')
     core.exception(8)
 }
 

@@ -108,6 +108,7 @@ class PS1 {
         dbg.add_cpu(D_RESOURCE_TYPES.R3000, this.cpu);
         this.load_BIOS_from_RAM(BIOS.BIOS)
         this.cpu.reset();
+        this.mem.ps1 = this;
     }
 
     /**
@@ -123,7 +124,9 @@ class PS1 {
 
     dump_dbg() {
         // NOT USED FOR BG DUMP
-        return this.cpu.core.get_debug_file();
+        //return this.cpu.core.get_debug_file();
+        console.log('WHAT?');
+        this.mem.dump_unknown();
     }
 
     killall() {
@@ -267,6 +270,7 @@ class PS1 {
     step_master(howmany) {
         this.cycles_left = 0;
         this.run_cycles(howmany);
+        this.mem.dump_unknown();
     }
 
     run_cycles(howmany) {

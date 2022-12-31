@@ -182,6 +182,7 @@ class R3000_pipeline_t {
      */
     move_forward() {
         //console.log('MOVE FORWARD!', this.current, this.items);
+        if (this.num_items === 0) return;
         this.current.copy(this.items[0]);
         this.items[0].copy(this.items[1]);
         this.items[1].clear();
@@ -219,6 +220,8 @@ class R3000 {
             I_STAT: 0,
             I_MASK: 0
         }
+
+        this.console = '';
     }
 
     set_interrupt(which) {
@@ -270,10 +273,8 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
         switch(addr) {
             case 0x1F801070: // I_STAT read
                 return this.io.I_STAT;
-                return;
-            case 0xF1801074: // I_MASK read
+            case 0x1F801074: // I_MASK read
                 return this.io.I_MASK;
-                return;
         }
         console.log('Unhandled CPU read', hex8(addr));
         return 0xFFFFFFFF>>>0;
@@ -400,8 +401,12 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
         if (which.new_PC !== 0) {
             this.regs.PC = which.new_PC>>>0;
             // putchar can be detected when the cpu jumps to 0xA0 with R9 loaded with 0x3C
-            if ((this.regs.PC === 0xA0) && (this.regs.R[9] === 0x3C)) {
-                console.log('putchar!', this.regs[4]);
+            if ((this.regs.PC === 0xB0)) {
+                //console.log('JUMP TO A0!', hex2(this.regs.R[9]))
+                if (this.regs.R[9] === 0x3D) {
+                    this.console += String.fromCharCode(this.regs.R[4]);
+                    console.log(this.console);
+                }
             }
             which.new_PC = 0;
         }
@@ -412,17 +417,21 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
         let p1 = (IR & 0xFC000000) >>> 26;
         let p2 = (IR & 0x3F);
         if (p1 === 0) {
-            //console.log('GRABBING', 0x3F + p2)
             current.op = this.op_table[0x3F + p2]
         }
         else {
-            //console.log('GRABBING', p1)
             current.op = this.op_table[p1]
+
         }
     }
 
     fetch_and_decode() {
         let IR = this.mem.CPU_read(this.regs.PC, PS1_MT.u32);
+        if (typeof IR === 'undefined') {
+            console.log('BAD IR! PC:' + hex8(this.regs.PC) + ' IR: ' + hex8(IR));
+            dbg.break();
+            return;
+        }
         //console.log('FETCH AND DECODE PC:', hex8(this.regs.PC), 'VAL:', hex8(IR))
         let current = this.pipe.push();
         this.decode(IR, current);
@@ -462,19 +471,19 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
     exception(code, branch_delay=false, cop0=false) {
         console.log('EXCEPTION!', this.clock.trace_cycles, code);
         if (this.trace_on) {
-            dbg.traces.add(TRACERS.R3000, this.clock.trace_cycles-1, this.trace_format(R3000_disassemble(current.opcode).disassembled, current.addr))
+            dbg.traces.add(TRACERS.R3000, this.clock.trace_cycles-1, 'EXCEPTION ' + code);
         }
         code <<= 2;
         let vector = 0x80000080;
         if (this.regs.COP0[R3000_COP0_reg.SR] & 0x400000) {
-            vector = 0xBFC00180;
+            vector = 0xBFC00180>>>0;
         }
         let raddr;
         if (!branch_delay)
-            raddr = (this.regs.PC - 4) & 0xFFFFFFFF;
+            raddr = ((this.regs.PC - 4) & 0xFFFFFFFF)>>>0;
         else
         {
-            raddr = this.regs.PC;
+            raddr = this.regs.PC>>>0;
             code |= 0x80000000;
         }
         this.regs.COP0[R3000_COP0_reg.EPC] = raddr>>>0;
@@ -488,6 +497,8 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
         this.regs.COP0[R3000_COP0_reg.Cause] = code;
         let lstat = this.regs.COP0[R3000_COP0_reg.SR];
         this.regs.COP0[R3000_COP0_reg.SR] = (lstat & 0xFFFFFFC0) | ((lstat & 0x0F) << 2);
+        console.log('EXCEPTION VECTOR IS', hex8(this.regs.PC));
+        console.log('RETURN ADDR IS', hex8(this.regs.PC));
     }
 
     // Apply any waiting register changes,
