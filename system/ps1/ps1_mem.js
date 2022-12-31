@@ -88,6 +88,10 @@ class PS1_mem {
 
         this.CPU_read_reg = function(addr, size, val, has_effect=true) {debugger;};
         this.CPU_write_reg = function(addr, size, val) {debugger;};
+
+        this.unknown_read_mem = new Set();
+        this.unknown_wrote_mem = new Set();
+        this.ps1 = null;
     }
 
     deKSEG(addr) {
@@ -136,9 +140,6 @@ class PS1_mem {
             addr &= 0xFFFFFFFD;
         else if ((size === PS1_MT.i32) || (size === PS1_MT.u32))
             addr &= 0xFFFFFFFC;
-        if (addr === 0x1FC06FF0) {
-            console.log('FOUNDITrrrrrrr');
-        }
         switch(kind) {
             case PS1_meme.scratchpad:
                 return PS1_read_mem(this.scratchpad, addr, size);
@@ -148,9 +149,6 @@ class PS1_mem {
                 return PS1_read_mem(this.VRAM, addr, size);
             case PS1_meme.BIOS:
                 let r = PS1_read_mem(this.BIOS, addr, size);
-                if (addr === 0x6FF0) {
-                    console.log('FOUNDIT4', hex4(r));
-                }
                 return r;
             default:
                 console.log('UNKNOWN MEM TYPE');
@@ -161,6 +159,25 @@ class PS1_mem {
     update_SR(newSR) {
         this.cache_isolated = +((newSR & 0x10000) === 0x10000);
     }
+
+    dump_unknown() {
+        let wl = [], rl = [];
+        for (let i of this.unknown_wrote_mem) {
+            wl.push(hex8(i));
+        }
+        for (let i of this.unknown_read_mem) {
+            rl.push(hex8(i));
+        }
+        wl = wl.sort();
+        rl = rl.sort();
+        if (wl.length > 0) console.log('WRITE ADDRS', wl);
+        if (rl.length > 0) console.log('READ ADDRS', rl);
+    }
+
+/*
+WRITE ADDRS (25)[
+ps1_mem.js:181 READ ADDRS [case 0x1F000084']
+ */
 
     CPU_write(addr, size, val) {
         addr = this.deKSEG(addr);
@@ -180,7 +197,55 @@ class PS1_mem {
             return;
         }
 
-
+        switch(addr) {
+            case 0x1F802041: // F802041h 1 PSX: POST (external 7 segment display, indicate BIOS boot status
+                console.log('WRITE POST STATUS!', val);
+                return;
+            case 0x1F8010F0: // DPCR - DMA control
+            case 0x1F801D8C: // Voice 0..23 Key OFF (Start Release) (W)
+            case 0x1F801D8E: // ...
+            case 0x1F801D90: // Voice 0..23 Channel FM (pitch lfo) mode (R/W)
+            case 0x1F801D92: // ..
+            case 0x1F801D94: // Voice 0..23 Channel Noise mode (R/W)
+            case 0x1F801D96: // ..
+            case 0x1F801D98: // Voice 0..23 Channel Reverb mode (R/W)
+            case 0x1F801D9A: // ..
+            case 0x1F801DA6: // Sound RAM Data Transfer Address
+            case 0x1F801DA8: // Sound RAM Data Transfer Fifo
+            case 0x1F801DAA: // SPU Control Register (SPUCNT)
+            case 0x1F801DAC: // Sound RAM Data Transfer Control
+            case 0x1F801DB0: // CD volume L
+            case 0x1F801DB2: // CD volume R
+            case 0x1F801DB4: // Extern volume L
+            case 0x1F801DB6: // Extern volume R
+            case 0x1F801000: // Expansion 1 base addr
+            case 0x1F801004: // Expansion 2 base addr
+            case 0x1F801008: // Expansion 1 delay/size
+            case 0x1F80100C: // Expansion 3 delay/size
+            case 0x1F801010: // BIOS ROM delay/size
+            case 0x1F801014: // SPU_DELAY delay/size
+            case 0x1F801018: // CDROM_DELAY delay/size
+            case 0x1F80101C: // Expansion 2 delay/size
+            case 0x1F801020: // COM_DELAY /size
+            case 0x1F801060: // RAM SIZE, 2mb mirrored in first 8mb
+            case 0x1F801100: // Timer 0 dotclock
+            case 0x1F801104: // ...
+            case 0x1F801108: // ...
+            case 0x1F801110: // Timer 1 hor. retrace
+            case 0x1F801114: // ...
+            case 0x1F801118: // ...
+            case 0x1F801120: // Timer 2 1/8 system clock
+            case 0x1F801124: // ...
+            case 0x1F801128: // ...
+            case 0x1F801D80: // SPU main vol L
+            case 0x1F801D82: // ...R
+            case 0x1F801D84: // Reverb output L
+            case 0x1F801D86: // ... R
+            case 0x1FFE0130: // Cache control
+                break;
+            default:
+                if (!this.cache_isolated) this.unknown_wrote_mem.add(addr);
+        }
 
         //console.log('WRITE TO UNKNOWN LOCATION', this.cache_isolated, hex8(addr), hex8(val));
     }
@@ -204,6 +269,20 @@ class PS1_mem {
         if ((addr >= 0x1F801070) && (addr <= 0x1F801074)) {
             return this.CPU_read_reg(addr, size, val, has_effect);
         }
+
+        switch(addr) {
+            case 0x1F8010F0: // DPCR - DMA Control register
+                break;
+            case 0x1F801DAA: // SPU Control Register
+                return 0;
+            case 0x1F801DAE: // SPU Status Register (SPUSTAT) (R)
+                return 0;
+            case 0x1F000084: // PIO
+                break;
+            default:
+                this.unknown_read_mem.add(addr);
+                break;
+       }
 
 
         //console.log('UNKNOWN READ FROM', hex8(addr));
