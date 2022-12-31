@@ -174,11 +174,6 @@ class PS1_mem {
         if (rl.length > 0) console.log('READ ADDRS', rl);
     }
 
-/*
-WRITE ADDRS (25)[
-ps1_mem.js:181 READ ADDRS [case 0x1F000084']
- */
-
     CPU_write(addr, size, val) {
         addr = this.deKSEG(addr);
         if ((addr < 0x800000) && !this.cache_isolated) {
@@ -196,11 +191,161 @@ ps1_mem.js:181 READ ADDRS [case 0x1F000084']
             this.CPU_write_reg(addr, size, val);
             return;
         }
-
         switch(addr) {
             case 0x1F802041: // F802041h 1 PSX: POST (external 7 segment display, indicate BIOS boot status
                 console.log('WRITE POST STATUS!', val);
                 return;
+            // ...
+            case 0x1F8010F4: // DICR - DMA Interrupt register
+            case 0x1F801810: // GP0 Send GP0 Commands/Packets (Rendering and VRAM Access)
+            case 0x1F801C00: //  Voice 0..23 stuff
+            case 0x1F801C02:
+            case 0x1F801C04:
+            case 0x1F801C06:
+            case 0x1F801C08:
+            case 0x1F801C0A:
+            case 0x1F801C10:
+            case 0x1F801C12:
+            case 0x1F801C14:
+            case 0x1F801C16:
+            case 0x1F801C18:
+            case 0x1F801C1A:
+            case 0x1F801C20:
+            case 0x1F801C22:
+            case 0x1F801C24:
+            case 0x1F801C26:
+            case 0x1F801C28:
+            case 0x1F801C2A:
+            case 0x1F801C30:
+            case 0x1F801C32:
+            case 0x1F801C34:
+            case 0x1F801C36:
+            case 0x1F801C38:
+            case 0x1F801C3A:
+            case 0x1F801C40:
+            case 0x1F801C42:
+            case 0x1F801C44:
+            case 0x1F801C46:
+            case 0x1F801C48:
+            case 0x1F801C4A:
+            case 0x1F801C50:
+            case 0x1F801C52:
+            case 0x1F801C54:
+            case 0x1F801C56:
+            case 0x1F801C58:
+            case 0x1F801C5A:
+            case 0x1F801C60:
+            case 0x1F801C62:
+            case 0x1F801C64:
+            case 0x1F801C66:
+            case 0x1F801C68:
+            case 0x1F801C6A:
+            case 0x1F801C70:
+            case 0x1F801C72:
+            case 0x1F801C74:
+            case 0x1F801C76:
+            case 0x1F801C78:
+            case 0x1F801C7A:
+            case 0x1F801C80:
+            case 0x1F801C82:
+            case 0x1F801C84:
+            case 0x1F801C86:
+            case 0x1F801C88:
+            case 0x1F801C8A:
+            case 0x1F801C90:
+            case 0x1F801C92:
+            case 0x1F801C94:
+            case 0x1F801C96:
+            case 0x1F801C98:
+            case 0x1F801C9A:
+            case 0x1F801CA0:
+            case 0x1F801CA2:
+            case 0x1F801CA4:
+            case 0x1F801CA6:
+            case 0x1F801CA8:
+            case 0x1F801CAA:
+            case 0x1F801CB0:
+            case 0x1F801CB2:
+            case 0x1F801CB4:
+            case 0x1F801CB6:
+            case 0x1F801CB8:
+            case 0x1F801CBA:
+            case 0x1F801CC0:
+            case 0x1F801CC2:
+            case 0x1F801CC4:
+            case 0x1F801CC6:
+            case 0x1F801CC8:
+            case 0x1F801CCA:
+            case 0x1F801CD0:
+            case 0x1F801CD2:
+            case 0x1F801CD4:
+            case 0x1F801CD6:
+            case 0x1F801CD8:
+            case 0x1F801CDA:
+            case 0x1F801CE0:
+            case 0x1F801CE2:
+            case 0x1F801CE4:
+            case 0x1F801CE6:
+            case 0x1F801CE8:
+            case 0x1F801CEA:
+            case 0x1F801CF0:
+            case 0x1F801CF2:
+            case 0x1F801CF4:
+            case 0x1F801CF6:
+            case 0x1F801CF8:
+            case 0x1F801CFA:
+            case 0x1F801D00:
+            case 0x1F801D02:
+            case 0x1F801D04:
+            case 0x1F801D06:
+            case 0x1F801D08:
+            case 0x1F801D0A:
+            case 0x1F801D10:
+            case 0x1F801D12:
+            case 0x1F801D14:
+            case 0x1F801D16:
+            case 0x1F801D18:
+            case 0x1F801D1A:
+            case 0x1F801D20:
+            case 0x1F801D22:
+            case 0x1F801D24:
+            case 0x1F801D26:
+            case 0x1F801D28:
+            case 0x1F801D2A:
+            case 0x1F801D30:
+            case 0x1F801D32:
+            case 0x1F801D34:
+            case 0x1F801D36:
+            case 0x1F801D38:
+            case 0x1F801D3A:
+            case 0x1F801D40:
+            case 0x1F801D42:
+            case 0x1F801D44:
+            case 0x1F801D46:
+            case 0x1F801D48:
+            case 0x1F801D4A:
+            case 0x1F801D50:
+            case 0x1F801D52:
+            case 0x1F801D54:
+            case 0x1F801D56:
+            case 0x1F801D58:
+            case 0x1F801D5A:
+            case 0x1F801D60:
+            case 0x1F801D62:
+            case 0x1F801D64:
+            case 0x1F801D66:
+            case 0x1F801D68:
+            case 0x1F801D6A:
+            case 0x1F801D70:
+            case 0x1F801D72:
+            case 0x1F801D74:
+            case 0x1F801D76:
+            case 0x1F801D78:
+            case 0x1F801D7A: // voice stuff
+            case 0x1F801D88: // Voice 0..23 Key ON (Start Attack/Decay/Sustain) (W)
+            case 0x1F801D8A: // ..
+            case 0x1F801DA2: // Sound RAM Reverb Work Area Start Address
+                break;
             case 0x1F8010F0: // DPCR - DMA control
             case 0x1F801D8C: // Voice 0..23 Key OFF (Start Release) (W)
             case 0x1F801D8E: // ...
@@ -271,6 +416,42 @@ ps1_mem.js:181 READ ADDRS [case 0x1F000084']
         }
 
         switch(addr) {
+            case 0x1F8010A8: // DMA2 GPU thing
+            case 0x1F8010F4: // DMA interrupt register
+                break;
+            case 0x1F801814: // GPUSTAT Read GPU Status Register
+                return 0x10000000;
+            case 0x1F801C0C: // Voice 0..23 ADSR Current Volume
+            case 0x1F801C1C: //
+            case 0x1F801C2C:
+            case 0x1F801C3C:
+            case 0x1F801C4C:
+            case 0x1F801C5C:
+            case 0x1F801C6C:
+            case 0x1F801C7C:
+            case 0x1F801C8C:
+            case 0x1F801C9C:
+            case 0x1F801CAC:
+            case 0x1F801CBC:
+            case 0x1F801CCC:
+            case 0x1F801CDC:
+            case 0x1F801CEC:
+            case 0x1F801CFC:
+            case 0x1F801D0C:
+            case 0x1F801D1C:
+            case 0x1F801D2C:
+            case 0x1F801D3C:
+            case 0x1F801D4C:
+            case 0x1F801D5C:
+            case 0x1F801D6C:
+            case 0x1F801D7C: // ..Voice 0..23 ADSR Current Volume
+            case 0x1F801D88: // Voice 0..23 Key ON (Start Attack/Decay/Sustain) (W)
+            case 0x1F801D8A: // ..
+            case 0x1F801D8C: // Voice 0..23 Key OFF (Start Release) (W)
+            case 0x1F801D8E: //  ...
+                return 0;
+            case 0x1F801DAC: // Sound RAM Data Transfer Control
+                return 0;
             case 0x1F8010F0: // DPCR - DMA Control register
                 break;
             case 0x1F801DAA: // SPU Control Register
