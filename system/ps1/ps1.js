@@ -276,7 +276,7 @@ class PS1 {
     run_cycles(howmany) {
         this.cycles_left += howmany;
         while (this.cycles_left > 0) {
-            this.clock.cycles_left_this_frame--;
+            this.clock.cycles_left_this_frame-=2;
             if (this.clock.cycles_left_this_frame <= 0) {
                 this.clock.cycles_left_this_frame += PS1_CYCLES_PER_FRAME_NTSC;
                 this.cpu.core.set_interrupt(1);
@@ -286,9 +286,9 @@ class PS1 {
             this.clock.cpu_frame_cycle++;
             this.clock.cpu_master_clock++;
 
-            this.clock.master_clock++;
+            this.clock.master_clock+=2;
 
-            this.cycles_left--;
+            this.cycles_left-= 2;
             if (dbg.do_break) break;
         }
     }
