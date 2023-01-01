@@ -730,66 +730,24 @@ function R3000_fMULTU(opcode,op, core) {
  * @param {R3000} core
  */
 function R3000_fCOP(opcode,op, core) {
-    // argument = COP#
-    let ins;
-    let copnum = (opcode >> 26) & 3;
-    if ((opcode & 0x4000000) === 0) { // MFC, CFC, MTC, CTC, BC.F, BC.T
-        switch ((opcode >>> 21) & 15) {
-            case 0: // MFCn
-                ins = R3000_MN.MFC;
-                break;
-            case 2: // CFCn
-                ins = R3000_MN.CFC;
-                break;
-            case 4: // MTCn
-                ins = R3000_MN.MTC;
-                break;
-            case 6: // CTCn
-                ins = R3000_MN.CTC;
-                break;
-            case 8: // could be a few...
-                switch ((opcode >>> 16) & 0x1F) {
-                    case 0: // BCnF
-                        ins = R3000_MN.BCF;
-                        break;
-                    case 1: // BCnT
-                        ins = R3000_MN.BCT;
-                        break;
-                    default:
-                        console.log('Could not decode COP instruction2', hex8(opcode));
-                        return;
-                }
-                break;
-            default:
-                console.log('Could not decode COP instruction', hex8(opcode));
+    // Opcode 0x10 is cop0, then just take the value of rs. 0 is mfc0, 4 is mtc0, and 0x10 is rfe
+    let opc = (opcode >>> 26) & 0x1F;
+    let rs = (opcode >>> 21) & 0x1F;
+    // Opcode 0x10 is cop0, then just take the value of rs. 0 is mfc0, 4 is mtc0, and 0x10 is rfe
+    if ((opc === 0x10)) {
+        switch (rs) {
+            case 0:
+                R3000_fMFC(opcode, op, core, 0);
+                return;
+            case 4:
+                R3000_fMTC(opcode, op, core, 0);
+                return;
+            case 0x10:
+                R3000_fCOP0_RFE(opcode, op, core);
                 return;
         }
-    } else { // COPn imm
-        if (((opcode >>> 21) & 15) === 10) {
-            ins = R3000_MN.RFE;
-        }
-        else
-            console.log('NOTE IMPLEMENTED COPN IMMEDIATE')
     }
-    if (copnum !== 0) {
-        console.log('ONLY COP0 SUPPORT!', copnum);
-        return;
-    }
-    switch(ins) {
-        case R3000_MN.MTC:
-            // move to cop
-            R3000_fMTC(opcode, op, core, copnum);
-            return;
-        case R3000_MN.MFC:
-            R3000_fMFC(opcode, op, core, copnum);
-            return;
-        case R3000_MN.RFE:
-            R3000_fCOP0_RFE(opcode, op, core);
-            return;
-        default:
-            console.log('UNIMPLEMENTED COP INSTRUCTION!', hex8(opcode), ins);
-            return;
-    }
+    console.log('BAD COP0 INSTRUCTION!', hex8(opcode));
 }
 
 /**
@@ -1173,6 +1131,7 @@ function R3000_fMTC(opcode,op, core, copnum) {
     let rt = (opcode >>> 16) & 0x1F;
     let rd = (opcode >>> 11) & 0x1F;
     // cop[rd] = reg[rt]
+    if (rd === 12) console.log('YAR R12 WRITE!', core.regs.R[rt] & 1);
     core.COP_write_reg(copnum, rd, core.regs.R[rt]);
 }
 
@@ -1199,9 +1158,9 @@ function R3000_fCOP0_RFE(opcode,op, core) {
     // move FROM co
     // rt = cop[rd]
     // The RFE opcode moves some bits in cop0r12 (SR): bit2-3 are copied to bit0-1, all other bits (including bit4-5) are left unchanged.
-    let r12 = core.regs.COP0[12];
+    let r12 = core.regs.COP0[R3000_COP0_reg.SR];
     // bit4-5 are copied to bit2-3
     let b23 = (r12 >>> 2) & 0x0C; // Move from 4-5 to 2-3
     let b01 = (r12 >>> 2) & 3; // Move from 2-3 to 0-1
-    core.regs.COP0[12] = (r12 & 0xFFFFFFF0) | b01 | b23;
+    core.regs.COP0[R3000_COP0_reg.SR] = (r12 & 0xFFFFFFF0) | b01 | b23;
 }
