@@ -329,7 +329,7 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
     cycle() {
         // Pop things off the stack and execute until we get a cycle_advance
         //console.log('PC!', this.regs.PC);
-        this.clock.trace_cycles++;
+        this.clock.trace_cycles+=2;
 
         if (this.pins.IRQ && (this.regs.COP0[12] & 0x400) && (this.regs.COP0[12] & 1)) {
             this.exception(0, this.pipe.get_next().new_PC !== 0);
@@ -338,13 +338,9 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
         if (this.pipe.num_items < 1)
             this.fetch_and_decode();
         let current = this.pipe.move_forward();
-        //console.log('OP!', current.op)
 
-        if (current.target > 0) {
+        if (this.debug_on && (current.target > 0)) {
             this.debug_add_delayed(current);
-        }
-        if (this.debug_on) {
-            this.debug_add(current.opcode, current.addr)
         }
         current.op.func(current.opcode, current.op, this);
 

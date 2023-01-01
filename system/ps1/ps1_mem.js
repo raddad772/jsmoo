@@ -70,6 +70,226 @@ function PS1_write_mem(buf, addr, sz, val) {
     }
 }
 
+const PS1_DMAe = Object.freeze({
+    to_ram: 0,
+    from_ram: 1,
+    increment: 0,
+    decrement: 1,
+    manual: 0,
+    request: 1,
+    linked_list: 2
+})
+
+const PS1_DMA_ports = Object.freeze({
+   MDEC_in: 0,
+   MDEC_out: 1,
+   GPU: 2,
+   cdrom: 3,
+   SPU: 4,
+   PIO: 5,
+   OTC: 6
+});
+
+class PS1_DMA_channel {
+    constructor(num) {
+        this.num = num;
+        this.enable = 0;
+        this.step = PS1_DMAe.increment;
+        this.sync = PS1_DMAe.manual;
+        this.direction = PS1_DMAe.to_ram;
+        this.trigger = 0;
+        this.chop = 0;
+        this.chop_dma_size = 0;
+        this.chop_cpu_size = 0;
+        this.unknown = 0;
+        this.base_addr = 0;
+        this.block_size = 0;
+        this.block_count = 0;
+    }
+
+    done() {
+        this.trigger = 0;
+        this.enable = 0;
+    }
+
+    transfer_size() {
+        let bs = this.block_size;
+        let bc = this.block_count;
+        switch(this.sync) {
+            case PS1_DMAe.manual:
+                return bs;
+            case PS1_DMAe.request:
+                return bc * bs;
+            case PS1_DMAe.linked_list:
+                return null;
+        }
+    }
+
+    get_control() {
+        return this.direction |
+            (this.step << 1) |
+            (this.chop << 8) |
+            (this.sync << 9) |
+            (this.chop_dma_size << 16) |
+            (this.chop_cpu_size << 20) |
+            (this.enable << 24) |
+            (this.trigger << 28) |
+            (this.unknown << 29);
+    }
+
+    active() {
+        let enable = (this.sync === PS1_DMAe.manual) ? this.trigger : true;
+        return enable && this.enable;
+    }
+
+    set_control(val) {
+        this.direction = (val & 1) ? PS1_DMAe.from_ram : PS1_DMAe.to_ram;
+        this.step = ((val >>> 1) & 1) ? PS1_DMAe.decrement : PS1_DMAe.increment;
+        this.chop = (val >>> 8) & 1;
+        switch ((val >>> 9) & 3) {
+            case 0:
+                this.sync = PS1_DMAe.manual;
+                break;
+            case 1:
+                this.sync = PS1_DMAe.request;
+                break;
+            case 2:
+                this.sync = PS1_DMAe.linked_list;
+                break;
+            default:
+                console.log('Unknown DMA mode 3');
+                break;
+        }
+        this.chop_dma_size = (val >>> 16) & 7;
+        this.chop_cpu_size = (val >>> 20) & 7;
+        this.enable = (val >>> 24) & 1;
+        this.trigger = (val >>> 28) & 1;
+        this.unknown = (val >>> 29) & 3;
+    }
+}
+
+class PS1_DMA {
+    /**
+     * @param do_dma
+     */
+    constructor(do_dma) {
+        this.control = 0x7654321;
+
+        this.irq_enable = 0;
+        this.irq_enable_ch = 0;
+        this.irq_flags_ch = 0;
+        this.irq_force = 0;
+        this.unknown1 = 0;
+
+        this.do_dma = do_dma;
+
+        /**
+         * @type {PS1_DMA_channel[]}
+         */
+        this.channels = [new PS1_DMA_channel(0), new PS1_DMA_channel(1), new PS1_DMA_channel(2), new PS1_DMA_channel(3), new PS1_DMA_channel(4), new PS1_DMA_channel(5), new PS1_DMA_channel(6)];
+    }
+
+    irq_status() {
+        return +(this.irq_force || (this.irq_enable && (this.irq_flags_ch & this.irq_enable_ch)));
+    }
+
+    write(addr, size, val, has_effect) {
+        let ch_num = ((addr - 0x80) & 0x70) >>> 4;
+        let reg = (addr & 0x0F);
+        let ch_activated = false;
+        /**
+         * @type {PS1_DMA_channel}
+         */
+        let ch;
+        switch(ch_num) {
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+                ch = this.channels[ch_num];
+                switch(reg) {
+                    case 0:
+                        ch.base_addr = (val>>>0) & 0xFFFFF;
+                        break;
+                    case 4:
+                        ch.block_size = (val & 0xFFFF) >>> 0;
+                        ch.block_count = (val >>> 16) & 0xFFFF;
+                        break;
+                    case 8:
+                        ch.set_control(val);
+                        break;
+                    default:
+                        console.log('Unimplemented per-channel DMA register write', ch_num, reg, hex8(addr));
+                        return;
+                }
+                if (ch.active()) ch_activated = true;
+                break;
+            case 7: // common registers
+                switch(reg) {
+                    case 0: // DPCR - DMA Control register 0x1F8010F0:
+                        this.control = val;
+                        return;
+                    case 4: // DICR - DMA Interrupt register case 0x1F8010F4:
+                        // Low 5 bits are R/w, we don't know what
+                        this.unknown1 = val & 31;
+                        this.irq_force = (val >>> 15) & 1;
+                        this.irq_enable_ch = (val >>> 16) & 0x7F;
+                        this.irq_enable = (val >>> 23) & 1;
+                        let to_ack = (val >>> 24) & 0x3F;
+                        this.irq_flags_ch &= (to_ack ^ 0x3F);
+                        return;
+                    default:
+                        console.log('Unhandled DMA write', ch_num, reg, hex8(addr));
+                        return;
+                }
+        }
+        if (ch_activated) this.do_dma(ch);
+    }
+
+    read(addr, size, val, has_effect=true) {
+        let ch_num = ((addr - 0x80) & 0x70) >>> 4;
+        let reg = (addr & 0x0F);
+        switch(ch_num) {
+            case 0:
+            case 1:
+            case 2:
+            case 3:
+            case 4:
+            case 5:
+            case 6:
+                let ch = this.channels[ch_num];
+                switch(reg) {
+                    case 0:
+                        return ch.base_addr;
+                    case 4:
+                        return (ch.block_count << 16) | ch.block_size;
+                    case 8:
+                        return ch.get_control();
+                    default:
+                        console.log('Unimplemented per-channel DMA register', ch_num, reg, hex8(addr));
+                        return 0xFFFFFFFF;
+                }
+            case 7:
+                switch(reg) {
+                    case 0: // DPCR - DMA control 0x1F8010F0:
+                        return this.control;
+                    case 4: // DPIR - DMA interrupt control 0x1F8010F4:
+                        return this.unknown1 | (this.irq_force << 15) | (this.irq_enable_ch << 16) |
+                            (this.irq_enable << 23) | (this.irq_flags_ch << 24) | (this.irq_status() << 31);
+                    default:
+                        console.log('Unimplemented per-channel DMA register2', ch_num, reg, hex8(addr));
+                        return 0xFFFFFFFF;
+                }
+
+            default:
+                console.log('Unhandled DMA read', hex8(addr));
+        }
+        return 0xFFFFFFFF;
+    }
+}
 
 
 class PS1_mem {
@@ -89,9 +309,123 @@ class PS1_mem {
         this.CPU_read_reg = function(addr, size, val, has_effect=true) {debugger;};
         this.CPU_write_reg = function(addr, size, val) {debugger;};
 
+        this.io = {
+            dma: new PS1_DMA(this.do_dma.bind(this))
+        }
+
         this.unknown_read_mem = new Set();
         this.unknown_wrote_mem = new Set();
         this.ps1 = null;
+    }
+
+    /**
+     * @param {PS1_DMA_channel} ch
+     */
+    do_dma(ch) {
+        // Executes DMA for a channel
+        // We'll just do an instant copy for now
+        if (ch.sync === PS1_DMAe.linked_list)
+            this.do_dma_linked_list(ch);
+        else
+            this.do_dma_block(ch);
+        ch.done();
+
+    }
+
+    /**
+     * @param {PS1_DMA_channel} ch
+     */
+    do_dma_linked_list(ch) {
+        let addr = ch.base_addr & 0x1FFFFC;
+        if (ch.direction === PS1_DMAe.to_ram) {
+            console.log('Invalid DMA direction for linked list mode');
+            return;
+        }
+
+        if (ch.num !== PS1_DMA_ports.GPU) {
+            console.log('Invalid DMA dest for linked list mode', ch.num);
+            return;
+        }
+
+        while(true) {
+            let header = this.CPU_read(addr, PS1_MT.u32, 0);
+            let copies = (header >>> 24) & 0xFF;
+
+            while (copies > 0) {
+                addr = (addr + 4) & 0x1FFFFC;
+                let cmd = this.CPU_read(addr, PS1_MT.u32, 0);
+                this.ps1.gpu.gp0(cmd);
+
+                copies--;
+            }
+
+            // Following Mednafen on this?
+            if ((header & 0x800000) !== 0)
+                break;
+
+            addr = header & 0x1FFFFC;
+        }
+    }
+
+    /**
+     * @param {PS1_DMA_channel} ch
+     */
+    do_dma_block(ch) {
+        let step = (ch.step === PS1_DMAe.increment) ? 4 : -4;
+        let addr = ch.base_addr;
+        let copies = ch.transfer_size();
+        if (copies === null) {
+            console.log("Couldn't decide DMA transfer size");
+            return;
+        }
+
+        while (copies > 0) {
+            let cur_addr = addr & 0x1FFFFC;
+            let src_word;
+            switch(ch.direction) {
+                case PS1_DMAe.from_ram:
+                    src_word = this.CPU_read(cur_addr, PS1_MT.u32, 0);
+                    switch(ch.num) {
+                        case PS1_DMA_ports.GPU:
+                            this.ps1.gpu.gp0(src_word);
+                            break;
+                        case PS1_DMA_ports.MDEC_in:
+                            this.ps1.MDEC.command(src_word);
+                            break;
+                        case PS1_DMA_ports.SPU: // Ignore SPU transfer for now
+                            break;
+                        default:
+                            console.log('UNHANDLED DMA PORT!', ch.num);
+                            return;
+                    }
+                    break;
+                case PS1_DMAe.to_ram:
+                    switch(ch.num) {
+                        case PS1_DMA_ports.OTC:
+                            src_word = (copies === 1) ? 0xFFFFFF : ((addr - 4) & 0x1FFFFF);
+                            break;
+                        case PS1_DMA_ports.GPU:
+                            console.log('unimplemented DMA GPU read');
+                            src_word = 0;
+                            break;
+                        case PS1_DMA_ports.cdrom:
+                            src_word = this.cdrom.dma_read_word();
+                            break;
+                        case PS1_DMA_ports.MDEC_out:
+                            src_word = 0;
+                            break;
+                        default:
+                            console.log('UNKNOWN DMA PORT', ch.num);
+                            src_word = 0;
+                            break;
+                    }
+                    this.CPU_write(cur_addr, PS1_MT.u32, src_word>>>0);
+                    break;
+            }
+            addr = ((addr + step) & 0xFFFFFFFF) >>> 0;
+            copies--;
+            //this.ps1.cpu.core.cycles_left--;
+        }
     }
 
     deKSEG(addr) {
@@ -177,12 +511,7 @@ class PS1_mem {
     CPU_write(addr, size, val) {
         addr = this.deKSEG(addr);
         if ((addr < 0x800000) && !this.cache_isolated) {
-            if ((addr & 0xFFFFFFFC) === 0x0000e1e8) {
-                console.log('WRITE TO BP', size, hex8(val));
-                //dbg.break()
-            }
             return this.write_mem_generic(PS1_meme.MRAM, addr & 0x1FFFFF, size, val)
-
         }
         if (((addr >= 0x1F800000) && (addr <= 0x1F800400)) && !this.cache_isolated)
             return this.write_mem_generic(PS1_meme.scratchpad, addr & 0x3FF, size, val);
@@ -191,12 +520,17 @@ class PS1_mem {
             this.CPU_write_reg(addr, size, val);
             return;
         }
+
+        if ((addr >= 0x1F801080) && (addr <= 0x1F8010FF)) {
+            this.io.dma.write(addr, size, val);
+            return;
+        }
+
         switch(addr) {
             case 0x1F802041: // F802041h 1 PSX: POST (external 7 segment display, indicate BIOS boot status
                 console.log('WRITE POST STATUS!', val);
                 return;
             // ...
-            case 0x1F8010F4: // DICR - DMA Interrupt register
             case 0x1F801810: // GP0 Send GP0 Commands/Packets (Rendering and VRAM Access)
             case 0x1F801C00: //  Voice 0..23 stuff
             case 0x1F801C02:
@@ -346,7 +680,6 @@ class PS1_mem {
             case 0x1F801D8A: // ..
             case 0x1F801DA2: // Sound RAM Reverb Work Area Start Address
                 break;
-            case 0x1F8010F0: // DPCR - DMA control
             case 0x1F801D8C: // Voice 0..23 Key OFF (Start Release) (W)
             case 0x1F801D8E: // ...
             case 0x1F801D90: // Voice 0..23 Channel FM (pitch lfo) mode (R/W)
@@ -414,13 +747,14 @@ class PS1_mem {
         if ((addr >= 0x1F801070) && (addr <= 0x1F801074)) {
             return this.CPU_read_reg(addr, size, val, has_effect);
         }
+        if ((addr >= 0x1F801080) && (addr <= 0x1F8010FF)) {
+            return this.io.dma.read(addr, size, val);
+        }
 
         switch(addr) {
             case 0x1F8010A8: // DMA2 GPU thing
-            case 0x1F8010F4: // DMA interrupt register
-                break;
             case 0x1F801814: // GPUSTAT Read GPU Status Register
-                return 0x10000000;
+                return 0x1C000000;
             case 0x1F801C0C: // Voice 0..23 ADSR Current Volume
             case 0x1F801C1C: //
             case 0x1F801C2C:
@@ -452,8 +786,6 @@ class PS1_mem {
                 return 0;
             case 0x1F801DAC: // Sound RAM Data Transfer Control
                 return 0;
-            case 0x1F8010F0: // DPCR - DMA Control register
-                break;
             case 0x1F801DAA: // SPU Control Register
                 return 0;
             case 0x1F801DAE: // SPU Status Register (SPUSTAT) (R)

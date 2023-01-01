@@ -8,4 +8,12 @@ class PS1_GTE2 {
         this.cur_output = this.output[1];
         this.last_used_buffer = 1;
    }
+
+   gp0(cmd) {
+        console.log('GP0 cmd', hex8(cmd>>>0));
+   }
+
+   gp1(cmd) {
+        console.log('GP1 cmd', hex8(cmd>>>8));
+   }
 }
