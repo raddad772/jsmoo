@@ -59,6 +59,75 @@ const R3000_reg_alias = Object.freeze([
 
 /**
  * @param {number} opcode
+ * @returns {string}
+ */
+function R3000_disassemble_COP(opcode) {
+    let ostr = '';
+    let opc = (opcode >>> 28) & 15;
+    let copnum = (opcode >>> 26) & 3;
+    let bit25 = (opcode >>> 25) & 1;
+    let bit5 = (opcode >>> 21) & 0x1F;
+    let rt = (opcode >>> 16) & 0x1F;
+    let rd = (opcode >>> 11) & 0x1F;
+    let rs = (opcode >>> 21) & 0x1F;
+    let imm16 = (opcode & 0xFFFF)>>>0;
+    let imm25 = (opcode & 0x1FFFFFF)>>>0;
+    switch(opc) {
+        case 4: //
+            switch(bit25) {
+                case 0:
+                    switch(bit5) {
+                        case 0: // MFCN rt, rd
+                            return 'MFC' + copnum + ' ' + R3000_reg_alias[r] + ', COP' + copnum + 'd' + rd;
+                        case 2: // CFCn rt, rd
+                            return 'CFC' + copnum + ' ' + R3000_reg_alias[r] + ', COP' + copnum + 'c' + rd;
+                        case 4: // MTCn rt, rd
+                            return 'MTC' + copnum + ' COP' + copnum + 'd' + rd + ', ' + R3000_reg_alias[r];
+                        case 5: // CTCn rt, rd
+                            return 'CTC' + copnum + ' COP' + copnum + 'c' + rd + ', ' + R3000_reg_alias[r];
+                        case 8: // rt=0 BCnF, rt=1 BCnT
+                            if (rt === 0)
+                                return 'BC' + copnum + 'F ' + mksigned16h4(imm16);
+                            else
+                                return 'BC' + copnum + 'T ' + mksigned16h4(imm16);
+                        default:
+                            console.log('BAD COP INSTRUCTION!', hex8(opcode));
+                            return 'BADCOP';
+                    }
+                case 1: // // Immediate 25-bit or some COP0 instructions
+                    if ((bit5 === 0x10) && (copnum === 0)) {
+                        switch(opcode & 0x1F) {
+                            case 1:
+                                return 'TLBR';
+                            case 2:
+                                return 'TLBWI';
+                            case 6:
+                                return 'TLBWR';
+                            case 8:
+                                return 'TLBP';
+                            case 0x10:
+                                return 'RFE';
+                            default:
+                                console.log('BAD COP0 INSTRUCTION!', hex8(opcode));
+                                return 'BADCOP0';
+                        }
+                    }
+                    return 'COP' + copnum + ' ' + hex4(imm25) + ', ' + bit5;
+            }
+            console.log('SHOULD NOT REACH HERE');
+            return 'COPWHAT?';
+        case 0x0C: // LWCn rt_dat, [rs+imm]
+            return 'LWC' + copnum + ' COP' + copnum + 'd' + rt +', [' + R3000_reg_alias[rs] + mksigned16h4(imm16) +' ]';
+        case 0x0E: // SWCn rt_dat, [rs+imm]
+            return 'SWC' + copnum + ' COP' + copnum + 'd' + rt +', [' + R3000_reg_alias[rs] + mksigned16h4(imm16) +' ]';
+        default:
+            console.log('BAD COP? INSTRUCTION!', hex8(opcode));
+            return 'UNKNOWN COP INS!'
+    }
+}
+
+/**
+ * @param {number} opcode
  * @returns {R3000_disassembly_output}
  */
 function R3000_disassemble(opcode) {
@@ -279,7 +348,7 @@ function R3000_disassemble(opcode) {
         case 0x12: // COP2
         case 0x11: // COP1
         case 0x10: // COP0
-            ostr1 = 'COP' + num;
+            ostr1 = R3000_disassemble_COP(opcode);
             break;
         case 0x20: // LB
             ostr1 = 'lb';

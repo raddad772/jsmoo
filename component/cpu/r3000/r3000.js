@@ -18,11 +18,7 @@ class R3000_regs_t {
             0, 0, 0, 0, 0, 0, 0, 0, // data regs
             0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0, // control regs
-            0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0,
-            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0
         ]
 
         this.trace_on = false;
@@ -225,13 +221,20 @@ class R3000 {
     }
 
     set_interrupt(which) {
-        if (this.io.I_STAT & which) return;
+        if (this.io.I_STAT & which){
+            //console.log('HA!');
+            //return;
+        }
+        else {
+            //console.log('SETTING');
+        }
+        // TODO: make this edge-detecting to trigger
         this.io.I_STAT |= which;
         this.update_I_STAT();
     }
 
     update_I_STAT() {
-        this.pins.IRQ = (this.io.I_STAT & this.io.I_MASK);
+        this.pins.IRQ = +((this.io.I_STAT & this.io.I_MASK) !== 0);
     }
 
         /* 1F801070h I_STAT - Interrupt status register (R=Status, W=Acknowledge)
@@ -331,6 +334,9 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
         //console.log('PC!', this.regs.PC);
         this.clock.trace_cycles+=2;
 
+        if (this.pins.IRQ) {
+            //console.log('IRQ PINS', this.regs.COP0[12], this.regs.COP0[12] & 0x400, this.regs.COP0[12] & 1)
+        }
         if (this.pins.IRQ && (this.regs.COP0[12] & 0x400) && (this.regs.COP0[12] & 1)) {
             this.exception(0, this.pipe.get_next().new_PC !== 0);
         }
@@ -447,7 +453,6 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
         if (COP === 0) {
             // TODO: add 1-cycle delay
             if (num === 12) {
-                //console.log('REG12 WRITE!', hex8(val));
                 this.mem.update_SR(val);
             }
             this.regs.COP0[num] = val;
@@ -465,7 +470,6 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
     }
 
     exception(code, branch_delay=false, cop0=false) {
-        console.log('EXCEPTION!', this.clock.trace_cycles, code);
         if (this.trace_on) {
             dbg.traces.add(TRACERS.R3000, this.clock.trace_cycles-1, 'EXCEPTION ' + code);
         }
@@ -483,7 +487,6 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
             code |= 0x80000000;
         }
         this.regs.COP0[R3000_COP0_reg.EPC] = raddr>>>0;
-        console.log('IRQ EPC', hex8(raddr>>>0));
         this.flush_pipe();
 
         if (cop0)
@@ -493,8 +496,6 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
         this.regs.COP0[R3000_COP0_reg.Cause] = code;
         let lstat = this.regs.COP0[R3000_COP0_reg.SR];
         this.regs.COP0[R3000_COP0_reg.SR] = (lstat & 0xFFFFFFC0) | ((lstat & 0x0F) << 2);
-        console.log('EXCEPTION VECTOR IS', hex8(this.regs.PC));
-        console.log('RETURN ADDR IS', hex8(this.regs.PC));
     }
 
     // Apply any waiting register changes,

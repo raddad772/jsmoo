@@ -550,7 +550,6 @@ class M68K_switchgen {
     }
 
     write(Tsize, what, value) {
-        console.log('YO!', what)
         switch(what.kind) {
             case 'DR':
                 this.writeDR(Tsize, what, value);
