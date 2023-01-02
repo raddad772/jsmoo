@@ -84,3 +84,30 @@ const PS1_STR = 'ps1';
 //const DEFAULT_SYSTEM = NES_STR;
 //const DEFAULT_SYSTEM = NES_AS_STR;
 const DEFAULT_SYSTEM = PS1_STR;
+
+
+const mutex_unlocked = 0;
+const mutex_locked = 1;
+
+// Basic spinlock. Spinning is not a performance issue since this only takes as long as an allocation
+function mutex_lock(buf, index) {
+    let yo = 0;
+    for (;;) {
+        yo++;
+        if (yo > 500) console.log('WATIING ON LOCK');
+        // If we succesfully atomically compare and exchange unlocked for locked, we have the mutex
+        if (Atomics.compareExchange(buf, index, mutex_unlocked, mutex_locked) === mutex_unlocked)
+            return;
+        // Wait for unlocked state to try for locked
+        for (;;) {
+            if (Atomics.load(buf, index) === mutex_unlocked) break;
+        }
+    }
+}
+
+function mutex_unlock(buf, index) {
+    if (Atomics.compareExchange(buf, index, mutex_locked, mutex_unlocked) !== mutex_locked) {
+        // This only happens if someone else unlocked our mutex, or we did it more than once...
+        throw new Error('Is this the right thing to do here? Mutex in inconsistent state');
+    }
+}

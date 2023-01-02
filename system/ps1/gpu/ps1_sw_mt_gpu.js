@@ -36,32 +36,28 @@ class PS1_GPU {
 
    gp0(cmd) {
         // Other ideas for sync: end is 0xBEEFCACE
-       console.log('GPU send command!', hex8(cmd));
-       return;
+       //console.log('GPU send command!', hex8(cmd));
+       //return;
        if (Atomics.load(this.FIFO, 17) > 15) {
-            console.log('Waiting on GP0...')
-            while (this.FIFO[17] > 15) {
+            console.log('Waiting on GP0 to empty buffer...')
+            while (Atomics.load(this.FIFO, 17) > 15) {
             }
         }
         // Get lock
-        let yo = 0;
-        if (Atomics.compareExchange(this.FIFO, 18, 0, 1) === 1) {
-            // Todo: use atomics.wait instead?
-            yo++;
-            if (yo === 300) {
-                console.log('Waiting on GP0 lock...');
-            }
-        }
-        let num_items = this.FIFO[17];
+       mutex_lock(this.FIFO, 18);
+
+       let head = this.FIFO[16];
+       let num_items = this.FIFO[17];
+
         // Add the item
-        this.FIFO[(this.FIFO[16] + num_items) & 15] = cmd;
+        this.FIFO[(head + num_items) & 15] = cmd;
 
         // num_items++
-        this.FIFO[17] = ++num_items;
+        this.FIFO[17] = num_items+1;
         // head does not move when appending to FIFO
 
         // Release lock
-        Atomics.store(this.FIFO, 18, 0);
+        mutex_unlock(this.FIFO, 18);
     }
 
    gp1(cmd) {
