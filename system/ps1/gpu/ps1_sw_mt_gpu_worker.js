@@ -69,26 +69,19 @@ class PS1_GPU_thread {
 
     listen_FIFO() {
         this.GP0_FIFO[16] = this.GP0_FIFO[17] = 0;
-        this.GP0_FIFO[18] = 0;
         for (let i = 0; i < 16; i++) {
             this.GP0_FIFO[i] = 0;
         }
         // Set "ready for command word"
-        this.MMIO[GPUSTAT] |= 0x4000000;
+        //this.MMIO[GPUSTAT] |= 0x4000000;
+        this.MMIO[GPUSTAT] |= 0x1C000000;
         console.log('Listening on FIFO...')
         while(true) {
             let yo = 0;
             let cmd = null;
             if (Atomics.load(this.GP0_FIFO, 17) === 0) continue;
-            console.log('DETECT!');
             // Get lock
-            while (Atomics.compareExchange(this.GP0_FIFO, 18, 0, 1) === 1) {
-                // Todo: use atomics.wait instead?
-                yo++;
-                if (yo === 300) {
-                    console.log('GPU waiting on GP0 lock...');
-                }
-            }
+            mutex_lock(this.GP0_FIFO, 18);
 
             // Get command(s)
             let head = this.GP0_FIFO[16];
@@ -101,7 +94,7 @@ class PS1_GPU_thread {
             }
 
             // Release lock
-            Atomics.store(this.GP0_FIFO, 18, 0);
+            mutex_unlock(this.GP0_FIFO, 18);
             if (cmd !== null) this.gp0(cmd);
         }
 
