@@ -16,6 +16,11 @@ const SPECTRUM_KEYS = Object.freeze([
     'caps', 'z', 'x', 'c', 'v', 'space', 'shift', 'm', 'n', 'b'
 ]);
 
+const GPU_messages = Object.freeze({
+    unknown: 0,
+    startup: 1,
+})
+
 const emulator_messages = Object.freeze({
     unknown: 0,
     // Parent to child

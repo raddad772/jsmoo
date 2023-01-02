@@ -79,7 +79,7 @@ importScripts('/helpers/as_wrapper.js')
 importScripts(
 	'/component/cpu/r3000/r3000_opcodes.js', '/component/cpu/r3000/r3000_instructions.js',
 	'/component/cpu/r3000/r3000.js', '/component/cpu/r3000/r3000_disassembler.js',
-	'/component/controller/ps1_dualshock.js', '/system/ps1/ps1_cpu.js', '/system/ps1/gpu/gte2.js',
+	'/component/controller/ps1_dualshock.js', '/system/ps1/ps1_cpu.js', '/system/ps1/gpu/ps1_sw_mt_gpu.js',
 	'/system/ps1/ps1_mem.js', '/system/ps1/ps1.js'
 );
 
