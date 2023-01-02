@@ -1131,7 +1131,6 @@ function R3000_fMTC(opcode,op, core, copnum) {
     let rt = (opcode >>> 16) & 0x1F;
     let rd = (opcode >>> 11) & 0x1F;
     // cop[rd] = reg[rt]
-    if (rd === 12) console.log('YAR R12 WRITE!', core.regs.R[rt] & 1);
     core.COP_write_reg(copnum, rd, core.regs.R[rt]);
 }
 

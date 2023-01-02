@@ -98,7 +98,7 @@ class PS1 {
         this.bus = new PS1_bus(this.clock);
         this.mem = new PS1_mem();
         this.cpu = new PS1_CPU(this.clock, this.bus, this.mem);
-        this.gpu = new PS1_GTE2(this.clock, this.bus);
+        this.gpu = new PS1_GPU(this.clock, this.bus);
 
         this.cycles_left = 0;
 
