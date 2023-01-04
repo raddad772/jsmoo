@@ -10,7 +10,7 @@ importScripts('/helpers/thread_common.js');
 importScripts('/helpers.js');
 
 
-const DBG_GP0 = true;
+const DBG_GP0 = false;
 
 const GPUSTAT = 0;
 const GPUPLAYING = 1;
@@ -308,7 +308,7 @@ class PS1_GPU_thread {
                 case 0x02: // Quick Rectangle
                     console.log('Quick rectangle!');
                     this.current_ins = this.gp0QuickRect.bind(this);
-                    this.cmd_arg_num = 4;
+                    this.cmd_arg_num = 3;
                     break;
                 case 0x21: //
                     case 0x28: // flat-shaded rectangle
@@ -495,8 +495,8 @@ class PS1_GPU_thread {
         let ysize = (this.cmd[2] >>> 16) & 0xFFFF;
         let xsize = (this.cmd[2]) & 0xFFFF;
         let BGR = BGR24to15(this.cmd[0] & 0xFFFFFF);
-        let start_x = (this.cmd[1]) & 0xFFFF;
         let start_y = (this.cmd[1] >>> 16) & 0xFFFF;
+        let start_x = (this.cmd[1]) & 0xFFFF;
         console.log('QUICKRECT! COLOR', hex4(BGR), 'X Y', start_x, start_y, 'SZ X SZ Y', xsize, ysize);
         for (let y = start_y; y < (start_y+ysize); y++) {
             for (let x = start_x; x < (start_x + xsize); x++) {
