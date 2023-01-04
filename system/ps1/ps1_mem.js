@@ -871,7 +871,7 @@ function i32_divide(a, b)
 {
     let ret = new u32_dual_return();
     let c = a & 0xFFFFFFFF;
-    let d = a & 0xFFFFFFFF;
+    let d = b & 0xFFFFFFFF;
     ret.lo = (c / d) & 0xFFFFFFFF
     ret.hi = c % d;
     return ret;
