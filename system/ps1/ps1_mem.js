@@ -473,7 +473,7 @@ class PS1_mem {
 
     read_mem_generic(kind, addr, size, val) {
         if ((size === PS1_MT.i16) || (size === PS1_MT.u16))
-            addr &= 0xFFFFFFFD;
+            addr &= 0xFFFFFFFE;
         else if ((size === PS1_MT.i32) || (size === PS1_MT.u32))
             addr &= 0xFFFFFFFC;
         switch(kind) {
@@ -512,11 +512,12 @@ class PS1_mem {
 
     CPU_write(addr, size, val) {
         addr = this.deKSEG(addr);
-        /*if (((addr & 0xFFFFFFFC) === 0x000DE004) && (val !== 0)) {
+        //if ((addr & 0xFFFFFFFC) === 80014124)
+        if (((addr & 0xFFFFFFFC) === 0x00014128)) {
             console.log('WRITE TO ADDR', hex8(addr), PS1_MT_r[size], hex8(val), this.ps1.cpu.core.clock.trace_cycles);
-            dbg.break();
+            //dbg.break();
             //debugger;
-        }*/
+        }
         if ((addr < 0x800000) && !this.cache_isolated) {
             return this.write_mem_generic(PS1_meme.MRAM, addr & 0x1FFFFF, size, val)
         }

@@ -251,10 +251,10 @@ class PS1_GPU_thread {
         this.GP0FIFO_sb = e.GP0FIFO;
         this.GP1FIFO_sb = e.GP1FIFO;
         this.VRAMb = e.VRAM;
-        console.log(e);
-        console.log(typeof this.VRAMb);
+        //console.log(e);
+        //console.log(typeof this.VRAMb);
         this.VRAM = new DataView(this.VRAMb);
-        console.log(e);
+        //console.log(e);
         for (let i = 0; i < (1024*1024); i+=4) {
             this.VRAM.setUint32(i,0xFFFFFFFF);
         }
@@ -316,7 +316,7 @@ class PS1_GPU_thread {
                 case 0x01: // Clear cache (not implemented)
                     break;
                 case 0x02: // Quick Rectangle
-                    console.log('Quick rectangle!');
+                    //console.log('Quick rectangle!');
                     this.current_ins = this.gp0QuickRect.bind(this);
                     this.cmd_arg_num = 3;
                     break;

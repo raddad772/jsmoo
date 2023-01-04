@@ -42,7 +42,6 @@ function R3000_fs_reg_write(core, target, value) {
     let p = core.pipe.get_next();
 
     if (p.target === target) p.target = -1;
-    //if (value === 0x02800280) { console.log('HERE3'); debugger; }
 }
 
 /**
@@ -56,8 +55,6 @@ function R3000_fs_reg_delay(core, target, value) {
 
     p.target = target;
     p.value = (value & 0xFFFFFFFF)>>>0;
-    //if (p.value === 0x02800280) { console.log('HERE2'); debugger; }
-    //if (p.value === 0xFFFFFE3A) dbg.break();
 }
 
 
@@ -175,7 +172,7 @@ function R3000_fBEQ(opcode,op, core) {
     // 00010x | rs   | rt   | <--immediate16bit--> |
     R3000_branch(core,
         (core.regs.PC + (mksigned16(opcode & 0xFFFF)*4)) & 0xFFFFFFFF,
-        core.regs.R[(opcode >>> 21) & 0x1F] === core.regs.R[(opcode >>> 16) & 0x1F],
+        (core.regs.R[(opcode >>> 21) & 0x1F]>>>0) === (core.regs.R[(opcode >>> 16) & 0x1F]>>>0),
         false);
 }
 
@@ -189,7 +186,7 @@ function R3000_fBNE(opcode,op, core) {
     // 00010x | rs   | rt   | <--immediate16bit--> |\
     R3000_branch(core,
         (core.regs.PC + (mksigned16(opcode & 0xFFFF)*4)) & 0xFFFFFFFF,
-        core.regs.R[(opcode >>> 21) & 0x1F] !== core.regs.R[(opcode >>> 16) & 0x1F],
+        (core.regs.R[(opcode >>> 21) & 0x1F]>>>0) !== (core.regs.R[(opcode >>> 16) & 0x1F]>>>0),
         false);
 }
 
@@ -203,7 +200,7 @@ function R3000_fBLEZ(opcode,op, core) {
     // 00010x | rs   | rt   | <--immediate16bit--> |
     R3000_branch(core,
         (core.regs.PC + (mksigned16(opcode & 0xFFFF)*4)) & 0xFFFFFFFF,
-        core.regs.R[(opcode >>> 21) & 0x1F] <= 0,
+        (core.regs.R[(opcode >>> 21) & 0x1F] & 0xFFFFFFFF) <= 0,
         false)
 }
 
@@ -217,7 +214,7 @@ function R3000_fBGTZ(opcode,op, core) {
     // 00010x | rs   | rt   | <--immediate16bit--> |
     R3000_branch(core,
         (core.regs.PC + (mksigned16(opcode & 0xFFFF)*4)) & 0xFFFFFFFF,
-        core.regs.R[(opcode >>> 21) & 0x1F] > 0,
+        (core.regs.R[(opcode >>> 21) & 0x1F] & 0xFFFFFFFF) > 0,
         false)
 }
 
@@ -785,7 +782,7 @@ function R3000_fLBU(opcode,op, core) {
     let addr = (core.regs.R[rs] + imm16) & 0xFFFFFFFF;
 
     let rd = core.mem.CPU_read(addr, PS1_MT.u8, 0);
-    R3000_fs_reg_delay(core, rt, rd);
+    R3000_fs_reg_delay(core, rt, rd&0xFF);
 }
 
 /**
@@ -800,10 +797,11 @@ function R3000_fLH(opcode,op, core) {
     let rt = (opcode >>> 16) & 0x1F;
     let imm16 = mksigned16(opcode & 0xFFFF);
 
-    let addr = (core.regs.R[rs] + imm16) & 0xFFFFFFFF;
+    let addr = (core.regs.R[rs] + imm16) >>> 0;
 
     let rd = core.mem.CPU_read(addr, PS1_MT.u16, 0);
-    rd = (rd << 16) >> 16;
+
+    rd = ((rd << 16) >> 16)>>>0;
     R3000_fs_reg_delay(core, rt, rd);
 }
 
