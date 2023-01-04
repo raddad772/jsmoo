@@ -42,6 +42,7 @@ function R3000_fs_reg_write(core, target, value) {
     let p = core.pipe.get_next();
 
     if (p.target === target) p.target = -1;
+    //if (value === 0x02800280) { console.log('HERE3'); debugger; }
 }
 
 /**
@@ -55,6 +56,7 @@ function R3000_fs_reg_delay(core, target, value) {
 
     p.target = target;
     p.value = (value & 0xFFFFFFFF)>>>0;
+    //if (p.value === 0x02800280) { console.log('HERE2'); debugger; }
     //if (p.value === 0xFFFFFE3A) dbg.break();
 }
 
@@ -836,6 +838,7 @@ function R3000_fLW(opcode,op, core) {
     let addr = ((core.regs.R[rs] + imm16) & 0xFFFFFFFF)>>>0;
 
     let rd = core.mem.CPU_read(addr, PS1_MT.u32, 0);
+    //if (rd === 0x02800280) { console.log('LW FROM', hex8(addr)); debugger; }
     R3000_fs_reg_delay(core, rt, rd);
 }
 
@@ -1093,13 +1096,16 @@ function R3000_merge_lr(current, next, target, mask, value)
         // Extend current core stuff
         next.lr_mask = current.lr_mask | mask;
         next.value = (current.value & (current.lr_mask ^ mask)) | value;
+        console.log('NEW VALUE!', hex8(next.value));
         current.lr = 0;
         current.target = -1;
     }
     else {
         next.lr_mask = mask;
         next.value = value;
+        console.log('NEW VALUE2!', hex8(next.value));
     }
+    //if (next.value === 0x02800280) { console.log('HERE1'); debugger; }
 }
 
 /**

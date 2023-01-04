@@ -9,6 +9,7 @@ let SM83_NUM_TO_GENERATE = 1000; // Generate 1 of each test
 //let Z80_NULL_WAIT_STATES = false;
 //const Z80_GEN_WAIT_HOW_LONG = 6; // 6 cycles of Wait are generated
 
+
 function ckrange(what, low, hi) {
     if (what < low) return false;
     if (what > hi) return false;
@@ -203,7 +204,6 @@ class SM83T_state {
             this.PC = 0;
 
             this.IME = 0;
-            this.EI = 0;
         }
         else {
             this.A = from.a;
@@ -219,7 +219,6 @@ class SM83T_state {
             this.PC = from.pc;
 
             this.IME = from.ime;
-            this.EI = from.ei;
         }
         this.junkvar = 0;
     }
@@ -256,7 +255,6 @@ class SM83T_state {
         where.sp = this.SP;
 
         where.ime = this.IME;
-        where.ei = this.EI;
     }
 
     inc_PC() {
@@ -284,7 +282,6 @@ function SM83_generate_registers(where) {
     where.h = pt_rnd8();
     where.l = pt_rnd8();
     where.ime = pt_rnd1();
-    where.ie = pt_rnd1();
 }
 
 class SM83_test_generator {
@@ -781,7 +778,7 @@ class SM83_test_generator {
     }
 
     EI() {
-        this.regs.EI = 1;
+        this.regs.IME = 1;
     }
 
     HALT() {

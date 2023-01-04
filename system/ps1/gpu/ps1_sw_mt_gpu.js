@@ -66,6 +66,9 @@ class PS1_GPU {
     }
 
     gp0(cmd) {
+        //if ((cmd >>> 24) === 0xA0) dbg.break();
+        //if (cmd === 0xFFFF801F) dbg.break();
+        console.log('HEY?', hex8(cmd));
         this.GP0FIFO.put_item_blocking(cmd)
     }
 

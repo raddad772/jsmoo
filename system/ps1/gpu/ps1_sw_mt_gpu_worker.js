@@ -9,6 +9,9 @@ Check GP1 first and act on it
 importScripts('/helpers/thread_common.js');
 importScripts('/helpers.js');
 
+
+const DBG_GP0 = true;
+
 const GPUSTAT = 0;
 const GPUPLAYING = 1;
 const GPUQUIT = 2;
@@ -280,12 +283,14 @@ class PS1_GPU_thread {
     }
 
     gp0(cmd) {
+        console.log('GOT CMD', hex8(cmd));
         // if we have an instruction...
         if (this.current_ins !== null) {
             this.cmd[this.cmd_arg_index++] = cmd;
             if (this.cmd_arg_index === this.cmd_arg_num) {
                 this.current_ins();
                 this.current_ins = null;
+                console.log('EXECUTE', hex8(this.cmd[0]))
             }
         }
         else {
@@ -296,10 +301,12 @@ class PS1_GPU_thread {
             this.cmd_arg_num = 1;
             switch (cmd >>> 24) {
                 case 0: // NOP
+                    console.log('INTERPRETED AS NOP:', hex8(cmd));
                     break;
                 case 0x01: // Clear cache (not implemented)
                     break;
                 case 0x02: // Quick Rectangle
+                    console.log('Quick rectangle!');
                     this.current_ins = this.gp0QuickRect.bind(this);
                     this.cmd_arg_num = 4;
                     break;
@@ -309,10 +316,12 @@ class PS1_GPU_thread {
                     this.cmd_arg_num = 5;
                     break;
                 case 0xA0: // Image stream to GPU
+                    if (DBG_GP0) console.log('GP0 A0 img load');
                     this.current_ins = this.gp0_image_load_start.bind(this);
                     this.cmd_arg_num = 3;
                     break;
                 case 0xE1: // GP0 Draw Mode
+                    if (DBG_GP0) console.log('GP0 E1 set draw mode');
                     this.page_base_x = cmd & 15;
                     this.page_base_y = (cmd >>> 4) & 1;
                     switch ((cmd >>> 7) & 3) {
@@ -337,24 +346,29 @@ class PS1_GPU_thread {
                     this.rect.texture_y_flip = (cmd >>> 12) & 1;
                     break;
                 case 0xE2: // Texture window
+                    if (DBG_GP0) console.log('GP0 E2 set draw mode');
                     this.tx_win_x_mask = cmd & 0x1F;
                     this.tx_win_y_mask = (cmd >>> 5) & 0x1F;
                     this.tx_win_x_offset = (cmd >>> 10) & 0x1F;
                     this.tx_win_y_offset = (cmd >>> 15) & 0x1F;
                     break;
                 case 0xE3: // Set draw area upper-left corner
+                    if (DBG_GP0) console.log('GP0 E3 set draw area UL corner');
                     this.draw_area_top = (cmd >>> 10) & 0x3FF;
                     this.draw_area_left = cmd & 0x3FF;
                     break;
                 case 0xE4: // Draw area lower-right corner
+                    if (DBG_GP0) console.log('GP0 E4 set draw area LR corner');
                     this.draw_area_bottom = (cmd >>> 10) & 0x3FF;
                     this.draw_area_right = cmd & 0x3FF;
                     break;
                 case 0xE5: // Drawing offset
+                    if (DBG_GP0) console.log('GP0 E5 set drawing offset');
                     this.draw_x_offset = mksigned11(cmd & 0x7FF);
                     this.draw_y_offset = mksigned11((cmd >>> 11) & 0x7FF);
                     break;
                 case 0xE6: // Set Mask Bit setting
+                    if (DBG_GP0) console.log('GP0 E6 set bit mask');
                     this.force_set_mask_bit = cmd & 1;
                     this.preserve_masked_pixels = (cmd >>> 1) & 1;
                     break;
@@ -410,6 +424,9 @@ class PS1_GPU_thread {
                 this.ready_vram_to_CPU();
 
                 // TODO: remember to flush GPU texture cache
+                break;
+            case 0x03: // DISPLAY DISABLE
+                //TODO: do this
                 break;
             case 0x04: // DMA direction
                 //console.log('GP1 dma direction', cmd & 3);
@@ -475,14 +492,17 @@ class PS1_GPU_thread {
         // GP0 quick rect!!!
        this.unready_all();
 
-        let ysize = (cmd >>> 16) & 0xFFFF;
-        let xsize = (cmd >>> 16) & 0xFFFF;
+        let ysize = (this.cmd[2] >>> 16) & 0xFFFF;
+        let xsize = (this.cmd[2]) & 0xFFFF;
         let BGR = BGR24to15(this.cmd[0] & 0xFFFFFF);
-        let start_x = (this.cmd[1] >>> 16) & 0xFFFF;
+        let start_x = (this.cmd[1]) & 0xFFFF;
         let start_y = (this.cmd[1] >>> 16) & 0xFFFF;
+        console.log('QUICKRECT! COLOR', hex4(BGR), 'X Y', start_x, start_y, 'SZ X SZ Y', xsize, ysize);
         for (let y = start_y; y < (start_y+ysize); y++) {
             for (let x = start_x; x < (start_x + xsize); x++) {
-                this.setpix(y, x, BGR);
+                //this.setpix(y, x, BGR);
+                let addr = (2048*y)+(x*2);
+                this.VRAM.setUint16(addr, BGR, true);
             }
         }
 
@@ -637,7 +657,7 @@ class PS1_GPU_thread {
 
     gp0_image_load_continue(cmd) {
         // Put in 2 16-bit pixels
-        console.log('TRANSFERRING!', this.gp0_transfer_remaining);
+        //console.log('TRANSFERRING!', this.gp0_transfer_remaining);
         for (let i = 0; i < 2; i++) {
             let px = cmd & 0xFFFF;
             cmd >>>= 16;
@@ -651,7 +671,7 @@ class PS1_GPU_thread {
             }
             //this.setpix(this.load_buffer.y+this.load_buffer.img_y, this.load_buffer.x+this.load_buffer.img_x, px);
             this.load_buffer.img_x++;
-            if (x >= (this.load_buffer.width+this.load_buffer.x)) {
+            if ((x+1) >= (this.load_buffer.width+this.load_buffer.x)) {
                 this.load_buffer.img_x = 0;
                 this.load_buffer.img_y++;
             }
