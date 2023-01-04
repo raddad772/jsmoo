@@ -10,9 +10,6 @@ class R3000_regs_t {
             0, 0, 0, 0, 0, 0, 0, 0,
         ];
 
-        // Multiply/divide registers
-        this.HI = this.LO = 0;
-
         // Coprocessor registers, of which there are 32
         this.COP0 = [
             0, 0, 0, 0, 0, 0, 0, 0, // data regs
