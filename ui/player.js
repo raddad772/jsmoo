@@ -463,6 +463,7 @@ class global_player_t {
 		this.timing_thread.play();
 		ui_el.system_select.disabled = true;
 		ui_el.play_button.innerHTML = "Pause";
+		this.send_play();
 	}
 
     step_master(howmany) {
@@ -494,6 +495,18 @@ class global_player_t {
 	do_save_state() {
 		if (this.queued_save_state === -1) return;
         this.player_thread.postMessage({kind: emulator_messages.request_savestate});
+	}
+
+	send_play() {
+		this.player_thread.postMessage({kind: emulator_messages.play})
+	}
+
+	send_pause() {
+		this.player_thread.postMessage({kind: emulator_messages.pause})
+	}
+
+	send_stop() {
+		this.player_thread.postMessage({kind: emulator_messages.stop})
 	}
 
 	do_lod_state() {

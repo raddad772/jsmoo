@@ -19,6 +19,9 @@ const SPECTRUM_KEYS = Object.freeze([
 const GPU_messages = Object.freeze({
     unknown: 0,
     startup: 1,
+    play: 2,
+    pause: 3,
+    stop: 4
 })
 
 const emulator_messages = Object.freeze({
@@ -45,6 +48,10 @@ const emulator_messages = Object.freeze({
     ui_event: 200,
     dump_something: 201,
     return_something: 202,
+
+    play: 40000, // play threads
+    pause: 40001, // pause threads
+    stop: 40002, // terminate threads
 
     // Child to parent
     frame_complete: 50,
@@ -109,5 +116,69 @@ function mutex_unlock(buf, index) {
     if (Atomics.compareExchange(buf, index, mutex_locked, mutex_unlocked) !== mutex_locked) {
         // This only happens if someone else unlocked our mutex, or we did it more than once...
         throw new Error('Is this the right thing to do here? Mutex in inconsistent state');
+    }
+}
+
+
+class MT_FIFO16 {
+    constructor() {
+        // 0-15 items
+        // 16 head
+        // 17 num_items
+        // 18 lock
+        this.sab = new SharedArrayBuffer(20*4);
+        this.FIFO = new Int32Array(this.sab);
+    }
+
+    clear() {
+        mutex_lock(this.FIFO, 18);
+        this.FIFO[16] = 0; // head = 0
+        this.FIFO[17] = 0; // num_items = 0
+        mutex_unlock(this.FIFO, 18);
+    }
+
+    set_sab(to) {
+        this.sab = to;
+        this.FIFO = new Int32Array(this.sab);
+    }
+
+    put_item_blocking(item) {
+        if (Atomics.load(this.FIFO, 17) > 15) {
+            //console.log('Waiting on GP0 to empty buffer...')
+            while (Atomics.load(this.FIFO, 17) > 15) {
+            }
+        }
+
+        mutex_lock(this.FIFO, 18);
+        let head = this.FIFO[16];
+        let num_items = this.FIFO[17];
+
+        this.FIFO[(head + num_items) & 15] = item;
+        // num_items++
+        this.FIFO[17] = num_items + 1;
+        // head does not move when appending to FIFO
+
+        mutex_unlock(this.FIFO, 18);
+    }
+
+    /**
+     * @returns {number|null}
+      */
+    get_item() {
+        if (Atomics.load(this.FIFO, 17) === 0) return null;
+        mutex_lock(this.FIFO, 18);
+        let item = null;
+
+        let head = this.FIFO[16];
+        let num_items = this.FIFO[17];
+        if (num_items > 0) {
+            item = this.FIFO[head];
+            this.FIFO[head] = 0xBEEFCACE;   // zero old place
+            this.FIFO[16] = (head+1) & 15;  // head++
+            this.FIFO[17] = --num_items;    // num_items--;
+        }
+
+        mutex_unlock(this.FIFO, 18);
+        return item;
     }
 }

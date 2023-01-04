@@ -145,6 +145,10 @@ class GB_bus {
         this.VRAM_bank = 0xFF;
     }
 
+    play() {}
+    pause() {}
+    stop() {}
+
     reset() {
         this.set_VRAM_bank(0);
         this.set_WRAM_bank(0);

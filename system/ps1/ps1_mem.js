@@ -532,6 +532,11 @@ class PS1_mem {
                 return;
             // ...
             case 0x1F801810: // GP0 Send GP0 Commands/Packets (Rendering and VRAM Access)
+                this.ps1.gpu.gp0(val);
+                return;
+            case 0x1F801814: // GP0 Send GP0 Commands/Packets (Rendering and VRAM Access)
+                this.ps1.gpu.gp1(val);
+                return;
             case 0x1F801C00: //  Voice 0..23 stuff
             case 0x1F801C02:
             case 0x1F801C04:
@@ -753,6 +758,8 @@ class PS1_mem {
 
         switch(addr) {
             case 0x1F8010A8: // DMA2 GPU thing
+            case 0x1F801810: // GP0/GPUREAD
+                return this.ps1.gpu.get_gpuread();
             case 0x1F801814: // GPUSTAT Read GPU Status Register
                 return this.ps1.gpu.get_gpustat();
             case 0x1F801C0C: // Voice 0..23 ADSR Current Volume

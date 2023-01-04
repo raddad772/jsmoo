@@ -223,6 +223,9 @@ class ZXSpectrum {
         return {master_frame: this.clock.frames_since_restart, x: this.clock.ula_x, scanline: this.clock.ula_y};
     }
 
+    play() {}
+    pause() {}
+    stop() {}
 
     get_description() {
         let d = new machine_description();

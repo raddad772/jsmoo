@@ -147,6 +147,9 @@ class NES_cart {
 			case 4: // MMC3
 				this.mapper = new NES_mapper_MMC3b(this.clock, this.bus);
 				break;
+			case 7: // AxROM
+				this.mapper = new NES_mapper_AXROM(this.clock, this.bus);
+				break;
 			case 23: // VRC2c, VRC4e, etc.
 				this.mapper = new NES_mapper_VRC2B_4E_4F(this.clock, this.bus);
 				this.mapper.is_vrc4 = true;

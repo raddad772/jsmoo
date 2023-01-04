@@ -57,6 +57,15 @@ class threaded_emulator_worker_t {
 
     async onmessage(e) {
         switch(e.kind) {
+            case emulator_messages.play:
+                this.play();
+                break;
+            case emulator_messages.pause:
+                this.pause();
+                break;
+            case emulator_messages.stop:
+                this.stop();
+                break;
             case emulator_messages.dump_something:
                 this.dump_something(e);
                 return;
@@ -91,6 +100,18 @@ class threaded_emulator_worker_t {
                 console.log('EMULATION MAIN THREAD UNHANDLED MESSAGE', e);
                 break;
         }
+    }
+
+    play() {
+        this.js_wrapper.play();
+    }
+
+    pause() {
+        this.js_wrapper.pause()
+    }
+
+    stop() {
+        this.js_wrapper.stop();
     }
 
     do_savestate() {
@@ -160,7 +181,7 @@ class threaded_emulator_worker_t {
         let on = this.js_wrapper.run_frame();
         let span = performance.now() - ts;
         // frame time frametime FRAME TIME
-        console.log('TIME PER FRAME:', span.toFixed(4));
+        //console.log('TIME PER FRAME:', span.toFixed(4));
         this.send_frame_done(on);
     }
 

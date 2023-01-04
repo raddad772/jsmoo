@@ -103,7 +103,7 @@ class a12_watcher {
                 result = this.fall;
             }
         }
-        else if (addr & 0x1000) {
+        else {
             if (this.cycles_down > this.delay) {
                 result = this.rise;
             }

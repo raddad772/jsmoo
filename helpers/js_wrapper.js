@@ -21,7 +21,7 @@ importScripts(
     '/system/nes/nes_bus.js', '/system/nes/nes_cart.js', '/system/nes/nes_clock.js',
     '/system/nes/ppu/nes_ppu.js', '/system/nes/mappers/nomapper.js', '/system/nes/mappers/mmc3b.js',
     '/system/nes/mappers/vrc2b_4e_4f.js', '/system/nes/mappers/mmc1.js', '/system/nes/nes.js',
-	'/system/nes/mappers/uxrom.js'
+	'/system/nes/mappers/uxrom.js', '/system/nes/mappers/axrom.js'
 )
 
 // Z80 (Spectrum, SMS/GG)
@@ -99,6 +99,18 @@ class js_wrapper_t {
 		this.tech_specs = null;
 		this.out_ptr = 0;
     }
+
+	play() {
+		this.system.play();
+	}
+
+	pause() {
+		this.system.pause();
+	}
+
+	stop() {
+		this.system.stop();
+	}
 
 	dump_sprites(imgdata, width, height) {
 		this.system.dump_sprites(imgdata, width, height);

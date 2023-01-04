@@ -133,6 +133,10 @@ class NES {
         return d;
 	}
 
+    play() {}
+    pause() {}
+    stop() {}
+
     present() {
         if (this.display_enabled)
             this.ppu.present();
