@@ -197,6 +197,10 @@ class SMSGG {
             this.load_bios();
     }
 
+    play() {}
+    pause() {}
+    stop() {}
+
     serialize() {
         let o = {version: 1};
         serialization_helper(o, this, SER_SMSGG);

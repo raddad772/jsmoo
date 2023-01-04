@@ -207,6 +207,15 @@ function mksigned16h4(what) {
  * @param {number} what
  * @returns {number}
  */
+function mksigned11(what) {
+     return (what << 21) >> 21;
+}
+
+
+/**
+ * @param {number} what
+ * @returns {number}
+ */
 function mksigned16(what) {
      return what >= 0x8000 ? -(0x10000 - what) : what;
 }

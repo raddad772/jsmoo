@@ -1,11 +1,15 @@
 "use strict";
 
 const GPUSTAT = 0;
+const GPUPLAYING = 1;
+const GPUQUIT = 2;
+const GPUGP1 = 3;
+const GPUREAD = 4;
 const LASTUSED = 23;
 
 class PS1_GPU {
     constructor() {
-        this.output_shared_buffers = [new SharedArrayBuffer(640*480*3), new SharedArrayBuffer(640*480*3)];
+        this.output_shared_buffers = [new SharedArrayBuffer(1024 * 512 * 2), new SharedArrayBuffer(1024 * 512 * 2)];
         this.output = [new Uint8Array(this.output_shared_buffers[0]), new Uint8Array(this.output_shared_buffers[1])];
         this.cur_output_num = 1;
         this.cur_output = this.output[1];
@@ -13,58 +17,75 @@ class PS1_GPU {
 
         this.gpu_thread = new Worker('/system/ps1/gpu/ps1_sw_mt_gpu_worker.js');
         this.gpu_thread.onmessage = this.on_gpu_message.bind(this);
-        this.gpu_thread.onerror = function(a, b, c) { console.log('ERR', a, b, c);}
+        this.gpu_thread.onerror = function (a, b, c) {
+            console.log('ERR', a, b, c);
+        }
 
-        this.FIFO_buffer = new SharedArrayBuffer(96);
+        this.GP0FIFO_buffer = new SharedArrayBuffer(80);
+        this.GP1FIFO_buffer = new SharedArrayBuffer(80);
         this.MMIO_buffer = new SharedArrayBuffer(96);
-        this.FIFO = new Int32Array(this.FIFO_buffer);
+        this.GP0FIFO = new MT_FIFO16();
+        this.GP1FIFO = new MT_FIFO16();
+        this.GP0FIFO.set_sab(this.GP0FIFO_buffer);
+        this.GP1FIFO.set_sab(this.GP1FIFO_buffer);
         this.MMIO = new Uint32Array(this.MMIO_buffer);
+
+        this.last_ppnum = 0;
+
+        this.IRQ_bit = 0;
 
         this.gpu_thread.postMessage({
             kind: GPU_messages.startup,
-            FIFO: this.FIFO_buffer,
+            GP0FIFO: this.GP0FIFO_buffer,
+            GP1FIFO: this.GP1FIFO_buffer,
             MMIO: this.MMIO_buffer,
+            VRAM: this.output_shared_buffers[1],
             output_buffer0: this.output_shared_buffers[0],
             output_buffer1: this.output_shared_buffers[1],
         });
 
-   }
-
-   on_gpu_message(e) {
-        console.log('GPU got msg from thread:', e);
-   }
-
-   gp0(cmd) {
-        // Other ideas for sync: end is 0xBEEFCACE
-       //console.log('GPU send command!', hex8(cmd));
-       //return;
-       if (Atomics.load(this.FIFO, 17) > 15) {
-            console.log('Waiting on GP0 to empty buffer...')
-            while (Atomics.load(this.FIFO, 17) > 15) {
-            }
-        }
-        // Get lock
-       mutex_lock(this.FIFO, 18);
-
-       let head = this.FIFO[16];
-       let num_items = this.FIFO[17];
-
-        // Add the item
-        this.FIFO[(head + num_items) & 15] = cmd;
-
-        // num_items++
-        this.FIFO[17] = num_items+1;
-        // head does not move when appending to FIFO
-
-        // Release lock
-        mutex_unlock(this.FIFO, 18);
     }
 
-   gp1(cmd) {
-        console.log('GP1 cmd', hex8(cmd>>>8));
-   }
+    play(num) {
+        this.MMIO[GPUPLAYING] = 1;
+        this.gpu_thread.postMessage({kind: GPU_messages.startup, num: num})
+    }
 
-   get_gpustat() {
-        return this.MMIO[GPUSTAT];
-   }
+    pause() {
+        console.log('GPUPAUS');
+        this.MMIO[GPUPLAYING] = 0;
+    }
+
+    stop() {
+        // Terminate thread
+        this.MMIO[GPUQUIT] = 1
+    }
+
+    on_gpu_message(e) {
+        console.log('GPU got msg from thread:', e);
+    }
+
+    gp0(cmd) {
+        this.GP0FIFO.put_item_blocking(cmd)
+    }
+
+    gp1(cmd) {
+        //console.log('SEND GP1 cmd', hex8(cmd >>> 8));
+        this.GP1FIFO.put_item_blocking(cmd);
+    }
+
+    get_gpuread() {
+        return this.MMIO[GPUREAD];
+    }
+
+    get_gpustat() {
+        let g = this.MMIO[GPUSTAT];
+        // Fill interrupt bit
+        g |= this.IRQ_bit << 24;
+        // Fill FIFO full bit
+        if (((g >>> 29) & 3) === 1)
+            g |= (this.FIFO[17] === 16) ? 0 : 1;
+
+        return g;
+    }
 }

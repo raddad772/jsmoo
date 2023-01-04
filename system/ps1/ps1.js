@@ -105,10 +105,20 @@ class PS1 {
         this.controller1_in = new ps1_dualshock_inputs();
         this.controller2_in = new ps1_dualshock_inputs();
 
+        this.playpausetrack = 1;
+
         dbg.add_cpu(D_RESOURCE_TYPES.R3000, this.cpu);
         this.load_BIOS_from_RAM(BIOS.BIOS)
         this.cpu.reset();
         this.mem.ps1 = this;
+    }
+
+    play() { this.gpu.play(this.playpausetrack); }
+    pause() {
+        this.gpu.pause(this.playpausetrack++);
+    }
+    stop() {
+        this.gpu.stop();
     }
 
     /**
@@ -140,10 +150,10 @@ class PS1 {
         d.standard = MD_STANDARD.NTSC;
         d.fps = 60;
         d.input_types = [INPUT_TYPES.PS1_DUALSHOCK];
-        d.x_resolution = 640;
-        d.y_resolution = 480;
-        d.xrh = 8;
-        d.xrw = 7;
+        d.x_resolution = 1024;
+        d.y_resolution = 512;
+        d.xrh = 1024;
+        d.xrw = 512;
 
         d.overscan.top = 0;
         d.overscan.bottom = 0;
@@ -299,6 +309,6 @@ class PS1 {
 
     run_frame() {
         this.run_cycles(this.clock.cycles_left_this_frame);
-        return {buffer_num: this.gpu.last_used_buffer }//, sound_buffer: this.apu.output.get_buffer()}
+        return {buffer_num: 1 }//, sound_buffer: this.apu.output.get_buffer()}
     }
 }

@@ -134,6 +134,9 @@ class NES_ppu {
             VRAM_read: 0, // VRAM read buffer
         }
 
+        this.rendering_enabled = true;
+        this.new_rendering_enabled = true;
+
         //this.scanline_timer = new perf_timer_t('scanline timer', 60*240, ['startup', 'startup2', 'maint', 'bgcolor', 'sprite_eval', 'color_out']);
         /*this.scanline_timer.add_split('startup');
         this.scanline_timer.add_split('')*/
@@ -194,12 +197,7 @@ class NES_ppu {
         else this.write_cgram(addr & 0x1F, val);
     }
 
-    rendering_enabled() {
-        return this.io.bg_enable || this.io.sprite_enable;
-    }
-
     write_regs(addr, val) {
-        //console.log(hex4(addr), hex2(val));
         switch((addr & 7) | 0x2000) {
             case 0x2000: // PPUCTRL
                 this.io.sprite_pattern_table = (val & 8) >>> 3;
@@ -222,6 +220,7 @@ class NES_ppu {
                 this.io.emph_g = (val & 0x40) >>> 6;
                 this.io.emph_b = (val & 0x80) >>> 7;
                 this.io.emph_bits = (val & 0xE0) << 1;
+                this.new_rendering_enabled = this.io.bg_enable || this.io.sprite_enable;
                 return;
             case 0x2003: // OAMADDR
                 this.io.OAM_addr = val;
@@ -255,7 +254,7 @@ class NES_ppu {
                 }
                 return;
             case 0x2007: // PPUDATA
-                if (this.rendering_enabled() && ((this.clock.ppu_y < this.clock.timing.vblank_start) || (this.clock.ppu_y > this.clock.timing.vblank_end))) {
+                if (this.rendering_enabled && ((this.clock.ppu_y < this.clock.timing.vblank_start) || (this.clock.ppu_y > this.clock.timing.vblank_end))) {
                     console.log('REJECT WRITE', this.clock.ppu_y, this.io.sprite_enable, this.io.bg_enable, hex4(this.io.v), hex2(val));
                     return;
                 }
@@ -296,7 +295,7 @@ class NES_ppu {
                 // reads do not increment counter
                 break;
             case 0x2007:
-                if (this.rendering_enabled() && ((this.clock.ppu_y < this.clock.timing.vblank_start) || (this.clock.ppu_y > this.clock.timing.vblank_end))) {
+                if (this.rendering_enabled && ((this.clock.ppu_y < this.clock.timing.vblank_start) || (this.clock.ppu_y > this.clock.timing.vblank_end))) {
                     return 0;
                 }
                 if ((this.io.v & 0x3FF) >= 0x3F00) {
@@ -496,7 +495,8 @@ class NES_ppu {
     }
 
     cycle_scanline_addr() {
-        if (this.clock.ppu_y < this.clock.timing.bottom_rendered_line) {
+        let enabled = this.rendering_enabled;
+        if (enabled && (this.clock.ppu_y < this.clock.timing.bottom_rendered_line)) {
             // Sprites
             if ((this.line_cycle > 0) && (this.line_cycle < 257)) {
                 this.sprite_x_counters[0]--;
@@ -509,7 +509,7 @@ class NES_ppu {
                 this.sprite_x_counters[7]--;
             }
         }
-        if ((!this.rendering_enabled()) || (this.line_cycle === 0)) return;
+        if ((!enabled) || (this.line_cycle === 0)) return;
         // Cycle # 8, 16,...248, and 328, 336. BUT NOT 0
         if (this.line_cycle === 256) {
             if ((this.io.v & 0x7000) !== 0x7000) { // if fine y !== 7
@@ -540,14 +540,14 @@ class NES_ppu {
         }
         // INCREMENT VERTICAL SCROLL IN v
         // Cycles 257, copy parts of T to V
-        if ((this.line_cycle === 257) && this.rendering_enabled())
+        if ((this.line_cycle === 257) && this.rendering_enabled)
             this.io.v = (this.io.v & 0xFBE0) | (this.io.t & 0x41F);
     }
 
     // Get tile info into shifters using screen X, Y coordinates
     scanline_prerender() {
         // 261
-        let re = this.rendering_enabled()
+        let re = this.rendering_enabled
         //if ((this.clock.frame_odd) && (this.line_cycle === 0) && re) this.line_cycle++;
         if (this.line_cycle === 1) {
             this.io.sprite0_hit = 0;
@@ -568,7 +568,7 @@ class NES_ppu {
     }
 
     perform_bg_fetches() { // Only called from prerender and visible scanlines
-        if (!this.rendering_enabled()) return;
+        if (!this.rendering_enabled) return;
         let in_tile_y = (this.io.v >>> 12) & 7; // Y position inside tile
 
         if (((this.line_cycle > 0) && (this.line_cycle <= 256)) || (this.line_cycle > 320)) {
@@ -605,7 +605,7 @@ class NES_ppu {
         let sx = this.line_cycle-1;
         let sy = this.clock.ppu_y;
         let bo = (sy * 256) + sx;
-        if (!this.rendering_enabled()) {
+        if (!this.rendering_enabled) {
             if (this.line_cycle < 256) {
                 this.cur_output[bo] = this.CGRAM[0] | this.io.emph_bits;
             }
@@ -766,6 +766,7 @@ class NES_ppu {
                 this.bus.mapper.a12_watch(r);
             }
             this.render_cycle();
+            this.rendering_enabled = this.new_rendering_enabled;
             this.line_cycle++;
             this.clock.ppu_frame_cycle++;
             if (this.line_cycle === 341) this.new_scanline();

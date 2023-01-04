@@ -117,6 +117,10 @@ class SNES {
         this.run_cycles(howmany);
     }
 
+    play() {}
+    pause() {}
+    stop() {}
+
 	get_description() {
 		let d = new machine_description();
 		d.name = 'SNES';
