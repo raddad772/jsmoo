@@ -200,7 +200,7 @@ class PS1 {
 
     load_ROM_from_RAM(name, ROM) {
         if (name.toUpperCase().indexOf('.EXE') !== -1) {
-            //this.sideload_EXE(ROM);
+            this.sideload_EXE(ROM);
         }
         else {
             console.log('Loading CD....')

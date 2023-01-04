@@ -12,6 +12,8 @@ const PS1_meme = Object.freeze({
     BIOS: 3,
 });
 
+const PS1_MT_r = ['i8', 'i16', 'i32', 'u8', 'u16', 'u32']
+
 const PS1_MT = Object.freeze({
     i8: 0,
     i16: 1,
@@ -510,6 +512,11 @@ class PS1_mem {
 
     CPU_write(addr, size, val) {
         addr = this.deKSEG(addr);
+        /*if (((addr & 0xFFFFFFFC) === 0x000DE004) && (val !== 0)) {
+            console.log('WRITE TO ADDR', hex8(addr), PS1_MT_r[size], hex8(val), this.ps1.cpu.core.clock.trace_cycles);
+            dbg.break();
+            //debugger;
+        }*/
         if ((addr < 0x800000) && !this.cache_isolated) {
             return this.write_mem_generic(PS1_meme.MRAM, addr & 0x1FFFFF, size, val)
         }
@@ -528,7 +535,7 @@ class PS1_mem {
 
         switch(addr) {
             case 0x1F802041: // F802041h 1 PSX: POST (external 7 segment display, indicate BIOS boot status
-                console.log('WRITE POST STATUS!', val);
+                //console.log('WRITE POST STATUS!', val);
                 return;
             // ...
             case 0x1F801810: // GP0 Send GP0 Commands/Packets (Rendering and VRAM Access)

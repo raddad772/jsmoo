@@ -78,13 +78,13 @@ function R3000_disassemble_COP(opcode) {
                 case 0:
                     switch(bit5) {
                         case 0: // MFCN rt, rd
-                            return 'MFC' + copnum + ' ' + R3000_reg_alias[r] + ', COP' + copnum + 'd' + rd;
+                            return 'MFC' + copnum + ' ' + R3000_reg_alias[rt] + ', COP' + copnum + 'd' + rd;
                         case 2: // CFCn rt, rd
-                            return 'CFC' + copnum + ' ' + R3000_reg_alias[r] + ', COP' + copnum + 'c' + rd;
+                            return 'CFC' + copnum + ' ' + R3000_reg_alias[rt] + ', COP' + copnum + 'c' + rd;
                         case 4: // MTCn rt, rd
-                            return 'MTC' + copnum + ' COP' + copnum + 'd' + rd + ', ' + R3000_reg_alias[r];
+                            return 'MTC' + copnum + ' COP' + copnum + 'd' + rd + ', ' + R3000_reg_alias[rt];
                         case 5: // CTCn rt, rd
-                            return 'CTC' + copnum + ' COP' + copnum + 'c' + rd + ', ' + R3000_reg_alias[r];
+                            return 'CTC' + copnum + ' COP' + copnum + 'c' + rd + ', ' + R3000_reg_alias[rt];
                         case 8: // rt=0 BCnF, rt=1 BCnT
                             if (rt === 0)
                                 return 'BC' + copnum + 'F ' + mksigned16h4(imm16);

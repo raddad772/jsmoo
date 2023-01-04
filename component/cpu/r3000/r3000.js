@@ -329,14 +329,11 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
     debug_add_delayed(w) {
         this.debug_tracelog += 'R' + dec2(w.target) + ' ' + hex8(w.value >>> 0).toLowerCase() + ' ';
     }
-    cycle() {
-        // Pop things off the stack and execute until we get a cycle_advance
-        //console.log('PC!', this.regs.PC);
-        this.clock.trace_cycles+=2;
 
-        if (this.pins.IRQ) {
-            //console.log('IRQ PINS', this.regs.COP0[12], this.regs.COP0[12] & 0x400, this.regs.COP0[12] & 1)
-        }
+    cycle() {
+        //console.log('PC!', this.regs.PC);
+        this.clock.trace_cycles += 2;
+
         if (this.pins.IRQ && (this.regs.COP0[12] & 0x400) && (this.regs.COP0[12] & 1)) {
             this.exception(0, this.pipe.get_next().new_PC !== 0);
         }
@@ -404,10 +401,9 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
             this.regs.PC = which.new_PC>>>0;
             // putchar can be detected when the cpu jumps to 0xA0 with R9 loaded with 0x3C
             if ((this.regs.PC === 0xB0)) {
-                //console.log('JUMP TO A0!', hex2(this.regs.R[9]))
                 if (this.regs.R[9] === 0x3D) {
                     this.console += String.fromCharCode(this.regs.R[4]);
-                    console.log(this.console);
+                    //console.log(this.console);
                 }
             }
             which.new_PC = 0;
