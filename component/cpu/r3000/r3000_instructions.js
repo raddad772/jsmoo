@@ -45,7 +45,22 @@ function R3000_fs_reg_write(core, target, value) {
 }
 
 /**
+ * @param {R3000} core
+ * @param {number} target
+ **/
+function R3000_fs_reg_delay_read(core, target, value) {
+    let p = core.pipe.current;
 
+    if (p.target === target) {
+        p.target = -1;
+        return p.value;
+    }
+    else {
+        return core.regs.R[target];
+    }
+}
+
+/**
  * @param {R3000} core
  * @param {number} target
  * @param {number} value
@@ -943,30 +958,27 @@ function R3000_fLWL(opcode,op, core) {
 
     let addr = (core.regs.R[rs] + imm16) & 0xFFFFFFFF;
 
-    // Now determine which bits...
-    let lbits = (3 - addr & 3);
-    let msk = 0;
-    // upper bits
-    // lbits = 0 = 8,
-    // lbits = 1 = 16
-    // lbits = 2 = 24,
-    // lbits = 3 = 32
-    switch(lbits) {
-        case 0: // upper 8
-            msk = 0xFF000000;
+    // Fetch register from delay if it's there, and also clobber it
+    let cur_v = R3000_fs_reg_delay_read(core, rt);
+
+    let aligned_addr = addr & 0xFFFFFFFC;
+    let aligned_word = core.mem.CPU_read(aligned_addr>>>0, PS1_MT.u32, 0);
+    let fv;
+    switch(addr & 3) {
+        case 0:
+            fv = ((cur_v & 0x00FFFFFF) | (aligned_word << 24)) & 0xFFFFFFFF;
             break;
         case 1:
-            msk = 0xFFFF0000;
+            fv = ((cur_v & 0x0000FFFF) | (aligned_word << 16)) & 0xFFFFFFFF;
             break;
         case 2:
-            msk = 0xFFFFFF00;
+            fv = ((cur_v & 0x000000FF) | (aligned_word << 8)) & 0xFFFFFFFF;
             break;
         case 3:
-            msk = 0xFFFFFFFF;
+            fv = aligned_word;
             break;
     }
-    let rd = core.mem.CPU_read(addr & 0xFFFFFFFC, PS1_MT.u32, 0) & msk;
-    R3000_merge_lr(core.pipe.current, core.pipe.get_next(), rt, msk, rd);
+    R3000_fs_reg_delay(core, rt, fv>>>0)
 }
 
 /**
@@ -981,32 +993,26 @@ function R3000_fSWL(opcode,op, core) {
     let imm16 = mksigned16(opcode & 0xFFFF);
 
     let addr = (core.regs.R[rs] + imm16) & 0xFFFFFFFF;
+    let v = core.regs.R[rt];
 
-    // Now determine which bits...
-    let lbits = (3 - addr & 3);
-    let msk = 0;
-    // upper bits
-    // lbits = 0 = 8,
-    // lbits = 1 = 16
-    // lbits = 2 = 24,
-    // lbits = 3 = 32
-    switch(lbits) {
+    let aligned_addr = (addr & 0xFFFFFFFC)>>>0;
+    let cur_mem = core.mem.CPU_read(aligned_addr, PS1_MT.u32, 0);
+
+    switch(addr & 3) {
         case 0: // upper 8
-            msk = 0xFF000000;
+            cur_mem = ((cur_mem & 0xFFFFFF00) | (v >>> 24)) & 0xFFFFFFFF;
             break;
         case 1:
-            msk = 0xFFFF0000;
+            cur_mem = ((cur_mem & 0xFFFF0000) | (v >>> 16)) & 0xFFFFFFFF;
             break;
         case 2:
-            msk = 0xFFFFFF00;
+            cur_mem = ((cur_mem & 0xFF000000) | (v >>> 8)) & 0xFFFFFFFF;
             break;
         case 3:
-            msk = 0xFFFFFFFF;
+            cur_mem = v;
             break;
     }
-    let rd = core.mem.CPU_read(addr & 0xFFFFFFFC, PS1_MT.u32, 0) & (msk ^ 0xFFFFFFFF); // Mask OUT stuff we
-    let r = core.regs.R[rt] &  msk;
-    core.mem.CPU_write(addr & 0xFFFFFFFC, PS1_MT.u32, rd | r);
+    core.mem.CPU_write(aligned_addr, PS1_MT.u32, cur_mem);
 }
 
 
@@ -1023,25 +1029,27 @@ function R3000_fLWR(opcode,op, core) {
 
     let addr = (core.regs.R[rs] + imm16) & 0xFFFFFFFF;
 
-    // Now determine which bits...
-    let lbits = (3 - addr & 3);
-    let msk = 0;
-    switch(lbits) {
-        case 0: // lower 32
-            msk = 0xFFFFFFFF;
+    // Fetch register from delay if it's there, and also clobber it
+    let cur_v = R3000_fs_reg_delay_read(core, rt);
+
+    let aligned_addr = addr & 0xFFFFFFFC;
+    let aligned_word = core.mem.CPU_read(aligned_addr>>>0, PS1_MT.u32, 0);
+    let fv;
+    switch(addr & 3) {
+        case 0:
+            fv = aligned_word;
             break;
         case 1:
-            msk = 0x00FFFFFF;
+            fv = ((cur_v & 0xFF000000) | (aligned_word >>> 8)) & 0xFFFFFFFF;
             break;
         case 2:
-            msk = 0x0000FFFF;
+            fv = ((cur_v & 0xFFFF0000) | (aligned_word >>> 16)) & 0xFFFFFFFF;
             break;
         case 3:
-            msk = 0x000000FF;
+            fv = ((cur_v & 0xFFFFFF00) | (aligned_word >>> 24)) & 0xFFFFFFFF;
             break;
     }
-    let rd = core.mem.CPU_read(addr & 0xFFFFFFFC, PS1_MT.u32, 0) & msk;
-    R3000_merge_lr(core.pipe.current, core.pipe.get_next(), rt, msk, rd);
+    R3000_fs_reg_delay(core, rt, fv>>>0)
 }
 
 /**
@@ -1056,27 +1064,26 @@ function R3000_fSWR(opcode,op, core) {
     let imm16 = mksigned16(opcode & 0xFFFF);
 
     let addr = (core.regs.R[rs] + imm16) & 0xFFFFFFFF;
+    let v = core.regs.R[rt];
 
-    // Now determine which bits...
-    let lbits = (3 - addr & 3);
-    let msk = 0;
-    switch(lbits) {
-        case 0: // lower 32
-            msk = 0xFFFFFFFF;
+    let aligned_addr = (addr & 0xFFFFFFFC)>>>0;
+    let cur_mem = core.mem.CPU_read(aligned_addr, PS1_MT.u32, 0);
+
+    switch(addr & 3) {
+        case 0: // upper 8
+            cur_mem = v;
             break;
         case 1:
-            msk = 0x00FFFFFF;
+            cur_mem = ((cur_mem & 0x000000FF) | (v << 8)) & 0xFFFFFFFF;
             break;
         case 2:
-            msk = 0x0000FFFF;
+            cur_mem = ((cur_mem & 0x0000FFFF) | (v << 16)) & 0xFFFFFFFF;
             break;
         case 3:
-            msk = 0x000000FF;
+            cur_mem = ((cur_mem & 0x00FFFFFF) | (v << 24)) & 0xFFFFFFFF;
             break;
     }
-    let rd = core.mem.CPU_read(addr & 0xFFFFFFFC, PS1_MT.u32, 0) & (msk ^ 0xFFFFFFFF); // Mask OUT stuff we
-    let r = core.regs.R[rt] &  msk;
-    core.mem.CPU_write(addr & 0xFFFFFFFC, PS1_MT.u32, rd | r);
+    core.mem.CPU_write(aligned_addr, PS1_MT.u32, cur_mem);
 }
 
 /**
@@ -1092,16 +1099,16 @@ function R3000_merge_lr(current, next, target, mask, value)
     next.target = target;
     if ((current.lr === 1) && (current.target === target)) {
         // Extend current core stuff
-        next.lr_mask = current.lr_mask | mask;
-        next.value = (current.value & (current.lr_mask ^ mask)) | value;
+        next.lr_mask = (current.lr_mask | mask)>>>0;
+        next.value = ((current.value & (current.lr_mask ^ mask)) | value)>>>0;
         console.log('NEW VALUE!', hex8(next.value));
         current.lr = 0;
         current.target = -1;
     }
     else {
-        next.lr_mask = mask;
-        next.value = value;
-        console.log('NEW VALUE2!', hex8(next.value));
+        next.lr_mask = mask>>>0;
+        next.value = value>>>0;
+        console.log('NEW VALUE2!', hex8(mask), hex8(next.value));
     }
     //if (next.value === 0x02800280) { console.log('HERE1'); debugger; }
 }

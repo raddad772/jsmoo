@@ -384,8 +384,10 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
     delay_slots(which) {
         // Load delay slot from instruction before this one
         if (which.target > 0) {// R0 stays 0
-            if (which.lr)
+            if (which.lr) {
+                console.log('APPLY!', hex8(which.lr_mask), hex8(which.value));
                 this.regs.R[which.target] = (this.regs.R[which.target] & (which.lr_mask ^ 0xFFFFFFFF)) | which.value;
+            }
             else
                 this.regs.R[which.target] = which.value;
             if (this.trace_on) {
