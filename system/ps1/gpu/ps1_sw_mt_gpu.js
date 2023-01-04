@@ -21,13 +21,11 @@ class PS1_GPU {
             console.log('ERR', a, b, c);
         }
 
-        this.GP0FIFO_buffer = new SharedArrayBuffer(80);
-        this.GP1FIFO_buffer = new SharedArrayBuffer(80);
         this.MMIO_buffer = new SharedArrayBuffer(96);
         this.GP0FIFO = new MT_FIFO16();
         this.GP1FIFO = new MT_FIFO16();
-        this.GP0FIFO.set_sab(this.GP0FIFO_buffer);
-        this.GP1FIFO.set_sab(this.GP1FIFO_buffer);
+        this.GP0FIFO.clear();
+        this.GP1FIFO.clear();
         this.MMIO = new Uint32Array(this.MMIO_buffer);
 
         this.last_ppnum = 0;
@@ -36,19 +34,21 @@ class PS1_GPU {
 
         this.gpu_thread.postMessage({
             kind: GPU_messages.startup,
-            GP0FIFO: this.GP0FIFO_buffer,
-            GP1FIFO: this.GP1FIFO_buffer,
+            GP0FIFO: this.GP0FIFO.sab,
+            GP1FIFO: this.GP1FIFO.sab,
             MMIO: this.MMIO_buffer,
             VRAM: this.output_shared_buffers[1],
             output_buffer0: this.output_shared_buffers[0],
             output_buffer1: this.output_shared_buffers[1],
         });
 
+        this.GPU_FIFO_tag = 0;
+
     }
 
     play(num) {
         this.MMIO[GPUPLAYING] = 1;
-        this.gpu_thread.postMessage({kind: GPU_messages.startup, num: num})
+        this.gpu_thread.postMessage({kind: GPU_messages.play, num: num})
     }
 
     pause() {
@@ -68,13 +68,13 @@ class PS1_GPU {
     gp0(cmd) {
         //if ((cmd >>> 24) === 0xA0) dbg.break();
         //if (cmd === 0xFFFF801F) dbg.break();
-        console.log('HEY?', hex8(cmd));
-        this.GP0FIFO.put_item_blocking(cmd)
+        //console.log('HEY?', hex8(cmd));
+        this.GP0FIFO.put_item_blocking(cmd, this.GPU_FIFO_tag++)
     }
 
     gp1(cmd) {
         //console.log('SEND GP1 cmd', hex8(cmd >>> 8));
-        this.GP1FIFO.put_item_blocking(cmd);
+        this.GP1FIFO.put_item_blocking(cmd, this.GPU_FIFO_tag++);
     }
 
     get_gpuread() {

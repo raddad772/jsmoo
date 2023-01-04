@@ -155,6 +155,12 @@ class PS1_GPU_thread {
         this.GP0_FIFO = new MT_FIFO16();
         this.GP1_FIFO = new MT_FIFO16();
 
+        this.cur_gp0 = null;
+        this.cur_gp0_tag = -2;
+        this.cur_gp1 = null;
+        this.cur_gp1_tag = -2;
+        this.GPU_FIFO_tag = 0;
+
         this.MMIO_sb = new SharedArrayBuffer(96);
         this.MMIO = new Uint32Array(this.MMIO_sb);
 
@@ -164,6 +170,7 @@ class PS1_GPU_thread {
         this.gp0_transfer_remaining = 0; // for transfers to/from GPU
         this.cmd = new Uint32Array(16); // Up to 16 args because why not
         this.handle_gp0 = this.gp0.bind(this);
+
     }
 
     GPUSTAT_update() {
@@ -244,7 +251,10 @@ class PS1_GPU_thread {
         this.GP0FIFO_sb = e.GP0FIFO;
         this.GP1FIFO_sb = e.GP1FIFO;
         this.VRAMb = e.VRAM;
+        console.log(e);
+        console.log(typeof this.VRAMb);
         this.VRAM = new DataView(this.VRAMb);
+        console.log(e);
         for (let i = 0; i < (1024*1024); i+=4) {
             this.VRAM.setUint32(i,0xFFFFFFFF);
         }
@@ -283,14 +293,14 @@ class PS1_GPU_thread {
     }
 
     gp0(cmd) {
-        console.log('GOT CMD', hex8(cmd));
+        //console.log('GOT CMD', hex8(cmd));
         // if we have an instruction...
         if (this.current_ins !== null) {
             this.cmd[this.cmd_arg_index++] = cmd;
             if (this.cmd_arg_index === this.cmd_arg_num) {
                 this.current_ins();
                 this.current_ins = null;
-                console.log('EXECUTE', hex8(this.cmd[0]))
+                //console.log('EXECUTE', hex8(this.cmd[0]))
             }
         }
         else {
@@ -316,7 +326,6 @@ class PS1_GPU_thread {
                     this.cmd_arg_num = 5;
                     break;
                 case 0xA0: // Image stream to GPU
-                    if (DBG_GP0) console.log('GP0 A0 img load');
                     this.current_ins = this.gp0_image_load_start.bind(this);
                     this.cmd_arg_num = 3;
                     break;
@@ -417,7 +426,7 @@ class PS1_GPU_thread {
                 this.display_line_start = 0x10;
                 this.display_line_end = 0x100;
                 this.display_depth = PS1e.D15bits;
-                this.clear_FIFO();
+                //this.clear_FIFO();
                 this.GPUSTAT_update();
                 this.ready_cmd();
                 this.ready_recv_DMA();
@@ -520,15 +529,10 @@ class PS1_GPU_thread {
     }
 
     init_FIFO() {
-        this.GP0_FIFO[16] = this.GP0_FIFO[17] = 0;
-        for (let i = 0; i < 16; i++) {
-            this.GP0_FIFO[i] = 0;
-        }
-
-        // Set "ready for stuff"
         this.ready_cmd();
         this.ready_vram_to_CPU();
         this.ready_recv_DMA();
+        // Set "ready for stuff"
         this.MMIO[GPUSTAT] = this.GPUSTAT;
     }
 
@@ -539,13 +543,29 @@ class PS1_GPU_thread {
     listen_FIFO() {
         this.MMIO[GPUPLAYING] = 1;
         while(this.MMIO[GPUPLAYING] === 1) {
-            let cmd1 = this.GP1_FIFO.get_item();
-            let cmd0 = null;
-            if (cmd1 === null) {
-                cmd0 = this.GP0_FIFO.get_item();
-                if (cmd0 !== null) this.handle_gp0(cmd0>>>0)
+            if (this.cur_gp0 === null) {
+                this.cur_gp0 = this.GP0_FIFO.get_item();
+                this.cur_gp0_tag = this.GP0_FIFO.output_tag;
             }
-            else this.gp1(cmd1>>>0);
+            if (this.cur_gp1 === null) {
+                this.cur_gp1 = this.GP1_FIFO.get_item();
+                this.cur_gp1_tag = this.GP1_FIFO.output_tag;
+            }
+            if ((this.cur_gp0 === null) && (this.cur_gp1 === null)) continue;
+            if ((this.cur_gp0 !== null) && (this.cur_gp0_tag === this.GPU_FIFO_tag)) {
+                this.handle_gp0(this.cur_gp0>>>0);
+                this.cur_gp0 = null;
+                this.GPU_FIFO_tag++;
+                continue;
+            }
+            if ((this.cur_gp1 !== null) && (this.cur_gp1_tag === this.GPU_FIFO_tag)) {
+                this.gp1(this.cur_gp1>>>0);
+                this.cur_gp1 = null;
+                this.GPU_FIFO_tag++;
+                continue;
+            }
+            console.log('DESYNC ERROR!', this.cur_gp0, this.cur_gp0_tag, this.cur_gp1, this.cur_gp1_tag);
+            return;
         }
         console.log('FIFO no more listen...')
         if (this.MMIO[GPUPLAYING] === 0) {
@@ -560,7 +580,7 @@ class PS1_GPU_thread {
     }
 
     onmessage(e) {
-        console.log('GPU got message', e);
+        console.log('GPU got message', e, e.kind);
         switch(e.kind) {
             case GPU_messages.startup:
                 this.msg_startup(e);
@@ -622,7 +642,9 @@ class PS1_GPU_thread {
         }
     }
 
-    gp0_image_load_start(cmd) {
+    gp0_image_load_start() {
+        this.unready_cmd();
+        this.ready_recv_DMA();
         let c = this.cmd;
         // Top-left corner in VRAM
         let x = c[1] & 0xFFFF;
@@ -636,7 +658,7 @@ class PS1_GPU_thread {
         let imgsize = ((width * height) + 1) & 0x1FFFE;
 
         this.gp0_transfer_remaining = imgsize/2;
-        console.log('TRANSFER IMGSIZE', imgsize, 'X Y', x, y, 'WIDTH HEIGHT', width, height, hex8(c[1]));
+        //console.log('TRANSFER IMGSIZE', imgsize, 'X Y', x, y, 'WIDTH HEIGHT', width, height, hex8(c[1]));
         if (this.gp0_transfer_remaining > 0) {
             this.load_buffer_reset(x, y, width, height);
             this.handle_gp0 = this.gp0_image_load_continue.bind(this);
@@ -678,9 +700,11 @@ class PS1_GPU_thread {
         }
         this.gp0_transfer_remaining--;
         if (this.gp0_transfer_remaining === 0) {
-            console.log('TRANSFER COMPLETE!');
+            //console.log('TRANSFER COMPLETE!');
             this.current_ins = null;
             this.handle_gp0 = this.gp0.bind(this);
+            this.ready_cmd();
+            this.unready_recv_DMA()
         }
     }
 
