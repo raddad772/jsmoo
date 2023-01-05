@@ -32,6 +32,92 @@ const R3000_reg = Object.freeze ({
     t8: 24, t9: 25, k0: 26, k1: 27, gp: 28, sp: 29, fp: 30, ra: 31
 });
 
+/*
+  cop2r0-1   3xS16 VXY0,VZ0              Vector 0 (X,Y,Z)
+  cop2r2-3   3xS16 VXY1,VZ1              Vector 1 (X,Y,Z)
+  cop2r4-5   3xS16 VXY2,VZ2              Vector 2 (X,Y,Z)
+  cop2r6     4xU8  RGBC                  Color/code value
+  cop2r7     1xU16 OTZ                   Average Z value (for Ordering Table)
+  cop2r8     1xS16 IR0                   16bit Accumulator (Interpolate)
+  cop2r9-11  3xS16 IR1,IR2,IR3           16bit Accumulator (Vector)
+  cop2r12-15 6xS16 SXY0,SXY1,SXY2,SXYP   Screen XY-coordinate FIFO  (3 stages)
+  cop2r16-19 4xU16 SZ0,SZ1,SZ2,SZ3       Screen Z-coordinate FIFO   (4 stages)
+  cop2r20-22 12xU8 RGB0,RGB1,RGB2        Color CRGB-code/color FIFO (3 stages)
+  cop2r23    4xU8  (RES1)                Prohibited
+  cop2r24    1xS32 MAC0                  32bit Maths Accumulators (Value)
+  cop2r25-27 3xS32 MAC1,MAC2,MAC3        32bit Maths Accumulators (Vector)
+  cop2r28-29 1xU15 IRGB,ORGB             Convert RGB Color (48bit vs 15bit)
+  cop2r30-31 2xS32 LZCS,LZCR             Count Leading-Zeroes/Ones (sign bits
+ */
+
+/*
+ cop2r32-36 9xS16 RT11RT12,..,RT33 Rotation matrix     (3x3)        ;cnt0-4
+  cop2r37-39 3x 32 TRX,TRY,TRZ      Translation vector  (X,Y,Z)      ;cnt5-7
+  cop2r40-44 9xS16 L11L12,..,L33    Light source matrix (3x3)        ;cnt8-12
+  cop2r45-47 3x 32 RBK,GBK,BBK      Background color    (R,G,B)      ;cnt13-15
+  cop2r48-52 9xS16 LR1LR2,..,LB3    Light color matrix source (3x3)  ;cnt16-20
+  cop2r53-55 3x 32 RFC,GFC,BFC      Far color           (R,G,B)      ;cnt21-23
+  cop2r56-57 2x 32 OFX,OFY          Screen offset       (X,Y)        ;cnt24-25
+  cop2r58 BuggyU16 H                Projection plane distance.       ;cnt26
+  cop2r59      S16 DQA              Depth queing parameter A (coeff) ;cnt27
+  cop2r60       32 DQB              Depth queing parameter B (offset);cnt28
+  cop2r61-62 2xS16 ZSF3,ZSF4        Average Z scale factors          ;cnt29-30
+  cop2r63      U20 FLAG             Returns any calculation errors   ;cnt31
+ */
+const GTE_reg = Object.freeze({
+    VXY0: 0, VZ0: 1, VXY1: 2, VZ1: 3, VXY2: 4, VZ2: 5,
+    RGBC: 6, OTZ: 7, IR0: 8, IR1: 9, IR2: 10, IR3: 11,
+    SXY0: 12, SXY1: 13, SXY2: 14, SXYP: 15,
+    SZ0: 16, SZ1: 17, SZ2: 18, SZ3: 19,
+    RGB0: 20, RGB1: 21, RGB2: 22,
+    RES1: 23, MAC0: 24, MAC1: 25, MAC2: 26, MAC3: 27,
+    IRGB: 28, ORGB: 29,
+    LZCS: 30, LZCR: 31,
+    RT11RT12: 32+0, RT13RT21: 32+1,
+    RT22RT23: 32+2, RT31RT32: 32+3,
+    RT33: 32+4, // returns sign-extended 32-bit
+    TRX: 32+5, TRY: 32+6, TRZ: 32+7,
+    L11L12: 32+8, L13L21: 32+9,
+    L22L23: 32+10, L31L32: 32+11,
+    L33: 32+12, // returns signed-extended 32-bit
+    RBK: 32+13, GBK: 32+14, BBK: 32+15,
+    LR1LR2: 32+16, LR3LG1: 32+17,
+    LG2LG3: 32+18, LB1LB2: 32+19,
+    LB3: 32+20, // returns sign-extended 32-bit
+    RFC: 32+21, GFC: 32+22, BFC: 32+23,
+    OFX: 32+24, OFY: 32+25,
+    H: 32+26, DQA: 32+27, DQB: 32+28,
+    ZSF3: 32+29, ZSF4: 32+30,
+    FLAG: 32+31
+})
+
+const GTE_reg_alias = Object.freeze({
+    0: 'VXY0', 1: 'VZ0', 2: 'VXY1', 3: 'VZ1', 4: 'VXY2', 5: 'VZ2',
+    6: 'RGBC', 7: 'OTZ', 8: 'IR0', 9: 'IR1', 10: 'IR2', 11: 'IR3',
+    12: 'SXY0', 13: 'SXY1', 14: 'SXY2', 15: 'SXYP',
+    16: 'SZ0', 17: 'SZ1', 18: 'SZ2', 19: 'SZ3',
+    20: 'RGB0', 21: 'RGB1', 22: 'RGB2',
+    23: 'RES1', 24: 'MAC0', 25: 'MAC1', 26: 'MAC2', 27: 'MAC3',
+    28: 'IRGB', 29: 'ORGB',
+    30: 'LZCS', 31: 'LZCR',
+    32: 'RT11RT12', 33: 'RT13RT21',
+    34: 'RT22RT23', 35: 'RT31RT32',
+    36: 'RT33',
+    37: 'TRX', 38: 'TRY', 39: 'TRZ',
+    40: 'L11L12', 41: 'L13L21',
+    42: 'L22L23', 43: 'L31L32',
+    44: 'L33',
+    45: 'RBK', 46: 'GBK', 47: 'BBK',
+    48: 'LR1LR2', 49: 'LR3LG1',
+    50: 'LG2LG3', 51: 'LB1LB2',
+    52: 'LB3',
+    53: 'RFC', 54: 'GFC', 55: 'BFC',
+    56: 'OFX', 57: 'OFY',
+    58: 'H', 59: 'DQA', 60: 'DQB',
+    61: 'ZSF3', 62: 'ZSF4',
+    63: 'FLAG'
+})
+
 const R3000_COP0_reg = Object.freeze({
     PRId: 15,
     SR: 12,
@@ -61,22 +147,89 @@ const R3000_reg_alias = Object.freeze([
  * @param {number} opcode
  * @returns {string}
  */
+function R3000_disassemble_GTE(opcode) {
+    let sf = (opcode >>> 19) & 1;
+    let MVMAmul_matrix = (opcode >>> 17) & 3;
+    let MVMAmul_vector = (opcode >>> 15) & 3;
+    let MVMAtrans_vector = (opcode >>> 13) & 3;
+    let lm = (opcode >>> 10) & 1;
+    let gte = opcode & 0x3F;
+    switch(opcode & 0x3F) {
+        case 0x00: // N/A
+            return 'GTE NA0';
+        case 0x01: //
+            return 'RTPS';
+        case 0x06:
+            return 'NCLIP';
+        case 0x0C:
+            return 'OP(' + sf + ')';
+        case 0x10:
+            return 'DPCS';
+        case 0x11:
+            return 'INTPL';
+        case 0x12:
+            return 'MVMVA';
+        case 0x13:
+            return 'NCDS';
+        case 0x14:
+            return 'CDP';
+        case 0x16:
+            return 'NCDT';
+        case 0x1B:
+            return 'NCCS';
+        case 0x1C:
+            return 'CC';
+        case 0x1E:
+            return 'NCS';
+        case 0x20:
+            return 'NCT';
+        case 0x28:
+            return 'SQRT(' + sf + ')';
+        case 0x29:
+            return 'DCPL';
+        case 0x2A:
+            return 'DPCT';
+        case 0x2D:
+            return 'AVSZ3';
+        case 0x2E:
+            return 'AVSZ4';
+        case 0x30:
+            return 'RTPT';
+        case 0x3D:
+            return 'GPF(' + sf + ')5';
+        case 0x3E:
+            return 'GPL(' + sf + ')5';
+        case 0x3F:
+            return 'NCCT';
+        default:
+            return 'GTE NA' + (opcode & 0x0F).toString(16).toUpperCase();
+    }
+}
+
+
+/**
+ * @param {number} opcode
+ * @returns {string}
+ */
 function R3000_disassemble_COP(opcode) {
     let ostr = '';
     let opc = (opcode >>> 28) & 15;
     let copnum = (opcode >>> 26) & 3;
     let bit25 = (opcode >>> 25) & 1;
-    let bit5 = (opcode >>> 21) & 0x1F;
+    let bits5 = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
     let rd = (opcode >>> 11) & 0x1F;
     let rs = (opcode >>> 21) & 0x1F;
     let imm16 = (opcode & 0xFFFF)>>>0;
     let imm25 = (opcode & 0x1FFFFFF)>>>0;
+    if (copnum === 2) {
+        return R3000_disassemble_GTE(opcode);
+    }
     switch(opc) {
         case 4: //
             switch(bit25) {
                 case 0:
-                    switch(bit5) {
+                    switch(bits5) {
                         case 0: // MFCN rt, rd
                             return 'MFC' + copnum + ' ' + R3000_reg_alias[rt] + ', COP' + copnum + 'd' + rd;
                         case 2: // CFCn rt, rd
@@ -92,10 +245,10 @@ function R3000_disassemble_COP(opcode) {
                                 return 'BC' + copnum + 'T ' + mksigned16h4(imm16);
                         default:
                             console.log('BAD COP INSTRUCTION!', hex8(opcode));
-                            return 'BADCOP';
+                            return 'BADCOP8';
                     }
                 case 1: // // Immediate 25-bit or some COP0 instructions
-                    if ((bit5 === 0x10) && (copnum === 0)) {
+                    if ((bits5 === 0x10) && (copnum === 0)) {
                         switch(opcode & 0x1F) {
                             case 1:
                                 return 'TLBR';
@@ -112,7 +265,7 @@ function R3000_disassemble_COP(opcode) {
                                 return 'BADCOP0';
                         }
                     }
-                    return 'COP' + copnum + ' ' + hex4(imm25) + ', ' + bit5;
+                    return 'COP' + copnum + ' ' + hex4(imm25) + ', ' + bits5;
             }
             console.log('SHOULD NOT REACH HERE');
             return 'COPWHAT?';

@@ -512,12 +512,6 @@ class PS1_mem {
 
     CPU_write(addr, size, val) {
         addr = this.deKSEG(addr);
-        //if ((addr & 0xFFFFFFFC) === 80014124)
-        if (((addr & 0xFFFFFFFC) === 0x00014128)) {
-            console.log('WRITE TO ADDR', hex8(addr), PS1_MT_r[size], hex8(val), this.ps1.cpu.core.clock.trace_cycles);
-            //dbg.break();
-            //debugger;
-        }
         if ((addr < 0x800000) && !this.cache_isolated) {
             return this.write_mem_generic(PS1_meme.MRAM, addr & 0x1FFFFF, size, val)
         }
@@ -535,6 +529,20 @@ class PS1_mem {
         }
 
         switch(addr) {
+            case 0x00FF1F00: // Invalid addresses
+            case 0x00FF1F04:
+            case 0x00FF1F08:
+            case 0x00FF1F0C:
+            case 0x00FF1F2C:
+            case 0x00FF1F34:
+            case 0x00FF1F3C:
+            case 0x00FF1F40:
+            case 0x00FF1F4C:
+            case 0x00FF1F50:
+            case 0x00FF1F60:
+            case 0x00FF1F64:
+            case 0x00FF1F7C:
+                return;
             case 0x1F802041: // F802041h 1 PSX: POST (external 7 segment display, indicate BIOS boot status
                 //console.log('WRITE POST STATUS!', val);
                 return;
@@ -765,6 +773,14 @@ class PS1_mem {
         }
 
         switch(addr) {
+            case 0x00FF1F00: // Invalid addresses?
+            case 0x00FF1F04:
+            case 0x00FF1F08:
+            case 0x00FF1F0C:
+            case 0x00FF1F50:
+                return 0;
+            case 0x1F80101C: // Expansion 2 Delay/size
+                return 0x00070777;
             case 0x1F8010A8: // DMA2 GPU thing
             case 0x1F801810: // GP0/GPUREAD
                 return this.ps1.gpu.get_gpuread();

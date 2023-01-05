@@ -39,7 +39,7 @@ function R3000_fs_reg_write(core, target, value) {
 
     if (core.trace_on) core.debug_reg_list.push(target);
 
-    let p = core.pipe.get_next();
+    let p = core.pipe.current;
 
     if (p.target === target) p.target = -1;
 }
@@ -737,6 +737,12 @@ function R3000_fMULTU(opcode,op, core) {
         )
 }
 
+function R3000_GTE_readreg(regnum) {
+    switch(regnum) {
+        case 0:
+    }
+}
+
 /**
  * @param {Number} opcode
  * @param {R3000_opcode} op
@@ -762,6 +768,7 @@ function R3000_fCOP(opcode,op, core) {
         }
     }
     console.log('BAD COP0 INSTRUCTION!', hex8(opcode));
+    dbg.break();
 }
 
 /**
@@ -1119,6 +1126,7 @@ function R3000_merge_lr(current, next, target, mask, value)
  * @param {R3000} core
  */
 function R3000_fSYSCALL(opcode,op, core) {
+    console.log('SYSCALL!', core.clock.trace_cycles, hex8(core.regs.PC))
     core.exception(8)
 }
 
