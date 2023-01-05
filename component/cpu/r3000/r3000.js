@@ -18,6 +18,17 @@ class R3000_regs_t {
             0, 0, 0, 0, 0, 0, 0, 0
         ]
 
+        this.COP2 = new Uint32Array([
+            0, 0, 0, 0, 0, 0, 0, 0, // data regs
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, // data regs
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0
+        ]);
+
         this.trace_on = false;
 
         // Internal registers
@@ -197,6 +208,7 @@ class R3000 {
         this.pins = new R3000_pins_t();
         this.mem = mem;
         this.multiplier = new R3000_multiplier_t(this.clock);
+        this.gte = new PS1_GTE(this.regs);
         this.op_table = R3000_generate_opcodes();
         this.trace_on = false;
 
@@ -402,7 +414,7 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
             if ((this.regs.PC === 0xB0)) {
                 if (this.regs.R[9] === 0x3D) {
                     this.console += String.fromCharCode(this.regs.R[4]);
-                    //console.log(this.console);
+                    console.log(this.console);
                 }
             }
             which.new_PC = 0;

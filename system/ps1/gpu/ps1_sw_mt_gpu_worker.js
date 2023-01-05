@@ -320,8 +320,10 @@ class PS1_GPU_thread {
                     this.current_ins = this.gp0QuickRect.bind(this);
                     this.cmd_arg_num = 3;
                     break;
-                case 0x21: //
-                    case 0x28: // flat-shaded rectangle
+                //case 0x21: // ??
+                //    console.log('NOT IMPLEMENT 0x21');
+                //    break;
+                case 0x28: // flat-shaded rectangle
                     this.current_ins = this.draw_flat4untex.bind(this);
                     this.cmd_arg_num = 5;
                     break;
@@ -686,11 +688,11 @@ class PS1_GPU_thread {
             let y = this.load_buffer.y+this.load_buffer.img_y;
             let x = this.load_buffer.x+this.load_buffer.img_x;
             let addr = (2048*y)+(x*2);
-            try {
+            //try {
                 this.VRAM.setUint16(addr, px, true);
-            } catch(e) {
-                console.log('WAIT!', y, x, this.load_buffer.width+this.load_buffer.x, addr);
-            }
+            //} catch(e) {
+            //    console.log('WAIT!', y, x, this.load_buffer.width+this.load_buffer.x, addr);
+            //}
             //this.setpix(this.load_buffer.y+this.load_buffer.img_y, this.load_buffer.x+this.load_buffer.img_x, px);
             this.load_buffer.img_x++;
             if ((x+1) >= (this.load_buffer.width+this.load_buffer.x)) {
