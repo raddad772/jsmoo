@@ -1,5 +1,3 @@
-"use strict";
-
 // Based on RustStation implementation, which modifications for JavaScript
 
 
@@ -11,20 +9,10 @@
 // < -0x8000
 // > 0x7FFF
 
-const GTEe = Object.freeze({
-   Rotation: 0,
-   Light: 1,
-   Color: 2,
-   Invalid: 3,
 
-   Translation: 0,
-   BackgroundColor: 1,
-   FarColor: 2,
-   Zero: 3
-});
+import {PS1_clock} from "./ps1";
 
-
-const UNR_TABLE = Object.freeze([
+const UNR_TABLE: StaticArray<u8> = [
     0xff, 0xfd, 0xfb, 0xf9, 0xf7, 0xf5, 0xf3, 0xf1,
     0xef, 0xee, 0xec, 0xea, 0xe8, 0xe6, 0xe4, 0xe3,
     0xe1, 0xdf, 0xdd, 0xdc, 0xda, 0xd8, 0xd6, 0xd5,
@@ -57,47 +45,61 @@ const UNR_TABLE = Object.freeze([
     0x0c, 0x0b, 0x0a, 0x0a, 0x09, 0x09, 0x08, 0x08,
     0x07, 0x07, 0x06, 0x06, 0x05, 0x05, 0x04, 0x04,
     0x03, 0x03, 0x02, 0x02, 0x01, 0x01, 0x00, 0x00,
-    0x00,
-]);
+    0x00
+];
 
-function GTEdivide(numerator, divisor) {
-    let shift = Math.clz32(divisor) - 16;
-    let n = numerator << shift;
-    let d = divisor << shift;
-    let rec = reciprocal(d);
+@inline
+function GTEdivide(numerator: u16, divisor: u16): u32 {
+    let shift = clz<u32>(<u32>divisor) - 16;
+    let n: u64 = <u64>numerator << shift;
+    let d: u64 = divisor << shift;
+    let rec: u64 = <u64>reciprocal(d);
     let res = (n * rec + 0x8000) >> 16;
     if (res <= 0x1FFFF)
-        return res;
+        return <u32>res;
     else
         return 0x1FFFF;
 }
 
-function reciprocal(d) {
-    let index = ((d & 0x7FFF) + 0x40) >>> 7;
-    let factor = (UNR_TABLE[index] & 0xFFFFFFFF) + 0x101;
-    d = (d | 0x8000) & 0xFFFFFFFF;
-    let tmp = ((d * -factor) + 0x80) >>> 8;
-    let r = ((factor * (0x20000 + tmp)) + 0x80) >>> 8;
+@inline
+function reciprocal(d: u16): u32 {
+    let index = ((d & 0x7FFF) + 0x40) >>>7;
+    let factor = <i32>UNR_TABLE[index] + 0x101;
+    d = <i32>(d | 0x8000);
+    let tmp = ((d * -factor) + 0x80) >> 8;
 
-    return r>>>0;
+    return ((factor * (0x20000 + tmp)) + 0x80) >> 8;
 }
 
-function saturate5s(v) {
+@inline
+function saturate5s(v: i16): u32 {
     if (v < 0) return 0;
     else if (v > 0x1f) return 0x1f;
-    return v & 0x1F;
+    return <u32>v & 0x1F;
+}
+
+enum Matrix {
+    Rotation = 0,
+    Light = 1,
+    Color = 2,
+    Invalid = 3,
+}
+
+enum ControlVector {
+   Translation = 0,
+   BackgroundColor = 1,
+   FarColor = 2,
+   Zero = 3
 }
 
 class GTECmdCfg {
-    constructor() {
-        this.shift = 0;
-        this.clamp_negative = 0;
-        this.amtrix = 0;
-        this.vector_mul = 0;
-        this.vector_add = 0;
-    }
+    shift: u32 = 0
+    clamp_negative: u32 = 0
+    matrix: Matrix = Matrix.Rotation
+    vector_mul: u32 = 0
+    vector_add: ControlVector = ControlVector.Translation
 
-    from_command(cmd) {
+    from_command(cmd: u32): void {
         this.shift = ((cmd & (1 << 19)) !== 0) ? 12 : 0;
         this.clamp_negative = +((cmd & (1 << 10)) !== 0)
         this.matrix = ((cmd >>> 17) & 3);
@@ -106,64 +108,103 @@ class GTECmdCfg {
     }
 }
 
+@inline
+function mtx(x: u32, y: u32, z: u32): u32 {
+    return (x*9) + (y*3) + z;
+}
+
 class PS1_GTE {
-    /**
-     * @param {PS1_clock} clock
-     */
-    constructor(clock) {
+    clock: PS1_clock
+    config: GTECmdCfg = new GTECmdCfg();
+    op_going: u32 = 0;
+    op_kind: u32 = 0; // GTE opcodes here
+    clock_start: u64 = 0; // Clock at time of instruction start
+    clock_end: u64 = 0; // Clock at time of instruction end
+    ofx: i32 = 0
+    ofy: i32 = 0
+    h: u16 = 0
+    dqa: i16 = 0
+    dqb: i32 = 0
+    zsf3: i16 = 0
+    zsf4: i16 = 0
+
+    flags: u32 = 0
+    mac: StaticArray<i32> = new StaticArray<i32>(4);
+    otz: u16 = 0
+    rgb: StaticArray<u8> = new StaticArray<u8>(4);
+    ir: StaticArray<i16> = new StaticArray<i16>(4);
+    z_fifo: StaticArray<u16> = new StaticArray<u16>(4);
+    lzcs: u32 = 0
+    lzcr: u8 = 0
+    reg_23: u32 = 0
+
+    // 3x3x3, i16
+    matrices: StaticArray<StaticArray<StaticArray<i16>>> = new StaticArray<StaticArray<StaticArray<i16>>>(3);
+    control_vectors: StaticArray<StaticArray<i32>> = new StaticArray<StaticArray<i32>>(4);
+    v: StaticArray<StaticArray<i16>> = new StaticArray<StaticArray<i32>>(4);
+
+    // 4x2
+    xy_fifo: StaticArray<StaticArray<i16>> = new StaticArray<StaticArray<i16>>(4);
+
+    // 3x4
+    rgb_fifo: StaticArray<StaticArray<u8>> = new StaticArray<StaticArray<u8>>(3);
+
+    constructor(clock: PS1_clock) {
         this.clock = clock;
+        for (let r: u32 = 0; r < 3; r++) {
+            this.matrices[r] = new StaticArray<StaticArray<i16>>(3);
+            for (let j: u32 = 0; j < 3; j++) {
+                this.matrices[r][j] = new StaticArray<i16>(3);
+                for (let c: u32 = 0; c < 3; c++) {
+                    this.matrices[r][j][c] = 0;
+                }
+            }
+        }
 
-        this.config = new GTECmdCfg();
-        this.op_going = 0;
-        this.op_kind = 0; // GTE opcodes here
-        this.clock_start = 0; // Clock at time of instruction start
-        this.clock_end = 0; // Clock at time of instruction end
+        for (let r: u32 = 0; r < 4; r++) {
+            this.control_vectors[r] = new StaticArray<i32>(3);
+            this.v[r] = new StaticArray<i16>(3);
+            this.xy_fifo[r] = new StaticArray<i16>(2);
+            for (let j: u32 = 0; j < 3; j++) {
+                this.control_vectors[r][j] = 0;
+                this.v[r][j] = 0;
+            }
+        }
 
-        this.ofx = this.ofy = this.h = this.dqa = this.dqb = this.zsf3 = this.zsf4 = 0;
-        this.matrices =
-            [[[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0], [0, 0, 0]], [[0, 0, 0], [0, 0, 0], [0, 0, 0]]]
-        this.control_vectors = [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
-        this.flags = 0;
-
-        this.v =  [[0, 0, 0], [0, 0, 0], [0, 0, 0], [0, 0, 0]];
-        this.mac = [0, 0, 0, 0];
-        this.otz = 0;
-        this.rgb = [0, 0, 0, 0];
-        this.ir = [0, 0, 0, 0];
-        this.xy_fifo = [[0, 0], [0, 0], [0, 0], [0, 0]];
-        this.z_fifo = [0, 0, 0, 0];
-        this.rgb_fifo = [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]];
-        this.lzcs = 0;
-        this.lzcr = 32;
-        this.reg_23 = 0;
+        for (let r: u32 = 0; r < 3; r++) {
+            this.rgb_fifo[r] = new StaticArray<u8>(4);
+            for (let j: u32 = 0; j < 4; j++) {
+                this.rgb_fifo[r][j] = 0;
+            }
+        }
     }
 
-    command(cmd) {
-        let opc = cmd & 0x3F;
+    command(cmd: u32): void {
+        let opc: u32 = cmd & 0x3F;
         this.config.from_command(cmd);
         this.flags = 0;
         switch(opc) {
-            case 0x01: this.cmd_RTPS(); break;
+            case 0x01: this.cmd_RTPS(this.config); break;
             case 0x06: this.cmd_NCLIP(); break;
-            case 0x0C: this.cmd_OP(); break;
-            case 0x10: this.cmd_DPCS(); break;
-            case 0x11: this.cmd_INTPL(); break;
-            case 0x12: this.cmd_MVMVA(); break;
-            case 0x13: this.cmd_NCDS(); break;
-            case 0x16: this.cmd_NCDT(); break;
-            case 0x1B: this.cmd_NCCS(); break;
-            case 0x1C: this.cmd_CC(); break;
-            case 0x1E: this.cmd_NCS(); break;
-            case 0x20: this.cmd_NCT(); break;
-            case 0x28: this.cmd_SQR(); break;
-            case 0x29: this.cmd_DCPL(); break;
-            case 0x2A: this.cmd_DPCT(); break;
+            case 0x0C: this.cmd_OP(this.config); break;
+            case 0x10: this.cmd_DPCS(this.config); break;
+            case 0x11: this.cmd_INTPL(this.config); break;
+            case 0x12: this.cmd_MVMVA(this.config); break;
+            case 0x13: this.cmd_NCDS(this.config); break;
+            case 0x16: this.cmd_NCDT(this.config); break;
+            case 0x1B: this.cmd_NCCS(this.config); break;
+            case 0x1C: this.cmd_CC(this.config); break;
+            case 0x1E: this.cmd_NCS(this.config); break;
+            case 0x20: this.cmd_NCT(this.config); break;
+            case 0x28: this.cmd_SQR(this.config); break;
+            case 0x29: this.cmd_DCPL(this.config); break;
+            case 0x2A: this.cmd_DPCT(this.config); break;
             case 0x2D: this.CMD_AVSZ3(); break;
             case 0x2E: this.cmd_AVSZ4(); break;
-            case 0x30: this.cmd_RTPT(); break;
-            case 0x3D: this.cmd_GPF(); break;
-            case 0x3E: this.cmd_GPL(); break;
-            case 0x3F: this.cmd_NCCT(); break;
+            case 0x30: this.cmd_RTPT(this.config); break;
+            case 0x3D: this.cmd_GPF(this.config); break;
+            case 0x3E: this.cmd_GPL(this.config); break;
+            case 0x3F: this.cmd_NCCT(this.config); break;
             default:
                 console.log('Unsupported GTE opcode', hex2(opc));
                 break;
@@ -172,184 +213,194 @@ class PS1_GTE {
         this.flags |= (+((this.flags & 0x7f87e000) !== 0)) << 31;
     }
 
-    write_reg(reg,val) {
+    write_reg(reg: u32, val: u32): void {
         switch(reg) {
             case 0:
-                this.v[0][0] = ((val & 0xFFFF) << 16) >> 16;
-                this.v[0][1] = (val & 0xFFFF0000) >> 16;
+                this.v[0][0] = <i16>val;
+                this.v[0][1] = <i16>(val >> 16);
                 break;
-            case 1: this.v[0][2] = ((val & 0xFFFF) << 16) >> 16; break;
+            case 1:
+                this.v[0][2] = <i16>val;
+                break;
             case 2:
-                this.v[1][0] = ((val & 0xFFFF) << 16) >> 16;
-                this.v[1][1] = (val & 0xFFFF0000) >> 16;
+                this.v[1][0] = <i16>val;
+                this.v[1][1] = <i16>(val >> 16);
                 break;
-            case 3: this.v[1][2] = ((val & 0xFFFF) << 16) >> 16; break;
+            case 3:
+                this.v[1][2] = <i16>val;
+                break;
             case 4:
-                this.v[2][0] = ((val & 0xFFFF) << 16) >> 16;
-                this.v[2][1] = (val & 0xFFFF0000) >> 16;
+                this.v[2][0] = <i16>val;
+                this.v[2][1] = <i16>(val >> 16);
                 break;
-            case 5: this.v[2][2] = ((val & 0xFFFF) << 16) >> 16; break;
+            case 5:
+                this.v[2][2] = <i16>val;
+                break;
             case 6:
-                this.rgb[0] = val & 0xFF;
-                this.rgb[1] = (val >>> 8) & 0xFF;
-                this.rgb[2] = (val >>> 16) & 0xFF;
+                this.rgb[0] = <u8>val;
+                this.rgb[1] = <u8>(val >> 8)
+                this.rgb[2] = <u8>(val >> 16)
+                this.rgb[3] = <u8>(val >> 24)
                 break;
-            case 7: this.otz = (val & 0xFFFF)>>>0; break;
-            case 8: this.ir[0] = (val & 0xFFFF)>>>0; break;
-            case 9: this.ir[1] = (val & 0xFFFF)>>>0; break;
-            case 10: this.ir[2] = (val & 0xFFFF)>>>0; break;
-            case 11: this.ir[3] = (val & 0xFFFF)>>>0; break;
+            case 7: this.otz = <u16>val; break;
+            case 8: this.ir[0] = <i16>val; break;
+            case 9: this.ir[1] = <i16>val; break;
+            case 10: this.ir[2] = <i16>val; break;
+            case 11: this.ir[3] = <i16>val; break;
             case 12:
-                this.xy_fifo[0][0] = ((val & 0xFFFF) << 16) >> 16;
-                this.xy_fifo[0][1] = (val & 0xFFFF0000) >> 16;
+                this.xy_fifo[0][0] = <i16>val;
+                this.xy_fifo[0][1] = <i16>(val >> 16);
                 break;
             case 13:
-                this.xy_fifo[1][0] = ((val & 0xFFFF) << 16) >> 16;
-                this.xy_fifo[1][1] = (val & 0xFFFF0000) >> 16;
+                this.xy_fifo[1][0] = <i16>val;
+                this.xy_fifo[1][1] = <i16>(val >> 16);
                 break;
             case 14:
-                this.xy_fifo[2][0] = this.xy_fifo[3][0] = ((val & 0xFFFF) << 16) >> 16;
-                this.xy_fifo[2][1] = this.xy_fifo[3][1] = (val & 0xFFFF0000) >> 16;
+                this.xy_fifo[2][0] = <i16>val;
+                this.xy_fifo[2][1] = <i16>(val >> 16);
                 break;
             case 15:
-                this.xy_fifo[3][0] = this.xy_fifo[2][0] = ((val & 0xFFFF) << 16) >> 16;
-                this.xy_fifo[3][1] = this.xy_fifo[2][1] = (val & 0xFFFF0000) >> 16;
+                this.xy_fifo[3][0] = this.xy_fifo[2][0] = <i16>val;
+                this.xy_fifo[3][1] = this.xy_fifo[2][1] = <i16>(val >> 16);
                 this.xy_fifo[0][0] = this.xy_fifo[1][0];
                 this.xy_fifo[0][1] = this.xy_fifo[1][1];
                 this.xy_fifo[1][0] = this.xy_fifo[2][0];
                 this.xy_fifo[1][1] = this.xy_fifo[2][1];
                 break;
-            case 16: this.z_fifo[0] = (val & 0xFFFF)>>>0; break;
-            case 17: this.z_fifo[1] = (val & 0xFFFF)>>>0; break;
-            case 18: this.z_fifo[2] = (val & 0xFFFF)>>>0; break;
-            case 19: this.z_fifo[3] = (val & 0xFFFF)>>>0; break;
+            case 16: this.z_fifo[0] = <u16>val; break;
+            case 17: this.z_fifo[1] = <u16>val; break;
+            case 18: this.z_fifo[2] = <u16>val; break;
+            case 19: this.z_fifo[3] = <u16>val; break;
             case 20:
-                this.rgb_fifo[0][0] = val & 0xFF;
-                this.rgb[0][1] = (val >>> 8) & 0xFF;
-                this.rgb[0][2] = (val >>> 16) & 0xFF;
+                this.rgb_fifo[0][0] = <u8>val;
+                this.rgb_fifo[0][1] = <u8>(val >> 8)
+                this.rgb_fifo[0][2] = <u8>(val >> 16)
+                this.rgb_fifo[0][3] = <u8>(val >> 24)
                 break;
             case 21:
-                this.rgb_fifo[1][0] = val & 0xFF;
-                this.rgb[1][1] = (val >>> 8) & 0xFF;
-                this.rgb[1][2] = (val >>> 16) & 0xFF;
+                this.rgb_fifo[1][0] = <u8>val;
+                this.rgb_fifo[1][1] = <u8>(val >> 8)
+                this.rgb_fifo[1][2] = <u8>(val >> 16)
+                this.rgb_fifo[1][3] = <u8>(val >> 24)
                 break;
             case 22:
-                this.rgb_fifo[2][0] = val & 0xFF;
-                this.rgb[2][1] = (val >>> 8) & 0xFF;
-                this.rgb[2][2] = (val >>> 16) & 0xFF;
+                this.rgb_fifo[2][0] = <u8>val;
+                this.rgb_fifo[2][1] = <u8>(val >> 8)
+                this.rgb_fifo[2][2] = <u8>(val >> 16)
+                this.rgb_fifo[2][3] = <u8>(val >> 24)
                 break;
             case 23: this.reg_23 = val; break;
-            case 24: this.mac[0] = val & 0xFFFFFFFF; break;
-            case 25: this.mac[1] = val & 0xFFFFFFFF; break;
-            case 26: this.mac[2] = val & 0xFFFFFFFF; break;
-            case 27: this.mac[3] = val & 0xFFFFFFFF; break;
+            case 24: this.mac[0] = <i32>val; break;
+            case 25: this.mac[1] = <i32>val; break;
+            case 26: this.mac[2] = <i32>val; break;
+            case 27: this.mac[3] = <i32>val; break;
             case 28:
-                this.ir[0] = (((val) & 0x1F) << 23) >> 16;
-                this.ir[1] = (((val >>> 5) & 0x1F) << 23) >> 16;
-                this.ir[2] = (((val >>> 10) & 0x1F) << 23) >> 16;
+                this.ir[0] = <i16>(((val) & 0x1F) << 7);
+                this.ir[1] = <i16>(((val >>> 5) & 0x1F) << 7);
+                this.ir[2] = <i16>(((val >>> 10) & 0x1F) << 7);
                 break;
             case 29:
                 break;
             case 30:
                 this.lzcs = val;
-                let tmp = ((val >>> 31) & 1) ? (val ^ 0xFFFFFFFF) : val;
-                this.lzcr = Math.clz32(tmp);
+                let tmp: u32 = ((val >>> 31) & 1) ? (val ^ 0xFFFFFFFF) : val;
+                this.lzcr = clz<u32>(tmp);
                 break;
             case 31:
                 console.log('Write to read-only GTE reg 31');
                 break;
             case 32: // 0
-                this.matrices[0][0][0] = ((val & 0xFFFF) << 16) >> 16;
-                this.matrices[0][0][1] = val >> 16;
+                this.matrices[0][0][0] = <i16>val;
+                this.matrices[0][0][1] = <i16>(val >> 16);
                 break;
             case 33: // 1
-                this.matrices[0][0][2] = ((val & 0xFFFF) << 16) >> 16;
-                this.matrices[0][1][0] = val >> 16;
+                this.matrices[0][0][2] = <i16>val;
+                this.matrices[0][1][0] = <i16>(val >> 16);
                 break;
             case 34: // 2
-                this.matrices[0][1][1] = ((val & 0xFFFF) << 16) >> 16;
-                this.matrices[0][1][2] = val >> 16;
+                this.matrices[0][1][1] = <i16>val;
+                this.matrices[0][1][2] = <i16>(val >> 16);
                 break;
             case 35: // 3
-                this.matrices[0][2][0] = ((val & 0xFFFF) << 16) >> 16;
-                this.matrices[0][2][1] = val >> 16;
+                this.matrices[0][2][0] = <i16>val;
+                this.matrices[0][2][1] = <i16>(val >> 16);
                 break;
             case 36: // 4
-                this.matrices[0][2][2] = ((val & 0xFFFF) << 16) >> 16;
+                this.matrices[0][2][2] = <i16>val;
                 break;
             case 37: // 5-7
             case 38:
             case 39:
-                this.v[0][reg - 37] = val & 0xFFFFFFFF;
+                this.v[0][reg - 37] = <i32>val;
                 break;
             case 40: // 8
-                this.matrices[1][0][0] = ((val & 0xFFFF) << 16) >> 16;
-                this.matrices[1][0][1] = val >> 16;
+                this.matrices[1][0][0] = <i16>val;
+                this.matrices[1][0][1] = <i16>(val >> 16);
                 break;
             case 41: // 9
-                this.matrices[1][0][2] = ((val & 0xFFFF) << 16) >> 16;
-                this.matrices[1][1][0] = val >> 16;
+                this.matrices[1][0][2] = <i16>val;
+                this.matrices[1][1][0] = <i16>(val >> 16);
                 break;
             case 42: // 10
-                this.matrices[1][1][1] = ((val & 0xFFFF) << 16) >> 16;
-                this.matrices[1][1][2] = val >> 16;
+                this.matrices[1][1][1] = <i16>val;
+                this.matrices[1][1][2] = <i16>(val >> 16);
                 break;
             case 43: // 11
-                this.matrices[1][2][0] = ((val & 0xFFFF) << 16) >> 16;
-                this.matrices[1][2][1] = val >> 16;
+                this.matrices[1][2][0] = <i16>val;
+                this.matrices[1][2][1] = <i16>(val >> 16);
                 break;
             case 44: // 12
-                this.matrices[1][2][2] = ((val & 0xFFFF) << 16) >> 16;
+                this.matrices[1][2][2] = <i16>val;
                 break;
             case 45: // 13-15
             case 46:
             case 47:
-                this.v[1][reg - 45] = val & 0xFFFFFFFF;
+                this.v[1][reg - 45] = <i32>val;
                 break;
             case 48: // 16
-                this.matrices[2][0][0] = ((val & 0xFFFF) << 16) >> 16;
-                this.matrices[2][0][1] = val >> 16;
+                this.matrices[2][0][0] = <i16>val;
+                this.matrices[2][0][1] = <i16>(val >> 16);
                 break;
             case 49: // 17
-                this.matrices[2][0][2] = ((val & 0xFFFF) << 16) >> 16;
-                this.matrices[2][1][0] = val >> 16;
+                this.matrices[2][0][2] = <i16>val;
+                this.matrices[2][1][0] = <i16>(val >> 16);
                 break;
             case 50: // 18
-                this.matrices[2][1][1] = ((val & 0xFFFF) << 16) >> 16;
-                this.matrices[2][1][2] = val >> 16;
+                this.matrices[2][1][1] = <i16>val;
+                this.matrices[2][1][2] = <i16>(val >> 16);
                 break;
             case 51: // 19
-                this.matrices[2][2][0] = ((val & 0xFFFF) << 16) >> 16;
-                this.matrices[2][2][1] = val >> 16;
+                this.matrices[2][2][0] = <i16>val;
+                this.matrices[2][2][1] = <i16>(val >> 16);
                 break;
             case 52: // 20
-                this.matrices[2][2][2] = ((val & 0xFFFF) << 16) >> 16;
+                this.matrices[2][2][2] = <i16>val;
                 break;
             case 53: // 21-23
             case 54:
             case 55:
-                this.v[2][reg - 53] = val & 0xFFFFFFFF;
+                this.v[2][reg - 53] = <i32>val;
                 break;
             case 56: // 24
-                this.ofx = val & 0xFFFFFFFF;
+                this.ofx = <i32>val;
                 break;
             case 57: // 25
-                this.ofy = val & 0xFFFFFFFF;
+                this.ofy = <i32>val;
                 break;
             case 58: // 26
-                this.h = (val & 0xFFFF)>>>0;
+                this.h = <u16>val;
                 break;
             case 59: // 27
-                this.dqa = ((val & 0xFFFF) << 16) >> 16;
+                this.dqa = <i16>val;
                 break;
             case 60: // 28
-                this.dqb = val & 0xFFFFFFFF;
+                this.dqb = <i32>val;
                 break;
             case 61: // 29
-                this.zsf3 = ((val & 0xFFFF) << 16) >> 16;
+                this.zsf3 = <i16>val;
                 break;
             case 62: // 30
-                this.zsf4 = ((val & 0xFFFF) << 16) >> 16;
+                this.zsf4 = <i16>val;
                 break;
             case 63: // 31
                 this.flags = val & 0x7FFFF00;
@@ -358,77 +409,78 @@ class PS1_GTE {
         }
     }
 
-    read_reg(reg) {
+    read_reg(reg: u32): u32 {
         switch(reg) {
-            case 0: return this.v[0][0] | (this.v[0][1] << 16);
-            case 1: return this.v[0][2];
-            case 2: return this.v[1][0] | (this.v[1][1] << 16);
-            case 3: return this.v[1][2];
-            case 4: return this.v[2][0] | (this.v[2][1] << 16);
-            case 5: return this.v[2][2];
-            case 6: return this.rgb[0] | (this.rgb[1] << 8) | (this.rgb[2] << 16) | (this.rgb[3] << 24);
-            case 7: return this.otz;
-            case 8: return this.ir[0];
-            case 9: return this.ir[1];
-            case 10: return this.ir[2];
-            case 11: return this.ir[3];
-            case 12: return this.xy_fifo[0][0] | (this.xy_fifo[0][1] << 16);
-            case 13: return this.xy_fifo[1][0] | (this.xy_fifo[1][1] << 16);
-            case 14: return this.xy_fifo[2][0] | (this.xy_fifo[2][1] << 16);
-            case 15: return this.xy_fifo[2][0] | (this.xy_fifo[3][1] << 16);
-            case 16: return this.z_fifo[0];
-            case 17: return this.z_fifo[1];
-            case 18: return this.z_fifo[2];
-            case 19: return this.z_fifo[3];
-            case 20: return this.rgb_fifo[0][0] | (this.rgb_fifo[0][1] << 16);
-            case 21: return this.rgb_fifo[1][0] | (this.rgb_fifo[1][1] << 16);
-            case 22: return this.rgb_fifo[2][0] | (this.rgb_fifo[2][1] << 16);
+            case 0: return (<u32><u16>this.v[0][0]) | (<u32><u16>(this.v[0][1] << 16));
+            case 1: return <u32><u16>this.v[0][2];
+            case 2: return (<u32><u16>this.v[1][0]) | (<u32><u16>(this.v[1][1] << 16));
+            case 3: return <u32><u16>this.v[1][2];
+            case 4: return (<u32><u16>this.v[2][0]) | (<u32><u16>(this.v[2][1] << 16));
+            case 5: return <u32><u16>this.v[2][2];
+            case 6: return <u32>this.rgb[0] | (<u32>this.rgb[1] << 8) | (<u32>this.rgb[2] << 16) | (<u32>this.rgb[3] << 24);
+            case 7: return <u32>this.otz;
+            case 8: return <u32>this.ir[0];
+            case 9: return <u32>this.ir[1];
+            case 10: return <u32>this.ir[2];
+            case 11: return <u32>this.ir[3];
+            case 12: return <u32>this.xy_fifo[0][0] | (<u32>this.xy_fifo[0][1] << 16);
+            case 13: return <u32>this.xy_fifo[1][0] | (<u32>this.xy_fifo[1][1] << 16);
+            case 14: return <u32>this.xy_fifo[2][0] | (<u32>this.xy_fifo[2][1] << 16);
+            case 15: return <u32>this.xy_fifo[2][0] | (<u32>this.xy_fifo[3][1] << 16);
+            case 16: return <u32>this.z_fifo[0];
+            case 17: return <u32>this.z_fifo[1];
+            case 18: return <u32>this.z_fifo[2];
+            case 19: return <u32>this.z_fifo[3];
+            case 20: return <u32>this.rgb_fifo[0][0] | (<u32>this.rgb_fifo[0][1] << 16);
+            case 21: return <u32>this.rgb_fifo[1][0] | (<u32>this.rgb_fifo[1][1] << 16);
+            case 22: return <u32>this.rgb_fifo[2][0] | (<u32>this.rgb_fifo[2][1] << 16);
             case 23: return this.reg_23;
-            case 24: return this.mac[0];
-            case 25: return this.mac[1];
-            case 26: return this.mac[2];
-            case 27: return this.mac[3];
+            case 24: return <u32>this.mac[0];
+            case 25: return <u32>this.mac[1];
+            case 26: return <u32>this.mac[2];
+            case 27: return <u32>this.mac[3];
             case 28:
             case 29:
                 return saturate5s(this.ir[1] >>> 7) | (saturate5s(this.ir[2] >>> 7) << 5) | (saturate5s(this.ir[3] >>> 7) << 10);
             case 30: return this.lzcs;
-            case 31: return this.lzcr;
-            case 32: return this.matrices[0][0][0] | (this.matrices[0][0][1] << 16);
-            case 33: return this.matrices[0][0][2] | (this.matrices[0][1][0] << 16);
-            case 34: return this.matrices[0][1][1] | (this.matrices[0][1][2] << 16);
-            case 35: return this.matrices[0][2][0] | (this.matrices[0][2][1] << 16);
-            case 36: return this.matrices[0][2][2];
+            case 31: return <u32>this.lzcr;
+            case 32: return (<u32><u16>this.matrices[0][0][0]) | ((<u32><u16>this.matrices[0][0][1]) << 16);
+            case 33: return (<u32><u16>this.matrices[0][0][2]) | ((<u32><u16>this.matrices[0][1][0]) << 16);
+            case 34: return (<u32><u16>this.matrices[0][1][1]) | ((<u32><u16>this.matrices[0][1][2]) << 16);
+            case 35: return (<u32><u16>this.matrices[0][2][0]) | ((<u32><u16>this.matrices[0][2][1]) << 16);
+            case 36: return <u32><u16>this.matrices[0][2][2];
             case 37:
             case 38:
             case 39:
-                return this.control_vectors[0][reg - 37];
-            case 40: return this.matrices[1][0][0] | (this.matrices[1][0][1] << 16);
-            case 41: return this.matrices[1][0][2] | (this.matrices[1][1][0] << 16);
-            case 42: return this.matrices[1][1][1] | (this.matrices[1][1][2] << 16);
-            case 43: return this.matrices[1][2][0] | (this.matrices[1][2][1] << 16);
-            case 44: return this.matrices[1][2][2];
+                return <u32>this.control_vectors[0][reg - 37];
+            case 40: return (<u32><u16>this.matrices[1][0][0]) | ((<u32><u16>this.matrices[1][0][1]) << 16);
+            case 41: return (<u32><u16>this.matrices[1][0][2]) | ((<u32><u16>this.matrices[1][1][0]) << 16);
+            case 42: return (<u32><u16>this.matrices[1][1][1]) | ((<u32><u16>this.matrices[1][1][2]) << 16);
+            case 43: return (<u32><u16>this.matrices[1][2][0]) | ((<u32><u16>this.matrices[1][2][1]) << 16);
+            case 44: return <u32><u16>this.matrices[1][2][2];
             case 45:
             case 46:
             case 47:
-                return this.control_vectors[1][reg - 45];
-            case 48: return this.matrices[2][0][0] | (this.matrices[2][0][1] << 16);
-            case 49: return this.matrices[2][0][2] | (this.matrices[2][1][0] << 16);
-            case 50: return this.matrices[2][1][1] | (this.matrices[2][1][2] << 16);
-            case 51: return this.matrices[2][2][0] | (this.matrices[2][2][1] << 16);
-            case 52: return this.matrices[2][2][2];
+                return <u32>this.control_vectors[1][reg - 45];
+            case 48: return (<u32><u16>this.matrices[2][0][0]) | ((<u32><u16>this.matrices[2][0][1]) << 16);
+            case 49: return (<u32><u16>this.matrices[2][0][2]) | ((<u32><u16>this.matrices[2][1][0]) << 16);
+            case 50: return (<u32><u16>this.matrices[2][1][1]) | ((<u32><u16>this.matrices[2][1][2]) << 16);
+            case 51: return (<u32><u16>this.matrices[2][2][0]) | ((<u32><u16>this.matrices[2][2][1]) << 16);
+            case 52: return <u32><u16>this.matrices[2][2][2];
             case 53:
             case 54:
             case 55:
-                return this.control_vectors[2][reg - 53];
-            case 56: return this.ofx;
-            case 57: return this.ofy;
-            case 58: return (this.h << 16) >> 16; // H reads back as signed even though unsigned
-            case 59: return this.dqa;
-            case 60: return this.dqb;
-            case 61: return this.zsf3;
-            case 62: return this.zsf4;
+                return <u32>this.control_vectors[2][reg - 53];
+            case 56: return <u32>this.ofx;
+            case 57: return <u32>this.ofy;
+            case 58: return <u32>(<i16>this.h << 16); // H reads back as signed even though unsigned
+            case 59: return <u32>this.dqa;
+            case 60: return <u32>this.dqb;
+            case 61: return <u32>this.zsf3;
+            case 62: return <u32>this.zsf4;
             case 63: return this.flags;
         }
+        unreachable();
     }
 
     do_RTP(vector_index) {
@@ -507,17 +559,17 @@ class PS1_GTE {
 
         this.xy_fifo[3][0] = this.i32_to_i11_saturate(0, screen_x);
         this.xy_fifo[3][1] = this.i32_to_i11_saturate(1, screen_y);
-        
+
         this.xy_fifo[0][0] = this.xy_fifo[1][0];
         this.xy_fifo[0][1] = this.xy_fifo[1][1];
         this.xy_fifo[1][0] = this.xy_fifo[2][0];
         this.xy_fifo[1][1] = this.xy_fifo[2][1];
         this.xy_fifo[2][0] = this.xy_fifo[3][0];
         this.xy_fifo[2][1] = this.xy_fifo[3][1];
-        
+
         return projection_factor;
     }
-    
+
     check_mac_overflow(val) {
         if (val < -0x80000000) {
             this.set_flag(15);

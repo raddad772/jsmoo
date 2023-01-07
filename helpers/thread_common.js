@@ -89,8 +89,8 @@ const PS1_STR = 'ps1';
 //const DEFAULT_SYSTEM = GBC_STR;
 //const DEFAULT_SYSTEM = GG_STR;
 //const DEFAULT_SYSTEM = NES_STR;
-//const DEFAULT_SYSTEM = NES_AS_STR;
-const DEFAULT_SYSTEM = PS1_STR;
+const DEFAULT_SYSTEM = NES_AS_STR;
+//const DEFAULT_SYSTEM = PS1_STR;
 
 
 const mutex_unlocked = 0;
