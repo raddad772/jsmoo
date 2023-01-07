@@ -29,6 +29,12 @@ export function hex6(val: u32): string {
     return outstr.toUpperCase();
 }
 
+export function hex8(val: u32): string {
+    let outstr = val.toString(16);
+    while(outstr.length < 8) outstr = '0' + outstr;
+    return outstr.toUpperCase();
+}
+
 export function hex0x2(val: u32): String {
     return '0x' + hex2(val);
 }
