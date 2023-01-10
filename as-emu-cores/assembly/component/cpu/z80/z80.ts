@@ -215,7 +215,7 @@ export class z80_t {
         this.regs.IRQ_vec = null;
 
         this.regs.IR = Z80_S_RESET;
-        this.current_instruction = Z80_fetch_decoded(this.regs.IR, 0x00);
+        //this.current_instruction = Z80_fetch_decoded(this.regs.IR, 0x00);
         this.regs.TCU = 0;
     }
 
@@ -245,7 +245,7 @@ export class z80_t {
 
     set_instruction(to: u32): void {
         this.regs.IR = to;
-        this.current_instruction = Z80_fetch_decoded(this.regs.IR, this.regs.prefix);
+        //this.current_instruction = Z80_fetch_decoded(this.regs.IR, this.regs.prefix);
         this.prefix_was = this.regs.prefix;
         this.regs.TCU = 0;
         this.regs.prefix = 0;

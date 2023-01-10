@@ -1,6 +1,46 @@
 "use strict";
 
 import {R3000} from "./r3000";
+import {
+    R3000_fADD,
+    R3000_fADDI,
+    R3000_fADDIU,
+    R3000_fADDU,
+    R3000_fAND, R3000_fANDI,
+    R3000_fBcondZ,
+    R3000_fBEQ,
+    R3000_fBGTZ,
+    R3000_fBLEZ,
+    R3000_fBNE,
+    R3000_fBREAK, R3000_fCOP,
+    R3000_fDIV,
+    R3000_fDIVU,
+    R3000_fJ,
+    R3000_fJAL,
+    R3000_fJALR,
+    R3000_fJR, R3000_fLB, R3000_fLBU, R3000_fLH, R3000_fLHU, R3000_fLUI, R3000_fLW, R3000_fLWC, R3000_fLWL, R3000_fLWR,
+    R3000_fMFHI,
+    R3000_fMFLO,
+    R3000_fMTHI,
+    R3000_fMTLO,
+    R3000_fMULT,
+    R3000_fMULTU,
+    R3000_fNA,
+    R3000_fNOR,
+    R3000_fOR, R3000_fORI, R3000_fSB, R3000_fSH,
+    R3000_fSLL,
+    R3000_fSLLV,
+    R3000_fSLT, R3000_fSLTI, R3000_fSLTIU,
+    R3000_fSLTU,
+    R3000_fSRA,
+    R3000_fSRAV,
+    R3000_fSRL,
+    R3000_fSRLV,
+    R3000_fSUB,
+    R3000_fSUBU, R3000_fSW, R3000_fSWC, R3000_fSWL, R3000_fSWR,
+    R3000_fSYSCALL,
+    R3000_fXOR, R3000_fXORI
+} from "./r3000_instructions";
 
 const R3000_MNs = [
     'SPECIAL', 'BcondZ', 'J', 'JAL', 'BEQ', 'BNE', 'BLEZ', 'BGTZ', 'ADDI', 'ADDIU', 'SLTI',
@@ -57,35 +97,16 @@ enum R3000_MN {
     RFE = 75
 };
 
-const R3000_MN_R = Object.freeze({
-    0: 'SPECIAL', 1: 'BcondZ', 2: 'J', 3: 'JAL', 4: 'BEQ',
-    5: 'BNE', 6: 'BLEZ', 7: 'BGTZ', 8: 'ADDI', 9: 'ADDIU',
-    10: 'SLTI', 11: 'SLTIU', 12: 'ANDI', 13: 'ORI', 14: 'XORI',
-    15: 'LUI', 16: 'COP0', 17: 'COP1', 18: 'COP2', 19: 'COP3',
-    20: 'LB', 21: 'LH', 22: 'LWL', 23: 'LW', 24: 'LBU',
-    25: 'LHU', 26: 'LWR', 27: 'SB', 28: 'SH', 29: 'SWL',
-    30: 'SW', 31: 'SWR', 32: 'SWC0', 33: 'SWC1', 34: 'SWC2',
-    35: 'SWC3', 36: 'SLL', 37: 'SRL', 38: 'SRA', 39: 'SLLV',
-    40: 'SRLV', 41: 'SRAV', 42: 'JR', 43: 'JALR', 44: 'SYSCALL',
-    45: 'BREAK', 46: 'MFHI', 47: 'MTHI', 48: 'MFLO', 49: 'MTLO',
-    50: 'MULT', 51: 'MULTU', 52: 'DIV', 53: 'DIVU', 54: 'ADD',
-    55: 'ADDU', 56: 'SUB', 57: 'SUBU', 58: 'AND', 59: 'OR',
-    60: 'XOR', 61: 'NOR', 62: 'SLT', 63: 'SLTU', 64: 'NA',
-    65: 'LWCx', 66: 'SWCx', 67: 'COPx', 68: 'MFC', 69: 'CFC',
-    70: 'MTC', 71: 'CTC', 72: 'BCF', 73: 'BCT', 74: 'COPimm',
-    75: 'RFE',
-});
-
 export class R3000_opcode {
     opcode: u32
-    mnemonic: string,
+    mnemonic: R3000_MN
     func: (opcode: u32, op: R3000_opcode, core: R3000) => void;
-    arg: i32;
+    arg: i32|null;
     constructor(
         opcode: u32,
-        mnemonic: string,
+        mnemonic: R3000_MN,
         func: (opcode: u32, op: R3000_opcode, core: R3000) => void,
-        arg: i32)
+        arg: i32|null)
     {
         this.opcode = opcode;
         this.mnemonic = mnemonic;
@@ -99,7 +120,7 @@ export class R3000_opcode {
 export function R3000_generate_opcodes(): StaticArray<R3000_opcode> {
     let R3000_table: StaticArray<R3000_opcode> = new StaticArray<R3000_opcode>(0x7F);
     // Decode bits 31...26
-    for (let op1 = 0; op1 < 0x3F; op1++) {
+    for (let op1: u32 = 0; op1 < 0x3F; op1++) {
 /*
  00h=SPECIAL 08h=ADDI  10h=COP0 18h=N/A   20h=LB   28h=SB   30h=LWC0 38h=SWC0
   01h=BcondZ  09h=ADDIU 11h=COP1 19h=N/A   21h=LH   29h=SH   31h=LWC1 39h=SWC1
@@ -112,7 +133,7 @@ export function R3000_generate_opcodes(): StaticArray<R3000_opcode> {
  */
         let o = R3000_fNA;
         let m = R3000_MN.NA;
-        let a = null;
+        let a: i32|null = null;
         switch(op1) {
             case 0x00: // SPECIAL
                 for (let op2 = 0; op2 < 0x3F; op2++) {
