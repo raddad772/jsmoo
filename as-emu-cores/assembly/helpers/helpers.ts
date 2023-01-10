@@ -20,6 +20,7 @@ export function mksigned16h(w: u32): string {
      return (what < 0 ? '-' : '+') + o + 'h';
 }
 
+// @ts-ignore
 @inline
 export function mksigned16(what: u32): i32 {
      return what >= 0x8000 ? -(0x10000 - what) : what;

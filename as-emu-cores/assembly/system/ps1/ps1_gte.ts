@@ -10,8 +10,8 @@
 // > 0x7FFF
 
 
-import {PS1_clock} from "./ps1";
 import {hex2} from "../../helpers/helpers";
+import {PS1_clock} from "./ps1_misc";
 
 const UNR_TABLE: StaticArray<u8> = [
     0xff, 0xfd, 0xfb, 0xf9, 0xf7, 0xf5, 0xf3, 0xf1,
