@@ -422,7 +422,7 @@ export class PS1_mem {
 
         while (copies > 0) {
             let cur_addr = addr & 0x1FFFFC;
-            let src_word;
+            let src_word: u32 = 0;
             switch(ch.direction) {
                 case DMAe.from_ram:
                     src_word = this.CPU_read(cur_addr, MT.u32, 0);
@@ -460,7 +460,7 @@ export class PS1_mem {
                             src_word = 0;
                             break;
                     }
-                    this.CPU_write(cur_addr, MT.u32, src_word);
+                    this.CPU_write(cur_addr, MT.u32, src_word!);
                     break;
             }
             addr = ((addr + step) & 0xFFFFFFFF) >>> 0;
@@ -910,7 +910,7 @@ class u32_dual_return {
     }
 }
 
-function u32_multiply(a: u32, b: u32) {
+function u32_multiply(a: u32, b: u32): u32_dual_return {
     let ret = new u32_dual_return();
     let c = <u64>a
     let d = <u64>b
@@ -920,45 +920,34 @@ function u32_multiply(a: u32, b: u32) {
     return ret;
 }
 
-function i32_multiply(a: i32, b: i32) {
+function i32_multiply(a: u32, b: u32): u32_dual_return {
     let ret = new u32_dual_return();
-    let c = BigInt(a & 0xFFFFFFFF);
-    let d = BigInt(b & 0xFFFFFFFF);
+    let c: i64 = ((<i64>a) << 32) >> 32;
+    let d: i64 = ((<i64>b) << 32) >> 32;
     let e = c * d;
-    let hi = (e >> BigInt(32)) & BigInt(0xFFFFFFFF);
-    let lo = e & BigInt(0xFFFFFFFF);
-    ret.hi = Number(hi)
-    ret.lo = Number(lo);
+    ret.hi = <u32>(e >> 32);
+    ret.lo = <u32>e;
     return ret;
 }
 
-
-function i32_divide(a, b)
+function i32_divide(a: u32, b: u32): u32_dual_return
 {
     let ret = new u32_dual_return();
-    let c = a & 0xFFFFFFFF;
-    let d = b & 0xFFFFFFFF;
+    let c: i32 = <i32>a;
+    let d: i32 = <i32>b;
     ret.lo = (c / d) & 0xFFFFFFFF
     ret.hi = c % d;
     return ret;
 }
 
-function u32_divide(a, b) {
+function u32_divide(a: u32, b: u32): u32_dual_return {
     let ret = new u32_dual_return();
-    let c = a >>> 0;
-    let d = b >>> 0;
-    ret.lo = (c / d) >>> 0;
+    let c = a
+    let d = b
+    ret.lo = (c / d);
     ret.hi = c % d;
     return ret;
 }
-
-function mtest() {
-    let a = -1;
-    let b = 6;
-    let r = i32_multiply(a, b);
-    console.log('MULTIPLY', hex4(a), 'by', hex4(b) + '.', hex4(r.hi), hex4(r.lo))
-}
-//mtest()
 
 export class R3000_multiplier_t {
     clock: PS1_clock
@@ -1006,13 +995,12 @@ export class R3000_multiplier_t {
             case 3: // unsigned divide
                 ret = u32_divide(this.op1, this.op2);
                 break;
+            default:
+                unreachable();
         }
-        this.HI = ret.hi;
-        this.LO = ret.lo;
+        this.hi = ret.hi;
+        this.hi = ret.lo;
 
         this.op_going = 0;
     }
 }
-
-
-

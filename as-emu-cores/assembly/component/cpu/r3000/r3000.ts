@@ -322,7 +322,7 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
         }
     }
 
-    COP_read_reg(COP: u32, num: u32, val: u32): u32 {
+    COP_read_reg(COP: u32, num: u32): u32 {
         switch(COP) {
             case 0:
                 return this.regs.COP0[num];

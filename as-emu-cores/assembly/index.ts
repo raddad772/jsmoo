@@ -15,4 +15,5 @@ export {
     gp_get_specs,
     gp_get_input_buffer,
     gp_get_framevars,
+    gp_play, gp_pause, gp_stop, gp_get_mt
 } from "./glue/global_player";

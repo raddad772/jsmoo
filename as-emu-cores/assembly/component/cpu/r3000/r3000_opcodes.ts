@@ -38,24 +38,24 @@ function R3000_MN_gen() {
 
 //console.log(R3000_MN_gen());
 
-const R3000_MN = Object.freeze({
-    SPECIAL: 0, BcondZ: 1, J: 2, JAL: 3, BEQ: 4,
-    BNE: 5, BLEZ: 6, BGTZ: 7, ADDI: 8, ADDIU: 9,
-    SLTI: 10, SLTIU: 11, ANDI: 12, ORI: 13, XORI: 14,
-    LUI: 15, COP0: 16, COP1: 17, COP2: 18, COP3: 19,
-    LB: 20, LH: 21, LWL: 22, LW: 23, LBU: 24,
-    LHU: 25, LWR: 26, SB: 27, SH: 28, SWL: 29,
-    SW: 30, SWR: 31, SWC0: 32, SWC1: 33, SWC2: 34,
-    SWC3: 35, SLL: 36, SRL: 37, SRA: 38, SLLV: 39,
-    SRLV: 40, SRAV: 41, JR: 42, JALR: 43, SYSCALL: 44,
-    BREAK: 45, MFHI: 46, MTHI: 47, MFLO: 48, MTLO: 49,
-    MULT: 50, MULTU: 51, DIV: 52, DIVU: 53, ADD: 54,
-    ADDU: 55, SUB: 56, SUBU: 57, AND: 58, OR: 59,
-    XOR: 60, NOR: 61, SLT: 62, SLTU: 63, NA: 64,
-    LWCx: 65, SWCx: 66, COPx: 67, MFC: 68, CFC: 69,
-    MTC: 70, CTC: 71, BCF: 72, BCT: 73, COPimm: 74,
-    RFE: 75
-});
+enum R3000_MN {
+    SPECIAL = 0, BcondZ = 1, J = 2, JAL = 3, BEQ = 4,
+    BNE = 5, BLEZ = 6, BGTZ = 7, ADDI = 8, ADDIU = 9,
+    SLTI = 10, SLTIU = 11, ANDI = 12, ORI = 13, XORI = 14,
+    LUI = 15, COP0 = 16, COP1 = 17, COP2 = 18, COP3 = 19,
+    LB = 20, LH = 21, LWL = 22, LW = 23, LBU = 24,
+    LHU = 25, LWR = 26, SB = 27, SH = 28, SWL = 29,
+    SW = 30, SWR = 31, SWC0 = 32, SWC1 = 33, SWC2 = 34,
+    SWC3 = 35, SLL = 36, SRL = 37, SRA = 38, SLLV = 39,
+    SRLV = 40, SRAV = 41, JR = 42, JALR = 43, SYSCALL = 44,
+    BREAK = 45, MFHI = 46, MTHI = 47, MFLO = 48, MTLO = 49,
+    MULT = 50, MULTU = 51, DIV = 52, DIVU = 53, ADD = 54,
+    ADDU = 55, SUB = 56, SUBU = 57, AND = 58, OR = 59,
+    XOR = 60, NOR = 61, SLT = 62, SLTU = 63, NA = 64,
+    LWCx = 65, SWCx = 66, COPx = 67, MFC = 68, CFC = 69,
+    MTC = 70, CTC = 71, BCF = 72, BCT = 73, COPimm = 74,
+    RFE = 75
+};
 
 const R3000_MN_R = Object.freeze({
     0: 'SPECIAL', 1: 'BcondZ', 2: 'J', 3: 'JAL', 4: 'BEQ',
