@@ -7,15 +7,35 @@ export function mksigned13(what: u32): i32 {
     return what >= 0x1000 ? -(0x2000 - what) : what;
 }
 
+export function mksigned16h4(w: u32): string {
+     let what: i32 = w >= 0x8000 ? -(0x10000 - <i32>w) : <i32>w;
+     let o = hex5(Math.abs(what * 4));
+     return (what < 0 ? '-' : '+') + o + 'h';
+}
+
+
+export function mksigned16h(w: u32): string {
+     let what: i32 = w >= 0x8000 ? -(0x10000 - <i32>w) : <i32>w;
+     let o: string = hex4(Math.abs(w));
+     return (what < 0 ? '-' : '+') + o + 'h';
+}
+
 export function mksigned16(what: u32): i32 {
      return what >= 0x8000 ? -(0x10000 - what) : what;
 }
 
 export function hex2(val: u32): string {
-    let outstr: String = val.toString(16);
-    if (outstr.length == 1) outstr = '0' + outstr;
+    let outstr = val.toString(16);
+    while(outstr.length < 2) outstr = '0' + outstr;
     return outstr.toUpperCase();
 }
+
+export function hex5(val: u32): string {
+    let outstr = val.toString(16);
+    while(outstr.length < 5) outstr = '0' + outstr;
+    return outstr.toUpperCase();
+}
+
 
 export function hex4(val: u32): string {
     let outstr = val.toString(16);

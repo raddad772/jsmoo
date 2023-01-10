@@ -50,6 +50,13 @@ export class machine_description {
     keymap: Array<input_map_keypoint> = new Array<input_map_keypoint>();
 }
 
+export class console_mt_struct {
+    vram_ptr: usize = 0
+    gp0_ptr: usize = 0
+    gp1_ptr: usize = 0
+    mmio_ptr: usize = 0
+}
+
 export interface systemEmulator {
     //serialize(): funcref,
     //deserialize()
@@ -58,11 +65,17 @@ export interface systemEmulator {
     finish_scanline(): u32;
     step_master(cycles: u32): u32;
     reset(): void;
-    load_ROM(what: usize, sz: u32): void;
+    load_ROM(name: string, what: usize, sz: u32): void;
     load_BIOS(what: usize, sz: u32): void;
     killall(): void;
     map_inputs(bufptr: usize): void;
     get_framevars(): framevars_t;
+
+    play(): void;
+    pause(): void;
+    stop(): void;
+
+    get_mt_struct(): console_mt_struct;
 }
 
 export interface systemEmulatorStandardClock {

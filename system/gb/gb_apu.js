@@ -62,7 +62,7 @@ class GB_squarewave1 {
         this.freq_timer = (2048 - this.freq_timer_reload);
         this.env_period = this.env_freq;
         this.vol = this.env_vol;
-        console.log('START ME 1!', this.enable, this.freq_timer, this.env_vol, this.length);
+        //console.log('START ME 1!', this.enable, this.freq_timer, this.env_vol, this.length);
 
         if (this.length === 0) {
             this.length = 64;

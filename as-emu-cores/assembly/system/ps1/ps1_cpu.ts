@@ -1,7 +1,10 @@
-"use strict";
+import {R3000} from "../../component/cpu/r3000/r3000";
+import {PS1_mem} from "./ps1_mem";
 
-class PS1_CPU {
-    constructor(clock, bus, mem) {
+export class PS1_CPU {
+    core: R3000
+
+    constructor(mem: PS1_mem) {
         this.core = new R3000(mem);
     }
 

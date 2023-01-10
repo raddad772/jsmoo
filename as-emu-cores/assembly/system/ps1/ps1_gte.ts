@@ -11,6 +11,7 @@
 
 
 import {PS1_clock} from "./ps1";
+import {hex2} from "../../helpers/helpers";
 
 const UNR_TABLE: StaticArray<u8> = [
     0xff, 0xfd, 0xfb, 0xf9, 0xf7, 0xf5, 0xf3, 0xf1,
@@ -48,6 +49,7 @@ const UNR_TABLE: StaticArray<u8> = [
     0x00
 ];
 
+//@ts-ignore
 @inline
 function GTEdivide(numerator: u16, divisor: u16): u32 {
     let shift = clz<u32>(<u32>divisor) - 16;
@@ -61,6 +63,7 @@ function GTEdivide(numerator: u16, divisor: u16): u32 {
         return 0x1FFFF;
 }
 
+//@ts-ignore
 @inline
 function reciprocal(d: u16): u32 {
     let index = ((d & 0x7FFF) + 0x40) >>>7;
@@ -71,6 +74,7 @@ function reciprocal(d: u16): u32 {
     return ((factor * (0x20000 + tmp)) + 0x80) >> 8;
 }
 
+//@ts-ignore
 @inline
 function saturate5s(v: i16): u32 {
     if (v < 0) return 0;
@@ -108,14 +112,16 @@ class GTECmdCfg {
     }
 }
 
+//@ts-ignore
 @inline
 function mtx(x: u32, y: u32, z: u32): u32 {
     return (x*9) + (y*3) + z;
 }
 
-class PS1_GTE {
+export class PS1_GTE {
     clock: PS1_clock
     config: GTECmdCfg = new GTECmdCfg();
+    config0: GTECmdCfg = new GTECmdCfg();
     op_going: u32 = 0;
     op_kind: u32 = 0; // GTE opcodes here
     clock_start: u64 = 0; // Clock at time of instruction start
@@ -149,6 +155,8 @@ class PS1_GTE {
     // 3x4
     rgb_fifo: StaticArray<StaticArray<u8>> = new StaticArray<StaticArray<u8>>(3);
 
+    cycle_count: i64 = 0;
+
     constructor(clock: PS1_clock) {
         this.clock = clock;
         for (let r: u32 = 0; r < 3; r++) {
@@ -177,6 +185,7 @@ class PS1_GTE {
                 this.rgb_fifo[r][j] = 0;
             }
         }
+        this.config0.from_command(0);
     }
 
     command(cmd: u32): void {
@@ -184,29 +193,29 @@ class PS1_GTE {
         this.config.from_command(cmd);
         this.flags = 0;
         switch(opc) {
-            case 0x01: this.cmd_RTPS(this.config); break;
-            case 0x06: this.cmd_NCLIP(); break;
-            case 0x0C: this.cmd_OP(this.config); break;
-            case 0x10: this.cmd_DPCS(this.config); break;
-            case 0x11: this.cmd_INTPL(this.config); break;
-            case 0x12: this.cmd_MVMVA(this.config); break;
-            case 0x13: this.cmd_NCDS(this.config); break;
-            case 0x16: this.cmd_NCDT(this.config); break;
-            case 0x1B: this.cmd_NCCS(this.config); break;
-            case 0x1C: this.cmd_CC(this.config); break;
-            case 0x1E: this.cmd_NCS(this.config); break;
-            case 0x20: this.cmd_NCT(this.config); break;
-            case 0x28: this.cmd_SQR(this.config); break;
-            case 0x29: this.cmd_DCPL(this.config); break;
-            case 0x2A: this.cmd_DPCT(this.config); break;
-            case 0x2D: this.CMD_AVSZ3(); break;
-            case 0x2E: this.cmd_AVSZ4(); break;
-            case 0x30: this.cmd_RTPT(this.config); break;
-            case 0x3D: this.cmd_GPF(this.config); break;
-            case 0x3E: this.cmd_GPL(this.config); break;
-            case 0x3F: this.cmd_NCCT(this.config); break;
+            case 0x01: this.cmd_RTPS(this.config); this.cycle_count = 14; break;
+            case 0x06: this.cmd_NCLIP(); this.cycle_count = 7; break;
+            case 0x0C: this.cmd_OP(this.config); this.cycle_count = 5; break;
+            case 0x10: this.cmd_DPCS(this.config); this.cycle_count = 7; break;
+            case 0x11: this.cmd_INTPL(this.config); this.cycle_count = 7; break;
+            case 0x12: this.cmd_MVMVA(this.config); this.cycle_count = 7; break;
+            case 0x13: this.cmd_NCDS(this.config); this.cycle_count = 18; break;
+            case 0x16: this.cmd_NCDT(this.config); this.cycle_count = 43; break;
+            case 0x1B: this.cmd_NCCS(this.config); this.cycle_count = 16; break;
+            case 0x1C: this.cmd_CC(this.config); this.cycle_count = 10; break;
+            case 0x1E: this.cmd_NCS(this.config); this.cycle_count = 13; break;
+            case 0x20: this.cmd_NCT(this.config); this.cycle_count = 29; break;
+            case 0x28: this.cmd_SQR(this.config); this.cycle_count = 4; break;
+            case 0x29: this.cmd_DCPL(this.config); this.cycle_count = 7; break;
+            case 0x2A: this.cmd_DPCT(this.config); this.cycle_count = 16; break;
+            case 0x2D: this.cmd_AVSZ3(); this.cycle_count = 4; break;
+            case 0x2E: this.cmd_AVSZ4(); this.cycle_count = 4; break;
+            case 0x30: this.cmd_RTPT(this.config); this.cycle_count = 22; break;
+            case 0x3D: this.cmd_GPF(this.config); this.cycle_count = 4; break;
+            case 0x3E: this.cmd_GPL(this.config); this.cycle_count = 4; break;
+            case 0x3F: this.cmd_NCCT(this.config); this.cycle_count = 38; break;
             default:
-                console.log('Unsupported GTE opcode', hex2(opc));
+                console.log('Unsupported GTE opcode ' + hex2(opc));
                 break;
         }
 
@@ -483,47 +492,96 @@ class PS1_GTE {
         unreachable();
     }
 
-    do_RTP(vector_index) {
-        let z_shifted = 0;
+    cmd_RTPT(config: GTECmdCfg): void {
+        this.do_RTP(config, 0);
+        this.do_RTP(config, 1);
 
-        let rm = GTEe.Rotation;
-        let tr = GTEe.Translation;
+        let pf = this.do_RTP(config, 2);
 
-        for (let r = 0; r < 3; r++) {
-            let res = (this.control_vectors[tr][r] & 0xFFFFFFFF)  << 12;
-            for (let c = 0; c < 3; c++) {
-                let v = this.v[vector_index][c] & 0xFFFFFFFF;
-                let m = this.matrices[rm][r][c] & 0xFFFFFFFF;
-                let rot = v * m;
+        this.depth_queueing(pf);
+    }
 
-                res = this.i64_to_i44(c, res + rot);
-            }
-            this.mac[r+1] = (res >> this.config.shift) & 0xFFFFFFFF;
-            z_shifted = (res >> 12) & 0xFFFFFFFF;
+    cmd_GPF(config: GTECmdCfg): void {
+        let ir0: i32 = <i32>this.ir[0];
+
+        for (let i = 1; i < 4; i++) {
+            let ir: i32 = <i32>this.ir[i];
+
+            this.mac[i] = (ir * ir0) >> config.shift;
         }
 
-        this.ir[1] = this.i32_to_i16_saturate(0, this.mac[1]);
-        this.ir[2] = this.i32_to_i16_saturate(0, this.mac[2]);
+        this.mac_to_ir(config);
+        this.mac_to_rgb_fifo();
+    }
+
+    cmd_GPL(config: GTECmdCfg): void {
+        let ir0: i32 = <i32>this.ir[0];
+        let shift: u8 = config.shift;
+        for (let i = 1; i < 4; i++) {
+            let ir: i32 = <i32>this.ir[i];
+
+            let ir_prod: i64 = <i64>(ir * ir0);
+
+            let mac = (<i64>this.mac[i]) << shift;
+
+            let sum = this.i64_to_i44(<u8>(i - 1), mac + ir_prod);
+
+            this.mac[i] = <i32>(sum >> shift);
+        }
+        this.mac_to_ir(config);
+        this.mac_to_rgb_fifo();
+    }
+
+    cmd_NCCT(config: GTECmdCfg): void {
+        this.do_ncc(config, 0);
+        this.do_ncc(config, 1);
+        this.do_ncc(config, 2);
+    }
+
+    do_RTP(config: GTECmdCfg, vector_index: u32): u32 {
+        let z_shifted: i32 = 0;
+
+        let rm = Matrix.Rotation;
+        let tr = ControlVector.Translation;
+
+        for (let r = 0; r < 3; r++) {
+            let res: i64 = (<i64>this.control_vectors[tr][r]) << 12;
+            for (let c = 0; c < 3; c++) {
+                let v: i32 = <i32>this.v[vector_index][c];
+                let m: i32 = <i32>this.matrices[rm][r][c];
+                let rot = v * m;
+
+                res = this.i64_to_i44(<u8>c, <i64>res + <i64>rot);
+            }
+            this.mac[r+1] = <i32>(res >> this.config.shift);
+            z_shifted = <i32>(res >> 12);
+        }
+
+        let val = this.mac[1];
+        this.ir[1] = this.i32_to_i16_saturate(this.config, 0, val);
+        val = this.mac[2];
+        this.ir[2] = this.i32_to_i16_saturate(this.config, 1, val);
+
         // Weird behavior on Z clip
+        let min: i32 = -32768;
+        let max: i32 = 32767;
+        if ((z_shifted > max) || (z_shifted < min))
+            this.set_flag(22);
 
-        let min = -32768;
-        let max = 32767;
-        if ((z_shifted > max) || (z_shifted < min)) this.set_flag(22);
+        min = config.clamp_negative ? 0 : -32768;
+        val = this.mac[3];
+        if (val < min) this.ir[3] = <i16>min;
+        else if (val > max) this.ir[3] = 32767;
+        else this.ir[3] = <i16>val;
 
-        min = this.config.clamp_negative ? 0 : -32768;
-        let val = this.mac[3];
-        if (val < min) this.ir[3] = min;
-        else if (val > max) this.ir[3] = max;
-        else this.ir[3] = ((val & 0xFFFF) << 16) >> 16;
-
-        let z_saturated;
+        let z_saturated: u16;
         if (z_shifted < 0) {
             this.set_flag(18);
             z_saturated = 0;
         }
-        else if (z_shifted > 32768) {
+        else if (z_shifted > 65535) {
             this.set_flag(18);
-            z_saturated = 32768;
+            z_saturated = 65535;
         } else {
             z_saturated = z_shifted;
         }
@@ -533,7 +591,7 @@ class PS1_GTE {
         this.z_fifo[2] = this.z_fifo[3];
         this.z_fifo[3] = z_saturated;
 
-        let projection_factor;
+        let projection_factor: u32;
         if (z_saturated > (this.h / 2)) {
             projection_factor = GTEdivide(this.h, z_saturated);
         }
@@ -542,11 +600,11 @@ class PS1_GTE {
             projection_factor = 0x1FFFF;
         }
 
-        let factor = projection_factor & 0xFFFFFFFF;
-        let x = this.ir[1] & 0xFFFFFFFF;
-        let y = this.ir[2] & 0xFFFFFFFF;
-        let ofx = this.ofx & 0xFFFFFFFF;
-        let ofy = this.ofy & 0xFFFFFFFF;
+        let factor: i64 = projection_factor;
+        let x: i64 = <i64>this.ir[1];
+        let y: i64 = <i64>this.ir[2];
+        let ofx: i64 = <i64>this.ofx;
+        let ofy: i64 = <i64>this.ofy;
 
         let screen_x = x * factor * ofx;
         let screen_y = y * factor * ofy;
@@ -554,8 +612,8 @@ class PS1_GTE {
         this.check_mac_overflow(screen_x);
         this.check_mac_overflow(screen_y);
 
-        screen_x = (screen_x >> 16) & 0xFFFFFFFF;
-        screen_y = (screen_y >> 16) & 0xFFFFFFFF;
+        screen_x = <i32>(screen_x >> 16);
+        screen_y = <i32>(screen_y >> 16);
 
         this.xy_fifo[3][0] = this.i32_to_i11_saturate(0, screen_x);
         this.xy_fifo[3][1] = this.i32_to_i11_saturate(1, screen_y);
@@ -570,7 +628,7 @@ class PS1_GTE {
         return projection_factor;
     }
 
-    check_mac_overflow(val) {
+    check_mac_overflow(val: i64): void {
         if (val < -0x80000000) {
             this.set_flag(15);
         } else if (val > 0x7fffffff) {
@@ -578,8 +636,7 @@ class PS1_GTE {
         }
     }
 
-
-    i32_to_i11_saturate(flag, val) {
+    i32_to_i11_saturate(flag: u8, val: i32): i16 {
         if (val < -0x400) {
             this.set_flag(14 - flag);
             return -0x400;
@@ -588,26 +645,27 @@ class PS1_GTE {
             this.set_flag(14 - flag);
             return 0x3FF;
         }
-        return val;
+        return <i16>val;
     }
-    i32_to_i16_saturate(flag, val, force_neg=false) {
-        let min = this.config.clamp_negative ? 0 : -32768;
-        min = force_neg ? -32768 : min;
-        let max = 32767;
+
+    i32_to_i16_saturate(config: GTECmdCfg, flag: u8, val: i32): i16 {
+        let min: i32 = config.clamp_negative ? 0 : -32768;
+        let max: i32 = 32767;
 
         if (val > max) {
             this.set_flag(24 - flag);
-            return max;
+            return 32767;
         }
         else if (val < min) {
             this.set_flag(24 - flag);
-            return min;
+            return -32768;
         } else {
-            return ((val & 0xFFFF) << 16) >> 16;
+            return <i16>val;
         }
     }
 
-    i64_to_i44(flag, val) {
+    @inline
+    i64_to_i44(flag: u8, val: i64): i64 {
         if (val > 0x7FFFFFFFFFF) {
             this.set_flag(30 - flag);
         }
@@ -615,26 +673,27 @@ class PS1_GTE {
             this.set_flag(27 - flag);
         }
 
-        return val >> 20;
+        // sign-extend result
+        return (val << 20) >> 20;
     }
 
-    set_flag(bit) { this.flags |= (1 << bit); }
+    set_flag(bit: u8): void { this.flags |= (1 << bit); }
 
-    cmd_RTPS() {
-        let pf = this.do_RTP(0);
+    cmd_RTPS(config: GTECmdCfg): void {
+        let pf = this.do_RTP(config, 0);
         this.depth_queueing(pf);
     }
 
-    depth_queueing(pf) {
-        let factor = pf & 0xFFFFFFFF;
-        let dqa = this.dqa & 0xFFFFFFFF;
-        let dqb = this.dqb & 0xFFFFFFFF;
+    depth_queueing(pf: u32): void {
+        let factor: i64 = <i64>pf;
+        let dqa = <i64>this.dqa;
+        let dqb = <i64>this.dqb;
 
         let depth = dqb + dqa * factor;
 
         this.check_mac_overflow(depth);
 
-        this.mac[0] = depth & 0xFFFFFFFF;
+        this.mac[0] = <i32>depth;
 
         depth >>= 12;
 
@@ -647,231 +706,389 @@ class PS1_GTE {
             this.ir[0] = 4096;
         }
         else
-            this.ir[0] = (depth >> 16) & 0xFFFFFFFF;
+            this.ir[0] = <i16>depth;
     }
 
-    cmd_NCLIP() {
-        let x0 = this.xy_fifo[0][0] & 0xFFFFFFFF;
-        let y0 = this.xy_fifo[0][1] & 0xFFFFFFFF;
+    cmd_NCLIP(): void {
+        let x0 = <i32>this.xy_fifo[0][0];
+        let y0 = <i32>this.xy_fifo[0][1];
 
-        let x1 = this.xy_fifo[1][0] & 0xFFFFFFFF;
-        let y1 = this.xy_fifo[1][1] & 0xFFFFFFFF;
+        let x1 = <i32>this.xy_fifo[1][0] & 0xFFFFFFFF;
+        let y1 = <i32>this.xy_fifo[1][1] & 0xFFFFFFFF;
 
-        let x2 = this.xy_fifo[2][0] & 0xFFFFFFFF;
-        let y2 = this.xy_fifo[2][1] & 0xFFFFFFFF;
+        let x2 = <i32>this.xy_fifo[2][0] & 0xFFFFFFFF;
+        let y2 = <i32>this.xy_fifo[2][1] & 0xFFFFFFFF;
 
         let a = x0 * (y1 - y2);
         let b = x1 * (y2 - y0);
         let c = x2 * (y0 - y1);
 
-        let sum = a + b + c;
+        let sum: i64 = <i64>a + <i64>b + <i64>c;
 
         this.check_mac_overflow(sum);
 
-        this.mac[0] = sum & 0xFFFFFFFF;
+        this.mac[0] = <i32>sum;
     }
 
-    cmd_OP() {
-        let rm = GTEe.Rotation;
+    cmd_OP(config: GTECmdCfg): void {
+        let rm = Matrix.Rotation;
 
-        let ir1 = this.ir[1] & 0xFFFFFFFF;
-        let ir2 = this.ir[2] & 0xFFFFFFFF;
-        let ir3 = this.ir[3] & 0xFFFFFFFF;
+        let ir1 = <i32>this.ir[1];
+        let ir2 = <i32>this.ir[2];
+        let ir3 = <i32>this.ir[3];
 
-        let r0 = this.matrices[rm][0][0] & 0xFFFFFFFF;
-        let r1 = this.matrices[rm][1][1] & 0xFFFFFFFF;
-        let r2 = this.matrices[rm][2][2] & 0xFFFFFFFF;
+        let r0 = <i32>this.matrices[rm][0][0];
+        let r1 = <i32>this.matrices[rm][1][1];
+        let r2 = <i32>this.matrices[rm][2][2];
 
-        let shift = this.config.shift;
+        let shift = config.shift;
 
         this.mac[1] = (r1 * ir3 - r2 * ir2) >> shift;
         this.mac[2] = (r2 * ir1 - r0 * ir3) >> shift;
         this.mac[3] = (r0 * ir2 - r1 * ir1) >> shift;
 
-        this.mac_to_ir();
+        this.mac_to_ir(config);
     }
 
-    mac_to_ir() {
-        this.ir[1] = this.i32_to_i16_saturate(0, self.mac[1])
-        this.ir[2] = this.i32_to_i16_saturate(1, self.mac[2])
-        this.ir[3] = this.i32_to_i16_saturate(2, self.mac[3])
+    mac_to_ir(config: GTECmdCfg): void {
+        this.ir[1] = this.i32_to_i16_saturate(config, 0, this.mac[1])
+        this.ir[2] = this.i32_to_i16_saturate(config, 1, this.mac[2])
+        this.ir[3] = this.i32_to_i16_saturate(config, 2, this.mac[3])
     }
 
-    cmd_DPCS() {
-        let fc = GTEe.FarColor;
-        let r = this.rgb[0];
-        let g = this.rgb[1];
-        let b = this.rgb[2];
+    cmd_DPCS(config: GTECmdCfg) {
+        let fca = ControlVector.FarColor;
+        let rgb = new StaticArray<u8>(3);
+        rgb[0] = this.rgb[0];
+        rgb[1] = this.rgb[1];
+        rgb[2] = this.rgb[2];
 
-        let col = [r, g, b];
+
         for (let i = 0; i < 3; i++) {
-            let fc = (this.control_vectors[fc][i] & 0xFFFFFFFF) << 12;
-            let col = (col[i] & 0xFFFFFFFF) << 16;
+            let fc: i64 = (<i64>this.control_vectors[fca][i]) << 12;
+            let col = (<i64>rgb[i]) << 16;
 
             let sub = fc - col;
 
-            let tmp = (this.i64_to_i44(i, sub) >> this.config.shift) & 0xFFFFFFFF;
+            let tmp = <i32>(this.i64_to_i44(<u8>i, sub) >> config.shift);
 
-            let ir0 = this.ir[0] & 0xFFFFFFFF;
+            let ir0 = <i64>this.ir[0];
 
-            let sat = this.i32_to_i16_saturate(i, tmp, true) & 0xFFFFFFFF;
+            let sat: i64 = <i64>this.i32_to_i16_saturate(this.config0, <u8>i, tmp);
 
-            let res = this.i64_to_i44(i, col + ir0 * sat);
+            let res = this.i64_to_i44(<u8>i, col + ir0 * sat);
 
-            this.mac[i + 1] = (res >> this.config.shift) & 0xFFFFFFFF;
+            this.mac[i + 1] = <i32>(res >> this.config.shift);
         }
 
-        this.mac_to_ir();
+        this.mac_to_ir(config);
         this.mac_to_rgb_fifo();
     }
 
-    mac_to_rgb_fifo() {
-        let gte = this;
-        let mac_to_color = function(mac, which) {
-            let c = mac >> 4;
-            if (c < 0) {
-                gte.set_flag(21 - which);
-                return 0;
-            }
-            else if (c > 0xFF) {
-                gte.set_flag(21 - which);
-                return 0xFF;
-            }
-            return c & 0xFF;
-        }
-
+    mac_to_rgb_fifo(): void {
         let mac1 = this.mac[1];
         let mac2 = this.mac[2];
         let mac3 = this.mac[3];
 
-        let r = mac_to_color(this, mac1, 0);
-        let g = mac_to_color(this, mac2, 1);
-        let b = mac_to_color(this, mac3, 2);
+        let r: u8 = mac_to_color(this, mac1, 0);
+        let g: u8 = mac_to_color(this, mac2, 1);
+        let b: u8 = mac_to_color(this, mac3, 2);
         this.rgb_fifo[0][0] = this.rgb_fifo[1][0]
         this.rgb_fifo[0][1] = this.rgb_fifo[1][1]
         this.rgb_fifo[0][2] = this.rgb_fifo[1][2]
         this.rgb_fifo[0][3] = this.rgb_fifo[1][3]
 
-        this.rgb_fifo[1][0] = this.rgb_fifo[2][0]
-        this.rgb_fifo[1][1] = this.rgb_fifo[2][1]
-        this.rgb_fifo[1][2] = this.rgb_fifo[2][2]
-        this.rgb_fifo[1][3] = this.rgb_fifo[2][3]
+        this.rgb_fifo[1][0] = this.rgb_fifo[2][0];
+        this.rgb_fifo[1][1] = this.rgb_fifo[2][1];
+        this.rgb_fifo[1][2] = this.rgb_fifo[2][2];
+        this.rgb_fifo[1][3] = this.rgb_fifo[2][3];
 
-        this.rgb_fifo[0][0] = r;
-        this.rgb_fifo[0][1] = g;
-        this.rgb_fifo[0][2] = b;
-        this.rgb_fifo[0][2] = this.rgb[3];
+        this.rgb_fifo[2][0] = r;
+        this.rgb_fifo[2][1] = g;
+        this.rgb_fifo[2][2] = b;
+        this.rgb_fifo[2][3] = this.rgb[3];
     }
 
-    cmd_INTPL() {
-        let fca = GTEe.FarColor;
+    cmd_INTPL(config: GTECmdCfg): void {
+        let fca = ControlVector.FarColor;
 
         for (let i = 0; i < 3; i++) {
-            let fc = (this.control_vectors[fca][i] & 0xFFFFFFFF) << 12;
-            let ir = (this.ir[i + 1] & 0xFFFFFFFF) << 12;
+            let fc = (<i64>this.control_vectors[fca][i]) << 12;
+            let ir = (<i64>this.ir[i + 1]) << 12;
 
             let sub = fc - ir;
-            let tmp = (this.i64_to_i44(i, sub) >> this.config.shift) & 0xFFFFFFFF;
-            let ir0 = this.ir[0] & 0xFFFFFFFF;
-            let sat = this.i32_to_i16_saturate(i, tmp, true)
+            let tmp = <i32>(this.i64_to_i44(i, sub) >> config.shift)
+            let ir0 = <i64>this.ir[0];
+            let sat = this.i32_to_i16_saturate(this.config0, i, tmp)
             let res = this.i64_to_i44(i, ir + ir0 * sat);
-            this.mac[i + 1] = (res >> this.config.shift) & 0xFFFFFFFF;
+            this.mac[i + 1] = <i32>(res >> this.config.shift);
         }
-        this.mac_to_ir();
+        this.mac_to_ir(config);
         this.mac_to_rgb_fifo();
     }
 
-    cmd_MVMVA() {
+    cmd_MVMVA(config: GTECmdCfg): void {
         this.v[3][0] = this.ir[1];
         this.v[3][1] = this.ir[2];
         this.v[3][2] = this.ir[3];
 
-        this.multiply_matrix_by_vector(this.config, this.config.matrix, this.config.vector_mul, this.config.vector_add);
+        this.multiply_matrix_by_vector(config, config.matrix, config.vector_mul, this.config.vector_add);
     }
 
-    cmd_NCDS() {
-        this.do_ncd(0);
+    cmd_NCDS(config: GTECmdCfg): void {
+        this.do_ncd(config, 0);
     }
 
-    cmd_NCDT() {
-        this.do_ncd(0);
-        this.do_ncd(1);
-        this.do_ncd(2);
+    cmd_NCDT(config: GTECmdCfg): void {
+        this.do_ncd(config, 0);
+        this.do_ncd(config, 1);
+        this.do_ncd(config, 2);
     }
 
-    cmd_NCCS() {
-        this.do_ncc(0);
+    cmd_NCCS(config: GTECmdCfg): void {
+        this.do_ncc(config, 0);
     }
 
-    do_ncc(vector_index) {
-
-    }
-
-    do_ncd(vector_index) {
-        this.multiply_matrix_by_vector(this.config, GTEe.Light, vector_index, GTEe.Zero);
-
+    cmd_CC(config: GTECmdCfg): void {
         this.v[3][0] = this.ir[1];
         this.v[3][1] = this.ir[2];
         this.v[3][2] = this.ir[3];
 
-        this.multiply_matrix_by_vector(this.config, GTEe.Color, 3, GTEe.BackgroundColor);
+        this.multiply_matrix_by_vector(config, Matrix.Color, 3, ControlVector.BackgroundColor);
 
-        this.cmd_DCPL();
-    }
+        let crol: StaticArray<u8> = new StaticArray<u8>(3);
+        crol[0] = this.rgb[0];
+        crol[1] = this.rgb[1];
+        crol[2] = this.rgb[2];
 
-    cmd_DCPL() {
-        let fca = GTEe.FarColor;
-
-        let r = this.rgb[0];
-        let g = this.rgb[1];
-        let b = this.rgb[2];
-
-        let col = [r, g, b];
         for (let i = 0; i < 3; i++) {
-            let fc = (this.control_vectors[fca][i] & 0xFFFFFFFF) << 12;
-            let ir = this.ir[i + 1] & 0xFFFFFFFF;
-            let col = (col[i] & 0xFFFFFFFF) << 4;
+            let col: i32 = (<i32>crol[i]) << 4;
+            let ir: i32 = <i32>this.ir[i + 1];
 
-            let shading = (col * ir) & 0xFFFFFFFF;
+            this.mac[i + 1] = (col * ir) >> config.shift;
+        }
 
-            let tmp = fc - shading;
+        this.mac_to_ir(config);
+        this.mac_to_rgb_fifo();
+    }
 
-            tmp = (this.i64_to_i44(i, tmp) >> this.config.shift) & 0xFFFFFFFF;
-            let ir0 = this.ir[0] & 0xFFFFFFFF;
-            let res = this.i32_to_i16_saturate(i, tmp, true);
+    do_nc(config: GTECmdCfg, vector_index: u8): void {
+        this.multiply_matrix_by_vector(config, Matrix.Light, vector_index, ControlVector.Zero);
+
+        this.v[3][0] = this.ir[1];
+        this.v[3][1] = this.ir[2];
+        this.v[3][2] = this.ir[3];
+
+        this.multiply_matrix_by_vector(config, Matrix.Color, 3, ControlVector.BackgroundColor);
+
+        this.mac_to_rgb_fifo();
+    }
+
+    do_dpc(config: GTECmdCfg): void {
+        let fca = ControlVector.FarColor;
+
+        let crol: StaticArray<u8> = new StaticArray<u8>(3);
+        crol[0] = this.rgb_fifo[0][0];
+        crol[1] = this.rgb_fifo[0][1];
+        crol[2] = this.rgb_fifo[0][2];
+
+        for (let i = 0; i < 3; i++) {
+            let fc = (<i64>this.control_vectors[fca][i]) << 12;
+            let col = (<i64>crol[i]) << 16;
+
+            let sub = fc - col;
+            let tmp = <i32>(this.i64_to_i44(i, sub) >> config.shift);
+            let ir0: i64 = <i64>this.ir[0];
+            let sat: i64 = <i64>this.i32_to_i16_saturate(this.config0, i, tmp);
+
+            let res = this.i64_to_i44(i, col + ir0 * sat);
+
+            this.mac[i + 1] = <i32>(res >> config.shift);
+        }
+
+        this.mac_to_ir(config);
+        this.mac_to_rgb_fifo();
+    }
+
+    cmd_AVSZ4() {
+        let z0: u32 = this.z_fifo[0];
+        let z1: u32 = this.z_fifo[1];
+        let z2: u32 = this.z_fifo[1];
+        let z3: u32 = this.z_fifo[1];
+
+        let sum = z0 + z1 + z2 + z3;
+
+        let zsf4 = <i64>this.zsf4;
+
+        let average = zsf4 * <i64>sum;
+
+        this.check_mac_overflow(average);
+
+        this.mac[0] = <i32>average;
+        this.otz = this.i64_to_otz(average);
+    }
+
+    cmd_AVSZ3() {
+        let z1: u32 = this.z_fifo[1];
+        let z2: u32 = this.z_fifo[1];
+        let z3: u32 = this.z_fifo[1];
+
+        let sum = z1 + z2 + z3;
+
+        let zsf3: i64 = <i64> this.zsf3;
+        let average = zsf3 * <i64>sum;
+
+        this.check_mac_overflow(average);
+
+        this.mac[0] = <i32>average;
+        this.otz = this.i64_to_otz(average);
+    }
+
+    i64_to_otz(average: i64): u16 {
+        let value = average >> 12;
+
+        if (value < 0) {
+            this.set_flag(18);
+            return 0;
+        } else if (value > 0xFFFF) {
+            this.set_flag(18);
+            return 0xFFFF;
+        }
+        return <u16>value;
+    }
+
+    cmd_DPCT(config: GTECmdCfg): void {
+        this.do_dpc(config);
+        this.do_dpc(config);
+        this.do_dpc(config);
+    }
+
+    cmd_SQR(config: GTECmdCfg): void {
+        for (let i = 1; i < 4; i++) {
+            let ir: i32 = <i32>this.ir[i];
+            this.mac[i] = (ir * ir) >> config.shift;
+        }
+        this.mac_to_ir(config);
+    }
+
+    cmd_NCS(config: GTECmdCfg): void {
+        this.do_nc(config, 0);
+    }
+
+    cmd_NCT(config: GTECmdCfg): void {
+        this.do_nc(config, 0);
+        this.do_nc(config, 1);
+        this.do_nc(config, 2);
+    }
+
+    do_ncc(config: GTECmdCfg, vector_index: u8): void {
+        this.multiply_matrix_by_vector(config, Matrix.Light, vector_index, ControlVector.Zero);
+
+        this.v[3][0] = this.ir[1];
+        this.v[3][1] = this.ir[2];
+        this.v[3][2] = this.ir[3];
+
+        this.multiply_matrix_by_vector(config, Matrix.Color, 3, ControlVector.BackgroundColor);
+
+        let crol: StaticArray<u8> = new StaticArray<u8>(3);
+        crol[0] = this.rgb[0];
+        crol[1] = this.rgb[1];
+        crol[2] = this.rgb[2];
+
+        for (let i = 0; i < 3; i++) {
+            let col: i32 = (<i32>crol[i]) << 4;
+            let ir: i32 = <i32>this.ir[i + 1];
+
+            this.mac[i + 1] = (col * ir) >> config.shift;
+        }
+
+        this.mac_to_ir(config);
+        this.mac_to_rgb_fifo();
+    }
+
+    do_ncd(config: GTECmdCfg, vector_index: u8): void {
+        this.multiply_matrix_by_vector(config, Matrix.Light, vector_index, ControlVector.Zero);
+
+        this.v[3][0] = this.ir[1];
+        this.v[3][1] = this.ir[2];
+        this.v[3][2] = this.ir[3];
+
+        this.multiply_matrix_by_vector(config, Matrix.Color, 3, ControlVector.BackgroundColor);
+
+        this.cmd_DCPL(config);
+    }
+
+    cmd_DCPL(config: GTECmdCfg): void {
+        let fca = ControlVector.FarColor;
+
+        let crol: StaticArray<u8> = new StaticArray<u8>(3);
+        crol[0] = this.rgb[0];
+        crol[1] = this.rgb[1];
+        crol[2] = this.rgb[2];
+
+        for (let i = 0; i < 3; i++) {
+            let fc = (<i64>this.control_vectors[fca][i]) << 12;
+            let ir: i32 = <i32>this.ir[i + 1];
+            let col = (<i32>crol[i]) << 4;
+
+            let shading: i64 = <i64>(col * ir);
+
+            let tmp: i32 = fc - shading;
+
+            tmp = <i32>(this.i64_to_i44(i, tmp) >> config.shift);
+            let ir0 = <i64>this.ir[0];
+            let res: i64 = <i64>this.i32_to_i16_saturate(this.config0, i, tmp);
 
             res = this.i64_to_i44(i, shading + ir0 * res);
 
-            this.mac[i+1] = (res >> this.config.shift) & 0xFFFFFFFF;
+            this.mac[i+1] = <i32>(res >> config.shift);
         }
-        this.mac_to_ir();
+        this.mac_to_ir(config);
         this.mac_to_rgb_fifo();
     }
 
-    multiply_matrix_by_vector(config, mat, vector_index, crv) {
-        if (mat === GTEe.Invalid) {
+    multiply_matrix_by_vector(config: GTECmdCfg, mat: Matrix, vei: u8, crv: ControlVector): void {
+        let vector_index: i32 = <i32>vei;
+        if (mat === Matrix.Invalid) {
             console.log('GTE mul with invalid matrix')
+            return;
         }
 
-        if (crv === GTEe.FarColor) {
+        if (crv === ControlVector.FarColor) {
             console.log('GTE multiply with far color. special...');
+            return;
         }
 
         for (let r = 0; r < 3; r++) {
-            let res = (this.control_vectors[crv][r] & 0xFFFFFFFF) << 12;
+            let res = (<i64>this.control_vectors[crv][r]) << 12;
 
             for (let c = 0; c < 3; c++) {
-                let v = this.v[vector_index][c] & 0xFFFFFFFF;
-                let m = this.matrices[mat][r][c] & 0xFFFFFFFF;
+                let v: i32 = <i32>this.v[vector_index][c];
+                let m: i32 = <i32>this.matrices[mat][r][c];
 
                 let product = v * m;
 
                 res = this.i64_to_i44(r, res + product);
             }
 
-            this.mac[r + 1] = (res >> this.config.shift) & 0xFFFFFFFF;
+            this.mac[r + 1] = <i32>(res >> config.shift);
         }
 
-        this.mac_to_ir();
+        this.mac_to_ir(config);
     }
+}
+
+// @ts-ignore
+@inline
+let mac_to_color = function(gte: PS1_GTE, mac: i32, which: u8): u8 {
+    let c = mac >> 4;
+    if (c < 0) {
+        gte.set_flag(21 - which);
+        return 0;
+    }
+    else if (c > 0xFF) {
+        gte.set_flag(21 - which);
+        return 0xFF;
+    }
+    return <u8>c;
 }

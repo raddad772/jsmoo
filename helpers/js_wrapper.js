@@ -83,6 +83,10 @@ importScripts(
 	'/system/ps1/ps1_mem.js', '/system/ps1/ps1_gte.js', '/system/ps1/ps1.js'
 );
 
+// PS1 AS
+importScripts(
+	'/system/ps1/as/ps1_helper.js'
+)
 
 class js_wrapper_t {
     constructor() {
@@ -95,6 +99,8 @@ class js_wrapper_t {
 
 		// JS wraps the AS! yay?
 		this.emu_wasm = false;
+		this.emu_wasm_helper = null;
+		this.emu_wasm_has_helper = false;
 		this.as_wrapper = new as_wrapper_t();
 		this.tech_specs = null;
 		this.out_ptr = 0;
@@ -102,14 +108,23 @@ class js_wrapper_t {
 
 	play() {
 		this.system.play();
+		if (this.emu_wasm_has_helper) {
+			this.emu_wasm_helper.play();
+		}
 	}
 
 	pause() {
 		this.system.pause();
+		if (this.emu_wasm_has_helper) {
+			this.emu_wasm_helper.pause();
+		}
 	}
 
 	stop() {
 		this.system.stop();
+		if (this.emu_wasm_has_helper) {
+			this.emu_wasm_helper.stop();
+		}
 	}
 
 	dump_sprites(imgdata, width, height) {
@@ -162,6 +177,7 @@ class js_wrapper_t {
 		}
 		console.log('SETTING SYSTEM', this.system_kind)
 		this.emu_wasm = false;
+		this.emu_wasm_helper = false;
 		switch(this.system_kind) {
 			case 'gg':
 				this.system = new SMSGG(bios, SMSGG_variants.GG, REGION.NTSC);
@@ -179,6 +195,12 @@ class js_wrapper_t {
 			case 'nes_as':
 				this.emu_wasm = true;
             	this.as_wrapper.wasm.gp_set_system(this.as_wrapper.global_player, to);
+				break;
+			case 'ps1_as':
+				this.emu_wasm = true;
+				this.emu_wasm_has_helper = true;
+				this.as_wrapper.wasm.gp_set_system(this.as_wrapper.global_player, to);
+				this.emu_wasm_helper = new PS1_as_helper(this);
 				break;
 			case 'gb':
 				this.system = new GameBoy(bios, GB_variants.DMG);
@@ -243,6 +265,10 @@ class js_wrapper_t {
             this.shared_buf2 = new SharedArrayBuffer(this.tech_specs.out_size*2);
             this.tech_specs.output_buffer = [this.shared_buf1, this.shared_buf2];
 			this.out_ptr = this.tech_specs.out_ptr;
+			if (this.emu_wasm_has_helper) {
+				this.shared_buf1 = this.emu_wasm_helper.sab;
+				this.out_ptr = this.emu_wasm_helper.sab_offset;
+			}
 		} else {
 			this.tech_specs = this.system.get_description();
 		}

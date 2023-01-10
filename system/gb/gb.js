@@ -145,10 +145,6 @@ class GB_bus {
         this.VRAM_bank = 0xFF;
     }
 
-    play() {}
-    pause() {}
-    stop() {}
-
     reset() {
         this.set_VRAM_bank(0);
         this.set_WRAM_bank(0);
@@ -246,6 +242,10 @@ class GameBoy {
         console.log('SP', this.ppu.sp_palette);
         console.log(this.cpu);
     }
+
+    play() {}
+    pause() {}
+    stop() {}
 
     killall() {
         dbg.remove_cpu(D_RESOURCE_TYPES.SM83);
