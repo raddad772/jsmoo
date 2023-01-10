@@ -662,8 +662,10 @@ class global_player_t {
 				SNES_present(data, imgdata.data, buf);
 				break;
 			case 'ps1':
-				PS1_present(data, imgdata.data, buf);
+				PS1_present(data, imgdata.data, buf, 0);
 				break;
+			case 'ps1_as':
+				PS1_present()
 			default:
 				console.log('NO PRESENTATION CODE FOR', this.system_kind);
 				break;

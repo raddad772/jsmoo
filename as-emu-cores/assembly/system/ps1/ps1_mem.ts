@@ -1,14 +1,47 @@
 ///<reference path="../../../node_modules/assemblyscript/std/assembly/index.d.ts"/>
-import {hex8} from "../../helpers/helpers";
+import {hex4, hex8} from "../../helpers/helpers";
+import {PS1} from "./ps1";
+import {R3000} from "../../component/cpu/r3000/r3000";
+import {PS1_clock} from "./ps1_misc";
 
-enum memkind {
+// @ts-ignore
+@inline
+function deKSEG(addr: u32) {
+    return (addr & 0x1FFFFFFF)>>>0;
+}
+
+
+enum DMA_direction {
+    to_ram, from_ram
+}
+
+enum DMA_inc {
+    increment, decrement
+}
+
+enum DMA_mode {
+    manual, request, linked_list
+}
+
+export enum PS1_DMA_ports {
+   MDEC_in,
+   MDEC_out,
+   GPU,
+   cdrom,
+   SPU,
+   PIO,
+   OTC
+}
+
+
+export enum memkind {
     scratchpad,
     MRAM,
     VRAM,
     BIOS
 }
 
-enum MT {
+export enum MT {
     i8,
     i16,
     i32,
@@ -29,14 +62,65 @@ function PS1_MT_r(k: u32): string {
     unreachable();
 }
 
+// @ts-ignore
 @inline
-function PS1_read_mem<T>(buf: usize, addr: u32): T {
-    return load<T>(buf, addr);
+function PS1_read_mem(buf: usize, addr: u32, sz: MT): u32 {
+    switch(sz) {
+        case MT.i8:
+            return <u32>load<i8>(buf+addr);
+        case MT.i16:
+            return <u32>load<i16>(buf+addr);
+        case MT.i32:
+            return <u32>load<i32>(buf+addr);
+        case MT.u8:
+            return <u32>load<u8>(buf+addr);
+        case MT.u16:
+            return <u32>load<u16>(buf+addr);
+        case MT.u32:
+            return <u32>load<u32>(buf+addr);
+        default:
+            console.log('BAD SIZE');
+            return 0xC0C0C0C0;
+    }
 }
 
+// @ts-ignore
 @inline
-function PS1_write_mem<T>(buf: usize, addr: u32, val: T): void {
-    store<T>(buf, addr, val)
+function PS1_write_mem(buf: usize, addr: u32, sz: MT, val: u32): void {
+    switch(sz) {
+        case MT.i8:
+            store<i8>(buf+addr, <i8>val);
+            return;
+        case MT.i16:
+            store<i16>(buf+addr, <i16>val);
+            return;
+        case MT.i32:
+            store<i32>(buf+addr, <i32>val);
+            return;
+        case MT.u8:
+            store<u8>(buf+addr, <u8>val);
+            return;
+        case MT.u16:
+            store<u16>(buf+addr, <u16>val);
+            return;
+        case MT.u32:
+            store<u32>(buf+addr, val);
+            return;
+        default:
+            console.log('BAD SIZE');
+    }
+}
+
+// @ts-ignore
+@inline
+function PS1_read_memarray<T>(buf: usize, addr: u32): T {
+    return load<T>(buf+addr);
+}
+
+// @ts-ignore
+@inline
+function PS1_write_memarray<T>(buf: usize, addr: u32, val: T): void {
+    store<T>(buf+addr, val)
 }
 
 enum DMAe {
@@ -147,18 +231,12 @@ class PS1_DMA {
     irq_flags_ch: u32 = 0
     irq_force: u32 = 0
     unknown1: u32 = 0
-    channels: Array<PS1_DMA_channel>
+    channels: Array<PS1_DMA_channel> = new Array<PS1_DMA_channel>();
+    mem: PS1_mem;
 
-    constructor() {
-        this.control = 0x7654321;
+    constructor(mem: PS1_mem) {
+        this.mem = mem;
 
-        this.irq_enable = 0;
-        this.irq_enable_ch = 0;
-        this.irq_flags_ch = 0;
-        this.irq_force = 0;
-        this.unknown1 = 0;
-
-        this.channels = new Array<PS1_DMA_channel>;
         for (let i: u32 = 0; i < 7; i++) {
             this.channels.push(new PS1_DMA_channel(i));
         }
@@ -197,7 +275,7 @@ class PS1_DMA {
                         console.log('Unimplemented per-channel DMA register write: ' + ch_num.toString() + ' ' + reg.toString() +  hex8(addr));
                         return;
                 }
-                if (ch.active()) ch_activated = true;
+                if (ch.active()) this.mem.do_dma(ch);
                 break;
             case 7: // common registers
                 switch(reg) {
@@ -218,7 +296,6 @@ class PS1_DMA {
                         return;
                 }
         }
-        if (ch_activated) this.do_dma(ch);
     }
 
     read(addr: u32, val: u32): u32 {
@@ -264,71 +341,64 @@ class PS1_DMA {
 }
 
 
-class PS1_mem {
-    scratchpad: usize = heap.alloc(1024);
+export class PS1_mem {
+    scratchpad_ab: StaticArray<u32> = new StaticArray<u32>(1024/4);
+
+    scratchpad: usize
+    MRAM: usize
+    VRAM: usize
+    BIOS: usize
+    MRAM_ab: StaticArray<u32> = new StaticArray<u32>((2 * 1024 * 1024) / 4);
+    VRAM_ab: StaticArray<u32> = new StaticArray<u32>((1024 * 1024) / 4);
+    BIOS_ab: StaticArray<u32> = new StaticArray<u32>((512 * 1024) / 4);
+    BIOS_untouched: StaticArray<u32> = new StaticArray<u32>((512 * 1024) / 4);
+    unknown_read_mem: Set<u32> = new Set();
+    unknown_wrote_mem: Set<u32> = new Set();
+
+    cpu: R3000|null=null;
+    cache_isolated: u32 = 0;
+
+    dma: PS1_DMA
+    ps1: PS1|null=null;
 
     constructor() {
-        this.scratchpad_ab = new ArrayBuffer(1024);
-        this.MRAM_ab = new ArrayBuffer(2 * 1024 * 1024);
-        this.VRAM_ab = new ArrayBuffer(1024 * 1024);
-        this.BIOS_ab = new ArrayBuffer(512 * 1024);
-        this.BIOS_untouched = new ArrayBuffer(512 * 1024);
-
-        this.scratchpad = new DataView(this.scratchpad_ab);
-        this.MRAM = new DataView(this.MRAM_ab);
-        this.VRAM = new DataView(this.VRAM_ab);
-        this.BIOS = new DataView(this.BIOS_ab);
-        this.cache_isolated = false;
-
-        this.CPU_read_reg = function(addr, size, val, has_effect=true) {debugger;};
-        this.CPU_write_reg = function(addr, size, val) {debugger;};
-
-        this.io = {
-            dma: new PS1_DMA(this.do_dma.bind(this))
-        }
-
-        this.unknown_read_mem = new Set();
-        this.unknown_wrote_mem = new Set();
-        this.ps1 = null;
+        this.scratchpad = changetype<usize>(this.scratchpad_ab);
+        this.MRAM = changetype<usize>(this.MRAM_ab);
+        this.VRAM = changetype<usize>(this.VRAM_ab);
+        this.BIOS = changetype<usize>(this.BIOS_ab);
+        this.dma = new PS1_DMA(this);
     }
 
-    /**
-     * @param {PS1_DMA_channel} ch
-     */
-    do_dma(ch) {
+    do_dma(ch: PS1_DMA_channel): void {
         // Executes DMA for a channel
         // We'll just do an instant copy for now
-        if (ch.sync === PS1_DMAe.linked_list)
+        if (ch.sync === DMAe.linked_list)
             this.do_dma_linked_list(ch);
         else
             this.do_dma_block(ch);
         ch.done();
-
     }
 
-    /**
-     * @param {PS1_DMA_channel} ch
-     */
-    do_dma_linked_list(ch) {
+    do_dma_linked_list(ch: PS1_DMA_channel): void {
         let addr = ch.base_addr & 0x1FFFFC;
-        if (ch.direction === PS1_DMAe.to_ram) {
+        if (ch.direction === DMAe.to_ram) {
             console.log('Invalid DMA direction for linked list mode');
             return;
         }
 
         if (ch.num !== PS1_DMA_ports.GPU) {
-            console.log('Invalid DMA dest for linked list mode', ch.num);
+            console.log('Invalid DMA dest for linked list mode ' + ch.num.toString());
             return;
         }
 
         while(true) {
-            let header = this.CPU_read(addr, PS1_MT.u32, 0);
+            let header = this.CPU_read(addr, MT.u32, 0);
             let copies = (header >>> 24) & 0xFF;
 
             while (copies > 0) {
                 addr = (addr + 4) & 0x1FFFFC;
-                let cmd = this.CPU_read(addr, PS1_MT.u32, 0);
-                this.ps1.gpu.gp0(cmd);
+                let cmd = this.CPU_read(addr, MT.u32, 0);
+                this.ps1!.gpu.gp0(cmd);
 
                 copies--;
             }
@@ -341,11 +411,8 @@ class PS1_mem {
         }
     }
 
-    /**
-     * @param {PS1_DMA_channel} ch
-     */
-    do_dma_block(ch) {
-        let step = (ch.step === PS1_DMAe.increment) ? 4 : -4;
+    do_dma_block(ch: PS1_DMA_channel): void {
+        let step = (ch.step === DMAe.increment) ? 4 : -4;
         let addr = ch.base_addr;
         let copies = ch.transfer_size();
         if (copies === null) {
@@ -357,23 +424,23 @@ class PS1_mem {
             let cur_addr = addr & 0x1FFFFC;
             let src_word;
             switch(ch.direction) {
-                case PS1_DMAe.from_ram:
-                    src_word = this.CPU_read(cur_addr, PS1_MT.u32, 0);
+                case DMAe.from_ram:
+                    src_word = this.CPU_read(cur_addr, MT.u32, 0);
                     switch(ch.num) {
                         case PS1_DMA_ports.GPU:
-                            this.ps1.gpu.gp0(src_word);
+                            this.ps1!.gpu.gp0(src_word);
                             break;
                         case PS1_DMA_ports.MDEC_in:
-                            this.ps1.MDEC.command(src_word);
+                            //this.ps1!.MDEC.command(src_word);
                             break;
                         case PS1_DMA_ports.SPU: // Ignore SPU transfer for now
                             break;
                         default:
-                            console.log('UNHANDLED DMA PORT!', ch.num);
+                            console.log('UNHANDLED DMA PORT! ' + ch.num.toString());
                             return;
                     }
                     break;
-                case PS1_DMAe.to_ram:
+                case DMAe.to_ram:
                     switch(ch.num) {
                         case PS1_DMA_ports.OTC:
                             src_word = (copies === 1) ? 0xFFFFFF : ((addr - 4) & 0x1FFFFF);
@@ -383,17 +450,17 @@ class PS1_mem {
                             src_word = 0;
                             break;
                         case PS1_DMA_ports.cdrom:
-                            src_word = this.cdrom.dma_read_word();
+                            //src_word = this.cdrom.dma_read_word();
                             break;
                         case PS1_DMA_ports.MDEC_out:
                             src_word = 0;
                             break;
                         default:
-                            console.log('UNKNOWN DMA PORT', ch.num);
+                            console.log('UNKNOWN DMA PORT ' + ch.num.toString());
                             src_word = 0;
                             break;
                     }
-                    this.CPU_write(cur_addr, PS1_MT.u32, src_word>>>0);
+                    this.CPU_write(cur_addr, MT.u32, src_word);
                     break;
             }
             addr = ((addr + step) & 0xFFFFFFFF) >>> 0;
@@ -402,74 +469,82 @@ class PS1_mem {
         }
     }
 
-    deKSEG(addr) {
-        return (addr & 0x1FFFFFFF)>>>0;
+    load_BIOS_from_RAM(buf: usize, sz: u32): void {
+        if (sz > (512*1024)) {
+            console.log('bad BIOS image!?');
+            return;
+        }
+        for (let i = 0; i < (sz / 4); i++) {
+            this.BIOS_ab[i] = load<u32>(buf+(i*4));
+            this.BIOS_untouched[i] = load<u32>(buf+(i*4))
+        }
     }
 
-    BIOS_patch(addr, val) {
-        this.BIOS.setUint32(addr, val, true);
+    BIOS_patch(addr: u32, val: u32): void {
+        store<u32>(this.BIOS+addr, val);
     }
 
     BIOS_patch_reset() {
-        let b_src = new Uint32Array(this.BIOS_untouched);
-        let b_dst = new Uint32Array(this.BIOS_ab);
-        b_dst.set(b_src);
-    }
-
-    reset() {
-        this.BIOS_patch_reset();
-    }
-
-    write_mem_generic(kind, addr, size, val) {
-        if ((size === PS1_MT.i16) || (size === PS1_MT.u16)) {
-            val &= 0xFFFF;
+        for (let i = 0; i < this.BIOS_untouched.length; i++) {
+            this.BIOS_ab[i] = this.BIOS_untouched[i];
         }
-        else if ((size === PS1_MT.i8) || (size === PS1_MT.u8))
+    }
+
+    reset(): void {
+        this.BIOS_patch_reset();
+        this.cache_isolated = 0;
+    }
+
+    @inline
+    write_mem_generic(kind: memkind, addr: u32, size: MT, val: u32): void {
+        if ((size === MT.i16) || (size === MT.u16))
+            val &= 0xFFFF;
+        else if ((size === MT.i8) || (size === MT.u8))
             val &= 0xFF;
 
         switch(kind) {
-            case PS1_meme.scratchpad:
+            case memkind.scratchpad:
                 PS1_write_mem(this.scratchpad, addr, size, val);
                 return;
-            case PS1_meme.MRAM:
+            case memkind.MRAM:
                 PS1_write_mem(this.MRAM, addr, size, val);
                 return;
-            case PS1_meme.VRAM:
+            case memkind.VRAM:
                 PS1_write_mem(this.VRAM, addr, size, val);
                 return;
             default:
                 console.log('UNKNOWN MEM TYPE');
-                return val;
+                return;
         }
     }
 
-    read_mem_generic(kind, addr, size, val) {
-        if ((size === PS1_MT.i16) || (size === PS1_MT.u16))
+    @inline
+    read_mem_generic(kind: memkind, addr: u32, size: MT, val: u32): u32 {
+        if ((size === MT.i16) || (size === MT.u16))
             addr &= 0xFFFFFFFE;
-        else if ((size === PS1_MT.i32) || (size === PS1_MT.u32))
+        else if ((size === MT.i32) || (size === MT.u32))
             addr &= 0xFFFFFFFC;
         switch(kind) {
-            case PS1_meme.scratchpad:
+            case memkind.scratchpad:
                 return PS1_read_mem(this.scratchpad, addr, size);
-            case PS1_meme.MRAM:
+            case memkind.MRAM:
                 return PS1_read_mem(this.MRAM, addr, size);
-            case PS1_meme.VRAM:
+            case memkind.VRAM:
                 return PS1_read_mem(this.VRAM, addr, size);
-            case PS1_meme.BIOS:
-                let r = PS1_read_mem(this.BIOS, addr, size);
-                return r;
+            case memkind.BIOS:
+                return PS1_read_mem(this.BIOS, addr, size);
             default:
                 console.log('UNKNOWN MEM TYPE');
                 return val;
         }
     }
 
-    update_SR(newSR) {
+    update_SR(newSR: u32): void {
         this.cache_isolated = +((newSR & 0x10000) === 0x10000);
     }
 
     dump_unknown() {
-        let wl = [], rl = [];
+        /*let wl = [], rl = [];
         for (let i of this.unknown_wrote_mem) {
             wl.push(hex8(i));
         }
@@ -479,24 +554,25 @@ class PS1_mem {
         wl = wl.sort();
         rl = rl.sort();
         if (wl.length > 0) console.log('WRITE ADDRS', wl);
-        if (rl.length > 0) console.log('READ ADDRS', rl);
+        if (rl.length > 0) console.log('READ ADDRS', rl);*/
+        console.log('Implement dump_unknown()');
     }
 
-    CPU_write(addr, size, val) {
-        addr = this.deKSEG(addr);
+    CPU_write(addr: u32, size: MT, val: u32): void {
+        addr = deKSEG(addr);
         if ((addr < 0x800000) && !this.cache_isolated) {
-            return this.write_mem_generic(PS1_meme.MRAM, addr & 0x1FFFFF, size, val)
+            return this.write_mem_generic(memkind.MRAM, addr & 0x1FFFFF, size, val)
         }
         if (((addr >= 0x1F800000) && (addr <= 0x1F800400)) && !this.cache_isolated)
-            return this.write_mem_generic(PS1_meme.scratchpad, addr & 0x3FF, size, val);
+            return this.write_mem_generic(memkind.scratchpad, addr & 0x3FF, size, val);
 
         if ((addr >= 0x1F801070) && (addr <= 0x1F801074)) {
-            this.CPU_write_reg(addr, size, val);
+            this.cpu!.CPU_write_reg(addr, val);
             return;
         }
 
         if ((addr >= 0x1F801080) && (addr <= 0x1F8010FF)) {
-            this.io.dma.write(addr, size, val);
+            this.dma.write(addr, size, val);
             return;
         }
 
@@ -520,10 +596,10 @@ class PS1_mem {
                 return;
             // ...
             case 0x1F801810: // GP0 Send GP0 Commands/Packets (Rendering and VRAM Access)
-                this.ps1.gpu.gp0(val);
+                this.ps1!.gpu.gp0(val);
                 return;
             case 0x1F801814: // GP0 Send GP0 Commands/Packets (Rendering and VRAM Access)
-                this.ps1.gpu.gp1(val);
+                this.ps1!.gpu.gp1(val);
                 return;
             case 0x1F801C00: //  Voice 0..23 stuff
             case 0x1F801C02:
@@ -721,27 +797,27 @@ class PS1_mem {
         //console.log('WRITE TO UNKNOWN LOCATION', this.cache_isolated, hex8(addr), hex8(val));
     }
 
-    CPU_read(addr, size, val, has_effect=true) {
-        addr = this.deKSEG(addr);
+    CPU_read(addr: u32, size: MT, val: u32, has_effect=true) {
+        addr = deKSEG(addr);
         // 2MB MRAM mirrored 4 times
         if (addr < 0x00800000) {
-            let r = this.read_mem_generic(PS1_meme.MRAM, addr & 0x1FFFFF, size, val);
+            let r = this.read_mem_generic(memkind.MRAM, addr & 0x1FFFFF, size, val);
             return r;
         }
         // 1F800000 1024kb of scratchpad
         if ((addr >= 0x1F800000) && (addr < 0x1F800400)) {
-            return this.read_mem_generic(PS1_meme.scratchpad, addr & 0x3FF, size, val);
+            return this.read_mem_generic(memkind.scratchpad, addr & 0x3FF, size, val);
         }
         // 1FC00000h 512kb BIOS
         if ((addr >= 0x1FC00000) && (addr < 0x1FC080000)) {
-            return this.read_mem_generic(PS1_meme.BIOS, addr & 0x7FFFF, size, val);
+            return this.read_mem_generic(memkind.BIOS, addr & 0x7FFFF, size, val);
         }
 
         if ((addr >= 0x1F801070) && (addr <= 0x1F801074)) {
-            return this.CPU_read_reg(addr, size, val, has_effect);
+            return this.cpu!.CPU_read_reg(addr, size, val);
         }
         if ((addr >= 0x1F801080) && (addr <= 0x1F8010FF)) {
-            return this.io.dma.read(addr, size, val);
+            return this.dma.read(addr, val);
         }
 
         switch(addr) {
@@ -755,9 +831,9 @@ class PS1_mem {
                 return 0x00070777;
             case 0x1F8010A8: // DMA2 GPU thing
             case 0x1F801810: // GP0/GPUREAD
-                return this.ps1.gpu.get_gpuread();
+                return this.ps1!.gpu.get_gpuread();
             case 0x1F801814: // GPUSTAT Read GPU Status Register
-                return this.ps1.gpu.get_gpustat();
+                return this.ps1!.gpu.get_gpustat();
             case 0x1F801C0C: // Voice 0..23 ADSR Current Volume
             case 0x1F801C1C: //
             case 0x1F801C2C:
@@ -803,14 +879,14 @@ class PS1_mem {
 
         //console.log('UNKNOWN READ FROM', hex8(addr));
         switch(size) {
-            case PS1_MT.u32:
-            case PS1_MT.i32:
+            case MT.u32:
+            case MT.i32:
                 return 0xFFFFFFFF;
-            case PS1_MT.u16:
-            case PS1_MT.i16:
+            case MT.u16:
+            case MT.i16:
                 return 0xFFFF;
-            case PS1_MT.u8:
-            case PS1_MT.i8:
+            case MT.u8:
+            case MT.i8:
                 return 0xFF;
         }
 
@@ -818,6 +894,8 @@ class PS1_mem {
 }
 
 class u32_dual_return {
+    hi: u32 = 0
+    lo: u32 = 0
     construct() {
         this.hi = 0;
         this.lo = 0;
@@ -832,17 +910,17 @@ class u32_dual_return {
     }
 }
 
-function u32_multiply(a, b) {
+function u32_multiply(a: u32, b: u32) {
     let ret = new u32_dual_return();
-    let c = BigInt(a >>> 0);
-    let d = BigInt(b >>> 0);
-    let e = c * d;
-    ret.hi = Number(BigInt.asUintN(32, e >> BigInt(32)))
-    ret.lo = Number(BigInt.asUintN(32, e))
+    let c = <u64>a
+    let d = <u64>b
+    let e: u64 = c * d;
+    ret.hi = <u32>(e >>> 32);
+    ret.lo = <u32>e;
     return ret;
 }
 
-function i32_multiply(a, b) {
+function i32_multiply(a: i32, b: i32) {
     let ret = new u32_dual_return();
     let c = BigInt(a & 0xFFFFFFFF);
     let d = BigInt(b & 0xFFFFFFFF);
@@ -882,22 +960,22 @@ function mtest() {
 }
 //mtest()
 
-class R3000_multiplier_t {
-    constructor(clock) {
-        this.clock = clock;
-        this.HI = 0;
-        this.LO = 0;
+export class R3000_multiplier_t {
+    clock: PS1_clock
+    hi: u32 = 0
+    lo: u32 = 0
 
-        this.op1 = 0;
-        this.op2 = 0;
-        this.op_going = 0;
-        this.op_kind = 0; // 0 for multiply signed, 1 for multiply unsinged
-                          // 2 for div signed, 2 for div unsigned
-        this.clock_start = 0; // Clock time of start
-        this.clock_end = 0; // Clock time of end
+    op1: u32 = 0
+    op2: u32 = 0
+    op_going: u32 = 0
+    op_kind: u32 = 0
+    clock_start: u32 = 0
+    clock_end: u32 = 0
+    constructor(clock: PS1_clock) {
+        this.clock = clock;
     }
 
-    set(hi, lo, op1, op2, op_kind, cycles) {
+    set(hi: u32, lo: u32, op1: u32, op2: u32, op_kind: u32, cycles: u32) {
         this.hi = hi;
         this.lo = lo;
         this.op1 = op1;

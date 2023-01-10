@@ -88,8 +88,8 @@ const PS1_STR = 'ps1';
 //const DEFAULT_SYSTEM = GB_AS_STR;
 //const DEFAULT_SYSTEM = GBC_STR;
 //const DEFAULT_SYSTEM = GG_STR;
-//const DEFAULT_SYSTEM = NES_STR;
-const DEFAULT_SYSTEM = NES_AS_STR;
+const DEFAULT_SYSTEM = NES_STR;
+//const DEFAULT_SYSTEM = NES_AS_STR;
 //const DEFAULT_SYSTEM = PS1_STR;
 
 
@@ -121,21 +121,22 @@ function mutex_unlock(buf, index) {
 
 
 class MT_FIFO16 {
-    constructor() {
+    constructor(buffer, offset) {
         // 0-15 items, *2 for tags
         // 32 head
         // 33 num_items
         // 34 lock
         this.sab = new SharedArrayBuffer(192);
+        this.offset = offset;
         this.FIFO = new Int32Array(this.sab);
         this.output_tag = 0;
     }
 
     clear() {
-        mutex_lock(this.FIFO, 34);
-        this.FIFO[32] = 0; // head = 0
-        this.FIFO[33] = 0; // num_items = 0
-        mutex_unlock(this.FIFO, 34);
+        mutex_lock(this.FIFO, this.offset+34);
+        this.FIFO[this.offset+32] = 0; // head = 0
+        this.FIFO[this.offset+33] = 0; // num_items = 0
+        mutex_unlock(this.FIFO, this.offset+34);
     }
 
     set_sab(to) {
@@ -144,47 +145,47 @@ class MT_FIFO16 {
     }
 
     put_item_blocking(item, tag) {
-        if (Atomics.load(this.FIFO, 33) > 15) {
+        if (Atomics.load(this.FIFO, this.offset+33) > 15) {
             //console.log('Waiting on GP0 to empty buffer...')
-            while (Atomics.load(this.FIFO, 33) > 15) {
+            while (Atomics.load(this.FIFO, this.offset+33) > 15) {
             }
         }
 
-        mutex_lock(this.FIFO, 34);
-        let head = this.FIFO[32];
-        let num_items = this.FIFO[33];
+        mutex_lock(this.FIFO, this.offset+34);
+        let head = this.FIFO[this.offset+32];
+        let num_items = this.FIFO[this.offset+33];
 
         let h = ((head + num_items) & 15) * 2
-        this.FIFO[h] = item;
-        this.FIFO[h+1] = tag;
+        this.FIFO[this.offset+h] = item;
+        this.FIFO[this.offset+h+1] = tag;
         // num_items++
-        this.FIFO[33] = num_items + 1;
+        this.FIFO[this.offset+33] = num_items + 1;
         // head does not move when appending to FIFO
 
-        mutex_unlock(this.FIFO, 34);
+        mutex_unlock(this.FIFO, this.offset+34);
     }
 
     /**
      * @returns {number|null}
       */
     get_item() {
-        if (Atomics.load(this.FIFO, 33) === 0) {
+        if (Atomics.load(this.FIFO, this.offset+33) === 0) {
             return null;
         }
-        mutex_lock(this.FIFO, 34);
+        mutex_lock(this.FIFO, this.offset+34);
         let item = null;
 
-        let head = this.FIFO[32];
-        let num_items = this.FIFO[33];
+        let head = this.FIFO[this.offset+32];
+        let num_items = this.FIFO[this.offset+33];
         if (num_items > 0) {
             item = this.FIFO[head*2];
-            this.output_tag = this.FIFO[(head*2)+1];
-            this.FIFO[head*2] = 0xBEEFCACE;  // zero old place
-            this.FIFO[32] = (head+1) & 15;  // head++
-            this.FIFO[33] = --num_items;    // num_items--;
+            this.output_tag = this.FIFO[this.offset+(head*2)+1];
+            this.FIFO[this.offset+(head*2)] = 0xBEEFCACE;  // zero old place
+            this.FIFO[this.offset+32] = (head+1) & 15;  // head++
+            this.FIFO[this.offset+33] = --num_items;    // num_items--;
         }
 
-        mutex_unlock(this.FIFO, 34);
+        mutex_unlock(this.FIFO, this.offset+34);
         return item;
     }
 }

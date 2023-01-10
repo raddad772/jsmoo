@@ -115,8 +115,8 @@ class NES {
         d.input_types = [INPUT_TYPES.NES_CONTROLLER];
         d.x_resolution = 256;
         d.y_resolution = 240;
-        d.xrh = 8;
-        d.xrw = 7;
+        d.xrh = 4;
+        d.xrw = 3;
 
         d.overscan.top = 8;
         d.overscan.bottom = 8;

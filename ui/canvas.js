@@ -79,58 +79,58 @@ class canvas_manager_t {
         return this.context;
     }
 
-    fixup_dimensions() {
-        if ((this.new_width !== this.width) || (this.new_height !== this.height) ||
-            (this.new_ar_h !== this.ar_h) || (this.new_ar_w !== this.ar_w) ||
-            (this.new_scale !== this.scale) || (this.new_overscan_left !== this.overscan_left) ||
-            (this.new_overscan_right !== this.overscan_right) || (this.new_overscan_top !== this.overscan_top) ||
-            (this.new_overscan_bottom !== this.overscan_bottom) ||
-            (this.new_correct_overscan !== this.correct_overscan) || (this.new_correct_PAR !== this.correct_PAR))
-        {
-            this.width = this.new_width;
-            this.height = this.new_height;
-            this.ar_h = this.new_ar_h;
-            this.ar_w = this.new_ar_w;
-            this.scale = this.new_scale;
-            this.overscan_top = this.new_overscan_top;
-            this.overscan_bottom = this.new_overscan_bottom;
-            this.overscan_left = this.new_overscan_left;
-            this.overscan_right = this.new_overscan_right;
-            this.correct_overscan = this.new_correct_overscan;
-            this.correct_PAR = this.new_correct_PAR;
+fixup_dimensions() {
+    if ((this.new_width !== this.width) || (this.new_height !== this.height) ||
+        (this.new_ar_h !== this.ar_h) || (this.new_ar_w !== this.ar_w) ||
+        (this.new_scale !== this.scale) || (this.new_overscan_left !== this.overscan_left) ||
+        (this.new_overscan_right !== this.overscan_right) || (this.new_overscan_top !== this.overscan_top) ||
+        (this.new_overscan_bottom !== this.overscan_bottom) ||
+        (this.new_correct_overscan !== this.correct_overscan) || (this.new_correct_PAR !== this.correct_PAR))
+    {
+        this.width = this.new_width;
+        this.height = this.new_height;
+        this.ar_h = this.new_ar_h;
+        this.ar_w = this.new_ar_w;
+        this.scale = this.new_scale;
+        this.overscan_top = this.new_overscan_top;
+        this.overscan_bottom = this.new_overscan_bottom;
+        this.overscan_left = this.new_overscan_left;
+        this.overscan_right = this.new_overscan_right;
+        this.correct_overscan = this.new_correct_overscan;
+        this.correct_PAR = this.new_correct_PAR;
 
-            if ((this.ar_h === null) || (!this.correct_PAR)) {
-                this.xmul = this.ymul = 1;
-            }
-            else {
-                let whar = this.width / this.calc_bottom_as
-                let myar = this.ar_w / this.ar_h;
-                this.xmul = myar / whar;
-                this.ymul = 1;
-                if ((this.xmul > 0.98) && (this.xmul < 1.02)) this.xmul = 1;
-                if (this.xmul < 1) {
-                    this.xmul = 1;
-                    this.ymul = whar / myar;
-                }
-            }
-
-            if (this.correct_overscan) {
-                this.el_h = this.height - (this.overscan_top + this.overscan_bottom);
-                this.el_w = this.width - (this.overscan_left + this.overscan_right);
-            } else {
-                this.el_h = this.height;
-                this.el_w = this.width;
-            }
-
-            this.pa_w = this.el_w;
-            this.pa_h = this.el_h;
-
-            this.el_h = Math.floor(this.el_h * this.scale * this.ymul);
-            this.el_w = Math.floor(this.el_w * this.scale * this.xmul);
-            this.el.height = this.el_h;
-            this.el.width = this.el_w;
+        if ((this.ar_h === null) || (!this.correct_PAR)) {
+            this.xmul = this.ymul = 1;
         }
+        else {
+            let whar = this.width / this.calc_bottom_as
+            let myar = this.ar_w / this.ar_h;
+            this.xmul = myar / whar;
+            this.ymul = 1;
+            if ((this.xmul > 0.98) && (this.xmul < 1.02)) this.xmul = 1;
+            if (this.xmul < 1) {
+                this.xmul = 1;
+                this.ymul = whar / myar;
+            }
+        }
+
+        if (this.correct_overscan) {
+            this.el_h = this.height - (this.overscan_top + this.overscan_bottom);
+            this.el_w = this.width - (this.overscan_left + this.overscan_right);
+        } else {
+            this.el_h = this.height;
+            this.el_w = this.width;
+        }
+
+        this.pa_w = this.el_w;
+        this.pa_h = this.el_h;
+
+        this.el_h = Math.floor(this.el_h * this.scale * this.ymul);
+        this.el_w = Math.floor(this.el_w * this.scale * this.xmul);
+        this.el.height = this.el_h;
+        this.el.width = this.el_w;
     }
+}
 
     /**
      * @returns {ImageData}

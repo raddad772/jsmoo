@@ -170,7 +170,6 @@ class PS1_GPU_thread {
         this.gp0_transfer_remaining = 0; // for transfers to/from GPU
         this.cmd = new Uint32Array(16); // Up to 16 args because why not
         this.handle_gp0 = this.gp0.bind(this);
-
     }
 
     GPUSTAT_update() {
@@ -214,8 +213,8 @@ class PS1_GPU_thread {
         o |= (dmar << 25);
 
         // Preserve GPU ready or not bits
-        this.GPUSTAT = o | (this.MMIO[GPUSTAT] & 0x1C000000);;
-        this.MMIO[GPUSTAT] = this.GPUSTAT;
+        this.GPUSTAT = o | (this.MMIO[this.MMIO_offset+GPUSTAT] & 0x1C000000);;
+        this.MMIO[this.MMIO_offset+GPUSTAT] = this.GPUSTAT;
     }
 
     ready_cmd() {
@@ -244,24 +243,31 @@ class PS1_GPU_thread {
 
 
     msg_startup(e) {
-        this.shared_output_buffers[0] = e.output_buffer0;
-        this.shared_output_buffers[1] = e.output_buffer1;
-        this.output[0] = new Uint8Array(this.shared_output_buffers[0]);
-        this.output[1] = new Uint8Array(this.shared_output_buffers[1]);
+        //this.shared_output_buffers[0] = e.output_buffer0;
+        //this.shared_output_buffers[1] = e.output_buffer1;
+        //this.output[0] = new Uint8Array(this.shared_output_buffers[0]);
+        //this.output[1] = new Uint8Array(this.shared_output_buffers[1]);
         this.GP0FIFO_sb = e.GP0FIFO;
         this.GP1FIFO_sb = e.GP1FIFO;
         this.VRAMb = e.VRAM;
+        this.MMIO_sb = e.MMIO;
+        this.GP0FIFO_offset = e.GP0FIFO_offset;
+        this.GP1FIFO_offset = e.GP1FIFO_offset;
+        this.MMIO_offset = e.MMIO_offset >>> 2;
+        this.VRAM_offset = e.VRAM_offset;
+        this.GP0_FIFO.set_sab(this.GP0FIFO_sb);
+        this.GP1_FIFO.set_sab(this.GP1FIFO_sb);
+        this.GP0_FIFO.offset = this.GP0FIFO_offset;
+        this.GP1_FIFO.offset = this.GP1FIFO_offset;
+
+        this.MMIO = new Uint32Array(this.MMIO_sb);
         //console.log(e);
         //console.log(typeof this.VRAMb);
         this.VRAM = new DataView(this.VRAMb);
         //console.log(e);
         for (let i = 0; i < (1024*1024); i+=4) {
-            this.VRAM.setUint32(i,0xFFFFFFFF);
+            this.VRAM.setUint32(this.VRAM_offset+i,0xFFFFFFFF);
         }
-        this.GP0_FIFO.set_sab(this.GP0FIFO_sb);
-        this.GP1_FIFO.set_sab(this.GP1FIFO_sb);
-        this.MMIO_sb = e.MMIO;
-        this.MMIO = new Uint32Array(this.MMIO_sb);
 
         this.rect = {
             texture_x_flip: 0,
@@ -286,7 +292,7 @@ class PS1_GPU_thread {
         this.display_line_end = 0x100;
 
         this.set_last_used_buffer(1);
-        this.MMIO[GPUREAD] = 0;
+        this.MMIO[this.MMIO_offset+GPUREAD] = 0;
 
         this.init_FIFO();
         this.listen_FIFO();
@@ -513,7 +519,7 @@ class PS1_GPU_thread {
             for (let x = start_x; x < (start_x + xsize); x++) {
                 //this.setpix(y, x, BGR);
                 let addr = (2048*y)+(x*2);
-                this.VRAM.setUint16(addr, BGR, true);
+                this.VRAM.setUint16(this.VRAM_offset+addr, BGR, true);
             }
         }
 
@@ -527,7 +533,7 @@ class PS1_GPU_thread {
         if ((ry < this.draw_area_top) || (ry > this.draw_area_bottom)) return;
         if ((rx < this.draw_area_left) || (rx > this.draw_area_right)) return;
         let addr = (2048*ry)+(rx*2);
-        this.VRAM.setUint16(addr, color, true);
+        this.VRAM.setUint16(this.VRAM_offset+addr, color, true);
     }
 
     init_FIFO() {
@@ -535,7 +541,7 @@ class PS1_GPU_thread {
         this.ready_vram_to_CPU();
         this.ready_recv_DMA();
         // Set "ready for stuff"
-        this.MMIO[GPUSTAT] = this.GPUSTAT;
+        this.MMIO[this.MMIO_offset+GPUSTAT] = this.GPUSTAT;
     }
 
     clear_FIFO() {
@@ -543,8 +549,8 @@ class PS1_GPU_thread {
     }
 
     listen_FIFO() {
-        this.MMIO[GPUPLAYING] = 1;
-        while(this.MMIO[GPUPLAYING] === 1) {
+        this.MMIO[this.MMIO_offset+GPUPLAYING] = 1;
+        while(this.MMIO[this.MMIO_offset+GPUPLAYING] === 1) {
             if (this.cur_gp0 === null) {
                 this.cur_gp0 = this.GP0_FIFO.get_item();
                 this.cur_gp0_tag = this.GP0_FIFO.output_tag;
@@ -570,7 +576,7 @@ class PS1_GPU_thread {
             return;
         }
         console.log('FIFO no more listen...')
-        if (this.MMIO[GPUPLAYING] === 0) {
+        if (this.MMIO[this.MMIO_offset+GPUPLAYING] === 0) {
             console.log('PAUSE receieved!');
             return;
         }
@@ -578,7 +584,7 @@ class PS1_GPU_thread {
     }
 
     set_last_used_buffer(which) {
-        this.MMIO[LASTUSED] = which;
+        this.MMIO[this.MMIO_offset+LASTUSED] = which;
     }
 
     onmessage(e) {
@@ -689,7 +695,7 @@ class PS1_GPU_thread {
             let x = this.load_buffer.x+this.load_buffer.img_x;
             let addr = (2048*y)+(x*2);
             //try {
-                this.VRAM.setUint16(addr, px, true);
+                this.VRAM.setUint16(this.VRAM_offset+addr, px, true);
             //} catch(e) {
             //    console.log('WAIT!', y, x, this.load_buffer.width+this.load_buffer.x, addr);
             //}

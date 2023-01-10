@@ -5,7 +5,14 @@ import {GB_CPU} from "./gb_cpu";
 import {hex4} from "../../helpers/helpers";
 import {GB_PPU} from "./gb_ppu";
 import {framevars_t} from "../../glue/global_player";
-import {input_map_keypoint, machine_description, MD_STANDARD, MD_TIMING, systemEmulator} from "../interface";
+import {
+    console_mt_struct,
+    input_map_keypoint,
+    machine_description,
+    MD_STANDARD,
+    MD_TIMING,
+    systemEmulator
+} from "../interface";
 import {dbg} from "../../helpers/debug";
 
 export const GB_QUICK_BOOT = true;
@@ -320,12 +327,19 @@ export class GameBoy implements systemEmulator {
         }
     }
 
-    load_ROM(what: usize, sz: u32): void {
+    load_ROM(name: string, what: usize, sz: u32): void {
         this.cart.load_ROM_from_RAM(what, sz);
         this.reset();
     }
 
     load_BIOS(what: usize, sz: u32): void {
         this.bus.load_BIOS_from_RAM(what, sz);
+    }
+
+    play(): void {};
+    pause(): void {};
+    stop(): void {};
+    get_mt_struct(): console_mt_struct {
+        return new console_mt_struct();
     }
 }

@@ -1,4 +1,11 @@
-import {input_map_keypoint, machine_description, MD_STANDARD, MD_TIMING, systemEmulator} from "../interface"
+import {
+    console_mt_struct,
+    input_map_keypoint,
+    machine_description,
+    MD_STANDARD,
+    MD_TIMING,
+    systemEmulator
+} from "../interface"
 import {m6502} from "../../component/cpu/m6502/m6502"
 import {NES_clock, NES_bus, NES_VARIANTS} from "./nes_common"
 import {NES_ppu} from "./nes_ppu";
@@ -96,6 +103,14 @@ export class NES implements systemEmulator {
         this.cpu = cpu;
         this.cycles_left = 0;
     }
+
+    play(): void {};
+    pause(): void {};
+    stop(): void {};
+    get_mt_struct(): console_mt_struct {
+        return new console_mt_struct();
+    }
+
 
     map_inputs(bufptr: usize): void {
         // Hardcoded yo!
@@ -202,7 +217,7 @@ export class NES implements systemEmulator {
     load_BIOS(what: usize, sz: u32): void {
     }
 
-    load_ROM(what: usize, sz: u32): void {
+    load_ROM(name: string, what: usize, sz: u32): void {
         this.cart.load_cart_from_RAM(what, sz);
         this.reset();
     }

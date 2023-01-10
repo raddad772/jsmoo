@@ -1,4 +1,4 @@
-import {machine_description, systemEmulator} from "../system/interface";
+import {console_mt_struct, machine_description, systemEmulator} from "../system/interface";
 import {NES_VARIANTS} from "../system/nes/nes_common";
 import {NES} from "../system/nes/nes";
 import {GB_variants} from "../system/gb/gb_common";
@@ -39,6 +39,22 @@ export class global_player_t {
 
     constructor() {
         this.ready = false;
+    }
+
+    get_mt_struct(): console_mt_struct {
+        return this.system.get_mt_struct();
+    }
+
+    play(): void {
+        this.system.play();
+    }
+
+    pause(): void {
+        this.system.pause();
+    }
+
+    stop(): void {
+        this.system.stop();
     }
 
     set_system(to: JSMOO_SYSTEMS): void {
@@ -85,9 +101,9 @@ export class global_player_t {
         }
     }
 
-    load_rom(sz: u32): void {
+    load_rom(name: string, sz: u32): void {
         //let r: usize = this.input_buffer;
-        this.system.load_ROM(this.input_buffer, sz);
+        this.system.load_ROM(name, this.input_buffer, sz);
     }
 
     get_framevars(): framevars_t {
@@ -111,8 +127,24 @@ export function gp_set_system(player: global_player_t, to: String): void {
     player.ext_set_system(to);
 }
 
-export function gp_load_ROM_from_RAM(player: global_player_t, sz: u32): void {
-    player.load_rom(sz);
+export function gp_play(player: global_player_t): void {
+    player.play();
+}
+
+export function gp_pause(player: global_player_t): void {
+    player.pause();
+}
+
+export function gp_stop(player: global_player_t): void {
+    player.stop();
+}
+
+export function gp_get_mt(player: global_player_t): console_mt_struct {
+    return player.get_mt_struct();
+}
+
+export function gp_load_ROM_from_RAM(player: global_player_t, name: string, sz: u32): void {
+    player.load_rom(name, sz);
 }
 
 export function gp_run_frame(player: global_player_t): u32 {
