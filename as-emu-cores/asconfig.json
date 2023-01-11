@@ -29,6 +29,7 @@
     }
   },
   "options": {
-    "bindings": "raw"
+    "bindings": "raw",
+     "enable": ["threads"]
   }
 }

@@ -46,10 +46,15 @@ async function instantiate(module, imports = {}) {
       obj = __lowerInternref(obj) || __notnull();
       exports.TST_M6502_cycle(obj);
     },
-    gp_load_ROM_from_RAM(player, sz) {
-      // assembly/glue/global_player/gp_load_ROM_from_RAM(assembly/glue/global_player/global_player_t, u32) => void
-      player = __lowerInternref(player) || __notnull();
-      exports.gp_load_ROM_from_RAM(player, sz);
+    gp_load_ROM_from_RAM(player, name, sz) {
+      // assembly/glue/global_player/gp_load_ROM_from_RAM(assembly/glue/global_player/global_player_t, ~lib/string/String, u32) => void
+      player = __retain(__lowerInternref(player) || __notnull());
+      name = __lowerString(name) || __notnull();
+      try {
+        exports.gp_load_ROM_from_RAM(player, name, sz);
+      } finally {
+        __release(player);
+      }
     },
     gp_run_frame(player) {
       // assembly/glue/global_player/gp_run_frame(assembly/glue/global_player/global_player_t) => u32
@@ -84,6 +89,26 @@ async function instantiate(module, imports = {}) {
       // assembly/glue/global_player/gp_get_framevars(assembly/glue/global_player/global_player_t) => assembly/glue/global_player/framevars_t
       player = __lowerInternref(player) || __notnull();
       return __liftRecord61(exports.gp_get_framevars(player) >>> 0);
+    },
+    gp_play(player) {
+      // assembly/glue/global_player/gp_play(assembly/glue/global_player/global_player_t) => void
+      player = __lowerInternref(player) || __notnull();
+      exports.gp_play(player);
+    },
+    gp_pause(player) {
+      // assembly/glue/global_player/gp_pause(assembly/glue/global_player/global_player_t) => void
+      player = __lowerInternref(player) || __notnull();
+      exports.gp_pause(player);
+    },
+    gp_stop(player) {
+      // assembly/glue/global_player/gp_stop(assembly/glue/global_player/global_player_t) => void
+      player = __lowerInternref(player) || __notnull();
+      exports.gp_stop(player);
+    },
+    gp_get_mt(player) {
+      // assembly/glue/global_player/gp_get_mt(assembly/glue/global_player/global_player_t) => assembly/system/interface/console_mt_struct
+      player = __lowerInternref(player) || __notnull();
+      return __liftRecord90(exports.gp_get_mt(player) >>> 0);
     },
   }, exports);
   function __liftRecord29(pointer) {
@@ -174,6 +199,17 @@ async function instantiate(module, imports = {}) {
       master_frame: new BigUint64Array(memory.buffer)[pointer + 0 >>> 3],
       x: new Uint32Array(memory.buffer)[pointer + 8 >>> 2],
       scanline: new Uint32Array(memory.buffer)[pointer + 12 >>> 2],
+    };
+  }
+  function __liftRecord90(pointer) {
+    // assembly/system/interface/console_mt_struct
+    // Hint: Opt-out from lifting as a record by providing an empty constructor
+    if (!pointer) return null;
+    return {
+      vram_ptr: new Uint32Array(memory.buffer)[pointer + 0 >>> 2],
+      gp0_ptr: new Uint32Array(memory.buffer)[pointer + 4 >>> 2],
+      gp1_ptr: new Uint32Array(memory.buffer)[pointer + 8 >>> 2],
+      mmio_ptr: new Uint32Array(memory.buffer)[pointer + 12 >>> 2],
     };
   }
   function __liftString(pointer) {

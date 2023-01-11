@@ -56,13 +56,13 @@ const R3000_MNs = [
     'MFC', 'CFC', 'MTC', 'CTC', 'BCF', 'BCT', 'COPimm', 'RFE'
 ]
 
-function R3000_MN_gen() {
+function R3000_MN_gen(): void {
     let per_line = 4;
     let mn = 'const R3000_MN = Object.freeze({';
     let mn_r = 'const R3000_MN_R = Object.freeze({';
     let cnt = 0;
     let on_line = 0;
-    for (let i in R3000_MNs) {
+    for (let i: u32 = 0; i <  R3000_MNs.length; i++) {
         if (on_line === 0) {
             mn += '\n    ';
             mn_r += '\n    ';
@@ -78,7 +78,7 @@ function R3000_MN_gen() {
 
 //console.log(R3000_MN_gen());
 
-enum R3000_MN {
+export enum R3000_MN {
     SPECIAL = 0, BcondZ = 1, J = 2, JAL = 3, BEQ = 4,
     BNE = 5, BLEZ = 6, BGTZ = 7, ADDI = 8, ADDIU = 9,
     SLTI = 10, SLTIU = 11, ANDI = 12, ORI = 13, XORI = 14,
@@ -101,12 +101,12 @@ export class R3000_opcode {
     opcode: u32
     mnemonic: R3000_MN
     func: (opcode: u32, op: R3000_opcode, core: R3000) => void;
-    arg: i32|null;
+    arg: i32=0;
     constructor(
         opcode: u32,
         mnemonic: R3000_MN,
         func: (opcode: u32, op: R3000_opcode, core: R3000) => void,
-        arg: i32|null)
+        arg: i32)
     {
         this.opcode = opcode;
         this.mnemonic = mnemonic;
@@ -133,11 +133,11 @@ export function R3000_generate_opcodes(): StaticArray<R3000_opcode> {
  */
         let o = R3000_fNA;
         let m = R3000_MN.NA;
-        let a: i32|null = null;
+        let a: i32 = 0;
         switch(op1) {
             case 0x00: // SPECIAL
                 for (let op2 = 0; op2 < 0x3F; op2++) {
-                    a = null;
+                    a = 0;
                     switch(op2) {
                         case 0x00: // SLL
                             m = R3000_MN.J;

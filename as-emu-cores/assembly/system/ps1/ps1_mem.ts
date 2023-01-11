@@ -6,8 +6,8 @@ import {PS1_clock} from "./ps1_misc";
 
 // @ts-ignore
 @inline
-function deKSEG(addr: u32) {
-    return (addr & 0x1FFFFFFF)>>>0;
+function deKSEG(addr: u32): u32 {
+    return addr & 0x1FFFFFFF;
 }
 
 
@@ -179,6 +179,7 @@ class PS1_DMA_channel {
                 return -1;
         }
         unreachable();
+        return -1;
     }
 
     get_control(): u32 {
@@ -232,11 +233,9 @@ class PS1_DMA {
     irq_force: u32 = 0
     unknown1: u32 = 0
     channels: Array<PS1_DMA_channel> = new Array<PS1_DMA_channel>();
-    mem: PS1_mem;
+    mem: PS1_mem|null=null;
 
-    constructor(mem: PS1_mem) {
-        this.mem = mem;
-
+    constructor() {
         for (let i: u32 = 0; i < 7; i++) {
             this.channels.push(new PS1_DMA_channel(i));
         }
@@ -246,7 +245,7 @@ class PS1_DMA {
         return +(this.irq_force || (this.irq_enable && (this.irq_flags_ch & this.irq_enable_ch)));
     }
 
-    write(addr: u32, size: u32, val: u32) {
+    write(addr: u32, size: u32, val: u32): void {
         let ch_num = ((addr - 0x80) & 0x70) >>> 4;
         let reg = (addr & 0x0F);
         let ch_activated = false;
@@ -275,7 +274,7 @@ class PS1_DMA {
                         console.log('Unimplemented per-channel DMA register write: ' + ch_num.toString() + ' ' + reg.toString() +  hex8(addr));
                         return;
                 }
-                if (ch.active()) this.mem.do_dma(ch);
+                if (ch.active()) this.mem!.do_dma(ch);
                 break;
             case 7: // common registers
                 switch(reg) {
@@ -344,10 +343,10 @@ class PS1_DMA {
 export class PS1_mem {
     scratchpad_ab: StaticArray<u32> = new StaticArray<u32>(1024/4);
 
-    scratchpad: usize
-    MRAM: usize
-    VRAM: usize
-    BIOS: usize
+    scratchpad: usize = 0
+    MRAM: usize = 0
+    VRAM: usize = 0
+    BIOS: usize = 0
     MRAM_ab: StaticArray<u32> = new StaticArray<u32>((2 * 1024 * 1024) / 4);
     VRAM_ab: StaticArray<u32> = new StaticArray<u32>((1024 * 1024) / 4);
     BIOS_ab: StaticArray<u32> = new StaticArray<u32>((512 * 1024) / 4);
@@ -362,11 +361,12 @@ export class PS1_mem {
     ps1: PS1|null=null;
 
     constructor() {
+        this.dma = new PS1_DMA();
+        this.dma.mem = this;
         this.scratchpad = changetype<usize>(this.scratchpad_ab);
         this.MRAM = changetype<usize>(this.MRAM_ab);
         this.VRAM = changetype<usize>(this.VRAM_ab);
         this.BIOS = changetype<usize>(this.BIOS_ab);
-        this.dma = new PS1_DMA(this);
     }
 
     do_dma(ch: PS1_DMA_channel): void {
@@ -415,7 +415,7 @@ export class PS1_mem {
         let step = (ch.step === DMAe.increment) ? 4 : -4;
         let addr = ch.base_addr;
         let copies = ch.transfer_size();
-        if (copies === null) {
+        if (copies === -1) {
             console.log("Couldn't decide DMA transfer size");
             return;
         }
@@ -460,7 +460,7 @@ export class PS1_mem {
                             src_word = 0;
                             break;
                     }
-                    this.CPU_write(cur_addr, MT.u32, src_word!);
+                    this.CPU_write(cur_addr, MT.u32, src_word);
                     break;
             }
             addr = ((addr + step) & 0xFFFFFFFF) >>> 0;
@@ -484,7 +484,7 @@ export class PS1_mem {
         store<u32>(this.BIOS+addr, val);
     }
 
-    BIOS_patch_reset() {
+    BIOS_patch_reset(): void {
         for (let i = 0; i < this.BIOS_untouched.length; i++) {
             this.BIOS_ab[i] = this.BIOS_untouched[i];
         }
@@ -543,7 +543,7 @@ export class PS1_mem {
         this.cache_isolated = +((newSR & 0x10000) === 0x10000);
     }
 
-    dump_unknown() {
+    dump_unknown(): void {
         /*let wl = [], rl = [];
         for (let i of this.unknown_wrote_mem) {
             wl.push(hex8(i));
@@ -592,7 +592,7 @@ export class PS1_mem {
             case 0x00FF1F7C:
                 return;
             case 0x1F802041: // F802041h 1 PSX: POST (external 7 segment display, indicate BIOS boot status
-                //console.log('WRITE POST STATUS!', val);
+                console.log('WRITE POST STATUS! ' + val.toString());
                 return;
             // ...
             case 0x1F801810: // GP0 Send GP0 Commands/Packets (Rendering and VRAM Access)
@@ -797,7 +797,7 @@ export class PS1_mem {
         //console.log('WRITE TO UNKNOWN LOCATION', this.cache_isolated, hex8(addr), hex8(val));
     }
 
-    CPU_read(addr: u32, size: MT, val: u32, has_effect=true) {
+    CPU_read(addr: u32, size: MT, val: u32): u32 {
         addr = deKSEG(addr);
         // 2MB MRAM mirrored 4 times
         if (addr < 0x00800000) {
@@ -809,7 +809,7 @@ export class PS1_mem {
             return this.read_mem_generic(memkind.scratchpad, addr & 0x3FF, size, val);
         }
         // 1FC00000h 512kb BIOS
-        if ((addr >= 0x1FC00000) && (addr < 0x1FC080000)) {
+        if ((addr >= 0x1FC00000) && (addr < 0x1FC08000)) {
             return this.read_mem_generic(memkind.BIOS, addr & 0x7FFFF, size, val);
         }
 
@@ -889,23 +889,24 @@ export class PS1_mem {
             case MT.i8:
                 return 0xFF;
         }
-
+        unreachable();
+        return 0;
     }
 }
 
 class u32_dual_return {
     hi: u32 = 0
     lo: u32 = 0
-    construct() {
+    constructor() {
         this.hi = 0;
         this.lo = 0;
     }
 
-    hexhi() {
+    hexhi(): string {
         return hex4(this.hi);
     }
 
-    hexlo() {
+    hexlo(): string {
         return hex4(this.lo);
     }
 }
@@ -964,7 +965,7 @@ export class R3000_multiplier_t {
         this.clock = clock;
     }
 
-    set(hi: u32, lo: u32, op1: u32, op2: u32, op_kind: u32, cycles: u32) {
+    set(hi: u32, lo: u32, op1: u32, op2: u32, op_kind: u32, cycles: u32): void {
         this.hi = hi;
         this.lo = lo;
         this.op1 = op1;
@@ -972,16 +973,16 @@ export class R3000_multiplier_t {
 
         this.op_going = 1;
         this.op_kind = op_kind;
-        this.clock_start = this.clock.cpu_master_clock;
-        this.clock_end = this.clock.cpu_master_clock+cycles;
+        this.clock_start = <u32>this.clock.cpu_master_clock;
+        this.clock_end = <u32>this.clock.cpu_master_clock+cycles;
     }
 
     // Finishes up multiply or divide
-    finish() {
+    finish(): void {
         if (!this.op_going)
             return;
 
-        let ret;
+        let ret: u32_dual_return = new u32_dual_return();
         switch(this.op_kind) {
             case 0: // signed multiply
                 ret = i32_multiply(this.op1, this.op2);

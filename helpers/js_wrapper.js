@@ -200,7 +200,7 @@ class js_wrapper_t {
 				this.emu_wasm = true;
 				this.emu_wasm_has_helper = true;
 				this.as_wrapper.wasm.gp_set_system(this.as_wrapper.global_player, to);
-				this.emu_wasm_helper = new PS1_as_helper(this);
+				this.emu_wasm_helper = new PS1_helper(this);
 				break;
 			case 'gb':
 				this.system = new GameBoy(bios, GB_variants.DMG);
