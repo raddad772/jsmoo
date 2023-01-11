@@ -1,7 +1,7 @@
 "use strict";
 
-function PS1_present(data, imgdata, PS1_output_buffer, offset) {
-    console.log('OFFSET? SHOULDNT BE 0', offset);
+function PS1_present(data, imgdata, PS1_output_buffer) {
+    let offset = data.vram_buffer;
     let gbo = new Uint16Array(PS1_output_buffer);
     for (let y = 0; y < 512; y++) {
         for (let x = 0; x < 1024; x++) {

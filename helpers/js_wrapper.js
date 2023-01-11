@@ -107,21 +107,31 @@ class js_wrapper_t {
     }
 
 	play() {
-		this.system.play();
+		if (!this.emu_wasm)
+			this.system.play();
+		else
+			this.as_wrapper.wasm.gp_play(this.as_wrapper.global_player);
+
 		if (this.emu_wasm_has_helper) {
 			this.emu_wasm_helper.play();
 		}
 	}
 
 	pause() {
-		this.system.pause();
+		if (!this.emu_wasm)
+			this.system.pause();
+		else
+			this.as_wrapper.wasm.gp_pause(this.as_wrapper.global_player);
 		if (this.emu_wasm_has_helper) {
 			this.emu_wasm_helper.pause();
 		}
 	}
 
 	stop() {
-		this.system.stop();
+		if (!this.emu_wasm)
+			this.system.stop();
+		else
+			this.as_wrapper.wasm.gp_stop(this.as_wrapper.global_player);
 		if (this.emu_wasm_has_helper) {
 			this.emu_wasm_helper.stop();
 		}
@@ -201,6 +211,9 @@ class js_wrapper_t {
 				this.emu_wasm_has_helper = true;
 				this.as_wrapper.wasm.gp_set_system(this.as_wrapper.global_player, to);
 				this.emu_wasm_helper = new PS1_helper(this);
+				let uar = new Uint8Array(bios.BIOS);
+				this.as_wrapper.copy_to_input_buffer(uar)
+				this.as_wrapper.wasm.gp_load_BIOS(this.as_wrapper.global_player, uar.length);
 				break;
 			case 'gb':
 				this.system = new GameBoy(bios, GB_variants.DMG);
@@ -235,22 +248,35 @@ class js_wrapper_t {
 
 	step_master(howmany) {
 		dbg.do_break = false;
-		this.system.step_master(howmany);
-		return this.system.get_framevars();
+		if (this.emu_wasm) {
+			console.log('STEP M')
+			this.as_wrapper.wasm.gp_step_master(this.as_wrapper.global_player, howmany);
+			return this.as_wrapper.wasm.gp_get_framevars(this.as_wrapper.global_player);
+		}
+		else {
+			console.log('STEP M');
+			this.system.step_master(howmany);
+			return this.system.get_framevars();
+		}
 	}
 
     run_frame() {
 		if (this.emu_wasm) {
 			dbg.do_break = false;
             this.as_wrapper.wasm.gp_run_frame(this.as_wrapper.global_player);
-            let rd = new Uint32Array(this.as_wrapper.wasm.memory.buffer);
-            let to_copy = this.tech_specs.out_size >>> 2;
-			let cbuf = new Uint32Array(this.shared_buf1);
-            cbuf.set(rd.slice(this.out_ptr >>> 2, (this.out_ptr>>>2)+to_copy))
-			/*for (let i = 0; i < to_copy; i++) {
-				cbuf[i] = rd[i+(this.out_ptr)];
-			}*/
-			return Object.assign({}, {buffer_num: 0}, this.as_wrapper.wasm.gp_get_framevars(this.as_wrapper.global_player));
+            if (!this.emu_wasm_has_helper) {
+				let rd = new Uint32Array(this.as_wrapper.wasm.memory.buffer);
+				let to_copy = this.tech_specs.out_size >>> 2;
+				let cbuf = new Uint32Array(this.shared_buf1);
+				cbuf.set(rd.slice(this.out_ptr >>> 2, (this.out_ptr >>> 2) + to_copy))
+				/*for (let i = 0; i < to_copy; i++) {
+                    cbuf[i] = rd[i+(this.out_ptr)];
+                }*/
+				return Object.assign({}, {buffer_num: 0}, this.as_wrapper.wasm.gp_get_framevars(this.as_wrapper.global_player));
+			}
+			else {
+				return Object.assign({}, {buffer_num: 0}, {vram_buffer: this.emu_wasm_helper.vram_buf});
+			}
 		} else {
 			dbg.do_break = false;
 			let r = this.system.run_frame();

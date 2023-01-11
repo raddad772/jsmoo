@@ -353,13 +353,14 @@ export class PS1 implements systemEmulator {
     }
 
     get_framevars(): framevars_t {
-        this.framevars.master_frame = this.clock.master_frame;
-        this.framevars.x = 0;
-        this.framevars.scanline = 0;
+        //this.framevars.master_frame = this.clock.master_frame;
+        //this.framevars.x = 0;
+        //this.framevars.scanline = 0;
         return this.framevars;
     }
 
     finish_frame(): u32 {
+        //console.log('RUNNING ' + this.clock.cycles_left_this_frame.toString() + ' CYCLES!');
         this.run_cycles(<i32>this.clock.cycles_left_this_frame);
         return 0;
     }

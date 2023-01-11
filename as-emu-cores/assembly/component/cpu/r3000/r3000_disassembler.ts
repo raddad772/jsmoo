@@ -286,13 +286,13 @@ function R3000_disassemble_COP(opcode: u32): string {
                 case 0:
                     switch(bits5) {
                         case 0: // MFCN rt, rd
-                            return 'MFC' + copnum.toString() + ' ' + R3000_reg_alias(rt) + ', COP' + copnum.toString() + 'd' + rd;
+                            return 'MFC' + copnum.toString() + ' ' + R3000_reg_alias(rt) + ', COP' + copnum.toString() + 'd' + rd.toString();
                         case 2: // CFCn rt, rd
-                            return 'CFC' + copnum.toString() + ' ' + R3000_reg_alias(rt) + ', COP' + copnum.toString() + 'c' + rd;
+                            return 'CFC' + copnum.toString() + ' ' + R3000_reg_alias(rt) + ', COP' + copnum.toString() + 'c' + rd.toString();
                         case 4: // MTCn rt, rd
-                            return 'MTC' + copnum.toString() + ' COP' + copnum.toString() + 'd' + rd + ', ' + R3000_reg_alias(rt);
+                            return 'MTC' + copnum.toString() + ' COP' + copnum.toString() + 'd' + rd.toString() + ', ' + R3000_reg_alias(rt);
                         case 5: // CTCn rt, rd
-                            return 'CTC' + copnum.toString() + ' COP' + copnum.toString() + 'c' + rd + ', ' + R3000_reg_alias(rt);
+                            return 'CTC' + copnum.toString() + ' COP' + copnum.toString() + 'c' + rd.toString() + ', ' + R3000_reg_alias(rt);
                         case 8: // rt=0 BCnF, rt=1 BCnT
                             if (rt === 0)
                                 return 'BC' + copnum.toString() + 'F ' + mksigned16h4(imm16);
@@ -320,14 +320,14 @@ function R3000_disassemble_COP(opcode: u32): string {
                                 return 'BADCOP0';
                         }
                     }
-                    return 'COP' + copnum.toString() + ' ' + hex4(imm25) + ', ' + bits5;
+                    return 'COP' + copnum.toString() + ' ' + hex4(imm25) + ', ' + bits5.toString();
             }
             console.log('SHOULD NOT REACH HERE');
             return 'COPWHAT?';
         case 0x0C: // LWCn rt_dat, [rs+imm]
-            return 'LWC' + copnum.toString() + ' COP' + copnum.toString() + 'd' + rt +', [' + R3000_reg_alias(rs) + mksigned16h4(imm16) +' ]';
+            return 'LWC' + copnum.toString() + ' COP' + copnum.toString() + 'd' + rt.toString() +', [' + R3000_reg_alias(rs) + '+' + mksigned16h4(imm16) +' ]';
         case 0x0E: // SWCn rt_dat, [rs+imm]
-            return 'SWC' + copnum.toString() + ' COP' + copnum.toString() + 'd' + rt +', [' + R3000_reg_alias(rs) + mksigned16h4(imm16) +' ]';
+            return 'SWC' + copnum.toString() + ' COP' + copnum.toString() + 'd' + rt.toString() +', [' + R3000_reg_alias(rs) + '+' + mksigned16h4(imm16) +' ]';
         default:
             console.log('BAD COP? INSTRUCTION! ' + hex8(opcode));
             return 'UNKNOWN COP INS!'
@@ -604,14 +604,14 @@ export function R3000_disassemble(opcode: u32): string {
         case 0x32: // LWC2
         case 0x31: // LWC1
         case 0x30: // LWC0
-            ostr1 = 'lwc' + num;
+            ostr1 = 'lwc' + num.toString();
             ostr2 = R3000_reg_alias(rt) + ', ' + mksigned16h(imm16) + '(' + R3000_reg_alias(rs) + ')';
             break;
         case 0x3B: // SWC3
         case 0x3A: // SWC2
         case 0x39: // SWC1
         case 0x38: // SWC0
-            ostr1 = 'swc' + num;
+            ostr1 = 'swc' + num.toString();
             ostr2 = R3000_reg_alias(rt) + ', ' + mksigned16h(imm16) + '(' + R3000_reg_alias(rs) + ')';
             break;
     }

@@ -5,7 +5,7 @@ import {PS1_GTE} from "../../../system/ps1/ps1_gte";
 import {R3000_generate_opcodes, R3000_MN, R3000_opcode} from "./r3000_opcodes";
 import {hex8} from "../../../helpers/helpers";
 import {R3000_fNA} from "./r3000_instructions";
-import {R3000_COP0_reg} from "./r3000_disassembler";
+import {R3000_COP0_reg, R3000_disassemble} from "./r3000_disassembler";
 import {PS1_clock} from "../../../system/ps1/ps1_misc";
 
 class R3000_regs_t {
@@ -235,7 +235,6 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
     }
 
     cycle(): void {
-        //console.log('PC!', this.regs.PC);
         this.clock.trace_cycles += 2;
 
         if (this.pins.IRQ && (this.regs.COP0[12] & 0x400) && (this.regs.COP0[12] & 1)) {
@@ -250,9 +249,10 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
 
         this.delay_slots(current);
 
-        /*if (this.trace_on) {
-            dbg.traces.add(TRACERS.R3000, this.clock.trace_cycles-1, this.trace_format(R3000_disassemble(current.opcode).disassembled, current.addr))
-        }*/
+        //if (this.trace_on) {
+            console.log(hex8(this.regs.PC) + ' ' + R3000_disassemble(current.opcode));
+            //dbg.traces.add(TRACERS.R3000, this.clock.trace_cycles-1, this.trace_format(R3000_disassemble(current.opcode).disassembled, current.addr))
+        //}
 
         current.clear();
 
@@ -275,6 +275,7 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
         if (which.new_PC !== 0) {
             this.regs.PC = which.new_PC;
             if ((this.regs.PC === 0xB0)) {
+                console.log('B0!');
                 if (this.regs.R[9] === 0x3D) {
                     this.console += String.fromCharCode(this.regs.R[4]);
                     console.log(this.console);
@@ -335,6 +336,7 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
     }
 
     exception(code: u32, branch_delay: bool = false, cop0: bool = false): void {
+        console.log('EXCEPTION ' + code.toString());
         //if (this.trace_on) {
             //dbg.traces.add(TRACERS.R3000, this.clock.trace_cycles-1, 'EXCEPTION ' + code);
         //}

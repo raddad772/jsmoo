@@ -43,6 +43,10 @@ export class global_player_t {
         this.ready = false;
     }
 
+    step_master(howmany: i32): void {
+        this.system.step_master(<u32>howmany);
+    }
+
     get_mt_struct(): console_mt_struct {
         return this.system.get_mt_struct();
     }
@@ -112,12 +116,17 @@ export class global_player_t {
         }
     }
 
+    load_BIOS(sz: u32): void {
+        this.system.load_BIOS(this.input_buffer, sz);
+    }
+
     load_rom(name: string, sz: u32): void {
         //let r: usize = this.input_buffer;
         this.system.load_ROM(name, this.input_buffer, sz);
     }
 
     get_framevars(): framevars_t {
+        console.log('SYSTEM? ' + changetype<usize>(this.system).toString())
         return this.system.get_framevars();
     }
 
@@ -131,10 +140,21 @@ export class global_player_t {
 }
 
 export function new_global_player(): global_player_t {
+    console.log('new_global_player');
     return new global_player_t();
 }
 
+export function gp_load_BIOS(player: global_player_t, size: u32): void {
+    console.log('gp_load_BIOS');
+    player.load_BIOS(size);
+}
+
+export function gp_step_master(player: global_player_t, howmany: i32): void {
+    player.step_master(howmany);
+}
+
 export function gp_set_system(player: global_player_t, to: String): void {
+    console.log('gp_set_system');
     player.ext_set_system(to);
 }
 
@@ -151,10 +171,12 @@ export function gp_stop(player: global_player_t): void {
 }
 
 export function gp_get_mt(player: global_player_t): console_mt_struct {
+    console.log('gp_get_mt');
     return player.get_mt_struct();
 }
 
 export function gp_load_ROM_from_RAM(player: global_player_t, name: string, sz: u32): void {
+    console.log('gp_load_ROM_from_RAM');
     player.load_rom(name, sz);
 }
 
@@ -163,6 +185,7 @@ export function gp_run_frame(player: global_player_t): u32 {
 }
 
 export function gp_get_specs(player: global_player_t): machine_description {
+    console.log('gp_get_specs');
     return player.tech_specs;
 }
 
@@ -171,5 +194,5 @@ export function gp_get_input_buffer(player: global_player_t): usize {
 }
 
 export function gp_get_framevars(player: global_player_t): framevars_t {
-    return player.get_framevars();
+    return new framevars_t();//player.get_framevars();
 }

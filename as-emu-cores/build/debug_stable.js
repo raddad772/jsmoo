@@ -25,7 +25,7 @@ async function instantiate(module, imports = {}) {
     TST_M6502_get(obj) {
       // assembly/glue/cpu_tester/TST_M6502_get(assembly/glue/cpu_tester/TST_M6502) => assembly/glue/cpu_tester/TST_M6502_IO
       obj = __lowerInternref(obj) || __notnull();
-      return __liftRecord29(exports.TST_M6502_get(obj) >>> 0);
+      return __liftRecord30(exports.TST_M6502_get(obj) >>> 0);
     },
     TST_M6502_new() {
       // assembly/glue/cpu_tester/TST_M6502_new() => assembly/glue/cpu_tester/TST_M6502
@@ -34,7 +34,7 @@ async function instantiate(module, imports = {}) {
     TST_M6502_set(obj, to) {
       // assembly/glue/cpu_tester/TST_M6502_set(assembly/glue/cpu_tester/TST_M6502, assembly/glue/cpu_tester/TST_M6502_IO) => void
       obj = __retain(__lowerInternref(obj) || __notnull());
-      to = __lowerRecord29(to) || __notnull();
+      to = __lowerRecord30(to) || __notnull();
       try {
         exports.TST_M6502_set(obj, to);
       } finally {
@@ -56,6 +56,11 @@ async function instantiate(module, imports = {}) {
         __release(player);
       }
     },
+    gp_load_BIOS(player, size) {
+      // assembly/glue/global_player/gp_load_BIOS(assembly/glue/global_player/global_player_t, u32) => void
+      player = __lowerInternref(player) || __notnull();
+      exports.gp_load_BIOS(player, size);
+    },
     gp_run_frame(player) {
       // assembly/glue/global_player/gp_run_frame(assembly/glue/global_player/global_player_t) => u32
       player = __lowerInternref(player) || __notnull();
@@ -71,6 +76,11 @@ async function instantiate(module, imports = {}) {
         __release(player);
       }
     },
+    gp_step_master(player, howmany) {
+      // assembly/glue/global_player/gp_step_master(assembly/glue/global_player/global_player_t, i32) => void
+      player = __lowerInternref(player) || __notnull();
+      exports.gp_step_master(player, howmany);
+    },
     new_global_player() {
       // assembly/glue/global_player/new_global_player() => assembly/glue/global_player/global_player_t
       return __liftInternref(exports.new_global_player() >>> 0);
@@ -78,7 +88,7 @@ async function instantiate(module, imports = {}) {
     gp_get_specs(player) {
       // assembly/glue/global_player/gp_get_specs(assembly/glue/global_player/global_player_t) => assembly/system/interface/machine_description
       player = __lowerInternref(player) || __notnull();
-      return __liftRecord32(exports.gp_get_specs(player) >>> 0);
+      return __liftRecord33(exports.gp_get_specs(player) >>> 0);
     },
     gp_get_input_buffer(player) {
       // assembly/glue/global_player/gp_get_input_buffer(assembly/glue/global_player/global_player_t) => usize
@@ -88,7 +98,7 @@ async function instantiate(module, imports = {}) {
     gp_get_framevars(player) {
       // assembly/glue/global_player/gp_get_framevars(assembly/glue/global_player/global_player_t) => assembly/glue/global_player/framevars_t
       player = __lowerInternref(player) || __notnull();
-      return __liftRecord61(exports.gp_get_framevars(player) >>> 0);
+      return __liftRecord62(exports.gp_get_framevars(player) >>> 0);
     },
     gp_play(player) {
       // assembly/glue/global_player/gp_play(assembly/glue/global_player/global_player_t) => void
@@ -108,10 +118,10 @@ async function instantiate(module, imports = {}) {
     gp_get_mt(player) {
       // assembly/glue/global_player/gp_get_mt(assembly/glue/global_player/global_player_t) => assembly/system/interface/console_mt_struct
       player = __lowerInternref(player) || __notnull();
-      return __liftRecord90(exports.gp_get_mt(player) >>> 0);
+      return __liftRecord122(exports.gp_get_mt(player) >>> 0);
     },
   }, exports);
-  function __liftRecord29(pointer) {
+  function __liftRecord30(pointer) {
     // assembly/glue/cpu_tester/TST_M6502_IO
     // Hint: Opt-out from lifting as a record by providing an empty constructor
     if (!pointer) return null;
@@ -130,11 +140,11 @@ async function instantiate(module, imports = {}) {
       RES_pending: new Uint32Array(memory.buffer)[pointer + 44 >>> 2],
     };
   }
-  function __lowerRecord29(value) {
+  function __lowerRecord30(value) {
     // assembly/glue/cpu_tester/TST_M6502_IO
     // Hint: Opt-out from lowering as a record by providing an empty constructor
     if (value == null) return 0;
-    const pointer = exports.__pin(exports.__new(48, 29));
+    const pointer = exports.__pin(exports.__new(48, 30));
     new Uint32Array(memory.buffer)[pointer + 0 >>> 2] = value.A;
     new Uint32Array(memory.buffer)[pointer + 4 >>> 2] = value.X;
     new Uint32Array(memory.buffer)[pointer + 8 >>> 2] = value.Y;
@@ -150,7 +160,7 @@ async function instantiate(module, imports = {}) {
     exports.__unpin(pointer);
     return pointer;
   }
-  function __liftRecord33(pointer) {
+  function __liftRecord34(pointer) {
     // assembly/system/interface/overscan_info
     // Hint: Opt-out from lifting as a record by providing an empty constructor
     if (!pointer) return null;
@@ -172,7 +182,7 @@ async function instantiate(module, imports = {}) {
       internal_code: new Uint32Array(memory.buffer)[pointer + 12 >>> 2],
     };
   }
-  function __liftRecord32(pointer) {
+  function __liftRecord33(pointer) {
     // assembly/system/interface/machine_description
     // Hint: Opt-out from lifting as a record by providing an empty constructor
     if (!pointer) return null;
@@ -185,13 +195,13 @@ async function instantiate(module, imports = {}) {
       y_resolution: new Uint32Array(memory.buffer)[pointer + 20 >>> 2],
       xrw: new Uint32Array(memory.buffer)[pointer + 24 >>> 2],
       xrh: new Uint32Array(memory.buffer)[pointer + 28 >>> 2],
-      overscan: __liftRecord33(new Uint32Array(memory.buffer)[pointer + 32 >>> 2]),
+      overscan: __liftRecord34(new Uint32Array(memory.buffer)[pointer + 32 >>> 2]),
       out_ptr: new Uint32Array(memory.buffer)[pointer + 36 >>> 2],
       out_size: new Uint32Array(memory.buffer)[pointer + 40 >>> 2],
       keymap: __liftArray(pointer => __liftRecord14(new Uint32Array(memory.buffer)[pointer >>> 2]), 2, new Uint32Array(memory.buffer)[pointer + 44 >>> 2]),
     };
   }
-  function __liftRecord61(pointer) {
+  function __liftRecord62(pointer) {
     // assembly/glue/global_player/framevars_t
     // Hint: Opt-out from lifting as a record by providing an empty constructor
     if (!pointer) return null;
@@ -201,7 +211,7 @@ async function instantiate(module, imports = {}) {
       scanline: new Uint32Array(memory.buffer)[pointer + 12 >>> 2],
     };
   }
-  function __liftRecord90(pointer) {
+  function __liftRecord122(pointer) {
     // assembly/system/interface/console_mt_struct
     // Hint: Opt-out from lifting as a record by providing an empty constructor
     if (!pointer) return null;

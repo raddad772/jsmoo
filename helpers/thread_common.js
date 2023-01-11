@@ -135,6 +135,7 @@ class MT_FIFO16 {
     }
 
     clear() {
+        return;
         mutex_lock(this.FIFO, this.offset+34);
         this.FIFO[this.offset+32] = 0; // head = 0
         this.FIFO[this.offset+33] = 0; // num_items = 0
@@ -147,6 +148,7 @@ class MT_FIFO16 {
     }
 
     put_item_blocking(item, tag) {
+        return;
         if (Atomics.load(this.FIFO, this.offset+33) > 15) {
             //console.log('Waiting on GP0 to empty buffer...')
             while (Atomics.load(this.FIFO, this.offset+33) > 15) {
@@ -171,6 +173,7 @@ class MT_FIFO16 {
      * @returns {number|null}
       */
     get_item() {
+        return null;
         if (Atomics.load(this.FIFO, this.offset+33) === 0) {
             return null;
         }

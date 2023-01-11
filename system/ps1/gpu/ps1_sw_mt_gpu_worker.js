@@ -214,7 +214,7 @@ class PS1_GPU_thread {
 
         // Preserve GPU ready or not bits
         this.GPUSTAT = o | (this.MMIO[this.MMIO_offset+GPUSTAT] & 0x1C000000);;
-        this.MMIO[this.MMIO_offset+GPUSTAT] = this.GPUSTAT;
+        //this.MMIO[this.MMIO_offset+GPUSTAT] = this.GPUSTAT;
     }
 
     ready_cmd() {
@@ -255,16 +255,23 @@ class PS1_GPU_thread {
         this.GP1FIFO_offset = e.GP1FIFO_offset;
         this.MMIO_offset = e.MMIO_offset >>> 2;
         this.VRAM_offset = e.VRAM_offset;
-        this.GP0_FIFO.set_sab(this.GP0FIFO_sb);
-        this.GP1_FIFO.set_sab(this.GP1FIFO_sb);
-        this.GP0_FIFO.offset = this.GP0FIFO_offset;
-        this.GP1_FIFO.offset = this.GP1FIFO_offset;
+        this.sab = e.SAB;
 
-        this.MMIO = new Uint32Array(this.MMIO_sb);
+        this.sab = new SharedArrayBuffer(1024*1024*100);
+
+
+        this.GP0_FIFO.set_sab(this.sab);
+        this.GP1_FIFO.set_sab(this.sab);
+        this.GP0_FIFO.offset = this.GP0FIFO_offset>>>2;
+        this.GP1_FIFO.offset = this.GP1FIFO_offset>>>2;
+
+
+        this.MMIO = new Uint32Array(this.sab);
+        //console.log(this.VRAM_offset, this.sab);
+        //console.log(typeof this.sab);
         //console.log(e);
-        //console.log(typeof this.VRAMb);
-        this.VRAM = new DataView(this.VRAMb);
-        //console.log(e);
+        this.VRAM = new DataView(this.sab);
+        console.log('murdering VRAM');
         for (let i = 0; i < (1024*1024); i+=4) {
             this.VRAM.setUint32(this.VRAM_offset+i,0xFFFFFFFF);
         }
@@ -292,7 +299,7 @@ class PS1_GPU_thread {
         this.display_line_end = 0x100;
 
         this.set_last_used_buffer(1);
-        this.MMIO[this.MMIO_offset+GPUREAD] = 0;
+        //this.MMIO[this.MMIO_offset+GPUREAD] = 0;
 
         this.init_FIFO();
         this.listen_FIFO();

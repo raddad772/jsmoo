@@ -474,7 +474,7 @@ export class PS1_mem {
             console.log('bad BIOS image!?');
             return;
         }
-        for (let i = 0; i < (sz / 4); i++) {
+        for (let i: u32 = 0; i < (sz >> 2); i++) {
             this.BIOS_ab[i] = load<u32>(buf+(i*4));
             this.BIOS_untouched[i] = load<u32>(buf+(i*4))
         }

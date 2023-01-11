@@ -9,14 +9,14 @@ export function mksigned13(what: u32): i32 {
 
 export function mksigned16h4(w: u32): string {
      let what: i32 = w >= 0x8000 ? -(0x10000 - <i32>w) : <i32>w;
-     let o = hex5(Math.abs(what * 4));
+     let o = hex5(abs<i32>(what * 4));
      return (what < 0 ? '-' : '+') + o + 'h';
 }
 
 
 export function mksigned16h(w: u32): string {
      let what: i32 = w >= 0x8000 ? -(0x10000 - <i32>w) : <i32>w;
-     let o: string = hex4(Math.abs(w));
+     let o: string = hex4(abs<i32>(what));
      return (what < 0 ? '-' : '+') + o + 'h';
 }
 

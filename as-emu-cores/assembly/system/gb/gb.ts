@@ -164,7 +164,7 @@ export class GB_bus {
 
     load_BIOS_from_RAM(what: usize, sz: u32): void {
         this.BIOS = new Uint8Array(sz);
-        for (let i = 0; i < sz; i++) {
+        for (let i: u32 = 0; i < sz; i++) {
             this.BIOS[i] = load<u8>(what+i);
         }
     }
