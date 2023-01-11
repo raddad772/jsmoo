@@ -424,7 +424,7 @@ export function R3000_fMULT(opcode: u32, op: R3000_opcode, core: R3000): void {
     // UNSIGNED multiply
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
-    let spd;
+    let spd: u32 = 0;
 
     let o1 = core.regs.R[rs];
 
@@ -448,7 +448,7 @@ export function R3000_fMULTU(opcode: u32, op: R3000_opcode, core: R3000): void {
     // UNSIGNED multiply
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
-    let spd;
+    let spd: u32 = 0;
     let o1 = core.regs.R[rs];
 
     // TODO: make this a little more correct
@@ -734,7 +734,7 @@ export function R3000_fBREAK(opcode: u32, op: R3000_opcode, core: R3000): void {
     core.exception(8)
 }
 
-export function R3000_fMTC(opcode: u32, op: R3000_opcode, core: R3000, copnum: u32) {
+export function R3000_fMTC(opcode: u32, op: R3000_opcode, core: R3000, copnum: u32): void {
     // move TO co
     let rt = (opcode >>> 16) & 0x1F;
     let rd = (opcode >>> 11) & 0x1F;
@@ -742,7 +742,7 @@ export function R3000_fMTC(opcode: u32, op: R3000_opcode, core: R3000, copnum: u
     core.COP_write_reg(copnum, rd, core.regs.R[rt]);
 }
 
-export function R3000_fMFC(opcode: u32, op: R3000_opcode, core: R3000, copnum: u32) {
+export function R3000_fMFC(opcode: u32, op: R3000_opcode, core: R3000, copnum: u32): void {
     // move FROM co
     // rt = cop[rd]
     let rt = (opcode >>> 16) & 0x1F;

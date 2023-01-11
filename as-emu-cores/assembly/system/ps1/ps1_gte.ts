@@ -147,7 +147,7 @@ export class PS1_GTE {
     // 3x3x3, i16
     matrices: StaticArray<StaticArray<StaticArray<i16>>> = new StaticArray<StaticArray<StaticArray<i16>>>(3);
     control_vectors: StaticArray<StaticArray<i32>> = new StaticArray<StaticArray<i32>>(4);
-    v: StaticArray<StaticArray<i16>> = new StaticArray<StaticArray<i32>>(4);
+    v: StaticArray<StaticArray<i16>> = new StaticArray<StaticArray<i16>>(4);
 
     // 4x2
     xy_fifo: StaticArray<StaticArray<i16>> = new StaticArray<StaticArray<i16>>(4);
@@ -219,7 +219,7 @@ export class PS1_GTE {
                 break;
         }
 
-        this.flags |= (+((this.flags & 0x7f87e000) !== 0)) << 31;
+        this.flags |= (((this.flags & 0x7f87e000) !== 0) ? 1 : 0) << 31;
     }
 
     write_reg(reg: u32, val: u32): void {
@@ -313,7 +313,7 @@ export class PS1_GTE {
             case 30:
                 this.lzcs = val;
                 let tmp: u32 = ((val >>> 31) & 1) ? (val ^ 0xFFFFFFFF) : val;
-                this.lzcr = clz<u32>(tmp);
+                this.lzcr = <u8>clz<u32>(tmp);
                 break;
             case 31:
                 console.log('Write to read-only GTE reg 31');
@@ -340,7 +340,7 @@ export class PS1_GTE {
             case 37: // 5-7
             case 38:
             case 39:
-                this.v[0][reg - 37] = <i32>val;
+                this.control_vectors[0][reg - 37] = <i32>val;
                 break;
             case 40: // 8
                 this.matrices[1][0][0] = <i16>val;
@@ -364,7 +364,7 @@ export class PS1_GTE {
             case 45: // 13-15
             case 46:
             case 47:
-                this.v[1][reg - 45] = <i32>val;
+                this.control_vectors[1][reg - 45] = <i32>val;
                 break;
             case 48: // 16
                 this.matrices[2][0][0] = <i16>val;
@@ -388,7 +388,7 @@ export class PS1_GTE {
             case 53: // 21-23
             case 54:
             case 55:
-                this.v[2][reg - 53] = <i32>val;
+                this.control_vectors[2][reg - 53] = <i32>val;
                 break;
             case 56: // 24
                 this.ofx = <i32>val;
@@ -412,8 +412,9 @@ export class PS1_GTE {
                 this.zsf4 = <i16>val;
                 break;
             case 63: // 31
+                let old_flags = this.flags;
                 this.flags = val & 0x7FFFF00;
-                this.flags |= (+((this.flags & 0x7f87e000) !== 0)) << 31;
+                this.flags |= (((old_flags & 0x7f87e000) !== 0) ? 1 : 0) << 31;
                 break;
         }
     }
@@ -490,6 +491,7 @@ export class PS1_GTE {
             case 63: return this.flags;
         }
         unreachable();
+        return 0;
     }
 
     cmd_RTPT(config: GTECmdCfg): void {
@@ -756,7 +758,7 @@ export class PS1_GTE {
         this.ir[3] = this.i32_to_i16_saturate(config, 2, this.mac[3])
     }
 
-    cmd_DPCS(config: GTECmdCfg) {
+    cmd_DPCS(config: GTECmdCfg): void {
         let fca = ControlVector.FarColor;
         let rgb = new StaticArray<u8>(3);
         rgb[0] = this.rgb[0];
@@ -910,7 +912,7 @@ export class PS1_GTE {
         this.mac_to_rgb_fifo();
     }
 
-    cmd_AVSZ4() {
+    cmd_AVSZ4(): void {
         let z0: u32 = this.z_fifo[0];
         let z1: u32 = this.z_fifo[1];
         let z2: u32 = this.z_fifo[1];
@@ -928,7 +930,7 @@ export class PS1_GTE {
         this.otz = this.i64_to_otz(average);
     }
 
-    cmd_AVSZ3() {
+    cmd_AVSZ3(): void {
         let z1: u32 = this.z_fifo[1];
         let z2: u32 = this.z_fifo[1];
         let z3: u32 = this.z_fifo[1];
@@ -1080,7 +1082,7 @@ export class PS1_GTE {
 
 // @ts-ignore
 @inline
-let mac_to_color = function(gte: PS1_GTE, mac: i32, which: u8): u8 {
+function mac_to_color(gte: PS1_GTE, mac: i32, which: u8): u8 {
     let c = mac >> 4;
     if (c < 0) {
         gte.set_flag(21 - which);

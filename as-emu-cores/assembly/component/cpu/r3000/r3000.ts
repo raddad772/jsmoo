@@ -2,7 +2,7 @@
 
 import {MT, PS1_mem, R3000_multiplier_t} from "../../../system/ps1/ps1_mem";
 import {PS1_GTE} from "../../../system/ps1/ps1_gte";
-import {R3000_generate_opcodes, R3000_opcode} from "./r3000_opcodes";
+import {R3000_generate_opcodes, R3000_MN, R3000_opcode} from "./r3000_opcodes";
 import {hex8} from "../../../helpers/helpers";
 import {R3000_fNA} from "./r3000_instructions";
 import {R3000_COP0_reg} from "./r3000_disassembler";
@@ -40,7 +40,7 @@ export class R3000_pipeline_item_t {
     new_PC: u32 = 0
     addr: u32 = 0
     empty: bool = false
-    op: R3000_opcode = new R3000_opcode(0, 'yo', R3000_fNA, 0);
+    op: R3000_opcode = new R3000_opcode(0, R3000_MN.NA, R3000_fNA, 0);
 
     copy(from: R3000_pipeline_item_t): void {
         this.kind = from.kind;
@@ -259,10 +259,10 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
         this.fetch_and_decode();
     }
 
-    delay_slots(which: R3000_pipeline_item_t) {
+    delay_slots(which: R3000_pipeline_item_t): void {
         // Load delay slot from instruction before this one
         if (which.target > 0) {// R0 stays 0
-            this.regs.R[which.target] = which.value;
+            this.regs.R[which.target] = <u32>which.value;
             /*if (this.trace_on) {
                 this.debug_reg_list.push(which.target);
                 //this.debug_tracelog += 'R' + dec2(which.target) + ' ' + hex8(this.regs.R[which.target]>>>0).toLowerCase() + ' ';
@@ -305,7 +305,7 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
         this.regs.PC += 4;
     }
 
-    COP_write_reg(COP: u32, num: u32, val: u32) {
+    COP_write_reg(COP: u32, num: u32, val: u32): void {
         switch(COP) {
             case 0:
                 // TODO: add 1-cycle delay
@@ -367,7 +367,7 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
     //  first in pipe.current, then in later
     //  ones.
     // Then clear out the pipe.
-    flush_pipe() {
+    flush_pipe(): void {
         this.delay_slots(this.pipe.current);
         this.delay_slots(this.pipe.items[0]);
         this.delay_slots(this.pipe.items[1]);

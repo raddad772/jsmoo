@@ -31,7 +31,7 @@ export class heapArrayT<T> {
     }
 
     @operator("[]")
-	__get(key: u32) {
+	__get(key: u32): T {
 		return load<T>(this.ptr+key);
 	}
 
@@ -42,9 +42,9 @@ export class heapArrayT<T> {
 }
 
 export class PS1_GPU {
-    MMIO_buffer: usize
-    GP0_buffer: usize
-    GP1_buffer: usize
+    MMIO_buffer: usize = 0
+    GP0_buffer: usize = 0
+    GP1_buffer: usize = 0
     GP0FIFO: MT_FIFO16
     GP1FIFO: MT_FIFO16
     MMIO: heapArrayT<u32>
@@ -64,26 +64,30 @@ export class PS1_GPU {
 
         //this.VRAMb = new SharedArrayBuffer(2*1024*1024); // 2MB VRAM shared-buffer
 
-        this.MMIO_buffer = heap.alloc(96);
-        this.GP0_buffer = heap.alloc(256);
-        this.GP1_buffer = heap.alloc(256);
-        this.GP0FIFO = new MT_FIFO16(this.GP0_buffer);
-        this.GP1FIFO = new MT_FIFO16(this.GP1_buffer);
-        this.GP0FIFO.clear();
-        this.GP1FIFO.clear();
-        this.MMIO = new heapArrayT<u32>(this.MMIO_buffer, 96);
+        let MMIO_buffer = heap.alloc(96);
+        let GP0_buffer = heap.alloc(256);
+        let GP1_buffer = heap.alloc(256);
+        let GP0FIFO = new MT_FIFO16(GP0_buffer);
+        let GP1FIFO = new MT_FIFO16(GP1_buffer);
+        GP0FIFO.clear();
+        GP1FIFO.clear();
+        this.MMIO = new heapArrayT<u32>(MMIO_buffer, 96);
+        this.GP0FIFO = GP0FIFO;
+        this.GP1FIFO = GP1FIFO;
 
         this.IRQ_bit = 0;
 
         this.GPU_FIFO_tag = 0;
-
+        this.GP0_buffer = GP0_buffer;
+        this.GP1_buffer = GP1_buffer;
+        this.MMIO_buffer = MMIO_buffer;
     }
 
-    play(num: i32) {
+    play(num: i32): void {
         this.MMIO.setUint32(GPUPLAYING, 1);
     }
 
-    pause() {
+    pause(): void {
         console.log('GPUPAUS');
         this.MMIO.setUint32(GPUPLAYING, 0);
     }

@@ -3,6 +3,7 @@ import {NES_VARIANTS} from "../system/nes/nes_common";
 import {NES} from "../system/nes/nes";
 import {GB_variants} from "../system/gb/gb_common";
 import {GameBoy} from "../system/gb/gb";
+import {PS1} from "../system/ps1/ps1";
 
 export class framevars_t {
     master_frame: u64 = 0
@@ -20,7 +21,8 @@ export enum JSMOO_SYSTEMS {
     TEST_NESM6502,
 
     DMG,
-    GBC
+    GBC,
+    PS1
 }
 
 export enum input_types {
@@ -71,6 +73,9 @@ export class global_player_t {
             case JSMOO_SYSTEMS.DMG:
                 this.system = new GameBoy(GB_variants.DMG, this.video_output_buffer);
                 break;
+            case JSMOO_SYSTEMS.PS1:
+                this.system = new PS1();
+                break;
             default:
                 console.log('UNIMPLEMENTED SYSTEM');
                 return;
@@ -88,12 +93,18 @@ export class global_player_t {
         if (to === 'gb_as') {
             ct = JSMOO_SYSTEMS.DMG;
         }
+        if (to === 'ps1_as') {
+            ct = JSMOO_SYSTEMS.PS1;
+        }
         switch(ct) {
             case JSMOO_SYSTEMS.NES_USA:
                 this.set_system(JSMOO_SYSTEMS.NES_USA);
                 return true;
             case JSMOO_SYSTEMS.DMG:
                 this.set_system(JSMOO_SYSTEMS.DMG);
+                return true;
+            case JSMOO_SYSTEMS.PS1:
+                this.set_system(JSMOO_SYSTEMS.PS1);
                 return true;
             default:
                 console.log('UNKNOWN SYSTEM ' + to);

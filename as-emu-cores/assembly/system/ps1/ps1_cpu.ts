@@ -8,19 +8,19 @@ export class PS1_CPU {
         this.core = new R3000(mem);
     }
 
-    enable_tracing() {
+    enable_tracing(): void {
         this.core.enable_tracing();
     }
 
-    disable_tracing() {
+    disable_tracing(): void {
         this.core.disable_tracing();
     }
 
-    reset() {
+    reset(): void {
         this.core.reset();
     }
 
-    cycle() {
+    cycle(): void {
         this.core.cycle();
     }
 }

@@ -761,7 +761,7 @@ class PS1_mem {
             return this.read_mem_generic(PS1_meme.scratchpad, addr & 0x3FF, size, val);
         }
         // 1FC00000h 512kb BIOS
-        if ((addr >= 0x1FC00000) && (addr < 0x1FC080000)) {
+        if ((addr >= 0x1FC00000) && (addr < 0x1FC08000)) {
             return this.read_mem_generic(PS1_meme.BIOS, addr & 0x7FFFF, size, val);
         }
 

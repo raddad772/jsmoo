@@ -35,7 +35,7 @@ export class heapArray2 {
     }
 
     @operator("[]")
-	__get(key: u32) {
+	__get(key: u32): u32 {
 		return load<u32>(this.ptr+key);
 	}
 
@@ -126,7 +126,7 @@ export class PS1 implements systemEmulator {
     bus: PS1_bus = new PS1_bus()
     cpu: PS1_CPU
     gpu: PS1_GPU
-    mem: PS1_mem = new PS1_mem()
+    mem: PS1_mem
     playpausetrack: u32 = 1
     cycles_left: i64 = 0;
 
@@ -135,14 +135,19 @@ export class PS1 implements systemEmulator {
 
     framevars: framevars_t = new framevars_t();
 
-    constructor(out_buffer: usize) {
-        this.cpu = new PS1_CPU(this.mem);
+    constructor() {
+        let mem = new PS1_mem();
+        let cpu = new PS1_CPU(mem);
+
         this.gpu = new PS1_GPU();
 
 
         //dbg.add_cpu(D_RESOURCE_TYPES.R3000, this.cpu);
         //this.load_BIOS_from_RAM(BIOS.BIOS)
-        this.cpu.reset();
+        cpu.reset();
+        this.cpu = cpu;
+        this.mem = mem;
+
         this.mem.ps1 = this;
         this.mem.cpu = this.cpu.core;
         //this.clock = clock;
@@ -209,7 +214,7 @@ export class PS1 implements systemEmulator {
         //dbg.remove_cpu(D_RESOURCE_TYPES.R3000);
     }
 
-    map_inputs(buffer: usize) {
+    map_inputs(buffer: usize): void {
         this.controller1_in.up = load<u32>(0);
         this.controller1_in.down = load<u32>(1);
         this.controller1_in.left = load<u32>(2);
@@ -272,10 +277,10 @@ export class PS1 implements systemEmulator {
             this.mem.BIOS_patch_reset();
 
             if (file_size >= 4) {
-                file_size = Math.floor((file_size + 3) / 4);
+                file_size = floor<i32>((file_size + 3) / 4);
                 let address_read = 0x800;
                 let address_write = load_addr & 0x1FFFFF;
-                for (let i = 0; i < file_size; i++) {
+                for (let i: u32 = 0; i < file_size; i++) {
                     let data = r.getUint32(address_read);
                     this.mem.write_mem_generic(memkind.MRAM, address_write, MT.u32, data);
                     address_read += 4;
@@ -327,7 +332,7 @@ export class PS1 implements systemEmulator {
         return 0;
     }
 
-    run_cycles(howmany: u32): void {
+    run_cycles(howmany: i32): void {
         this.cycles_left += <i64>howmany;
         while (this.cycles_left > 0) {
             this.clock.cycles_left_this_frame-=2;
@@ -355,7 +360,7 @@ export class PS1 implements systemEmulator {
     }
 
     finish_frame(): u32 {
-        this.run_cycles(this.clock.cycles_left_this_frame);
+        this.run_cycles(<i32>this.clock.cycles_left_this_frame);
         return 0;
     }
 }
