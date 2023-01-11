@@ -56,6 +56,11 @@ export async function instantiate(module, imports = {}) {
         __release(player);
       }
     },
+    gp_load_BIOS(player, size) {
+      // assembly/glue/global_player/gp_load_BIOS(assembly/glue/global_player/global_player_t, u32) => void
+      player = __lowerInternref(player) || __notnull();
+      exports.gp_load_BIOS(player, size);
+    },
     gp_run_frame(player) {
       // assembly/glue/global_player/gp_run_frame(assembly/glue/global_player/global_player_t) => u32
       player = __lowerInternref(player) || __notnull();
@@ -70,6 +75,11 @@ export async function instantiate(module, imports = {}) {
       } finally {
         __release(player);
       }
+    },
+    gp_step_master(player, howmany) {
+      // assembly/glue/global_player/gp_step_master(assembly/glue/global_player/global_player_t, i32) => void
+      player = __lowerInternref(player) || __notnull();
+      exports.gp_step_master(player, howmany);
     },
     new_global_player() {
       // assembly/glue/global_player/new_global_player() => assembly/glue/global_player/global_player_t

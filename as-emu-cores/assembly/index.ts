@@ -9,8 +9,10 @@ export {
 
 export {
     gp_load_ROM_from_RAM,
+    gp_load_BIOS,
     gp_run_frame,
     gp_set_system,
+    gp_step_master,
     new_global_player,
     gp_get_specs,
     gp_get_input_buffer,

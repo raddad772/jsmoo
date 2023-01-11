@@ -14,16 +14,15 @@ class PS1_helper {
             console.log('ERR', a, b, c);
         }
 
-        let d = this.as_wrapper.wasm.gp_get_mt();
+        let d = this.as_wrapper.wasm.gp_get_mt(this.as_wrapper.global_player);
 
 
-        this.sab = this.as_wrapper.wasm.memory;
         this.vram_buf = d.vram_ptr;
         this.gp0_buf = d.gp0_ptr;
         this.gp1_buf = d.gp1_ptr;
         this.mmio_buf = d.mmio_ptr;
 
-        this.sab = this.as_wrapper.wasm.memory;
+        this.sab = this.as_wrapper.wasm.memory.buffer;
         this.sab_offset = d.vram_ptr;
 
         this.gpu_thread.postMessage({
@@ -35,7 +34,8 @@ class PS1_helper {
             GP0FIFO_offset: d.gp0_ptr,
             GP1FIFO_offset: d.gp1_ptr,
             MMIO_offset: d.mmio_ptr,
-            VRAM_offset: d.vram_ptr
+            VRAM_offset: d.vram_ptr,
+            SAB: this.sab
         });
     }
 

@@ -346,6 +346,14 @@ class input_provider_t {
 	}
 }
 
+function remove_as(w) {
+	if (w === 'gb_as') return 'gb';
+	if (w === 'gbc_as') return 'gbc';
+	if (w === 'nes_as') return 'nes';
+	if (w === 'ps1_as') return 'ps1';
+	return w;
+}
+
 class global_player_t {
 	constructor() {
 		this.system_kind = DEFAULT_SYSTEM;
@@ -402,7 +410,7 @@ class global_player_t {
 		await this.bios_manager.onload();
 		this.step1_done = false;
         this.player_thread.postMessage({kind: emulator_messages.startup, general_sab: this.general_sab});
-		this.send_set_system(this.system_kind, this.bios_manager.bioses[this.system_kind]);
+		this.send_set_system(this.system_kind, this.bios_manager.bioses[remove_as(this.system_kind)]);
 	}
 
 	send_set_system(kind, bios) {
@@ -662,10 +670,11 @@ class global_player_t {
 				SNES_present(data, imgdata.data, buf);
 				break;
 			case 'ps1':
-				PS1_present(data, imgdata.data, buf, 0);
+				PS1_present(data, imgdata.data, buf);
 				break;
 			case 'ps1_as':
-				PS1_present()
+				PS1_present(data, imgdata.data, buf);
+				break;
 			default:
 				console.log('NO PRESENTATION CODE FOR', this.system_kind);
 				break;
@@ -699,7 +708,7 @@ class global_player_t {
 
 	set_system(to) {
 		this.system_kind = to;
-		this.send_set_system(to, this.bios_manager.bioses[this.system_kind])
+		this.send_set_system(to, this.bios_manager.bioses[remove_as(this.system_kind)])
 	}
 
 	load_rom(name, what) {

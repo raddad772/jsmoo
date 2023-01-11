@@ -56,7 +56,7 @@ const R3000_MNs = [
     'MFC', 'CFC', 'MTC', 'CTC', 'BCF', 'BCT', 'COPimm', 'RFE'
 ]
 
-function R3000_MN_gen(): void {
+function R3000_MN_gen(): string {
     let per_line = 4;
     let mn = 'const R3000_MN = Object.freeze({';
     let mn_r = 'const R3000_MN_R = Object.freeze({';
