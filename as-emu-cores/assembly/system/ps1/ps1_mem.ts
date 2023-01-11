@@ -77,7 +77,7 @@ function PS1_read_mem(buf: usize, addr: u32, sz: MT): u32 {
         case MT.u16:
             return <u32>load<u16>(buf+addr);
         case MT.u32:
-            return <u32>load<u32>(buf+addr);
+            return load<u32>(buf+addr);
         default:
             console.log('BAD SIZE');
             return 0xC0C0C0C0;
@@ -558,6 +558,8 @@ export class PS1_mem {
         console.log('Implement dump_unknown()');
     }
 
+    // @ts-ignore
+    @inline
     CPU_write(addr: u32, size: MT, val: u32): void {
         addr = deKSEG(addr);
         if ((addr < 0x800000) && !this.cache_isolated) {
@@ -797,12 +799,13 @@ export class PS1_mem {
         //console.log('WRITE TO UNKNOWN LOCATION', this.cache_isolated, hex8(addr), hex8(val));
     }
 
+    // @ts-ignore
+    @inline
     CPU_read(addr: u32, size: MT, val: u32): u32 {
         addr = deKSEG(addr);
         // 2MB MRAM mirrored 4 times
         if (addr < 0x00800000) {
-            let r = this.read_mem_generic(memkind.MRAM, addr & 0x1FFFFF, size, val);
-            return r;
+            return this.read_mem_generic(memkind.MRAM, addr & 0x1FFFFF, size, val);
         }
         // 1F800000 1024kb of scratchpad
         if ((addr >= 0x1F800000) && (addr < 0x1F800400)) {

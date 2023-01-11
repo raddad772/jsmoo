@@ -250,7 +250,7 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
         this.delay_slots(current);
 
         //if (this.trace_on) {
-            console.log(hex8(this.regs.PC) + ' ' + R3000_disassemble(current.opcode));
+            //console.log(hex8(this.regs.PC) + ' ' + R3000_disassemble(current.opcode));
             //dbg.traces.add(TRACERS.R3000, this.clock.trace_cycles-1, this.trace_format(R3000_disassemble(current.opcode).disassembled, current.addr))
         //}
 
@@ -274,12 +274,21 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
         // Branch delay slot
         if (which.new_PC !== 0) {
             this.regs.PC = which.new_PC;
+            if ((this.regs.PC & 0x1FFFFFFF) === 0x1FC06FA4) {
+                console.log('SystemHalt reached!');
+            }
+            if ((this.regs.PC === 0xA0)) {
+                console.log('A0! ' + this.regs.R[9].toString());
+            }
             if ((this.regs.PC === 0xB0)) {
-                console.log('B0!');
+                console.log('B0! ' + this.regs.R[9].toString());
                 if (this.regs.R[9] === 0x3D) {
                     this.console += String.fromCharCode(this.regs.R[4]);
                     console.log(this.console);
                 }
+            }
+            if ((this.regs.PC == 0xC)) {
+                console.log('C0! ' + this.regs.R[9].toString());
             }
             which.new_PC = 0;
         }

@@ -35,7 +35,6 @@ export class MT_FIFO16 {
     }
 
     clear(): void {
-        return;
         mutex_lock(this.buf, (34*4));
         store<i32>(this.buf+(32*4), 0); // head = 0
         store<i32>(this.buf+(33*4), 0); // num_items = 0
@@ -47,7 +46,6 @@ export class MT_FIFO16 {
     }
 
     put_item_blocking(item: u32, tag: u32): void {
-        return;
         if (atomic.load<i32>(this.buf+(33*4)) > 15) {
             //console.log('Waiting on GP0 to empty buffer...')
             while (atomic.load<i32>(this.buf+(33*4)) > 15) {
@@ -69,7 +67,6 @@ export class MT_FIFO16 {
     }
 
     get_item(): i32|null {
-        return null;
         if (atomic.load(this.buf+(33*4)) === 0) {
             return null;
         }
