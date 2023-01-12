@@ -65,12 +65,6 @@ export class PS1_GPU {
         this.GP0FIFO = GP0FIFO;
         this.GP1FIFO = GP1FIFO;
 
-        this.GP0FIFO.put_bad(0, 0x1234);
-        this.GP0FIFO.put_bad(1, 0x12345);
-        this.GP0FIFO.put_bad(2, 0x123456);
-        this.GP0FIFO.put_bad(3, 0x1234567);
-        console.log('DONE PUT');
-
         this.IRQ_bit = 0;
 
         this.GPU_FIFO_tag = 0;
@@ -94,21 +88,16 @@ export class PS1_GPU {
     }
 
     gp0(cmd: u32): void {
-        console.log('send GP0')
-        //if ((cmd >>> 24) === 0xA0) dbg.break();
-        //if (cmd === 0xFFFF801F) dbg.break();
-        //console.log('HEY?', hex8(cmd));
+        //console.log('send GP0 ' + hex8(cmd));
         this.GP0FIFO.put_item_blocking(cmd, this.GPU_FIFO_tag++)
     }
 
     gp1(cmd: u32): void {
-        //console.log('SEND GP1 cmd', hex8(cmd >>> 8));
-        console.log('send GP1')
+        //console.log('send GP1 ' + hex8(cmd))
         this.GP1FIFO.put_item_blocking(cmd, this.GPU_FIFO_tag++);
     }
 
     get_gpuread(): u32 {
-        console.log('GET GPUREAD!');
         return this.MMIO.getUint32(GPUREAD*4);
     }
 
@@ -117,7 +106,7 @@ export class PS1_GPU {
         // Fill interrupt bit
         g |= this.IRQ_bit << 24;
         // Fill FIFO full bit
-        console.log('GET GPUSTAT! ' + hex8(g));
+        //console.log('GET GPUSTAT! ' + hex8(g));
         if (((g >>> 29) & 3) === 1)
             g |= this.GP0FIFO.full() ? 0 : 1;
 

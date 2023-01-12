@@ -58,6 +58,7 @@ export class MT_FIFO16 {
             console.log('Waiting on GP0 to empty buffer...')
             while (atomic.load<i32>(this.buf+(33*4)) > 15) {
             }
+            console.log('Buffer emptied');
         }
 
         //console.log('Set Mutex ' + hex8(item))
