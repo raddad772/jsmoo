@@ -249,6 +249,7 @@ export class PS1 implements systemEmulator {
 
     load_ROM(name: string, buf: usize, size: u32): void {
         if ((name.toUpperCase().indexOf('.EXE') !== -1) || (name.toUpperCase().indexOf('.PS-EXE') !== -1)) {
+            console.log('Loading EXE...');
             this.sideload_EXE(buf, size);
         }
         else {
@@ -267,10 +268,12 @@ export class PS1 implements systemEmulator {
         if ((r.getUint8(0) === 80) && (r.getUint8(1) === 83) && (r.getUint8(2) === 45) &&
             (r.getUint8(3) === 88) && (r.getUint8(4) === 32) && (r.getUint8(5) === 69) &&
             (r.getUint8(6) === 88) && (r.getUint8(7) === 69)) {
+            console.log('START LOAD')
             let initial_pc = r.getUint32(0x10);
             let initial_gp = r.getUint32(0x14);
             let load_addr = r.getUint32(0x18);
             let file_size = r.getUint32(0x1C);
+            console.log('FILE SIZE! ' + file_size.toString() + ' ' + sz.toString());
             let memfill_start = r.getUint32(0x28);
             let memfill_size = r.getUint32(0x2C);
             let initial_sp_base = r.getUint32(0x30);

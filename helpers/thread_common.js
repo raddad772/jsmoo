@@ -169,14 +169,22 @@ class MT_FIFO16 {
         mutex_unlock(this.FIFO, this.offset+34);
     }
 
+    getbad(index) {
+        //return this.FIFO[this.offset+index];
+        console.log('GET FROM', hex8(this.offset*4));
+        return Atomics.load(this.FIFO, (this.offset*4)+(index*4));
+    }
+
     /**
      * @returns {number|null}
       */
     get_item() {
         //return null;
-        if (Atomics.load(this.FIFO, this.offset+33) === 0) {
+        if (Atomics.load(this.FIFO, 33*4) === 0) {
+            //console.log('NUM ITEMS IS 0');
             return null;
         }
+        console.log('GETTING AN ITEMS!');
         mutex_lock(this.FIFO, this.offset+34);
         let item = null;
 

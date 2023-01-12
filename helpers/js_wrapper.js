@@ -262,7 +262,7 @@ class js_wrapper_t {
     load_ROM_from_RAM(name, ROM) {
 		if (this.emu_wasm) {
             this.as_wrapper.copy_to_input_buffer(ROM);
-            this.as_wrapper.wasm.gp_load_ROM_from_RAM(this.as_wrapper.global_player, ROM.byteLength);
+            this.as_wrapper.wasm.gp_load_ROM_from_RAM(this.as_wrapper.global_player, name, ROM.byteLength);
 		} else {
 			this.system.load_ROM_from_RAM(name, ROM);
 		}
