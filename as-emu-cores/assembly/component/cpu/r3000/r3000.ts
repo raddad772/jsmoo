@@ -3,10 +3,11 @@
 import {MT, PS1_mem, R3000_multiplier_t} from "../../../system/ps1/ps1_mem";
 import {PS1_GTE} from "../../../system/ps1/ps1_gte";
 import {R3000_generate_opcodes, R3000_MN, R3000_opcode} from "./r3000_opcodes";
-import {hex8} from "../../../helpers/helpers";
+import {dec2, hex8} from "../../../helpers/helpers";
 import {R3000_fNA} from "./r3000_instructions";
-import {R3000_COP0_reg, R3000_disassemble} from "./r3000_disassembler";
+import {R3000_COP0_reg, R3000_disassemble, R3000_reg_alias} from "./r3000_disassembler";
 import {PS1_clock} from "../../../system/ps1/ps1_misc";
+import {D_RESOURCE_TYPES, dbg, R3000_COLOR, trace_start_format} from "../../../helpers/debug";
 
 class R3000_regs_t {
     // MIPS general-purpose registers, of which there are 32
@@ -128,6 +129,10 @@ export class R3000 {
     trace_on: bool = false;
     console: string = '';
     io: R3000_IO = new R3000_IO();
+    debug_on: boolean = false;
+
+    debug_tracelog: string = '';
+    debug_reg_list: Array<u32> = new Array<u32>();
 
     constructor(mem: PS1_mem) {
         this.mem = mem;
@@ -213,25 +218,26 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
     }
 
     trace_format(disasm: string, PCO: u32): string {
-        /*let outstr = trace_start_format('R3K', R3000_COLOR, this.clock.trace_cycles-1, ' ', PCO)
+        let outstr: string = trace_start_format('R3K', R3000_COLOR, this.clock.trace_cycles-1, ' ', PCO)
         outstr += disasm;
-		let sp = disasm.length;
-		while(sp < 30) {
+		while(outstr.length < 30) {
 			outstr += ' ';
-			sp++;
 		}
         if (this.debug_reg_list.length > 0) {
-            for (let i in this.debug_reg_list) {
+            for (let i = 0, k = this.debug_reg_list.length; i < k; i++) {
                 let rn = this.debug_reg_list[i];
                 if (this.debug_on) {
-                    this.debug_tracelog += 'R' + dec2(rn) + ' ' + hex8(this.regs.R[rn]>>>0).toLowerCase() + ' ';
+                    this.debug_tracelog += 'R' + dec2(rn) + ' ' + hex8(this.regs.R[rn]).toLowerCase() + ' ';
                 }
-                outstr += ' ' + R3000_reg_alias[rn] + ':' + hex8(this.regs.R[rn]);
+                outstr += ' ' + R3000_reg_alias(rn) + ':' + hex8(this.regs.R[rn]);
             }
+            this.debug_reg_list = new Array<u32>();
         }
-        this.debug_reg_list = [];
-        return outstr;*/
-        return 'TEST';
+        return outstr;
+    }
+
+    debug_add_delayed(w: R3000_pipeline_item_t): void {
+        this.debug_tracelog += 'R' + dec2(w.target) + ' ' + hex8(<u32>w.value).toLowerCase() + ' ';
     }
 
     cycle(): void {
@@ -245,29 +251,44 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
             this.fetch_and_decode();
         let current = this.pipe.move_forward();
 
+        if (this.debug_on && (current.target > 0)) {
+            this.debug_add_delayed(current);
+        }
+
         current.op.func(current.opcode, current.op, this);
 
         this.delay_slots(current);
 
-        //if (this.trace_on) {
+        if (this.trace_on) {
             //console.log(hex8(this.regs.PC) + ' ' + R3000_disassemble(current.opcode));
-            //dbg.traces.add(TRACERS.R3000, this.clock.trace_cycles-1, this.trace_format(R3000_disassemble(current.opcode).disassembled, current.addr))
-        //}
+            dbg.traces.add(D_RESOURCE_TYPES.R3000, this.clock.trace_cycles-1, this.trace_format(R3000_disassemble(current.opcode), current.addr))
+        }
 
         current.clear();
 
         this.fetch_and_decode();
     }
 
+    get_debug_file(): string {
+        let o: string = this.debug_tracelog + '\r\n';
+        this.debug_tracelog = '';
+        let a: string = 'PC 00000000 OP 00000000 R00 00000000 R01 00000000 R02 00000000 R03 00000000 R04 00000000 R05 00000000 R06 00000000 R07 00000000 R08 00000000 R09 00000000 R10 00000000 R11 00000000 R12 00000000 R13 00000000 R14 00000000 R15 00000000 R16 00000000 R17 00000000 R18 00000000 R19 00000000 R20 00000000 R21 00000000 R22 00000000 R23 00000000 R24 00000000 R25 00000000 R26 00000000 R27 00000000 R28 00000000 R29 00000000 R30 00000000 R31 00000000 CAUSE 00000000 IRQ 0000 D8 00 D16 0000 D32 00000000 \r\n';
+        a += 'PC 00000000 OP 00000000 \r\n';
+        a += 'PC 00000000 OP 00000000 \r\n';
+        a += 'PC 00000000 OP 00000000 \r\n';
+        a += 'PC 00000000 OP 00000000 ';
+        a += o;
+        return a;
+    }
+
     delay_slots(which: R3000_pipeline_item_t): void {
         // Load delay slot from instruction before this one
         if (which.target > 0) {// R0 stays 0
             this.regs.R[which.target] = <u32>which.value;
-            /*if (this.trace_on) {
+            if (this.trace_on) {
                 this.debug_reg_list.push(which.target);
-                //this.debug_tracelog += 'R' + dec2(which.target) + ' ' + hex8(this.regs.R[which.target]>>>0).toLowerCase() + ' ';
-
-            }*/
+                this.debug_tracelog += 'R' + dec2(which.target) + ' ' + hex8(this.regs.R[which.target]>>>0).toLowerCase() + ' ';
+            }
             which.target = -1;
         }
 
@@ -346,9 +367,9 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
 
     exception(code: u32, branch_delay: bool = false, cop0: bool = false): void {
         console.log('EXCEPTION ' + code.toString());
-        //if (this.trace_on) {
-            //dbg.traces.add(TRACERS.R3000, this.clock.trace_cycles-1, 'EXCEPTION ' + code);
-        //}
+        if (this.trace_on) {
+            dbg.traces.add(D_RESOURCE_TYPES.R3000, this.clock.trace_cycles-1, 'EXCEPTION ' + code.toString());
+        }
         code <<= 2;
         let vector: u32 = 0x80000080;
         if (this.regs.COP0[R3000_COP0_reg.SR] & 0x400000) {

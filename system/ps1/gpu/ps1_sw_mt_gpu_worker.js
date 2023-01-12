@@ -148,7 +148,7 @@ class PS1_GPU_thread {
 
         // 0-15 = slots 1-16
         // 16 = head
-        // 17 = num_items
+        // 17 = length
         // 18 = lock
         this.GP0FIFO_sb = new SharedArrayBuffer(80);
         this.GP1FIFO_sb = new SharedArrayBuffer(80);

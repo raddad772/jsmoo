@@ -25,7 +25,7 @@ async function instantiate(module, imports = {}) {
     TST_M6502_get(obj) {
       // assembly/glue/cpu_tester/TST_M6502_get(assembly/glue/cpu_tester/TST_M6502) => assembly/glue/cpu_tester/TST_M6502_IO
       obj = __lowerInternref(obj) || __notnull();
-      return __liftRecord30(exports.TST_M6502_get(obj) >>> 0);
+      return __liftRecord35(exports.TST_M6502_get(obj) >>> 0);
     },
     TST_M6502_new() {
       // assembly/glue/cpu_tester/TST_M6502_new() => assembly/glue/cpu_tester/TST_M6502
@@ -34,7 +34,7 @@ async function instantiate(module, imports = {}) {
     TST_M6502_set(obj, to) {
       // assembly/glue/cpu_tester/TST_M6502_set(assembly/glue/cpu_tester/TST_M6502, assembly/glue/cpu_tester/TST_M6502_IO) => void
       obj = __retain(__lowerInternref(obj) || __notnull());
-      to = __lowerRecord30(to) || __notnull();
+      to = __lowerRecord35(to) || __notnull();
       try {
         exports.TST_M6502_set(obj, to);
       } finally {
@@ -66,12 +66,28 @@ async function instantiate(module, imports = {}) {
       player = __lowerInternref(player) || __notnull();
       return exports.gp_run_frame(player) >>> 0;
     },
+    gp_dump_debug(player) {
+      // assembly/glue/global_player/gp_dump_debug(assembly/glue/global_player/global_player_t) => ~lib/string/String
+      player = __lowerInternref(player) || __notnull();
+      return __liftString(exports.gp_dump_debug(player) >>> 0);
+    },
     gp_set_system(player, to) {
       // assembly/glue/global_player/gp_set_system(assembly/glue/global_player/global_player_t, ~lib/string/String) => void
       player = __retain(__lowerInternref(player) || __notnull());
       to = __lowerString(to) || __notnull();
       try {
         exports.gp_set_system(player, to);
+      } finally {
+        __release(player);
+      }
+    },
+    gp_ui_event(player, dest, what, val_bool) {
+      // assembly/glue/global_player/gp_ui_event(assembly/glue/global_player/global_player_t, u32, ~lib/string/String, bool) => void
+      player = __retain(__lowerInternref(player) || __notnull());
+      what = __lowerString(what) || __notnull();
+      val_bool = val_bool ? 1 : 0;
+      try {
+        exports.gp_ui_event(player, dest, what, val_bool);
       } finally {
         __release(player);
       }
@@ -88,7 +104,7 @@ async function instantiate(module, imports = {}) {
     gp_get_specs(player) {
       // assembly/glue/global_player/gp_get_specs(assembly/glue/global_player/global_player_t) => assembly/system/interface/machine_description
       player = __lowerInternref(player) || __notnull();
-      return __liftRecord33(exports.gp_get_specs(player) >>> 0);
+      return __liftRecord38(exports.gp_get_specs(player) >>> 0);
     },
     gp_get_input_buffer(player) {
       // assembly/glue/global_player/gp_get_input_buffer(assembly/glue/global_player/global_player_t) => usize
@@ -98,7 +114,7 @@ async function instantiate(module, imports = {}) {
     gp_get_framevars(player) {
       // assembly/glue/global_player/gp_get_framevars(assembly/glue/global_player/global_player_t) => assembly/glue/global_player/framevars_t
       player = __lowerInternref(player) || __notnull();
-      return __liftRecord62(exports.gp_get_framevars(player) >>> 0);
+      return __liftRecord67(exports.gp_get_framevars(player) >>> 0);
     },
     gp_play(player) {
       // assembly/glue/global_player/gp_play(assembly/glue/global_player/global_player_t) => void
@@ -118,10 +134,10 @@ async function instantiate(module, imports = {}) {
     gp_get_mt(player) {
       // assembly/glue/global_player/gp_get_mt(assembly/glue/global_player/global_player_t) => assembly/system/interface/console_mt_struct
       player = __lowerInternref(player) || __notnull();
-      return __liftRecord122(exports.gp_get_mt(player) >>> 0);
+      return __liftRecord129(exports.gp_get_mt(player) >>> 0);
     },
   }, exports);
-  function __liftRecord30(pointer) {
+  function __liftRecord35(pointer) {
     // assembly/glue/cpu_tester/TST_M6502_IO
     // Hint: Opt-out from lifting as a record by providing an empty constructor
     if (!pointer) return null;
@@ -140,11 +156,11 @@ async function instantiate(module, imports = {}) {
       RES_pending: new Uint32Array(memory.buffer)[pointer + 44 >>> 2],
     };
   }
-  function __lowerRecord30(value) {
+  function __lowerRecord35(value) {
     // assembly/glue/cpu_tester/TST_M6502_IO
     // Hint: Opt-out from lowering as a record by providing an empty constructor
     if (value == null) return 0;
-    const pointer = exports.__pin(exports.__new(48, 30));
+    const pointer = exports.__pin(exports.__new(48, 35));
     new Uint32Array(memory.buffer)[pointer + 0 >>> 2] = value.A;
     new Uint32Array(memory.buffer)[pointer + 4 >>> 2] = value.X;
     new Uint32Array(memory.buffer)[pointer + 8 >>> 2] = value.Y;
@@ -160,7 +176,7 @@ async function instantiate(module, imports = {}) {
     exports.__unpin(pointer);
     return pointer;
   }
-  function __liftRecord34(pointer) {
+  function __liftRecord39(pointer) {
     // assembly/system/interface/overscan_info
     // Hint: Opt-out from lifting as a record by providing an empty constructor
     if (!pointer) return null;
@@ -171,7 +187,7 @@ async function instantiate(module, imports = {}) {
       right: new Uint32Array(memory.buffer)[pointer + 12 >>> 2],
     };
   }
-  function __liftRecord14(pointer) {
+  function __liftRecord13(pointer) {
     // assembly/system/interface/input_map_keypoint
     // Hint: Opt-out from lifting as a record by providing an empty constructor
     if (!pointer) return null;
@@ -182,7 +198,7 @@ async function instantiate(module, imports = {}) {
       internal_code: new Uint32Array(memory.buffer)[pointer + 12 >>> 2],
     };
   }
-  function __liftRecord33(pointer) {
+  function __liftRecord38(pointer) {
     // assembly/system/interface/machine_description
     // Hint: Opt-out from lifting as a record by providing an empty constructor
     if (!pointer) return null;
@@ -195,13 +211,22 @@ async function instantiate(module, imports = {}) {
       y_resolution: new Uint32Array(memory.buffer)[pointer + 20 >>> 2],
       xrw: new Uint32Array(memory.buffer)[pointer + 24 >>> 2],
       xrh: new Uint32Array(memory.buffer)[pointer + 28 >>> 2],
-      overscan: __liftRecord34(new Uint32Array(memory.buffer)[pointer + 32 >>> 2]),
+      overscan: __liftRecord39(new Uint32Array(memory.buffer)[pointer + 32 >>> 2]),
       out_ptr: new Uint32Array(memory.buffer)[pointer + 36 >>> 2],
       out_size: new Uint32Array(memory.buffer)[pointer + 40 >>> 2],
-      keymap: __liftArray(pointer => __liftRecord14(new Uint32Array(memory.buffer)[pointer >>> 2]), 2, new Uint32Array(memory.buffer)[pointer + 44 >>> 2]),
+      keymap: __liftArray(pointer => __liftRecord13(new Uint32Array(memory.buffer)[pointer >>> 2]), 2, new Uint32Array(memory.buffer)[pointer + 44 >>> 2]),
     };
   }
-  function __liftRecord62(pointer) {
+  function __liftRecord68(pointer) {
+    // assembly/helpers/debug/debugger_info_t
+    // Hint: Opt-out from lifting as a record by providing an empty constructor
+    if (!pointer) return null;
+    return {
+      broke: new Uint8Array(memory.buffer)[pointer + 0 >>> 0] != 0,
+      traces: __liftArray(pointer => __liftString(new Uint32Array(memory.buffer)[pointer >>> 2]), 2, new Uint32Array(memory.buffer)[pointer + 4 >>> 2]),
+    };
+  }
+  function __liftRecord67(pointer) {
     // assembly/glue/global_player/framevars_t
     // Hint: Opt-out from lifting as a record by providing an empty constructor
     if (!pointer) return null;
@@ -209,9 +234,10 @@ async function instantiate(module, imports = {}) {
       master_frame: new BigUint64Array(memory.buffer)[pointer + 0 >>> 3],
       x: new Uint32Array(memory.buffer)[pointer + 8 >>> 2],
       scanline: new Uint32Array(memory.buffer)[pointer + 12 >>> 2],
+      dbg_info: __liftRecord68(new Uint32Array(memory.buffer)[pointer + 16 >>> 2]),
     };
   }
-  function __liftRecord122(pointer) {
+  function __liftRecord129(pointer) {
     // assembly/system/interface/console_mt_struct
     // Hint: Opt-out from lifting as a record by providing an empty constructor
     if (!pointer) return null;

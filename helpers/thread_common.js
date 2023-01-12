@@ -126,7 +126,7 @@ class MT_FIFO16 {
     constructor(buffer, offset) {
         // 0-15 items, *2 for tags
         // 32 head
-        // 33 num_items
+        // 33 length
         // 34 lock
         this.sab = new SharedArrayBuffer(192);
         this.offset = offset;
@@ -138,7 +138,7 @@ class MT_FIFO16 {
         //return;
         mutex_lock(this.FIFO, this.offset+34);
         this.FIFO[this.offset+32] = 0; // head = 0
-        this.FIFO[this.offset+33] = 0; // num_items = 0
+        this.FIFO[this.offset+33] = 0; // length = 0
         mutex_unlock(this.FIFO, this.offset+34);
     }
 
@@ -162,7 +162,7 @@ class MT_FIFO16 {
         let h = ((head + num_items) & 15) * 2
         this.FIFO[this.offset+h] = item;
         this.FIFO[this.offset+h+1] = tag;
-        // num_items++
+        // length++
         this.FIFO[this.offset+33] = num_items + 1;
         // head does not move when appending to FIFO
 
@@ -187,7 +187,7 @@ class MT_FIFO16 {
             this.output_tag = this.FIFO[this.offset+(head*2)+1];
             this.FIFO[this.offset+(head*2)] = 0xBEEFCACE;  // zero old place
             this.FIFO[this.offset+32] = (head+1) & 15;  // head++
-            this.FIFO[this.offset+33] = --num_items;    // num_items--;
+            this.FIFO[this.offset+33] = --num_items;    // length--;
         }
 
         mutex_unlock(this.FIFO, this.offset+34);

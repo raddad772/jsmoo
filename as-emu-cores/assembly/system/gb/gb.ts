@@ -229,6 +229,10 @@ export class GameBoy implements systemEmulator {
         this.ppu = ppu;
     }
 
+    dump_debug(): string {
+        return '';
+    }
+
     map_inputs(bufptr: usize): void {
         this.controller_in.up = load<u32>(bufptr);
         this.controller_in.down = load<u32>(bufptr+(4));

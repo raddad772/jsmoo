@@ -8,7 +8,7 @@ import {
     systemEmulator
 } from "../interface";
 import {memkind, MT, PS1_mem} from "./ps1_mem";
-import {D_RESOURCE_TYPES} from "../../helpers/debug";
+import {D_RESOURCE_TYPES, dbg} from "../../helpers/debug";
 import {PS1_CPU} from "./ps1_cpu";
 import {PS1_GPU} from "./ps1_gpu";
 import {PS1_bus, PS1_clock} from "./ps1_misc";
@@ -142,7 +142,7 @@ export class PS1 implements systemEmulator {
         this.gpu = new PS1_GPU();
 
 
-        //dbg.add_cpu(D_RESOURCE_TYPES.R3000, this.cpu);
+        dbg.add_cpu(D_RESOURCE_TYPES.R3000, changetype<usize>(cpu.core));
         //this.load_BIOS_from_RAM(BIOS.BIOS)
         cpu.reset();
         this.cpu = cpu;
@@ -203,15 +203,15 @@ export class PS1 implements systemEmulator {
         this.mem.BIOS_patch_reset();
     }
 
-    dump_dbg(): void {
+    dump_debug(): string {
         // NOT USED FOR BG DUMP
-        //return this.cpu.core.get_debug_file();
-        console.log('WHAT?');
-        this.mem.dump_unknown();
+        return this.cpu.core.get_debug_file();
+        //console.log('WHAT?');
+        //this.mem.dump_unknown();
     }
 
     killall(): void {
-        //dbg.remove_cpu(D_RESOURCE_TYPES.R3000);
+        dbg.remove_cpu(D_RESOURCE_TYPES.R3000);
     }
 
     map_inputs(buffer: usize): void {
@@ -348,15 +348,16 @@ export class PS1 implements systemEmulator {
             this.clock.master_clock+=2;
 
             this.cycles_left-= 2;
-            //if (dbg.do_break) break;
+            if (dbg.do_break) break;
         }
     }
 
     get_framevars(): framevars_t {
-        //this.framevars.master_frame = this.clock.master_frame;
-        //this.framevars.x = 0;
-        //this.framevars.scanline = 0;
-        return this.framevars;
+        let d = new framevars_t();
+        d.master_frame = this.clock.master_frame;
+        d.x = 0;
+        d.scanline = 0;
+        return d;
     }
 
     finish_frame(): u32 {

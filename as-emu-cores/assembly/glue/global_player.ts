@@ -4,11 +4,13 @@ import {NES} from "../system/nes/nes";
 import {GB_variants} from "../system/gb/gb_common";
 import {GameBoy} from "../system/gb/gb";
 import {PS1} from "../system/ps1/ps1";
+import {dbg, debugger_info_t, EMU_GLOBALS} from "../helpers/debug";
 
 export class framevars_t {
     master_frame: u64 = 0
     x: u32 = 0
     scanline: u32 = 0
+    dbg_info: debugger_info_t = new debugger_info_t();
 }
 
 export enum JSMOO_SYSTEMS {
@@ -89,6 +91,19 @@ export class global_player_t {
         this.ready = true;
     }
 
+    ui_event(dest: EMU_GLOBALS, what: string, val_bool: boolean): void {
+        switch(dest) {
+            case EMU_GLOBALS.global_player:
+                break;
+            case EMU_GLOBALS.debug:
+                dbg.ui_event(what, val_bool);
+                break;
+            default:
+                console.log('UNHANDLED UI EVENT ' + what);
+                break;
+        }
+    }
+
     ext_set_system(to: String): bool {
         let ct: JSMOO_SYSTEMS = JSMOO_SYSTEMS.NONE;
         if (to == 'nes_as') {
@@ -100,6 +115,7 @@ export class global_player_t {
         if (to === 'ps1_as') {
             ct = JSMOO_SYSTEMS.PS1;
         }
+        dbg.syskind = ct;
         switch(ct) {
             case JSMOO_SYSTEMS.NES_USA:
                 this.set_system(JSMOO_SYSTEMS.NES_USA);
@@ -126,8 +142,9 @@ export class global_player_t {
     }
 
     get_framevars(): framevars_t {
-        console.log('SYSTEM? ' + changetype<usize>(this.system).toString())
-        return this.system.get_framevars();
+        let d = this.system.get_framevars();
+        d.dbg_info = dbg.get_dbg_info();
+        return d;
     }
 
     run_frame(): u32 {
@@ -158,6 +175,11 @@ export function gp_set_system(player: global_player_t, to: String): void {
     player.ext_set_system(to);
 }
 
+export function gp_ui_event(player: global_player_t, dest: u32, what: string, val_bool: boolean): void {
+    console.log('UI EVENT ' + what + ' ' + val_bool.toString());
+    player.ui_event(dest, what, val_bool);
+}
+
 export function gp_play(player: global_player_t): void {
     player.play();
 }
@@ -180,6 +202,10 @@ export function gp_load_ROM_from_RAM(player: global_player_t, name: string, sz: 
     player.load_rom(name, sz);
 }
 
+export function gp_dump_debug(player: global_player_t): string {
+    return player.system.dump_debug();
+}
+
 export function gp_run_frame(player: global_player_t): u32 {
     return player.run_frame();
 }
@@ -194,5 +220,5 @@ export function gp_get_input_buffer(player: global_player_t): usize {
 }
 
 export function gp_get_framevars(player: global_player_t): framevars_t {
-    return new framevars_t();//player.get_framevars();
+    return player.get_framevars();
 }

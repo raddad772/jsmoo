@@ -37,7 +37,7 @@ export class MT_FIFO16 {
     clear(): void {
         mutex_lock(this.buf, (34*4));
         store<i32>(this.buf+(32*4), 0); // head = 0
-        store<i32>(this.buf+(33*4), 0); // num_items = 0
+        store<i32>(this.buf+(33*4), 0); // length = 0
         mutex_unlock(this.buf, (34*4));
     }
 
@@ -59,7 +59,7 @@ export class MT_FIFO16 {
         let h = ((head + num_items) & 15) * 2
         store<i32>(this.buf+(h*4), <i32>item);
         store<i32>(this.buf+((h+1)*4), <i32>tag);
-        // num_items++
+        // length++
         store<i32>(this.buf+(33*4), num_items + 1)
         // head does not move when appending to FIFO
 
@@ -80,7 +80,7 @@ export class MT_FIFO16 {
             this.output_tag = load<i32>(this.buf+(((head*2)+1)*4));
             store<i32>(this.buf+((head*2)*4), <i32>0xBEEFCACE);  // zero old place
             store<i32>(this.buf+(32*4), (head+1) & 15);  // head++
-            store<i32>(this.buf+(33*4), --num_items);    // num_items--;
+            store<i32>(this.buf+(33*4), --num_items);    // length--;
         }
 
         mutex_unlock(this.buf, (34*4));

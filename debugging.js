@@ -256,6 +256,17 @@ class debugger_t {
         this.frames_til_pause = 0;
     }
 
+    dump_from_wasm(what) {
+        if (what.broke) {
+            this.break();
+        }
+        if (what.traces.length > 0) {
+            for (let i = 0; i < what.traces.length; i++) {
+                this.traces.add(D_RESOURCE_TYPES.R3000, 0, what.traces[i]);
+            }
+        }
+    }
+
     process_CPU_trace(set_to) {
 		let syskind = emulator_worker.js_wrapper.system_kind;
         if (set_to) {

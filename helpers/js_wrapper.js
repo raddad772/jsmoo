@@ -146,12 +146,31 @@ class js_wrapper_t {
 	}
 
 	dump_dbg() {
-		return this.system.dump_dbg();
+		if (this.emu_wasm) {
+			let d = this.as_wrapper.wasm.gp_dump_debug(this.as_wrapper.global_player)
+			console.log(d);
+			return d;
+		}
+		else {
+			return this.system.dump_dbg();
+		}
 	}
 
 	dump_bg(imgdata, what, width, height) {
 		this.system.dump_BG(imgdata, what, width, height);
 	}
+
+	ui_event(dest, data) {
+		if (this.emu_wasm) {
+			if (dest === 'dbg') dest = 1;
+			else console.log('UNKNOWN UI EVENT DEST', dest);
+			for (let i in data) {
+				this.as_wrapper.wasm.gp_ui_event(this.as_wrapper.global_player, dest, i, data[i]);
+			}
+		}
+    }
+
+
 
     update_keymap(keymap) {
 		if (this.emu_wasm) {
@@ -251,7 +270,9 @@ class js_wrapper_t {
 		if (this.emu_wasm) {
 			console.log('STEP M')
 			this.as_wrapper.wasm.gp_step_master(this.as_wrapper.global_player, howmany);
-			return this.as_wrapper.wasm.gp_get_framevars(this.as_wrapper.global_player);
+			let d = this.as_wrapper.wasm.gp_get_framevars(this.as_wrapper.global_player);
+			dbg.dump_from_wasm(d.dbg_info)
+			return d;
 		}
 		else {
 			console.log('STEP M');
@@ -272,7 +293,9 @@ class js_wrapper_t {
 				/*for (let i = 0; i < to_copy; i++) {
                     cbuf[i] = rd[i+(this.out_ptr)];
                 }*/
-				return Object.assign({}, {buffer_num: 0}, this.as_wrapper.wasm.gp_get_framevars(this.as_wrapper.global_player));
+				let d = this.as_wrapper.wasm.gp_get_framevars(this.as_wrapper.global_player);
+				dbg.dump_from_wasm(d.dbg_info);
+				return Object.assign({}, {buffer_num: 0}, d);
 			}
 			else {
 				return Object.assign({}, {buffer_num: 0}, {vram_buffer: this.emu_wasm_helper.vram_buf});

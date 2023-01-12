@@ -107,6 +107,9 @@ export class NES implements systemEmulator {
     play(): void {};
     pause(): void {};
     stop(): void {};
+    dump_debug(): string {
+        return '';
+    }
     get_mt_struct(): console_mt_struct {
         return new console_mt_struct();
     }

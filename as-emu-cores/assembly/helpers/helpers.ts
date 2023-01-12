@@ -20,10 +20,26 @@ export function mksigned16h(w: u32): string {
      return (what < 0 ? '-' : '+') + o + 'h';
 }
 
+export function padl(what: string, howmuch: u32): string {
+    let hm: i32 = <i32>howmuch;
+    while(what.length < hm) {
+		what = ' ' + what;
+	}
+	return what;
+}
+
+
+
 // @ts-ignore
 @inline
 export function mksigned16(what: u32): i32 {
      return what >= 0x8000 ? -(0x10000 - what) : what;
+}
+
+export function dec2(val: u32): string {
+    let outstr = val.toString();
+    while(outstr.length < 2) outstr = '0' + outstr;
+    return outstr;
 }
 
 export function hex2(val: u32): string {

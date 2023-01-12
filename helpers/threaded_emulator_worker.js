@@ -142,6 +142,7 @@ class threaded_emulator_worker_t {
                 break;
             case 'dbg':
                 dbg.ui_event(event.data);
+                this.js_wrapper.ui_event('dbg', event.data);
                 break;
             case 'startup':
                 let v = event.data;
