@@ -13,6 +13,7 @@ import {NES_cart} from "./nes_cart";
 import {ricoh2A03} from "./cpu/r2a03";
 import {dbg} from "../../helpers/debug";
 import {framevars_t} from "../../glue/global_player";
+import {bigstr_output} from "../../component/cpu/r3000/r3000";
 
 let NES_inputmap: Array<input_map_keypoint> = new Array<input_map_keypoint>(16);
 // p1                                    p2
@@ -107,8 +108,8 @@ export class NES implements systemEmulator {
     play(): void {};
     pause(): void {};
     stop(): void {};
-    dump_debug(): string {
-        return '';
+    dump_debug(): bigstr_output {
+        return new bigstr_output();
     }
     get_mt_struct(): console_mt_struct {
         return new console_mt_struct();

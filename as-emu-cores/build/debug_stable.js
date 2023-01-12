@@ -67,9 +67,9 @@ async function instantiate(module, imports = {}) {
       return exports.gp_run_frame(player) >>> 0;
     },
     gp_dump_debug(player) {
-      // assembly/glue/global_player/gp_dump_debug(assembly/glue/global_player/global_player_t) => ~lib/string/String
+      // assembly/glue/global_player/gp_dump_debug(assembly/glue/global_player/global_player_t) => ~lib/array/Array<~lib/string/String>
       player = __lowerInternref(player) || __notnull();
-      return __liftString(exports.gp_dump_debug(player) >>> 0);
+      return __liftArray(pointer => __liftString(new Uint32Array(memory.buffer)[pointer >>> 2]), 2, exports.gp_dump_debug(player) >>> 0);
     },
     gp_set_system(player, to) {
       // assembly/glue/global_player/gp_set_system(assembly/glue/global_player/global_player_t, ~lib/string/String) => void
@@ -114,7 +114,7 @@ async function instantiate(module, imports = {}) {
     gp_get_framevars(player) {
       // assembly/glue/global_player/gp_get_framevars(assembly/glue/global_player/global_player_t) => assembly/glue/global_player/framevars_t
       player = __lowerInternref(player) || __notnull();
-      return __liftRecord67(exports.gp_get_framevars(player) >>> 0);
+      return __liftRecord68(exports.gp_get_framevars(player) >>> 0);
     },
     gp_play(player) {
       // assembly/glue/global_player/gp_play(assembly/glue/global_player/global_player_t) => void
@@ -134,7 +134,7 @@ async function instantiate(module, imports = {}) {
     gp_get_mt(player) {
       // assembly/glue/global_player/gp_get_mt(assembly/glue/global_player/global_player_t) => assembly/system/interface/console_mt_struct
       player = __lowerInternref(player) || __notnull();
-      return __liftRecord129(exports.gp_get_mt(player) >>> 0);
+      return __liftRecord130(exports.gp_get_mt(player) >>> 0);
     },
   }, exports);
   function __liftRecord35(pointer) {
@@ -187,7 +187,7 @@ async function instantiate(module, imports = {}) {
       right: new Uint32Array(memory.buffer)[pointer + 12 >>> 2],
     };
   }
-  function __liftRecord13(pointer) {
+  function __liftRecord6(pointer) {
     // assembly/system/interface/input_map_keypoint
     // Hint: Opt-out from lifting as a record by providing an empty constructor
     if (!pointer) return null;
@@ -214,10 +214,10 @@ async function instantiate(module, imports = {}) {
       overscan: __liftRecord39(new Uint32Array(memory.buffer)[pointer + 32 >>> 2]),
       out_ptr: new Uint32Array(memory.buffer)[pointer + 36 >>> 2],
       out_size: new Uint32Array(memory.buffer)[pointer + 40 >>> 2],
-      keymap: __liftArray(pointer => __liftRecord13(new Uint32Array(memory.buffer)[pointer >>> 2]), 2, new Uint32Array(memory.buffer)[pointer + 44 >>> 2]),
+      keymap: __liftArray(pointer => __liftRecord6(new Uint32Array(memory.buffer)[pointer >>> 2]), 2, new Uint32Array(memory.buffer)[pointer + 44 >>> 2]),
     };
   }
-  function __liftRecord68(pointer) {
+  function __liftRecord69(pointer) {
     // assembly/helpers/debug/debugger_info_t
     // Hint: Opt-out from lifting as a record by providing an empty constructor
     if (!pointer) return null;
@@ -226,7 +226,7 @@ async function instantiate(module, imports = {}) {
       traces: __liftArray(pointer => __liftString(new Uint32Array(memory.buffer)[pointer >>> 2]), 2, new Uint32Array(memory.buffer)[pointer + 4 >>> 2]),
     };
   }
-  function __liftRecord67(pointer) {
+  function __liftRecord68(pointer) {
     // assembly/glue/global_player/framevars_t
     // Hint: Opt-out from lifting as a record by providing an empty constructor
     if (!pointer) return null;
@@ -234,10 +234,10 @@ async function instantiate(module, imports = {}) {
       master_frame: new BigUint64Array(memory.buffer)[pointer + 0 >>> 3],
       x: new Uint32Array(memory.buffer)[pointer + 8 >>> 2],
       scanline: new Uint32Array(memory.buffer)[pointer + 12 >>> 2],
-      dbg_info: __liftRecord68(new Uint32Array(memory.buffer)[pointer + 16 >>> 2]),
+      dbg_info: __liftRecord69(new Uint32Array(memory.buffer)[pointer + 16 >>> 2]),
     };
   }
-  function __liftRecord129(pointer) {
+  function __liftRecord130(pointer) {
     // assembly/system/interface/console_mt_struct
     // Hint: Opt-out from lifting as a record by providing an empty constructor
     if (!pointer) return null;

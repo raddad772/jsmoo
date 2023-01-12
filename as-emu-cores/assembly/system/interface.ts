@@ -1,4 +1,5 @@
 import {framevars_t} from "../glue/global_player";
+import {bigstr_output} from "../component/cpu/r3000/r3000";
 
 export enum MD_TIMING {
     frame = 0,
@@ -74,7 +75,7 @@ export interface systemEmulator {
     play(): void;
     pause(): void;
     stop(): void;
-    dump_debug(): string;
+    dump_debug(): bigstr_output;
 
     get_mt_struct(): console_mt_struct;
 }

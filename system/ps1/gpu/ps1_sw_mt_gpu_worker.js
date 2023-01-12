@@ -272,9 +272,9 @@ class PS1_GPU_thread {
         //console.log(e);
         this.VRAM = new DataView(this.sab);
         console.log('murdering VRAM');
-        for (let i = 0; i < (1024*1024); i+=4) {
+        /*for (let i = 0; i < (1024*1024); i+=4) {
             this.VRAM.setUint32(this.VRAM_offset+i,0xFFFFFFFF);
-        }
+        }*/
 
         this.rect = {
             texture_x_flip: 0,

@@ -5,6 +5,7 @@ import {GB_variants} from "../system/gb/gb_common";
 import {GameBoy} from "../system/gb/gb";
 import {PS1} from "../system/ps1/ps1";
 import {dbg, debugger_info_t, EMU_GLOBALS} from "../helpers/debug";
+import {bigstr_output} from "../component/cpu/r3000/r3000";
 
 export class framevars_t {
     master_frame: u64 = 0
@@ -170,7 +171,22 @@ export function gp_step_master(player: global_player_t, howmany: i32): void {
     player.step_master(howmany);
 }
 
+// yes <i32><u32>0xFFFFFFFF = -1
+// yes <i32><i16>-1 = -1
+// yes <u32><i32>-1 = 0xFFFFFFFF
+// yes <i16><i32>-1 = -1
+// yes <i32>0xFFFFFFFF = -1
+// yes let a: i32 = 0xFFFFFFFF; = -1
+// yes a: u32 = 0xFFFFFFFF; <i32>a < 0
+// yes PC + (<u32>(<i16>(opcode & 0xFFFF))*4);
+function test_assumptions(): void {
+    let a: u32 = <u32>(<i16>0xFFFF);
+    let b: u32 = <u32>(<i32>a>>1);
+    console.log('!!!!!!!!!!RESULT ' + a.toString(16));
+}
+
 export function gp_set_system(player: global_player_t, to: String): void {
+    //test_assumptions();
     console.log('gp_set_system');
     player.ext_set_system(to);
 }
@@ -202,8 +218,8 @@ export function gp_load_ROM_from_RAM(player: global_player_t, name: string, sz: 
     player.load_rom(name, sz);
 }
 
-export function gp_dump_debug(player: global_player_t): string {
-    return player.system.dump_debug();
+export function gp_dump_debug(player: global_player_t): Array<string> {
+    return player.system.dump_debug().strings;
 }
 
 export function gp_run_frame(player: global_player_t): u32 {

@@ -14,6 +14,7 @@ import {
     systemEmulator
 } from "../interface";
 import {dbg} from "../../helpers/debug";
+import {bigstr_output} from "../../component/cpu/r3000/r3000";
 
 export const GB_QUICK_BOOT = true;
 
@@ -229,8 +230,8 @@ export class GameBoy implements systemEmulator {
         this.ppu = ppu;
     }
 
-    dump_debug(): string {
-        return '';
+    dump_debug(): bigstr_output {
+        return new bigstr_output();
     }
 
     map_inputs(bufptr: usize): void {
