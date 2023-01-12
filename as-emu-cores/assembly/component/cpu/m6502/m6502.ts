@@ -99,6 +99,14 @@ export class m6502 {
         return 0;
     }
 
+    enable_tracing(): void {
+        console.log('Implement tracing M6502');
+    }
+
+    disable_tracing(): void {
+        console.log('Implement tracing M6502');
+    }
+
     reset(): void {
         this.pins.RST = 0;
         this.regs.TCU = 0;

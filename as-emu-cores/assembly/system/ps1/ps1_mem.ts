@@ -3,6 +3,7 @@ import {hex4, hex8} from "../../helpers/helpers";
 import {PS1} from "./ps1";
 import {R3000} from "../../component/cpu/r3000/r3000";
 import {PS1_clock} from "./ps1_misc";
+import {D_RESOURCE_TYPES, dbg} from "../../helpers/debug";
 
 // @ts-ignore
 @inline
@@ -595,6 +596,7 @@ export class PS1_mem {
                 return;
             case 0x1F802041: // F802041h 1 PSX: POST (external 7 segment display, indicate BIOS boot status
                 console.log('WRITE POST STATUS! ' + val.toString());
+                if (val === 15) dbg.break(D_RESOURCE_TYPES.R3000);
                 return;
             // ...
             case 0x1F801810: // GP0 Send GP0 Commands/Packets (Rendering and VRAM Access)

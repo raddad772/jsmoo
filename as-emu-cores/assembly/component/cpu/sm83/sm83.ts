@@ -113,13 +113,13 @@ export class SM83_t {
         this.variant = variant;
     }
 
-    /*enable_tracing(trace_peek: null = null): void {
-        console.log('ENABLE THIS ENABLE TRACING')
+    enable_tracing(): void {
+        console.log('ENABLE THIS ENABLE TRACING, WAIT IMPLEMENT IT')
         this.trace_on = true;
-        if (trace_peek !== null)
-            this.trace_peek = trace_peek;
-        console.log('TRACING ENABLED HERE!')
-    }*/
+        /*if (trace_peek !== null)
+            this.trace_peek = trace_peek;*/
+        //console.log('TRACING ENABLED HERE!')
+    }
 
     disable_tracing(): void {
         console.log('ENABLE THIS DISABLE TRACING');

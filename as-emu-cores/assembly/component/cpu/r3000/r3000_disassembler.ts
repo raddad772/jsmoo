@@ -168,7 +168,7 @@ export enum R3000_COP0_reg {
 }
 
 
-function R3000_reg_alias(reg: u32): string {
+export function R3000_reg_alias(reg: u32): string {
     switch(reg) {
         case 0: return 'r0'
         case 1: return 'at'

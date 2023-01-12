@@ -214,8 +214,7 @@ class R3000 {
 
         this.debug_reg_list = [];
         this.debug_tracelog = '';
-        this.debug_on = false;
-        this.any_debug = false;
+        this.debug_on = true;
         this.cache_isolated = false;
 
         this.mem.CPU_write_reg = this.CPU_write_reg.bind(this);
@@ -370,7 +369,6 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
     get_debug_file() {
         let o = this.debug_tracelog + '\r\n';
         this.debug_tracelog = '';
-        this.any_debug = false;
         let a = 'PC 00000000 OP 00000000 R00 00000000 R01 00000000 R02 00000000 R03 00000000 R04 00000000 R05 00000000 R06 00000000 R07 00000000 R08 00000000 R09 00000000 R10 00000000 R11 00000000 R12 00000000 R13 00000000 R14 00000000 R15 00000000 R16 00000000 R17 00000000 R18 00000000 R19 00000000 R20 00000000 R21 00000000 R22 00000000 R23 00000000 R24 00000000 R25 00000000 R26 00000000 R27 00000000 R28 00000000 R29 00000000 R30 00000000 R31 00000000 CAUSE 00000000 IRQ 0000 D8 00 D16 0000 D32 00000000 \r\n';
         a += 'PC 00000000 OP 00000000 \r\n';
         a += 'PC 00000000 OP 00000000 \r\n';
