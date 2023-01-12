@@ -16,7 +16,7 @@ export function R3000_branch(core: R3000, new_addr: u32, doit: bool, link: bool,
     if (doit)
         core.pipe.get_next().new_PC = new_addr>>>0;
     if (link)
-        R3000_fs_reg_write(core, link_reg, ((core.regs.PC+4)&0xFFFFFFFF)>>>0);
+        R3000_fs_reg_write(core, link_reg, core.regs.PC+4);
 }
 
 //@ts-ignore
@@ -24,7 +24,7 @@ export function R3000_branch(core: R3000, new_addr: u32, doit: bool, link: bool,
 export function R3000_fs_reg_write(core: R3000, target: u32, value: u32): void {
     if (target !== 0) core.regs.R[target] = value;
 
-    //if (core.trace_on) core.debug_reg_list.push(target);
+    if (core.trace_on) core.debug_reg_list.push(target);
 
     let p = core.pipe.current;
 
@@ -51,7 +51,7 @@ export function R3000_fs_reg_delay(core: R3000, target: i32, value: u32): void {
     let p = core.pipe.get_next();
 
     p.target = target;
-    p.value = <i64>value;
+    p.value = value;
 }
 
 
@@ -115,8 +115,12 @@ export function R3000_fJAL(opcode: u32, op: R3000_opcode, core: R3000): void {
 export function R3000_fJR(opcode: u32, op: R3000_opcode, core: R3000): void
 {
     let rs = (opcode >>> 21) & 0x1F;
+    let a = core.regs.R[rs];
+    if ((a & 3) !== 0) {
+        console.log('ADDRESS EXCEPTION, HANDLE?');
+    }
     R3000_branch(core,
-        core.regs.R[rs],
+        a,
         true,
         false);
 }
@@ -125,13 +129,17 @@ export function R3000_fJALR(opcode: u32, op: R3000_opcode, core: R3000): void
 {
     let rs = (opcode >>> 21) & 0x1F;
     let rd = (opcode >>> 11) & 0x1F;
-    R3000_branch(core, core.regs.R[rs], true, true, rd)
+    let a = core.regs.R[rs];
+    if ((a & 3) !== 0) {
+        console.log('ADDRESS EXCEPTION, HANDLE?');
+    }
+    R3000_branch(core, a, true, true, rd)
 }
 
 export function R3000_fBEQ(opcode: u32, op: R3000_opcode, core: R3000): void {
     // 00010x | rs   | rt   | <--immediate16bit--> |
     R3000_branch(core,
-        <u32>(<i32>core.regs.PC + (mksigned16(opcode & 0xFFFF)*4)),
+        core.regs.PC + (<u32>(<i16>(opcode & 0xFFFF))*4),
         core.regs.R[(opcode >>> 21) & 0x1F] === core.regs.R[(opcode >>> 16) & 0x1F],
         false);
 }
@@ -139,7 +147,7 @@ export function R3000_fBEQ(opcode: u32, op: R3000_opcode, core: R3000): void {
 export function R3000_fBNE(opcode: u32, op: R3000_opcode, core: R3000): void {
     // 00010x | rs   | rt   | <--immediate16bit--> |\
     R3000_branch(core,
-        <u32>(<i32>core.regs.PC + (mksigned16(opcode & 0xFFFF)*4)),
+        core.regs.PC + (<u32>(<i16>(opcode & 0xFFFF))*4),
         core.regs.R[(opcode >>> 21) & 0x1F] !== core.regs.R[(opcode >>> 16) & 0x1F],
         false);
 }
@@ -147,7 +155,7 @@ export function R3000_fBNE(opcode: u32, op: R3000_opcode, core: R3000): void {
 export function R3000_fBLEZ(opcode: u32, op: R3000_opcode, core: R3000): void {
     // 00010x | rs   | rt   | <--immediate16bit--> |
     R3000_branch(core,
-        <u32>(<i32>core.regs.PC + (mksigned16(opcode & 0xFFFF)*4)),
+        core.regs.PC + (<u32>(<i16>(opcode & 0xFFFF))*4),
         (<i32>core.regs.R[(opcode >>> 21) & 0x1F]) <= 0,
         false)
 }
@@ -155,7 +163,7 @@ export function R3000_fBLEZ(opcode: u32, op: R3000_opcode, core: R3000): void {
 export function R3000_fBGTZ(opcode: u32, op: R3000_opcode, core: R3000): void {
     // 00010x | rs   | rt   | <--immediate16bit--> |
     R3000_branch(core,
-        <u32>(<i32>core.regs.PC + (mksigned16(opcode & 0xFFFF)*4)),
+        core.regs.PC + (<u32>(<i16>(opcode & 0xFFFF))*4),
         (<i32>core.regs.R[(opcode >>> 21) & 0x1F])  > 0,
         false)
 }
@@ -164,19 +172,20 @@ export function R3000_fADDI(opcode: u32, op: R3000_opcode, core: R3000): void {
     //   001xxx | rs   | rt   | <--immediate16bit--> | alu-imm
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
-    let imm = ((<i32>opcode & 0xFFFF) << 16) >> 16;
+    let imm: u32 = <u32>(<i16>(opcode & 0xFFFF));
 
+    // core.regs.PC + (<u32>(<i16>(opcode & 0xFFFF))*4)
     // TODO: add overflow trap
-    R3000_fs_reg_write(core, rt, <u32>(<i32>core.regs.R[rs] + imm));
+    R3000_fs_reg_write(core, rt, core.regs.R[rs] + <u32>imm);
 }
 
 export function R3000_fADDIU(opcode: u32, op: R3000_opcode, core: R3000): void {
     //   001xxx | rs   | rt   | <--immediate16bit--> | alu-imm
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
-    let imm = ((<i32>opcode & 0xFFFF) << 16) >> 16;
+    let imm: u32 = <u32>(<i16>(opcode & 0xFFFF));
 
-    R3000_fs_reg_write(core, rt, <u32>(<i32>core.regs.R[rs] + imm));
+    R3000_fs_reg_write(core, rt, core.regs.R[rs] + <u32>imm);
 }
 
 export function R3000_fADD(opcode: u32, op: R3000_opcode, core: R3000): void {
@@ -186,7 +195,7 @@ export function R3000_fADD(opcode: u32, op: R3000_opcode, core: R3000): void {
     let rd = (opcode >>> 11) & 0x1F;
 
     // TODO: add overflow trap
-    R3000_fs_reg_write(core, rd, <u32>(<i32>core.regs.R[rs] + <i32>core.regs.R[rt]));
+    R3000_fs_reg_write(core, rd, core.regs.R[rs] + core.regs.R[rt]);
 }
 
 export function R3000_fADDU(opcode: u32, op: R3000_opcode, core: R3000): void {
@@ -195,7 +204,7 @@ export function R3000_fADDU(opcode: u32, op: R3000_opcode, core: R3000): void {
     let rt = (opcode >>> 16) & 0x1F;
     let rd = (opcode >>> 11) & 0x1F;
 
-    R3000_fs_reg_write(core, rd, <u32>(<i32>core.regs.R[rs] + <i32>core.regs.R[rt]));
+    R3000_fs_reg_write(core, rd, core.regs.R[rs] + core.regs.R[rt]);
 }
 
 export function R3000_fSUB(opcode: u32, op: R3000_opcode, core: R3000): void {
@@ -205,7 +214,7 @@ export function R3000_fSUB(opcode: u32, op: R3000_opcode, core: R3000): void {
     let rd = (opcode >>> 11) & 0x1F;
 
     // TODO: add overflow trap
-    R3000_fs_reg_write(core, rd, <u32>(<i32>core.regs.R[rs] - <i32>core.regs.R[rt]));
+    R3000_fs_reg_write(core, rd, core.regs.R[rs] - core.regs.R[rt]);
 }
 
 export function R3000_fSUBU(opcode: u32, op: R3000_opcode, core: R3000): void {
@@ -214,7 +223,7 @@ export function R3000_fSUBU(opcode: u32, op: R3000_opcode, core: R3000): void {
     let rt = (opcode >>> 16) & 0x1F;
     let rd = (opcode >>> 11) & 0x1F;
 
-    R3000_fs_reg_write(core, rd, <u32>(<i32>core.regs.R[rs] - <i32>core.regs.R[rt]));
+    R3000_fs_reg_write(core, rd, core.regs.R[rs] - <i32>core.regs.R[rt]);
 }
 
 export function R3000_fAND(opcode: u32, op: R3000_opcode, core: R3000): void {
@@ -228,7 +237,7 @@ export function R3000_fAND(opcode: u32, op: R3000_opcode, core: R3000): void {
 export function R3000_fANDI(opcode: u32, op: R3000_opcode, core: R3000): void {
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
-    let imm16 = (opcode & 0xFFFF);
+    let imm16: u32 = opcode & 0xFFFF;
 
     R3000_fs_reg_write(core, rt, imm16 & core.regs.R[rs]);
 }
@@ -236,7 +245,7 @@ export function R3000_fANDI(opcode: u32, op: R3000_opcode, core: R3000): void {
 export function R3000_fORI(opcode: u32, op: R3000_opcode, core: R3000): void {
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
-    let imm16 = (opcode & 0xFFFF) >>> 0;
+    let imm16: u32 = opcode & 0xFFFF;
 
     R3000_fs_reg_write(core, rt, imm16 | core.regs.R[rs]);
 }
@@ -244,7 +253,7 @@ export function R3000_fORI(opcode: u32, op: R3000_opcode, core: R3000): void {
 export function R3000_fXORI(opcode: u32, op: R3000_opcode, core: R3000): void {
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
-    let imm16 = (opcode & 0xFFFF) >>> 0;
+    let imm16: u32 = opcode & 0xFFFF;
 
     R3000_fs_reg_write(core, rt, imm16 ^ core.regs.R[rs]);
 }
@@ -270,7 +279,7 @@ export function R3000_fNOR(opcode: u32, op: R3000_opcode, core: R3000): void {
     let rt = (opcode >>> 16) & 0x1F;
     let rd = (opcode >>> 11) & 0x1F;
 
-    R3000_fs_reg_write(core, rd, ((core.regs.R[rs] | core.regs.R[rt]) ^ 0xFFFFFFFF)>>> 0);
+    R3000_fs_reg_write(core, rd, (core.regs.R[rs] | core.regs.R[rt]) ^ 0xFFFFFFFF);
 }
 
 export function R3000_fSLT(opcode: u32, op: R3000_opcode, core: R3000): void {
@@ -292,7 +301,7 @@ export function R3000_fSLTU(opcode: u32, op: R3000_opcode, core: R3000): void {
 export function R3000_fSLTI(opcode: u32, op: R3000_opcode, core: R3000): void {
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
-    let imm16: i32 = ((opcode & 0xFFFF) << 16) >> 16; // sign-extend
+    let imm16: i32 = (<i16>(opcode & 0xFFFF)); // sign-extend
 
     R3000_fs_reg_write(core, rt, +(<i32>core.regs.R[rs] < imm16));
 }
@@ -300,10 +309,10 @@ export function R3000_fSLTI(opcode: u32, op: R3000_opcode, core: R3000): void {
 export function R3000_fSLTIU(opcode: u32, op: R3000_opcode, core: R3000): void {
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
-    let imm16: u32 = <u32>(((<i32>opcode & 0xFFFF) << 16) >> 16); // sign-extend
+    let imm16: u32 = <u32>(<i16>(opcode & 0xFFFF)); // sign-extend
 
     // unary operator converts to 0/1
-    R3000_fs_reg_write(core, rt, +(core.regs.R[rs] < imm16 >>> 0));
+    R3000_fs_reg_write(core, rt, +(core.regs.R[rs] < imm16));
 }
 
 export function R3000_fSLLV(opcode: u32, op: R3000_opcode, core: R3000): void {
@@ -361,7 +370,7 @@ export function R3000_fLUI(opcode: u32, op: R3000_opcode, core: R3000): void {
     let rt = (opcode >>> 16) & 0x1F;
     let imm16: u32 = opcode & 0xFFFF;
 
-    R3000_fs_reg_write(core, rt, (imm16 << 16));
+    R3000_fs_reg_write(core, rt, imm16 << 16);
 }
 
 export function R3000_fMFHI(opcode: u32, op: R3000_opcode, core: R3000): void {
@@ -426,7 +435,7 @@ export function R3000_fMULT(opcode: u32, op: R3000_opcode, core: R3000): void {
     let rt = (opcode >>> 16) & 0x1F;
     let spd: u32 = 0;
 
-    let o1 = core.regs.R[rs];
+    let o1: i32 = <i32>core.regs.R[rs];
 
     // TODO: make this a little more correct
     if (abs<i32>(o1) < 0x800)
@@ -493,21 +502,19 @@ export function R3000_fLB(opcode: u32, op: R3000_opcode, core: R3000): void {
     //lb  rt,imm(rs)    rt=[imm+rs]  ;byte sign-extended
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
-    let imm16: i32 = mksigned16(opcode & 0xFFFF);
-
-    let addr = <u32>(<i32>core.regs.R[rs] + imm16);
+    let imm16: u32 = <u32>(<i16>(opcode & 0xFFFF));
+    let addr = core.regs.R[rs] + imm16;
 
     let rd = <i32>core.mem.CPU_read(addr, MT.u8, 0);
     rd = (rd << 24) >> 24;
-    R3000_fs_reg_delay(core, rt, rd);
+    R3000_fs_reg_delay(core, rt, <u32>rd);
 }
 
 export function R3000_fLBU(opcode: u32, op: R3000_opcode, core: R3000): void {
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
-    let imm16: i32 = mksigned16(opcode & 0xFFFF);
-
-    let addr = <u32>(<i32>core.regs.R[rs] + imm16);
+    let imm16: u32 = <u32>(<i16>(opcode & 0xFFFF));
+    let addr = core.regs.R[rs] + imm16;
 
     let rd = core.mem.CPU_read(addr, MT.u8, 0);
     R3000_fs_reg_delay(core, rt, rd&0xFF);
@@ -517,33 +524,30 @@ export function R3000_fLH(opcode: u32, op: R3000_opcode, core: R3000): void {
     //lb  rt,imm(rs)    rt=[imm+rs]  ;byte sign-extended
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
-    let imm16: i32 = mksigned16(opcode & 0xFFFF);
+    let imm16: u32 = <u32>(<i16>(opcode & 0xFFFF));
+    let addr = core.regs.R[rs] + imm16;
 
-    let addr = <u32>(<i32>core.regs.R[rs] + imm16)
+    let rd: u32 = <u32>(<i16>core.mem.CPU_read(addr, MT.i16, 0));
 
-    let rd: i32 = <i32>core.mem.CPU_read(addr, MT.u16, 0);
-
-    rd = <u32>((rd << 16) >> 16);
+    //rd = <u32>((rd << 16) >> 16);
     R3000_fs_reg_delay(core, rt, rd);
 }
 
 export function R3000_fLHU(opcode: u32, op: R3000_opcode, core: R3000): void {
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
-    let imm16: i32 = mksigned16(opcode & 0xFFFF);
-
-    let addr = <u32>(<i32>core.regs.R[rs] + imm16);
+    let imm16: u32 = <u32>(<i16>(opcode & 0xFFFF));
+    let addr = core.regs.R[rs] + imm16;
 
     let rd = core.mem.CPU_read(addr, MT.u16, 0);
-    R3000_fs_reg_delay(core, rt, rd);
+    R3000_fs_reg_delay(core, rt, rd&0xFFFF);
 }
 
 export function R3000_fLW(opcode: u32, op: R3000_opcode, core: R3000): void {
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
-    let imm16: i32 = mksigned16(opcode & 0xFFFF);
-
-    let addr = <u32>(<i32>core.regs.R[rs] + imm16);
+    let imm16: u32 = <u32>(<i16>(opcode & 0xFFFF));
+    let addr = core.regs.R[rs] + imm16;
 
     //if (rd === 0x02800280) { console.log('LW FROM', hex8(addr)); debugger; }
     R3000_fs_reg_delay(core, rt, core.mem.CPU_read(addr, MT.u32, 0));
@@ -553,9 +557,8 @@ export function R3000_fSB(opcode: u32, op: R3000_opcode, core: R3000): void {
     //lb  rt,imm(rs)    rt=[imm+rs]  ;byte sign-extended
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
-    let imm16: i32 = mksigned16(opcode & 0xFFFF);
-
-    let addr = <u32>(<i32>core.regs.R[rs] + imm16);
+    let imm16: u32 = <u32>(<i16>(opcode & 0xFFFF));
+    let addr = core.regs.R[rs] + imm16;
 
     core.mem.CPU_write(addr, MT.u8, core.regs.R[rt] & 0xFF);
 }
@@ -564,20 +567,19 @@ export function R3000_fSH(opcode: u32, op: R3000_opcode, core: R3000): void {
     //lb  rt,imm(rs)    rt=[imm+rs]  ;byte sign-extended
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
-    let imm16: i32 = mksigned16(opcode & 0xFFFF);
+    let imm16: u32 = <u32>(<i16>(opcode & 0xFFFF));
+    let addr = core.regs.R[rs] + imm16;
 
-    let addr = <u32>(<i32>core.regs.R[rs] + imm16);
-
-    core.mem.CPU_write(addr, MT.u16, (core.regs.R[rt] & 0xFFFF));
+    core.mem.CPU_write(addr, MT.u16, core.regs.R[rt] & 0xFFFF);
 }
 
 export function R3000_fSW(opcode: u32, op: R3000_opcode, core: R3000): void {
     //lb  rt,imm(rs)    rt=[imm+rs]  ;byte sign-extended
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
-    let imm16: i32 = mksigned16(opcode & 0xFFFF);
+    let imm16: u32 = <u32>(<i16>(opcode & 0xFFFF));
+    let addr = core.regs.R[rs] + imm16;
 
-    let addr = <u32>(<i32>core.regs.R[rs] + imm16);
     core.mem.CPU_write(addr, MT.u32, core.regs.R[rt]);
 }
 
@@ -585,9 +587,8 @@ export function R3000_fLWC(opcode: u32, op: R3000_opcode, core: R3000): void {
     // ;cop#dat_rt = [rs+imm]  ;word
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
-    let imm16: i32 = mksigned16(opcode & 0xFFFF);
-
-    let addr = <u32>(<i32>core.regs.R[rs] + imm16);
+    let imm16: u32 = <u32>(<i16>(opcode & 0xFFFF));
+    let addr = core.regs.R[rs] + imm16;
 
     let rd = core.mem.CPU_read(addr, MT.u32, 0);
     // TODO: add the 1-cycle delay to this
@@ -598,9 +599,8 @@ export function R3000_fSWC(opcode: u32, op: R3000_opcode, core: R3000): void {
     // ;cop#dat_rt = [rs+imm]  ;word
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
-    let imm16 = mksigned16(opcode & 0xFFFF);
-
-    let addr = <u32>(<i32>core.regs.R[rs] + imm16);
+    let imm16: u32 = <u32>(<i16>(opcode & 0xFFFF));
+    let addr = core.regs.R[rs] + imm16;
 
     let rd = core.COP_read_reg(op.arg, rt);
     // TODO: add the 1-cycle delay to this
@@ -610,9 +610,8 @@ export function R3000_fSWC(opcode: u32, op: R3000_opcode, core: R3000): void {
 export function R3000_fLWL(opcode: u32, op: R3000_opcode, core: R3000): void {
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
-    let imm16: i32 = mksigned16(opcode & 0xFFFF);
-
-    let addr = <u32>(<i32>core.regs.R[rs] + imm16);
+    let imm16: u32 = <u32>(<i16>(opcode & 0xFFFF));
+    let addr = core.regs.R[rs] + imm16;
 
 
     // Fetch register from delay if it's there, and also clobber it
@@ -641,9 +640,9 @@ export function R3000_fLWL(opcode: u32, op: R3000_opcode, core: R3000): void {
 export function R3000_fSWL(opcode: u32, op: R3000_opcode, core: R3000): void {
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
-    let imm16 = mksigned16(opcode & 0xFFFF);
+    let imm16: u32 = <u32>(<i16>(opcode & 0xFFFF));
+    let addr = core.regs.R[rs] + imm16;
 
-    let addr = <u32>(<i32>core.regs.R[rs] + imm16);
     let v = core.regs.R[rt];
 
     let aligned_addr = (addr & 0xFFFFFFFC)>>>0;
@@ -669,9 +668,8 @@ export function R3000_fSWL(opcode: u32, op: R3000_opcode, core: R3000): void {
 export function R3000_fLWR(opcode: u32, op: R3000_opcode, core: R3000): void {
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
-    let imm16 = mksigned16(opcode & 0xFFFF);
-
-    let addr = <u32>(<i32>core.regs.R[rs] + imm16);
+    let imm16: u32 = <u32>(<i16>(opcode & 0xFFFF));
+    let addr = core.regs.R[rs] + imm16;
 
     // Fetch register from delay if it's there, and also clobber it
     let cur_v = R3000_fs_reg_delay_read(core, rt);
@@ -699,9 +697,8 @@ export function R3000_fLWR(opcode: u32, op: R3000_opcode, core: R3000): void {
 export function R3000_fSWR(opcode: u32, op: R3000_opcode, core: R3000): void {
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;
-    let imm16 = mksigned16(opcode & 0xFFFF);
-
-    let addr = <u32>(<i32>core.regs.R[rs] + imm16);
+    let imm16: u32 = <u32>(<i16>(opcode & 0xFFFF));
+    let addr = core.regs.R[rs] + imm16;
     let v = core.regs.R[rt];
 
     let aligned_addr = (addr & 0xFFFFFFFC)>>>0;
@@ -754,7 +751,7 @@ export function R3000_fCOP0_RFE(opcode: u32, op: R3000_opcode, core: R3000): voi
     // move FROM co
     // rt = cop[rd]
     // The RFE opcode moves some bits in cop0r12 (SR): bit2-3 are copied to bit0-1, all other bits (including bit4-5) are left unchanged.
-    let r12 = core.regs.COP0[R3000_COP0_reg.SR];
+    let r12: u32 = core.regs.COP0[R3000_COP0_reg.SR];
     // bit4-5 are copied to bit2-3
     let b23 = (r12 >>> 2) & 0x0C; // Move from 4-5 to 2-3
     let b01 = (r12 >>> 2) & 3; // Move from 2-3 to 0-1

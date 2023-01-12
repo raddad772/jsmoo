@@ -74,7 +74,7 @@ function PS1_read_mem(buf: usize, addr: u32, sz: MT): u32 {
         case MT.i32:
             return <u32>load<i32>(buf+addr);
         case MT.u8:
-            return <u32>load<u8>(buf+addr);
+            return  <u32>load<u8>(buf+addr);
         case MT.u16:
             return <u32>load<u16>(buf+addr);
         case MT.u32:
@@ -596,7 +596,7 @@ export class PS1_mem {
                 return;
             case 0x1F802041: // F802041h 1 PSX: POST (external 7 segment display, indicate BIOS boot status
                 console.log('WRITE POST STATUS! ' + val.toString());
-                if (val === 15) dbg.break(D_RESOURCE_TYPES.R3000);
+                //if (val === 15) dbg.break(D_RESOURCE_TYPES.R3000);
                 return;
             // ...
             case 0x1F801810: // GP0 Send GP0 Commands/Packets (Rendering and VRAM Access)
@@ -814,7 +814,7 @@ export class PS1_mem {
             return this.read_mem_generic(memkind.scratchpad, addr & 0x3FF, size, val);
         }
         // 1FC00000h 512kb BIOS
-        if ((addr >= 0x1FC00000) && (addr < 0x1FC08000)) {
+        if ((addr >= 0x1FC00000) && (addr < 0x1FC80000)) {
             return this.read_mem_generic(memkind.BIOS, addr & 0x7FFFF, size, val);
         }
 
@@ -875,7 +875,9 @@ export class PS1_mem {
             case 0x1F801DAE: // SPU Status Register (SPUSTAT) (R)
                 return 0;
             case 0x1F000084: // PIO
-                break;
+                console.log('PIO READ!');
+                return 0;
+                //break;
             default:
                 this.unknown_read_mem.add(addr);
                 break;
@@ -892,6 +894,7 @@ export class PS1_mem {
                 return 0xFFFF;
             case MT.u8:
             case MT.i8:
+                console.log('UNKNOWN READ!? ' + hex8(addr));
                 return 0xFF;
         }
         unreachable();

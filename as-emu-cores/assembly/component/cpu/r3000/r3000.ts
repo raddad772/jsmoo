@@ -36,7 +36,7 @@ export enum R3000_pipe_kind {
 export class R3000_pipeline_item_t {
     kind: R3000_pipe_kind = R3000_pipe_kind.empty;
     target: i32 = -1;
-    value: i64 = -1
+    value: u32 = 0
     opcode: u32 = 0
     new_PC: u32 = 0
     addr: u32 = 0
@@ -56,7 +56,7 @@ export class R3000_pipeline_item_t {
     clear(): void {
         this.kind = R3000_pipe_kind.empty;
         this.target = -1;
-        this.value = -1;
+        this.value = 0;
         this.new_PC = 0;
     }
 }
@@ -117,6 +117,22 @@ class R3000_IO {
     I_MASK: u32 = 0
 }
 
+export class bigstr_output {
+    strings: Array<string> = new Array<string>();
+
+    constructor() {
+        this.strings.push('');
+    }
+
+    add(w: string): void {
+        this.strings.push(w);
+    }
+
+    add_to_start(w: string): void {
+        this.strings[0] = w;
+    }
+}
+
 export class R3000 {
     mem: PS1_mem
     clock: PS1_clock = new PS1_clock();
@@ -129,9 +145,9 @@ export class R3000 {
     trace_on: bool = false;
     console: string = '';
     io: R3000_IO = new R3000_IO();
-    debug_on: boolean = false;
+    debug_on: boolean = true;
 
-    debug_tracelog: string = '';
+    debug_tracelog: bigstr_output = new bigstr_output();
     debug_reg_list: Array<u32> = new Array<u32>();
 
     constructor(mem: PS1_mem) {
@@ -217,6 +233,10 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
         // Setup COP0 registers
     }
 
+    debug_add(opcode: u32, PC: u32): void {
+        this.debug_tracelog.add('\r\nPC ' + hex8(PC).toLowerCase() + ' OP ' + hex8(opcode).toLowerCase() + ' ');
+    }
+
     trace_format(disasm: string, PCO: u32): string {
         let outstr: string = trace_start_format('R3K', R3000_COLOR, this.clock.trace_cycles-1, ' ', PCO)
         outstr += disasm;
@@ -227,7 +247,7 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
             for (let i = 0, k = this.debug_reg_list.length; i < k; i++) {
                 let rn = this.debug_reg_list[i];
                 if (this.debug_on) {
-                    this.debug_tracelog += 'R' + dec2(rn) + ' ' + hex8(this.regs.R[rn]).toLowerCase() + ' ';
+                    this.debug_tracelog.add('R' + dec2(rn) + ' ' + hex8(this.regs.R[rn]).toLowerCase() + ' ');
                 }
                 outstr += ' ' + R3000_reg_alias(rn) + ':' + hex8(this.regs.R[rn]);
             }
@@ -237,7 +257,7 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
     }
 
     debug_add_delayed(w: R3000_pipeline_item_t): void {
-        this.debug_tracelog += 'R' + dec2(w.target) + ' ' + hex8(<u32>w.value).toLowerCase() + ' ';
+        this.debug_tracelog.add('R' + dec2(w.target) + ' ' + hex8(w.value).toLowerCase() + ' ');
     }
 
     cycle(): void {
@@ -251,9 +271,13 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
             this.fetch_and_decode();
         let current = this.pipe.move_forward();
 
-        if (this.debug_on && (current.target > 0)) {
-            this.debug_add_delayed(current);
+        if (this.debug_on) {
+            this.debug_add(current.opcode, current.addr)
         }
+
+        //if (this.debug_on && (current.target > 0)) {
+        //    this.debug_add_delayed(current);
+        //}
 
         current.op.func(current.opcode, current.op, this);
 
@@ -269,16 +293,16 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
         this.fetch_and_decode();
     }
 
-    get_debug_file(): string {
-        let o: string = this.debug_tracelog + '\r\n';
-        this.debug_tracelog = '';
+    get_debug_file(): bigstr_output {
+        this.debug_tracelog.add('\r\n');
         let a: string = 'PC 00000000 OP 00000000 R00 00000000 R01 00000000 R02 00000000 R03 00000000 R04 00000000 R05 00000000 R06 00000000 R07 00000000 R08 00000000 R09 00000000 R10 00000000 R11 00000000 R12 00000000 R13 00000000 R14 00000000 R15 00000000 R16 00000000 R17 00000000 R18 00000000 R19 00000000 R20 00000000 R21 00000000 R22 00000000 R23 00000000 R24 00000000 R25 00000000 R26 00000000 R27 00000000 R28 00000000 R29 00000000 R30 00000000 R31 00000000 CAUSE 00000000 IRQ 0000 D8 00 D16 0000 D32 00000000 \r\n';
         a += 'PC 00000000 OP 00000000 \r\n';
         a += 'PC 00000000 OP 00000000 \r\n';
         a += 'PC 00000000 OP 00000000 \r\n';
         a += 'PC 00000000 OP 00000000 ';
-        a += o;
-        return a;
+        this.debug_tracelog.add_to_start(a)
+
+        return this.debug_tracelog;
     }
 
     delay_slots(which: R3000_pipeline_item_t): void {
@@ -287,7 +311,7 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
             this.regs.R[which.target] = <u32>which.value;
             if (this.trace_on) {
                 this.debug_reg_list.push(which.target);
-                this.debug_tracelog += 'R' + dec2(which.target) + ' ' + hex8(this.regs.R[which.target]>>>0).toLowerCase() + ' ';
+                this.debug_tracelog.add('R' + dec2(which.target) + ' ' + hex8(this.regs.R[which.target]>>>0).toLowerCase() + ' ');
             }
             which.target = -1;
         }

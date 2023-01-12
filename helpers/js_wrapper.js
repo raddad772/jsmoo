@@ -148,8 +148,11 @@ class js_wrapper_t {
 	dump_dbg() {
 		if (this.emu_wasm) {
 			let d = this.as_wrapper.wasm.gp_dump_debug(this.as_wrapper.global_player)
-			console.log(d);
-			return d;
+			let a = '';
+			for (let i in d) {
+				a += d[i];
+			}
+			return a;
 		}
 		else {
 			return this.system.dump_dbg();
@@ -268,14 +271,12 @@ class js_wrapper_t {
 	step_master(howmany) {
 		dbg.do_break = false;
 		if (this.emu_wasm) {
-			console.log('STEP M')
 			this.as_wrapper.wasm.gp_step_master(this.as_wrapper.global_player, howmany);
 			let d = this.as_wrapper.wasm.gp_get_framevars(this.as_wrapper.global_player);
 			dbg.dump_from_wasm(d.dbg_info)
 			return d;
 		}
 		else {
-			console.log('STEP M');
 			this.system.step_master(howmany);
 			return this.system.get_framevars();
 		}
