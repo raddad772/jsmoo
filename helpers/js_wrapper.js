@@ -313,14 +313,17 @@ class js_wrapper_t {
     get_specs() {
 		if (this.emu_wasm) {
 			this.tech_specs = this.as_wrapper.wasm.gp_get_specs(this.as_wrapper.global_player);
-            this.shared_buf1 = new SharedArrayBuffer(this.tech_specs.out_size*2);
-            this.shared_buf2 = new SharedArrayBuffer(this.tech_specs.out_size*2);
-            this.tech_specs.output_buffer = [this.shared_buf1, this.shared_buf2];
 			this.out_ptr = this.tech_specs.out_ptr;
 			if (this.emu_wasm_has_helper) {
 				this.shared_buf1 = this.emu_wasm_helper.sab;
+				this.shared_buf2 = this.emu_wasm_helper.sab;
 				this.out_ptr = this.emu_wasm_helper.sab_offset;
 			}
+			else {
+            	this.shared_buf1 = new SharedArrayBuffer(this.tech_specs.out_size*2);
+            	this.shared_buf2 = new SharedArrayBuffer(this.tech_specs.out_size*2);
+			}
+			this.tech_specs.output_buffer = [this.shared_buf1, this.shared_buf2];
 		} else {
 			this.tech_specs = this.system.get_description();
 		}

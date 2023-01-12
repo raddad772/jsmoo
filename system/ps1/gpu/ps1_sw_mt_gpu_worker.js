@@ -258,13 +258,13 @@ class PS1_GPU_thread {
         this.GP1_FIFO.set_offset(this.GP1FIFO_offset);
 
         this.MMIO = new Uint32Array(this.sab);
-        //console.log(this.VRAM_offset, this.sab);
+        console.log('VRAM offset:', this.VRAM_offset, this.sab);
         //console.log(typeof this.sab);
         //console.log(e);
-        this.VRAM = new DataView(this.sab);
+        this.VRAM = new DataView(this.sab, this.VRAM_offset);
         console.log('murdering VRAM ' + this.VRAM_offset.toString());
         for (let i = 0; i < (1024*1024); i+=4) {
-            this.VRAM.setUint32(this.VRAM_offset+i,0xFFFFFFFF);
+            this.VRAM.setUint32(i,0x77777777);
         }
 
         this.rect = {
@@ -514,7 +514,7 @@ class PS1_GPU_thread {
             for (let x = start_x; x < (start_x + xsize); x++) {
                 //this.setpix(y, x, BGR);
                 let addr = (2048*y)+(x*2);
-                this.VRAM.setUint16(this.VRAM_offset+addr, BGR, true);
+                this.VRAM.setUint16(addr, BGR, true);
             }
         }
 
@@ -528,7 +528,7 @@ class PS1_GPU_thread {
         if ((ry < this.draw_area_top) || (ry > this.draw_area_bottom)) return;
         if ((rx < this.draw_area_left) || (rx > this.draw_area_right)) return;
         let addr = (2048*ry)+(rx*2);
-        this.VRAM.setUint16(this.VRAM_offset+addr, color, true);
+        this.VRAM.setUint16(addr, color, true);
     }
 
     init_FIFO() {
@@ -692,7 +692,7 @@ class PS1_GPU_thread {
             let x = this.load_buffer.x+this.load_buffer.img_x;
             let addr = (2048*y)+(x*2);
             //try {
-                this.VRAM.setUint16(this.VRAM_offset+addr, px, true);
+                this.VRAM.setUint16(addr, px, true);
             //} catch(e) {
             //    console.log('WAIT!', y, x, this.load_buffer.width+this.load_buffer.x, addr);
             //}
