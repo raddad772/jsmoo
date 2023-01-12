@@ -1,3 +1,5 @@
+import {hex8} from "./helpers";
+
 const mutex_unlocked: i32 = 0;
 const mutex_locked: i32 = 1;
 
@@ -31,7 +33,13 @@ export class MT_FIFO16 {
     output_tag: u32 = 0
 
     constructor(buf: usize) {
+        console.log('SET BUF: ' + buf.toString())
         this.buf = buf;
+    }
+
+    put_bad(index: u32, item: u32): void {
+        console.log('PUT TO ' + hex8(this.buf+(index*4)) + ': ' + hex8(<u32>item));
+        store<i32>(this.buf+(index*4), <i32>item);
     }
 
     clear(): void {
@@ -47,11 +55,12 @@ export class MT_FIFO16 {
 
     put_item_blocking(item: u32, tag: u32): void {
         if (atomic.load<i32>(this.buf+(33*4)) > 15) {
-            //console.log('Waiting on GP0 to empty buffer...')
+            console.log('Waiting on GP0 to empty buffer...')
             while (atomic.load<i32>(this.buf+(33*4)) > 15) {
             }
         }
 
+        //console.log('Set Mutex ' + hex8(item))
         mutex_lock(this.buf, (34*4));
         let head = load<i32>(this.buf+(32*4));
         let num_items = load<i32>(this.buf+(33*4));
@@ -64,10 +73,11 @@ export class MT_FIFO16 {
         // head does not move when appending to FIFO
 
         mutex_unlock(this.buf, (34*4));
+        //console.log('Unset Mutex')
     }
 
     get_item(): i32|null {
-        if (atomic.load(this.buf+(33*4)) === 0) {
+        if (atomic.load<i32>(this.buf+(33*4)) === 0) {
             return null;
         }
         mutex_lock(this.buf, (34*4));

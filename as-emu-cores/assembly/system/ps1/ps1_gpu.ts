@@ -1,4 +1,5 @@
 import {MT_FIFO16} from "../../helpers/mt_fifo";
+import {hex8} from "../../helpers/helpers";
 
 const GPUSTAT = 0;
 const GPUPLAYING = 1;
@@ -53,17 +54,6 @@ export class PS1_GPU {
     IRQ_bit: u32 = 0
 
     constructor() {
-        //this.output_shared_buffers = [new SharedArrayBuffer(1024 * 512 * 2), new SharedArrayBuffer(1024 * 512 * 2)];
-        //this.output = [new Uint8Array(this.output_shared_buffers[0]), new Uint8Array(this.output_shared_buffers[1])];
-
-        //this.gpu_thread = new Worker('/system/ps1/gpu/ps1_sw_mt_gpu_worker.js');
-        //this.gpu_thread.onmessage = this.on_gpu_message.bind(this);
-        //this.gpu_thread.onerror = function (a, b, c) {
-        //    console.log('ERR', a, b, c);
-        //}
-
-        //this.VRAMb = new SharedArrayBuffer(2*1024*1024); // 2MB VRAM shared-buffer
-
         let MMIO_buffer = heap.alloc(96);
         let GP0_buffer = heap.alloc(256);
         let GP1_buffer = heap.alloc(256);
@@ -75,6 +65,12 @@ export class PS1_GPU {
         this.GP0FIFO = GP0FIFO;
         this.GP1FIFO = GP1FIFO;
 
+        this.GP0FIFO.put_bad(0, 0x1234);
+        this.GP0FIFO.put_bad(1, 0x12345);
+        this.GP0FIFO.put_bad(2, 0x123456);
+        this.GP0FIFO.put_bad(3, 0x1234567);
+        console.log('DONE PUT');
+
         this.IRQ_bit = 0;
 
         this.GPU_FIFO_tag = 0;
@@ -84,20 +80,21 @@ export class PS1_GPU {
     }
 
     play(num: i32): void {
-        this.MMIO.setUint32(GPUPLAYING, 1);
+        this.MMIO.setUint32(GPUPLAYING*4, 1);
     }
 
     pause(): void {
         console.log('GPUPAUS');
-        this.MMIO.setUint32(GPUPLAYING, 0);
+        this.MMIO.setUint32(GPUPLAYING*4, 0);
     }
 
     stop(): void {
         // Terminate thread
-        this.MMIO.setUint32(GPUQUIT, 1);
+        this.MMIO.setUint32(GPUQUIT*4, 1);
     }
 
     gp0(cmd: u32): void {
+        console.log('send GP0')
         //if ((cmd >>> 24) === 0xA0) dbg.break();
         //if (cmd === 0xFFFF801F) dbg.break();
         //console.log('HEY?', hex8(cmd));
@@ -106,18 +103,21 @@ export class PS1_GPU {
 
     gp1(cmd: u32): void {
         //console.log('SEND GP1 cmd', hex8(cmd >>> 8));
+        console.log('send GP1')
         this.GP1FIFO.put_item_blocking(cmd, this.GPU_FIFO_tag++);
     }
 
     get_gpuread(): u32 {
-        return this.MMIO.getUint32(GPUREAD);
+        console.log('GET GPUREAD!');
+        return this.MMIO.getUint32(GPUREAD*4);
     }
 
     get_gpustat(): u32 {
-        let g = this.MMIO.getUint32(GPUSTAT);
+        let g = this.MMIO.getUint32(GPUSTAT*4);
         // Fill interrupt bit
         g |= this.IRQ_bit << 24;
         // Fill FIFO full bit
+        console.log('GET GPUSTAT! ' + hex8(g));
         if (((g >>> 29) & 3) === 1)
             g |= this.GP0FIFO.full() ? 0 : 1;
 

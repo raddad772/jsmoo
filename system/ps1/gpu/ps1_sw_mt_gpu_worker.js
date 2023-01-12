@@ -1,11 +1,5 @@
 "use strict";
 
-/*
-GOTTA REFACTOR FIFO into a class.
-Have separate GP0 and GP1 FIFO
-Check GP1 first and act on it
-
- */
 importScripts('/helpers/thread_common.js');
 importScripts('/helpers.js');
 
@@ -213,8 +207,9 @@ class PS1_GPU_thread {
         o |= (dmar << 25);
 
         // Preserve GPU ready or not bits
-        this.GPUSTAT = o | (this.MMIO[this.MMIO_offset+GPUSTAT] & 0x1C000000);;
-        //this.MMIO[this.MMIO_offset+GPUSTAT] = this.GPUSTAT;
+        this.GPUSTAT = o | (this.MMIO[this.MMIO_offset+GPUSTAT] & 0x1C000000);
+        console.log('RENDER SETTING GPUSTAT ' + hex8(this.GPUSTAT));
+        this.MMIO[this.MMIO_offset+GPUSTAT] = this.GPUSTAT;
     }
 
     ready_cmd() {
@@ -262,8 +257,14 @@ class PS1_GPU_thread {
 
         this.GP0_FIFO.set_sab(this.sab);
         this.GP1_FIFO.set_sab(this.sab);
+        console.log('SETTING OFFSET ', this.GP0FIFO_offset)
         this.GP0_FIFO.offset = this.GP0FIFO_offset>>>2;
         this.GP1_FIFO.offset = this.GP1FIFO_offset>>>2;
+        console.log('GETTING!');
+        console.log('0', hex8(this.GP0_FIFO.getbad(0)));
+        console.log('1', hex8(this.GP0_FIFO.getbad(1)));
+        console.log('2', hex8(this.GP0_FIFO.getbad(2)));
+        console.log('3', hex8(this.GP0_FIFO.getbad(3)));
 
 
         this.MMIO = new Uint32Array(this.sab);
@@ -271,10 +272,10 @@ class PS1_GPU_thread {
         //console.log(typeof this.sab);
         //console.log(e);
         this.VRAM = new DataView(this.sab);
-        console.log('murdering VRAM');
-        /*for (let i = 0; i < (1024*1024); i+=4) {
+        console.log('murdering VRAM ' + this.VRAM_offset.toString());
+        for (let i = 0; i < (1024*1024); i+=4) {
             this.VRAM.setUint32(this.VRAM_offset+i,0xFFFFFFFF);
-        }*/
+        }
 
         this.rect = {
             texture_x_flip: 0,
@@ -299,14 +300,14 @@ class PS1_GPU_thread {
         this.display_line_end = 0x100;
 
         this.set_last_used_buffer(1);
-        //this.MMIO[this.MMIO_offset+GPUREAD] = 0;
+        this.MMIO[this.MMIO_offset+GPUREAD] = 0;
 
         this.init_FIFO();
         this.listen_FIFO();
     }
 
     gp0(cmd) {
-        //console.log('GOT CMD', hex8(cmd));
+        console.log('GOT CMD', hex8(cmd));
         // if we have an instruction...
         if (this.current_ins !== null) {
             this.cmd[this.cmd_arg_index++] = cmd;
@@ -404,7 +405,7 @@ class PS1_GPU_thread {
     }
 
     gp1(cmd) {
-        //console.log('RECV GP1 cmd', hex8(cmd));
+        console.log('RECV GP1 cmd', hex8(cmd));
         switch(cmd >>> 24) {
             case 0:
                 console.log('GP1 soft reset')
@@ -556,6 +557,7 @@ class PS1_GPU_thread {
     }
 
     listen_FIFO() {
+        console.log('Listening to FIFO...');
         this.MMIO[this.MMIO_offset+GPUPLAYING] = 1;
         while(this.MMIO[this.MMIO_offset+GPUPLAYING] === 1) {
             if (this.cur_gp0 === null) {
