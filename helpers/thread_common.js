@@ -134,12 +134,17 @@ class MT_FIFO16 {
         this.output_tag = 0;
     }
 
+    set_offset(to) {
+        this.offset32 = to >>> 2;
+        this.offset = to;
+    }
+
     clear() {
         //return;
-        mutex_lock(this.FIFO, this.offset+34);
-        this.FIFO[this.offset+32] = 0; // head = 0
-        this.FIFO[this.offset+33] = 0; // length = 0
-        mutex_unlock(this.FIFO, this.offset+34);
+        mutex_lock(this.FIFO, this.offset32+34);
+        this.FIFO[this.offset32+32] = 0; // head = 0
+        this.FIFO[this.offset32+33] = 0; // length = 0
+        mutex_unlock(this.FIFO, this.offset32+34);
     }
 
     set_sab(to) {
@@ -149,30 +154,24 @@ class MT_FIFO16 {
 
     put_item_blocking(item, tag) {
         //return;
-        if (Atomics.load(this.FIFO, this.offset+33) > 15) {
+        if (Atomics.load(this.FIFO, this.offset32+33) > 15) {
             //console.log('Waiting on GP0 to empty buffer...')
-            while (Atomics.load(this.FIFO, this.offset+33) > 15) {
+            while (Atomics.load(this.FIFO, this.offset32+33) > 15) {
             }
         }
 
-        mutex_lock(this.FIFO, this.offset+34);
-        let head = this.FIFO[this.offset+32];
-        let num_items = this.FIFO[this.offset+33];
+        mutex_lock(this.FIFO, this.offset32+34);
+        let head = this.FIFO[this.offset32+32];
+        let num_items = this.FIFO[this.offset32+33];
 
         let h = ((head + num_items) & 15) * 2
-        this.FIFO[this.offset+h] = item;
-        this.FIFO[this.offset+h+1] = tag;
+        this.FIFO[this.offset32+h] = item;
+        this.FIFO[this.offset32+h+1] = tag;
         // length++
-        this.FIFO[this.offset+33] = num_items + 1;
+        this.FIFO[this.offset32+33] = num_items + 1;
         // head does not move when appending to FIFO
 
-        mutex_unlock(this.FIFO, this.offset+34);
-    }
-
-    getbad(index) {
-        //return this.FIFO[this.offset+index];
-        console.log('GET FROM', hex8(this.offset*4));
-        return Atomics.load(this.FIFO, (this.offset*4)+(index*4));
+        mutex_unlock(this.FIFO, this.offset32+34);
     }
 
     /**
@@ -180,25 +179,24 @@ class MT_FIFO16 {
       */
     get_item() {
         //return null;
-        if (Atomics.load(this.FIFO, 33*4) === 0) {
+        if (Atomics.load(this.FIFO, this.offset32+33) === 0) {
             //console.log('NUM ITEMS IS 0');
             return null;
         }
-        console.log('GETTING AN ITEMS!');
-        mutex_lock(this.FIFO, this.offset+34);
+        mutex_lock(this.FIFO, this.offset32+34);
         let item = null;
 
-        let head = this.FIFO[this.offset+32];
-        let num_items = this.FIFO[this.offset+33];
+        let head = this.FIFO[this.offset32+32];
+        let num_items = this.FIFO[this.offset32+33];
         if (num_items > 0) {
-            item = this.FIFO[head*2];
-            this.output_tag = this.FIFO[this.offset+(head*2)+1];
-            this.FIFO[this.offset+(head*2)] = 0xBEEFCACE;  // zero old place
-            this.FIFO[this.offset+32] = (head+1) & 15;  // head++
-            this.FIFO[this.offset+33] = --num_items;    // length--;
+            item = this.FIFO[this.offset32+(head*2)];
+            this.output_tag = this.FIFO[this.offset32+(head*2)+1];
+            this.FIFO[this.offset32+(head*2)] = 0xBEEFCACE;  // zero old place
+            this.FIFO[this.offset32+32] = (head+1) & 15;  // head++
+            this.FIFO[this.offset32+33] = --num_items;    // length--;
         }
 
-        mutex_unlock(this.FIFO, this.offset+34);
+        mutex_unlock(this.FIFO, this.offset32+34);
         return item;
     }
 }

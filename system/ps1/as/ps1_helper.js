@@ -16,13 +16,13 @@ class PS1_helper {
 
         let d = this.as_wrapper.wasm.gp_get_mt(this.as_wrapper.global_player);
 
-
         this.vram_buf = d.vram_ptr;
         this.gp0_buf = d.gp0_ptr;
         this.gp1_buf = d.gp1_ptr;
         this.mmio_buf = d.mmio_ptr;
 
         this.sab = this.as_wrapper.wasm.memory.buffer;
+        console.log('SAB?', this.sab);
         this.sab_offset = d.vram_ptr;
 
         this.gpu_thread.postMessage({
@@ -48,6 +48,10 @@ class PS1_helper {
     }
 
     stop() {
+        this.gpu_thread.postMessage({kind: GPU_messages.stop, num: 0})
+    }
+
+    dump_debug() {
     }
 
     on_gpu_message(e) {

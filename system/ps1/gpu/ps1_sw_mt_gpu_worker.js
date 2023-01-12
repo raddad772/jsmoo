@@ -252,20 +252,10 @@ class PS1_GPU_thread {
         this.VRAM_offset = e.VRAM_offset;
         this.sab = e.SAB;
 
-        this.sab = new SharedArrayBuffer(1024*1024*100);
-
-
         this.GP0_FIFO.set_sab(this.sab);
         this.GP1_FIFO.set_sab(this.sab);
-        console.log('SETTING OFFSET ', this.GP0FIFO_offset)
-        this.GP0_FIFO.offset = this.GP0FIFO_offset>>>2;
-        this.GP1_FIFO.offset = this.GP1FIFO_offset>>>2;
-        console.log('GETTING!');
-        console.log('0', hex8(this.GP0_FIFO.getbad(0)));
-        console.log('1', hex8(this.GP0_FIFO.getbad(1)));
-        console.log('2', hex8(this.GP0_FIFO.getbad(2)));
-        console.log('3', hex8(this.GP0_FIFO.getbad(3)));
-
+        this.GP0_FIFO.set_offset(this.GP0FIFO_offset);
+        this.GP1_FIFO.set_offset(this.GP1FIFO_offset);
 
         this.MMIO = new Uint32Array(this.sab);
         //console.log(this.VRAM_offset, this.sab);
@@ -307,7 +297,7 @@ class PS1_GPU_thread {
     }
 
     gp0(cmd) {
-        console.log('GOT CMD', hex8(cmd));
+        //console.log('GOT CMD', hex8(cmd));
         // if we have an instruction...
         if (this.current_ins !== null) {
             this.cmd[this.cmd_arg_index++] = cmd;
@@ -405,14 +395,11 @@ class PS1_GPU_thread {
     }
 
     gp1(cmd) {
-        console.log('RECV GP1 cmd', hex8(cmd));
+        //console.log('RECV GP1 cmd', hex8(cmd));
         switch(cmd >>> 24) {
             case 0:
                 console.log('GP1 soft reset')
                 // Soft reset
-                /**
-                 * @type {GPUSTAT_reg}
-                 */
                 this.unready_cmd();
                 this.unready_recv_DMA();
                 this.unready_vram_to_CPU();
@@ -568,7 +555,8 @@ class PS1_GPU_thread {
                 this.cur_gp1 = this.GP1_FIFO.get_item();
                 this.cur_gp1_tag = this.GP1_FIFO.output_tag;
             }
-            if ((this.cur_gp0 === null) && (this.cur_gp1 === null)) continue;
+            if ((this.cur_gp0 === null) && (this.cur_gp1 === null))
+                continue;
             if ((this.cur_gp0 !== null) && (this.cur_gp0_tag === this.GPU_FIFO_tag)) {
                 this.handle_gp0(this.cur_gp0>>>0);
                 this.cur_gp0 = null;

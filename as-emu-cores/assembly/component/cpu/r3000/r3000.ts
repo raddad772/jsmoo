@@ -145,7 +145,7 @@ export class R3000 {
     trace_on: bool = false;
     console: string = '';
     io: R3000_IO = new R3000_IO();
-    debug_on: boolean = true;
+    debug_on: boolean = false;
 
     debug_tracelog: bigstr_output = new bigstr_output();
     debug_reg_list: Array<u32> = new Array<u32>();

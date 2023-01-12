@@ -148,6 +148,8 @@ class js_wrapper_t {
 	dump_dbg() {
 		if (this.emu_wasm) {
 			let d = this.as_wrapper.wasm.gp_dump_debug(this.as_wrapper.global_player)
+			if (this.emu_wasm_has_helper)
+				this.emu_wasm_helper.dump_debug();
 			let a = '';
 			for (let i in d) {
 				a += d[i];

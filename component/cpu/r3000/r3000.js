@@ -412,7 +412,7 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
             if ((this.regs.PC === 0xB0)) {
                 if (this.regs.R[9] === 0x3D) {
                     this.console += String.fromCharCode(this.regs.R[4]);
-                    console.log(this.console);
+                    //console.log(this.console);
                 }
             }
             which.new_PC = 0;
