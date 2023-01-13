@@ -14,12 +14,28 @@ import {PS1_GPU} from "./ps1_gpu";
 import {PS1_bus, PS1_clock} from "./ps1_misc";
 import {framevars_t} from "../../glue/global_player";
 import {bigstr_output} from "../../component/cpu/r3000/r3000";
+import {run_controllers} from "./ps1_pad";
 
 const PS1_CYCLES_PER_FRAME_NTSC = 564480
 const PS1_CYCLES_PER_FRAME_PAL = 677376
 
+export enum PS1_IRQ {
+    VBlank,
+    GPU,
+    CDROM,
+    DMA,
+    TMR0,
+    TMR1,
+    TMR2,
+    PadMemCardByteRecv,
+    SIO,
+    SPU,
+    PIOLightpen
+}
+
+
 export class heapArray2 {
-	ptr: usize = 0;
+    ptr: usize = 0;
 	sz: u32 = 0;
 
 	constructor(ptr: usize, sz: u32) {
@@ -153,6 +169,11 @@ export class PS1 implements systemEmulator {
         this.mem.ps1 = this;
         this.mem.cpu = this.cpu.core;
         //this.clock = clock;
+    }
+
+    set_irq(from: PS1_IRQ, level: u32): void {
+        this.cpu.core.io.I_STAT.set_level(level, from);
+        this.cpu.core.update_I_STAT();
     }
 
     get_description(): machine_description {
@@ -350,10 +371,11 @@ export class PS1 implements systemEmulator {
     run_cycles(howmany: i32): void {
         this.cycles_left += <i64>howmany;
         while (this.cycles_left > 0) {
+            run_controllers(this, 2);
             this.clock.cycles_left_this_frame-=2;
             if (this.clock.cycles_left_this_frame <= 0) {
                 this.clock.cycles_left_this_frame += PS1_CYCLES_PER_FRAME_NTSC;
-                this.cpu.core.set_interrupt(1);
+                this.set_irq(PS1_IRQ.VBlank, 1);
             }
 
             this.cpu.cycle();

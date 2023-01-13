@@ -1,4 +1,4 @@
-// Based on RustStation implementation, which modifications for JavaScript
+// Based on RustStation implementation, because I didn't want to do it
 
 
 // how to do 16-bit signed fixed-point multiply, in JavaScript.
