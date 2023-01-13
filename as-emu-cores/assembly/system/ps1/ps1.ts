@@ -15,6 +15,7 @@ import {PS1_bus, PS1_clock} from "./ps1_misc";
 import {framevars_t} from "../../glue/global_player";
 import {bigstr_output} from "../../component/cpu/r3000/r3000";
 import {run_controllers} from "./ps1_pad";
+import {Button} from "./ps1_gamepad";
 
 const PS1_CYCLES_PER_FRAME_NTSC = 564480
 const PS1_CYCLES_PER_FRAME_PAL = 677376
@@ -148,8 +149,8 @@ export class PS1 implements systemEmulator {
     playpausetrack: u32 = 1
     cycles_left: i64 = 0;
 
-    controller1_in: ps1_dualshock_inputs = new ps1_dualshock_inputs();
-    controller2_in: ps1_dualshock_inputs = new ps1_dualshock_inputs();
+    //controller1_in: ps1_dualshock_inputs = new ps1_dualshock_inputs();
+    //controller2_in: ps1_dualshock_inputs = new ps1_dualshock_inputs();
 
     framevars: framevars_t = new framevars_t();
 
@@ -242,34 +243,34 @@ export class PS1 implements systemEmulator {
     }
 
     map_inputs(buffer: usize): void {
-        this.controller1_in.up = load<u32>((4*0)+buffer);
-        this.controller1_in.down = load<u32>((4*1)+buffer);
-        this.controller1_in.left = load<u32>((4*2)+buffer);
-        this.controller1_in.right = load<u32>((4*3)+buffer);
-        this.controller1_in.start = load<u32>((4*4)+buffer);
-        this.controller1_in.select = load<u32>((4*5)+buffer);
-        this.controller1_in.l1 = load<u32>((4*6)+buffer);
-        this.controller1_in.l2 = load<u32>((4*7)+buffer);
-        this.controller1_in.r1 = load<u32>((4*8)+buffer);
-        this.controller1_in.r2 = load<u32>((4*9)+buffer);
-        this.controller1_in.circle = load<u32>((4*10)+buffer);
-        this.controller1_in.square = load<u32>((4*11)+buffer);
-        this.controller1_in.triangle = load<u32>((4*12)+buffer);
-        this.controller1_in.x = load<u32>((4*13)+buffer);
-        this.controller2_in.up = load<u32>((4*14)+buffer);
-        this.controller2_in.down = load<u32>((4*15)+buffer);
-        this.controller2_in.left = load<u32>((4*16)+buffer);
-        this.controller2_in.right = load<u32>((4*17)+buffer);
-        this.controller2_in.start = load<u32>((4*18)+buffer);
-        this.controller2_in.select = load<u32>((4*19)+buffer);
-        this.controller2_in.l1 = load<u32>((4*20)+buffer);
-        this.controller2_in.l2 = load<u32>((4*21)+buffer);
-        this.controller2_in.r1 = load<u32>((4*22)+buffer);
-        this.controller2_in.r2 = load<u32>((4*23)+buffer);
-        this.controller2_in.circle = load<u32>((4*24)+buffer);
-        this.controller2_in.square = load<u32>((4*25)+buffer);
-        this.controller2_in.triangle = load<u32>((4*26)+buffer);
-        this.controller2_in.x = load<u32>((4*27)+buffer);
+        this.mem.controller1.device.set_button_state(Button.DUp, load<u32>((4*0)+buffer));
+        this.mem.controller1.device.set_button_state(Button.DDown, load<u32>((4*1)+buffer));
+        this.mem.controller1.device.set_button_state(Button.DLeft, load<u32>((4*2)+buffer));
+        this.mem.controller1.device.set_button_state(Button.DRight, load<u32>((4*3)+buffer));
+        this.mem.controller1.device.set_button_state(Button.Start, load<u32>((4*4)+buffer));
+        this.mem.controller1.device.set_button_state(Button.Select, load<u32>((4*5)+buffer));
+        this.mem.controller1.device.set_button_state(Button.L1, load<u32>((4*6)+buffer));
+        this.mem.controller1.device.set_button_state(Button.L2, load<u32>((4*7)+buffer));
+        this.mem.controller1.device.set_button_state(Button.R1, load<u32>((4*8)+buffer));
+        this.mem.controller1.device.set_button_state(Button.R2, load<u32>((4*9)+buffer));
+        this.mem.controller1.device.set_button_state(Button.Circle, load<u32>((4*10)+buffer));
+        this.mem.controller1.device.set_button_state(Button.Square, load<u32>((4*11)+buffer));
+        this.mem.controller1.device.set_button_state(Button.Triangle, load<u32>((4*12)+buffer));
+        this.mem.controller1.device.set_button_state(Button.Cross, load<u32>((4*13)+buffer));
+        this.mem.controller2.device.set_button_state(Button.DUp, load<u32>((4*14)+buffer));
+        this.mem.controller2.device.set_button_state(Button.DDown, load<u32>((4*15)+buffer));
+        this.mem.controller2.device.set_button_state(Button.DLeft, load<u32>((4*16)+buffer));
+        this.mem.controller2.device.set_button_state(Button.DRight, load<u32>((4*17)+buffer));
+        this.mem.controller2.device.set_button_state(Button.Start, load<u32>((4*18)+buffer));
+        this.mem.controller2.device.set_button_state(Button.Select, load<u32>((4*19)+buffer));
+        this.mem.controller2.device.set_button_state(Button.L1, load<u32>((4*20)+buffer));
+        this.mem.controller2.device.set_button_state(Button.L2, load<u32>((4*21)+buffer));
+        this.mem.controller2.device.set_button_state(Button.R1, load<u32>((4*22)+buffer));
+        this.mem.controller2.device.set_button_state(Button.R2, load<u32>((4*23)+buffer));
+        this.mem.controller2.device.set_button_state(Button.Circle, load<u32>((4*24)+buffer));
+        this.mem.controller2.device.set_button_state(Button.Square, load<u32>((4*25)+buffer));
+        this.mem.controller2.device.set_button_state(Button.Triangle, load<u32>((4*26)+buffer));
+        this.mem.controller2.device.set_button_state(Button.Cross, load<u32>((4*27)+buffer));
         /*for (let i = 0; i < 28; i++) {
             let v = load<u32>((4*i)+buffer)
             if (v !== 0) {

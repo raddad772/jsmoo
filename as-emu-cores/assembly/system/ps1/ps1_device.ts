@@ -1,6 +1,7 @@
 // Thanks to rustation-ng
 
 import {DsrState, DsrStateKind} from "./ps1_pad";
+import {Button} from "./ps1_gamepad";
 
 export class u8DsrState {
     r1: u8
@@ -15,7 +16,7 @@ export class u8DsrState {
     }
 }
 
-interface DeviceInterface {
+export interface DeviceInterface {
     memory: Array<u8>
 
     // Human-readable description
@@ -27,6 +28,8 @@ interface DeviceInterface {
     handle_command(seq: u8, cmd: u8): u8DsrState;
     write_counter(): u32;
     connected(): void;
+
+    set_button_state(button: Button, state: u32): void;
 }
 
 class DisconnectedDevice implements DeviceInterface {
@@ -40,7 +43,9 @@ class DisconnectedDevice implements DeviceInterface {
         return 'Disconnected';
     }
 
-    handle_command(seq: u8, cmd: u8) {
+    set_button_state(button: Button, state: u32): void {};
+
+    handle_command(seq: u8, cmd: u8): u8DsrState {
         return new u8DsrState(0xFF, new DsrState());
     }
 
@@ -57,9 +62,14 @@ export enum PeripheralKind {
 
 export class Peripheral {
     kind: PeripheralKind = PeripheralKind.Disconnected
-    device: DeviceInterface = new DisconnectedDevice();
+    device: DeviceInterface
     seq: u8 = 0
     active: boolean = false
+
+    constructor(device: DeviceInterface|null = null) {
+        if (device === null) this.device = new DisconnectedDevice();
+        else this.device = device;
+    }
 
     select(): void {
         this.active = true;
@@ -84,7 +94,7 @@ export class Peripheral {
         this.device.connected();
     }
 
-    disconnect_device() {
+    disconnect_device(): void {
         this.device = new DisconnectedDevice();
     }
 }
