@@ -4,6 +4,8 @@ import {PS1} from "./ps1";
 import {R3000} from "../../component/cpu/r3000/r3000";
 import {PS1_clock} from "./ps1_misc";
 import {D_RESOURCE_TYPES, dbg} from "../../helpers/debug";
+import {PS1_pad_memcard} from "./ps1_pad";
+import {Peripheral} from "./ps1_device";
 
 // @ts-ignore
 @inline
@@ -355,9 +357,15 @@ export class PS1_mem {
     unknown_read_mem: Set<u32> = new Set();
     unknown_wrote_mem: Set<u32> = new Set();
 
+
+    //do this tomorrow let con1 = new Peripheral()
+
+    pad_memcard = new PS1_pad_memcard();
+
     cpu: R3000|null=null;
     cache_isolated: u32 = 0;
 
+    pc1: PS1_pad_memcard = new PS1_pad_memcard()
     dma: PS1_DMA
     ps1: PS1|null=null;
 

@@ -8,6 +8,7 @@ import {R3000_fNA} from "./r3000_instructions";
 import {R3000_COP0_reg, R3000_disassemble, R3000_reg_alias} from "./r3000_disassembler";
 import {PS1_clock} from "../../../system/ps1/ps1_misc";
 import {D_RESOURCE_TYPES, dbg, R3000_COLOR, trace_start_format} from "../../../helpers/debug";
+import {IRQ_multiplexer_t} from "../../../helpers/IRQ_multiplexer";
 
 class R3000_regs_t {
     // MIPS general-purpose registers, of which there are 32
@@ -113,7 +114,7 @@ export class R3000_pipeline_t {
 }
 
 class R3000_IO {
-    I_STAT: u32 = 0
+    I_STAT: IRQ_multiplexer_t = new IRQ_multiplexer_t();
     I_MASK: u32 = 0
 }
 
@@ -155,14 +156,8 @@ export class R3000 {
         this.op_table = R3000_generate_opcodes();
     }
 
-    set_interrupt(which: u32): void {
-        // TODO: make this edge-detecting to trigger
-        this.io.I_STAT |= which;
-        this.update_I_STAT();
-    }
-
     update_I_STAT(): void {
-        this.pins.IRQ = +((this.io.I_STAT & this.io.I_MASK) !== 0);
+        this.pins.IRQ = +((this.io.I_STAT.IF & this.io.I_MASK) !== 0);
     }
 
         /* 1F801070h I_STAT - Interrupt status register (R=Status, W=Acknowledge)
@@ -189,7 +184,7 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
     CPU_write_reg(addr: u32, val: u32): void {
         switch(addr) {
             case 0x1F801070: // I_STAT write
-                this.io.I_STAT &= (val>>>0);
+                this.io.I_STAT.IF &= val;
                 this.update_I_STAT();
                 return;
             case 0x1F801074: // I_MASK write
@@ -203,7 +198,7 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
     CPU_read_reg(addr: u32, size: MT, val: u32): u32 {
         switch(addr) {
             case 0x1F801070: // I_STAT read
-                return this.io.I_STAT;
+                return this.io.I_STAT.IF;
             case 0x1F801074: // I_MASK read
                 return this.io.I_MASK;
         }
