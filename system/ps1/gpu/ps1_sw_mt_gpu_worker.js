@@ -258,11 +258,11 @@ class PS1_GPU_thread {
         this.GP1_FIFO.set_offset(this.GP1FIFO_offset);
 
         this.MMIO = new Uint32Array(this.sab);
-        console.log('VRAM offset:', this.VRAM_offset, this.sab);
+        //console.log('VRAM offset:', this.VRAM_offset, this.sab);
         //console.log(typeof this.sab);
         //console.log(e);
         this.VRAM = new DataView(this.sab, this.VRAM_offset);
-        console.log('murdering VRAM ' + this.VRAM_offset.toString());
+        //console.log('murdering VRAM ' + this.VRAM_offset.toString());
         for (let i = 0; i < (1024*1024); i+=4) {
             this.VRAM.setUint32(i,0x77777777);
         }
@@ -321,16 +321,24 @@ class PS1_GPU_thread {
                     break;
                 case 0x02: // Quick Rectangle
                     //console.log('Quick rectangle!');
-                    this.current_ins = this.gp0QuickRect.bind(this);
+                    this.current_ins = this.cmd02_quick_rect.bind(this);
                     this.cmd_arg_num = 3;
                     break;
                 //case 0x21: // ??
                 //    console.log('NOT IMPLEMENT 0x21');
                 //    break;
                 case 0x28: // flat-shaded rectangle
-                    this.current_ins = this.draw_flat4untex.bind(this);
+                    this.current_ins = this.cmd28_draw_flat4untex.bind(this);
                     this.cmd_arg_num = 5;
                     break;
+                case 0x60: // Rectangle, variable size, opaque
+                    this.current_ins = this.cmd60_rect_opaque_flat.bind(this)
+                    this.cmd_arg_num = 3;
+                    break;
+                /*case 0x75: // Rectangle, 8x8, opaque, textured
+                    this.current_ins = this.cmd75_rect_opaque_flat_textured.bind(this);
+                    this.cmd_arg_num = 3;
+                    break;*/
                 case 0xA0: // Image stream to GPU
                     this.current_ins = this.gp0_image_load_start.bind(this);
                     this.cmd_arg_num = 3;
@@ -437,6 +445,9 @@ class PS1_GPU_thread {
 
                 // TODO: remember to flush GPU texture cache
                 break;
+            case 0x01: // reset CMD FIFO
+                console.log('RESET CMD FIFO NOT IMPLEMENT');
+                break;
             case 0x03: // DISPLAY DISABLE
                 //TODO: do this
                 break;
@@ -500,7 +511,7 @@ class PS1_GPU_thread {
         this.unready_vram_to_CPU();
     }
 
-    gp0QuickRect(cmd) {
+    cmd02_quick_rect() {
         // GP0 quick rect!!!
        this.unready_all();
 
@@ -585,7 +596,7 @@ class PS1_GPU_thread {
     }
 
     onmessage(e) {
-        console.log('GPU got message', e, e.kind);
+        //console.log('GPU got message', e, e.kind);
         switch(e.kind) {
             case GPU_messages.startup:
                 this.msg_startup(e);
@@ -713,7 +724,54 @@ class PS1_GPU_thread {
         }
     }
 
-    draw_flat4untex() {
+    cmd60_rect_opaque_flat() {
+        let color = BGR24to15(this.cmd[0] & 0xFFFFFF);
+        let xstart = this.cmd[1] & 0xFFFF;
+        let ystart = this.cmd[1] >>> 16;
+        let xsize = this.cmd[2] & 0xFFFF;
+        let ysize = this.cmd[2] >>> 16;
+
+        let xend = (xstart + xsize);
+        xend = xend > 1024 ? 1024 : xend;
+
+        let yend = (ystart + ysize);
+        yend = yend > 512 ? 512 : yend;
+
+        for (let y = ystart; y < yend; y++) {
+            for (let x = xstart; x < xend; x++) {
+                this.setpix(y, x, color)
+            }
+        }
+    }
+
+    cmd75_rect_opaque_flat_textured() {
+        let xstart = this.cmd[1] & 0xFFFF;
+        let ystart = this.cmd[1] >> 16;
+        let clut = this.cmd[2] >> 16;
+        let v = (this.cmd[2] >> 8) & 0xFF;
+        let ustart = this.cmd[2] & 0xFF;
+
+        let xend = (xstart + 8);
+        let yend = (ystart + 8);
+        xend = xend > 1024 ? 1024 : xend;
+        yend = yend > 512 ? 512 : yend;
+
+        let tpage = (this.page_base_y * 256) + this.page_base_x;
+        console.log('TEXTURE PAGE!', this.page_base_x, this.page_base_y);
+        console.log('AAAND THE TEXTURE DEPTH', this.texture_depth)
+
+        for (let y = ystart; y < yend; y++) {
+            let u = ystart;
+            for (let x = xstart; x < xend; x++) {
+
+
+                u++;
+            }
+            v++;
+        }
+    }
+
+    cmd28_draw_flat4untex() {
         // Flat 4-vertex untextured poly
         let c = this.cmd;
         let x0 = mksigned16(c[1] & 0xFFFF);

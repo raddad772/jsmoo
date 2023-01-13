@@ -329,7 +329,7 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
                 //console.log('B0! ' + this.regs.R[9].toString());
                 if (this.regs.R[9] === 0x3D) {
                     this.console += String.fromCharCode(this.regs.R[4]);
-                    console.log(this.console);
+                    //console.log(this.console);
                 }
             }
             /*if ((this.regs.PC == 0xC)) {

@@ -22,7 +22,6 @@ class PS1_helper {
         this.mmio_buf = d.mmio_ptr;
 
         this.sab = this.as_wrapper.wasm.memory.buffer;
-        console.log('SAB?', this.sab);
         this.sab_offset = d.vram_ptr;
 
         this.gpu_thread.postMessage({
