@@ -245,6 +245,7 @@ class input_provider_t {
 					break;
 			}
 
+			if (km.value !== 0) console.log('GOT SOME!');
 			km.value = imap[km.name];
 		}
 		return this.keymap;

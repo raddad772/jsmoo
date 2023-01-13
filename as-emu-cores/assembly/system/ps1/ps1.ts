@@ -55,7 +55,8 @@ function fill_PS1_inputmap(): void {
         kp.internal_code = i;
         kp.buf_pos = i;
         kp.uber = (i < 14) ? 'p1' : 'p2';
-        switch((i < 14) ? i : (i - 14)) {
+        let k = (i < 14) ? i : i - 14;
+        switch(k) {
             case 0:
                 kp.name = 'up';
                 break;
@@ -169,6 +170,10 @@ export class PS1 implements systemEmulator {
 
         d.out_ptr = changetype<usize>(this.mem.VRAM_ab);
         d.out_size = (1024*512*2*2)
+
+        for (let i = 0, k = PS1_inputmap.length; i < k; i++) {
+            d.keymap.push(PS1_inputmap[i]);
+        }
         return d;
     }
 
@@ -216,34 +221,40 @@ export class PS1 implements systemEmulator {
     }
 
     map_inputs(buffer: usize): void {
-        this.controller1_in.up = load<u32>(0);
-        this.controller1_in.down = load<u32>(1);
-        this.controller1_in.left = load<u32>(2);
-        this.controller1_in.right = load<u32>(3);
-        this.controller1_in.circle = load<u32>(4);
-        this.controller1_in.square = load<u32>(5);
-        this.controller1_in.triangle = load<u32>(6);
-        this.controller1_in.x = load<u32>(7);
-        this.controller1_in.l1 = load<u32>(8);
-        this.controller1_in.l2 = load<u32>(9);
-        this.controller1_in.r1 = load<u32>(10);
-        this.controller1_in.r2 = load<u32>(11);
-        this.controller1_in.start = load<u32>(12);
-        this.controller1_in.select = load<u32>(13);
-        this.controller2_in.up = load<u32>(14);
-        this.controller2_in.down = load<u32>(15);
-        this.controller2_in.left = load<u32>(16);
-        this.controller2_in.right = load<u32>(17);
-        this.controller2_in.circle = load<u32>(18);
-        this.controller2_in.square = load<u32>(19);
-        this.controller2_in.triangle = load<u32>(20);
-        this.controller2_in.x = load<u32>(21);
-        this.controller2_in.l1 = load<u32>(22);
-        this.controller2_in.l2 = load<u32>(23);
-        this.controller2_in.r1 = load<u32>(24);
-        this.controller2_in.r2 = load<u32>(25);
-        this.controller2_in.start = load<u32>(26);
-        this.controller2_in.select = load<u32>(27);
+        this.controller1_in.up = load<u32>((4*0)+buffer);
+        this.controller1_in.down = load<u32>((4*1)+buffer);
+        this.controller1_in.left = load<u32>((4*2)+buffer);
+        this.controller1_in.right = load<u32>((4*3)+buffer);
+        this.controller1_in.start = load<u32>((4*4)+buffer);
+        this.controller1_in.select = load<u32>((4*5)+buffer);
+        this.controller1_in.l1 = load<u32>((4*6)+buffer);
+        this.controller1_in.l2 = load<u32>((4*7)+buffer);
+        this.controller1_in.r1 = load<u32>((4*8)+buffer);
+        this.controller1_in.r2 = load<u32>((4*9)+buffer);
+        this.controller1_in.circle = load<u32>((4*10)+buffer);
+        this.controller1_in.square = load<u32>((4*11)+buffer);
+        this.controller1_in.triangle = load<u32>((4*12)+buffer);
+        this.controller1_in.x = load<u32>((4*13)+buffer);
+        this.controller2_in.up = load<u32>((4*14)+buffer);
+        this.controller2_in.down = load<u32>((4*15)+buffer);
+        this.controller2_in.left = load<u32>((4*16)+buffer);
+        this.controller2_in.right = load<u32>((4*17)+buffer);
+        this.controller2_in.start = load<u32>((4*18)+buffer);
+        this.controller2_in.select = load<u32>((4*19)+buffer);
+        this.controller2_in.l1 = load<u32>((4*20)+buffer);
+        this.controller2_in.l2 = load<u32>((4*21)+buffer);
+        this.controller2_in.r1 = load<u32>((4*22)+buffer);
+        this.controller2_in.r2 = load<u32>((4*23)+buffer);
+        this.controller2_in.circle = load<u32>((4*24)+buffer);
+        this.controller2_in.square = load<u32>((4*25)+buffer);
+        this.controller2_in.triangle = load<u32>((4*26)+buffer);
+        this.controller2_in.x = load<u32>((4*27)+buffer);
+        /*for (let i = 0; i < 28; i++) {
+            let v = load<u32>((4*i)+buffer)
+            if (v !== 0) {
+                console.log('CK' + i.toString());
+            }
+        }*/
         //this.cpu.update_inputs(this.controller1_in, this.controller2_in);
     }
 
