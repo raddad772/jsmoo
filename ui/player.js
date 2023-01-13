@@ -27,6 +27,7 @@ class input_provider_t {
 			case 'gb':
 				this.setup_gb();
 				break;
+			case 'ps1_as':
 			case 'ps1':
 				this.setup_ps1();
 				break;
@@ -57,6 +58,7 @@ class input_provider_t {
 			case 'nes':
 				this.disconnect_nes();
 				break;
+			case 'ps1_as':
 			case 'ps1':
 				this.disconnect_ps1();
 				break;
