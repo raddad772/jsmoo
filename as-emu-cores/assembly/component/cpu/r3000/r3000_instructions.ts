@@ -5,6 +5,7 @@ import {R3000_opcode} from "./r3000_opcodes";
 import {hex8, mksigned16} from "../../../helpers/helpers";
 import {R3000_COP0_reg, R3000_reg} from "./r3000_disassembler";
 import {MT} from "../../../system/ps1/ps1_mem";
+import {D_RESOURCE_TYPES, dbg} from "../../../helpers/debug";
 
 export function R3000_fNA(opcode: u32, op: R3000_opcode, core: R3000): void {
     console.log('BAD INSTRUCTION ' + hex8(opcode));
@@ -378,6 +379,8 @@ export function R3000_fMFHI(opcode: u32, op: R3000_opcode, core: R3000): void {
 
     // TODO: add delay here until core.multiplier.clock_end
     core.multiplier.finish();
+    //console.log('MOVE FROM HI ' + hex8(core.multiplier.hi) + ' at ' + core.clock.trace_cycles.toString());
+    //if (core.multiplier.hi > 10) dbg.break(D_RESOURCE_TYPES.R3000);
     R3000_fs_reg_write(core, rd, core.multiplier.hi);
 }
 

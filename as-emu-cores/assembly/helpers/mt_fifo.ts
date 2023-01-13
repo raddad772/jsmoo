@@ -55,10 +55,10 @@ export class MT_FIFO16 {
 
     put_item_blocking(item: u32, tag: u32): void {
         if (atomic.load<i32>(this.buf+(33*4)) > 15) {
-            console.log('Waiting on GP0 to empty buffer...')
+            //console.log('Waiting on GP0 to empty buffer...')
             while (atomic.load<i32>(this.buf+(33*4)) > 15) {
             }
-            console.log('Buffer emptied');
+            //console.log('Buffer emptied');
         }
 
         //console.log('Set Mutex ' + hex8(item))
