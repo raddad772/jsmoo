@@ -56,7 +56,7 @@ export class DsrState {
     }
 
 
-    delay_by(offset: i32) {
+    delay_by(offset: i32): void {
         if (this.kind === DsrStateKind.Pending)
             this.delay += offset;
     }
@@ -147,7 +147,7 @@ export class PS1_pad_memcard {
 
     transfer_state: TransferState = new TransferState()
 
-    maybe_exchange_byte() {
+    maybe_exchange_byte(): void {
         if (this.tx_pending === -1) return;
         if (!this.tx_en) return;
         if (!this.transfer_state.is_idle()) return;
@@ -239,7 +239,7 @@ export class PS1_pad_memcard {
         return stat;
     }
 
-    set_mode(mode: u8) {
+    set_mode(mode: u8): void {
         if (mode === this.mode) return;
         if (!this.transfer_state.is_idle()) {
             console.log('WARNING Pad/Memcard change mode during transfer');
@@ -340,12 +340,12 @@ export class PS1_pad_memcard {
     refresh_irq_level(): void { this.interrupt |= this.dsr_active() & this.dsr_it; }
 }
 
-export function run_controller(psx: PS1, cycles: i32) {
+export function run_controller(psx: PS1, cycles: i32): void {
     run_transfer(psx, cycles);
     run_dsr(psx, cycles);
 }
 
-export function run_transfer(psx: PS1, cycles: i32) {
+export function run_transfer(psx: PS1, cycles: i32): void {
     while (cycles > 0) {
         let elapsed: i32 = 0
         let ts = psx.mem.pad_memcard.transfer_state
@@ -389,7 +389,7 @@ export function run_transfer(psx: PS1, cycles: i32) {
     }
 }
 
-function run_dsr(psx: PS1, cycles: i32) {
+function run_dsr(psx: PS1, cycles: i32): void {
     let pmc = psx.mem.pad_memcard;
     pmc.pad1_dsr.run(cycles);
     pmc.pad2_dsr.run(cycles);
@@ -400,6 +400,6 @@ function run_dsr(psx: PS1, cycles: i32) {
     psx.set_irq(PS1_IRQ.PadMemCardByteRecv, pmc.interrupt);
 }
 
-export function run_controllers(psx: PS1, cycles: i32) {
+export function run_controllers(psx: PS1, cycles: i32): void {
     run_controller(psx, cycles);
 }
