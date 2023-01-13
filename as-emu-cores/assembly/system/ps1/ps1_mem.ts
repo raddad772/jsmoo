@@ -909,14 +909,6 @@ class u32_dual_return {
         this.hi = 0;
         this.lo = 0;
     }
-
-    hexhi(): string {
-        return hex4(this.hi);
-    }
-
-    hexlo(): string {
-        return hex4(this.lo);
-    }
 }
 
 function u32_multiply(a: u32, b: u32): u32_dual_return {
@@ -931,11 +923,14 @@ function u32_multiply(a: u32, b: u32): u32_dual_return {
 
 function i32_multiply(a: u32, b: u32): u32_dual_return {
     let ret = new u32_dual_return();
-    let c: i64 = ((<i64>a) << 32) >> 32;
-    let d: i64 = ((<i64>b) << 32) >> 32;
-    let e = c * d;
-    ret.hi = <u32>(e >> 32);
+    let c: i64 = <i64><i32>a;
+    let d: i64 = <i64><i32>b;
+    let e: i64 = c * d;
+    ret.hi = <u32>(e >>> 32);
     ret.lo = <u32>e;
+    //console.log('HI! ' + hex8(ret.hi));
+    //console.log('LO! ' + hex8(ret.lo));
+    //console.log('e! ' + (<u64>e).toString())
     return ret;
 }
 
@@ -967,8 +962,8 @@ export class R3000_multiplier_t {
     op2: u32 = 0
     op_going: u32 = 0
     op_kind: u32 = 0
-    clock_start: u32 = 0
-    clock_end: u32 = 0
+    clock_start: u64 = 0
+    clock_end: u64 = 0
     constructor(clock: PS1_clock) {
         this.clock = clock;
     }
@@ -981,14 +976,19 @@ export class R3000_multiplier_t {
 
         this.op_going = 1;
         this.op_kind = op_kind;
-        this.clock_start = <u32>this.clock.cpu_master_clock;
-        this.clock_end = <u32>this.clock.cpu_master_clock+cycles;
+        this.clock_start = <u64>this.clock.cpu_master_clock;
+        this.clock_end = <u64>this.clock.cpu_master_clock+cycles;
     }
 
     // Finishes up multiply or divide
-    finish(): void {
+    finish(): u32 {
         if (!this.op_going)
-            return;
+            return 0;
+
+        let ret_cycles: u32 = 0;
+        if (this.clock.cpu_master_clock < this.clock_end) {
+            ret_cycles = <u32>(this.clock_end - this.clock.cpu_master_clock);
+        }
 
         let ret: u32_dual_return = new u32_dual_return();
         switch(this.op_kind) {
@@ -1008,8 +1008,9 @@ export class R3000_multiplier_t {
                 unreachable();
         }
         this.hi = ret.hi;
-        this.hi = ret.lo;
+        this.lo = ret.lo;
 
         this.op_going = 0;
+        return ret_cycles;
     }
 }

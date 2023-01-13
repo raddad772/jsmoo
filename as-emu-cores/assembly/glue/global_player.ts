@@ -55,6 +55,7 @@ export class global_player_t {
     }
 
     play(): void {
+        dbg.do_break = false;
         this.system.play();
     }
 
@@ -158,16 +159,17 @@ export class global_player_t {
 }
 
 export function new_global_player(): global_player_t {
-    console.log('new_global_player');
+    //console.log('new_global_player');
     return new global_player_t();
 }
 
 export function gp_load_BIOS(player: global_player_t, size: u32): void {
-    console.log('gp_load_BIOS');
+    //console.log('gp_load_BIOS');
     player.load_BIOS(size);
 }
 
 export function gp_step_master(player: global_player_t, howmany: i32): void {
+    dbg.do_break = false;
     player.step_master(howmany);
 }
 
@@ -187,12 +189,12 @@ function test_assumptions(): void {
 
 export function gp_set_system(player: global_player_t, to: String): void {
     //test_assumptions();
-    console.log('gp_set_system');
+    //console.log('gp_set_system');
     player.ext_set_system(to);
 }
 
 export function gp_ui_event(player: global_player_t, dest: u32, what: string, val_bool: boolean): void {
-    console.log('UI EVENT ' + what + ' ' + val_bool.toString());
+    //console.log('UI EVENT ' + what + ' ' + val_bool.toString());
     player.ui_event(dest, what, val_bool);
 }
 
@@ -209,12 +211,12 @@ export function gp_stop(player: global_player_t): void {
 }
 
 export function gp_get_mt(player: global_player_t): console_mt_struct {
-    console.log('gp_get_mt');
+    //console.log('gp_get_mt');
     return player.get_mt_struct();
 }
 
 export function gp_load_ROM_from_RAM(player: global_player_t, name: string, sz: u32): void {
-    console.log('gp_load_ROM_from_RAM');
+    //console.log('gp_load_ROM_from_RAM');
     player.load_rom(name, sz);
 }
 
@@ -227,7 +229,7 @@ export function gp_run_frame(player: global_player_t): u32 {
 }
 
 export function gp_get_specs(player: global_player_t): machine_description {
-    console.log('gp_get_specs');
+    //console.log('gp_get_specs');
     return player.tech_specs;
 }
 

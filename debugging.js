@@ -258,6 +258,7 @@ class debugger_t {
 
     dump_from_wasm(what) {
         if (what.broke) {
+            console.log('BREAKIONG!');
             this.break();
         }
         if (what.traces.length > 0) {
