@@ -905,12 +905,10 @@ export class PS1_mem {
 class u32_dual_return {
     hi: u32 = 0
     lo: u32 = 0
-    constructor() {
-        this.hi = 0;
-        this.lo = 0;
-    }
 }
 
+// @ts-ignore
+@inline
 function u32_multiply(a: u32, b: u32): u32_dual_return {
     let ret = new u32_dual_return();
     let c = <u64>a
@@ -921,6 +919,8 @@ function u32_multiply(a: u32, b: u32): u32_dual_return {
     return ret;
 }
 
+// @ts-ignore
+@inline
 function i32_multiply(a: u32, b: u32): u32_dual_return {
     let ret = new u32_dual_return();
     let c: i64 = <i64><i32>a;
@@ -928,12 +928,11 @@ function i32_multiply(a: u32, b: u32): u32_dual_return {
     let e: i64 = c * d;
     ret.hi = <u32>(e >>> 32);
     ret.lo = <u32>e;
-    //console.log('HI! ' + hex8(ret.hi));
-    //console.log('LO! ' + hex8(ret.lo));
-    //console.log('e! ' + (<u64>e).toString())
     return ret;
 }
 
+// @ts-ignore
+@inline
 function i32_divide(a: u32, b: u32): u32_dual_return
 {
     let ret = new u32_dual_return();
@@ -944,6 +943,8 @@ function i32_divide(a: u32, b: u32): u32_dual_return
     return ret;
 }
 
+// @ts-ignore
+@inline
 function u32_divide(a: u32, b: u32): u32_dual_return {
     let ret = new u32_dual_return();
     let c = a
