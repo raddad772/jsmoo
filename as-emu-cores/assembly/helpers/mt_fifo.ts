@@ -33,13 +33,7 @@ export class MT_FIFO16 {
     output_tag: u32 = 0
 
     constructor(buf: usize) {
-        console.log('SET BUF: ' + buf.toString())
         this.buf = buf;
-    }
-
-    put_bad(index: u32, item: u32): void {
-        console.log('PUT TO ' + hex8(this.buf+(index*4)) + ': ' + hex8(<u32>item));
-        store<i32>(this.buf+(index*4), <i32>item);
     }
 
     clear(): void {
