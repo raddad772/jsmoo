@@ -208,7 +208,7 @@ class PS1_GPU_thread {
 
         // Preserve GPU ready or not bits
         this.GPUSTAT = o | (this.MMIO[this.MMIO_offset+GPUSTAT] & 0x1C000000);
-        console.log('RENDER SETTING GPUSTAT ' + hex8(this.GPUSTAT));
+        //console.log('RENDER SETTING GPUSTAT ' + hex8(this.GPUSTAT));
         this.MMIO[this.MMIO_offset+GPUSTAT] = this.GPUSTAT;
     }
 

@@ -66,8 +66,10 @@ const DEFAULT_PS1P1 = {
     'square': ['z', 90],
     'triangle': ['a', 65],
     'x': ['x', 88],
-    'l': ['q', 81],
-    'r': ['w', 87],
+    'l1': ['q', 81],
+    'l2': ['e', 69],
+    'r1': ['w', 87],
+    'r2': ['r', 82],
 }
 
 const DEFAULT_PS1P2 = {
@@ -81,8 +83,10 @@ const DEFAULT_PS1P2 = {
     'square': [null, null],
     'triangle': [null, null],
     'x': [null, null],
-    'l': [null, null],
-    'r': [null, null],
+    'l1': [null, null],
+    'l2': [null, null],
+    'r1': [null, null],
+    'r2': [null, null],
 }
 
 const DEFAULT_NES2 = {
@@ -589,6 +593,7 @@ class controller_input_config_t {
 
     setup_ps1dualshock() {
         if (typeof this.savedict[this.id] === 'undefined') {
+        //if (true) {
             this.changed = true;
             switch(this.id) {
                 case 'ps1p1cfg':
@@ -602,15 +607,16 @@ class controller_input_config_t {
         this.arrow_exclude = true;
         let c = this.savedict[this.id];
 
-        // TODO: NOTCORRECT
         this.buttons.up = new controller_button_t(c,'up', 63, 58, 79, 73);
         this.buttons.left = new controller_button_t(c,'left', 42, 75, 59, 93);
         this.buttons.right = new controller_button_t(c,'right', 80, 75, 94, 94);
         this.buttons.down = new controller_button_t(c,'down', 63, 93, 78, 108);
         this.buttons.select = new controller_button_t(c,'select', 117, 82, 140, 105);
         this.buttons.start = new controller_button_t(c,'start', 151, 82, 171, 105);
-        this.buttons.l = new controller_button_t(c,'l', 37, 1, 105, 32);
-        this.buttons.r = new controller_button_t(c,'r', 206, 1, 278, 32);
+        this.buttons.l1 = new controller_button_t(c,'l1', 37, 1, 105, 32);
+        this.buttons.l2 = new controller_button_t(c,'l2', 37, 1, 105, 32);
+        this.buttons.r1 = new controller_button_t(c,'r1', 206, 1, 278, 32);
+        this.buttons.r2 = new controller_button_t(c,'r2', 206, 1, 278, 32);
         this.buttons.circle = new controller_button_t(c,'circle', 204, 73, 227, 96);
         this.buttons.square = new controller_button_t(c,'square', 232, 47, 255, 74);
         this.buttons.triangle = new controller_button_t(c,'triangle', 231, 95, 255, 118);
