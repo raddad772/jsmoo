@@ -315,7 +315,7 @@ class PS1_GPU_thread {
             this.cmd_arg_num = 1;
             switch (cmd >>> 24) {
                 case 0: // NOP
-                    console.log('INTERPRETED AS NOP:', hex8(cmd));
+                    if (cmd !== 0) console.log('INTERPRETED AS NOP:', hex8(cmd));
                     break;
                 case 0x01: // Clear cache (not implemented)
                     break;
@@ -335,10 +335,10 @@ class PS1_GPU_thread {
                     this.current_ins = this.cmd60_rect_opaque_flat.bind(this)
                     this.cmd_arg_num = 3;
                     break;
-                /*case 0x75: // Rectangle, 8x8, opaque, textured
+                case 0x75: // Rectangle, 8x8, opaque, textured
                     this.current_ins = this.cmd75_rect_opaque_flat_textured.bind(this);
                     this.cmd_arg_num = 3;
-                    break;*/
+                    break;
                 case 0xA0: // Image stream to GPU
                     this.current_ins = this.gp0_image_load_start.bind(this);
                     this.cmd_arg_num = 3;
@@ -744,6 +744,15 @@ class PS1_GPU_thread {
         }
     }
 
+    get_tex_8bit(base_x, base_y, u, v) {
+        let x = base_x * 64
+        let y = base_y * 256;
+        x += (u >> 1);
+        y += v;
+        let addr = (2048*y) + (2*x) + (u & 1);
+        return this.VRAM.getUint8(addr);
+    }
+
     cmd75_rect_opaque_flat_textured() {
         let xstart = this.cmd[1] & 0xFFFF;
         let ystart = this.cmd[1] >> 16;
@@ -756,15 +765,21 @@ class PS1_GPU_thread {
         xend = xend > 1024 ? 1024 : xend;
         yend = yend > 512 ? 512 : yend;
 
-        let tpage = (this.page_base_y * 256) + this.page_base_x;
-        console.log('TEXTURE PAGE!', this.page_base_x, this.page_base_y);
-        console.log('AAAND THE TEXTURE DEPTH', this.texture_depth)
-
+        let clx = (clut & 0x3F) * 16;
+        let cly = (clut >> 6) & 0x1FF;
+        let cl_addr = (2048*cly)+(2*clx);
+        /*
+            X coordinate X/16  (ie. in 16-halfword steps)
+              6-14     Y coordinate 0-511 (ie. in 1-line steps)
+         */
         for (let y = ystart; y < yend; y++) {
-            let u = ystart;
+            let u = ustart;
             for (let x = xstart; x < xend; x++) {
-
-
+                let cl = this.get_tex_8bit(this.page_base_x, this.page_base_y, u ,v);
+                let color = this.VRAM.getUint16(cl_addr + (cl*2));
+                let hbit = color & 0x8000;
+                let lbit = color & 0x7FFF;
+                if ((lbit !== 0) || ((lbit === 0) && hbit)) this.setpix(y, x, lbit);
                 u++;
             }
             v++;
