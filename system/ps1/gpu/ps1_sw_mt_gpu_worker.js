@@ -553,8 +553,8 @@ class PS1_GPU_thread {
         // VRAM is 512 1024-wide 16-bit words. so 2048 bytes per line
         let ry = y + this.draw_y_offset;
         let rx = x + this.draw_x_offset;
-        if ((ry < this.draw_area_top) || (ry > this.draw_area_bottom)) return;
-        if ((rx < this.draw_area_left) || (rx > this.draw_area_right)) return;
+        //if ((ry < this.draw_area_top) || (ry > this.draw_area_bottom)) return;
+        //if ((rx < this.draw_area_left) || (rx > this.draw_area_right)) return;
         let addr = (2048*ry)+(rx*2);
         this.VRAM.setUint16(addr, color, true);
     }
@@ -784,10 +784,6 @@ class PS1_GPU_thread {
         yend = yend > 512 ? 512 : yend;
 
         let ts = this.get_texture_sampler(this.texture_depth, this.page_base_x, this.page_base_y, clut)
-        /*
-            X coordinate X/16  (ie. in 16-halfword steps)
-              6-14     Y coordinate 0-511 (ie. in 1-line steps)
-         */
         for (let y = ystart; y < yend; y++) {
             let u = ustart;
             for (let x = xstart; x < xend; x++) {
@@ -799,7 +795,6 @@ class PS1_GPU_thread {
             }
             v++;
         }
-
     }
 
     sample_tex_4bit(ts, u, v) {
