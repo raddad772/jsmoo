@@ -396,6 +396,10 @@ export class PS1_mem {
             return;
         }
 
+        if ((addr >= 0x1F801040) && (addr < 0x1F801060)) {
+            return this.pad_memcard.CPU_write(addr - 0x1F801040, size, val, this.ps1!);
+        }
+
         switch(addr) {
             case 0x00FF1F00: // Invalid addresses
             case 0x00FF1F04:
@@ -640,6 +644,10 @@ export class PS1_mem {
         }
         if ((addr >= 0x1F801080) && (addr <= 0x1F8010FF)) {
             return this.dma.read(addr, val);
+        }
+
+        if ((addr >= 0x1F801040) && (addr < 0x1F801060)) {
+            return this.pad_memcard.CPU_read(addr - 0x1F801040, size);
         }
 
         switch(addr) {

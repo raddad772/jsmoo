@@ -42,6 +42,7 @@ export class PS1_DigitalPad implements DeviceInterface {
         let d = new u8DsrState();
         let resp: u8;
         let send_dsr: boolean;
+        console.log('HANDLE CMD! ' + seq.toString());
         switch(seq) {
             case 0:
                 resp = 0xFF;

@@ -13,6 +13,20 @@ const GPUGP1 = 3;
 const GPUREAD = 4;
 const LASTUSED = 23;
 
+
+class texture_sampler {
+    constructor(page_x, page_y, clut) {
+        this.func = null;
+        page_x = (page_x & 0x0F) * 64;
+        page_y = (page_y & 1) * 256;
+        this.base_addr = (page_y * 2048) + (page_x*2);
+        let clx = (clut & 0x3F) * 16;
+        let cly = (clut >> 6) & 0x1FF;
+        this.clut_addr = (2048*cly)+(2*clx);
+    }
+}
+
+
 function set_bit(w, bitnum, val) {
     if (val)
         w |= (1 << bitnum);
@@ -236,7 +250,6 @@ class PS1_GPU_thread {
         this.GPUSTAT &= 0xEFFFFFFF;
     }
 
-
     msg_startup(e) {
         //this.shared_output_buffers[0] = e.output_buffer0;
         //this.shared_output_buffers[1] = e.output_buffer1;
@@ -334,6 +347,10 @@ class PS1_GPU_thread {
                 case 0x60: // Rectangle, variable size, opaque
                     this.current_ins = this.cmd60_rect_opaque_flat.bind(this)
                     this.cmd_arg_num = 3;
+                    break;
+                case 0x64: // Rectangle, variable size, textured, flat, opaque
+                    this.current_ins = this.cmd64_rect_opaque_flat_textured.bind(this)
+                    this.cmd_arg_num = 4;
                     break;
                 case 0x75: // Rectangle, 8x8, opaque, textured
                     this.current_ins = this.cmd75_rect_opaque_flat_textured.bind(this);
@@ -744,19 +761,89 @@ class PS1_GPU_thread {
         }
     }
 
-    get_tex_8bit(base_x, base_y, u, v) {
-        let x = base_x * 64
-        let y = base_y * 256;
-        x += (u >> 1);
-        y += v;
-        let addr = (2048*y) + (2*x) + (u & 1);
-        return this.VRAM.getUint8(addr);
+    cmd64_rect_opaque_flat_textured() {
+        // WRIOW GP0,(0x64<<24)+(COLOR&0xFFFFFF)      ; Write GP0 Command Word (Color+Command)
+        //let color24 = this.cmd[0] & 0xFFFFFF;
+
+        // WRIOW GP0,(Y<<16)+(X&0xFFFF)               ; Write GP0  Packet Word (Vertex)
+        let ystart = (this.cmd[1] & 0xFFFF0000) >> 16;
+        let xstart = ((this.cmd[1] & 0xFFFF) << 16) >> 16;
+
+        // WRIOW GP0,(PAL<<16)+((V&0xFF)<<8)+(U&0xFF) ; Write GP0  Packet Word (Texcoord+Palette)
+        let clut = (this.cmd[2] >>> 16) & 0xFFFF;
+        let v = (this.cmd[2] >> 8) & 0xFF;
+        let ustart = this.cmd[2] & 0xFF;
+
+        // WRIOW GP0,(HEIGHT<<16)+(WIDTH&0xFFFF)      ; Write GP0  Packet Word (Width+Height)
+        let height = (this.cmd[3] >>> 16) & 0xFFFF;
+        let width = this.cmd[3] & 0xFFFF;
+
+        let xend = (xstart + width);
+        let yend = (ystart + height);
+        xend = xend > 1024 ? 1024 : xend;
+        yend = yend > 512 ? 512 : yend;
+
+        let ts = this.get_texture_sampler(this.texture_depth, this.page_base_x, this.page_base_y, clut)
+        /*
+            X coordinate X/16  (ie. in 16-halfword steps)
+              6-14     Y coordinate 0-511 (ie. in 1-line steps)
+         */
+        for (let y = ystart; y < yend; y++) {
+            let u = ustart;
+            for (let x = xstart; x < xend; x++) {
+                let color = this.sample_texture(ts, u, v);
+                let hbit = color & 0x8000;
+                let lbit = color & 0x7FFF;
+                if ((lbit !== 0) || ((lbit === 0) && hbit)) this.setpix(y, x, lbit);
+                u++;
+            }
+            v++;
+        }
+
+    }
+
+    sample_tex_4bit(ts, u, v) {
+        let addr = ts.base_addr + ((v&0xFF)<<11) + ((u&0xFF) >>> 1);
+        let d = this.VRAM.getUint8(addr);
+        if (u & 1) d &= 0x0F;
+        d = (d & 0xF0) >>> 4;
+        return this.VRAM.getUint16(ts.clut_addr + (d*2));
+    }
+
+    sample_tex_8bit(ts, u, v) {
+        let d = this.VRAM.getUint8(ts.base_addr + ((v&0xFF)<<11) + (u&0x7F));
+        return this.VRAM.getUint16(ts.clut_addr + (d*2));
+    }
+
+    sample_tex_15bit(ts, u, v) {
+        let addr = ts.base_addr + ((v&0xFF)<<11) + ((u&0x3F)>>1);
+        return this.VRAM.getUint16(addr);
+    }
+
+    get_texture_sampler(tex_depth, page_x, page_y, clut=0) {
+        let ts = new texture_sampler(page_x, page_y, clut);
+        switch(tex_depth) {
+            case PS1e.T4bit:
+                ts.func = this.sample_tex_4bit.bind(this);
+                break;
+            case PS1e.T8bit:
+                ts.func = this.sample_tex_8bit.bind(this);
+                break;
+            case PS1e.T15bit:
+                ts.func = this.sample_tex_15bit.bind(this);
+                break;
+        }
+        return ts;
+    }
+
+    sample_texture(ts, u, v) {
+        return ts.func(ts, u, v);
     }
 
     cmd75_rect_opaque_flat_textured() {
-        let xstart = this.cmd[1] & 0xFFFF;
+        let xstart = ((this.cmd[1] & 0xFFFF) << 16) >> 16;
         let ystart = this.cmd[1] >> 16;
-        let clut = this.cmd[2] >> 16;
+        let clut = this.cmd[2] >>> 16;
         let v = (this.cmd[2] >> 8) & 0xFF;
         let ustart = this.cmd[2] & 0xFF;
 
@@ -765,21 +852,17 @@ class PS1_GPU_thread {
         xend = xend > 1024 ? 1024 : xend;
         yend = yend > 512 ? 512 : yend;
 
-        let clx = (clut & 0x3F) * 16;
-        let cly = (clut >> 6) & 0x1FF;
-        let cl_addr = (2048*cly)+(2*clx);
-        /*
-            X coordinate X/16  (ie. in 16-halfword steps)
-              6-14     Y coordinate 0-511 (ie. in 1-line steps)
-         */
+        let ts = this.get_texture_sampler(this.texture_depth, this.page_base_x, this.page_base_y, clut);
+
         for (let y = ystart; y < yend; y++) {
             let u = ustart;
             for (let x = xstart; x < xend; x++) {
-                let cl = this.get_tex_8bit(this.page_base_x, this.page_base_y, u ,v);
-                let color = this.VRAM.getUint16(cl_addr + (cl*2));
+                let color = this.sample_texture(ts, u, v);
+
                 let hbit = color & 0x8000;
                 let lbit = color & 0x7FFF;
                 if ((lbit !== 0) || ((lbit === 0) && hbit)) this.setpix(y, x, lbit);
+                //this.setpix(y, x, lbit);
                 u++;
             }
             v++;
