@@ -138,7 +138,6 @@ export function R3000_fJALR(opcode: u32, op: R3000_opcode, core: R3000): void
 }
 
 export function R3000_fBEQ(opcode: u32, op: R3000_opcode, core: R3000): void {
-    // 00010x | rs   | rt   | <--immediate16bit--> |
     R3000_branch(core,
         core.regs.PC + (<u32>(<i16>(opcode & 0xFFFF))*4),
         core.regs.R[(opcode >>> 21) & 0x1F] === core.regs.R[(opcode >>> 16) & 0x1F],

@@ -69,6 +69,7 @@ export class Peripheral {
     constructor(device: DeviceInterface|null = null) {
         if (device === null) this.device = new DisconnectedDevice();
         else this.device = device;
+        this.device.connected();
     }
 
     select(): void {
@@ -78,6 +79,7 @@ export class Peripheral {
     }
 
     exchange_byte(cmd: u8): u8DsrState {
+        console.log('EXCHG BYTE ' + this.active.toString());
         if (!this.active)
             return new u8DsrState(0xFF, new DsrState());
 

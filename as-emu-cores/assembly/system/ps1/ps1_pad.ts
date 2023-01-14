@@ -2,6 +2,8 @@
 
 import {Peripheral, PeripheralKind, u8DsrState} from "./ps1_device";
 import {PS1, PS1_IRQ} from "./ps1";
+import {MT} from "./ps1_mem";
+import {hex2} from "../../helpers/helpers";
 
 class Optional<T> {
     value: T
@@ -151,6 +153,7 @@ export class PS1_pad_memcard {
         if (this.tx_pending === -1) return;
         if (!this.tx_en) return;
         if (!this.transfer_state.is_idle()) return;
+        console.log('OK EXCHANGE!')
 
         let to_send: u8 = <u8>this.tx_pending;
 
@@ -206,6 +209,66 @@ export class PS1_pad_memcard {
         this.transfer_state.delay = to_tx_start;
         this.transfer_state.rx_available_delay = to_tx_end;
         this.transfer_state.value = resp;
+    }
+
+    CPU_read(offset: u32, size: MT): u32 {
+        switch(offset) {
+            case 0:
+                if (size !== MT.u8) {
+                    console.log('Unhandled gamepad RX access not u8: ' + size.toString());
+                    return 0;
+                }
+                return this.get_response();
+            case 4:
+                return this.stat();
+            case 8:
+                return <u32>this.mode;
+            case 10:
+                return <u32>this.control();
+            case 14:
+                return <u32>this.baud_div;
+            default:
+                console.log('Bad gamepad/memcard read? ' + offset.toString());
+                return 0;
+        }
+    }
+
+    CPU_write(offset: u32, size: MT, value: u32, ps1: PS1): void {
+        console.log('WRITE! ' + hex2(offset) + ' ' + hex2(value));
+        let v = <u16>value;
+        switch(offset) {
+            case 0:
+                if (size !== MT.u8) {
+                    console.log('Unimplemented gamepad TX access kind ' + size.toString());
+                    return;
+                }
+
+                if (this.tx_pending > 0) {
+                    console.log('WARNING dropping pad/memcard byte before send');
+                }
+
+                this.tx_pending = <i16>(v & 0xFF);
+                break;
+            case 8:
+                this.set_mode(<u8>(v & 0xFF));
+                break;
+            case 10:
+                if ((size !== MT.u16) && (size !== MT.u8)) {
+                    console.log('Unimplemented gamepad control access kind ' + size.toString());
+                    return;
+                }
+                this.set_control(v);
+                ps1.set_irq(PS1_IRQ.PadMemCardByteRecv, this.interrupt)
+                break;
+            case 14:
+                this.baud_div = v;
+                break;
+            default:
+                console.log('Write to gamepad register undone ' + offset.toString());
+                break;
+        }
+
+        this.maybe_exchange_byte();
     }
 
     dsr_active(): u32 {
@@ -299,7 +362,7 @@ export class PS1_pad_memcard {
             }
 
             if (ctrl & 0xF00) {
-                console.log('Unsupproted gamepad interrpts! ' + ctrl.toString());
+                console.log('Unsupported gamepad interrpts! ' + ctrl.toString());
             }
         }
 
