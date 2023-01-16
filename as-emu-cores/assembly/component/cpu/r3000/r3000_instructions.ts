@@ -479,24 +479,64 @@ export function R3000_fMULTU(opcode: u32, op: R3000_opcode, core: R3000): void {
 }
 
 export function R3000_fCOP(opcode: u32, op: R3000_opcode, core: R3000): void {
+    let copnum = (opcode >>> 26) & 3;
+
     // Opcode 0x10 is cop0, then just take the value of rs. 0 is mfc0, 4 is mtc0, and 0x10 is rfe
     let opc = (opcode >>> 26) & 0x1F;
     let rs = (opcode >>> 21) & 0x1F;
+    let rt = (opcode >>> 16) & 0x1F;
+    let rd = (opcode >>> 11) & 0x1F;
     // Opcode 0x10 is cop0, then just take the value of rs. 0 is mfc0, 4 is mtc0, and 0x10 is rfe
-    if ((opc === 0x10)) {
-        switch (rs) {
-            case 0:
-                R3000_fMFC(opcode, op, core, 0);
+
+    if (copnum === 0) {
+        // Cop0 decoding easy
+        if ((opc === 0x10)) {
+            switch (rs) {
+                case 0:
+                    R3000_fMFC(opcode, op, core, 0);
+                    return;
+                case 4:
+                    R3000_fMTC(opcode, op, core, 0);
+                    return;
+                case 0x10:
+                    R3000_fCOP0_RFE(opcode, op, core);
+                    return;
+            }
+        }
+        console.log('BAD COP0 INSTRUCTION! ' + hex8(opcode));
+    }
+    else {
+        if (copnum !== 2) {
+            console.log('BAD COP INS? ' + hex8(opcode));
+            return;
+        }
+        if (opcode & 0x2000000) {
+            core.gte.command(opcode);
+            return;
+        }
+        let bits5 = (opcode >> 21) & 0x1F;
+        let low6 = (opcode & 0x3F);
+        if (low6 !== 0) { // TLBxxx, RFE (which is only COP0?)
+            console.log('BAD COP INSTRUCTION ' + hex8(opcode));
+            return;
+        }
+        switch(bits5) {
+            case 0: // MFCn rt = dat
+                if (rt !== 0) core.regs.R[rt] = core.gte.read_reg(rd);
                 return;
-            case 4:
-                R3000_fMTC(opcode, op, core, 0);
+            case 2: // CFCn rt = cnt
+                if (rt !== 0) core.regs.R[rt] = core.gte.read_reg(rd+32);
                 return;
-            case 0x10:
-                R3000_fCOP0_RFE(opcode, op, core);
+            case 4: // MTCn  dat = rt
+                core.gte.write_reg(rd, core.regs.R[rt])
                 return;
+            case 6: // CTCn  cnt = rt
+                core.gte.write_reg(rd+32, core.regs.R[rt])
+                return;
+            default:
+                console.log('UNKNOWN COP INSTRUCTION ' + hex8(opcode));
         }
     }
-    console.log('BAD COP0 INSTRUCTION! ' + hex8(opcode));
     //dbg.break();
 }
 
