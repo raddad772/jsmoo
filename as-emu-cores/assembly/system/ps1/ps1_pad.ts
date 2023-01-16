@@ -153,7 +153,6 @@ export class PS1_pad_memcard {
         if (this.tx_pending === -1) return;
         if (!this.tx_en) return;
         if (!this.transfer_state.is_idle()) return;
-        console.log('OK EXCHANGE!')
 
         let to_send: u8 = <u8>this.tx_pending;
 
@@ -187,7 +186,7 @@ export class PS1_pad_memcard {
                 this.pad1_dsr.delay_by(to_dsr_start);
                 this.memcard1_dsr = mcr.r2;
                 this.memcard1_dsr.delay_by(to_dsr_start);
-                resp = padr.r1 * mcr.r1;
+                resp = padr.r1 & mcr.r1;
                 break;
             case Target.PadMemCard2:
                 padr = this.pad2.exchange_byte(to_send);
@@ -197,7 +196,7 @@ export class PS1_pad_memcard {
                 this.pad2_dsr.delay_by(to_dsr_start);
                 this.memcard2_dsr = mcr.r2;
                 this.memcard2_dsr.delay_by(to_dsr_start);
-                resp = padr.r1 * mcr.r1;
+                resp = padr.r1 & mcr.r1;
                 break;
             default:
                 unreachable();
@@ -218,7 +217,9 @@ export class PS1_pad_memcard {
                     console.log('Unhandled gamepad RX access not u8: ' + size.toString());
                     return 0;
                 }
-                return this.get_response();
+                let r: u32 = this.get_response();
+                //return this.get_response();
+                return r;
             case 4:
                 return this.stat();
             case 8:
@@ -234,7 +235,6 @@ export class PS1_pad_memcard {
     }
 
     CPU_write(offset: u32, size: MT, value: u32, ps1: PS1): void {
-        console.log('WRITE! ' + hex2(offset) + ' ' + hex2(value));
         let v = <u16>value;
         switch(offset) {
             case 0:
@@ -243,7 +243,7 @@ export class PS1_pad_memcard {
                     return;
                 }
 
-                if (this.tx_pending > 0) {
+                if (this.tx_pending >= 0) {
                     console.log('WARNING dropping pad/memcard byte before send');
                 }
 

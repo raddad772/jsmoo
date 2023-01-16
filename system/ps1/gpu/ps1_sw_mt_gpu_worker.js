@@ -13,6 +13,37 @@ const GPUGP1 = 3;
 const GPUREAD = 4;
 const LASTUSED = 23;
 
+class vertex3 {
+    constructor() {
+        this.x = this.y = this.z = 0;
+        this.r = this.g = this.b = 0;
+    }
+
+    v2_from_cmd(cmd) {
+        this.x = ((cmd & 0xFFFF) << 16) >> 16;
+        this.y = cmd >> 16;
+    }
+
+    c24_from_cmd(cmd) {
+        this.r = cmd & 0xFF;
+        this.g = (cmd >>> 8) & 0xFF;
+        this.b = (cmd >>> 16) & 0xFF;
+    }
+}
+
+class color_sampler {
+    constructor() {
+        this.r_start = this.g_start = this.b_start = 0;
+        this.r = this.g = this.b = 0;
+        this.r_end = this.g_end = this.b_end = 0;
+    }
+
+    fromrgb24(rgb) {
+        this.r = this.r_start = (rgb & 0xFF);
+        this.g = this.g_start = (rgb >> 8) & 0xFF;
+        this.b = this.b_start = (rgb >> 16) & 0xFF;
+    }
+}
 
 class texture_sampler {
     constructor(page_x, page_y, clut) {
@@ -124,6 +155,16 @@ class PS1_GPU_thread {
         this.display_disabled = 0;
         this.interrupt = 0; // interrupt status
         this.dma_direction = PS1e.DMAoff;
+
+        this.color1 = new color_sampler();
+        this.color2 = new color_sampler();
+        this.color3 = new color_sampler();
+
+        this.v1 = new vertex3();
+        this.v2 = new vertex3();
+        this.v3 = new vertex3();
+        this.v4 = new vertex3();
+        this.v5 = new vertex3();
 
         this.load_buffer = {
             x: 0,
@@ -326,7 +367,9 @@ class PS1_GPU_thread {
             this.cmd_arg_index = 1;
             this.ins_special = false;
             this.cmd_arg_num = 1;
-            switch (cmd >>> 24) {
+            let cmdr = cmd >>> 24;
+            //if ((cmdr & 0xA0) === 0xA0) cmdr = 0xA0;
+            switch (cmdr) {
                 case 0: // NOP
                     if (cmd !== 0) console.log('INTERPRETED AS NOP:', hex8(cmd));
                     break;
@@ -344,7 +387,11 @@ class PS1_GPU_thread {
                     this.current_ins = this.cmd28_draw_flat4untex.bind(this);
                     this.cmd_arg_num = 5;
                     break;
-                case 0x60: // Rectangle, variable size, opaque
+                case 0x30: // opaque shaded trinalge
+                    this.current_ins = this.cmd30_tri_shaded_opaque.bind(this);
+                    this.cmd_arg_num = 6;
+                    break;
+                    case 0x60: // Rectangle, variable size, opaque
                     this.current_ins = this.cmd60_rect_opaque_flat.bind(this)
                     this.cmd_arg_num = 3;
                     break;
@@ -537,7 +584,7 @@ class PS1_GPU_thread {
         let BGR = BGR24to15(this.cmd[0] & 0xFFFFFF);
         let start_y = (this.cmd[1] >>> 16) & 0xFFFF;
         let start_x = (this.cmd[1]) & 0xFFFF;
-        console.log('QUICKRECT! COLOR', hex4(BGR), 'X Y', start_x, start_y, 'SZ X SZ Y', xsize, ysize);
+        //console.log('QUICKRECT! COLOR', hex4(BGR), 'X Y', start_x, start_y, 'SZ X SZ Y', xsize, ysize);
         for (let y = start_y; y < (start_y+ysize); y++) {
             for (let x = start_x; x < (start_x + xsize); x++) {
                 //this.setpix(y, x, BGR);
@@ -549,10 +596,10 @@ class PS1_GPU_thread {
         this.ready_all();
     }
 
-    setpix(y, x, color) {
+    setpix(y, x, color, transparent=false) {
         // VRAM is 512 1024-wide 16-bit words. so 2048 bytes per line
-        let ry = y + this.draw_y_offset;
-        let rx = x + this.draw_x_offset;
+        let ry = (y & 511) + this.draw_y_offset;
+        let rx = (x & 1023) + this.draw_x_offset;
         //if ((ry < this.draw_area_top) || (ry > this.draw_area_bottom)) return;
         //if ((rx < this.draw_area_left) || (rx > this.draw_area_right)) return;
         let addr = (2048*ry)+(rx*2);
@@ -619,11 +666,314 @@ class PS1_GPU_thread {
                 this.msg_startup(e);
                 break;
             case GPU_messages.play:
-                this.listen_FIFO();
+                //this.listen_FIFO();
                 break;
         }
     }
 
+    lr_draw_flat_shaded_triangle(v0, v1, v2) {
+        // Sort left-to-right. Leftmost vertex is
+
+        // Find left triangle slope
+        /*let dx = x1 - x0
+        dy = y1 - y0
+        D = 2*dy - dx
+        y = y0
+
+        for x from x0 to x1
+            plot(x, y)
+            if D > 0
+                y = y + 1
+                D = D - 2*dx
+            end if
+            D = D + 2*dy
+         */
+    }
+
+    draw_flat_shaded_triangle(v1, v2, v3) {
+        let draw_line = function(y, x1, x2, r1, r2, g1, g2, b1, b2, setpix) {
+            x1 >>= 0;
+            x2 >>= 0;
+            if (x1 > x2) {
+                let a = x1;
+                let b = r1;
+                let c = g1;
+                let d = b1;
+                x1 = x2;
+                r1 = r2;
+                g1 = g2;
+                b1 = b2;
+                x2 = a;
+                r2 = b;
+                g2 = c;
+                b2 = d;
+            }
+            let r = 1 / (x2 - x1);
+            let rd = (r2 - r1) * r;
+            let gd = (g2 - g1) * r;
+            let bd = (b2 - b1) * r;
+
+            for (let x = x1; x < x2; x++) {
+                setpix(y, x, ((r1 & 31)) | ((g1 & 31) << 5) | ((b1 & 31) << 10));
+                r1 += rd;
+                g1 += gd;
+                b1 += bd;
+            }
+        }
+
+        let fill_bottom = function(v1, v2, v3, draw_line, setpix) {
+            // fill flat-bottom triangle
+            //console.log('YS!', v1.y, v2.y, v3.y)
+            let recip = 1 / (v2.y - v1.y);
+            let islop1 = (v2.x - v1.x) * recip;
+            let rslop1 = (v2.r - v1.r) * recip;
+            let gslop1 = (v2.g - v1.g) * recip;
+            let bslop1 = (v2.b - v1.b) * recip;
+
+            recip = 1 / (v3.y - v1.y);
+            let islop2 = (v3.x - v1.x) * recip;
+            let rslop2 = (v3.r - v1.r) * recip;
+            let gslop2 = (v3.g - v1.g) * recip;
+            let bslop2 = (v3.b - v1.b) * recip;
+
+            let cx1 = v1.x
+            let cx2 = v1.x
+            let cr1 = v1.r;
+            let cr2 = v1.r;
+            let cg1 = v1.g;
+            let cg2 = v1.g;
+            let cb1 = v1.b;
+            let cb2 = v1.b;
+
+            for (let y = v1.y; y <= v2.y; y++) {
+                draw_line(y, cx1, cx2, (cr1 >>> 3), (cr2 >>> 3), (cg1 >>> 3), (cg2 >>> 3), (cb1 >>> 3), (cb2 >>> 3), setpix)
+                cx1 += islop1;
+                cx2 += islop2;
+                cr1 += rslop1;
+                cr2 += rslop2;
+                cg1 += gslop1;
+                cg2 += gslop2;
+                cb1 += bslop1;
+                cb2 += bslop2;
+            }
+        }
+
+        let fill_top = function(v1, v2, v3, draw_line, setpix) {
+            // fill flat-top triangle
+            //     v2.     .v1
+            //    /  _____/
+            //  /_____/
+            // v3
+            //
+            let r1 = 1 / (v3.y - v1.y);
+            let r2 = 1 / (v3.y - v2.y)
+
+            let islop1 = (v3.x - v1.x) * r1;
+            let rslop1 = (v3.r - v1.r) * r1;
+            let gslop1 = (v3.g - v1.g) * r1;
+            let bslop1 = (v3.b - v1.b) * r1;
+
+            let islop2 = (v3.x - v2.x) * r2;
+            let rslop2 = (v3.r - v2.r) * r2;
+            let gslop2 = (v3.g - v2.g) * r2;
+            let bslop2 = (v3.b - v2.b) * r2;
+
+            let cr1 = v3.r;
+            let cr2 = v3.r;
+            let cg1 = v3.g;
+            let cg2 = v3.g;
+            let cb1 = v3.b;
+            let cb2 = v3.b;
+
+            let cx1 = v3.x;
+            let cx2 = v3.x;
+            for (let y = v3.y; y > v1.y; y--) {
+                draw_line(y, cx1, cx2, (cr1 >>> 3), (cr2 >>> 3), (cg1 >>> 3), (cg2 >>> 3), (cb1 >>> 3), (cb2 >>> 3), setpix)
+
+                cx1 -= islop1;
+                cx2 -= islop2;
+                cr1 -= rslop1;
+                cr2 -= rslop2;
+                cg1 -= gslop1;
+                cg2 -= gslop2;
+                cb1 -= bslop1;
+                cb2 -= bslop2;
+            }
+        }
+        // I think? the PS1 uses render top/bottom separately algorithm. so....let's do that
+        // first sort points
+
+        let a;
+        if (v2.y > v3.y) {
+            a = v2;
+            v2 = v3;
+            v3 = a;
+        }
+
+        if (v1.y > v2.y) {
+            a = v1;
+            v1 = v2;
+            v2 = a;
+        }
+
+        if (v2.y > v3.y) {
+            a = v2;
+            v2 = v3;
+            v3 = a;
+        }
+
+        // Trivial case 1
+        if (v1.y === v3.y) {
+            console.log('BOTTOMONLY')
+            fill_bottom(v1, v2, v3, draw_line, this.setpix.bind(this));
+        }
+        else if (v1.y === v2.y) { // trivial case 2
+            console.log('TOPONLY')
+            fill_top(v1, v2, v3, draw_line, this.setpix.bind(this));
+        } // other cases
+        else {
+            console.log('BOTH');
+            let v4 = this.v4;
+            v4.y = v2.y;
+            // Now calculate G and B
+            let c = ((v2.y - v1.y) / (v3.y - v1.y));
+
+            v4.x = v1.x + c * (v3.x - v1.x);
+            v4.r = v1.r + c * (v3.r - v1.r);
+            v4.g = v1.g + c * (v3.g - v1.g);
+            v4.b = v1.b + c * (v3.b - v1.b);
+
+            // v3.b - v1.b is the gradient between v1 and 3
+            // v1.b + sets us up to
+
+            console.log('POINTS:')
+            console.log('v1', v1.x, v1.y, 'RGB', v1.r, v1.g, v1.b)
+            console.log('v2', v2.x, v2.y, 'RGB', v2.r, v2.g, v2.b)
+            console.log('v3', v3.x, v3.y, 'RGB', v3.r, v3.g, v3.b)
+            console.log('v4', v4.x, v4.y, 'RGB', v4.r, v4.g, v4.b)
+            fill_bottom(v1, v2, v4, draw_line, this.setpix.bind(this));
+            fill_top(v2, v4, v3, draw_line, this.setpix.bind(this));
+        }
+    }
+
+    bad_draw_flat_shaded_triangle(x0, y0, x1, y1, x2, y2, c0, c1, c2) {
+        // sort points vertically
+        let a, b, c;
+        if (y1 > y2) {
+            a = x1;
+            b = y1;
+            c = c1;
+            x1 = x2;
+            y1 = y2;
+            c1 = c2;
+            x2 = a;
+            y2 = b;
+            c2 = c;
+        }
+
+        if (y0 > y1) {
+            a = x0;
+            b = y0;
+            c = c0;
+            x0 = x1;
+            y0 = y1;
+            c0 = c1;
+            x1 = a;
+            y1 = b;
+            c1 = c;
+        }
+
+        if (y1 > y2) {
+            a = x1;
+            b = y1;
+            c = c1;
+            x1 = x2;
+            y1 = y2;
+            c1 = c2;
+            x2 = a;
+            y2 = b;
+            c2 = c;
+        }
+
+        // now that p0 is highest, p1 is middle, p2 lowest
+        // look:     p0
+        //           .
+        //          | \
+        //          /  \
+        //         |    \
+        //        /      \
+        //        .__-----`
+        //       p1       p2
+        // we need two loops, one for the top triangle, one for the
+        // bottom.
+        // we need to find 3 slopes also.
+
+        //         //        `-----__.
+
+        let r0 = 0;
+        let r1 = 31;
+        let r2 = 15;
+
+        // find p0...p2 x, rgb-slope
+        let rec = 1 / (y2 - y0 + 1)
+        let dx_far = (x2 - x0) * rec;
+        let r_far = (r2 - r0) * rec;
+
+        // find p0...p1 x-slope
+        rec = 1 / (y1 - y0 + 1);
+        let dx_upper = (x1 - x0) * rec;
+        let r_upper = Math.abs(r1 - r0) * rec;
+
+        // find p1...p2 x-slope
+        // aka we're going left 4 pixels for 10 pixels down = .4
+        rec = 1 / (y2 - y1 + 1);
+        let dx_low = (x2 - x1) * rec;
+        let r_low = Math.abs(r2 - r1) * rec;
+
+        let xf = x0;
+        let xt = x0 + dx_upper;
+
+        let rf = r0;
+        let rt = r0 + r_upper;
+
+        let rd, r;
+        for (let y = y0; y <= y2; y++) {
+            if (y >= 0) {
+                // Top slope
+                let xs = (xf > 0 ? xf : 0)
+                let xe = xt;
+                r = (rf > 0 ? rf : 0);
+                //r = rf;
+                rd = (rt - r) / (xs - xe);
+                for (let x = xs; x <= xe; x++) {
+                    this.setpix(y, x, r);
+                    r += rd;
+                    //if (r > 31) r = 1568;
+                }
+                // Bottom slope
+                /*xs = xf;
+                xe = (xt > 0 ? xt : 0);
+                r = rf;
+                let rl = (rt > 0 ? rt : 0);
+                rd = (rl - r) / (xs - xe)
+                for (let x = xf; x > (xt > 0 ? xt : 0); x--) {
+                    this.setpix(y, x, r);
+                    r += rd;
+                    if (r > 31) r = 158
+                }*/
+            }
+            xf += dx_far;
+            rf += r_far;
+            if (y < y1) { // if we're in the upper slope
+                xt += dx_upper;
+                rt += r_upper;
+            }
+            else {// if we're in the lower slope
+                xt += dx_low;
+                rt += r_low;
+            }
+        }
+    }
 
     draw_flat_triangle(x0, y0, x1, y1, x2, y2, color) {
         // sort points vertically
@@ -680,18 +1030,18 @@ class PS1_GPU_thread {
         this.ready_recv_DMA();
         let c = this.cmd;
         // Top-left corner in VRAM
-        let x = c[1] & 0xFFFF;
-        let y = (c[1] >>> 16) & 0xFFFF;
+        let x = c[1] & 1023;
+        let y = (c[1] >>> 16) & 511;
 
         // Resolution
         let width = c[2] & 0xFFFF;
         let height = (c[2] >>> 16) & 0xFFFF;
 
         // Get imgsize, round it
-        let imgsize = ((width * height) + 1) & 0x1FFFE;
+        let imgsize = (((width * height) + 1) & 0xFFFFFFFE)>>>0;
 
         this.gp0_transfer_remaining = imgsize/2;
-        //console.log('TRANSFER IMGSIZE', imgsize, 'X Y', x, y, 'WIDTH HEIGHT', width, height, hex8(c[1]));
+        console.log('TRANSFER IMGSIZE', imgsize, 'X Y', x, y, 'WIDTH HEIGHT', width, height, hex8(c[1]));
         if (this.gp0_transfer_remaining > 0) {
             this.load_buffer_reset(x, y, width, height);
             this.handle_gp0 = this.gp0_image_load_continue.bind(this);
@@ -759,6 +1109,27 @@ class PS1_GPU_thread {
                 this.setpix(y, x, color)
             }
         }
+    }
+
+    cmd30_tri_shaded_opaque() {
+        // 0 WRIOW GP0,(0x30<<24)+(COLOR1&0xFFFFFF)       ; Write GP0 Command Word (Color1+Command)
+        // 1 WRIOW GP0,(Y1<<16)+(X1&0xFFFF)               ; Write GP0  Packet Word (Vertex1)
+        // 2 WRIOW GP0,(COLOR2&0xFFFFFF)                  ; Write GP0  Packet Word (Color2)
+        // 3 WRIOW GP0,(Y2<<16)+(X2&0xFFFF)               ; Write GP0  Packet Word (Vertex2)
+        // 4 WRIOW GP0,(COLOR3&0xFFFFFF)                  ; Write GP0  Packet Word (Color3)
+        // 5 WRIOW GP0,(Y3<<16)+(X3&0xFFFF)               ; Write GP0  Packet Word (Vertex3)
+        let c1 = this.color1;
+        let c2 = this.color2;
+        let c3 = this.color3;
+        this.v1.v2_from_cmd(this.cmd[1]);
+        this.v2.v2_from_cmd(this.cmd[3]);
+        this.v3.v2_from_cmd(this.cmd[5])
+        this.v1.c24_from_cmd(this.cmd[0])
+        this.v1.c24_from_cmd(this.cmd[2])
+        this.v1.c24_from_cmd(this.cmd[4])
+        this.draw_flat_shaded_triangle(this.v1, this.v2, this.v3);
+        //rgba, rgbb, rgbc
+
     }
 
     cmd64_rect_opaque_flat_textured() {

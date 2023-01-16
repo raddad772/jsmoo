@@ -185,6 +185,8 @@ export class PS1_mem {
         this.MRAM = changetype<usize>(this.MRAM_ab);
         this.VRAM = changetype<usize>(this.VRAM_ab);
         this.BIOS = changetype<usize>(this.BIOS_ab);
+        this.pad_memcard.pad1 = this.controller1;
+        //this.pad_memcard.pad2 = this.controller2;
     }
 
     do_dma(ch: PS1_DMA_channel): void {
@@ -763,8 +765,14 @@ function i32_divide(a: u32, b: u32): u32_dual_return
     let ret = new u32_dual_return();
     let c: i32 = <i32>a;
     let d: i32 = <i32>b;
-    ret.lo = (c / d) & 0xFFFFFFFF
-    ret.hi = c % d;
+    if (d === 0) {
+        ret.lo = 0;
+        ret.hi = 0;
+    }
+    else {
+        ret.lo = (c / d) & 0xFFFFFFFF
+        ret.hi = c % d;
+    }
     return ret;
 }
 
@@ -774,8 +782,14 @@ function u32_divide(a: u32, b: u32): u32_dual_return {
     let ret = new u32_dual_return();
     let c = a
     let d = b
-    ret.lo = (c / d);
-    ret.hi = c % d;
+    if (d === 0) {
+        ret.lo = 0;
+        ret.hi = 0;
+    }
+    else {
+        ret.lo = (c / d);
+        ret.hi = c % d;
+    }
     return ret;
 }
 

@@ -10,7 +10,7 @@
 // > 0x7FFF
 
 
-import {hex2} from "../../helpers/helpers";
+import {hex2, hex4} from "../../helpers/helpers";
 import {PS1_clock} from "./ps1_misc";
 
 const UNR_TABLE: StaticArray<u8> = [
@@ -54,8 +54,8 @@ const UNR_TABLE: StaticArray<u8> = [
 function GTEdivide(numerator: u16, divisor: u16): u32 {
     let shift = clz<u32>(<u32>divisor) - 16;
     let n: u64 = <u64>numerator << shift;
-    let d: u64 = divisor << shift;
-    let rec: u64 = <u64>reciprocal(d);
+    let d: u64 = <u64>divisor << shift;
+    let rec: u64 = <u64>reciprocal(<u16>d);
     let res = (n * rec + 0x8000) >> 16;
     if (res <= 0x1FFFF)
         return <u32>res;
@@ -68,10 +68,10 @@ function GTEdivide(numerator: u16, divisor: u16): u32 {
 function reciprocal(d: u16): u32 {
     let index = ((d & 0x7FFF) + 0x40) >>>7;
     let factor = <i32>UNR_TABLE[index] + 0x101;
-    d = <i32>(d | 0x8000);
-    let tmp = ((d * -factor) + 0x80) >> 8;
+    let di: i32 = <i32>(d | 0x8000);
+    let tmp = ((di * -factor) + 0x80) >> 8;
 
-    return ((factor * (0x20000 + tmp)) + 0x80) >> 8;
+    return <u32>(((factor * (0x20000 + tmp)) + 0x80) >> 8);
 }
 
 //@ts-ignore
@@ -97,17 +97,17 @@ enum ControlVector {
 }
 
 class GTECmdCfg {
-    shift: u32 = 0
+    shift: u8 = 0
     clamp_negative: u32 = 0
     matrix: Matrix = Matrix.Rotation
-    vector_mul: u32 = 0
+    vector_mul: u8 = 0
     vector_add: ControlVector = ControlVector.Translation
 
     from_command(cmd: u32): void {
         this.shift = ((cmd & (1 << 19)) !== 0) ? 12 : 0;
         this.clamp_negative = +((cmd & (1 << 10)) !== 0)
         this.matrix = ((cmd >>> 17) & 3);
-        this.vector_mul = (cmd >>> 15) & 3;
+        this.vector_mul = <u8>((cmd >>> 15) & 3);
         this.vector_add = ((cmd >>> 13)) & 3;
     }
 }
@@ -585,7 +585,7 @@ export class PS1_GTE {
             this.set_flag(18);
             z_saturated = 65535;
         } else {
-            z_saturated = z_shifted;
+            z_saturated = <u16>z_shifted;
         }
 
         this.z_fifo[0] = this.z_fifo[1];
@@ -608,14 +608,14 @@ export class PS1_GTE {
         let ofx: i64 = <i64>this.ofx;
         let ofy: i64 = <i64>this.ofy;
 
-        let screen_x = x * factor * ofx;
-        let screen_y = y * factor * ofy;
+        let screen_xa = x * factor * ofx;
+        let screen_ya = y * factor * ofy;
 
-        this.check_mac_overflow(screen_x);
-        this.check_mac_overflow(screen_y);
+        this.check_mac_overflow(screen_xa);
+        this.check_mac_overflow(screen_ya);
 
-        screen_x = <i32>(screen_x >> 16);
-        screen_y = <i32>(screen_y >> 16);
+        let screen_x: i32 = <i32>(screen_xa >> 16);
+        let screen_y: i32 = <i32>(screen_ya >> 16);
 
         this.xy_fifo[3][0] = this.i32_to_i11_saturate(0, screen_x);
         this.xy_fifo[3][1] = this.i32_to_i11_saturate(1, screen_y);
@@ -819,10 +819,10 @@ export class PS1_GTE {
             let ir = (<i64>this.ir[i + 1]) << 12;
 
             let sub = fc - ir;
-            let tmp = <i32>(this.i64_to_i44(i, sub) >> config.shift)
+            let tmp = <i32>(this.i64_to_i44(<u8>i, sub) >> config.shift)
             let ir0 = <i64>this.ir[0];
-            let sat = this.i32_to_i16_saturate(this.config0, i, tmp)
-            let res = this.i64_to_i44(i, ir + ir0 * sat);
+            let sat = this.i32_to_i16_saturate(this.config0, <u8>i, tmp)
+            let res = this.i64_to_i44(<u8>i, ir + ir0 * sat);
             this.mac[i + 1] = <i32>(res >> this.config.shift);
         }
         this.mac_to_ir(config);
@@ -899,11 +899,11 @@ export class PS1_GTE {
             let col = (<i64>crol[i]) << 16;
 
             let sub = fc - col;
-            let tmp = <i32>(this.i64_to_i44(i, sub) >> config.shift);
+            let tmp = <i32>(this.i64_to_i44(<u8>i, sub) >> config.shift);
             let ir0: i64 = <i64>this.ir[0];
-            let sat: i64 = <i64>this.i32_to_i16_saturate(this.config0, i, tmp);
+            let sat: i64 = <i64>this.i32_to_i16_saturate(this.config0, <u8>i, tmp);
 
-            let res = this.i64_to_i44(i, col + ir0 * sat);
+            let res = this.i64_to_i44(<u8>i, col + ir0 * sat);
 
             this.mac[i + 1] = <i32>(res >> config.shift);
         }
@@ -936,6 +936,7 @@ export class PS1_GTE {
         let z3: u32 = this.z_fifo[1];
 
         let sum = z1 + z2 + z3;
+        console.log('AVSZ! ' + hex4(z1) + ' ' + hex4(z2) + ' ' + hex4(z3))
 
         let zsf3: i64 = <i64> this.zsf3;
         let average = zsf3 * <i64>sum;
@@ -1035,13 +1036,13 @@ export class PS1_GTE {
 
             let shading: i64 = <i64>(col * ir);
 
-            let tmp: i32 = fc - shading;
+            let tmpr = fc - shading;
 
-            tmp = <i32>(this.i64_to_i44(i, tmp) >> config.shift);
+            let tmp: i32 = <i32>(this.i64_to_i44(<u8>i, tmpr) >> config.shift);
             let ir0 = <i64>this.ir[0];
-            let res: i64 = <i64>this.i32_to_i16_saturate(this.config0, i, tmp);
+            let res: i64 = <i64>this.i32_to_i16_saturate(this.config0, <u8>i, tmp);
 
-            res = this.i64_to_i44(i, shading + ir0 * res);
+            res = this.i64_to_i44(<u8>i, shading + ir0 * res);
 
             this.mac[i+1] = <i32>(res >> config.shift);
         }
@@ -1070,7 +1071,7 @@ export class PS1_GTE {
 
                 let product = v * m;
 
-                res = this.i64_to_i44(r, res + product);
+                res = this.i64_to_i44(<u8>r, res + product);
             }
 
             this.mac[r + 1] = <i32>(res >> config.shift);

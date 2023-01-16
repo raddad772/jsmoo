@@ -79,7 +79,6 @@ export class Peripheral {
     }
 
     exchange_byte(cmd: u8): u8DsrState {
-        console.log('EXCHG BYTE ' + this.active.toString());
         if (!this.active)
             return new u8DsrState(0xFF, new DsrState());
 

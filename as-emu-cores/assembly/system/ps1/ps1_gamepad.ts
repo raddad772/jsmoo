@@ -3,6 +3,7 @@
 // according to position in the serial protocol
 import {DeviceInterface, u8DsrState} from "./ps1_device";
 import {DsrStateKind} from "./ps1_pad";
+import {hex2} from "../../helpers/helpers";
 
 export enum Button {
     Select,
@@ -42,7 +43,6 @@ export class PS1_DigitalPad implements DeviceInterface {
         let d = new u8DsrState();
         let resp: u8;
         let send_dsr: boolean;
-        console.log('HANDLE CMD! ' + seq.toString());
         switch(seq) {
             case 0:
                 resp = 0xFF;
@@ -68,6 +68,7 @@ export class PS1_DigitalPad implements DeviceInterface {
                 console.log('ERROR SHOULD NOT BE HERE');
                 return d;
         }
+        d.r1 = resp;
         if (send_dsr) {
             d.r2.kind = DsrStateKind.Pending;
             d.r2.delay = 360;
