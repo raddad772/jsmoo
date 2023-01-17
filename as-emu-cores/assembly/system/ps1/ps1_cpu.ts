@@ -20,7 +20,7 @@ export class PS1_CPU {
         this.core.reset();
     }
 
-    cycle(): void {
-        this.core.cycle();
+    cycle(howmany: i32): void {
+        this.core.cycle(howmany);
     }
 }

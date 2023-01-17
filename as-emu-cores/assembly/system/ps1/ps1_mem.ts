@@ -418,7 +418,7 @@ export class PS1_mem {
             case 0x00FF1F7C:
                 return;
             case 0x1F802041: // F802041h 1 PSX: POST (external 7 segment display, indicate BIOS boot status
-                //console.log('WRITE POST STATUS! ' + val.toString());
+                console.log('WRITE POST STATUS! ' + val.toString());
                 //if (val === 15) dbg.break(D_RESOURCE_TYPES.R3000);
                 return;
             // ...

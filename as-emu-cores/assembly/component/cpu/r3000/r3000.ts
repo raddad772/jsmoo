@@ -241,9 +241,9 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
         if (this.debug_reg_list.length > 0) {
             for (let i = 0, k = this.debug_reg_list.length; i < k; i++) {
                 let rn = this.debug_reg_list[i];
-                if (this.debug_on) {
+                /*if (this.debug_on) {
                     this.debug_tracelog.add('R' + dec2(rn) + ' ' + hex8(this.regs.R[rn]).toLowerCase() + ' ');
-                }
+                }*/
                 outstr += ' ' + R3000_reg_alias(rn) + ':' + hex8(this.regs.R[rn]);
             }
             this.debug_reg_list = new Array<u32>();
@@ -255,37 +255,43 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
         this.debug_tracelog.add('R' + dec2(w.target) + ' ' + hex8(w.value).toLowerCase() + ' ');
     }
 
-    cycle(): void {
-        this.clock.trace_cycles += 2;
+    cycle(howmany: i32): void {
+        let cycles_left: i32 = howmany;
+        while(cycles_left > 0) {
+            this.clock.trace_cycles += 2;
 
-        if (this.pins.IRQ && (this.regs.COP0[12] & 0x400) && (this.regs.COP0[12] & 1)) {
-            this.exception(0, this.pipe.get_next().new_PC !== 0);
-        }
+            if (this.pins.IRQ && (this.regs.COP0[12] & 0x400) && (this.regs.COP0[12] & 1)) {
+                this.exception(0, this.pipe.get_next().new_PC !== 0);
+            }
 
-        if (this.pipe.num_items < 1)
+            if (this.pipe.num_items < 1)
+                this.fetch_and_decode();
+            let current = this.pipe.move_forward();
+
+            /*if (this.debug_on) {
+                this.debug_add(current.opcode, current.addr)
+            }*/
+
+            //if (this.debug_on && (current.target > 0)) {
+            //    this.debug_add_delayed(current);
+            //}
+
+            current.op.func(current.opcode, current.op, this);
+
+            this.delay_slots(current);
+
+            if (this.trace_on) {
+                //console.log(hex8(this.regs.PC) + ' ' + R3000_disassemble(current.opcode));
+                dbg.traces.add(D_RESOURCE_TYPES.R3000, this.clock.trace_cycles-1, this.trace_format(R3000_disassemble(current.opcode), current.addr))
+            }
+
+            current.clear();
+
             this.fetch_and_decode();
-        let current = this.pipe.move_forward();
 
-        if (this.debug_on) {
-            this.debug_add(current.opcode, current.addr)
+            cycles_left -= 2;
+            if (dbg.do_break) break;
         }
-
-        //if (this.debug_on && (current.target > 0)) {
-        //    this.debug_add_delayed(current);
-        //}
-
-        current.op.func(current.opcode, current.op, this);
-
-        this.delay_slots(current);
-
-        if (this.trace_on) {
-            //console.log(hex8(this.regs.PC) + ' ' + R3000_disassemble(current.opcode));
-            dbg.traces.add(D_RESOURCE_TYPES.R3000, this.clock.trace_cycles-1, this.trace_format(R3000_disassemble(current.opcode), current.addr))
-        }
-
-        current.clear();
-
-        this.fetch_and_decode();
     }
 
     get_debug_file(): bigstr_output {
@@ -324,7 +330,7 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
                 //console.log('B0! ' + this.regs.R[9].toString());
                 if (this.regs.R[9] === 0x3D) {
                     this.console += String.fromCharCode(this.regs.R[4]);
-                    //console.log(this.console);
+                    console.log(this.console);
                 }
             }
             /*if ((this.regs.PC == 0xC)) {
