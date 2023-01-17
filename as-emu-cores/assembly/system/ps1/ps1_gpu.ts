@@ -109,7 +109,9 @@ export class PS1_GPU {
         //console.log('GET GPUSTAT! ' + hex8(g));
         if (((g >>> 29) & 3) === 1)
             g |= this.GP0FIFO.full() ? 0 : 1;
-
+        //g |= 0x1C000000
+        g |=   0x1c000000
+        //console.log(hex8(g))
         return g;
     }
 }

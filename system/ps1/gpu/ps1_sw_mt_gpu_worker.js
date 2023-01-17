@@ -13,10 +13,17 @@ const GPUGP1 = 3;
 const GPUREAD = 4;
 const LASTUSED = 23;
 
+const LOG_GFX = false
+const LOG_GP0 = true && LOG_GFX
+const LOG_GP1 = false && LOG_GFX
+const LOG_DRAW_TRIS = true && LOG_GP0
+const LOG_DRAW_QUADS = true && LOG_GP0
+
 class vertex3 {
     constructor() {
         this.x = this.y = this.z = 0;
         this.r = this.g = this.b = 0;
+        this.u = this.v = 0;
     }
 
     v2_from_cmd(cmd) {
@@ -28,6 +35,20 @@ class vertex3 {
         this.r = cmd & 0xFF;
         this.g = (cmd >>> 8) & 0xFF;
         this.b = (cmd >>> 16) & 0xFF;
+    }
+
+    uv_from_cmd(cmd) {
+        this.u = cmd & 0xFF;
+        this.v = (cmd >>> 8) & 0xFF;
+    }
+
+    copy_all(from) {
+        this.x = from.x;
+        this.y = from.y;
+        this.z = from.z;
+        this.r = from.r;
+        this.g = from.g;
+        this.b = from.b;
     }
 }
 
@@ -52,7 +73,7 @@ class texture_sampler {
         page_y = (page_y & 1) * 256;
         this.base_addr = (page_y * 2048) + (page_x*2);
         let clx = (clut & 0x3F) * 16;
-        let cly = (clut >> 6) & 0x1FF;
+        let cly = (clut >>> 6) & 0x1FF;
         this.clut_addr = (2048*cly)+(2*clx);
     }
 }
@@ -160,11 +181,18 @@ class PS1_GPU_thread {
         this.color2 = new color_sampler();
         this.color3 = new color_sampler();
 
+        this.v0 = new vertex3();
         this.v1 = new vertex3();
         this.v2 = new vertex3();
         this.v3 = new vertex3();
         this.v4 = new vertex3();
         this.v5 = new vertex3();
+
+        this.t0 = new vertex3();
+        this.t1 = new vertex3();
+        this.t2 = new vertex3();
+        this.t3 = new vertex3();
+        this.t4 = new vertex3();
 
         this.load_buffer = {
             x: 0,
@@ -351,7 +379,7 @@ class PS1_GPU_thread {
     }
 
     gp0(cmd) {
-        //console.log('GOT CMD', hex8(cmd));
+        if (LOG_GP0) console.log('GOT CMD', hex8(cmd));
         // if we have an instruction...
         if (this.current_ins !== null) {
             this.cmd[this.cmd_arg_index++] = cmd;
@@ -360,8 +388,7 @@ class PS1_GPU_thread {
                 this.current_ins = null;
                 //console.log('EXECUTE', hex8(this.cmd[0]))
             }
-        }
-        else {
+        } else {
             // If we don't have one yet...
             this.cmd[0] = cmd;
             this.cmd_arg_index = 1;
@@ -387,11 +414,19 @@ class PS1_GPU_thread {
                     this.current_ins = this.cmd28_draw_flat4untex.bind(this);
                     this.cmd_arg_num = 5;
                     break;
+                case 0x2C: // polygon, 4 points, textured, flat
+                    this.current_ins = this.cmd2c_quad_opaque_flat_textured.bind(this);
+                    this.cmd_arg_num = 9;
+                    break;
                 case 0x30: // opaque shaded trinalge
                     this.current_ins = this.cmd30_tri_shaded_opaque.bind(this);
                     this.cmd_arg_num = 6;
                     break;
-                    case 0x60: // Rectangle, variable size, opaque
+                case 0x38: // polygon, 4 points, gouraud-shaded
+                    this.current_ins = this.cmd38_quad_shaded_opaque.bind(this);
+                    this.cmd_arg_num = 8;
+                    break;
+                case 0x60: // Rectangle, variable size, opaque
                     this.current_ins = this.cmd60_rect_opaque_flat.bind(this)
                     this.cmd_arg_num = 3;
                     break;
@@ -403,9 +438,16 @@ class PS1_GPU_thread {
                     this.current_ins = this.cmd75_rect_opaque_flat_textured.bind(this);
                     this.cmd_arg_num = 3;
                     break;
+                case 0xBC:
+                case 0xB8:
                 case 0xA0: // Image stream to GPU
                     this.current_ins = this.gp0_image_load_start.bind(this);
                     this.cmd_arg_num = 3;
+                    break;
+                case 0xC0:
+                    console.log('WARNING unhandled GP0 command 0xC0');
+                    this.cmd_arg_num = 2;
+                    this.current_ins = this.gp0_cmd_unhandled.bind(this)
                     break;
                 case 0xE1: // GP0 Draw Mode
                     if (DBG_GP0) console.log('GP0 E1 set draw mode');
@@ -460,7 +502,7 @@ class PS1_GPU_thread {
                     this.preserve_masked_pixels = (cmd >>> 1) & 1;
                     break;
                 default:
-                    console.log('Unknown GP0 command', hex8(cmd>>>0));
+                    console.log('Unknown GP0 command', hex8(cmd >>> 0));
                     break;
             }
         }
@@ -584,7 +626,7 @@ class PS1_GPU_thread {
         let BGR = BGR24to15(this.cmd[0] & 0xFFFFFF);
         let start_y = (this.cmd[1] >>> 16) & 0xFFFF;
         let start_x = (this.cmd[1]) & 0xFFFF;
-        //console.log('QUICKRECT! COLOR', hex4(BGR), 'X Y', start_x, start_y, 'SZ X SZ Y', xsize, ysize);
+        if (LOG_DRAW_QUADS) console.log('QUICKRECT! COLOR', hex4(BGR), 'X Y', start_x, start_y, 'SZ X SZ Y', xsize, ysize);
         for (let y = start_y; y < (start_y+ysize); y++) {
             for (let x = start_x; x < (start_x + xsize); x++) {
                 //this.setpix(y, x, BGR);
@@ -600,8 +642,8 @@ class PS1_GPU_thread {
         // VRAM is 512 1024-wide 16-bit words. so 2048 bytes per line
         let ry = (y & 511) + this.draw_y_offset;
         let rx = (x & 1023) + this.draw_x_offset;
-        //if ((ry < this.draw_area_top) || (ry > this.draw_area_bottom)) return;
-        //if ((rx < this.draw_area_left) || (rx > this.draw_area_right)) return;
+        if ((ry < this.draw_area_top) || (ry > this.draw_area_bottom)) return;
+        if ((rx < this.draw_area_left) || (rx > this.draw_area_right)) return;
         let addr = (2048*ry)+(rx*2);
         this.VRAM.setUint16(addr, color, true);
     }
@@ -691,6 +733,7 @@ class PS1_GPU_thread {
     }
 
     draw_flat_shaded_triangle(v1, v2, v3) {
+        if (LOG_DRAW_TRIS) console.log('shaded', v1, v2, v3);
         let draw_line = function(y, x1, x2, r1, r2, g1, g2, b1, b2, setpix) {
             x1 >>= 0;
             x2 >>= 0;
@@ -802,7 +845,6 @@ class PS1_GPU_thread {
         }
         // I think? the PS1 uses render top/bottom separately algorithm. so....let's do that
         // first sort points
-
         let a;
         if (v2.y > v3.y) {
             a = v2;
@@ -824,15 +866,12 @@ class PS1_GPU_thread {
 
         // Trivial case 1
         if (v1.y === v3.y) {
-            console.log('BOTTOMONLY')
             fill_bottom(v1, v2, v3, draw_line, this.setpix.bind(this));
         }
         else if (v1.y === v2.y) { // trivial case 2
-            console.log('TOPONLY')
             fill_top(v1, v2, v3, draw_line, this.setpix.bind(this));
         } // other cases
         else {
-            console.log('BOTH');
             let v4 = this.v4;
             v4.y = v2.y;
             // Now calculate G and B
@@ -846,11 +885,11 @@ class PS1_GPU_thread {
             // v3.b - v1.b is the gradient between v1 and 3
             // v1.b + sets us up to
 
-            console.log('POINTS:')
+            /*console.log('POINTS:')
             console.log('v1', v1.x, v1.y, 'RGB', v1.r, v1.g, v1.b)
             console.log('v2', v2.x, v2.y, 'RGB', v2.r, v2.g, v2.b)
             console.log('v3', v3.x, v3.y, 'RGB', v3.r, v3.g, v3.b)
-            console.log('v4', v4.x, v4.y, 'RGB', v4.r, v4.g, v4.b)
+            console.log('v4', v4.x, v4.y, 'RGB', v4.r, v4.g, v4.b)*/
             fill_bottom(v1, v2, v4, draw_line, this.setpix.bind(this));
             fill_top(v2, v4, v3, draw_line, this.setpix.bind(this));
         }
@@ -1025,6 +1064,10 @@ class PS1_GPU_thread {
         }
     }
 
+    gp0_cmd_unhandled() {
+
+    }
+
     gp0_image_load_start() {
         this.unready_cmd();
         this.ready_recv_DMA();
@@ -1041,7 +1084,7 @@ class PS1_GPU_thread {
         let imgsize = (((width * height) + 1) & 0xFFFFFFFE)>>>0;
 
         this.gp0_transfer_remaining = imgsize/2;
-        console.log('TRANSFER IMGSIZE', imgsize, 'X Y', x, y, 'WIDTH HEIGHT', width, height, hex8(c[1]));
+        if (LOG_GP0) console.log('TRANSFER IMGSIZE', imgsize, 'X Y', x, y, 'WIDTH HEIGHT', width, height, hex8(c[0]));
         if (this.gp0_transfer_remaining > 0) {
             this.load_buffer_reset(x, y, width, height);
             this.handle_gp0 = this.gp0_image_load_continue.bind(this);
@@ -1098,6 +1141,8 @@ class PS1_GPU_thread {
         let xsize = this.cmd[2] & 0xFFFF;
         let ysize = this.cmd[2] >>> 16;
 
+        console.log('60_rect_opaque_flat', xstart, ystart, xsize, ysize, hex6(this.cmd[0] & 0xFFFFFF));
+
         let xend = (xstart + xsize);
         xend = xend > 1024 ? 1024 : xend;
 
@@ -1109,6 +1154,30 @@ class PS1_GPU_thread {
                 this.setpix(y, x, color)
             }
         }
+    }
+
+    cmd38_quad_shaded_opaque() {
+        // WRIOW GP0,(0x38<<24)+(COLOR1&0xFFFFFF)       ; Write GP0 Command Word (Color1+Command)
+        // WRIOW GP0,(Y1<<16)+(X1&0xFFFF)               ; Write GP0  Packet Word (Vertex1)
+        // WRIOW GP0,(COLOR2&0xFFFFFF)                  ; Write GP0  Packet Word (Color2)
+        // WRIOW GP0,(Y2<<16)+(X2&0xFFFF)               ; Write GP0  Packet Word (Vertex2)
+        // WRIOW GP0,(COLOR3&0xFFFFFF)                  ; Write GP0  Packet Word (Color3)
+        // WRIOW GP0,(Y3<<16)+(X3&0xFFFF)               ; Write GP0  Packet Word (Vertex3)
+        // WRIOW GP0,(COLOR4&0xFFFFFF)                  ; Write GP0  Packet Word (Color4)
+        // WRIOW GP0,(Y4<<16)+(X4&0xFFFF)               ; Write GP0  Packet Word (Vertex4)
+        let c = this.cmd;
+        this.t1.c24_from_cmd(c[0]);
+        this.t1.v2_from_cmd(c[1]);
+        this.t2.c24_from_cmd(c[2]);
+        this.t2.v2_from_cmd(c[3]);
+        this.t3.c24_from_cmd(c[4]);
+        this.t3.v2_from_cmd(c[5]);
+        this.t4.c24_from_cmd(c[6]);
+        this.t4.v2_from_cmd(c[7]);
+
+        if (LOG_DRAW_QUADS) console.log('quad_shaded', this.t1, this.t2, this.t3, this.t4);
+        this.draw_flat_shaded_triangle(this.t1, this.t2, this.t3);
+        this.draw_flat_shaded_triangle(this.t2, this.t3, this.t4);
     }
 
     cmd30_tri_shaded_opaque() {
@@ -1125,8 +1194,9 @@ class PS1_GPU_thread {
         this.v2.v2_from_cmd(this.cmd[3]);
         this.v3.v2_from_cmd(this.cmd[5])
         this.v1.c24_from_cmd(this.cmd[0])
-        this.v1.c24_from_cmd(this.cmd[2])
-        this.v1.c24_from_cmd(this.cmd[4])
+        this.v2.c24_from_cmd(this.cmd[2])
+        this.v3.c24_from_cmd(this.cmd[4])
+        console.log('tri_shaded_opaque', this.v1, this.v2, this.v3);
         this.draw_flat_shaded_triangle(this.v1, this.v2, this.v3);
         //rgba, rgbb, rgbc
 
@@ -1153,6 +1223,7 @@ class PS1_GPU_thread {
         let yend = (ystart + height);
         xend = xend > 1024 ? 1024 : xend;
         yend = yend > 512 ? 512 : yend;
+        if (LOG_GP0) console.log('rect_opaque_flat', xstart, ystart, width, height);
 
         let ts = this.get_texture_sampler(this.texture_depth, this.page_base_x, this.page_base_y, clut)
         for (let y = ystart; y < yend; y++) {
@@ -1168,11 +1239,157 @@ class PS1_GPU_thread {
         }
     }
 
+    draw_flat_tex_triangle(v1, v2, v3, palette, tx_page) {
+        let tx_x = tx_page & 0x1FF;
+        let tx_y = (tx_page >>> 11) & 1
+        let tsa = this.get_texture_sampler(this.texture_depth, tx_x, tx_y, palette);
+        console.log('BITS?', this.texture_depth);
+
+        let draw_line = function(y, x1, x2, u1, u2, v1, v2, ts, setpix) {
+            x1 >>= 0;
+            x2 >>= 0;
+            /*u1 >>= 0;
+            u2 >>= 0;
+            v1 >>= 0;
+            v2 >>= 0;*/
+            if (x1 > x2) {
+                let a = x1;
+                let b = u1;
+                let c = v1;
+                x1 = x2;
+                u1 = u2;
+                v1 = v2;
+                x2 = a;
+                u2 = b;
+                v2 = c;
+            }
+            let r = 1 / (x2 - x1);
+            let ud = (u2 - u1) * r;
+            let vd = (v2 - v1) * r;
+
+            for (let x = x1; x < x2; x++) {
+                let c = ts.func(ts, u1>>>0, v1>>>0);
+                if ((c & 0x8000) === 0x8000) setpix(y, x, c);
+                u1 += ud;
+                v1 += vd;
+            }
+        }
+
+        let fill_bottom = function(v1, v2, v3, draw_line, ts, setpix) {
+            // fill flat-bottom triangle
+            //console.log('YS!', v1.y, v2.y, v3.y)
+            let r1 = 1 / (v2.y - v1.y);
+            let r2 = 1 / (v3.y - v1.y);
+            let islop1 = (v2.x - v1.x) * r1;
+            let uslop1 = (v2.u - v1.u) * r1;
+            let vslop1 = (v2.v - v1.v) * r1;
+
+            let islop2 = (v3.x - v1.x) * r2;
+            let uslop2 = (v3.u - v1.u) * r2;
+            let vslop2 = (v3.v - v1.v) * r2;
+
+            let cx1 = v1.x;
+            let cx2 = v1.x;
+            let cu1 = v1.u;
+            let cu2 = v1.u;
+            let cv1 = v1.v;
+            let cv2 = v1.v;
+
+            for (let y = v1.y; y <= v2.y; y++) {
+                draw_line(y, cx1, cx2, cu1, cu2, cv1, cv2, ts, setpix);
+                cx1 += islop1;
+                cx2 += islop2;
+                cu1 += uslop1;
+                cu2 += uslop2;
+                cv1 += vslop1;
+                cv2 += vslop2;
+            }
+        }
+
+        let fill_top = function(v1, v2, v3, draw_line, ts, setpix) {
+            // fill flat-top triangle
+            //     v2.     .v1
+            //    /  _____/
+            //  /_____/
+            // v3
+            //
+            let r1 = 1 / (v3.y - v1.y);
+            let r2 = 1 / (v3.y - v2.y)
+
+            let islop1 = (v3.x - v1.x) * r1;
+            let uslop1 = (v3.u - v1.u) * r1;
+            let vslop1 = (v3.v - v1.v) * r1;
+
+            let islop2 = (v3.x - v2.x) * r2;
+            let uslop2 = (v3.u - v2.u) * r2;
+            let vslop2 = (v3.v - v2.v) * r2;
+
+            let cu1 = v3.u;
+            let cu2 = v3.u;
+            let cv1 = v3.v;
+            let cv2 = v3.v;
+
+            let cx1 = v3.x;
+            let cx2 = v3.x;
+            for (let y = v3.y; y > v1.y; y--) {
+                draw_line(y, cx1, cx2, cu1, cu2, cv1, cv2, ts, setpix);
+
+                cx1 -= islop1;
+                cx2 -= islop2;
+                cu1 -= uslop1;
+                cu2 -= uslop2;
+                cv1 -= vslop1;
+                cv2 -= vslop2;
+            }
+        }
+
+        // first sort points
+        let a;
+        if (v2.y > v3.y) {
+            a = v2;
+            v2 = v3;
+            v3 = a;
+        }
+
+        if (v1.y > v2.y) {
+            a = v1;
+            v1 = v2;
+            v2 = a;
+        }
+
+        if (v2.y > v3.y) {
+            a = v2;
+            v2 = v3;
+            v3 = a;
+        }
+
+        // Trivial case 1
+        if (v1.y === v3.y) {
+            fill_bottom(v1, v2, v3, draw_line, tsa, this.setpix.bind(this));
+        }
+        else if (v1.y === v2.y) { // trivial case 2
+            fill_top(v1, v2, v3, draw_line, tsa, this.setpix.bind(this));
+        } // other cases
+        else {
+            let v4 = this.v4;
+            v4.y = v2.y;
+            // Now calculate G and B
+            let c = ((v2.y - v1.y) / (v3.y - v1.y));
+
+            v4.x = v1.x + c * (v3.x - v1.x);
+            v4.u = v1.u + c * (v3.u - v1.u);
+            v4.v = v1.v + c * (v3.v - v1.v);
+
+            fill_bottom(v1, v2, v4, draw_line, tsa, this.setpix.bind(this));
+            fill_top(v2, v4, v3, draw_line, tsa, this.setpix.bind(this));
+        }
+    }
+
     sample_tex_4bit(ts, u, v) {
         let addr = ts.base_addr + ((v&0xFF)<<11) + ((u&0xFF) >>> 1);
         let d = this.VRAM.getUint8(addr);
-        if (u & 1) d &= 0x0F;
-        d = (d & 0xF0) >>> 4;
+        if ((u & 1) === 0) d &= 0x0F;
+        else d = (d & 0xF0) >>> 4;
         return this.VRAM.getUint16(ts.clut_addr + (d*2));
     }
 
@@ -1218,6 +1435,7 @@ class PS1_GPU_thread {
         xend = xend > 1024 ? 1024 : xend;
         yend = yend > 512 ? 512 : yend;
 
+        if (LOG_GP0) console.log('rect_oqaue_flat_textured')
         let ts = this.get_texture_sampler(this.texture_depth, this.page_base_x, this.page_base_y, clut);
 
         for (let y = ystart; y < yend; y++) {
@@ -1249,10 +1467,40 @@ class PS1_GPU_thread {
         /*
         For quads, I do v1, v2, v3 for one triangle and then v2, v3, v4 for the other
          */
-        let color = c[0] & 0xFFFFFF;
+        let color = BGR24to15(c[0] & 0xFFFFFF);
+        if (LOG_DRAW_QUADS) console.log('flat4untex ', x0, y0, x1, y1, x2, y2, hex6(color));
         this.draw_flat_triangle(x0, y0, x1, y1, x2, y2, color);
         this.draw_flat_triangle(x1, y1, x2, y2, x3, y3, color);
+    }
 
+    cmd2c_quad_opaque_flat_textured() {
+        // Flat 4-vertex textured poly
+        let c = this.cmd;
+        // 0 WRIOW GP0,(0x2C<<24)+(COLOR&0xFFFFFF)        ; Write GP0 Command Word (Color+Command)
+        let col = c[0] & 0xFFFFFF;
+        // 1 WRIOW GP0,(Y1<<16)+(X1&0xFFFF)               ; Write GP0  Packet Word (Vertex1)
+        this.t1.v2_from_cmd(c[1]);
+        // 2 WRIOW GP0,(PAL<<16)+((V1&0xFF)<<8)+(U1&0xFF) ; Write GP0  Packet Word (Texcoord1+Palette)
+        let palette = c[2] >>> 16;
+        this.t1.uv_from_cmd(c[2]);
+        // 3 WRIOW GP0,(Y2<<16)+(X2&0xFFFF)               ; Write GP0  Packet Word (Vertex2)
+        this.t2.v2_from_cmd(c[3]);
+        // 4 WRIOW GP0,(TEX<<16)+((V2&0xFF)<<8)+(U2&0xFF) ; Write GP0  Packet Word (Texcoord2+Texpage)
+        let tx_page = c[4] >>> 16;
+        this.t2.uv_from_cmd(c[4]);
+        // 5 WRIOW GP0,(Y3<<16)+(X3&0xFFFF)               ; Write GP0  Packet Word (Vertex3)
+        this.t3.v2_from_cmd(c[5]);
+        // 6 WRIOW GP0,((V3&0xFF)<<8)+(U3&0xFF)           ; Write GP0  Packet Word (Texcoord3)
+        this.t3.uv_from_cmd(c[6]);
+        // 7 WRIOW GP0,(Y4<<16)+(X4&0xFFFF)               ; Write GP0  Packet Word (Vertex4)
+        this.t4.v2_from_cmd(c[7]);
+        // 8 WRIOW GP0,((V4&0xFF)<<8)+(U4&0xFF)           ; Write GP0  Packet Word (Texcoord4)
+        this.t4.uv_from_cmd(c[8]);
+
+        console.log('TEX', this.t1, this.t2, this.t3, this.t4);
+
+        this.draw_flat_tex_triangle(this.t1, this.t2, this.t3, palette, tx_page);
+        this.draw_flat_tex_triangle(this.t2, this.t3, this.t4, palette, tx_page);
     }
 }
 

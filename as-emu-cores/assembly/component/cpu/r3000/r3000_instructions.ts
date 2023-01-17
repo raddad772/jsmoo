@@ -8,7 +8,7 @@ import {MT} from "../../../system/ps1/ps1_mem";
 import {D_RESOURCE_TYPES, dbg} from "../../../helpers/debug";
 
 export function R3000_fNA(opcode: u32, op: R3000_opcode, core: R3000): void {
-    console.log('BAD INSTRUCTION ' + hex8(opcode));
+    console.log('BAD INSTRUCTION ' + hex8(opcode) + ' AT PC(+4) ' + hex8(core.regs.PC));
 }
 
 //@ts-ignore

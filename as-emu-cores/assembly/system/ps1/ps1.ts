@@ -296,6 +296,7 @@ export class PS1 implements systemEmulator {
     // Closely followed code from https://github.com/RobertPeip/FPSXApp/blob/main/Project/FPSXApp/Memory.cpp#L71-L132
     // With permission from author to not be GPL3'd
     sideload_EXE(buf: usize, sz: u32): void {
+        return;
         let r = new heapArray2(buf, sz);
         // 80 83 45 88 32 69 88 69
         if ((r.getUint8(0) === 80) && (r.getUint8(1) === 83) && (r.getUint8(2) === 45) &&
@@ -371,21 +372,23 @@ export class PS1 implements systemEmulator {
 
     run_cycles(howmany: i32): void {
         this.cycles_left += <i64>howmany;
+        let block = 1;
         while (this.cycles_left > 0) {
-            run_controllers(this, 2);
-            this.clock.cycles_left_this_frame-=2;
+            run_controllers(this, block);
+            this.cpu.cycle(block);
+            this.clock.cycles_left_this_frame -= block;
+
             if (this.clock.cycles_left_this_frame <= 0) {
                 this.clock.cycles_left_this_frame += PS1_CYCLES_PER_FRAME_NTSC;
                 this.set_irq(PS1_IRQ.VBlank, 1);
             }
 
-            this.cpu.cycle();
-            this.clock.cpu_frame_cycle++;
-            this.clock.cpu_master_clock++;
+            this.clock.cpu_frame_cycle += block;
+            this.clock.cpu_master_clock += block;
 
-            this.clock.master_clock+=2;
+            this.clock.master_clock += block;
 
-            this.cycles_left-= 2;
+            this.cycles_left -= block;
             if (dbg.do_break) break;
         }
     }
@@ -400,7 +403,8 @@ export class PS1 implements systemEmulator {
 
     finish_frame(): u32 {
         //console.log('RUNNING ' + this.clock.cycles_left_this_frame.toString() + ' CYCLES!');
-        this.run_cycles(<i32>this.clock.cycles_left_this_frame);
+        //this.run_cycles(<i32>this.clock.cycles_left_this_frame);
+        this.run_cycles(PS1_CYCLES_PER_FRAME_NTSC);
         return 0;
     }
 }
