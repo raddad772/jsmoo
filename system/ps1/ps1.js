@@ -215,6 +215,7 @@ class PS1 {
 // Closely followed code from https://github.com/RobertPeip/FPSXApp/blob/main/Project/FPSXApp/Memory.cpp#L71-L132
 // With permission from author to not be GPL3'd
 sideload_EXE(mfile) {
+        return;
     let r = new DataView(mfile.buffer);
     // 80 83 45 88 32 69 88 69
     if ((r.getUint8(0) === 80) && (r.getUint8(1) === 83) && (r.getUint8(2) === 45) &&

@@ -76,6 +76,10 @@ class texture_sampler {
         let cly = (clut >>> 6) & 0x1FF;
         this.clut_addr = (2048*cly)+(2*clx);
     }
+
+    clut_lookup(vram, d) {
+        return vram.getUint8(this.clut_addr+(d*2));
+    }
 }
 
 
@@ -1141,7 +1145,7 @@ class PS1_GPU_thread {
         let xsize = this.cmd[2] & 0xFFFF;
         let ysize = this.cmd[2] >>> 16;
 
-        console.log('60_rect_opaque_flat', xstart, ystart, xsize, ysize, hex6(this.cmd[0] & 0xFFFFFF));
+        if (LOG_GP0) console.log('60_rect_opaque_flat', xstart, ystart, xsize, ysize, hex6(this.cmd[0] & 0xFFFFFF));
 
         let xend = (xstart + xsize);
         xend = xend > 1024 ? 1024 : xend;
@@ -1196,7 +1200,7 @@ class PS1_GPU_thread {
         this.v1.c24_from_cmd(this.cmd[0])
         this.v2.c24_from_cmd(this.cmd[2])
         this.v3.c24_from_cmd(this.cmd[4])
-        console.log('tri_shaded_opaque', this.v1, this.v2, this.v3);
+        if (LOG_GP0) console.log('tri_shaded_opaque', this.v1, this.v2, this.v3);
         this.draw_flat_shaded_triangle(this.v1, this.v2, this.v3);
         //rgba, rgbb, rgbc
 
@@ -1243,11 +1247,10 @@ class PS1_GPU_thread {
         let tx_x = tx_page & 0x1FF;
         let tx_y = (tx_page >>> 11) & 1
         let tsa = this.get_texture_sampler(this.texture_depth, tx_x, tx_y, palette);
-        console.log('BITS?', this.texture_depth);
 
         let draw_line = function(y, x1, x2, u1, u2, v1, v2, ts, setpix) {
-            x1 >>= 0;
-            x2 >>= 0;
+            x1 = Math.round(x1);
+            x2 = Math.round(x2);
             /*u1 >>= 0;
             u2 >>= 0;
             v1 >>= 0;
@@ -1269,7 +1272,9 @@ class PS1_GPU_thread {
 
             for (let x = x1; x < x2; x++) {
                 let c = ts.func(ts, u1>>>0, v1>>>0);
-                if ((c & 0x8000) === 0x8000) setpix(y, x, c);
+                let hbit = c & 0x8000;
+                let lbit = c & 0x7FFF;
+                if ((lbit !== 0) || ((lbit === 0) && hbit)) setpix(y>>>0, x>>>0, 0);
                 u1 += ud;
                 v1 += vd;
             }
@@ -1496,8 +1501,6 @@ class PS1_GPU_thread {
         this.t4.v2_from_cmd(c[7]);
         // 8 WRIOW GP0,((V4&0xFF)<<8)+(U4&0xFF)           ; Write GP0  Packet Word (Texcoord4)
         this.t4.uv_from_cmd(c[8]);
-
-        console.log('TEX', this.t1, this.t2, this.t3, this.t4);
 
         this.draw_flat_tex_triangle(this.t1, this.t2, this.t3, palette, tx_page);
         this.draw_flat_tex_triangle(this.t2, this.t3, this.t4, palette, tx_page);
