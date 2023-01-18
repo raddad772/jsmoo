@@ -372,7 +372,7 @@ export class PS1 implements systemEmulator {
 
     run_cycles(howmany: i32): void {
         this.cycles_left += <i64>howmany;
-        let block = 1;
+        let block = 250;
         while (this.cycles_left > 0) {
             run_controllers(this, block);
             this.cpu.cycle(block);
