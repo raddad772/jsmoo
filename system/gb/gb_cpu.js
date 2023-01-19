@@ -271,7 +271,7 @@ class GB_CPU {
                 this.bus.set_VRAM_bank(val);
                 return;
             case 0xFF50: // Boot ROM disable. Cannot re-enable
-                if (val > 0) {
+                if (val & 1) {
                     console.log('Disable boot ROM!');
                     //dbg.break();
                     this.clock.bootROM_enabled = false;

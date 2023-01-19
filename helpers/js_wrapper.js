@@ -301,7 +301,9 @@ class js_wrapper_t {
 				return Object.assign({}, {buffer_num: 0}, d);
 			}
 			else {
-				return Object.assign({}, {buffer_num: 0}, {vram_buffer: this.emu_wasm_helper.vram_buf});
+				let d = this.as_wrapper.wasm.gp_get_framevars(this.as_wrapper.global_player);
+				dbg.dump_from_wasm(d.dbg_info);
+				return Object.assign({}, {buffer_num: 0}, d, {vram_buffer: this.emu_wasm_helper.vram_buf});
 			}
 		} else {
 			dbg.do_break = false;

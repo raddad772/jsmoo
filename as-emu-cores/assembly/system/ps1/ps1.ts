@@ -16,6 +16,7 @@ import {framevars_t} from "../../glue/global_player";
 import {bigstr_output} from "../../component/cpu/r3000/r3000";
 import {run_controllers} from "./ps1_pad";
 import {Button} from "./ps1_gamepad";
+import {hex8} from "../../helpers/helpers";
 
 const PS1_CYCLES_PER_FRAME_NTSC = 564480
 const PS1_CYCLES_PER_FRAME_PAL = 677376
@@ -233,6 +234,7 @@ export class PS1 implements systemEmulator {
 
     dump_debug(): bigstr_output {
         // NOT USED FOR BG DUMP
+        console.log(hex8(this.cpu.core.regs.R[3]));
         return this.cpu.core.get_debug_file();
         //console.log('WHAT?');
         //this.mem.dump_unknown();

@@ -99,7 +99,7 @@ class traces_t {
     oldest_trace: u32 = 0
     num_traces: u32 = 0
     max_traces: u32 = 400
-    traces: stringFIFO = new stringFIFO(400);
+    traces: stringFIFO = new stringFIFO(200);
 
     add(kind: D_RESOURCE_TYPES, master_clock: i64, trace: string): void {
         this.traces.add(trace);
