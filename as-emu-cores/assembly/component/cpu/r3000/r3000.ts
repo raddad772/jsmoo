@@ -20,6 +20,8 @@ class R3000_regs_t {
     PC: u32 = 0
 }
 
+const ENABLE_TRACE_AFTER: i32 = -1;
+
 class R3000_pins_t {
     Addr: u32 = 0
     D: u32 = 0
@@ -63,29 +65,33 @@ export class R3000_pipeline_item_t {
 }
 
 export class R3000_pipeline_t {
-    items: StaticArray<R3000_pipeline_item_t> = new StaticArray<R3000_pipeline_item_t>(2);
     base: u32 = 0
     num_items: u32 = 0
     current: R3000_pipeline_item_t = new R3000_pipeline_item_t();
     empty_item: R3000_pipeline_item_t = new R3000_pipeline_item_t();
+    item0: R3000_pipeline_item_t = new R3000_pipeline_item_t();
+    item1: R3000_pipeline_item_t = new R3000_pipeline_item_t();
     constructor() {
-        this.items[0] = new R3000_pipeline_item_t();
-        this.items[1] = new R3000_pipeline_item_t();
-
-        this.current = new R3000_pipeline_item_t();
         this.empty_item.empty = true;
     }
 
     push(): R3000_pipeline_item_t {
         if (this.num_items === 2) return this.empty_item;
-        let r = this.items[this.num_items];
         this.num_items++;
-        return r;
+        switch(this.num_items) {
+            case 1:
+                return this.item0;
+            case 2:
+                return this.item1;
+            default:
+                unreachable();
+                return this.empty_item;
+        }
     }
 
     clear(): void {
-        this.items[0].clear();
-        this.items[1].clear();
+        this.item0.clear();
+        this.item1.clear();
         this.num_items = 0;
         this.current.clear();
     }
@@ -99,14 +105,14 @@ export class R3000_pipeline_t {
     }
 
     get_next(): R3000_pipeline_item_t {
-        return this.items[0];
+        return this.item0;
     }
 
     move_forward(): R3000_pipeline_item_t {
         if (this.num_items === 0) return this.empty_item;
-        this.current.copy(this.items[0]);
-        this.items[0].copy(this.items[1]);
-        this.items[1].clear();
+        this.current.copy(this.item0);
+        this.item0.copy(this.item1);
+        this.item1.clear();
         this.num_items--;
 
         return this.current;
@@ -150,6 +156,8 @@ export class R3000 {
 
     debug_tracelog: bigstr_output = new bigstr_output();
     debug_reg_list: Array<u32> = new Array<u32>();
+
+    trace_enabled: bool = false
 
     constructor(mem: PS1_mem) {
         this.mem = mem;
@@ -259,6 +267,10 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
         let cycles_left: i32 = howmany;
         while(cycles_left > 0) {
             this.clock.trace_cycles += 2;
+            if ((ENABLE_TRACE_AFTER > -1) && !this.trace_enabled) {
+                this.trace_enabled = true;
+                this.enable_tracing();
+            }
 
             if (this.pins.IRQ && (this.regs.COP0[12] & 0x400) && (this.regs.COP0[12] & 1)) {
                 this.exception(0, this.pipe.get_next().new_PC !== 0);
@@ -290,6 +302,7 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
             this.fetch_and_decode();
 
             cycles_left -= 2;
+            if ((this.regs.PC >= 0x80036800) && (this.regs.PC <= 0x80036810)) break;
             if (dbg.do_break) break;
         }
     }
@@ -320,6 +333,10 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
         // Branch delay slot
         if (which.new_PC !== 0) {
             this.regs.PC = which.new_PC;
+            if (this.regs.PC === 0x80036800) {
+                console.log('HITIT ' + this.clock.trace_cycles.toString());
+                dbg.break();
+            }
             /*if ((this.regs.PC & 0x1FFFFFFF) === 0x1FC06FA4) {
                 console.log('SystemHalt reached!');
             }
@@ -391,7 +408,7 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
     }
 
     exception(code: u32, branch_delay: bool = false, cop0: bool = false): void {
-        console.log('EXCEPTION ' + code.toString());
+        console.log('EXCEPTION ' + code.toString() + ' ' + this.clock.trace_cycles.toString());
         if (this.trace_on) {
             dbg.traces.add(D_RESOURCE_TYPES.R3000, this.clock.trace_cycles-1, 'EXCEPTION ' + code.toString());
         }
@@ -426,8 +443,8 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
     // Then clear out the pipe.
     flush_pipe(): void {
         this.delay_slots(this.pipe.current);
-        this.delay_slots(this.pipe.items[0]);
-        this.delay_slots(this.pipe.items[1]);
+        this.delay_slots(this.pipe.item0);
+        this.delay_slots(this.pipe.item1);
         this.pipe.move_forward();
         this.pipe.move_forward();
     }

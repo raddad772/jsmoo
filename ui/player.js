@@ -1,6 +1,7 @@
 'use strict';
 
 
+const DO_AUDIO = false;
 const GENEQO = '===';
 
 class input_provider_t {
@@ -362,7 +363,7 @@ class global_player_t {
 		this.playing = false;
 		this.system = null;
 		this.timing_thread = new timing_thread_t(this.on_timing_message.bind(this));
-		this.audio = new ConsoleAudioContext();
+		//this.audio = new ConsoleAudioContext();
 		this.shared_output_buffers = [null, null];
 		this.ready = false;
 
@@ -469,7 +470,8 @@ class global_player_t {
 
 	async play() {
 		this.playing = true;
-		await this.audio.grab_context();
+		if (DO_AUDIO)
+			await this.audio.grab_context();
 		this.timing_thread.play();
 		ui_el.system_select.disabled = true;
 		ui_el.play_button.innerHTML = "Pause";
@@ -629,7 +631,7 @@ class global_player_t {
 		this.timing_thread.frame_done();
 		this.present_system(data);
 		this.update_framevars(data);
-		if (typeof data.sound_buffer !== 'undefined')
+		if ((typeof data.sound_buffer !== 'undefined') && DO_AUDIO)
 			this.audio.audio_node.port.postMessage({"type": "samples", "samples": data.sound_buffer});
 	}
 

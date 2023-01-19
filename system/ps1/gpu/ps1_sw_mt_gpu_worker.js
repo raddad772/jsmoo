@@ -4,8 +4,6 @@ importScripts('/helpers/thread_common.js');
 importScripts('/helpers.js');
 
 
-const DBG_GP0 = false;
-
 const GPUSTAT = 0;
 const GPUPLAYING = 1;
 const GPUQUIT = 2;
@@ -13,7 +11,8 @@ const GPUGP1 = 3;
 const GPUREAD = 4;
 const LASTUSED = 23;
 
-const LOG_GFX = false
+const DBG_GP0 = false;
+const LOG_GFX = true
 const LOG_GP0 = true && LOG_GFX
 const LOG_GP1 = false && LOG_GFX
 const LOG_DRAW_TRIS = true && LOG_GP0
@@ -67,21 +66,36 @@ class color_sampler {
 }
 
 class texture_sampler {
-    constructor(page_x, page_y, clut) {
-        this.func = null;
+    /**
+     * @param {Number} page_x
+     * @param {Number} page_y
+     * @param {Number }clut
+     * @param {PS1_GPU_thread} ctrl
+     */
+    constructor(page_x, page_y, clut, ctrl) {
+        this.func2 = null;
         page_x = (page_x & 0x0F) * 64;
         page_y = (page_y & 1) * 256;
         this.base_addr = (page_y * 2048) + (page_x*2);
         let clx = (clut & 0x3F) * 16;
         let cly = (clut >>> 6) & 0x1FF;
         this.clut_addr = (2048*cly)+(2*clx);
+        this.ctrl = ctrl;
+    }
+
+    func(ts, u, v) {
+        // Texcoord = (Texcoord AND (NOT (Mask*8))) OR ((Offset AND Mask)*8)
+        u = (u & (~(ctrl.tx_win_x_mask * 8)));
+        u |= ((u & ctrl.tx_win_x_offset) * 8)
+        v = (v & (~(ctrl.tx.tx_win_y_mask * 8)))
+        v |= ((v & ctrl.tx_win_y_offset) * 8);
+        return this.func2(ts, u, v);
     }
 
     clut_lookup(vram, d) {
         return vram.getUint8(this.clut_addr+(d*2));
     }
 }
-
 
 function set_bit(w, bitnum, val) {
     if (val)
@@ -231,8 +245,6 @@ class PS1_GPU_thread {
         // 16 = head
         // 17 = length
         // 18 = lock
-        this.GP0FIFO_sb = new SharedArrayBuffer(80);
-        this.GP1FIFO_sb = new SharedArrayBuffer(80);
         this.GP0_FIFO = new MT_FIFO16();
         this.GP1_FIFO = new MT_FIFO16();
 
@@ -383,7 +395,7 @@ class PS1_GPU_thread {
     }
 
     gp0(cmd) {
-        if (LOG_GP0) console.log('GOT CMD', hex8(cmd));
+        if (DBG_GP0) console.log('GOT CMD', hex8(cmd));
         // if we have an instruction...
         if (this.current_ins !== null) {
             this.cmd[this.cmd_arg_index++] = cmd;
@@ -737,7 +749,7 @@ class PS1_GPU_thread {
     }
 
     draw_flat_shaded_triangle(v1, v2, v3) {
-        if (LOG_DRAW_TRIS) console.log('shaded', v1, v2, v3);
+        if (LOG_DRAW_TRIS) console.log('shaded v1', v1.x, v1.y, 'v2', v2.x, v2.y, 'v3', v3.x, v3.y);
         let draw_line = function(y, x1, x2, r1, r2, g1, g2, b1, b2, setpix) {
             x1 >>= 0;
             x2 >>= 0;
@@ -766,6 +778,7 @@ class PS1_GPU_thread {
                 g1 += gd;
                 b1 += bd;
             }
+            console.log('shaded done');
         }
 
         let fill_bottom = function(v1, v2, v3, draw_line, setpix) {
@@ -1409,16 +1422,16 @@ class PS1_GPU_thread {
     }
 
     get_texture_sampler(tex_depth, page_x, page_y, clut=0) {
-        let ts = new texture_sampler(page_x, page_y, clut);
+        let ts = new texture_sampler(page_x, page_y, clut, this);
         switch(tex_depth) {
             case PS1e.T4bit:
-                ts.func = this.sample_tex_4bit.bind(this);
+                ts.func2 = this.sample_tex_4bit.bind(this);
                 break;
             case PS1e.T8bit:
-                ts.func = this.sample_tex_8bit.bind(this);
+                ts.func2 = this.sample_tex_8bit.bind(this);
                 break;
             case PS1e.T15bit:
-                ts.func = this.sample_tex_15bit.bind(this);
+                ts.func2 = this.sample_tex_15bit.bind(this);
                 break;
         }
         return ts;

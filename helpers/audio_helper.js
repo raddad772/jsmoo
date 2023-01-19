@@ -24,6 +24,6 @@ class ConsoleAudioContext {
     }
 
     handle_audio_message(e) {
-        //console.log('GOT AUDIO MESSAGE', e);
+        console.log('GOT AUDIO MESSAGE', e);
     }
 }
