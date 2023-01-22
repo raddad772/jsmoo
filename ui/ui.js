@@ -222,6 +222,10 @@ function click_dump_dbg() {
 	global_player.dump_dbg();
 }
 
+function click_dump_dbg2() {
+	global_player.dump_dbg2();
+}
+
 function click_bg_dump(which) {
 	console.log(which);
 	global_player.dump_bg(bg_canvas, which)

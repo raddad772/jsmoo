@@ -35,7 +35,10 @@ class threaded_emulator_worker_t {
         switch(e.what) {
             case 'dbg':
                 let r = this.js_wrapper.dump_dbg();
-                this.send_return(e.what, r);
+                this.send_return(e.what, 'dbg', r);
+                break;
+            case 'dbg2':
+                this.js_wrapper.emu_wasm_helper.dump_dbg2();
                 break;
             case 'sprites':
                 // {kind: emulator_messages.dump_something, what: 'sprites', imgdata: canvas.get_imgdata().data.buffer, width: 200, height: 200 }
@@ -192,8 +195,8 @@ class threaded_emulator_worker_t {
         this.send_specs(this.tech_specs)
     }
 
-    send_return(kind, data) {
-        postMessage({kind: emulator_messages.return_something, data: data})
+    send_return(kind, what, data) {
+        postMessage({kind: emulator_messages.return_something, what: what, data: data})
     }
 
     send_mstep_done(data) {

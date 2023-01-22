@@ -21,7 +21,9 @@ const GPU_messages = Object.freeze({
     startup: 5,
     play: 6,
     pause: 7,
-    stop: 8
+    stop: 8,
+
+    dump_something: 88
 })
 
 const emulator_messages = Object.freeze({
@@ -85,14 +87,14 @@ const PS1_AS_STR = 'ps1_as';
 //const DEFAULT_SYSTEM = SPECTRUM_STR;
 //const DEFAULT_SYSTEM = SNES_STR;
 //const DEFAULT_SYSTEM = SMS_STR;
-//const DEFAULT_SYSTEM = GB_STR;
+const DEFAULT_SYSTEM = GB_STR;
 //const DEFAULT_SYSTEM = GB_AS_STR;
 //const DEFAULT_SYSTEM = GBC_STR;
 //const DEFAULT_SYSTEM = GG_STR;
 //const DEFAULT_SYSTEM = NES_STR;
 //const DEFAULT_SYSTEM = NES_AS_STR;
 //const DEFAULT_SYSTEM = PS1_STR;
-const DEFAULT_SYSTEM = PS1_AS_STR;
+//const DEFAULT_SYSTEM = PS1_AS_STR;
 
 
 const mutex_unlocked = 0;

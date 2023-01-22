@@ -7,6 +7,7 @@ class GB_timer {
         this.TAC = 0;
         this.last_bit = 0;
         this.TIMA_reload_cycle = false;
+        this.TMA_reload_cycle = false;
 
         this.SYSCLK = 0;
 
@@ -62,7 +63,7 @@ class GB_timer {
                 this.SYSCLK_change(0);
                 return;
             case 0xFF05: // TIMA, the timer counter
-                this.TIMA = val;
+                if (!this.TIMA_reload_cycle) this.TIMA = val;
                 // "During the strange cycle [A] you can prevent the IF flag from being set and prevent the TIMA from being reloaded from TMA by writing a value to TIMA. That new value will be the one that stays in the TIMA register after the instruction. Writing to DIV, TAC or other registers wont prevent the IF flag from being set or TIMA from being reloaded."
                 if (this.cycles_til_TIMA_IRQ === 1) this.cycles_til_TIMA_IRQ = 0;
                 return;

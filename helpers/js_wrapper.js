@@ -152,7 +152,7 @@ class js_wrapper_t {
 				this.emu_wasm_helper.dump_debug();
 			let a = '';
 			for (let i in d) {
-				a += d[i];
+				a += d[i] + '\r\n';
 			}
 			return a;
 		}

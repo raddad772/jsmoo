@@ -838,10 +838,10 @@ class GB_PPU {
                     (this.io.bg_tile_map_base << 3) | (this.io.sprites_big << 2) |
                     (this.io.obj_enable << 1) | (this.io.bg_window_enable);
             case 0xFF41: // STAT LCD status
-                let mode0_enable = this.io.IE & 1;
-                let mode1_enable = (this.io.IE & 2) >>> 1;
-                let mode2_enable = (this.io.IE & 4) >>> 2;
-                let lylyc_enable = (this.io.IE & 8) >>> 3;
+                let mode0_enable = this.io.STAT_IE & 1;
+                let mode1_enable = (this.io.STAT_IE & 2) >>> 1;
+                let mode2_enable = (this.io.STAT_IE & 4) >>> 2;
+                let lylyc_enable = (this.io.STAT_IE & 8) >>> 3;
                 return this.clock.ppu_mode |
                     ((this.clock.ly === this.io.lyc) ? 1 : 0) |
                     (mode0_enable << 3) |
