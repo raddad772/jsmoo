@@ -9,6 +9,7 @@ const GPUPLAYING = 1;
 const GPUQUIT = 2;
 const GPUGP1 = 3;
 const GPUREAD = 4;
+const GPURESPOND = 5; // pause thread to respond to messages
 const LASTUSED = 23;
 
 const DBG_GP0 = false;
@@ -212,6 +213,8 @@ class PS1_GPU_thread {
         this.t3 = new vertex3();
         this.t4 = new vertex3();
 
+        this.resp_to_message = 0;
+
         this.load_buffer = {
             x: 0,
             y: 0,
@@ -263,6 +266,9 @@ class PS1_GPU_thread {
         this.gp0_transfer_remaining = 0; // for transfers to/from GPU
         this.cmd = new Uint32Array(16); // Up to 16 args because why not
         this.handle_gp0 = this.gp0.bind(this);
+
+        this.recv_gp0 = new Uint32Array(15000000);
+        this.recv_gp0_len = 0;
     }
 
     GPUSTAT_update() {
@@ -394,7 +400,19 @@ class PS1_GPU_thread {
         this.listen_FIFO();
     }
 
+    dump_gp0send() {
+        let r = '';
+        for (let i = 0; i < this.recv_gp0_len; i++) {
+            r += hex8(this.recv_gp0[i]) + '\r\n';
+        }
+        return r;
+    }
+
     gp0(cmd) {
+        //console.log(hex8(cmd));
+        this.recv_gp0[this.recv_gp0_len] = cmd>>>0;
+        this.recv_gp0_len++;
+
         if (DBG_GP0) console.log('GOT CMD', hex8(cmd));
         // if we have an instruction...
         if (this.current_ins !== null) {
@@ -467,6 +485,7 @@ class PS1_GPU_thread {
                     break;
                 case 0xE1: // GP0 Draw Mode
                     if (DBG_GP0) console.log('GP0 E1 set draw mode');
+                    console.log('SET DRAW MODE', hex8(cmd));
                     this.page_base_x = cmd & 15;
                     this.page_base_y = (cmd >>> 4) & 1;
                     switch ((cmd >>> 7) & 3) {
@@ -680,6 +699,12 @@ class PS1_GPU_thread {
         console.log('Listening to FIFO...');
         this.MMIO[this.MMIO_offset+GPUPLAYING] = 1;
         while(this.MMIO[this.MMIO_offset+GPUPLAYING] === 1) {
+            if (this.MMIO[this.MMIO_offset+GPURESPOND] > 0) {
+                this.resp_to_message = this.MMIO[this.MMIO_offset+GPURESPOND];
+                this.MMIO[this.MMIO_offset+GPURESPOND] = 0;
+                console.log('Quitting FIFO to respond message')
+                return;
+            }
             if (this.cur_gp0 === null) {
                 this.cur_gp0 = this.GP0_FIFO.get_item();
                 this.cur_gp0_tag = this.GP0_FIFO.output_tag;
@@ -726,6 +751,17 @@ class PS1_GPU_thread {
             case GPU_messages.play:
                 //this.listen_FIFO();
                 break;
+            case GPU_messages.dump_something:
+                postMessage({kind: GPU_messages.dump_something, what: 'dbg2', data: this.dump_gp0send()});
+                break;
+        }
+        if (this.resp_to_message > 0) {
+            if (e.count !== this.resp_to_message) {
+                console.log('WRONG MESSAGE! BYE!')
+            } else {
+                this.resp_to_message = 0;
+                this.listen_FIFO()
+            }
         }
     }
 
@@ -1121,6 +1157,8 @@ class PS1_GPU_thread {
     }
 
     gp0_image_load_continue(cmd) {
+        this.recv_gp0[this.recv_gp0_len] = cmd>>>0;
+        this.recv_gp0_len++;
         // Put in 2 16-bit pixels
         //console.log('TRANSFERRING!', this.gp0_transfer_remaining);
         for (let i = 0; i < 2; i++) {

@@ -1,5 +1,6 @@
 "use strict";
 
+const GPURESPOND=5
 class PS1_helper {
     /**
      * @param {js_wrapper_t} jswrapper
@@ -20,9 +21,11 @@ class PS1_helper {
         this.gp0_buf = d.gp0_ptr;
         this.gp1_buf = d.gp1_ptr;
         this.mmio_buf = d.mmio_ptr;
+        this.MMIO_offset = d.mmio_ptr>>>2;
 
         this.sab = this.as_wrapper.wasm.memory.buffer;
         this.sab_offset = d.vram_ptr;
+        this.MMIO = new Uint32Array(this.sab)
 
         this.gpu_thread.postMessage({
             kind: GPU_messages.startup,
@@ -36,6 +39,8 @@ class PS1_helper {
             VRAM_offset: d.vram_ptr,
             SAB: this.sab
         });
+
+        this.looking_for_cnt = 0;
     }
 
     play(num) {
@@ -43,18 +48,24 @@ class PS1_helper {
     }
 
     pause(num) {
-        this.gpu_thread.postMessage({kind: GPU_messages.pause, num: num})
+        //this.gpu_thread.postMessage({kind: GPU_messages.pause, num: num})
     }
 
     stop() {
-        this.gpu_thread.postMessage({kind: GPU_messages.stop, num: 0})
+        //this.gpu_thread.postMessage({kind: GPU_messages.stop, num: 0})
+    }
+
+    dump_dbg2() {
+        console.log('got here');
+        this.gpu_thread.postMessage({kind: GPU_messages.dump_something, what: 'dbg2', count: 10})
+        this.MMIO[this.MMIO_offset+GPURESPOND] = 10;
     }
 
     dump_debug() {
     }
 
     on_gpu_message(e) {
-        console.log('GPU got msg from thread:', e);
+        postMessage({kind: emulator_messages.return_something, what: e.data.what, data: e.data.data});
     }
 
 

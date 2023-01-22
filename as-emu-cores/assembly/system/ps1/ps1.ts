@@ -234,10 +234,20 @@ export class PS1 implements systemEmulator {
 
     dump_debug(): bigstr_output {
         // NOT USED FOR BG DUMP
-        console.log(hex8(this.cpu.core.regs.R[3]));
-        return this.cpu.core.get_debug_file();
+        return this.dump_thingy();
+        //return this.cpu.core.get_debug_file();
         //console.log('WHAT?');
         //this.mem.dump_unknown();
+    }
+
+    dump_thingy(): bigstr_output {
+        let d: bigstr_output = new bigstr_output();
+
+        for (let i = 0; i < <i32>this.gpu.gp0sendnum; i++) {
+            d.add(hex8(this.gpu.gp0send[i]));
+        }
+
+        return d;
     }
 
     killall(): void {

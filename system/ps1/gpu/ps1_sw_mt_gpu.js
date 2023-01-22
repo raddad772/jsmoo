@@ -43,7 +43,6 @@ class PS1_GPU {
         });
 
         this.GPU_FIFO_tag = 0;
-
     }
 
     play(num) {

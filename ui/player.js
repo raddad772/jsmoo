@@ -561,7 +561,19 @@ class global_player_t {
 		e = e.data;
 		switch(e.kind) {
 			case emulator_messages.return_something:
-				save_js('mdebug.txt', e.data);
+				switch(e.what) {
+					case 'dbg':
+						save_js('mdebug.txt', e.data);
+						break;
+					case 'dbg2':
+						save_js('modebug.txt', e.data);
+						break;
+					default:
+						console.log(e);
+						console.log('unknown dump kind', e.kind);
+						break;
+				}
+
 				break;
 			case emulator_messages.dbg_break:
 				this.pause();
@@ -751,6 +763,10 @@ class global_player_t {
 
 	dump_dbg() {
 		this.player_thread.postMessage({kind: emulator_messages.dump_something, what: 'dbg'})
+	}
+
+	dump_dbg2() {
+		this.player_thread.postMessage({kind: emulator_messages.dump_something, what: 'dbg2'})
 	}
 
 	dump_bg(canvas, which) {
