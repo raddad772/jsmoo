@@ -243,9 +243,9 @@ export class PS1 implements systemEmulator {
     dump_thingy(): bigstr_output {
         let d: bigstr_output = new bigstr_output();
 
-        for (let i = 0; i < <i32>this.gpu.gp0sendnum; i++) {
+        /*for (let i = 0; i < <i32>this.gpu.gp0sendnum; i++) {
             d.add(hex8(this.gpu.gp0send[i]));
-        }
+        }*/
 
         return d;
     }
