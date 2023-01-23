@@ -134,7 +134,7 @@ export async function instantiate(module, imports = {}) {
     gp_get_mt(player) {
       // assembly/glue/global_player/gp_get_mt(assembly/glue/global_player/global_player_t) => assembly/system/interface/console_mt_struct
       player = __lowerInternref(player) || __notnull();
-      return __liftRecord139(exports.gp_get_mt(player) >>> 0);
+      return __liftRecord138(exports.gp_get_mt(player) >>> 0);
     },
   }, exports);
   function __liftRecord35(pointer) {
@@ -237,7 +237,7 @@ export async function instantiate(module, imports = {}) {
       dbg_info: __liftRecord69(new Uint32Array(memory.buffer)[pointer + 16 >>> 2]),
     };
   }
-  function __liftRecord139(pointer) {
+  function __liftRecord138(pointer) {
     // assembly/system/interface/console_mt_struct
     // Hint: Opt-out from lifting as a record by providing an empty constructor
     if (!pointer) return null;
