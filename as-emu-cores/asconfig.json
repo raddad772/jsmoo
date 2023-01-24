@@ -3,12 +3,13 @@
     "debug": {
       "outFile": "build/debug.wasm",
       "sourceMap": true,
-      "optimizeLevel": 3,
+      "optimizeLevel": 2,
       "debug": true,
       "runtime": "minimal",
       "maximumMemory": 32768,
       "sharedMemory": true,
-      "exportRuntime": true
+      "exportRuntime": true,
+      "stats": true
     },
     "release": {
       "outFile": "build/release.wasm",

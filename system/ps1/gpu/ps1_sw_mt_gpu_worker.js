@@ -13,7 +13,7 @@ const GPURESPOND = 5; // pause thread to respond to messages
 const LASTUSED = 23;
 
 const DBG_GP0 = false;
-const LOG_GFX = true
+const LOG_GFX = false
 const LOG_GP0 = true && LOG_GFX
 const LOG_GP1 = false && LOG_GFX
 const LOG_DRAW_TRIS = true && LOG_GP0
@@ -589,6 +589,9 @@ class PS1_GPU_thread {
             case 0x01: // reset CMD FIFO
                 console.log('RESET CMD FIFO NOT IMPLEMENT');
                 break;
+            case 0x02:
+                console.log('GPU IRQ RESET; WHAT...');
+                break;
             case 0x03: // DISPLAY DISABLE
                 //TODO: do this
                 break;
@@ -719,14 +722,14 @@ class PS1_GPU_thread {
                 this.handle_gp0(this.cur_gp0>>>0);
                 this.cur_gp0 = null;
                 this.GPU_FIFO_tag++;
-                console.log('GP0', this.GPU_FIFO_tag);
+                //console.log('GP0', this.GPU_FIFO_tag);
                 continue;
             }
             if ((this.cur_gp1 !== null) && (this.cur_gp1_tag === this.GPU_FIFO_tag)) {
                 this.gp1(this.cur_gp1>>>0);
                 this.cur_gp1 = null;
                 this.GPU_FIFO_tag++;
-                console.log('GP1', this.GPU_FIFO_tag);
+                //console.log('GP1', this.GPU_FIFO_tag);
                 continue;
             }
             console.log('DESYNC ERROR!', this.cur_gp0, this.cur_gp0_tag, this.cur_gp1, this.cur_gp1_tag);

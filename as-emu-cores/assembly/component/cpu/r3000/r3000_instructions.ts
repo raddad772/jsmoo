@@ -23,7 +23,7 @@ export function R3000_branch(core: R3000, new_addr: u32, doit: bool, link: bool,
 //@ts-ignore
 @inline
 export function R3000_fs_reg_write(core: R3000, target: u32, value: u32): void {
-    if (target !== 0) core.regs.R[target] = value;
+    if (target !== 0) unchecked(core.regs.R[target] = value);
 
     if (core.trace_on) core.debug_reg_list.push(target);
 
