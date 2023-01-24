@@ -142,7 +142,7 @@ export class ps1_dualshock_inputs {
 }
 
 export class PS1 implements systemEmulator {
-    clock: PS1_clock = new PS1_clock()
+    clock: PS1_clock
     bus: PS1_bus = new PS1_bus()
     cpu: PS1_CPU
     gpu: PS1_GPU
@@ -157,18 +157,20 @@ export class PS1 implements systemEmulator {
 
     constructor() {
         let mem = new PS1_mem();
-        let cpu = new PS1_CPU(mem);
+        let clock = new PS1_clock();
+        let cpu = new PS1_CPU(mem, clock);
 
         this.gpu = new PS1_GPU();
-
 
         dbg.add_cpu(D_RESOURCE_TYPES.R3000, changetype<usize>(cpu.core));
         //this.load_BIOS_from_RAM(BIOS.BIOS)
         cpu.reset();
         this.cpu = cpu;
         this.mem = mem;
+        this.clock = clock;
 
         this.mem.ps1 = this;
+        this.gpu.ps1 = this;
         this.mem.cpu = this.cpu.core;
         //this.clock = clock;
     }
@@ -386,6 +388,7 @@ export class PS1 implements systemEmulator {
         this.cycles_left += <i64>howmany;
         let block = 250;
         while (this.cycles_left > 0) {
+            if (block < this.cycles_left) block = <i32>this.cycles_left;
             run_controllers(this, block);
             this.cpu.cycle(block);
             this.clock.cycles_left_this_frame -= block;

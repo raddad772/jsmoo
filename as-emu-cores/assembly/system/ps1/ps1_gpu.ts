@@ -1,5 +1,7 @@
 import {MT_FIFO16} from "../../helpers/mt_fifo";
 import {hex8} from "../../helpers/helpers";
+import {dbg} from "../../helpers/debug";
+import {PS1} from "./ps1";
 
 const GPUSTAT = 0;
 const GPUPLAYING = 1;
@@ -48,10 +50,13 @@ export class PS1_GPU {
     GP1_buffer: usize = 0
     GP0FIFO: MT_FIFO16
     GP1FIFO: MT_FIFO16
+    gp0total: i32 = 0
     MMIO: heapArrayT<u32>
 
     GPU_FIFO_tag: i32 = 0
     IRQ_bit: u32 = 0
+
+    ps1: PS1|null = null
 
     constructor() {
         let MMIO_buffer = heap.alloc(96);
@@ -89,7 +94,13 @@ export class PS1_GPU {
 
     gp0(cmd: u32): void {
         //console.log('send GP0 ' + hex8(cmd));
+        //this.gp0total++;
         this.GP0FIFO.put_item_blocking(cmd, this.GPU_FIFO_tag++)
+        //if (this.gp0total >= 97) dbg.break();
+        if (cmd === 0x38FF0000) {
+            console.log('JUST HIT DIVERGE ' + this.ps1!.clock.trace_cycles.toString());
+            dbg.break();
+        }
     }
 
     gp1(cmd: u32): void {

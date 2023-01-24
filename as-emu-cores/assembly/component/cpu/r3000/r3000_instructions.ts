@@ -117,9 +117,9 @@ export function R3000_fJR(opcode: u32, op: R3000_opcode, core: R3000): void
 {
     let rs = (opcode >>> 21) & 0x1F;
     let a = core.regs.R[rs];
-    if ((a & 3) !== 0) {
-        console.log('ADDRESS EXCEPTION, HANDLE?');
-    }
+    //if ((a & 3) !== 0) {
+        //console.log('ADDRESS EXCEPTION, HANDLE?');
+    //}
     R3000_branch(core,
         a,
         true,

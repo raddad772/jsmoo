@@ -2,10 +2,8 @@
   "targets": {
     "debug": {
       "outFile": "build/debug.wasm",
-      "textFile": "build/debug.wat",
-      "optimizeLevel": 3,
-      "shrinkLevel": 0,
       "sourceMap": true,
+      "optimizeLevel": 3,
       "debug": true,
       "runtime": "minimal",
       "maximumMemory": 32768,
@@ -14,7 +12,6 @@
     },
     "release": {
       "outFile": "build/release.wasm",
-      "textFile": "build/release.wat",
       "sourceMap": true,
       "uncheckedBehavior": "always",
       "optimizeLevel": 3,

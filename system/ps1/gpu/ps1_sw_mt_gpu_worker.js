@@ -86,10 +86,10 @@ class texture_sampler {
 
     func(ts, u, v) {
         // Texcoord = (Texcoord AND (NOT (Mask*8))) OR ((Offset AND Mask)*8)
-        u = (u & (~(ctrl.tx_win_x_mask * 8)));
-        u |= ((u & ctrl.tx_win_x_offset) * 8)
-        v = (v & (~(ctrl.tx.tx_win_y_mask * 8)))
-        v |= ((v & ctrl.tx_win_y_offset) * 8);
+        u = (u & (~(this.ctrl.tx_win_x_mask * 8)));
+        u |= ((u & this.ctrl.tx_win_x_offset) * 8)
+        v = (v & (~(this.ctrl.tx_win_y_mask * 8)))
+        v |= ((v & this.ctrl.tx_win_y_offset) * 8);
         return this.func2(ts, u, v);
     }
 
@@ -707,11 +707,11 @@ class PS1_GPU_thread {
             }
             if (this.cur_gp0 === null) {
                 this.cur_gp0 = this.GP0_FIFO.get_item();
-                this.cur_gp0_tag = this.GP0_FIFO.output_tag;
+                if (this.cur_gp0 !== null) this.cur_gp0_tag = this.GP0_FIFO.output_tag;
             }
             if (this.cur_gp1 === null) {
                 this.cur_gp1 = this.GP1_FIFO.get_item();
-                this.cur_gp1_tag = this.GP1_FIFO.output_tag;
+                if (this.cur_gp1 !== null) this.cur_gp1_tag = this.GP1_FIFO.output_tag;
             }
             if ((this.cur_gp0 === null) && (this.cur_gp1 === null))
                 continue;
@@ -719,15 +719,19 @@ class PS1_GPU_thread {
                 this.handle_gp0(this.cur_gp0>>>0);
                 this.cur_gp0 = null;
                 this.GPU_FIFO_tag++;
+                console.log('GP0', this.GPU_FIFO_tag);
                 continue;
             }
             if ((this.cur_gp1 !== null) && (this.cur_gp1_tag === this.GPU_FIFO_tag)) {
                 this.gp1(this.cur_gp1>>>0);
                 this.cur_gp1 = null;
                 this.GPU_FIFO_tag++;
+                console.log('GP1', this.GPU_FIFO_tag);
                 continue;
             }
             console.log('DESYNC ERROR!', this.cur_gp0, this.cur_gp0_tag, this.cur_gp1, this.cur_gp1_tag);
+            debugger;
+            //dbg.break();
             return;
         }
         console.log('FIFO no more listen...')
@@ -814,7 +818,7 @@ class PS1_GPU_thread {
                 g1 += gd;
                 b1 += bd;
             }
-            console.log('shaded done');
+            //console.log('shaded done');
         }
 
         let fill_bottom = function(v1, v2, v3, draw_line, setpix) {
