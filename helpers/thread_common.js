@@ -50,6 +50,7 @@ const emulator_messages = Object.freeze({
     ui_event: 200,
     dump_something: 201,
     return_something: 202,
+    console_dump: 800,
 
     play: 40000, // play threads
     pause: 40001, // pause threads
