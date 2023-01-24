@@ -190,30 +190,31 @@ export class PS1_GTE {
 
     command(cmd: u32): void {
         let opc: u32 = cmd & 0x3F;
-        this.config.from_command(cmd);
+        let config: GTECmdCfg = this.config;
+        config.from_command(cmd);
         this.flags = 0;
         switch(opc) {
-            case 0x01: this.cmd_RTPS(this.config); this.cycle_count = 14; break;
+            case 0x01: this.cmd_RTPS(config); this.cycle_count = 14; break;
             case 0x06: this.cmd_NCLIP(); this.cycle_count = 7; break;
-            case 0x0C: this.cmd_OP(this.config); this.cycle_count = 5; break;
-            case 0x10: this.cmd_DPCS(this.config); this.cycle_count = 7; break;
-            case 0x11: this.cmd_INTPL(this.config); this.cycle_count = 7; break;
-            case 0x12: this.cmd_MVMVA(this.config); this.cycle_count = 7; break;
-            case 0x13: this.cmd_NCDS(this.config); this.cycle_count = 18; break;
-            case 0x16: this.cmd_NCDT(this.config); this.cycle_count = 43; break;
-            case 0x1B: this.cmd_NCCS(this.config); this.cycle_count = 16; break;
-            case 0x1C: this.cmd_CC(this.config); this.cycle_count = 10; break;
-            case 0x1E: this.cmd_NCS(this.config); this.cycle_count = 13; break;
-            case 0x20: this.cmd_NCT(this.config); this.cycle_count = 29; break;
-            case 0x28: this.cmd_SQR(this.config); this.cycle_count = 4; break;
-            case 0x29: this.cmd_DCPL(this.config); this.cycle_count = 7; break;
-            case 0x2A: this.cmd_DPCT(this.config); this.cycle_count = 16; break;
+            case 0x0C: this.cmd_OP(config); this.cycle_count = 5; break;
+            case 0x10: this.cmd_DPCS(config); this.cycle_count = 7; break;
+            case 0x11: this.cmd_INTPL(config); this.cycle_count = 7; break;
+            case 0x12: this.cmd_MVMVA(config); this.cycle_count = 7; break;
+            case 0x13: this.cmd_NCDS(config); this.cycle_count = 18; break;
+            case 0x16: this.cmd_NCDT(config); this.cycle_count = 43; break;
+            case 0x1B: this.cmd_NCCS(config); this.cycle_count = 16; break;
+            case 0x1C: this.cmd_CC(config); this.cycle_count = 10; break;
+            case 0x1E: this.cmd_NCS(config); this.cycle_count = 13; break;
+            case 0x20: this.cmd_NCT(config); this.cycle_count = 29; break;
+            case 0x28: this.cmd_SQR(config); this.cycle_count = 4; break;
+            case 0x29: this.cmd_DCPL(config); this.cycle_count = 7; break;
+            case 0x2A: this.cmd_DPCT(config); this.cycle_count = 16; break;
             case 0x2D: this.cmd_AVSZ3(); this.cycle_count = 4; break;
             case 0x2E: this.cmd_AVSZ4(); this.cycle_count = 4; break;
-            case 0x30: this.cmd_RTPT(this.config); this.cycle_count = 22; break;
-            case 0x3D: this.cmd_GPF(this.config); this.cycle_count = 4; break;
-            case 0x3E: this.cmd_GPL(this.config); this.cycle_count = 4; break;
-            case 0x3F: this.cmd_NCCT(this.config); this.cycle_count = 38; break;
+            case 0x30: this.cmd_RTPT(config); this.cycle_count = 22; break;
+            case 0x3D: this.cmd_GPF(config); this.cycle_count = 4; break;
+            case 0x3E: this.cmd_GPL(config); this.cycle_count = 4; break;
+            case 0x3F: this.cmd_NCCT(config); this.cycle_count = 38; break;
             default:
                 console.log('Unsupported GTE opcode ' + hex2(opc));
                 break;
@@ -561,16 +562,16 @@ export class PS1_GTE {
                 let m: i32 = <i32>this.matrices[rm][r][c];
                 let rot = v * m;
 
-                res = this.i64_to_i44(<u8>c, <i64>res + <i64>rot);
+                res = this.i64_to_i44(<u8>c, res + <i64>rot);
             }
-            this.mac[r+1] = <i32>(res >> this.config.shift);
+            this.mac[r+1] = <i32>(res >> config.shift);
             z_shifted = <i32>(res >> 12);
         }
 
-        let val = this.mac[1];
-        this.ir[1] = this.i32_to_i16_saturate(this.config, 0, val);
-        val = this.mac[2];
-        this.ir[2] = this.i32_to_i16_saturate(this.config, 1, val);
+        this.ir[1] = this.i32_to_i16_saturate(config, 0, this.mac[1]);
+        this.ir[2] = this.i32_to_i16_saturate(config, 1, this.mac[2]);
+        console.log('MAC2! ' + hex8(<u32>this.mac[2]));
+        console.log('IR2!' + hex4(<u32>this.ir[2]));
 
         // Weird behavior on Z clip
         let min: i32 = -32768;
@@ -579,7 +580,7 @@ export class PS1_GTE {
             this.set_flag(22);
 
         min = config.clamp_negative ? 0 : -32768;
-        val = this.mac[3];
+        let val = this.mac[3];
         if (val < min) this.ir[3] = <i16>min;
         else if (val > max) this.ir[3] = 32767;
         else this.ir[3] = <i16>val;
@@ -610,14 +611,14 @@ export class PS1_GTE {
             projection_factor = 0x1FFFF;
         }
 
-        let factor: i64 = projection_factor;
+        let factor: i64 = <i64>projection_factor;
         let x: i64 = <i64>this.ir[1];
         let y: i64 = <i64>this.ir[2];
         let ofx: i64 = <i64>this.ofx;
         let ofy: i64 = <i64>this.ofy;
 
-        let screen_xa = x * factor * ofx;
-        let screen_ya = y * factor * ofy;
+        let screen_xa: i64 = x * factor + ofx;
+        let screen_ya: i64 = y * factor + ofy;
 
         this.check_mac_overflow(screen_xa);
         this.check_mac_overflow(screen_ya);
@@ -625,9 +626,10 @@ export class PS1_GTE {
         let screen_x: i32 = <i32>(screen_xa >> 16);
         let screen_y: i32 = <i32>(screen_ya >> 16);
 
-        this.xy_fifo[3][0] = this.i32_to_i11_saturate(0, screen_x);
-        this.xy_fifo[3][1] = this.i32_to_i11_saturate(1, screen_y);
-
+        //this.xy_fifo[3][0] = <i16>(<u16>this.i32_to_i11_saturate(0, screen_x) & 0x7FF);
+        //this.xy_fifo[3][1] = <i16>(<u16>this.i32_to_i11_saturate(1, screen_y) & 0x7FF);
+        this.xy_fifo[3][0] = <i16>this.i32_to_i11_saturate(0, screen_x);
+        this.xy_fifo[3][1] = <i16>this.i32_to_i11_saturate(1, screen_y);
         this.xy_fifo[0][0] = this.xy_fifo[1][0];
         this.xy_fifo[0][1] = this.xy_fifo[1][1];
         this.xy_fifo[1][0] = this.xy_fifo[2][0];
@@ -639,9 +641,9 @@ export class PS1_GTE {
     }
 
     check_mac_overflow(val: i64): void {
-        if (val < -0x80000000) {
+        if (val < -0x8000_0000) {
             this.set_flag(15);
-        } else if (val > 0x7fffffff) {
+        } else if (val > 0x7fff_ffff) {
             this.set_flag(16);
         }
     }
@@ -669,9 +671,8 @@ export class PS1_GTE {
         else if (val < min) {
             this.set_flag(24 - flag);
             return -32768;
-        } else {
-            return <i16>val;
         }
+        return <i16>val;
     }
 
     @inline
@@ -788,7 +789,7 @@ export class PS1_GTE {
 
             let res = this.i64_to_i44(<u8>i, col + ir0 * sat);
 
-            this.mac[i + 1] = <i32>(res >> this.config.shift);
+            this.mac[i + 1] = <i32>(res >> config.shift);
         }
 
         this.mac_to_ir(config);
@@ -831,7 +832,7 @@ export class PS1_GTE {
             let ir0 = <i64>this.ir[0];
             let sat = this.i32_to_i16_saturate(this.config0, <u8>i, tmp)
             let res = this.i64_to_i44(<u8>i, ir + ir0 * sat);
-            this.mac[i + 1] = <i32>(res >> this.config.shift);
+            this.mac[i + 1] = <i32>(res >> config.shift);
         }
         this.mac_to_ir(config);
         this.mac_to_rgb_fifo();
@@ -842,7 +843,7 @@ export class PS1_GTE {
         this.v[3][1] = this.ir[2];
         this.v[3][2] = this.ir[3];
 
-        this.multiply_matrix_by_vector(config, config.matrix, config.vector_mul, this.config.vector_add);
+        this.multiply_matrix_by_vector(config, config.matrix, config.vector_mul, config.vector_add);
     }
 
     cmd_NCDS(config: GTECmdCfg): void {
@@ -944,7 +945,6 @@ export class PS1_GTE {
         let z3: u32 = this.z_fifo[3];
 
         let sum = z1 + z2 + z3;
-        console.log('AVSZ! ' + hex4(z1) + ' ' + hex4(z2) + ' ' + hex4(z3))
 
         let zsf3: i64 = <i64> this.zsf3;
         let average = zsf3 * <i64>sum;
