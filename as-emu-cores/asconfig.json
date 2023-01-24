@@ -3,7 +3,7 @@
     "debug": {
       "outFile": "build/debug.wasm",
       "sourceMap": true,
-      "optimizeLevel": 2,
+      "optimizeLevel": 1,
       "debug": true,
       "runtime": "minimal",
       "maximumMemory": 32768,

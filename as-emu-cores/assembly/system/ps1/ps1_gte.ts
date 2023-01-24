@@ -226,21 +226,21 @@ export class PS1_GTE {
         switch(reg) {
             case 0:
                 this.v[0][0] = <i16>val;
-                this.v[0][1] = <i16>(val >> 16);
+                this.v[0][1] = <i16>(val >>> 16);
                 break;
             case 1:
                 this.v[0][2] = <i16>val;
                 break;
             case 2:
                 this.v[1][0] = <i16>val;
-                this.v[1][1] = <i16>(val >> 16);
+                this.v[1][1] = <i16>(val >>> 16);
                 break;
             case 3:
                 this.v[1][2] = <i16>val;
                 break;
             case 4:
                 this.v[2][0] = <i16>val;
-                this.v[2][1] = <i16>(val >> 16);
+                this.v[2][1] = <i16>(val >>> 16);
                 break;
             case 5:
                 this.v[2][2] = <i16>val;
@@ -269,12 +269,14 @@ export class PS1_GTE {
                 this.xy_fifo[2][1] = <i16>(val >> 16);
                 break;
             case 15:
-                this.xy_fifo[3][0] = this.xy_fifo[2][0] = <i16>val;
-                this.xy_fifo[3][1] = this.xy_fifo[2][1] = <i16>(val >> 16);
+                //this.xy_fifo[3][0] ;
+                //this.xy_fifo[3][1];
                 this.xy_fifo[0][0] = this.xy_fifo[1][0];
                 this.xy_fifo[0][1] = this.xy_fifo[1][1];
                 this.xy_fifo[1][0] = this.xy_fifo[2][0];
                 this.xy_fifo[1][1] = this.xy_fifo[2][1];
+                this.xy_fifo[2][0] = this.xy_fifo[3][0] = <i16>val;
+                this.xy_fifo[2][1] = this.xy_fifo[3][1] = <i16>(val >> 16);
                 break;
             case 16: this.z_fifo[0] = <u16>val; break;
             case 17: this.z_fifo[1] = <u16>val; break;
@@ -307,7 +309,6 @@ export class PS1_GTE {
                 this.ir[1] = <i16>(((val) & 0x1F) << 7);
                 this.ir[2] = <i16>(((val >>> 5) & 0x1F) << 7);
                 this.ir[3] = <i16>(((val >>> 10) & 0x1F) << 7);
-                //console.log('SETTING IRS ' + hex4(<u32>this.ir[0]) + ' ' + hex4(<u32>this.ir[1]) + hex4(<u32>this.ir[2]))
                 break;
             case 29:
                 break;
@@ -413,9 +414,13 @@ export class PS1_GTE {
                 this.zsf4 = <i16>val;
                 break;
             case 63: // 31
-                let old_flags = this.flags;
-                this.flags = val & 0x7FFFF00;
-                this.flags |= (((old_flags & 0x7f87e000) !== 0) ? 1 : 0) << 31;
+                /*this.flags = val & 0x7ff_ff00;
+                let msb: u32 = ((val & 0x7f87_e000) !== 0) ? 1 : 0;
+                this.flags |= msb << 31;*/
+                this.flags = (val & 0x7ffff000) | ((val & 0x7f87e000) ? (1 << 31) : 0);
+                //let old_flags = this.flags;
+                //this.flags = val & 0x7FFFF00;
+                //this.flags |= (((old_flags & 0x7f87e000) !== 0) ? 1 : 0) << 31;
                 break;
         }
     }
@@ -425,7 +430,7 @@ export class PS1_GTE {
             case 0: return (<u32><u16>this.v[0][0]) | ((<u32><u16>this.v[0][1]) << 16);
             case 1: return <u32><i32>this.v[0][2];
             case 2: return (<u32><u16>this.v[1][0]) | ((<u32><u16>this.v[1][1]) << 16);
-            case 3: return <u32><u16>this.v[1][2];
+            case 3: return <u32><i32>this.v[1][2];
             case 4: return (<u32><u16>this.v[2][0]) | ((<u32><u16>this.v[2][1]) << 16);
             case 5: return <u32><i32>this.v[2][2];
             case 6: return <u32>this.rgb[0] | (<u32>this.rgb[1] << 8) | (<u32>this.rgb[2] << 16) | (<u32>this.rgb[3] << 24);
@@ -436,17 +441,17 @@ export class PS1_GTE {
             case 9: return <u32>this.ir[1];
             case 10: return <u32>this.ir[2];
             case 11: return <u32>this.ir[3];
-            case 12: return <u32>this.xy_fifo[0][0] | (<u32>this.xy_fifo[0][1] << 16);
-            case 13: return <u32>this.xy_fifo[1][0] | (<u32>this.xy_fifo[1][1] << 16);
-            case 14: return <u32>this.xy_fifo[2][0] | (<u32>this.xy_fifo[2][1] << 16);
-            case 15: return <u32>this.xy_fifo[2][0] | (<u32>this.xy_fifo[3][1] << 16);
+            case 12: return <u32><u16>this.xy_fifo[0][0] | (<u32><u16>this.xy_fifo[0][1] << 16);
+            case 13: return <u32><u16>this.xy_fifo[1][0] | (<u32><u16>this.xy_fifo[1][1] << 16);
+            case 14: return <u32><u16>this.xy_fifo[2][0] | (<u32><u16>this.xy_fifo[2][1] << 16);
+            case 15: return <u32><u16>this.xy_fifo[2][0] | (<u32><u16>this.xy_fifo[3][1] << 16);
             case 16: return <u32>this.z_fifo[0];
             case 17: return <u32>this.z_fifo[1];
             case 18: return <u32>this.z_fifo[2];
             case 19: return <u32>this.z_fifo[3];
-            case 20: return <u32>this.rgb_fifo[0][0] | (<u32>this.rgb_fifo[0][1] << 16);
-            case 21: return <u32>this.rgb_fifo[1][0] | (<u32>this.rgb_fifo[1][1] << 16);
-            case 22: return <u32>this.rgb_fifo[2][0] | (<u32>this.rgb_fifo[2][1] << 16);
+            case 20: return <u32>this.rgb_fifo[0][0] | (<u32>this.rgb_fifo[0][1] << 8) | (<u32>this.rgb_fifo[0][2] << 16) | (<u32>this.rgb_fifo[0][3] << 24);
+            case 21: return <u32>this.rgb_fifo[1][0] | (<u32>this.rgb_fifo[1][1] << 8) | (<u32>this.rgb_fifo[1][2] << 16) | (<u32>this.rgb_fifo[1][3] << 24);
+            case 22: return <u32>this.rgb_fifo[2][0] | (<u32>this.rgb_fifo[2][1] << 8) | (<u32>this.rgb_fifo[2][2] << 16) | (<u32>this.rgb_fifo[2][3] << 24);
             case 23: return this.reg_23;
             case 24: return <u32>this.mac[0];
             case 25: return <u32>this.mac[1];
@@ -461,7 +466,7 @@ export class PS1_GTE {
             case 33: return (<u32><u16>this.matrices[0][0][2]) | ((<u32><u16>this.matrices[0][1][0]) << 16);
             case 34: return (<u32><u16>this.matrices[0][1][1]) | ((<u32><u16>this.matrices[0][1][2]) << 16);
             case 35: return (<u32><u16>this.matrices[0][2][0]) | ((<u32><u16>this.matrices[0][2][1]) << 16);
-            case 36: return <u32><u16>this.matrices[0][2][2];
+            case 36: return <u32><i32>this.matrices[0][2][2];
             case 37:
             case 38:
             case 39:
@@ -470,7 +475,7 @@ export class PS1_GTE {
             case 41: return (<u32><u16>this.matrices[1][0][2]) | ((<u32><u16>this.matrices[1][1][0]) << 16);
             case 42: return (<u32><u16>this.matrices[1][1][1]) | ((<u32><u16>this.matrices[1][1][2]) << 16);
             case 43: return (<u32><u16>this.matrices[1][2][0]) | ((<u32><u16>this.matrices[1][2][1]) << 16);
-            case 44: return <u32><u16>this.matrices[1][2][2];
+            case 44: return <u32><i32>this.matrices[1][2][2];
             case 45:
             case 46:
             case 47:
@@ -479,7 +484,7 @@ export class PS1_GTE {
             case 49: return (<u32><u16>this.matrices[2][0][2]) | ((<u32><u16>this.matrices[2][1][0]) << 16);
             case 50: return (<u32><u16>this.matrices[2][1][1]) | ((<u32><u16>this.matrices[2][1][2]) << 16);
             case 51: return (<u32><u16>this.matrices[2][2][0]) | ((<u32><u16>this.matrices[2][2][1]) << 16);
-            case 52: return <u32><u16>this.matrices[2][2][2];
+            case 52: return <u32><i32>this.matrices[2][2][2];
             case 53:
             case 54:
             case 55:
