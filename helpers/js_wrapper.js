@@ -104,6 +104,8 @@ class js_wrapper_t {
 		this.as_wrapper = new as_wrapper_t();
 		this.tech_specs = null;
 		this.out_ptr = 0;
+
+		this.console_out = '';
     }
 
 	play() {
@@ -128,6 +130,7 @@ class js_wrapper_t {
 	}
 
 	stop() {
+		this.console_out = '';
 		if (!this.emu_wasm)
 			this.system.stop();
 		else
@@ -276,11 +279,19 @@ class js_wrapper_t {
 			this.as_wrapper.wasm.gp_step_master(this.as_wrapper.global_player, howmany);
 			let d = this.as_wrapper.wasm.gp_get_framevars(this.as_wrapper.global_player);
 			dbg.dump_from_wasm(d.dbg_info)
+			this.dump_console(d.console)
 			return d;
 		}
 		else {
 			this.system.step_master(howmany);
 			return this.system.get_framevars();
+		}
+	}
+	
+	dump_console(w) {
+		if (w.length > 0) {
+			this.console_out += w;
+			emulator_worker.send_console(this.console_out);
 		}
 	}
 
@@ -298,11 +309,13 @@ class js_wrapper_t {
                 }*/
 				let d = this.as_wrapper.wasm.gp_get_framevars(this.as_wrapper.global_player);
 				dbg.dump_from_wasm(d.dbg_info);
+				this.dump_console(d.console)
 				return Object.assign({}, {buffer_num: 0}, d);
 			}
 			else {
 				let d = this.as_wrapper.wasm.gp_get_framevars(this.as_wrapper.global_player);
 				dbg.dump_from_wasm(d.dbg_info);
+				this.dump_console(d.console)
 				return Object.assign({}, {buffer_num: 0}, d, {vram_buffer: this.emu_wasm_helper.vram_buf});
 			}
 		} else {

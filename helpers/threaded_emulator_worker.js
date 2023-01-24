@@ -195,6 +195,10 @@ class threaded_emulator_worker_t {
         this.send_specs(this.tech_specs)
     }
 
+    send_console(cstr) {
+        postMessage({kind: emulator_messages.console_dump, console: cstr})
+    }
+
     send_return(kind, what, data) {
         postMessage({kind: emulator_messages.return_something, what: what, data: data})
     }

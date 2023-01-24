@@ -557,9 +557,16 @@ class global_player_t {
 		}
 	}
 
+	display_console(w) {
+		console.log(w);
+	}
+	
 	on_player_message(e) {
 		e = e.data;
 		switch(e.kind) {
+			case emulator_messages.console_dump:
+				this.display_console(e.console);
+				break;
 			case emulator_messages.return_something:
 				switch(e.what) {
 					case 'dbg':

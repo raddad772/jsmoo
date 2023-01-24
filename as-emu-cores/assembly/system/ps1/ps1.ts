@@ -413,6 +413,8 @@ export class PS1 implements systemEmulator {
         d.master_frame = this.clock.master_frame;
         d.x = 0;
         d.scanline = 0;
+        d.console = this.cpu.core.console;
+        this.cpu.core.console = '';
         return d;
     }
 

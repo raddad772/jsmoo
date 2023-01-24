@@ -12,6 +12,7 @@ export class framevars_t {
     x: u32 = 0
     scanline: u32 = 0
     dbg_info: debugger_info_t = new debugger_info_t();
+    console: string = '';
 }
 
 export enum JSMOO_SYSTEMS {

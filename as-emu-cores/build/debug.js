@@ -235,6 +235,7 @@ export async function instantiate(module, imports = {}) {
       x: new Uint32Array(memory.buffer)[pointer + 8 >>> 2],
       scanline: new Uint32Array(memory.buffer)[pointer + 12 >>> 2],
       dbg_info: __liftRecord69(new Uint32Array(memory.buffer)[pointer + 16 >>> 2]),
+      console: __liftString(new Uint32Array(memory.buffer)[pointer + 20 >>> 2]),
     };
   }
   function __liftRecord138(pointer) {

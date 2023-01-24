@@ -134,6 +134,8 @@ export class PS1_GTE {
     zsf3: i16 = 0
     zsf4: i16 = 0
 
+    cnt: u32 = 0
+
     flags: u32 = 0
     mac: StaticArray<i32> = new StaticArray<i32>(4);
     otz: u16 = 0
@@ -220,7 +222,9 @@ export class PS1_GTE {
                 break;
         }
 
-        this.flags |= (((this.flags & 0x7f87e000) !== 0) ? 1 : 0) << 31;
+        //this.flags |= (((this.flags & 0x7f87e000) !== 0) ? 1 : 0) << 31;
+        let msb: u32 = ((this.flags & 0x7f87_e000) != 0) ? 0x80000000 : 0;
+        this.flags |= msb;
     }
 
     write_reg(reg: u32, val: u32): void {
@@ -436,9 +440,7 @@ export class PS1_GTE {
             case 5: return <u32><i32>this.v[2][2];
             case 6: return <u32>this.rgb[0] | (<u32>this.rgb[1] << 8) | (<u32>this.rgb[2] << 16) | (<u32>this.rgb[3] << 24);
             case 7: return <u32>this.otz;
-            case 8:
-                console.log('IR0 WRITE! ' + hex4(<u32>this.ir[0]) + '.to ' + hex8(<u32><i32>this.ir[0]));
-                return <u32>this.ir[0];
+            case 8:return <u32>this.ir[0];
             case 9: return <u32>this.ir[1];
             case 10: return <u32>this.ir[2];
             case 11: return <u32>this.ir[3];
@@ -560,9 +562,9 @@ export class PS1_GTE {
             for (let c = 0; c < 3; c++) {
                 let v: i32 = <i32>this.v[vector_index][c];
                 let m: i32 = <i32>this.matrices[rm][r][c];
-                let rot = v * m;
+                let rot: i32 = v * m;
 
-                res = this.i64_to_i44(<u8>c, res + <i64>rot);
+                res = this.i64_to_i44(<u8>r, res + <i64>rot);
             }
             this.mac[r+1] = <i32>(res >> config.shift);
             z_shifted = <i32>(res >> 12);
@@ -570,8 +572,6 @@ export class PS1_GTE {
 
         this.ir[1] = this.i32_to_i16_saturate(config, 0, this.mac[1]);
         this.ir[2] = this.i32_to_i16_saturate(config, 1, this.mac[2]);
-        console.log('MAC2! ' + hex8(<u32>this.mac[2]));
-        console.log('IR2!' + hex4(<u32>this.ir[2]));
 
         // Weird behavior on Z clip
         let min: i32 = -32768;
@@ -670,17 +670,17 @@ export class PS1_GTE {
         }
         else if (val < min) {
             this.set_flag(24 - flag);
-            return -32768;
+            return <i16>min;
         }
         return <i16>val;
     }
 
     @inline
     i64_to_i44(flag: u8, val: i64): i64 {
-        if (val > 0x7FFFFFFFFFF) {
+        if (val > 0x7FF_FFFF_FFFF) {
             this.set_flag(30 - flag);
         }
-        else if (val < -0x80000000000) {
+        else if (val < -0x800_0000_0000) {
             this.set_flag(27 - flag);
         }
 
@@ -688,7 +688,9 @@ export class PS1_GTE {
         return (val << 20) >> 20;
     }
 
-    set_flag(bit: u8): void { this.flags |= (1 << bit); }
+    set_flag(bit: u8): void {
+        this.flags |= (1 << bit);
+    }
 
     cmd_RTPS(config: GTECmdCfg): void {
         let pf = this.do_RTP(config, 0);
