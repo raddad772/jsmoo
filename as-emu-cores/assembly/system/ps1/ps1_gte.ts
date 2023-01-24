@@ -10,7 +10,7 @@
 // > 0x7FFF
 
 
-import {hex2, hex4} from "../../helpers/helpers";
+import {hex2, hex4, hex8} from "../../helpers/helpers";
 import {PS1_clock} from "./ps1_misc";
 
 const UNR_TABLE: StaticArray<u8> = [
@@ -304,9 +304,10 @@ export class PS1_GTE {
             case 26: this.mac[2] = <i32>val; break;
             case 27: this.mac[3] = <i32>val; break;
             case 28:
-                this.ir[0] = <i16>(((val) & 0x1F) << 7);
-                this.ir[1] = <i16>(((val >>> 5) & 0x1F) << 7);
-                this.ir[2] = <i16>(((val >>> 10) & 0x1F) << 7);
+                this.ir[1] = <i16>(((val) & 0x1F) << 7);
+                this.ir[2] = <i16>(((val >>> 5) & 0x1F) << 7);
+                this.ir[3] = <i16>(((val >>> 10) & 0x1F) << 7);
+                //console.log('SETTING IRS ' + hex4(<u32>this.ir[0]) + ' ' + hex4(<u32>this.ir[1]) + hex4(<u32>this.ir[2]))
                 break;
             case 29:
                 break;
@@ -421,15 +422,17 @@ export class PS1_GTE {
 
     read_reg(reg: u32): u32 {
         switch(reg) {
-            case 0: return (<u32><u16>this.v[0][0]) | (<u32><u16>(this.v[0][1] << 16));
-            case 1: return <u32><u16>this.v[0][2];
-            case 2: return (<u32><u16>this.v[1][0]) | (<u32><u16>(this.v[1][1] << 16));
+            case 0: return (<u32><u16>this.v[0][0]) | ((<u32><u16>this.v[0][1]) << 16);
+            case 1: return <u32><i32>this.v[0][2];
+            case 2: return (<u32><u16>this.v[1][0]) | ((<u32><u16>this.v[1][1]) << 16);
             case 3: return <u32><u16>this.v[1][2];
-            case 4: return (<u32><u16>this.v[2][0]) | (<u32><u16>(this.v[2][1] << 16));
-            case 5: return <u32><u16>this.v[2][2];
+            case 4: return (<u32><u16>this.v[2][0]) | ((<u32><u16>this.v[2][1]) << 16);
+            case 5: return <u32><i32>this.v[2][2];
             case 6: return <u32>this.rgb[0] | (<u32>this.rgb[1] << 8) | (<u32>this.rgb[2] << 16) | (<u32>this.rgb[3] << 24);
             case 7: return <u32>this.otz;
-            case 8: return <u32>this.ir[0];
+            case 8:
+                console.log('IR0 WRITE! ' + hex4(<u32>this.ir[0]) + '.to ' + hex8(<u32><i32>this.ir[0]));
+                return <u32>this.ir[0];
             case 9: return <u32>this.ir[1];
             case 10: return <u32>this.ir[2];
             case 11: return <u32>this.ir[3];
@@ -915,8 +918,8 @@ export class PS1_GTE {
     cmd_AVSZ4(): void {
         let z0: u32 = this.z_fifo[0];
         let z1: u32 = this.z_fifo[1];
-        let z2: u32 = this.z_fifo[1];
-        let z3: u32 = this.z_fifo[1];
+        let z2: u32 = this.z_fifo[2];
+        let z3: u32 = this.z_fifo[3];
 
         let sum = z0 + z1 + z2 + z3;
 
@@ -932,8 +935,8 @@ export class PS1_GTE {
 
     cmd_AVSZ3(): void {
         let z1: u32 = this.z_fifo[1];
-        let z2: u32 = this.z_fifo[1];
-        let z3: u32 = this.z_fifo[1];
+        let z2: u32 = this.z_fifo[2];
+        let z3: u32 = this.z_fifo[3];
 
         let sum = z1 + z2 + z3;
         console.log('AVSZ! ' + hex4(z1) + ' ' + hex4(z2) + ' ' + hex4(z3))

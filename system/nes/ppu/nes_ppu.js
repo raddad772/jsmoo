@@ -325,18 +325,13 @@ class NES_ppu {
         let high = this.bus.PPU_read(r + 8, 0, has_effect);
         let output = 0;
         for (let i = 0; i < 8; i++) {
-            //output <<= 2;
-            //output |= ((low & 0x80) >>> 7) | ((high & 0x80) >>> 6);
             output <<= 2;
             output |= (low & 1) | ((high & 1) << 1);
-            //low <<= 1;
-            //high <<= 1;
             low >>>= 1;
             high >>>= 1;
         }
         return output;
     }
-
 
     fetch_chr_addr(table, tile, line) {
         return (0x1000 * table) + (tile * 16) + line;

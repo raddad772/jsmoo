@@ -110,8 +110,12 @@ export class R3000_pipeline_t {
 
     move_forward(): R3000_pipeline_item_t {
         if (this.num_items === 0) return this.empty_item;
-        this.current.copy(this.item0);
-        this.item0.copy(this.item1);
+        let a = this.current;
+        this.current = this.item0;
+        this.item0 = this.item1;
+        this.item1 = a;
+        //this.current.copy(this.item0);
+        //this.item0.copy(this.item1);
         this.item1.clear();
         this.num_items--;
 
@@ -325,7 +329,7 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
     delay_slots(which: R3000_pipeline_item_t): void {
         // Load delay slot from instruction before this one
         if (which.target > 0) {// R0 stays 0
-            this.regs.R[which.target] = <u32>which.value;
+            unchecked(this.regs.R[which.target] = <u32>which.value);
             if (this.trace_on) {
                 this.debug_reg_list.push(which.target);
                 this.debug_tracelog.add('R' + dec2(which.target) + ' ' + hex8(this.regs.R[which.target]>>>0).toLowerCase() + ' ');
