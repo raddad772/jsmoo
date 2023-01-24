@@ -142,12 +142,12 @@ export class bigstr_output {
 
 export class R3000 {
     mem: PS1_mem
-    clock: PS1_clock = new PS1_clock();
+    clock: PS1_clock
     regs: R3000_regs_t = new R3000_regs_t();
     pipe: R3000_pipeline_t = new R3000_pipeline_t();
     pins: R3000_pins_t = new R3000_pins_t();
-    multiplier: R3000_multiplier_t = new R3000_multiplier_t(this.clock);
-    gte: PS1_GTE = new PS1_GTE(this.clock)
+    multiplier: R3000_multiplier_t
+    gte: PS1_GTE
     op_table: StaticArray<R3000_opcode>
     trace_on: bool = false;
     console: string = '';
@@ -159,9 +159,12 @@ export class R3000 {
 
     trace_enabled: bool = false
 
-    constructor(mem: PS1_mem) {
+    constructor(mem: PS1_mem, clock: PS1_clock) {
         this.mem = mem;
+        this.multiplier = new R3000_multiplier_t(clock);
+        this.gte = new PS1_GTE(clock);
         this.op_table = R3000_generate_opcodes();
+        this.clock = clock;
     }
 
     update_I_STAT(): void {
@@ -402,7 +405,7 @@ Mask: Read/Write I_MASK (0=Disabled, 1=Enabled)
     }
 
     exception(code: u32, branch_delay: bool = false, cop0: bool = false): void {
-        console.log('EXCEPTION ' + code.toString() + ' ' + this.clock.trace_cycles.toString());
+        //console.log('EXCEPTION ' + code.toString() + ' ' + this.clock.trace_cycles.toString());
         if (this.trace_on) {
             dbg.traces.add(D_RESOURCE_TYPES.R3000, this.clock.trace_cycles-1, 'EXCEPTION ' + code.toString());
         }
