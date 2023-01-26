@@ -5,7 +5,7 @@ import {GB_variants} from "../system/gb/gb_common";
 import {GameBoy} from "../system/gb/gb";
 import {PS1} from "../system/ps1/ps1";
 import {dbg, debugger_info_t, EMU_GLOBALS} from "../helpers/debug";
-import {bigstr_output} from "../component/cpu/r3000/r3000";
+import {REGION, SMSGG, SMSGG_variants} from "../system/sms_gg/sms_gg";
 
 export class framevars_t {
     master_frame: u64 = 0
@@ -21,6 +21,7 @@ export enum JSMOO_SYSTEMS {
     SMS2_USA,
     SPECTRUM48,
     SNES_USA,
+    GAMEGEAR,
 
     TEST_NESM6502,
 
@@ -85,6 +86,12 @@ export class global_player_t {
             case JSMOO_SYSTEMS.PS1:
                 this.system = new PS1();
                 break;
+            case JSMOO_SYSTEMS.GAMEGEAR:
+                this.system = new SMSGG(SMSGG_variants.GG, REGION.NTSC, this.video_output_buffer);
+                break;
+            case JSMOO_SYSTEMS.SMS2_USA:
+                this.system = new SMSGG(SMSGG_variants.SMS2, REGION.NTSC, this.video_output_buffer);
+                break;
             default:
                 console.log('UNIMPLEMENTED SYSTEM');
                 return;
@@ -112,6 +119,12 @@ export class global_player_t {
         if (to == 'nes_as') {
             ct = JSMOO_SYSTEMS.NES_USA;
         }
+        if (to === 'sms_as') {
+            ct = JSMOO_SYSTEMS.SMS2_USA;
+        }
+        if (to === 'gg_as') {
+            ct = JSMOO_SYSTEMS.GAMEGEAR;
+        }
         if (to === 'gb_as') {
             ct = JSMOO_SYSTEMS.DMG;
         }
@@ -122,6 +135,12 @@ export class global_player_t {
         switch(ct) {
             case JSMOO_SYSTEMS.NES_USA:
                 this.set_system(JSMOO_SYSTEMS.NES_USA);
+                return true;
+            case JSMOO_SYSTEMS.SMS2_USA:
+                this.set_system(JSMOO_SYSTEMS.SMS2_USA);
+                return true;
+            case JSMOO_SYSTEMS.GAMEGEAR:
+                this.set_system(JSMOO_SYSTEMS.GAMEGEAR);
                 return true;
             case JSMOO_SYSTEMS.DMG:
                 this.set_system(JSMOO_SYSTEMS.DMG);

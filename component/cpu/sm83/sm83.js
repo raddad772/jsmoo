@@ -1,6 +1,6 @@
 "use strict";
 
-let SM83_PC_BRK = -1;
+let SM83_PC_BRK = 0xC2BE;
 
 class SM83_regs_F {
     constructor() {

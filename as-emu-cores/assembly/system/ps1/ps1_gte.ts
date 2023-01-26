@@ -147,7 +147,7 @@ export class PS1_GTE {
     reg_23: u32 = 0
 
     // 3x3x3, i16
-    matrices: StaticArray<StaticArray<StaticArray<i16>>> = new StaticArray<StaticArray<StaticArray<i16>>>(3);
+    matrices: StaticArray<StaticArray<StaticArray<i16>>> = new StaticArray<StaticArray<StaticArray<i16>>>(4);
     control_vectors: StaticArray<StaticArray<i32>> = new StaticArray<StaticArray<i32>>(4);
     v: StaticArray<StaticArray<i16>> = new StaticArray<StaticArray<i16>>(4);
 
@@ -161,7 +161,7 @@ export class PS1_GTE {
 
     constructor(clock: PS1_clock) {
         this.clock = clock;
-        for (let r: u32 = 0; r < 3; r++) {
+        for (let r: u32 = 0; r < 4; r++) {
             this.matrices[r] = new StaticArray<StaticArray<i16>>(3);
             for (let j: u32 = 0; j < 3; j++) {
                 this.matrices[r][j] = new StaticArray<i16>(3);
@@ -419,13 +419,7 @@ export class PS1_GTE {
                 this.zsf4 = <i16>val;
                 break;
             case 63: // 31
-                /*this.flags = val & 0x7ff_ff00;
-                let msb: u32 = ((val & 0x7f87_e000) !== 0) ? 1 : 0;
-                this.flags |= msb << 31;*/
                 this.flags = (val & 0x7ffff000) | ((val & 0x7f87e000) ? (1 << 31) : 0);
-                //let old_flags = this.flags;
-                //this.flags = val & 0x7FFFF00;
-                //this.flags |= (((old_flags & 0x7f87e000) !== 0) ? 1 : 0) << 31;
                 break;
         }
     }
@@ -447,7 +441,7 @@ export class PS1_GTE {
             case 12: return <u32><u16>this.xy_fifo[0][0] | (<u32><u16>this.xy_fifo[0][1] << 16);
             case 13: return <u32><u16>this.xy_fifo[1][0] | (<u32><u16>this.xy_fifo[1][1] << 16);
             case 14: return <u32><u16>this.xy_fifo[2][0] | (<u32><u16>this.xy_fifo[2][1] << 16);
-            case 15: return <u32><u16>this.xy_fifo[2][0] | (<u32><u16>this.xy_fifo[3][1] << 16);
+            case 15: return <u32><u16>this.xy_fifo[3][0] | (<u32><u16>this.xy_fifo[3][1] << 16);
             case 16: return <u32>this.z_fifo[0];
             case 17: return <u32>this.z_fifo[1];
             case 18: return <u32>this.z_fifo[2];
@@ -1063,25 +1057,27 @@ export class PS1_GTE {
     multiply_matrix_by_vector(config: GTECmdCfg, mat: Matrix, vei: u8, crv: ControlVector): void {
         let vector_index: i32 = <i32>vei;
         if (mat === Matrix.Invalid) {
-            console.log('GTE mul with invalid matrix')
-            return;
+            this.matrices[mat][0][0] = (-(<i16>this.rgb[0])) << 4;
+            this.matrices[mat][0][1] = (<i16>this.rgb[0]) << 4;
+            this.matrices[mat][0][2] = this.ir[0];
+            this.matrices[mat][1][0] = this.matrices[mat][1][1] = this.matrices[mat][1][2] = this.matrices[0][0][2];
+            this.matrices[mat][2][0] = this.matrices[mat][2][1] = this.matrices[mat][2][2] = this.matrices[0][1][1];
         }
 
-        if (crv === ControlVector.FarColor) {
-            console.log('GTE multiply with far color. special...');
-            return;
-        }
+        let far_color = crv === ControlVector.FarColor
 
         for (let r = 0; r < 3; r++) {
-            let res = (<i64>this.control_vectors[crv][r]) << 12;
+            let res: i64 = (<i64>this.control_vectors[crv][r]) << 12;
+            if (far_color) res = 0;
 
             for (let c = 0; c < 3; c++) {
                 let v: i32 = <i32>this.v[vector_index][c];
                 let m: i32 = <i32>this.matrices[mat][r][c];
 
-                let product = v * m;
+                let product: i32 = v * m;
 
-                res = this.i64_to_i44(<u8>r, res + product);
+                if ((!far_color && (c < 1)) || (c >= 1))
+                    res = this.i64_to_i44(<u8>r, res + <i64>product);
             }
 
             this.mac[r + 1] = <i32>(res >> config.shift);

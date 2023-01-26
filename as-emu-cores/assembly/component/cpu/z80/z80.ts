@@ -2,7 +2,7 @@ import {D_RESOURCE_TYPES, dbg} from "../../../helpers/debug";
 import {Z80_MN, Z80_opcode_functions, Z80_opcode_info, Z80_S_DECODE, Z80_S_IRQ, Z80_S_RESET} from "./z80_opcodes";
 import {mksigned8} from "../../../helpers/helpers";
 
-enum Z80P {
+export enum Z80P {
     HL,
     IX,
     IY
@@ -61,7 +61,7 @@ export class z80_regs {
     E: u32 = 0;
     H: u32 = 0;
     L: u32 = 0;
-    F = new z80_register_F_t();
+    F: z80_register_F_t = new z80_register_F_t();
     I: u32 = 0; // Iforget
     R: u32 = 0; // Refresh counter
 
@@ -87,6 +87,8 @@ export class z80_regs {
     IX: u32 = 0;
     IY: u32 = 0;
 
+    data: u32 = 0; // For specific special shenanigans
+
     t: StaticArray<i32> = new StaticArray<i32>(8);
     WZ: u32 = 0; // ?
     EI: u32 = 0; //"ei" executed last
@@ -97,8 +99,11 @@ export class z80_regs {
     IM: u32 = 0; // Interrupt Mode
     HALT: u32 = 0; // If HALT was executed
 
+    TR: u32 = 0; // Temporary Register
+    TA: u32 = 0; // Temporary Address
+
     // Internal registers
-    IRQ_vec: u32 | null = null;
+    IRQ_vec: u32 = 0;
     rprefix: u32 = Z80P.HL;
     prefix: u32 = 0x00;
 
@@ -176,9 +181,9 @@ export class z80_t {
     trace_cycles: u32 = 0;
     last_trace_cycle: u32 = 0;
 
-    current_instruction: Z80_opcode_functions = new Z80_opcode_functions(new Z80_opcode_info(0, Z80_MN.UKN, 'FAIL'), function(regs: z80_regs, pins: z80_pins): void {debugger;});
+    current_instruction: Z80_opcode_functions = new Z80_opcode_functions(new Z80_opcode_info(0, Z80_MN.UKN, 'FAIL'), function(regs: z80_regs, pins: z80_pins): void {});
 
-    trace_peek: (addr: u32, val: u32) => u32 = function(addr, val): u32 { debugger; return 0xCD;}
+    trace_peek: (addr: u32, val: u32) => u32 = function(addr, val): u32 { return 0xCD;}
     PCO: u32 = 0;
 
     constructor(CMOS: bool) {
@@ -212,7 +217,7 @@ export class z80_t {
 
         this.IRQ_pending = this.NMI_pending = this.NMI_ack = false;
         this.IRQ_ack = false;
-        this.regs.IRQ_vec = null;
+        this.regs.IRQ_vec = 0;
 
         this.regs.IR = Z80_S_RESET;
         //this.current_instruction = Z80_fetch_decoded(this.regs.IR, 0x00);
@@ -226,7 +231,7 @@ export class z80_t {
 
     notify_NMI(level: bool): void {
         if (!level && this.NMI_ack) { this.NMI_ack = false; }// level 0, NMI already ack'd
-        this.NMI_pending ||= level;
+        this.NMI_pending = (this.NMI_pending || level);
     }
 
     set_pins_opcode(): void {

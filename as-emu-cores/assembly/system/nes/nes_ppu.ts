@@ -91,7 +91,6 @@ export class NES_ppu {
     sprite0_on_this_line: bool = false;
 
     CGRAM: StaticArray<u32> = new StaticArray<u32>(32);
-    output: StaticArray<u16> = new StaticArray<u16>(256*256);
 
     bg_fetches0: u32 = 0
     bg_fetches1: u32 = 0

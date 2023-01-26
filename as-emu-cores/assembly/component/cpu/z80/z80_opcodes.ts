@@ -314,13 +314,13 @@ export class Z80_opcode_info {
     }
 }
 
-//const Z80_opcode_matrix_premn = {
-export var Z80_opcode_matrix_premn: Map<u32, Z80_opcode_info> = new Map<u32, Z80_opcode_info>();
-export var Z80_CB_opcode_matrix_premn: Map<u32, Z80_opcode_info> = new Map<u32, Z80_opcode_info>();
-export var Z80_CBd_opcode_matrix_premn: Map<u32, Z80_opcode_info> = new Map<u32, Z80_opcode_info>();
-export var Z80_ED_opcode_matrix_premn: Map<u32, Z80_opcode_info> = new Map<u32, Z80_opcode_info>();
+//const Z80_opcode_matrix = {
+export var Z80_opcode_matrix: Map<u32, Z80_opcode_info> = new Map<u32, Z80_opcode_info>();
+export var Z80_CB_opcode_matrix: Map<u32, Z80_opcode_info> = new Map<u32, Z80_opcode_info>();
+export var Z80_CBd_opcode_matrix: Map<u32, Z80_opcode_info> = new Map<u32, Z80_opcode_info>();
+export var Z80_ED_opcode_matrix: Map<u32, Z80_opcode_info> = new Map<u32, Z80_opcode_info>();
 
-function Z80_opcode_matrix_premn_func(opcode: u32) {
+function Z80_opcode_matrix_premn_func(opcode: u32): Z80_opcode_info {
     switch(opcode) {
         case 0x00: return new Z80_opcode_info(0x00, Z80_MN.NOP, 'NOP');
         case 0x01: return new Z80_opcode_info(0x01, Z80_MN.LD_rr_nn, 'LD_rr_nn BC', 'BC');
@@ -1254,11 +1254,11 @@ function Z80_ED_opcode_matrix_premn_func(opcode: u32): Z80_opcode_info {
 
 
 for (let i = 0; i < 0x102; i++) {
-    Z80_opcode_matrix_premn.set(i, Z80_opcode_matrix_premn_func(i));
+    Z80_opcode_matrix.set(i, Z80_opcode_matrix_premn_func(i));
     if (i < 0x100) {
-        Z80_CB_opcode_matrix_premn.set(i, Z80_CB_opcode_matrix_premn_func(i));
-        Z80_CBd_opcode_matrix_premn.set(i, Z80_CBd_opcode_matrix_premn_func(i));
-        Z80_ED_opcode_matrix_premn.set(i, Z80_ED_opcode_matrix_premn_func(i));
+        Z80_CB_opcode_matrix.set(i, Z80_CB_opcode_matrix_premn_func(i));
+        Z80_CBd_opcode_matrix.set(i, Z80_CBd_opcode_matrix_premn_func(i));
+        Z80_ED_opcode_matrix.set(i, Z80_ED_opcode_matrix_premn_func(i));
     }
 }
 
@@ -1285,7 +1285,7 @@ export function Z80_prefix_to_codemap(prefix: u32): u32 {
         case 0xDDCB: return (Z80_MAX_OPCODE + 1) * 5;
         case 0xFDCB: return (Z80_MAX_OPCODE + 1) * 6;
         default:
-            debugger;
+            console.log('BAD PREFIX');
             return -1;
     }
 }

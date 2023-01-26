@@ -3,6 +3,7 @@
 // opcode
 // prefix
 // two-prefix
+
 const Z80_matrix_size = Z80_MAX_OPCODE * Z80_prefixes.length;
 
 class Z80_get_opc_by_prefix_ret {
@@ -230,16 +231,16 @@ class Z80_switchgen {
         this.addl('regs.F.Y = (regs.PC >>> 13) & 1;');
         this.addl('if (regs.F.C) {');
         this.addl('    if (regs.data & 0x80) {')
-        this.addl('        regs.F.P ^= Z80_parity((regs.B - 1) & 7) ^ 1;');
-        this.addl('        regs.F.H = +((regs.B & 0x0F) === 0);');
+        this.addl('        regs.F.PV ^= Z80_parity((regs.B - 1) & 7) ^ 1;');
+        this.addl('        regs.F.H = +((regs.B & 0x0F) ' + GENEQO + ' 0);');
         this.addl('    }')
         this.addl('    else {')
-        this.addl('        regs.F.P ^= Z80_parity((regs.B + 1) & 7) ^ 1;');
-        this.addl('        regs.F.H = +((regs.B & 0x0F) === 0x0F);');
+        this.addl('        regs.F.PV ^= Z80_parity((regs.B + 1) & 7) ^ 1;');
+        this.addl('        regs.F.H = +((regs.B & 0x0F) ' + GENEQO + ' 0x0F);');
         this.addl('    }');
         this.addl('}');
         this.addl('else {');
-        this.addl('    regs.F.P ^= Z80_parity(regs.B & 7) ^ 1;');
+        this.addl('    regs.F.PV ^= Z80_parity(regs.B & 7) ^ 1;');
         this.addl('}');
     }
 
@@ -1127,7 +1128,7 @@ function Z80_replace_arg(arg, sub) {
  * @param {Z80_opcode_info} opcode_info
  * @param {null|String} sub
  */
-function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
+function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS, as=false) {
     let r;
     let indent2 = indent + '    ';
     let bnum;
@@ -1197,7 +1198,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.addl('if (regs.P) regs.F.PV = 0;');
             ag.addl('regs.P = 0;');
             ag.addl('regs.Q = 0;');
-            ag.addl('regs.IRQ_vec = null;');
+            ag.addl('regs.IRQ_vec = 0;');
             break;
         case Z80_MN.RESET:
             // disables the maskable interrupt, selects interrupt mode 0, zeroes registers I & R and zeroes the program counter (PC)
@@ -2232,7 +2233,10 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS) {
             ag.XOR('regs.A', ag.readreg(Z80hacksub(arg1, sub)), 'regs.A');
             break;
     }
-    return 'function(regs, pins) { //' + opcode_info.mnemonic + '\n' + ag.finished() + indent + '}';
+    if (as)
+        return 'function(regs: z80_regs, pins: z80_pins): void { // ' + opcode_info.mnemonic + '\n' + ag.finished() + indent + '}';
+    else
+        return 'function(regs, pins) { //' + opcode_info.mnemonic + '\n' + ag.finished() + indent + '}';
 }
 
 function Z80_get_matrix_by_prefix(prfx, i) {
@@ -2254,17 +2258,71 @@ function Z80_get_matrix_by_prefix(prfx, i) {
     }
 }
 
+function Z80_get_matrix_by_prefix_as(prfx, i) {
+    switch(prfx) {
+        case 0:
+            return 'Z80_opcode_matrix.get(' + hex0x2(i) + '), // ' + hex2(i) + '\n';
+        case 0xCB:
+            return 'Z80_CB_opcode_matrix.get(' + hex0x2(i) + '), // CB ' + hex2(i) + '\n';
+        case 0xED:
+            return 'Z80_ED_opcode_matrix.get(' + hex0x2(i) + '), // ED ' + hex2(i) + '\n';
+        case 0xDD:
+            return 'Z80_opcode_matrix.get(' + hex0x2(i) + '), // DD ' + hex2(i) + '\n';
+        case 0xFD:
+            return 'Z80_opcode_matrix.get(' + hex0x2(i) + '), // FD ' + hex2(i) + '\n';
+        case 0xDDCB:
+            return 'Z80_CBd_opcode_matrix.get(' + hex0x2(i) + '), // CB DD ' + hex2(i) + '\n';
+        case 0xFDCB:
+            return 'Z80_CBd_opcode_matrix.get(' + hex0x2(i) + '), // CB FD ' + hex2(i) + '\n';
+    }
+}
+
+
 function generate_z80_core_as(CMOS) {
     let output_name = 'z80_decoded_opcodes';
-    let outstr = 'import {Z80_opcode_functions, Z80_opcode_matrix, Z80_opcode_matrixCB, Z80_MAX_OPCODE, Z80_S_DECODE} from "../../../component/cpu/z80/z80_opcodes";\n' +
-    'import {Z80_pins_t, Z80_regs_t} from "../../../component/cpu/z80/z80";\n'
+    let outstr = 'import {Z80_opcode_functions, Z80_opcode_matrix, Z80_CB_opcode_matrix, Z80_CBd_opcode_matrix, Z80_ED_opcode_matrix, Z80_MAX_OPCODE, Z80_S_DECODE, Z80_parity} from "./z80_opcodes"\n' +
+    'import {z80_pins, z80_regs, Z80P} from "./z80"\n'
     outstr += 'import {mksigned8} from "../../../helpers/helpers"\n'
     outstr += '\nexport var ' + output_name + ': Array<Z80_opcode_functions> = new Array<Z80_opcode_functions>(((Z80_MAX_OPCODE+1)*7));';
     outstr += '\n\nfunction z80_get_opcode_function(opcode: u32): Z80_opcode_functions {';
     outstr += '\n    switch(opcode) {\n'
     let indent = '        ';
     let firstin = false;
-
+    let num_opcodes = 0;
+    for (let p in Z80_prefixes) {
+        let prfx = Z80_prefixes[p];
+        for (let i = 0; i < Z80_MAX_OPCODE; i++) {
+            num_opcodes++;
+            let matrix_code = Z80_prefix_to_codemap[prfx] + i;
+            let mystr = indent + 'case ' + hex0x2(matrix_code) + ': return new Z80_opcode_functions(';
+            let r = Z80_get_opc_by_prefix(prfx, i);
+            let ra;
+            if ((typeof r === 'undefined') || (typeof r.opc === 'undefined')) {
+                mystr += Z80_get_matrix_by_prefix_as(0, 0);
+                ra = Z80_generate_instruction_function(indent, Z80_get_opc_by_prefix(0, 0), null, CMOS, true);
+            }
+            else {
+                let sre = Z80_get_matrix_by_prefix_as(prfx, i);
+                if (typeof sre === 'undefined') {
+                    console.log('WHAT?', hex2(prfx), hex2(i));
+                }
+                mystr += sre;
+                ra = Z80_generate_instruction_function(indent, r.opc, r.sub, CMOS, true);
+            }
+            mystr += '            ' + ra + ');';
+            if (firstin)
+                outstr += '\n';
+            firstin = true;
+            outstr += mystr;
+        }
+    }
+    outstr += '\n    }';
+    outstr += "\n    return new Z80_opcode_functions(Z80_opcode_matrix.get(0), function(regs: z80_regs, pins: z80_pins): void { console.log('INVALID OPCODE');});";
+    outstr += '\n}'
+    outstr += '\n\nfor (let i = 0; i <= ' + num_opcodes + '; i++) {';
+    outstr += '\n    ' + output_name + '[i] = z80_get_opcode_function(i);';
+    outstr += '\n}\n'
+    return outstr;
 }
 
 function generate_z80_core(CMOS) {
