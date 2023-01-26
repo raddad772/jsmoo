@@ -17,9 +17,11 @@ class input_provider_t {
 			case 'nes':
 				this.setup_nes();
 				break;
+			case 'sms_as':
 			case 'sms':
 				this.setup_sms();
 				break;
+			case 'gg_as':
 			case 'gg':
 				this.setup_gg();
 				break;
@@ -45,9 +47,11 @@ class input_provider_t {
 
 	disconnect() {
 		switch(this.system_kind) {
+			case 'sms_as':
 			case 'sms':
 				this.disconnect_sms();
 				break;
+			case 'gg_as':
 			case 'gg':
 				this.disconnect_gg();
 				break;
@@ -353,6 +357,8 @@ function remove_as(w) {
 	if (w === 'gb_as') return 'gb';
 	if (w === 'gbc_as') return 'gbc';
 	if (w === 'nes_as') return 'nes';
+	if (w === 'gg_as') return 'gg';
+	if (w === 'sms_as') return 'sms';
 	if (w === 'ps1_as') return 'ps1';
 	return w;
 }
@@ -662,6 +668,10 @@ class global_player_t {
 
 	present_system(data) {
 		switch(this.system_kind) {
+			case 'sms_as':
+			case 'gg_as':
+				this.canvas_manager.set_size(this.tech_specs.x_resolution, this.tech_specs.y_resolution);
+				break;
 			case 'sms':
 				this.canvas_manager.set_size(this.tech_specs.x_resolution, data.bottom_rendered_line, this.tech_specs.xrw, this.tech_specs.xrh, 224);
 				break;
@@ -673,9 +683,11 @@ class global_player_t {
 			case 'nes':
 				NES_present(data, imgdata.data, buf, this.canvas_manager.correct_overscan, this.tech_specs.overscan);
 				break;
+			case 'gg_as':
 			case 'gg':
 				GG_present(data, imgdata.data, buf);
 				break;
+			case 'sms_as':
 			case 'sms':
 				SMS_present(data, imgdata.data, buf);
 				break;

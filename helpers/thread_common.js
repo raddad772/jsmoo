@@ -75,7 +75,9 @@ const NES_STR = 'nes';
 const NES_AS_STR = 'nes_as';
 const COMMODORE64_STR = 'c64';
 const GG_STR = 'gg';
+const GG_AS_STR = 'gg_as';
 const SMS_STR = 'sms';
+const SMS_AS_STR = 'sms_as';
 const GENESIS_STR = 'megadrive';
 const GB_STR = 'gb';
 const GB_AS_STR = 'gb_as';
@@ -92,10 +94,12 @@ const PS1_AS_STR = 'ps1_as';
 //const DEFAULT_SYSTEM = GB_AS_STR;
 //const DEFAULT_SYSTEM = GBC_STR;
 //const DEFAULT_SYSTEM = GG_STR;
+const DEFAULT_SYSTEM = GG_AS_STR;
+//const DEFAULT_SYSTEM = SMS_AS_STR;
 //const DEFAULT_SYSTEM = NES_STR;
 //const DEFAULT_SYSTEM = NES_AS_STR;
 //const DEFAULT_SYSTEM = PS1_STR;
-const DEFAULT_SYSTEM = PS1_AS_STR;
+//const DEFAULT_SYSTEM = PS1_AS_STR;
 
 
 const mutex_unlocked = 0;

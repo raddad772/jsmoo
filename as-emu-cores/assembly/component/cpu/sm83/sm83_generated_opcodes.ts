@@ -1,5 +1,5 @@
 import {SM83_opcode_functions, SM83_opcode_matrix, SM83_opcode_matrixCB, SM83_MAX_OPCODE, SM83_S_DECODE} from "../../../component/cpu/sm83/sm83_opcodes";
-import {SM83_pins_t, SM83_regs_t} from "../../../component/cpu/sm83/sm83";
+import {SM83_pins_t, SM83_regs_t} from "./sm83";
 import {mksigned8} from "../../../helpers/helpers"
 
 export var sm83_decoded_opcodes: Array<SM83_opcode_functions> = new Array<SM83_opcode_functions>(SM83_MAX_OPCODE+0xFF);

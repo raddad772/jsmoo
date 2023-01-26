@@ -31,6 +31,7 @@ class GB_timer {
     }
 
     SYSCLK_change(new_value) {
+        // of old-style counter. -2 for new-style
         // 00 = bit 9, lowest speed, /1024  4096 hz   & 0x200
         // 01 = bit 3,               /16  262144 hz   & 0x08
         // 10 = bit 5,               /64  65536 hz    & 0x20
@@ -38,16 +39,16 @@ class GB_timer {
         this.SYSCLK = new_value;
         let this_bit;
         switch(this.TAC & 3) {
-            case 0: // using bit 9
+            case 0: // using bit 7
                 this_bit = (this.SYSCLK >>> 7) & 1;
                 break;
-            case 3: // using bit 7
+            case 3: // using bit 5
                 this_bit = (this.SYSCLK >>> 5) & 1;
                 break;
-            case 2: // using bit 5
+            case 2: // using bit 3
                 this_bit = (this.SYSCLK >>> 3) & 1;
                 break;
-            case 1: // using bit 3
+            case 1: // using bit 1
                 this_bit = (this.SYSCLK >>> 1) & 1;
                 break;
         }

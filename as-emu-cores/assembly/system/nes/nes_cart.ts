@@ -9,7 +9,7 @@ import {NES_mapper_DXROM} from "./mappers/dxrom";
 import {NES_PPU_mirror_modes} from "./mappers/interface";
 import {NES_mapper_AXROM} from "./mappers/axrom";
 
-export class heapArray {
+export class heapArray8 {
 	ptr: usize = 0;
 	sz: u32 = 0;
 
@@ -67,7 +67,7 @@ export class NES_cart {
     }
 
     load_cart_from_RAM(ibuf: usize, sz: u32): bool {
-		let fil: heapArray = new heapArray(ibuf, sz);
+		let fil: heapArray8 = new heapArray8(ibuf, sz);
 		// @ts-ignore
 		if ((fil[0] !== 0x4E) || (fil[1] !== 0x45) || (fil[2] !== 0x53) || (fil[3] !== 0x1A)) {
 			console.log('Bad iNES header');
@@ -120,7 +120,7 @@ export class NES_cart {
         return true;
     }
 
-    read_ROM_RAM(inp: heapArray, offset: u32): void {
+    read_ROM_RAM(inp: heapArray8, offset: u32): void {
         this.PRG_ROM = new Uint8Array(this.header.prg_rom_size);
         this.CHR_ROM = new Uint8Array(this.header.chr_rom_size);
 		let p: u32 = 0;
@@ -141,7 +141,7 @@ export class NES_cart {
 		console.log('Read ' + this.CHR_ROM.byteLength.toString() + ' CHR ROM bytes');
     }
 
-    read_ines1_header(fil: heapArray): bool {
+    read_ines1_header(fil: heapArray8): bool {
 		console.log('iNES version 1 header found');
 		// @ts-ignore
 		this.header.prg_rom_size = 16384 * fil[4];
@@ -169,7 +169,7 @@ export class NES_cart {
 		return true;
 	}
 
-    read_ines2_header(fil: heapArray): bool {
+    read_ines2_header(fil: heapArray8): bool {
 		console.log('iNES version 2 header found');
 		// @ts-ignore
 		let prgrom_msb: u32 = fil[9] & 0x0F;

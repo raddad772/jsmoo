@@ -215,6 +215,7 @@ class js_wrapper_t {
 		console.log('SETTING SYSTEM', this.system_kind)
 		this.emu_wasm = false;
 		this.emu_wasm_helper = false;
+		let uar;
 		switch(this.system_kind) {
 			case 'gg':
 				this.system = new SMSGG(bios, SMSGG_variants.GG, REGION.NTSC);
@@ -233,12 +234,23 @@ class js_wrapper_t {
 				this.emu_wasm = true;
             	this.as_wrapper.wasm.gp_set_system(this.as_wrapper.global_player, to);
 				break;
+			case 'gg_as':
+				this.emu_wasm = true;
+				this.as_wrapper.wasm.gp_set_system(this.as_wrapper.global_player, to);
+				break;
+			case 'sms_as':
+				this.emu_wasm = true;
+				this.as_wrapper.wasm.gp_set_system(this.as_wrapper.global_player, to);
+				uar = new Uint8Array(bios.BIOS);
+				this.as_wrapper.copy_to_input_buffer(uar)
+				this.as_wrapper.wasm.gp_load_BIOS(this.as_wrapper.global_player, uar.length);
+				break;
 			case 'ps1_as':
 				this.emu_wasm = true;
 				this.emu_wasm_has_helper = true;
 				this.as_wrapper.wasm.gp_set_system(this.as_wrapper.global_player, to);
 				this.emu_wasm_helper = new PS1_helper(this);
-				let uar = new Uint8Array(bios.BIOS);
+				uar = new Uint8Array(bios.BIOS);
 				this.as_wrapper.copy_to_input_buffer(uar)
 				this.as_wrapper.wasm.gp_load_BIOS(this.as_wrapper.global_player, uar.length);
 				break;

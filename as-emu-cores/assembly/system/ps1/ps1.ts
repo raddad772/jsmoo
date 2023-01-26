@@ -310,7 +310,6 @@ export class PS1 implements systemEmulator {
     // Closely followed code from https://github.com/RobertPeip/FPSXApp/blob/main/Project/FPSXApp/Memory.cpp#L71-L132
     // With permission from author to not be GPL3'd
     sideload_EXE(buf: usize, sz: u32): void {
-        //return;
         let r = new heapArray2(buf, sz);
         // 80 83 45 88 32 69 88 69
         if ((r.getUint8(0) === 80) && (r.getUint8(1) === 83) && (r.getUint8(2) === 45) &&
@@ -386,7 +385,7 @@ export class PS1 implements systemEmulator {
 
     run_cycles(howmany: i32): void {
         this.cycles_left += <i64>howmany;
-        let block = 250;
+        let block = 20;
         while (this.cycles_left > 0) {
             if (block < this.cycles_left) block = <i32>this.cycles_left;
             run_controllers(this, block);

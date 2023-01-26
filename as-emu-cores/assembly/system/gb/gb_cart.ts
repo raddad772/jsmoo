@@ -3,7 +3,7 @@
 import {GB_bus, GB_clock, GBmappernull} from "./gb";
 import {GB_variants} from "./gb_common";
 import {GB_mapper} from "./mappers/interface";
-import {heapArray} from "../nes/nes_cart";
+import {heapArray8} from "../nes/nes_cart";
 import {GB_mapper_none} from "./mappers/nomapper";
 import {hex2} from "../../helpers/helpers";
 import {GB_mapper_MBC1} from "./mappers/mbc1";
@@ -80,7 +80,7 @@ export class GB_cart {
     }
 
     load_ROM_from_RAM(ibuf: usize, sz: u32): void {
-        let inp: heapArray = new heapArray(ibuf, sz);
+        let inp: heapArray8 = new heapArray8(ibuf, sz);
 
         // Look for header
         // @ts-ignore
@@ -274,7 +274,7 @@ export class GB_cart {
         this.setup_mapper();
     }
 
-    read_ROM(inp: heapArray): void {
+    read_ROM(inp: heapArray8): void {
 		//this.ROM.set(inp.slice(0, this.header.ROM_size));
         for (let i: u32 = 0, k: u32 = this.header.ROM_size; i < k; i++) {
             // @ts-ignore

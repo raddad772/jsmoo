@@ -468,6 +468,11 @@ class PS1_GPU_thread {
                     this.current_ins = this.cmd64_rect_opaque_flat_textured.bind(this)
                     this.cmd_arg_num = 4;
                     break;
+                case 0x6A: // Solid 1x1 rect
+                case 0x68:
+                    this.current_ins = this.cmd68_rect_1x1.bind(this);
+                    this.cmd_arg_num = 2;
+                    break;
                 case 0x75: // Rectangle, 8x8, opaque, textured
                     this.current_ins = this.cmd75_rect_opaque_flat_textured.bind(this);
                     this.cmd_arg_num = 3;
@@ -1262,6 +1267,13 @@ class PS1_GPU_thread {
         this.draw_flat_shaded_triangle(this.v1, this.v2, this.v3);
         //rgba, rgbb, rgbc
 
+    }
+
+    cmd68_rect_1x1() {
+        let y = (this.cmd[1] & 0xFFFF0000) >> 16;
+        let x = ((this.cmd[1] & 0xFFFF) << 16) >> 16;
+        let color = BGR24to15(this.cmd[0] & 0xFFFFFF);
+        this.setpix(y, x, color);
     }
 
     cmd64_rect_opaque_flat_textured() {
