@@ -214,20 +214,20 @@ class SM83_t {
                 if (mask & 1) { // VBLANK interrupt
                     imask = 0xFE;
                     this.regs.IV = 0x40;
-                    console.log('VBLANK IRQ', this.clock.master_frame, this.clock.ly, this.clock.lx);
+                    //console.log('VBLANK IRQ', this.clock.master_frame, this.clock.ly, this.clock.lx);
                 } else if (mask & 2) { // STAT interrupt
                     //if (this.bus.ppu.enabled)
                     imask = 0xFD;
                     this.regs.IV = 0x48;
-                    console.log('STAT IRQ!', this.clock.master_frame, this.clock.ly);
+                    //console.log('STAT IRQ!', this.clock.master_frame, this.clock.ly);
                 } else if (mask & 4) { // Timer interrupt
                     imask = 0xFB;
                     this.regs.IV = 0x50;
-                    console.log('TIMER IRQ');
+                    //console.log('TIMER IRQ');
                 } else if (mask & 8) { // Serial interrupt
                     imask = 0xF7;
                     this.regs.IV = 0x58;
-                    console.log('SERIAL IRQ');
+                    //console.log('SERIAL IRQ');
                 } else if (mask & 0x10) { // Joypad interrupt
                     imask = 0xEF;
                     this.regs.IV = 0x60;

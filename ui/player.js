@@ -133,11 +133,12 @@ class input_provider_t {
 				case 'p2':
 					imap = this.input_buffer2;
 					break;
+				case 'console':
 				case 0:
 					imap = this.input_buffer1;
 					break;
 				default:
-					console.log('WHAT!?!?!?', uber);
+					console.log('WHAT!?!?!?', km.uber);
 					break;
 			}
 

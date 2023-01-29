@@ -7,6 +7,7 @@ import {SN76489} from "../../component/audio/sn76489/sn76489";
 import {D_RESOURCE_TYPES, dbg} from "../../helpers/debug";
 import {framevars_t} from "../../glue/global_player";
 import {bigstr_output} from "../../component/cpu/r3000/r3000";
+import {hex4} from "../../helpers/helpers";
 
 export enum SMSGG_variants {
     SMS1,
@@ -165,11 +166,14 @@ export class SMSGG implements systemEmulator {
     display_enabled: boolean = true;
     framevars: framevars_t = new framevars_t();
 
+    outbuf: usize = 0
+
     constructor(variant: SMSGG_variants, region: REGION, out_buffer: usize) {
         //this.bios = bios;
         this.variant = variant;
         this.region = region
         let clock = new SMSGG_clock(variant, region);
+        this.outbuf = out_buffer
 
         let controller1_in = new smspad_inputs();
 
@@ -366,7 +370,11 @@ export class SMSGG implements systemEmulator {
             this.finish_scanline();
             if (dbg.do_break) break;
         }
+        console.log(hex4(this.cpu.regs.PC));
         // return {buffer_num: this.vdp.last_used_buffer, bottom_rendered_line: this.clock.timing.bottom_rendered_line+1, sound_buffer: this.sn76489.output.get_buffer()};
+        /*for (let i = 0; i < (256*240*2); i++) {
+            store<u8>(this.outbuf+i, 0xFF);
+        }*/
         return 0;
     }
 

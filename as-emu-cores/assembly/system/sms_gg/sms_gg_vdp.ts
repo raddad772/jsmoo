@@ -67,7 +67,7 @@ export class SMSGG_VDP {
     mode: SMSGG_VDP_modes = SMSGG_VDP_modes.SMS;
     out_buffer: usize
 
-    objects: StaticArray<SMSGG_object> = new StaticArray<SMSGG_object>(8);
+    objects: StaticArray<SMSGG_object> = new StaticArray<SMSGG_object>(12);
 
     io: SMSGG_VDP_io = new SMSGG_VDP_io();
     latch: SMSGG_VDP_latch = new SMSGG_VDP_latch();
@@ -101,7 +101,7 @@ export class SMSGG_VDP {
                 break;
         }
 
-        for (let i = 0; i < 8; i++) {
+        for (let i = 0; i < 12; i++) {
             this.objects[i] = new SMSGG_object();
         }
     }
@@ -110,7 +110,7 @@ export class SMSGG_VDP {
         let hlimit = (8 << (this.io.sprite_zoom + this.io.sprite_size)) - 1;
         let vlimit = hlimit;
         for (let i = 0; i < 8; i++) {
-            let o = this.objects[i];
+            let o = unchecked(this.objects[i]);
             if (o.y === 0xD0) continue;
             if (<i32>this.clock.hpos < o.x) continue;
             if (<i32>this.clock.hpos > (o.x + hlimit)) continue;
@@ -294,9 +294,6 @@ export class SMSGG_VDP {
     }
 
     sprite_setup(): void {
-        for (let i = 0; i < 8; i++) {
-            this.objects[i].y = 0xFF;
-        }
         let valid = 0;
         let vlimit = (8 << (this.io.sprite_zoom + this.io.sprite_size)) - 1;
         for (let i = 0; i < 8; i++) unchecked(this.objects[i].y = 0xD0);
@@ -375,7 +372,7 @@ export class SMSGG_VDP {
             }
         }
 
-        store<u16>(this.out_buffer+(this.doi*this.bm), color);
+        //store<u16>(this.out_buffer+(this.doi*this.bm), color);
         this.doi++;
     }
 
@@ -562,7 +559,8 @@ export class SMSGG_VDP {
                 if ((this.io.address & 1) === 0)
                     this.latch.cram = val;
                 else {
-                    unchecked(this.CRAM[this.io.address >>> 1] = <u16>(((val & 0x0F) << 8) | this.latch.cram));
+                    console.log(this.io.address.toString());
+                    unchecked(this.CRAM[(this.io.address >>> 1) & 31] = <u16>(((val & 0x0F) << 8) | this.latch.cram));
                 }
 
             }

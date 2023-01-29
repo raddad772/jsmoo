@@ -693,9 +693,16 @@ class Z80_switchgen {
     }
 
     CP(x, y) {
-        this.addl('let x = ' + x + ';');
-        this.addl('let y = ' + y + ';');
-        this.addl('let z = x - y;');
+        if (GENTARGET === 'as') {
+            this.addl('let x: i32 = <i32>' + x + ';');
+            this.addl('let y: i32 = <i32>' + y + ';');
+            this.addl('let z: i32 = x - y;');
+        }
+        else {
+            this.addl('let x = ' + x + ';');
+            this.addl('let y = ' + y + ';');
+            this.addl('let z = x - y;');
+        }
 
         this.addl('regs.F.C = +(z < 0);');
         this.addl('regs.F.N = 1;');
@@ -1043,19 +1050,34 @@ class Z80_switchgen {
 
 
     SUB(x, y, c, out=null, do_declare=true) {
-        if (do_declare) {
-            this.addl('let x = (' + x + ');');
-            this.addl('let y = (' + y + ');');
-            this.addl('let c = +(' + c + ');');
-            this.addl('let z = (x - y - c) & 0x1FF;');
+        if (GENTARGET === 'as') {
+            if (do_declare) {
+                this.addl('let x: i32 = (<i32>' + x + ');');
+                this.addl('let y: i32 = (<i32>' + y + ');');
+                this.addl('let c = <i32>(+(' + c + '));');
+                this.addl('let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;');
+            }
+            else {
+                this.addl('x = (' + x + ');');
+                this.addl('y = (' + y + ');');
+                this.addl('c = +(' + c + ');');
+                this.addl('z = (x - y - c) & 0x1FF;');
+            }
         }
         else {
-            this.addl('x = (' + x + ');');
-            this.addl('y = (' + y + ');');
-            this.addl('c = +(' + c + ');');
-            this.addl('z = (x - y - c) & 0x1FF;');
+            if (do_declare) {
+                this.addl('let x = (' + x + ');');
+                this.addl('let y = (' + y + ');');
+                this.addl('let c = +(' + c + ');');
+                this.addl('let z = (x - y - c) & 0x1FF;');
+            }
+            else {
+                this.addl('x = (' + x + ');');
+                this.addl('y = (' + y + ');');
+                this.addl('c = +(' + c + ');');
+                this.addl('z = (x - y - c) & 0x1FF;');
+            }
         }
-
         this.addl('regs.F.C = (z & 0x100) >>> 8;');
         this.addl('regs.F.N = 1;');
         this.addl('regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;');
@@ -1165,7 +1187,12 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS, as=fa
             // case 1 should skip 6-8 of them
             // case 2 should skip none of them
             // but we've already used 1.
-            ag.addl('let wait;')
+            if (GENTARGET === 'as') {
+                ag.addl('let wait: u32;')
+            }
+            else {
+                ag.addl('let wait;')
+            }
             ag.addl('switch(pins.IRQ_maskable ? regs.IM : 1) {');
             ag.addl('case 0:');
             ag.addl('    regs.t[0] = 0;')
@@ -1230,7 +1257,12 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS, as=fa
             argL = ag.readregL(arg1);
             argH = ag.readregH(arg1);
             ag.Q(1);
-            ag.psaddl('let x, y, z;');
+            if (GENTARGET === 'as') {
+                ag.psaddl('let x: u32, y: u32, z: u32;');
+            }
+            else {
+                ag.psaddl('let x, y, z;');
+            }
             ag.addcycles(4);
             ag.addl('regs.WZ = (((regs.H << 8) | regs.L) + 1) & 0xFFFF;');
             ag.ADD('regs.L', argL, 'regs.F.C', 'regs.L', false);
@@ -1258,7 +1290,12 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS, as=fa
             argL = ag.readregL(arg1);
             ag.addl('// SUB was ' + sub);
             ag.Q(1);
-            ag.psaddl('let x, y, z;');
+            if (GENTARGET === 'as') {
+                ag.psaddl('let x: u32, y: u32, z: u32;');
+            }
+            else {
+                ag.psaddl('let x, y, z;');
+            }
             switch(sub) {
                 case 'IX':
                     HLH = '((regs.IX & 0xFF00) >>> 8)';
@@ -2073,7 +2110,13 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS, as=fa
             break;
         case Z80_MN.SBC_hl_rr:  //n16&
             ag.Q(1);
-            ag.psaddl('let x, y, z, c;');
+            if (GENTARGET === 'as') {
+                ag.psaddl('let x: i32, y: i32, z: i32, c: i32;');
+            }
+            else {
+                ag.psaddl('let x, y, z, c;');
+
+            }
 
             ag.addl('regs.TA = ' + ag.readreg('HL') + ';');
             ag.addl('regs.WZ = (regs.TA + 1) & 0xFFFF;');
@@ -2291,7 +2334,7 @@ function generate_z80_core_as(CMOS) {
     let num_opcodes = 0;
     for (let p in Z80_prefixes) {
         let prfx = Z80_prefixes[p];
-        for (let i = 0; i < Z80_MAX_OPCODE; i++) {
+        for (let i = 0; i <= Z80_MAX_OPCODE; i++) {
             num_opcodes++;
             let matrix_code = Z80_prefix_to_codemap[prfx] + i;
             let mystr = indent + 'case ' + hex0x2(matrix_code) + ': return new Z80_opcode_functions(';
