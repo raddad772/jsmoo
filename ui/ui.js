@@ -442,6 +442,7 @@ async function main() {
 }
 
 after_js = main;
+//after_js = AS_test_pt_z80;
 function uie_input_focus() {
 	keyboard_input.input_capture = false;
 }

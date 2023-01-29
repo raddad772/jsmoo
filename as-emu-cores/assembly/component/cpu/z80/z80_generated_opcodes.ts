@@ -251,7 +251,7 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
         });
         case 0x09: return new Z80_opcode_functions(Z80_opcode_matrix.get(0x09), // 09
             function(regs: z80_regs, pins: z80_pins): void { // ADD_hl_rr BC
-            let x, y, z;
+            let x: u32, y: u32, z: u32;
             switch(regs.TCU) {
                 case 1: // Adding 4 cycles
                     // SUB was HL
@@ -773,7 +773,7 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
         });
         case 0x19: return new Z80_opcode_functions(Z80_opcode_matrix.get(0x19), // 19
             function(regs: z80_regs, pins: z80_pins): void { // ADD_hl_rr DE
-            let x, y, z;
+            let x: u32, y: u32, z: u32;
             switch(regs.TCU) {
                 case 1: // Adding 4 cycles
                     // SUB was HL
@@ -1327,7 +1327,7 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
         });
         case 0x29: return new Z80_opcode_functions(Z80_opcode_matrix.get(0x29), // 29
             function(regs: z80_regs, pins: z80_pins): void { // ADD_hl_rr HL
-            let x, y, z;
+            let x: u32, y: u32, z: u32;
             switch(regs.TCU) {
                 case 1: // Adding 4 cycles
                     // SUB was HL
@@ -1951,7 +1951,7 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
         });
         case 0x39: return new Z80_opcode_functions(Z80_opcode_matrix.get(0x39), // 39
             function(regs: z80_regs, pins: z80_pins): void { // ADD_hl_rr SP
-            let x, y, z;
+            let x: u32, y: u32, z: u32;
             switch(regs.TCU) {
                 case 1: // Adding 4 cycles
                     // SUB was HL
@@ -4067,10 +4067,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.B);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.B);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -4098,10 +4098,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.C);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.C);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -4129,10 +4129,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.D);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.D);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -4160,10 +4160,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.E);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.E);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -4191,10 +4191,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.H);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.H);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -4222,10 +4222,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.L);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.L);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -4262,10 +4262,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
                 case 3: // Read end/latch
                     regs.TR = pins.D;
                     pins.RD = 0; pins.MRQ = 0;
-                    let x = (regs.A);
-                    let y = (regs.TR);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.TR);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -4295,10 +4295,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.A);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.A);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -4326,10 +4326,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.B);
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.B);
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -4357,10 +4357,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.C);
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.C);
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -4388,10 +4388,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.D);
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.D);
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -4419,10 +4419,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.E);
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.E);
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -4450,10 +4450,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.H);
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.H);
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -4481,10 +4481,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.L);
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.L);
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -4521,10 +4521,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
                 case 3: // Read end/latch
                     regs.TR = pins.D;
                     pins.RD = 0; pins.MRQ = 0;
-                    let x = (regs.A);
-                    let y = (regs.TR);
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.TR);
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -4554,10 +4554,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.A);
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.A);
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -5250,9 +5250,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = regs.A;
-                    let y = regs.B;
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>regs.B;
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -5279,9 +5279,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = regs.A;
-                    let y = regs.C;
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>regs.C;
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -5308,9 +5308,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = regs.A;
-                    let y = regs.D;
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>regs.D;
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -5337,9 +5337,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = regs.A;
-                    let y = regs.E;
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>regs.E;
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -5366,9 +5366,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = regs.A;
-                    let y = regs.H;
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>regs.H;
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -5395,9 +5395,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = regs.A;
-                    let y = regs.L;
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>regs.L;
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -5433,9 +5433,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
                 case 3: // Read end/latch
                     regs.TR = pins.D;
                     pins.RD = 0; pins.MRQ = 0;
-                    let x = regs.A;
-                    let y = regs.TR;
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>regs.TR;
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -5464,9 +5464,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = regs.A;
-                    let y = regs.A;
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>regs.A;
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -6511,10 +6511,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
                     regs.TR = pins.D;
                     pins.RD = 0; pins.MRQ = 0;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
-                    let x = (regs.A);
-                    let y = (regs.TR);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.TR);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -6820,10 +6820,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
                     regs.TR = pins.D;
                     pins.RD = 0; pins.MRQ = 0;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
-                    let x = (regs.A);
-                    let y = (regs.TR);
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.TR);
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -8122,9 +8122,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
                     regs.TR = pins.D;
                     pins.RD = 0; pins.MRQ = 0;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
-                    let x = regs.A;
-                    let y = regs.TR;
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>regs.TR;
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -8219,7 +8219,7 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
                     break;
                 case 7: // write end
                     pins.WR = 0; pins.MRQ = 0;
-                    let wait;
+                    let wait: u32;
                     switch(pins.IRQ_maskable ? regs.IM : 1) {
                     case 0:
                         regs.t[0] = 0;
@@ -8296,10 +8296,35 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
                     break;
             }
         });
+        case 0x101: return new Z80_opcode_functions(Z80_opcode_matrix.get(0x101), // 101
+            function(regs: z80_regs, pins: z80_pins): void { // RESET
+            switch(regs.TCU) {
+                case 1:
+                    regs.IFF1 = regs.IFF2 = 0; // disable interrupt
+                    regs.IM = 0;
+                    regs.I = 0;
+                    regs.R = 0;
+                    regs.PC = 0;
+                    // Following is auto-generated code for instruction finish
+                    break;
+                case 2: // cleanup_custom
+                    pins.Addr = regs.PC;
+                    regs.PC = (regs.PC + 1) & 0xFFFF;
+                    regs.TCU = 0;
+                    regs.EI = 0;
+                    regs.P = 0;
+                    regs.prefix = 0x00;
+                    regs.rprefix = Z80P.HL;
+                    regs.IR = Z80_S_DECODE;
+                    regs.poll_IRQ = true;
+                    break;
+            }
+        });
         case 0x102: return new Z80_opcode_functions(Z80_CB_opcode_matrix.get(0x00), // CB 00
             function(regs: z80_regs, pins: z80_pins): void { // RLC_r B
             switch(regs.TCU) {
                 case 1: // cleanup_custom
+                    console.log('CB00');
                     regs.Q = 1;
                     let x = regs.B;
                     x = ((x << 1) | (x >>> 7)) & 0xFF;
@@ -8329,6 +8354,7 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             function(regs: z80_regs, pins: z80_pins): void { // RLC_r C
             switch(regs.TCU) {
                 case 1: // cleanup_custom
+                    console.log('CB01');
                     regs.Q = 1;
                     let x = regs.C;
                     x = ((x << 1) | (x >>> 7)) & 0xFF;
@@ -14971,6 +14997,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
         case 0x202: return new Z80_opcode_functions(Z80_opcode_matrix.get(0x00), // 00
             function(regs: z80_regs, pins: z80_pins): void { // undefined
         });
+        case 0x203: return new Z80_opcode_functions(Z80_opcode_matrix.get(0x00), // 00
+            function(regs: z80_regs, pins: z80_pins): void { // undefined
+        });
         case 0x204: return new Z80_opcode_functions(Z80_opcode_matrix.get(0x00), // DD 00
             function(regs: z80_regs, pins: z80_pins): void { // NOP
             switch(regs.TCU) {
@@ -15216,7 +15245,7 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
         });
         case 0x20D: return new Z80_opcode_functions(Z80_opcode_matrix.get(0x09), // DD 09
             function(regs: z80_regs, pins: z80_pins): void { // ADD_hl_rr BC
-            let x, y, z;
+            let x: u32, y: u32, z: u32;
             switch(regs.TCU) {
                 case 1: // Adding 4 cycles
                     // SUB was IX
@@ -15737,7 +15766,7 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
         });
         case 0x21D: return new Z80_opcode_functions(Z80_opcode_matrix.get(0x19), // DD 19
             function(regs: z80_regs, pins: z80_pins): void { // ADD_hl_rr DE
-            let x, y, z;
+            let x: u32, y: u32, z: u32;
             switch(regs.TCU) {
                 case 1: // Adding 4 cycles
                     // SUB was IX
@@ -16288,7 +16317,7 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
         });
         case 0x22D: return new Z80_opcode_functions(Z80_opcode_matrix.get(0x29), // DD 29
             function(regs: z80_regs, pins: z80_pins): void { // ADD_hl_rr HL
-            let x, y, z;
+            let x: u32, y: u32, z: u32;
             switch(regs.TCU) {
                 case 1: // Adding 4 cycles
                     // SUB was IX
@@ -16970,7 +16999,7 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
         });
         case 0x23D: return new Z80_opcode_functions(Z80_opcode_matrix.get(0x39), // DD 39
             function(regs: z80_regs, pins: z80_pins): void { // ADD_hl_rr SP
-            let x, y, z;
+            let x: u32, y: u32, z: u32;
             switch(regs.TCU) {
                 case 1: // Adding 4 cycles
                     // SUB was IX
@@ -19437,10 +19466,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.B);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.B);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -19468,10 +19497,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.C);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.C);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -19499,10 +19528,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.D);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.D);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -19530,10 +19559,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.E);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.E);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -19561,10 +19590,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (((regs.IX & 0xFF00) >>> 8));
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>((regs.IX & 0xFF00) >>> 8));
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -19592,10 +19621,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = ((regs.IX & 0xFF));
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>(regs.IX & 0xFF));
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -19654,10 +19683,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
                 case 11: // Read end/latch
                     regs.TR = pins.D;
                     pins.RD = 0; pins.MRQ = 0;
-                    let x = (regs.A);
-                    let y = (regs.TR);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.TR);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -19687,10 +19716,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.A);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.A);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -19718,10 +19747,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.B);
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.B);
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -19749,10 +19778,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.C);
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.C);
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -19780,10 +19809,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.D);
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.D);
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -19811,10 +19840,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.E);
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.E);
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -19842,10 +19871,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (((regs.IX & 0xFF00) >>> 8));
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>((regs.IX & 0xFF00) >>> 8));
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -19873,10 +19902,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = ((regs.IX & 0xFF));
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>(regs.IX & 0xFF));
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -19935,10 +19964,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
                 case 11: // Read end/latch
                     regs.TR = pins.D;
                     pins.RD = 0; pins.MRQ = 0;
-                    let x = (regs.A);
-                    let y = (regs.TR);
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.TR);
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -19968,10 +19997,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.A);
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.A);
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -20730,9 +20759,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = regs.A;
-                    let y = regs.B;
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>regs.B;
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -20759,9 +20788,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = regs.A;
-                    let y = regs.C;
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>regs.C;
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -20788,9 +20817,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = regs.A;
-                    let y = regs.D;
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>regs.D;
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -20817,9 +20846,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = regs.A;
-                    let y = regs.E;
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>regs.E;
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -20846,9 +20875,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = regs.A;
-                    let y = ((regs.IX & 0xFF00) >>> 8);
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>((regs.IX & 0xFF00) >>> 8);
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -20875,9 +20904,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = regs.A;
-                    let y = (regs.IX & 0xFF);
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>(regs.IX & 0xFF);
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -20935,9 +20964,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
                 case 11: // Read end/latch
                     regs.TR = pins.D;
                     pins.RD = 0; pins.MRQ = 0;
-                    let x = regs.A;
-                    let y = regs.TR;
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>regs.TR;
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -20966,9 +20995,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = regs.A;
-                    let y = regs.A;
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>regs.A;
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -22013,10 +22042,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
                     regs.TR = pins.D;
                     pins.RD = 0; pins.MRQ = 0;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
-                    let x = (regs.A);
-                    let y = (regs.TR);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.TR);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -22322,10 +22351,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
                     regs.TR = pins.D;
                     pins.RD = 0; pins.MRQ = 0;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
-                    let x = (regs.A);
-                    let y = (regs.TR);
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.TR);
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -23622,9 +23651,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
                     regs.TR = pins.D;
                     pins.RD = 0; pins.MRQ = 0;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
-                    let x = regs.A;
-                    let y = regs.TR;
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>regs.TR;
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -23719,7 +23748,7 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
                     break;
                 case 7: // write end
                     pins.WR = 0; pins.MRQ = 0;
-                    let wait;
+                    let wait: u32;
                     switch(pins.IRQ_maskable ? regs.IM : 1) {
                     case 0:
                         regs.t[0] = 0;
@@ -23784,6 +23813,30 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
                     // Following is auto-generated code for instruction finish
                     break;
                 case 20: // cleanup_custom
+                    pins.Addr = regs.PC;
+                    regs.PC = (regs.PC + 1) & 0xFFFF;
+                    regs.TCU = 0;
+                    regs.EI = 0;
+                    regs.P = 0;
+                    regs.prefix = 0x00;
+                    regs.rprefix = Z80P.HL;
+                    regs.IR = Z80_S_DECODE;
+                    regs.poll_IRQ = true;
+                    break;
+            }
+        });
+        case 0x305: return new Z80_opcode_functions(Z80_opcode_matrix.get(0x101), // DD 101
+            function(regs: z80_regs, pins: z80_pins): void { // RESET
+            switch(regs.TCU) {
+                case 1:
+                    regs.IFF1 = regs.IFF2 = 0; // disable interrupt
+                    regs.IM = 0;
+                    regs.I = 0;
+                    regs.R = 0;
+                    regs.PC = 0;
+                    // Following is auto-generated code for instruction finish
+                    break;
+                case 2: // cleanup_custom
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     regs.TCU = 0;
@@ -24064,7 +24117,7 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
         });
         case 0x348: return new Z80_opcode_functions(Z80_ED_opcode_matrix.get(0x42), // ED 42
             function(regs: z80_regs, pins: z80_pins): void { // SBC_hl_rr BC
-            let x, y, z, c;
+            let x: i32, y: i32, z: i32, c: i32;
             switch(regs.TCU) {
                 case 1: // Adding 4 cycles
                     regs.Q = 1;
@@ -24193,10 +24246,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (0);
-                    let y = (regs.A);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>0);
+                    let y: i32 = (<i32>regs.A);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -24379,7 +24432,7 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
         });
         case 0x350: return new Z80_opcode_functions(Z80_ED_opcode_matrix.get(0x4A), // ED 4A
             function(regs: z80_regs, pins: z80_pins): void { // ADC_hl_rr BC
-            let x, y, z;
+            let x: u32, y: u32, z: u32;
             switch(regs.TCU) {
                 case 1: // Adding 4 cycles
                     regs.Q = 1;
@@ -24506,10 +24559,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (0);
-                    let y = (regs.A);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>0);
+                    let y: i32 = (<i32>regs.A);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -24691,7 +24744,7 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
         });
         case 0x358: return new Z80_opcode_functions(Z80_ED_opcode_matrix.get(0x52), // ED 52
             function(regs: z80_regs, pins: z80_pins): void { // SBC_hl_rr DE
-            let x, y, z, c;
+            let x: i32, y: i32, z: i32, c: i32;
             switch(regs.TCU) {
                 case 1: // Adding 4 cycles
                     regs.Q = 1;
@@ -24820,10 +24873,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (0);
-                    let y = (regs.A);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>0);
+                    let y: i32 = (<i32>regs.A);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -25013,7 +25066,7 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
         });
         case 0x360: return new Z80_opcode_functions(Z80_ED_opcode_matrix.get(0x5A), // ED 5A
             function(regs: z80_regs, pins: z80_pins): void { // ADC_hl_rr DE
-            let x, y, z;
+            let x: u32, y: u32, z: u32;
             switch(regs.TCU) {
                 case 1: // Adding 4 cycles
                     regs.Q = 1;
@@ -25140,10 +25193,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (0);
-                    let y = (regs.A);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>0);
+                    let y: i32 = (<i32>regs.A);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -25333,7 +25386,7 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
         });
         case 0x368: return new Z80_opcode_functions(Z80_ED_opcode_matrix.get(0x62), // ED 62
             function(regs: z80_regs, pins: z80_pins): void { // SBC_hl_rr HL
-            let x, y, z, c;
+            let x: i32, y: i32, z: i32, c: i32;
             switch(regs.TCU) {
                 case 1: // Adding 4 cycles
                     regs.Q = 1;
@@ -25462,10 +25515,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (0);
-                    let y = (regs.A);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>0);
+                    let y: i32 = (<i32>regs.A);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -25681,7 +25734,7 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
         });
         case 0x370: return new Z80_opcode_functions(Z80_ED_opcode_matrix.get(0x6A), // ED 6A
             function(regs: z80_regs, pins: z80_pins): void { // ADC_hl_rr HL
-            let x, y, z;
+            let x: u32, y: u32, z: u32;
             switch(regs.TCU) {
                 case 1: // Adding 4 cycles
                     regs.Q = 1;
@@ -25808,10 +25861,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (0);
-                    let y = (regs.A);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>0);
+                    let y: i32 = (<i32>regs.A);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -26025,7 +26078,7 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
         });
         case 0x378: return new Z80_opcode_functions(Z80_ED_opcode_matrix.get(0x72), // ED 72
             function(regs: z80_regs, pins: z80_pins): void { // SBC_hl_rr SP
-            let x, y, z, c;
+            let x: i32, y: i32, z: i32, c: i32;
             switch(regs.TCU) {
                 case 1: // Adding 4 cycles
                     regs.Q = 1;
@@ -26154,10 +26207,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (0);
-                    let y = (regs.A);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>0);
+                    let y: i32 = (<i32>regs.A);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -26336,7 +26389,7 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
         });
         case 0x380: return new Z80_opcode_functions(Z80_ED_opcode_matrix.get(0x7A), // ED 7A
             function(regs: z80_regs, pins: z80_pins): void { // ADC_hl_rr SP
-            let x, y, z;
+            let x: u32, y: u32, z: u32;
             switch(regs.TCU) {
                 case 1: // Adding 4 cycles
                     regs.Q = 1;
@@ -26463,10 +26516,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (0);
-                    let y = (regs.A);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>0);
+                    let y: i32 = (<i32>regs.A);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -27999,6 +28052,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
         case 0x406: return new Z80_opcode_functions(Z80_opcode_matrix.get(0x00), // 00
             function(regs: z80_regs, pins: z80_pins): void { // undefined
         });
+        case 0x407: return new Z80_opcode_functions(Z80_opcode_matrix.get(0x00), // 00
+            function(regs: z80_regs, pins: z80_pins): void { // undefined
+        });
         case 0x408: return new Z80_opcode_functions(Z80_opcode_matrix.get(0x00), // FD 00
             function(regs: z80_regs, pins: z80_pins): void { // NOP
             switch(regs.TCU) {
@@ -28244,7 +28300,7 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
         });
         case 0x411: return new Z80_opcode_functions(Z80_opcode_matrix.get(0x09), // FD 09
             function(regs: z80_regs, pins: z80_pins): void { // ADD_hl_rr BC
-            let x, y, z;
+            let x: u32, y: u32, z: u32;
             switch(regs.TCU) {
                 case 1: // Adding 4 cycles
                     // SUB was IY
@@ -28765,7 +28821,7 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
         });
         case 0x421: return new Z80_opcode_functions(Z80_opcode_matrix.get(0x19), // FD 19
             function(regs: z80_regs, pins: z80_pins): void { // ADD_hl_rr DE
-            let x, y, z;
+            let x: u32, y: u32, z: u32;
             switch(regs.TCU) {
                 case 1: // Adding 4 cycles
                     // SUB was IY
@@ -29316,7 +29372,7 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
         });
         case 0x431: return new Z80_opcode_functions(Z80_opcode_matrix.get(0x29), // FD 29
             function(regs: z80_regs, pins: z80_pins): void { // ADD_hl_rr HL
-            let x, y, z;
+            let x: u32, y: u32, z: u32;
             switch(regs.TCU) {
                 case 1: // Adding 4 cycles
                     // SUB was IY
@@ -29998,7 +30054,7 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
         });
         case 0x441: return new Z80_opcode_functions(Z80_opcode_matrix.get(0x39), // FD 39
             function(regs: z80_regs, pins: z80_pins): void { // ADD_hl_rr SP
-            let x, y, z;
+            let x: u32, y: u32, z: u32;
             switch(regs.TCU) {
                 case 1: // Adding 4 cycles
                     // SUB was IY
@@ -32465,10 +32521,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.B);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.B);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -32496,10 +32552,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.C);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.C);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -32527,10 +32583,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.D);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.D);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -32558,10 +32614,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.E);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.E);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -32589,10 +32645,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (((regs.IY & 0xFF00) >>> 8));
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>((regs.IY & 0xFF00) >>> 8));
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -32620,10 +32676,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = ((regs.IY & 0xFF));
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>(regs.IY & 0xFF));
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -32682,10 +32738,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
                 case 11: // Read end/latch
                     regs.TR = pins.D;
                     pins.RD = 0; pins.MRQ = 0;
-                    let x = (regs.A);
-                    let y = (regs.TR);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.TR);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -32715,10 +32771,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.A);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.A);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -32746,10 +32802,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.B);
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.B);
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -32777,10 +32833,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.C);
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.C);
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -32808,10 +32864,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.D);
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.D);
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -32839,10 +32895,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.E);
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.E);
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -32870,10 +32926,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (((regs.IY & 0xFF00) >>> 8));
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>((regs.IY & 0xFF00) >>> 8));
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -32901,10 +32957,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = ((regs.IY & 0xFF));
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>(regs.IY & 0xFF));
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -32963,10 +33019,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
                 case 11: // Read end/latch
                     regs.TR = pins.D;
                     pins.RD = 0; pins.MRQ = 0;
-                    let x = (regs.A);
-                    let y = (regs.TR);
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.TR);
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -32996,10 +33052,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = (regs.A);
-                    let y = (regs.A);
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.A);
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -33758,9 +33814,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = regs.A;
-                    let y = regs.B;
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>regs.B;
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -33787,9 +33843,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = regs.A;
-                    let y = regs.C;
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>regs.C;
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -33816,9 +33872,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = regs.A;
-                    let y = regs.D;
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>regs.D;
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -33845,9 +33901,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = regs.A;
-                    let y = regs.E;
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>regs.E;
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -33874,9 +33930,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = regs.A;
-                    let y = ((regs.IY & 0xFF00) >>> 8);
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>((regs.IY & 0xFF00) >>> 8);
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -33903,9 +33959,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = regs.A;
-                    let y = (regs.IY & 0xFF);
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>(regs.IY & 0xFF);
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -33963,9 +34019,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
                 case 11: // Read end/latch
                     regs.TR = pins.D;
                     pins.RD = 0; pins.MRQ = 0;
-                    let x = regs.A;
-                    let y = regs.TR;
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>regs.TR;
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -33994,9 +34050,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             switch(regs.TCU) {
                 case 1: // cleanup_custom
                     regs.Q = 1;
-                    let x = regs.A;
-                    let y = regs.A;
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>regs.A;
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -35041,10 +35097,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
                     regs.TR = pins.D;
                     pins.RD = 0; pins.MRQ = 0;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
-                    let x = (regs.A);
-                    let y = (regs.TR);
-                    let c = +(0);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.TR);
+                    let c = <i32>(+(0));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -35350,10 +35406,10 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
                     regs.TR = pins.D;
                     pins.RD = 0; pins.MRQ = 0;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
-                    let x = (regs.A);
-                    let y = (regs.TR);
-                    let c = +(regs.F.C);
-                    let z = (x - y - c) & 0x1FF;
+                    let x: i32 = (<i32>regs.A);
+                    let y: i32 = (<i32>regs.TR);
+                    let c = <i32>(+(regs.F.C));
+                    let z = <i32>(<i32>x - <i32>y - <i32>c) & 0x1FF;
                     regs.F.C = (z & 0x100) >>> 8;
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -36650,9 +36706,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
                     regs.TR = pins.D;
                     pins.RD = 0; pins.MRQ = 0;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
-                    let x = regs.A;
-                    let y = regs.TR;
-                    let z = x - y;
+                    let x: i32 = <i32>regs.A;
+                    let y: i32 = <i32>regs.TR;
+                    let z: i32 = x - y;
                     regs.F.C = +(z < 0);
                     regs.F.N = 1;
                     regs.F.PV = (((x ^ y) & (x ^ z)) & 0x80) >>> 7;
@@ -36747,7 +36803,7 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
                     break;
                 case 7: // write end
                     pins.WR = 0; pins.MRQ = 0;
-                    let wait;
+                    let wait: u32;
                     switch(pins.IRQ_maskable ? regs.IM : 1) {
                     case 0:
                         regs.t[0] = 0;
@@ -36812,6 +36868,30 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
                     // Following is auto-generated code for instruction finish
                     break;
                 case 20: // cleanup_custom
+                    pins.Addr = regs.PC;
+                    regs.PC = (regs.PC + 1) & 0xFFFF;
+                    regs.TCU = 0;
+                    regs.EI = 0;
+                    regs.P = 0;
+                    regs.prefix = 0x00;
+                    regs.rprefix = Z80P.HL;
+                    regs.IR = Z80_S_DECODE;
+                    regs.poll_IRQ = true;
+                    break;
+            }
+        });
+        case 0x509: return new Z80_opcode_functions(Z80_opcode_matrix.get(0x101), // FD 101
+            function(regs: z80_regs, pins: z80_pins): void { // RESET
+            switch(regs.TCU) {
+                case 1:
+                    regs.IFF1 = regs.IFF2 = 0; // disable interrupt
+                    regs.IM = 0;
+                    regs.I = 0;
+                    regs.R = 0;
+                    regs.PC = 0;
+                    // Following is auto-generated code for instruction finish
+                    break;
+                case 2: // cleanup_custom
                     pins.Addr = regs.PC;
                     regs.PC = (regs.PC + 1) & 0xFFFF;
                     regs.TCU = 0;
@@ -49099,6 +49179,9 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
         case 0x60A: return new Z80_opcode_functions(Z80_opcode_matrix.get(0x00), // 00
             function(regs: z80_regs, pins: z80_pins): void { // undefined
         });
+        case 0x60B: return new Z80_opcode_functions(Z80_opcode_matrix.get(0x00), // 00
+            function(regs: z80_regs, pins: z80_pins): void { // undefined
+        });
         case 0x60C: return new Z80_opcode_functions(Z80_CBd_opcode_matrix.get(0x00), // CB FD 00
             function(regs: z80_regs, pins: z80_pins): void { // RLC_irr_r addr B
             switch(regs.TCU) {
@@ -61374,10 +61457,13 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
         case 0x70C: return new Z80_opcode_functions(Z80_opcode_matrix.get(0x00), // 00
             function(regs: z80_regs, pins: z80_pins): void { // undefined
         });
+        case 0x70D: return new Z80_opcode_functions(Z80_opcode_matrix.get(0x00), // 00
+            function(regs: z80_regs, pins: z80_pins): void { // undefined
+        });
     }
     return new Z80_opcode_functions(Z80_opcode_matrix.get(0), function(regs: z80_regs, pins: z80_pins): void { console.log('INVALID OPCODE');});
 }
 
-for (let i = 0; i <= 1799; i++) {
+for (let i = 0; i <= 1806; i++) {
     z80_decoded_opcodes[i] = z80_get_opcode_function(i);
 }

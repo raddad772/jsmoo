@@ -73,7 +73,7 @@ class GB_MAPPER_MBC3 {
             if (rb <= 3) {
                 if (this.has_RAM) this.RAM_bank_offset = rb * 8192;
             } else {
-                console.log('SET TO RTC!', rb);
+                //console.log('SET TO RTC!', rb);
                 // RTC registers handled during read/write ops to the area
             }
             if (this.has_RAM) this.RAM_bank_offset = rb * 8192;

@@ -1,6 +1,15 @@
 import {D_RESOURCE_TYPES, dbg} from "../../../helpers/debug";
-import {Z80_MN, Z80_opcode_functions, Z80_opcode_info, Z80_S_DECODE, Z80_S_IRQ, Z80_S_RESET} from "./z80_opcodes";
+import {
+    Z80_MN,
+    Z80_opcode_functions,
+    Z80_opcode_info,
+    Z80_prefix_to_codemap,
+    Z80_S_DECODE,
+    Z80_S_IRQ,
+    Z80_S_RESET
+} from "./z80_opcodes";
 import {mksigned8} from "../../../helpers/helpers";
+import {z80_decoded_opcodes} from "./z80_generated_opcodes";
 
 export enum Z80P {
     HL,
@@ -164,6 +173,13 @@ export class z80_pins {
     MRQ: u32 = 0; // Memory request
 }
 
+// @ts-ignore
+@inline
+function Z80_fetch_decoded(opcode: u32, prefix: u32): Z80_opcode_functions {
+    console.log('UM ' + prefix.toString(16) + ' ' + (Z80_prefix_to_codemap(prefix) + opcode).toString());
+    return z80_decoded_opcodes[Z80_prefix_to_codemap(prefix) + opcode];
+}
+
 export class z80_t {
     regs: z80_regs = new z80_regs();
     pins: z80_pins = new z80_pins();
@@ -204,6 +220,7 @@ export class z80_t {
 
     reset(PC_VEC: u32=0): void {
         this.regs.rprefix = Z80P.HL;
+        console.log('prefix=0')
         this.regs.prefix = 0x00;
         this.regs.A = 0xFF;
         this.regs.F.setbyte(0xFF);
@@ -220,7 +237,7 @@ export class z80_t {
         this.regs.IRQ_vec = 0;
 
         this.regs.IR = Z80_S_RESET;
-        //this.current_instruction = Z80_fetch_decoded(this.regs.IR, 0x00);
+        this.current_instruction = Z80_fetch_decoded(this.regs.IR, 0x00);
         this.regs.TCU = 0;
     }
 
@@ -250,9 +267,10 @@ export class z80_t {
 
     set_instruction(to: u32): void {
         this.regs.IR = to;
-        //this.current_instruction = Z80_fetch_decoded(this.regs.IR, this.regs.prefix);
+        this.current_instruction = Z80_fetch_decoded(this.regs.IR, this.regs.prefix);
         this.prefix_was = this.regs.prefix;
         this.regs.TCU = 0;
+        console.log('prefix=0 SI')
         this.regs.prefix = 0;
         this.regs.rprefix = Z80P.HL;
     }
@@ -266,11 +284,13 @@ export class z80_t {
             // RD on T1
             // data latch T2
             case 0: // already handled by fetch of next instruction starting
+                //console.log('TCU0')
                 this.set_pins_opcode();
                 //this.regs.rprefix = Z80P.HL;
                 //this.regs.prefix = 0;
                 break;
             case 1: // T1 MREQ, RD
+                //console.log('TCU1')
                 if (this.regs.HALT) { this.regs.TCU = 0; break; }
                 if (this.regs.poll_IRQ) {
                     // Make sure we only do this at start of an instruction
@@ -301,12 +321,14 @@ export class z80_t {
                 this.pins.MRQ = 1;
                 break;
             case 2: // T2, RD to 0 and data latch, REFRESH and MRQ=1 for REFRESH
+                //console.log('TCU2')
                 this.pins.RD = 0;
                 this.pins.MRQ = 0;
                 this.regs.t[0] = this.pins.D;
                 this.pins.Addr = (this.regs.I << 8) | this.regs.R;
                 break;
             case 3: // T3 not much here
+                //console.log('TCU3')
                 //this.pins.MRQ = 0;
                 // If we need to fetch another, start that and set TCU back to 1
                 this.regs.inc_R();
@@ -316,27 +338,33 @@ export class z80_t {
                 // this gets a little tricky
                 // 4, 5, 6, 7, 8, 9, 10, 11, 12 = rprefix != HL and is CB, execute CBd
                 if ((this.regs.t[0] === 0xCB) && (this.regs.rprefix !== Z80P.HL)) {
+                    //console.log('PREFIXA')
                     this.regs.prefix = ((this.regs.prefix << 8) | 0xCB) & 0xFFFF;
+                    //console.log('PREFIX=' + this.regs.prefix.toString(16));
                     break;
                 }
                 // . so 13, 14, 15, 16. opcode, then immediate execution CB
                 else if (this.regs.t[0] === 0xCB) {
+                    //console.log('PREFIXCB')
                     this.regs.prefix = 0xCB;
                     this.regs.TCU = 12;
                     break;
                 }
                 // reuse 13-16
                 else if (this.regs.t[0] === 0xED) {
+                    //console.log('PREFIXED')
                     this.regs.prefix = 0xED;
                     this.regs.TCU = 12;
                     break;
                 }
                 else {
                     //this.regs.prefix = 0x00;
+                    //console.log('SET INS')
                     this.set_instruction(this.regs.t[0]);
                     break;
                 }
             case 4: // CBd begins here, as does operand()
+                //console.log('TCU4')
                 //
                 switch(this.regs.rprefix) {
                     case Z80P.HL:
@@ -352,47 +380,59 @@ export class z80_t {
                 this.set_pins_opcode();
                 break;
             case 5: // operand() middle
+                //console.log('TCU5')
                 this.pins.RD = 1;
                 this.pins.MRQ = 1;
                 break;
             case 6: // operand() end
+                //console.log('TCU6')
                 this.regs.WZ = (this.regs.WZ + mksigned8(this.pins.D)) & 0xFFFF;
                 this.set_pins_nothing();
                 this.regs.TCU += 2;
                 break;
             case 7: // wait a cycle
+                //console.log('TCU7')
                 break;
             case 8: // wait one more cycle
+                //console.log('TCU8')
                 break;
             case 9: // start opcode fetch
+                //console.log('TCU9')
                 this.set_pins_opcode();
                 break;
             case 10:
+                //console.log('TCU10')
                 this.pins.RD = 1;
                 this.pins.MRQ = 1;
                 break;
             case 11: // cycle 3 of opcode tech
+                //console.log('TCU11')
                 this.set_pins_nothing();
                 this.regs.t[0] = this.pins.D;
                 this.set_instruction(this.regs.t[0]);
                 break;
             case 12: // cycle 4 of opcode fetch. execute instruction!
+                //console.log('TCU12')
                 //this.set_instruction(this.regs.t[0]);
                 break;
             case 13: // CB regular and ED regular starts here
+                //console.log('TCU13')
                 this.set_pins_opcode();
                 break;
             case 14:
+                //console.log('TCU14')
                 this.pins.MRQ = 1;
                 this.pins.RD = 1;
                 break;
             case 15:
+                //console.log('TCU15')
                 this.pins.Addr = (this.regs.I << 8) | this.regs.R;
                 this.regs.inc_R();
                 this.regs.t[0] = this.pins.D;
                 this.set_pins_nothing();
                 break;
             case 16:
+                //console.log('TCU16 ' + this.regs.prefix.toString(16));
                 // execute from CB or ED now
                 this.set_instruction(this.regs.t[0]);
                 break;
@@ -436,6 +476,7 @@ export class z80_t {
         this.trace_cycles++;
         if (this.regs.IR === Z80_S_DECODE) {
             // Long logic to decode opcodes and decide what to do
+            //console.log('DECODE')
             if ((this.regs.TCU === 1) && (this.regs.prefix === 0)) this.PCO = this.pins.Addr;
             this.ins_cycles();
         } else {
@@ -444,6 +485,7 @@ export class z80_t {
                 dbg.traces.add(TRACERS.Z80, this.trace_cycles, this.trace_format(Z80_disassemble(this.PCO, this.trace_peek(this.PCO, 0, false), this.trace_peek), this.PCO));
             }*/
             // Execute an actual opcode
+            //console.log('OPCODE')
             this.current_instruction.exec_func(this.regs, this.pins);
         }
     }

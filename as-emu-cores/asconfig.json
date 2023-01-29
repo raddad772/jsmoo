@@ -9,6 +9,7 @@
       "maximumMemory": 32768,
       "sharedMemory": true,
       "exportRuntime": true,
+      "uncheckedBehavior": "never",
       "stats": true
     },
     "release": {

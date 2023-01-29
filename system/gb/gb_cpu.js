@@ -310,8 +310,9 @@ class GB_CPU {
                     //console.log('LCD OFF SO NOTIFY HBLANK!');
                 }
                 this.hdma.mode = (val & 0x80) >>> 7;
-                this.hdma.length = (val + 1) & 0x7F; // up to 128 blocks of 16 bytes.
+                this.hdma.length = (val & 0x7F) + 1; // up to 128 blocks of 16 bytes.
                 if (!this.hdma.enabled) {
+                    console.log('HDMA TRANSFER')
                     this.hdma.enabled = true;
                     if (this.hdma.mode === 0) this.hdma.active = true;
                 } else {
@@ -527,8 +528,8 @@ class GB_CPU {
                     hdma.source_index = (hdma.source_index + 1) & 0xFFFF;
                     // A 16-byte block has finished
                     if ((hdma.dest_index & 0x0F) === 0) {
-                        hdma.length = (hdma.length - 1) & 0xFF;
-                        if (hdma.length === 0xFF) { // Terminate HDMA
+                        hdma.length--; // = (hdma.length - 1) & 0xFF;
+                        if (hdma.length <= 0) { // Terminate HDMA
                             hdma.enabled = false;
                             hdma.waiting = false;
                             hdma.completed = true;

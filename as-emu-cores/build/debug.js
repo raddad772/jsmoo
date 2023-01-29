@@ -25,7 +25,7 @@ export async function instantiate(module, imports = {}) {
     TST_M6502_get(obj) {
       // assembly/glue/cpu_tester/TST_M6502_get(assembly/glue/cpu_tester/TST_M6502) => assembly/glue/cpu_tester/TST_M6502_IO
       obj = __lowerInternref(obj) || __notnull();
-      return __liftRecord38(exports.TST_M6502_get(obj) >>> 0);
+      return __liftRecord45(exports.TST_M6502_get(obj) >>> 0);
     },
     TST_M6502_new() {
       // assembly/glue/cpu_tester/TST_M6502_new() => assembly/glue/cpu_tester/TST_M6502
@@ -34,7 +34,7 @@ export async function instantiate(module, imports = {}) {
     TST_M6502_set(obj, to) {
       // assembly/glue/cpu_tester/TST_M6502_set(assembly/glue/cpu_tester/TST_M6502, assembly/glue/cpu_tester/TST_M6502_IO) => void
       obj = __retain(__lowerInternref(obj) || __notnull());
-      to = __lowerRecord38(to) || __notnull();
+      to = __lowerRecord45(to) || __notnull();
       try {
         exports.TST_M6502_set(obj, to);
       } finally {
@@ -45,6 +45,30 @@ export async function instantiate(module, imports = {}) {
       // assembly/glue/cpu_tester/TST_M6502_cycle(assembly/glue/cpu_tester/TST_M6502) => void
       obj = __lowerInternref(obj) || __notnull();
       exports.TST_M6502_cycle(obj);
+    },
+    TST_Z80_get(obj) {
+      // assembly/glue/cpu_tester/TST_Z80_get(assembly/glue/cpu_tester/TST_Z80) => assembly/glue/cpu_tester/TST_Z80_IO
+      obj = __lowerInternref(obj) || __notnull();
+      return __liftRecord48(exports.TST_Z80_get(obj) >>> 0);
+    },
+    TST_Z80_new() {
+      // assembly/glue/cpu_tester/TST_Z80_new() => assembly/glue/cpu_tester/TST_Z80
+      return __liftInternref(exports.TST_Z80_new() >>> 0);
+    },
+    TST_Z80_set(obj, to) {
+      // assembly/glue/cpu_tester/TST_Z80_set(assembly/glue/cpu_tester/TST_Z80, assembly/glue/cpu_tester/TST_Z80_IO) => void
+      obj = __retain(__lowerInternref(obj) || __notnull());
+      to = __lowerRecord48(to) || __notnull();
+      try {
+        exports.TST_Z80_set(obj, to);
+      } finally {
+        __release(obj);
+      }
+    },
+    TST_Z80_cycle(obj) {
+      // assembly/glue/cpu_tester/TST_Z80_cycle(assembly/glue/cpu_tester/TST_Z80) => void
+      obj = __lowerInternref(obj) || __notnull();
+      exports.TST_Z80_cycle(obj);
     },
     gp_load_ROM_from_RAM(player, name, sz) {
       // assembly/glue/global_player/gp_load_ROM_from_RAM(assembly/glue/global_player/global_player_t, ~lib/string/String, u32) => void
@@ -104,7 +128,7 @@ export async function instantiate(module, imports = {}) {
     gp_get_specs(player) {
       // assembly/glue/global_player/gp_get_specs(assembly/glue/global_player/global_player_t) => assembly/system/interface/machine_description
       player = __lowerInternref(player) || __notnull();
-      return __liftRecord41(exports.gp_get_specs(player) >>> 0);
+      return __liftRecord52(exports.gp_get_specs(player) >>> 0);
     },
     gp_get_input_buffer(player) {
       // assembly/glue/global_player/gp_get_input_buffer(assembly/glue/global_player/global_player_t) => usize
@@ -114,7 +138,7 @@ export async function instantiate(module, imports = {}) {
     gp_get_framevars(player) {
       // assembly/glue/global_player/gp_get_framevars(assembly/glue/global_player/global_player_t) => assembly/glue/global_player/framevars_t
       player = __lowerInternref(player) || __notnull();
-      return __liftRecord70(exports.gp_get_framevars(player) >>> 0);
+      return __liftRecord80(exports.gp_get_framevars(player) >>> 0);
     },
     gp_play(player) {
       // assembly/glue/global_player/gp_play(assembly/glue/global_player/global_player_t) => void
@@ -134,10 +158,10 @@ export async function instantiate(module, imports = {}) {
     gp_get_mt(player) {
       // assembly/glue/global_player/gp_get_mt(assembly/glue/global_player/global_player_t) => assembly/system/interface/console_mt_struct
       player = __lowerInternref(player) || __notnull();
-      return __liftRecord172(exports.gp_get_mt(player) >>> 0);
+      return __liftRecord175(exports.gp_get_mt(player) >>> 0);
     },
   }, exports);
-  function __liftRecord38(pointer) {
+  function __liftRecord45(pointer) {
     // assembly/glue/cpu_tester/TST_M6502_IO
     // Hint: Opt-out from lifting as a record by providing an empty constructor
     if (!pointer) return null;
@@ -156,11 +180,11 @@ export async function instantiate(module, imports = {}) {
       RES_pending: new Uint32Array(memory.buffer)[pointer + 44 >>> 2],
     };
   }
-  function __lowerRecord38(value) {
+  function __lowerRecord45(value) {
     // assembly/glue/cpu_tester/TST_M6502_IO
     // Hint: Opt-out from lowering as a record by providing an empty constructor
     if (value == null) return 0;
-    const pointer = exports.__pin(exports.__new(48, 38));
+    const pointer = exports.__pin(exports.__new(48, 45));
     new Uint32Array(memory.buffer)[pointer + 0 >>> 2] = value.A;
     new Uint32Array(memory.buffer)[pointer + 4 >>> 2] = value.X;
     new Uint32Array(memory.buffer)[pointer + 8 >>> 2] = value.Y;
@@ -176,7 +200,92 @@ export async function instantiate(module, imports = {}) {
     exports.__unpin(pointer);
     return pointer;
   }
-  function __liftRecord42(pointer) {
+  function __liftRecord48(pointer) {
+    // assembly/glue/cpu_tester/TST_Z80_IO
+    // Hint: Opt-out from lifting as a record by providing an empty constructor
+    if (!pointer) return null;
+    return {
+      A: new Uint32Array(memory.buffer)[pointer + 0 >>> 2],
+      B: new Uint32Array(memory.buffer)[pointer + 4 >>> 2],
+      C: new Uint32Array(memory.buffer)[pointer + 8 >>> 2],
+      D: new Uint32Array(memory.buffer)[pointer + 12 >>> 2],
+      E: new Uint32Array(memory.buffer)[pointer + 16 >>> 2],
+      H: new Uint32Array(memory.buffer)[pointer + 20 >>> 2],
+      L: new Uint32Array(memory.buffer)[pointer + 24 >>> 2],
+      F: new Uint32Array(memory.buffer)[pointer + 28 >>> 2],
+      I: new Uint32Array(memory.buffer)[pointer + 32 >>> 2],
+      R: new Uint32Array(memory.buffer)[pointer + 36 >>> 2],
+      AF_: new Uint32Array(memory.buffer)[pointer + 40 >>> 2],
+      BC_: new Uint32Array(memory.buffer)[pointer + 44 >>> 2],
+      DE_: new Uint32Array(memory.buffer)[pointer + 48 >>> 2],
+      HL_: new Uint32Array(memory.buffer)[pointer + 52 >>> 2],
+      PC: new Uint32Array(memory.buffer)[pointer + 56 >>> 2],
+      SP: new Uint32Array(memory.buffer)[pointer + 60 >>> 2],
+      IX: new Uint32Array(memory.buffer)[pointer + 64 >>> 2],
+      IY: new Uint32Array(memory.buffer)[pointer + 68 >>> 2],
+      WZ: new Uint32Array(memory.buffer)[pointer + 72 >>> 2],
+      EI: new Uint32Array(memory.buffer)[pointer + 76 >>> 2],
+      P: new Uint32Array(memory.buffer)[pointer + 80 >>> 2],
+      Q: new Uint32Array(memory.buffer)[pointer + 84 >>> 2],
+      IR: new Uint32Array(memory.buffer)[pointer + 88 >>> 2],
+      IFF1: new Uint32Array(memory.buffer)[pointer + 92 >>> 2],
+      IFF2: new Uint32Array(memory.buffer)[pointer + 96 >>> 2],
+      IM: new Uint32Array(memory.buffer)[pointer + 100 >>> 2],
+      pins_D: new Uint32Array(memory.buffer)[pointer + 104 >>> 2],
+      pins_Addr: new Uint32Array(memory.buffer)[pointer + 108 >>> 2],
+      pins_RD: new Uint32Array(memory.buffer)[pointer + 112 >>> 2],
+      pins_WR: new Uint32Array(memory.buffer)[pointer + 116 >>> 2],
+      pins_IO: new Uint32Array(memory.buffer)[pointer + 120 >>> 2],
+      pins_MRQ: new Uint32Array(memory.buffer)[pointer + 124 >>> 2],
+      prefix: new Uint32Array(memory.buffer)[pointer + 128 >>> 2],
+      rprefix: new Uint32Array(memory.buffer)[pointer + 132 >>> 2],
+      TCU: new Int32Array(memory.buffer)[pointer + 136 >>> 2],
+    };
+  }
+  function __lowerRecord48(value) {
+    // assembly/glue/cpu_tester/TST_Z80_IO
+    // Hint: Opt-out from lowering as a record by providing an empty constructor
+    if (value == null) return 0;
+    const pointer = exports.__pin(exports.__new(140, 48));
+    new Uint32Array(memory.buffer)[pointer + 0 >>> 2] = value.A;
+    new Uint32Array(memory.buffer)[pointer + 4 >>> 2] = value.B;
+    new Uint32Array(memory.buffer)[pointer + 8 >>> 2] = value.C;
+    new Uint32Array(memory.buffer)[pointer + 12 >>> 2] = value.D;
+    new Uint32Array(memory.buffer)[pointer + 16 >>> 2] = value.E;
+    new Uint32Array(memory.buffer)[pointer + 20 >>> 2] = value.H;
+    new Uint32Array(memory.buffer)[pointer + 24 >>> 2] = value.L;
+    new Uint32Array(memory.buffer)[pointer + 28 >>> 2] = value.F;
+    new Uint32Array(memory.buffer)[pointer + 32 >>> 2] = value.I;
+    new Uint32Array(memory.buffer)[pointer + 36 >>> 2] = value.R;
+    new Uint32Array(memory.buffer)[pointer + 40 >>> 2] = value.AF_;
+    new Uint32Array(memory.buffer)[pointer + 44 >>> 2] = value.BC_;
+    new Uint32Array(memory.buffer)[pointer + 48 >>> 2] = value.DE_;
+    new Uint32Array(memory.buffer)[pointer + 52 >>> 2] = value.HL_;
+    new Uint32Array(memory.buffer)[pointer + 56 >>> 2] = value.PC;
+    new Uint32Array(memory.buffer)[pointer + 60 >>> 2] = value.SP;
+    new Uint32Array(memory.buffer)[pointer + 64 >>> 2] = value.IX;
+    new Uint32Array(memory.buffer)[pointer + 68 >>> 2] = value.IY;
+    new Uint32Array(memory.buffer)[pointer + 72 >>> 2] = value.WZ;
+    new Uint32Array(memory.buffer)[pointer + 76 >>> 2] = value.EI;
+    new Uint32Array(memory.buffer)[pointer + 80 >>> 2] = value.P;
+    new Uint32Array(memory.buffer)[pointer + 84 >>> 2] = value.Q;
+    new Uint32Array(memory.buffer)[pointer + 88 >>> 2] = value.IR;
+    new Uint32Array(memory.buffer)[pointer + 92 >>> 2] = value.IFF1;
+    new Uint32Array(memory.buffer)[pointer + 96 >>> 2] = value.IFF2;
+    new Uint32Array(memory.buffer)[pointer + 100 >>> 2] = value.IM;
+    new Uint32Array(memory.buffer)[pointer + 104 >>> 2] = value.pins_D;
+    new Uint32Array(memory.buffer)[pointer + 108 >>> 2] = value.pins_Addr;
+    new Uint32Array(memory.buffer)[pointer + 112 >>> 2] = value.pins_RD;
+    new Uint32Array(memory.buffer)[pointer + 116 >>> 2] = value.pins_WR;
+    new Uint32Array(memory.buffer)[pointer + 120 >>> 2] = value.pins_IO;
+    new Uint32Array(memory.buffer)[pointer + 124 >>> 2] = value.pins_MRQ;
+    new Uint32Array(memory.buffer)[pointer + 128 >>> 2] = value.prefix;
+    new Uint32Array(memory.buffer)[pointer + 132 >>> 2] = value.rprefix;
+    new Int32Array(memory.buffer)[pointer + 136 >>> 2] = value.TCU;
+    exports.__unpin(pointer);
+    return pointer;
+  }
+  function __liftRecord53(pointer) {
     // assembly/system/interface/overscan_info
     // Hint: Opt-out from lifting as a record by providing an empty constructor
     if (!pointer) return null;
@@ -198,7 +307,7 @@ export async function instantiate(module, imports = {}) {
       internal_code: new Uint32Array(memory.buffer)[pointer + 12 >>> 2],
     };
   }
-  function __liftRecord41(pointer) {
+  function __liftRecord52(pointer) {
     // assembly/system/interface/machine_description
     // Hint: Opt-out from lifting as a record by providing an empty constructor
     if (!pointer) return null;
@@ -211,13 +320,13 @@ export async function instantiate(module, imports = {}) {
       y_resolution: new Uint32Array(memory.buffer)[pointer + 20 >>> 2],
       xrw: new Uint32Array(memory.buffer)[pointer + 24 >>> 2],
       xrh: new Uint32Array(memory.buffer)[pointer + 28 >>> 2],
-      overscan: __liftRecord42(new Uint32Array(memory.buffer)[pointer + 32 >>> 2]),
+      overscan: __liftRecord53(new Uint32Array(memory.buffer)[pointer + 32 >>> 2]),
       out_ptr: new Uint32Array(memory.buffer)[pointer + 36 >>> 2],
       out_size: new Uint32Array(memory.buffer)[pointer + 40 >>> 2],
       keymap: __liftArray(pointer => __liftRecord6(new Uint32Array(memory.buffer)[pointer >>> 2]), 2, new Uint32Array(memory.buffer)[pointer + 44 >>> 2]),
     };
   }
-  function __liftRecord71(pointer) {
+  function __liftRecord81(pointer) {
     // assembly/helpers/debug/debugger_info_t
     // Hint: Opt-out from lifting as a record by providing an empty constructor
     if (!pointer) return null;
@@ -226,7 +335,7 @@ export async function instantiate(module, imports = {}) {
       traces: __liftArray(pointer => __liftString(new Uint32Array(memory.buffer)[pointer >>> 2]), 2, new Uint32Array(memory.buffer)[pointer + 4 >>> 2]),
     };
   }
-  function __liftRecord70(pointer) {
+  function __liftRecord80(pointer) {
     // assembly/glue/global_player/framevars_t
     // Hint: Opt-out from lifting as a record by providing an empty constructor
     if (!pointer) return null;
@@ -234,11 +343,11 @@ export async function instantiate(module, imports = {}) {
       master_frame: new BigUint64Array(memory.buffer)[pointer + 0 >>> 3],
       x: new Uint32Array(memory.buffer)[pointer + 8 >>> 2],
       scanline: new Uint32Array(memory.buffer)[pointer + 12 >>> 2],
-      dbg_info: __liftRecord71(new Uint32Array(memory.buffer)[pointer + 16 >>> 2]),
+      dbg_info: __liftRecord81(new Uint32Array(memory.buffer)[pointer + 16 >>> 2]),
       console: __liftString(new Uint32Array(memory.buffer)[pointer + 20 >>> 2]),
     };
   }
-  function __liftRecord172(pointer) {
+  function __liftRecord175(pointer) {
     // assembly/system/interface/console_mt_struct
     // Hint: Opt-out from lifting as a record by providing an empty constructor
     if (!pointer) return null;

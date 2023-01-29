@@ -4,7 +4,11 @@ export {
     TST_M6502_get,
     TST_M6502_new,
     TST_M6502_set,
-    TST_M6502_cycle
+    TST_M6502_cycle,
+    TST_Z80_get,
+    TST_Z80_new,
+    TST_Z80_set,
+    TST_Z80_cycle
 } from "./glue/cpu_tester";
 
 export {
