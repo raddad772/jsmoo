@@ -176,7 +176,6 @@ export class z80_pins {
 // @ts-ignore
 @inline
 function Z80_fetch_decoded(opcode: u32, prefix: u32): Z80_opcode_functions {
-    console.log('UM ' + prefix.toString(16) + ' ' + (Z80_prefix_to_codemap(prefix) + opcode).toString());
     return z80_decoded_opcodes[Z80_prefix_to_codemap(prefix) + opcode];
 }
 
@@ -270,7 +269,6 @@ export class z80_t {
         this.current_instruction = Z80_fetch_decoded(this.regs.IR, this.regs.prefix);
         this.prefix_was = this.regs.prefix;
         this.regs.TCU = 0;
-        console.log('prefix=0 SI')
         this.regs.prefix = 0;
         this.regs.rprefix = Z80P.HL;
     }

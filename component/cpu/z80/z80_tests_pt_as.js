@@ -422,7 +422,7 @@ async function AS_dotest_pt_z80() {
     let as = new as_wrapper_t();
     await as.do_setup();
     let cpu = as.wasm.TST_Z80_new();
-    let start_test = 0;
+    let start_test = 0xB0;
     let skip_tests = {
         0x00: [0x76], // HALT
         0xCB: [],
@@ -443,9 +443,9 @@ async function AS_dotest_pt_z80() {
     }
     //let test_classes = [0x00, 0xCB, 0xED, 0xDD, 0xFD, 0xDDCB, 0xFDCB]
     // PASSED CLASSES: 0x00, 0xCB, 0xED, 0xDD, 0xFD, 0xDDCB
-    // AS PASSED CLASSES: 0x00
+    // AS PASSED CLASSES: 0x00, 0xCB,
     //let test_classes = [0x00, 0xCB, 0xED, 0xDD, 0xFD, 0xDDCB, 0xFDCB];
-    let test_classes = [0xCB, 0xED, 0xDD, 0xFD, 0xDDCB, 0xFDCB];
+    let test_classes = [0xED, 0xDD, 0xFD, 0xDDCB, 0xFDCB];
     //let test_classes = [0xDDCB];
     if (AS_Z80_TEST_DO_TRACING) cpu.enable_tracing(read8);
     for (let mclass in test_classes) {
