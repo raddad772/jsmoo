@@ -1341,6 +1341,8 @@ class Z80_test_generator {
         this.wait(5);
         this.regs.PC = (this.regs.PC - 2) & 0xFFFF;
         this.regs.WZ = (this.regs.PC + 1) & 0xFFFF;
+        this.regs.F.X = (this.regs.PC >>> 11) & 1;
+        this.regs.F.Y = (this.regs.PC >>> 13) & 1;
     }
 
     CPI() {
@@ -1515,6 +1517,7 @@ class Z80_test_generator {
         this.regs.WZ = (this.readreg('BC') - 1) & 0xFFFF;
         this.wait(1);
         let data = this.in((this.regs.WZ + 1) & 0xFFFF);
+        this.regs.data = data;
         this.regs.B = (this.regs.B - 1) & 0xFF;
         let ta = this.readreg('_HL');
         this.write(ta, data);
@@ -1533,6 +1536,7 @@ class Z80_test_generator {
         if (this.regs.B === 0) return;
         this.wait(5);
         this.regs.PC = (this.regs.PC - 2) & 0xFFFF;
+        this.post_IN_O_R();
     }
 
     INI() {
@@ -1728,6 +1732,8 @@ class Z80_test_generator {
         this.wait(5);
         this.regs.PC = (this.regs.PC - 2) & 0xFFFF;
         this.regs.WZ = (this.regs.PC + 1) & 0xFFFF;
+        this.regs.F.X = (this.regs.PC >>> 11) & 1;
+        this.regs.F.Y = (this.regs.PC >>> 13) & 1;
     }
 
     LDI() {
@@ -1856,6 +1862,7 @@ class Z80_test_generator {
         this.regs.B = (this.regs.B - 1) & 0xFF;
         ta = this.readreg('BC');
         this.out(ta, data);
+        this.regs.data = data;
         this.regs.WZ = (ta + 1) & 0xFFFF;
 
         this.regs.F.C = ((this.regs.L + data) & 0x100) >>> 8;
