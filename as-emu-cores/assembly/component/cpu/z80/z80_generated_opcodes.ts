@@ -8324,7 +8324,6 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             function(regs: z80_regs, pins: z80_pins): void { // RLC_r B
             switch(regs.TCU) {
                 case 1: // cleanup_custom
-                    console.log('CB00');
                     regs.Q = 1;
                     let x = regs.B;
                     x = ((x << 1) | (x >>> 7)) & 0xFF;
@@ -8354,7 +8353,6 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
             function(regs: z80_regs, pins: z80_pins): void { // RLC_r C
             switch(regs.TCU) {
                 case 1: // cleanup_custom
-                    console.log('CB01');
                     regs.Q = 1;
                     let x = regs.C;
                     x = ((x << 1) | (x >>> 7)) & 0xFF;
@@ -26867,7 +26865,7 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
                     regs.TA = (regs.TA + 1) & 0xFFFF;
                     regs.H = (regs.TA & 0xFF00) >>> 8;
                     regs.L = regs.TA & 0xFF;
-                    regs.F.C = ((((regs.C + 1) & 0xFF) + regs.TR) & 0x100) >>> 8;
+                    regs.F.C = ((regs.C + 1 + regs.TR) & 0x100) >>> 8;
                     regs.F.N = (regs.TR & 0x80) >>> 7;
                     regs.TA = ((regs.C + 1) & 0xFF) + regs.TR & 7 ^ regs.B;
                     regs.F.PV = Z80_parity(regs.TA);
@@ -27382,7 +27380,7 @@ function z80_get_opcode_function(opcode: u32): Z80_opcode_functions {
                     regs.TA = (regs.TA + 1) & 0xFFFF;
                     regs.H = (regs.TA & 0xFF00) >>> 8;
                     regs.L = regs.TA & 0xFF;
-                    regs.F.C = ((((regs.C + 1) & 0xFF) + regs.TR) & 0x100) >>> 8;
+                    regs.F.C = ((regs.C + 1 + regs.TR) & 0x100) >>> 8;
                     regs.F.N = (regs.TR & 0x80) >>> 7;
                     regs.TA = ((regs.C + 1) & 0xFF) + regs.TR & 7 ^ regs.B;
                     regs.F.PV = Z80_parity(regs.TA);

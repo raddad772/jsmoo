@@ -379,6 +379,7 @@ class Z80T_state {
             this.Q = 0;
 
             this.WZ = 0;
+            this.data = 0;
         }
         else {
             this.A = from.a;
@@ -1358,6 +1359,7 @@ class Z80_test_generator {
         this.regs.F.H = ((this.regs.A ^ data ^ n) & 0x10) >>> 4;
         this.regs.F.X = ((n - this.regs.F.H) & 8) >>> 3;
         this.regs.F.Y = ((n - this.regs.F.H) & 2) >>> 1;
+
         this.regs.setSZ(n);
     }
 
@@ -1369,6 +1371,8 @@ class Z80_test_generator {
         this.wait(5);
         this.regs.PC = (this.regs.PC - 2) & 0xFFFF;
         this.regs.WZ = (this.regs.PC + 1) & 0xFFFF;
+        this.regs.F.X = (this.regs.PC >>> 11) & 1;
+        this.regs.F.Y = (this.regs.PC >>> 13) & 1;
     }
 
     CPL() {
@@ -1536,6 +1540,7 @@ class Z80_test_generator {
         this.regs.WZ = (this.readreg('BC') + 1) & 0xFFFF;
         this.wait(1);
         let data = this.in((this.regs.WZ - 1) & 0xFFFF);
+        this.regs.data = data;
         this.regs.B = (this.regs.B - 1) & 0xFF;
         let ta = this.readreg('_HL');
         this.write(ta, data);
@@ -1554,6 +1559,24 @@ class Z80_test_generator {
         if (this.regs.B === 0) return;
         this.wait(5);
         this.regs.PC = (this.regs.PC - 2) & 0xFFFF;
+        this.post_IN_O_R();
+    }
+
+    post_IN_O_R() {
+        // Post IN O R with latest Z80 research
+        this.regs.F.X = (this.regs.PC >>> 11) & 1;
+        this.regs.F.Y = (this.regs.PC >>> 13) & 1;
+        if (this.regs.F.C) {
+            if (this.regs.data & 0x80) {
+                this.regs.F.PV ^= Z80_parity((this.regs.B - 1) & 7) ^ 1;
+                this.regs.F.H = +((this.regs.B & 0x0F) === 0);
+            } else {
+                this.regs.F.PV ^= Z80_parity((this.regs.B + 1) & 7) ^ 1;
+                this.regs.F.H = +((this.regs.B & 0x0F) === 0x0F);
+            }
+        } else {
+            this.regs.F.PV ^= Z80_parity(this.regs.B & 7) ^ 1;
+        }
     }
 
     JP_c_nn(cond) {
@@ -1734,6 +1757,8 @@ class Z80_test_generator {
         this.wait(5);
         this.regs.PC = (this.regs.PC - 2) & 0xFFFF;
         this.regs.WZ = (this.regs.PC + 1) & 0xFFFF;
+        this.regs.F.X = (this.regs.PC >>> 11) & 1;
+        this.regs.F.Y = (this.regs.PC >>> 13) & 1;
     }
 
     NEG() {
@@ -1766,6 +1791,7 @@ class Z80_test_generator {
         if (this.regs.B === 0) return;
         this.wait(5);
         this.regs.PC = (this.regs.PC - 2) & 0xFFFF;
+        this.post_IN_O_R();
     }
 
     OTIR() {
@@ -1774,6 +1800,7 @@ class Z80_test_generator {
         if (this.regs.B === 0) return;
         this.wait(5);
         this.regs.PC = (this.regs.PC - 2) & 0xFFFF;
+        this.post_IN_O_R();
     }
 
     OUT_ic_r(x) {
@@ -1804,6 +1831,7 @@ class Z80_test_generator {
         this.wait(1);
         let ta = this.readreg('_HL');
         let data = this.read(ta);
+        this.regs.data = data;
         ta = (ta - 1) & 0xFFFF;
         this.writereg('_HL', ta);
         this.regs.B = (this.regs.B - 1) & 0xFF;

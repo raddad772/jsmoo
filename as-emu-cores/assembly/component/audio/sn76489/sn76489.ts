@@ -1,5 +1,10 @@
 "use strict";
 
+/*
+Big thanks to TotalJustice of TotalSMS, whose implementation
+very heavily inspired mine
+ */
+
 const SMSGG_voltable: StaticArray<i16> = [8191, 6507, 5168, 4105, 3261, 2590, 2057, 1642,
     1298, 1031, 819, 650, 516, 410, 326, 0];
 
