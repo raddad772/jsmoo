@@ -24,7 +24,8 @@
       "maximumMemory": 32768,
       "sharedMemory": true,
       "exportRuntime": true,
-      "debug": true
+      "debug": true,
+      "stats": true
     }
   },
   "options": {

@@ -592,7 +592,7 @@ class PS1_GPU_thread {
                 // TODO: remember to flush GPU texture cache
                 break;
             case 0x01: // reset CMD FIFO
-                console.log('RESET CMD FIFO NOT IMPLEMENT');
+                //console.log('RESET CMD FIFO NOT IMPLEMENT');
                 break;
             case 0x02:
                 console.log('GPU IRQ RESET; WHAT...');
@@ -738,9 +738,7 @@ class PS1_GPU_thread {
                 continue;
             }
             console.log('DESYNC ERROR!', this.cur_gp0, this.cur_gp0_tag, this.cur_gp1, this.cur_gp1_tag);
-            debugger;
             //dbg.break();
-            return;
         }
         console.log('FIFO no more listen...')
         if (this.MMIO[this.MMIO_offset+GPUPLAYING] === 0) {

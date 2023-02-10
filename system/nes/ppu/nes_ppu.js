@@ -669,7 +669,7 @@ class NES_ppu {
                     sprite_color = this.CGRAM[0x10 + my_color];
                     if ((!this.io.sprite0_hit) && (this.sprite0_on_this_line) && (m === 0) && bg_has_pixel && (this.line_cycle < 256)) {
                         this.io.sprite0_hit = 1;
-                        //console.log('s0 hit at PPU sy sx', this.clock.ppu_y, this.OAM[0], this.OAM[3]);
+                        //console.log('s0 hit at PPU sy sx', this.clock.ppu_y, this.line_cycle);
                     }
                 }
             }

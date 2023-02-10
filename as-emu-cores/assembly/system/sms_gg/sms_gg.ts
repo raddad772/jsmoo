@@ -137,8 +137,8 @@ export class SMSGG_clock {
     vdp_frame_cycle: u32 = 0;
 
     ccounter: u32 = 0;
-    hpos: u32 = 0;
-    vpos: u32 = 0;
+    hpos: i32 = 0;
+    vpos: i32 = 0;
     line_counter: i32 = 0;
 
     timing: SMSGG_clock_timing = new SMSGG_clock_timing();
@@ -370,11 +370,7 @@ export class SMSGG implements systemEmulator {
             this.finish_scanline();
             if (dbg.do_break) break;
         }
-        console.log(hex4(this.cpu.regs.PC));
         // return {buffer_num: this.vdp.last_used_buffer, bottom_rendered_line: this.clock.timing.bottom_rendered_line+1, sound_buffer: this.sn76489.output.get_buffer()};
-        /*for (let i = 0; i < (256*240*2); i++) {
-            store<u8>(this.outbuf+i, 0xFF);
-        }*/
         return 0;
     }
 

@@ -305,7 +305,7 @@ class SMSGG_VDP {
         let nta = ((this.clock.hpos >>> 3) & 0x1F) | ((this.clock.vpos  << 2) & 0x3E0) | (this.io.bg_name_table_address << 10);
         let pattern = this.VRAM[nta];
 
-        let paddr = (this.io.vpos & 7) | (pattern << 3) | (this.io.bg_pattern_table_address << 11);
+        let paddr = (this.clock.vpos & 7) | (pattern << 3) | (this.io.bg_pattern_table_address << 11);
 
         let caddr = ((paddr >>> 3) & 0x1F) | (this.io.bg_color_table_address << 6);
 
@@ -321,7 +321,7 @@ class SMSGG_VDP {
         let nta = ((this.clock.hpos >>> 3) & 0x1F) | ((this.clock.vpos  << 2) & 0x3E0) | (this.io.bg_name_table_address << 10);
         let pattern = this.VRAM[nta];
 
-        let paddr = (this.io.vpos & 7) | (pattern << 3);
+        let paddr = (this.clock.vpos & 7) | (pattern << 3);
         if (this.clock.vpos >= 64 && this.clock.vpos <= 127) paddr |= (this.io.bg_pattern_table_address & 1) << 11;
         if (this.clock.vpos >= 128 && this.clock.vpos <= 191) paddr |= (this.io.bg_pattern_table_address & 2) << 11;
 
@@ -546,7 +546,7 @@ class SMSGG_VDP {
         this.set_scanline_kind(this.clock.vpos);
 
         if (this.clock.vpos < this.clock.timing.cc_line)
-            this.io.ccounter = (this.io.ccounter + 1) & 0xFFF;
+            this.clock.ccounter = (this.clock.ccounter + 1) & 0xFFF;
     }
 
     set_scanline_kind(vpos) {

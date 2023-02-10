@@ -751,7 +751,7 @@ class GB_PPU {
                 this.io.obj_enable = (val & 2) >>> 1;
                 this.io.bg_window_enable = val & 1;
                 return;
-            case 0xFF41: // STAT LCD status
+            case 0xFF41: // STAT LCD stats
                 if (this.variant === GB_variants.DMG) {
                     this.io.STAT_IE = 0x0F;
                     this.eval_STAT();

@@ -1,15 +1,18 @@
 "use strict";
 
-function SMS_present(data, imgdata, SMS_output_buffer, rendered_lines) {
-    let output = new Uint8Array(SMS_output_buffer)
-    for (let ry = 0; ry < data.bottom_rendered_line; ry++) {
+function SMS_present(data, imgdata, SMS_output_buffer) {
+    let smso = new Uint8Array(SMS_output_buffer)
+    let brl = 224; // data.bottom_rendered_line
+    for (let ry = 0; ry < brl; ry++) {
         let y = ry;
         for (let rx = 0; rx < 256; rx++) {
             let x = rx;
             let di = ((y * 256) + x) * 4;
             let ulai = (y * 256) + x;
 
-            let color = output[ulai];
+            let color = smso[ulai];
+            //if ((color !== 0) && (color !== 0xFF))
+                //console.log('COLOR!', color);
             let r, g, b;
             b = ((color >>> 4) & 3) * 0x55;
             g = ((color >>> 2) & 3) * 0x55;

@@ -199,5 +199,6 @@ class SMSGG_mapper_sega {
         this.ROM.set(ibuf);
         this.cart.num_ROM_banks = Math.ceil((this.ROM.byteLength / 0x4000));
         if (this.cart.num_ROM_banks === 0) this.cart.num_ROM_banks = 1;
+        console.log('num ROM banks ' + this.cart.num_ROM_banks.toString())
     }
 }

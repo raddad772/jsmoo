@@ -317,7 +317,7 @@ class js_wrapper_t {
 				let cbuf = new Uint32Array(this.shared_buf1);
 				cbuf.set(rd.slice(this.out_ptr >>> 2, (this.out_ptr >>> 2) + to_copy))
 				/*for (let i = 0; i < to_copy; i++) {
-                    cbuf[i] = rd[i+(this.out_ptr)];
+                    cbuf[i] = 0xFF00FF00;
                 }*/
 				let d = this.as_wrapper.wasm.gp_get_framevars(this.as_wrapper.global_player);
 				dbg.dump_from_wasm(d.dbg_info);
@@ -349,6 +349,7 @@ class js_wrapper_t {
 			else {
             	this.shared_buf1 = new SharedArrayBuffer(this.tech_specs.out_size*2);
             	this.shared_buf2 = new SharedArrayBuffer(this.tech_specs.out_size*2);
+				console.log('YO?')
 			}
 			this.tech_specs.output_buffer = [this.shared_buf1, this.shared_buf2];
 		} else {
