@@ -178,7 +178,7 @@ class NES_cart {
 	}
 
 	read_ines1_header(fil) {
-		tconsole.addl(null, 'iNES version 1 header found');
+		console.log('iNES version 1 header found');
 		this.header.prg_rom_size = 16384 * fil[4];
 		this.header.chr_rom_size = 8192 * fil[5];
 		this.header.chr_ram_present = this.header.chr_rom_size === 0;
@@ -195,7 +195,7 @@ class NES_cart {
 	}
 
 	read_ines2_header(fil) {
-		tconsole.addl(null, 'iNES version 2 header found');
+		console.log('iNES version 2 header found');
 		let prgrom_msb = fil[9] & 0x0F;
 		let chrrom_msb = (fil[9] & 0xF0) >>> 4;
 		if (prgrom_msb === 0x0F) {

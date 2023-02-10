@@ -219,7 +219,6 @@ export class z80_t {
 
     reset(PC_VEC: u32=0): void {
         this.regs.rprefix = Z80P.HL;
-        console.log('prefix=0')
         this.regs.prefix = 0x00;
         this.regs.A = 0xFF;
         this.regs.F.setbyte(0xFF);

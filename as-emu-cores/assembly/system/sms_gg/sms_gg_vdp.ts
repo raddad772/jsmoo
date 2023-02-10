@@ -93,11 +93,11 @@ export class SMSGG_VDP {
         this.bus.vdp = this;
         if (variant === SMSGG_variants.GG) this.bm = 2;
 
-        let bm = 1;
+        this.bm = 1;
         switch(variant) {
             case SMSGG_variants.GG:
                 this.mode = SMSGG_VDP_modes.GG;
-                bm = 2;
+                this.bm = 2;
                 break;
         }
 
@@ -226,19 +226,19 @@ export class SMSGG_VDP {
         let hpos = this.clock.hpos;
         let vpos = this.clock.vpos;
 
-        if (hpos < (this.latch.hscroll & 7)) {
+        if (hpos < (<i32>this.latch.hscroll & 7)) {
             this.bg_color = 0;
             return;
         }
 
-        if ((!this.io.bg_hscroll_lock) || (vpos >= 16)) hpos -= this.latch.hscroll;
-        if ((!this.io.bg_vscroll_lock) || (hpos <= 191)) vpos += this.latch.vscroll;
+        if ((!this.io.bg_hscroll_lock) || (vpos >= 16)) hpos -= <i32>this.latch.hscroll;
+        if ((!this.io.bg_vscroll_lock) || (hpos <= 191)) vpos += <i32>this.latch.vscroll;
         hpos &= 0xFF;
         vpos &= 0x1FF;
 
         let nta: u32;
         if (this.bg_gfx_vlines === 192) {
-            vpos %= 224;
+            vpos = vpos % 224;
             nta = (this.io.bg_name_table_address & 0x0E) << 10;
             nta += (vpos & 0xF8) << 3;
             nta += ((hpos & 0xF8) >>> 3) << 1;
@@ -307,7 +307,7 @@ export class SMSGG_VDP {
                 let y = <u32>unchecked(this.VRAM[attr_addr++]);
                 if (y === 0xD0) break;
                 if (y >= 0xE0) y = (y - 0xFF) & 0x1FF;
-                if ((vpos < y) || (vpos > (y + vlimit))) {
+                if ((vpos < <i32>y) || (vpos > <i32>(y + vlimit))) {
                     attr_addr += 3;
                     continue;
                 }
@@ -338,7 +338,7 @@ export class SMSGG_VDP {
                 let y = <u32>unchecked(this.VRAM[attr_addr + index]) + 1;
                 if ((this.bg_gfx_vlines === 192) && (y === 0xD1)) break;
                 if (y >= 0xF1) y = (y - 0xFF) & 0x1FF;
-                if ((vpos < y) || (vpos > (y + vlimit))) continue;
+                if ((vpos < <i32>y) || (vpos > <i32>(y + vlimit))) continue;
 
                 let x = <u32>unchecked(this.VRAM[attr_addr + 0x80 + (index << 1)]);
                 let pattern = <u32>unchecked(this.VRAM[attr_addr + 0x81 + (index << 1)]);
@@ -372,7 +372,10 @@ export class SMSGG_VDP {
             }
         }
 
-        //store<u16>(this.out_buffer+(this.doi*this.bm), color);
+        if (this.mode === SMSGG_VDP_modes.GG)
+            store<u16>(this.out_buffer+(this.doi*this.bm), color); // color
+        else
+            store<u8>(this.out_buffer+(this.doi*this.bm), <u8>color);
         this.doi++;
     }
 
@@ -454,8 +457,9 @@ export class SMSGG_VDP {
 
             this.sprite_setup();
             this.doi = (this.clock.vpos * 256);
+            if (this.clock.vpos > 256) console.log('WHAT! ' + this.clock.vpos.toString());
         }
-        if ((this.clock.hpos < 256) && (this.clock.vpos < this.clock.timing.frame_lines)) {
+        if ((this.clock.hpos < 256) && (this.clock.vpos < <i32>this.clock.timing.frame_lines)) {
             this.bg_gfx();
             this.sprite_gfx();
             this.dac_gfx();
@@ -469,7 +473,7 @@ export class SMSGG_VDP {
             this.new_frame();
         }
 
-        if (this.clock.vpos < this.clock.timing.rendered_lines) {
+        if (this.clock.vpos < <i32>this.clock.timing.rendered_lines) {
             this.clock.line_counter = (this.clock.line_counter - 1);
             if (this.clock.line_counter < 0) {
                 this.clock.line_counter = this.io.line_irq_reload;
@@ -486,13 +490,13 @@ export class SMSGG_VDP {
             this.update_irqs();
         }
 
-        if (this.clock.vpos < this.clock.timing.cc_line)
+        if (this.clock.vpos < <i32>this.clock.timing.cc_line)
             this.clock.ccounter = (this.clock.ccounter + 1) & 0xFFF;
     }
 
     scanline_cycle(): void {
         // TODO: maybe here
-        if (this.clock.vpos < this.clock.timing.rendered_lines)
+        if (this.clock.vpos < <i32>this.clock.timing.rendered_lines)
             this.scanline_visible();
         else
             this.scanline_invisible();
@@ -559,14 +563,13 @@ export class SMSGG_VDP {
                 if ((this.io.address & 1) === 0)
                     this.latch.cram = val;
                 else {
-                    console.log(this.io.address.toString());
                     unchecked(this.CRAM[(this.io.address >>> 1) & 31] = <u16>(((val & 0x0F) << 8) | this.latch.cram));
                 }
 
             }
             else {
                 // 6 bits for SMS
-                unchecked(this.CRAM[this.io.address] = <u16>val & 0x3F);
+                unchecked(this.CRAM[this.io.address & 31] = <u16>val & 0x3F);
             }
         }
         this.io.address = (this.io.address + 1) & 0x3FFF;
@@ -575,7 +578,7 @@ export class SMSGG_VDP {
     write_control(val: u32): void {
         if (this.latch.control === 0) {
             this.latch.control = 1;
-            this.io.address = (this.io.address & 0xFF00) | val;
+            this.io.address = (this.io.address & 0xFF00) | (val & 0xFF);
             return;
         }
 

@@ -259,7 +259,6 @@ class NES_mapper_MMC1 {
     }
 
     set_CHR_ROM(addr, bank_num) {
-        bank_num %= this.num_CHR_banks;
         let b = (addr >>> 12);
         this.CHR_map[b].addr = addr;
         this.CHR_map[b].offset = (bank_num % this.num_CHR_banks) * 0x1000;

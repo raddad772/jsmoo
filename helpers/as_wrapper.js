@@ -2,7 +2,8 @@
 
 /* Wrap AssemblyScript GlobalPlayer object */
 
-const USE_DEBUG = true;
+const USE_DEBUG = false;
+console.log('USE DEBUG?', USE_DEBUG)
 if (DO_WASM_IMPORTS) {
     if (USE_DEBUG)
         importScripts('/as-emu-cores/build/debug_stable.js');
