@@ -604,7 +604,7 @@ export class SMSGG_VDP {
         }
         if (this.io.irq_line_pending && this.io.irq_line_enabled) {
             level = 1;
-            this.io.irq_line_pending = 0;
+            //this.io.irq_line_pending = 0;
         }
         //if (level === 1) console.log('NOTIFY AT', this.clock.vpos, this.clock.hpos);
         this.parent!.cpu.notify_IRQ(level === 1);
@@ -634,7 +634,7 @@ export class SMSGG_VDP {
         }
 
         this.clock.timing.bottom_rendered_line = bottom_row - 1;
-        this.clock.timing.vblank_start = bottom_row + 1;
+        this.clock.timing.vblank_start = bottom_row;
         this.clock.timing.rendered_lines = bottom_row;
     }
 
@@ -656,7 +656,7 @@ export class SMSGG_VDP {
                 this.io.video_mode = (this.io.video_mode & 0x0A) | ((val & 8) >>> 1) | ((val & 0x10) >>> 4);
                 this.io.irq_frame_enabled = (val & 0x20) >>> 5;
                 this.io.display_enable = (val & 0x40) >>> 6;
-                this.io.irq_frame_pending &= this.io.irq_frame_enabled;
+                //this.io.irq_frame_pending &= this.io.irq_frame_enabled;
                 this.update_irqs();
                 this.update_videomode();
                 return;
