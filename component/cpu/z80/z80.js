@@ -223,7 +223,7 @@ class z80_pins_t {
 }
 
 const SER_z80_t = [
-    'regs', 'pins', 'CMOS', 'IRQ_pending', 'IRQ_ack',
+    'regs', 'pins', 'CMOS', 'IRQ_pending',
     'NMI_pending', 'NMI_ack', 'PCO', 'prefix_was'
 ];
 
@@ -236,7 +236,6 @@ class z80_t {
         this.prefix_was = 0; // For serial
 
         this.IRQ_pending = false;
-        this.IRQ_ack = false;
 
         this.NMI_pending = false;
         this.NMI_ack = false;
@@ -295,7 +294,6 @@ class z80_t {
         this.regs.IM = 1;
 
         this.IRQ_pending = this.NMI_pending = this.NMI_ack = false;
-        this.IRQ_ack = false;
         this.regs.IRQ_vec = null;
 
         this.regs.IR = Z80_S_RESET;
@@ -305,7 +303,6 @@ class z80_t {
 
     notify_IRQ(level) {
         this.IRQ_pending = !!level;
-        if (!this.IRQ_pending) this.IRQ_ack = false;
     }
 
     notify_NMI(level) {
@@ -369,24 +366,16 @@ class z80_t {
                             console.log('NMI', this.trace_cycles);
                             dbg.break(D_RESOURCE_TYPES.Z80);
                         }
-                    } else if (this.IRQ_pending && !this.IRQ_ack) {
-                        if (this.pins.IRQ_maskable && ((!this.regs.IFF1) || this.regs.EI)) {
-                            this.IRQ_pending = false;
-                        } else {
-                            this.IRQ_pending = false;
-                            this.IRQ_ack = false;
-                            //console.log('IRQ!', this.regs.IM);
-                            this.pins.D = 0xFF;
-                            this.regs.PC = (this.regs.PC - 1) & 0xFFFF;
-                            this.pins.IRQ_maskable = true;
-                            this.regs.IRQ_vec = 0x38;
-                            this.pins.D = 0xFF;
-                            this.set_instruction(Z80_S_IRQ);
-                            if (dbg.brk_on_NMIRQ) {
-                                //console.log(this.trace_cycles);
-                                dbg.break();
-                            }
-                            break;
+                    } else if (this.IRQ_pending && this.regs.IFF1 && (!(this.regs.EI))) {
+                        this.pins.D = 0xFF;
+                        this.regs.PC = (this.regs.PC - 1) & 0xFFFF;
+                        this.pins.IRQ_maskable = true;
+                        this.regs.IRQ_vec = 0x38;
+                        this.pins.D = 0xFF;
+                        this.set_instruction(Z80_S_IRQ);
+                        if (dbg.brk_on_NMIRQ) {
+                            //console.log(this.trace_cycles);
+                            dbg.break();
                         }
                     }
                 }

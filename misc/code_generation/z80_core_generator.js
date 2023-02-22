@@ -70,6 +70,7 @@ class Z80_switchgen {
         this.indent3 = '    ' + this.indent2;
         this.in_case = false;
         this.last_case = 0;
+        this.exclude_EI = false;
         this.added_lines = 0;
         this.has_footer = false;
         this.no_addr_at_end = false;
@@ -169,7 +170,8 @@ class Z80_switchgen {
             this.addr_to_PC_then_inc();
         this.RWMIO(0, 0, 0, 0);
         this.addl('regs.TCU = 0;');
-        this.addl('regs.EI = 0;');
+        if (!this.exclude_EI)
+            this.addl('regs.EI = 0;');
         this.addl('regs.P = 0;');
         this.addl('regs.prefix = 0x00;');
         this.addl('regs.rprefix = Z80P.HL;');
@@ -1526,6 +1528,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS, as=fa
         case Z80_MN.EI:  //
             ag.Q(0);
             ag.addl('regs.IFF1 = regs.IFF2 = regs.EI = 1;')
+            ag.exclude_EI = true;
             break;
         case Z80_MN.EX_irr_rr:  //n16&, n16&
             ag.Q(0);
