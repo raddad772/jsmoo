@@ -1256,6 +1256,7 @@ class Z80_test_generator {
     BIT_o_irr(bit, addr) {
         this.Q(1);
         this.BIT(bit, this.read(addr));
+        this.wait(1);
         this.regs.setXY(this.readreg('WZH'));
     }
 

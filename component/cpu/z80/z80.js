@@ -339,6 +339,7 @@ class z80_t {
     }
 
     ins_cycles() {
+        let dispatched_irq = false;
         switch(this.regs.TCU) {
             // 1-4 is fetch next thing and interpret
             // addr T0-1
@@ -352,33 +353,38 @@ class z80_t {
                 //this.regs.prefix = 0;
                 break;
             case 1: // T1 MREQ, RD
-                if (this.regs.HALT) { this.regs.TCU = 0; break; }
-                if (this.regs.poll_IRQ) {
-                    // Make sure we only do this at start of an instruction
-                    this.regs.poll_IRQ = false;
-                    if (this.NMI_pending && !this.NMI_ack) {
-                        this.NMI_pending = false;
-                        this.NMI_ack = true;
-                        this.regs.IRQ_vec = 0x66;
-                        this.pins.IRQ_maskable = false;
-                        this.set_instruction(Z80_S_IRQ);
-                        if (dbg.brk_on_NMIRQ) {
-                            console.log('NMI', this.trace_cycles);
-                            dbg.break(D_RESOURCE_TYPES.Z80);
-                        }
-                    } else if (this.IRQ_pending && this.regs.IFF1 && (!(this.regs.EI))) {
-                        this.pins.D = 0xFF;
-                        this.regs.PC = (this.regs.PC - 1) & 0xFFFF;
-                        this.pins.IRQ_maskable = true;
-                        this.regs.IRQ_vec = 0x38;
-                        this.pins.D = 0xFF;
-                        this.set_instruction(Z80_S_IRQ);
-                        if (dbg.brk_on_NMIRQ) {
-                            //console.log(this.trace_cycles);
-                            dbg.break();
-                        }
+                if (this.NMI_pending && !this.NMI_ack) {
+                    this.NMI_pending = false;
+                    this.NMI_ack = true;
+                    this.regs.IRQ_vec = 0x66;
+                    this.pins.IRQ_maskable = false;
+                    this.set_instruction(Z80_S_IRQ);
+                    if (dbg.brk_on_NMIRQ) {
+                        console.log('NMI', this.trace_cycles);
+                        dbg.break(D_RESOURCE_TYPES.Z80);
+                    }
+                    dispatched_irq = true;
+                } else if (this.IRQ_pending && this.regs.IFF1 && (!(this.regs.EI))) {
+                    this.regs.PC = (this.regs.PC - 1) & 0xFFFF;
+                    this.pins.IRQ_maskable = true;
+                    this.regs.IRQ_vec = 0x38;
+                    this.pins.D = 0xFF;
+                    this.set_instruction(Z80_S_IRQ);
+                    if (dbg.brk_on_NMIRQ) {
+                        console.log(this.trace_cycles);
+                        dbg.break();
+                    }
+                    dispatched_irq = true;
+                }
+                if (this.regs.HALT) {
+                    if (dispatched_irq) {
+                        this.regs.HALT = 0;
+                    } else {
+                        this.regs.TCU = 0;
+                        break;
                     }
                 }
+
                 this.pins.RD = 1;
                 this.pins.MRQ = 1;
                 break;
