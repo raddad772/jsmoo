@@ -1,5 +1,7 @@
 "use strict";
 
+// This uses the Ares Z80 core, kinda. It was significantly restructured, obviously, but the original source is that.
+
 /*
  A note on the format of the tests produced by this.
 
