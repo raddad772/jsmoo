@@ -1465,6 +1465,7 @@ class Z80_test_generator {
 
     HALT() {
         this.Q(0);
+        this.regs.PC = (this.regs.PC - 1) & 0xFFFF;
         //this.regs.HALT = 1;
     }
 
