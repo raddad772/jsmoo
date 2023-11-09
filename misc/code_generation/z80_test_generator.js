@@ -570,11 +570,11 @@ function Z80_generate_registers(where) {
     where.r = pt_rnd8() & 0x7F;
 
     where.ei = pt_rnd8() & 1;
-    
+
     where.wz = pt_rnd16();
     where.ix = pt_rnd16();
     where.iy = pt_rnd16();
-    
+
     where.af_ = pt_rnd16();
     where.bc_ = pt_rnd16();
     where.de_ = pt_rnd16();
@@ -1554,7 +1554,7 @@ class Z80_test_generator {
         this.write(ta, data);
         ta = (ta + 1) & 0xFFFF;
         this.writereg('_HL', ta);
-        this.regs.F.C = +(((this.regs.C + 1) + data) > 0xFF);
+        this.regs.F.C = +((((this.regs.C + 1) & 0xFF) + data) > 0xFF);
         this.regs.F.N = (data & 0x80) >>> 7;
         this.regs.parity((((this.regs.C + 1) & 0xFF) + data & 7 ^ this.regs.B) & 0xFF);
         this.regs.setXYSZ(this.regs.B);
