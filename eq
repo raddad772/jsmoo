@@ -1,0 +1,45 @@
+[1mdiff --git a/as-emu-cores/assembly/component/cpu/r3000/r3000.ts b/as-emu-cores/assembly/component/cpu/r3000/r3000.ts[m
+[1mindex b9706b1..0cdcb66 100644[m
+[1m--- a/as-emu-cores/assembly/component/cpu/r3000/r3000.ts[m
+[1m+++ b/as-emu-cores/assembly/component/cpu/r3000/r3000.ts[m
+[36m@@ -340,20 +340,11 @@[m [mMask: Read/Write I_MASK (0=Disabled, 1=Enabled)[m
+         // Branch delay slot[m
+         if (which.new_PC !== 0) {[m
+             this.regs.PC = which.new_PC;[m
+[31m-            if (this.regs.PC === 0x80036800) {[m
+[31m-                //console.log('HITIT ' + this.clock.trace_cycles.toString());[m
+[31m-                //dbg.break();[m
+[31m-            }[m
+             if ((this.regs.PC === 0xB0)) {[m
+[31m-                //console.log('B0! ' + this.regs.R[9].toString());[m
+                 if (this.regs.R[9] === 0x3D) {[m
+                     this.console += String.fromCharCode(this.regs.R[4]);[m
+[31m-                    //console.log(this.console);[m
+                 }[m
+             }[m
+[31m-            /*if ((this.regs.PC == 0xC)) {[m
+[31m-                console.log('C0! ' + this.regs.R[9].toString());[m
+[31m-            }*/[m
+             which.new_PC = 0;[m
+         }[m
+     }[m
+[1mdiff --git a/helpers/thread_common.js b/helpers/thread_common.js[m
+[1mindex 7fc7d14..d415548 100644[m
+[1m--- a/helpers/thread_common.js[m
+[1m+++ b/helpers/thread_common.js[m
+[36m@@ -90,13 +90,13 @@[m [mconst PS1_AS_STR = 'ps1_as';[m
+ //const DEFAULT_SYSTEM = SPECTRUM_STR;[m
+ //const DEFAULT_SYSTEM = SNES_STR;[m
+ //const DEFAULT_SYSTEM = SMS_STR;[m
+[31m-//const DEFAULT_SYSTEM = GB_STR;[m
+[32m+[m[32mconst DEFAULT_SYSTEM = GB_STR;[m
+ //const DEFAULT_SYSTEM = GB_AS_STR;[m
+ //const DEFAULT_SYSTEM = GBC_STR;[m
+ //const DEFAULT_SYSTEM = GG_STR;[m
+ //const DEFAULT_SYSTEM = GG_AS_STR;[m
+ //const DEFAULT_SYSTEM = SMS_AS_STR;[m
+[31m-const DEFAULT_SYSTEM = NES_STR;[m
+[32m+[m[32m//const DEFAULT_SYSTEM = NES_STR;[m
+ //const DEFAULT_SYSTEM = NES_AS_STR;[m
+ //const DEFAULT_SYSTEM = PS1_STR;[m
+ //const DEFAULT_SYSTEM = PS1_AS_STR;[m
