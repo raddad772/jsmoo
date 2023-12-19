@@ -1540,6 +1540,7 @@ class Z80_test_generator {
         if (this.regs.B === 0) return;
         this.wait(5);
         this.regs.PC = (this.regs.PC - 2) & 0xFFFF;
+        this.regs.WZ = (this.regs.PC + 1) & 0xFFFF;
         this.post_IN_O_R();
     }
 
@@ -1567,6 +1568,7 @@ class Z80_test_generator {
         if (this.regs.B === 0) return;
         this.wait(5);
         this.regs.PC = (this.regs.PC - 2) & 0xFFFF;
+        this.regs.WZ = (this.regs.PC + 1) & 0xFFFF;
         this.post_IN_O_R();
     }
 
@@ -1801,6 +1803,7 @@ class Z80_test_generator {
         if (this.regs.B === 0) return;
         this.wait(5);
         this.regs.PC = (this.regs.PC - 2) & 0xFFFF;
+        this.regs.WZ = (this.regs.PC + 1) & 0xFFFF;
         this.post_IN_O_R();
     }
 
@@ -1810,6 +1813,7 @@ class Z80_test_generator {
         if (this.regs.B === 0) return;
         this.wait(5);
         this.regs.PC = (this.regs.PC - 2) & 0xFFFF;
+        this.regs.WZ = (this.regs.PC + 1) & 0xFFFF;
         this.post_IN_O_R();
     }
 
