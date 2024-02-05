@@ -213,7 +213,80 @@ const M6502_MN = Object.freeze({
     NOPL: 128, // X
 });
 
+function M6502_gen_MN_R() {
+    let o = {};
+    let ostr = "const M6502_MN_R = {\n";
+    for (let a in M6502_MN) {
+        ostr += '    ' + M6502_MN[a] + ': "' + a + '",\n'
+        o[M6502_MN[a]] = a;
+    }
+    ostr += "\n};"
+    return(ostr);
+}
+//console.log(M6502_gen_MN_R());
 
+const M6502_MN_R = {
+    0: "ADC",
+    1: "AND",
+    2: "ASL",
+    3: "BCC",
+    4: "BCS",
+    5: "BEQ",
+    6: "BIT",
+    7: "BMI",
+    8: "BNE",
+    9: "BPL",
+    10: "BRK",
+    11: "BVC",
+    12: "BVS",
+    13: "CLC",
+    14: "CLD",
+    15: "CLI",
+    16: "CLV",
+    17: "CMP",
+    18: "CPX",
+    19: "CPY",
+    20: "DEC",
+    21: "DEX",
+    22: "DEY",
+    23: "EOR",
+    24: "INC",
+    25: "INX",
+    26: "INY",
+    27: "JMP",
+    28: "JSR",
+    29: "LDA",
+    30: "LDX",
+    31: "LDY",
+    32: "LSR",
+    33: "NOP",
+    34: "ORA",
+    35: "PHA",
+    36: "PHP",
+    37: "PLA",
+    38: "PLP",
+    39: "ROL",
+    40: "ROR",
+    41: "RTI",
+    42: "RTS",
+    43: "SBC",
+    44: "SEC",
+    45: "SED",
+    46: "SEI",
+    47: "STA",
+    48: "STX",
+    49: "STY",
+    50: "TAX",
+    51: "TAY",
+    52: "TSX",
+    53: "TXA",
+    54: "TXS",
+    55: "TYA",
+    56: "NONE",
+    57: "S_RESET",
+    58: "S_NMI",
+    59: "S_IRQ",
+};
 
 //console.log(m6502_am_gen());
 const M6502_AM = Object.freeze({
@@ -264,6 +337,62 @@ const M6502_AM = Object.freeze({
     ZP_INDr: 15, // X 65C02
     ZP_INDw: 1501, // X 65C02
 });
+
+function M6502_gen_AM_R() {
+    let o = {};
+    let ostr = "const M6502_AM_R = {\n";
+    for (let a in M6502_AM) {
+        ostr += '    ' + M6502_AM[a] + ': "' + a + '",\n'
+        o[M6502_AM[a]] = a;
+    }
+    ostr += "\n};"
+    return(ostr);
+}
+//console.log(M6502_gen_AM_R());
+
+const M6502_AM_R = {
+    0: "ACCUM",
+    1: "ABSr",
+    101: "ABSm",
+    102: "ABSw",
+    103: "ABSjmp",
+    104: "ABSjsr",
+    2: "ABS_Xr",
+    201: "ABS_Xm",
+    202: "ABS_Xw",
+    203: "ABS_Xsya",
+    3: "ABS_Yr",
+    301: "ABS_Ym",
+    302: "ABS_Yw",
+    303: "ABS_Yxas",
+    304: "ABS_Ysxa",
+    4: "IMM",
+    5: "IMPLIED",
+    6: "IND",
+    601: "INDjmp",
+    7: "X_INDr",
+    701: "X_INDm",
+    702: "X_INDw",
+    8: "IND_Yr",
+    801: "IND_Ym",
+    802: "IND_Yw",
+    9: "PC_REL",
+    901: "PC_REL_ZP",
+    10: "ZPr",
+    1001: "ZPm",
+    1002: "ZPw",
+    11: "ZP_Xr",
+    1101: "ZP_Xm",
+    1102: "ZP_Xw",
+    12: "ZP_Yr",
+    1201: "ZP_Ym",
+    1202: "ZP_Yw",
+    13: "NONE",
+    14: "ABS_IND_Xr",
+    15: "ZP_INDr",
+    1501: "ZP_INDw",
+};
+
 
 class M6502_opcode_info {
     constructor(opcode, ins, addr_mode, mnemonic, variant=M6502_VARIANTS.STOCK) {
@@ -964,3 +1093,16 @@ class M6502_opcode_functions {
         this.exec_func = exec_func;
     }
 }
+
+function M6502_C_func_name(mo) {
+    return 'M6502_ins_' + hex2(mo.opcode) + '_' + M6502_MN_R[mo.ins];
+}
+
+function M6502_C_func_signature(mo) {
+    return 'void ' + M6502_C_func_name(mo) + '(struct M6502_regs *regs, struct M6502_pins *pins)';
+}
+
+function M6502_C_func_dec(mo) {
+    return M6502_C_func_signature(mo) + '; // ' + mo.mnemonic + '\n';
+}
+

@@ -3540,45 +3540,45 @@ const wdc65816_decoded_opcodes = Object.freeze(
                 }
             },
             true, true, false),
-        0x54: new WDC_opcode_functions(WDC_opcode_matrix[0x54],
-            function(regs, pins) { // MVN xyc
-                switch(regs.TCU) {
-                        // MVN xyc E=0 M=0 X=0
-                    case 1: // 2
-                        pins.Addr = regs.PC; pins.BA = regs.PBR;
-                        regs.PC = (regs.PC + 1) & 0xFFFF;
-                        break;
-                    case 2: // 3
-                        regs.DBR = pins.D;
-                        pins.Addr = regs.PC; pins.BA = regs.PBR;
-                        regs.PC = (regs.PC + 1) & 0xFFFF;
-                        break;
-                    case 3: // 4
-                        regs.TA = pins.D;
-                        pins.Addr = ((regs.X + regs.MD) & 0xFFFF); pins.BA = (regs.TA);
-                        break;
-                    case 4: // 5
-                        pins.RW = 1;
-                        pins.Addr = ((regs.Y + regs.MD) & 0xFFFF); pins.BA = (regs.DBR);
-                        break;
-                    case 5: // 6
-                        pins.RW = 0; pins.PDV = 0;
-                        break;
-                    case 6: // 7
-                        regs.C = (regs.C - 1) & 0xFFFF;
-                        regs.X = (regs.X + 1) & 0xFFFF;
-                        regs.Y = (regs.Y + 1) & 0xFFFF;
-                        if (regs.C !== 0xFFFF) regs.PC = (regs.PC - 3) & 0xFFFF;
-                        // Following is auto-generated code for instruction finish
-                        break;
-                    case 7: // cleanup
-                        pins.Addr = regs.PC; pins.BA = regs.PBR;
-                        regs.PC = (regs.PC + 1) & 0xFFFF;
-                        pins.PDV = 1;
-                        regs.TCU = 0;
-                        break;
-                }
-            },
+0x54: new WDC_opcode_functions(WDC_opcode_matrix[0x54],
+function(regs, pins) { // MVN xyc
+    switch(regs.TCU) {
+            // MVN xyc E=0 M=0 X=0
+        case 1: // 2
+            pins.Addr = regs.PC; pins.BA = regs.PBR;
+            regs.PC = (regs.PC + 1) & 0xFFFF;
+            break;
+        case 2: // 3
+            regs.DBR = pins.D;
+            pins.Addr = regs.PC; pins.BA = regs.PBR;
+            regs.PC = (regs.PC + 1) & 0xFFFF;
+            break;
+        case 3: // 4
+            regs.TA = pins.D;
+            pins.Addr = ((regs.X + regs.MD) & 0xFFFF); pins.BA = (regs.TA);
+            break;
+        case 4: // 5
+            pins.RW = 1;
+            pins.Addr = ((regs.Y + regs.MD) & 0xFFFF); pins.BA = (regs.DBR);
+            break;
+        case 5: // 6
+            pins.RW = 0; pins.PDV = 0;
+            break;
+        case 6: // 7
+            regs.C = (regs.C - 1) & 0xFFFF;
+            regs.X = (regs.X + 1) & 0xFFFF;
+            regs.Y = (regs.Y + 1) & 0xFFFF;
+            if (regs.C !== 0xFFFF) regs.PC = (regs.PC - 3) & 0xFFFF;
+            // Following is auto-generated code for instruction finish
+            break;
+        case 7: // cleanup
+            pins.Addr = regs.PC; pins.BA = regs.PBR;
+            regs.PC = (regs.PC + 1) & 0xFFFF;
+            pins.PDV = 1;
+            regs.TCU = 0;
+            break;
+    }
+},
             true, false, true),
         0x55: new WDC_opcode_functions(WDC_opcode_matrix[0x55],
             function(regs, pins) { // EOR d,x

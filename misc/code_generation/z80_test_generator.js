@@ -379,6 +379,7 @@ class Z80T_state {
             this.EI = 0;
             this.P = 0;
             this.Q = 0;
+            this.sq = 0;
 
             this.WZ = 0;
             this.data = 0;
@@ -415,6 +416,7 @@ class Z80T_state {
             this.EI = from.ei;
             this.P = from.p;
             this.Q = from.q;
+            this.sq = from.sq;
         }
         this.junkvar = 0;
     }
@@ -761,7 +763,7 @@ class Z80_test_generator {
     }
 
     Q(w) {
-        this.regs.Q = w;
+        this.regs.sq = w;
     }
 
     writereg(what, val) {
@@ -1293,13 +1295,13 @@ class Z80_test_generator {
     }
 
     CCF() {
-        if (this.regs.Q) { this.regs.F.X = this.regs.F.Y = 0; }
+        if (this.regs.Q !== 0) { this.regs.F.X = this.regs.F.Y = 0; }
         this.regs.F.H = this.regs.F.C;
         this.regs.F.C ^= 1;
         this.regs.F.N = 0;
-        this.regs.F.X |= ((this.regs.A & 8) >>> 3);
-        this.regs.F.Y |= ((this.regs.A & 0x20) >>> 5);
-        this.regs.Q = 1;
+        this.regs.F.X |= (((this.regs.F.getbyte() ^ this.regs.Q) | this.regs.A) & 8) >>> 3;
+        this.regs.F.Y |= (((this.regs.F.getbyte() ^ this.regs.Q) | this.regs.A) & 32) >>> 5;
+        this.Q(1);
     }
 
     CP_a_irr(x) {
@@ -2317,18 +2319,21 @@ class Z80_test_generator {
         let c = Z80_opcode_matrix[code];
         let fn = this[Z80_MN_R[c.ins]].bind(this);
         fn(c.arg1, c.arg2, c.arg3);
+        this.set_q();
     }
 
     instructionCB(code) {
         let c = Z80_CB_opcode_matrix[code];
         let fn = this[Z80_MN_R[c.ins]].bind(this);
         fn(c.arg1, c.arg2, c.arg3);
+        this.set_q();
     }
 
     instructionED(code) {
         let c = Z80_ED_opcode_matrix[code];
         let fn = this[Z80_MN_R[c.ins]].bind(this);
         fn(c.arg1, c.arg2, c.arg3);
+        this.set_q();
     }
 
     instructionCBd(addr, code) {
@@ -2341,6 +2346,14 @@ class Z80_test_generator {
         if (arg2 === 'addr') arg2 = addr;
         if (arg3 === 'addr') arg3 = addr;
         fn(arg1, arg2, arg3);
+        this.set_q();
+    }
+
+    set_q() {
+        if (this.regs.sq !== 0)
+            this.regs.Q = this.regs.F.getbyte()
+        else
+            this.regs.Q = 0;
     }
 
 

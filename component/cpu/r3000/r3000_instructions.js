@@ -869,7 +869,7 @@ function R3000_fLW(opcode,op, core) {
 
  * @param {R3000} core
  */
-function R3000_fSB(opcode,op, core) {
+function R3000_fSB(opcode, op, core) {
     //lb  rt,imm(rs)    rt=[imm+rs]  ;byte sign-extended
     let rs = (opcode >>> 21) & 0x1F;
     let rt = (opcode >>> 16) & 0x1F;

@@ -607,7 +607,9 @@ class M68K_switchgen {
 
     prefetch(output=null) {
         this.addcycle('PREFETCH');
-        this.addcycles(3)
+        this.addcycle();
+        this.addcycle();
+        this.addcycle();
         this.addl('regs.IR = regs.IRC;');
         this.readM(1, 1, 'regs.PC & 0xFFFFFFFE', 'regs.IRC');
         this.inc_PC2();
@@ -1129,4 +1131,4 @@ function M68K_generate_core() {
     //console.log(func_matrix, opt_matrix);
 }
 
-M68K_generate_core();
+//M68K_generate_core();

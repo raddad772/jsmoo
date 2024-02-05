@@ -1,7 +1,7 @@
 "use strict";
 
 const SM83_MN_LIST = Object.freeze([
-    'none',
+    'NONE',
     'ADC_di_da', 'ADC_di_di', 'ADC_di_ind',
     'ADD_di_da', 'ADD_di_di', 'ADD16_di_di', 'ADD_di_ind', 'ADD_di_rel',
     'AND_di_da', 'AND_di_di', 'AND_di_ind', 
@@ -71,7 +71,7 @@ function sm83_mn_gen() {
     return mn + '\n});\n\n' + mn_r + '\n});\n';
 }
 
-//console.log(sm83_mn_gen());*/
+//console.log(sm83_mn_gen());
 function sm83_mn_gen_as() {
     let mn = 'export enum SM83_MN {\n';
     let mn_r = 'export var SM83_MN_R: Map<u32, string> = new Map<u32, string>();\n';
@@ -87,49 +87,49 @@ function sm83_mn_gen_as() {
 //console.log(sm83_mn_gen_as());
 
 const SM83_MN = Object.freeze({
-    ADC_di_da: 0, ADC_di_di: 1, ADC_di_ind: 2, ADD_di_da: 3, ADD_di_di: 4,
-    ADD16_di_di: 5, ADD_di_ind: 6, ADD_di_rel: 7, AND_di_da: 8, AND_di_di: 9,
-    AND_di_ind: 10, BIT_idx_di: 11, BIT_idx_ind: 12, CALL_cond_addr: 13, CCF: 14,
-    CP_di_da: 15, CP_di_di: 16, CP_di_ind: 17, CPL: 18, DAA: 19,
-    DEC_di: 20, DEC16_di: 21, DEC_ind: 22, DI: 23, EI: 24,
-    HALT: 25, INC_di: 26, INC16_di: 27, INC_ind: 28, JP_cond_addr: 29,
-    JP_di: 30, JR_cond_rel: 31, LD_addr_di: 32, LD16_addr_di: 33, LD_di_addr: 34,
-    LD_di_da: 35, LD16_di_da: 36, LD_di_di: 37, LD16_di_di: 38, LD_di_di_rel: 39,
-    LD_di_ind: 40, LD_di_ind_dec: 41, LD_di_ind_inc: 42, LD_ind_da: 43, LD_ind_di: 44,
-    LD_ind_dec_di: 45, LD_ind_inc_di: 46, LDH_addr_di: 47, LDH_di_addr: 48, LDH_di_ind: 49,
-    LDH_ind_di: 50, NOP: 51, OR_di_da: 52, OR_di_di: 53, OR_di_ind: 54,
-    POP_di: 55, POP_di_AF: 56, PUSH_di: 57, RES_idx_di: 58, RES_idx_ind: 59,
-    RET: 60, RET_cond: 61, RETI: 62, RL_di: 63, RL_ind: 64,
-    RLA: 65, RLC_di: 66, RLC_ind: 67, RLCA: 68, RR_di: 69,
-    RR_ind: 70, RRA: 71, RRC_di: 72, RRC_ind: 73, RRCA: 74,
-    RST_imp: 75, SBC_di_da: 76, SBC_di_di: 77, SBC_di_ind: 78, SCF: 79,
-    SET_idx_di: 80, SET_idx_ind: 81, SLA_di: 82, SLA_ind: 83, SRA_di: 84,
-    SRA_ind: 85, SRL_di: 86, SRL_ind: 87, SUB_di_da: 88, SUB_di_di: 89,
-    SUB_di_ind: 90, SWAP_di: 91, SWAP_ind: 92, STOP: 93, XOR_di_da: 94,
-    XOR_di_di: 95, XOR_di_ind: 96, RESET: 97, S_IRQ: 98
+    NONE: 0, ADC_di_da: 1, ADC_di_di: 2, ADC_di_ind: 3, ADD_di_da: 4,
+    ADD_di_di: 5, ADD16_di_di: 6, ADD_di_ind: 7, ADD_di_rel: 8, AND_di_da: 9,
+    AND_di_di: 10, AND_di_ind: 11, BIT_idx_di: 12, BIT_idx_ind: 13, CALL_cond_addr: 14,
+    CCF: 15, CP_di_da: 16, CP_di_di: 17, CP_di_ind: 18, CPL: 19,
+    DAA: 20, DEC_di: 21, DEC16_di: 22, DEC_ind: 23, DI: 24,
+    EI: 25, HALT: 26, INC_di: 27, INC16_di: 28, INC_ind: 29,
+    JP_cond_addr: 30, JP_di: 31, JR_cond_rel: 32, LD_addr_di: 33, LD16_addr_di: 34,
+    LD_di_addr: 35, LD_di_da: 36, LD16_di_da: 37, LD_di_di: 38, LD16_di_di: 39,
+    LD_di_di_rel: 40, LD_di_ind: 41, LD_di_ind_dec: 42, LD_di_ind_inc: 43, LD_ind_da: 44,
+    LD_ind_di: 45, LD_ind_dec_di: 46, LD_ind_inc_di: 47, LDH_addr_di: 48, LDH_di_addr: 49,
+    LDH_di_ind: 50, LDH_ind_di: 51, NOP: 52, OR_di_da: 53, OR_di_di: 54,
+    OR_di_ind: 55, POP_di: 56, POP_di_AF: 57, PUSH_di: 58, RES_idx_di: 59,
+    RES_idx_ind: 60, RET: 61, RET_cond: 62, RETI: 63, RL_di: 64,
+    RL_ind: 65, RLA: 66, RLC_di: 67, RLC_ind: 68, RLCA: 69,
+    RR_di: 70, RR_ind: 71, RRA: 72, RRC_di: 73, RRC_ind: 74,
+    RRCA: 75, RST_imp: 76, SBC_di_da: 77, SBC_di_di: 78, SBC_di_ind: 79,
+    SCF: 80, SET_idx_di: 81, SET_idx_ind: 82, SLA_di: 83, SLA_ind: 84,
+    SRA_di: 85, SRA_ind: 86, SRL_di: 87, SRL_ind: 88, SUB_di_da: 89,
+    SUB_di_di: 90, SUB_di_ind: 91, SWAP_di: 92, SWAP_ind: 93, STOP: 94,
+    XOR_di_da: 95, XOR_di_di: 96, XOR_di_ind: 97, RESET: 98, S_IRQ: 99,
 });
 
 const SM83_MN_R = Object.freeze({
-    0: 'ADC_di_da', 1: 'ADC_di_di', 2: 'ADC_di_ind', 3: 'ADD_di_da', 4: 'ADD_di_di',
-    5: 'ADD16_di_di', 6: 'ADD_di_ind', 7: 'ADD_di_rel', 8: 'AND_di_da', 9: 'AND_di_di',
-    10: 'AND_di_ind', 11: 'BIT_idx_di', 12: 'BIT_idx_ind', 13: 'CALL_cond_addr', 14: 'CCF',
-    15: 'CP_di_da', 16: 'CP_di_di', 17: 'CP_di_ind', 18: 'CPL', 19: 'DAA',
-    20: 'DEC_di', 21: 'DEC16_di', 22: 'DEC_ind', 23: 'DI', 24: 'EI',
-    25: 'HALT', 26: 'INC_di', 27: 'INC16_di', 28: 'INC_ind', 29: 'JP_cond_addr',
-    30: 'JP_di', 31: 'JR_cond_rel', 32: 'LD_addr_di', 33: 'LD16_addr_di', 34: 'LD_di_addr',
-    35: 'LD_di_da', 36: 'LD16_di_da', 37: 'LD_di_di', 38: 'LD16_di_di', 39: 'LD_di_di_rel',
-    40: 'LD_di_ind', 41: 'LD_di_ind_dec', 42: 'LD_di_ind_inc', 43: 'LD_ind_da', 44: 'LD_ind_di',
-    45: 'LD_ind_dec_di', 46: 'LD_ind_inc_di', 47: 'LDH_addr_di', 48: 'LDH_di_addr', 49: 'LDH_di_ind',
-    50: 'LDH_ind_di', 51: 'NOP', 52: 'OR_di_da', 53: 'OR_di_di', 54: 'OR_di_ind',
-    55: 'POP_di', 56: 'POP_di_AF', 57: 'PUSH_di', 58: 'RES_idx_di', 59: 'RES_idx_ind',
-    60: 'RET', 61: 'RET_cond', 62: 'RETI', 63: 'RL_di', 64: 'RL_ind',
-    65: 'RLA', 66: 'RLC_di', 67: 'RLC_ind', 68: 'RLCA', 69: 'RR_di',
-    70: 'RR_ind', 71: 'RRA', 72: 'RRC_di', 73: 'RRC_ind', 74: 'RRCA',
-    75: 'RST_imp', 76: 'SBC_di_da', 77: 'SBC_di_di', 78: 'SBC_di_ind', 79: 'SCF',
-    80: 'SET_idx_di', 81: 'SET_idx_ind', 82: 'SLA_di', 83: 'SLA_ind', 84: 'SRA_di',
-    85: 'SRA_ind', 86: 'SRL_di', 87: 'SRL_ind', 88: 'SUB_di_da', 89: 'SUB_di_di',
-    90: 'SUB_di_ind', 91: 'SWAP_di', 92: 'SWAP_ind', 93: 'STOP', 94: 'XOR_di_da',
-    95: 'XOR_di_di', 96: 'XOR_di_ind', 97: 'RESET', 98: 'S_IRQ'
+    0: 'NONE', 1: 'ADC_di_da', 2: 'ADC_di_di', 3: 'ADC_di_ind', 4: 'ADD_di_da',
+    5: 'ADD_di_di', 6: 'ADD16_di_di', 7: 'ADD_di_ind', 8: 'ADD_di_rel', 9: 'AND_di_da',
+    10: 'AND_di_di', 11: 'AND_di_ind', 12: 'BIT_idx_di', 13: 'BIT_idx_ind', 14: 'CALL_cond_addr',
+    15: 'CCF', 16: 'CP_di_da', 17: 'CP_di_di', 18: 'CP_di_ind', 19: 'CPL',
+    20: 'DAA', 21: 'DEC_di', 22: 'DEC16_di', 23: 'DEC_ind', 24: 'DI',
+    25: 'EI', 26: 'HALT', 27: 'INC_di', 28: 'INC16_di', 29: 'INC_ind',
+    30: 'JP_cond_addr', 31: 'JP_di', 32: 'JR_cond_rel', 33: 'LD_addr_di', 34: 'LD16_addr_di',
+    35: 'LD_di_addr', 36: 'LD_di_da', 37: 'LD16_di_da', 38: 'LD_di_di', 39: 'LD16_di_di',
+    40: 'LD_di_di_rel', 41: 'LD_di_ind', 42: 'LD_di_ind_dec', 43: 'LD_di_ind_inc', 44: 'LD_ind_da',
+    45: 'LD_ind_di', 46: 'LD_ind_dec_di', 47: 'LD_ind_inc_di', 48: 'LDH_addr_di', 49: 'LDH_di_addr',
+    50: 'LDH_di_ind', 51: 'LDH_ind_di', 52: 'NOP', 53: 'OR_di_da', 54: 'OR_di_di',
+    55: 'OR_di_ind', 56: 'POP_di', 57: 'POP_di_AF', 58: 'PUSH_di', 59: 'RES_idx_di',
+    60: 'RES_idx_ind', 61: 'RET', 62: 'RET_cond', 63: 'RETI', 64: 'RL_di',
+    65: 'RL_ind', 66: 'RLA', 67: 'RLC_di', 68: 'RLC_ind', 69: 'RLCA',
+    70: 'RR_di', 71: 'RR_ind', 72: 'RRA', 73: 'RRC_di', 74: 'RRC_ind',
+    75: 'RRCA', 76: 'RST_imp', 77: 'SBC_di_da', 78: 'SBC_di_di', 79: 'SBC_di_ind',
+    80: 'SCF', 81: 'SET_idx_di', 82: 'SET_idx_ind', 83: 'SLA_di', 84: 'SLA_ind',
+    85: 'SRA_di', 86: 'SRA_ind', 87: 'SRL_di', 88: 'SRL_ind', 89: 'SUB_di_da',
+    90: 'SUB_di_di', 91: 'SUB_di_ind', 92: 'SWAP_di', 93: 'SWAP_ind', 94: 'STOP',
+    95: 'XOR_di_da', 96: 'XOR_di_di', 97: 'XOR_di_ind', 98: 'RESET', 99: 'S_IRQ',
 });
 
 /*function SM83_generate_opcode_matrix()
@@ -386,7 +386,7 @@ const SM83_opcode_matrix = Object.freeze({
     0xC8: new SM83_opcode_info(0xC8, SM83_MN.RET_cond, 'regs.F.Z ' + GENEQO + ' 1'),
     0xC9: new SM83_opcode_info(0xC9, SM83_MN.RET),
     0xCA: new SM83_opcode_info(0xCA, SM83_MN.JP_cond_addr, 'regs.F.Z ' + GENEQO + ' 1'),
-    //0xCB: new SM83_opcode_info(0xCB, SM83_MN.CB),
+    0xCB: new SM83_opcode_info(0xCB, SM83_MN.NONE),
     0xCC: new SM83_opcode_info(0xCC, SM83_MN.CALL_cond_addr, 'regs.F.Z ' + GENEQO + ' 1'),
     0xCD: new SM83_opcode_info(0xCD, SM83_MN.CALL_cond_addr, '1'),
     0xCE: new SM83_opcode_info(0xCE, SM83_MN.ADC_di_da, 'A'),
@@ -395,7 +395,7 @@ const SM83_opcode_matrix = Object.freeze({
     0xD0: new SM83_opcode_info(0xD0, SM83_MN.RET_cond, 'regs.F.C ' + GENEQO + ' 0'),
     0xD1: new SM83_opcode_info(0xD1, SM83_MN.POP_di, 'DE'),
     0xD2: new SM83_opcode_info(0xD2, SM83_MN.JP_cond_addr, 'regs.F.C ' + GENEQO + ' 0'),
-    //0xD3: new SM83_opcode_info(0xD3, SM83_MN.),
+    0xD3: new SM83_opcode_info(0xD3, SM83_MN.NONE),
     0xD4: new SM83_opcode_info(0xD4, SM83_MN.CALL_cond_addr, 'regs.F.C ' + GENEQO + ' 0'),
     0xD5: new SM83_opcode_info(0xD5, SM83_MN.PUSH_di, 'DE'),
     0xD6: new SM83_opcode_info(0xD6, SM83_MN.SUB_di_da, 'A'),
@@ -403,26 +403,26 @@ const SM83_opcode_matrix = Object.freeze({
     0xD8: new SM83_opcode_info(0xD8, SM83_MN.RET_cond, 'regs.F.C ' + GENEQO + ' 1'),
     0xD9: new SM83_opcode_info(0xD9, SM83_MN.RETI),
     0xDA: new SM83_opcode_info(0xDA, SM83_MN.JP_cond_addr, 'regs.F.C ' + GENEQO + ' 1'),
-    //0xDB: new SM83_opcode_info(0xDB, SM83_MN.),
+    0xDB: new SM83_opcode_info(0xDB, SM83_MN.NONE),
     0xDC: new SM83_opcode_info(0xDC, SM83_MN.CALL_cond_addr, 'regs.F.C ' + GENEQO + ' 1'),
-    //0xDD: new SM83_opcode_info(0xDD, SM83_MN.),
+    0xDD: new SM83_opcode_info(0xDD, SM83_MN.NONE),
     0xDE: new SM83_opcode_info(0xDE, SM83_MN.SBC_di_da, 'A'),
     0xDF: new SM83_opcode_info(0xDF, SM83_MN.RST_imp, 0x18),
 
     0xE0: new SM83_opcode_info(0xE0, SM83_MN.LDH_addr_di, 'A'),
     0xE1: new SM83_opcode_info(0xE1, SM83_MN.POP_di, 'HL'),
     0xE2: new SM83_opcode_info(0xE2, SM83_MN.LDH_ind_di, 'C', 'A'),
-    //0xE3: new SM83_opcode_info(0xE3, SM83_MN.),
-    //0xE4: new SM83_opcode_info(0xE4, SM83_MN.),
+    0xE3: new SM83_opcode_info(0xE3, SM83_MN.NONE),
+    0xE4: new SM83_opcode_info(0xE4, SM83_MN.NONE),
     0xE5: new SM83_opcode_info(0xE5, SM83_MN.PUSH_di, 'HL'),
     0xE6: new SM83_opcode_info(0xE6, SM83_MN.AND_di_da, 'A'),
     0xE7: new SM83_opcode_info(0xE7, SM83_MN.RST_imp, 0x20),
     0xE8: new SM83_opcode_info(0xE8, SM83_MN.ADD_di_rel, 'SP'),
     0xE9: new SM83_opcode_info(0xE9, SM83_MN.JP_di, 'HL'),
     0xEA: new SM83_opcode_info(0xEA, SM83_MN.LD_addr_di, 'A'),
-    //0xEB: new SM83_opcode_info(0xEB, SM83_MN.),
-    //0xEC: new SM83_opcode_info(0xEC, SM83_MN.),
-    //0xED: new SM83_opcode_info(0xED, SM83_MN.),
+    0xEB: new SM83_opcode_info(0xEB, SM83_MN.NONE),
+    0xEC: new SM83_opcode_info(0xEC, SM83_MN.NONE),
+    0xED: new SM83_opcode_info(0xED, SM83_MN.NONE),
     0xEE: new SM83_opcode_info(0xEE, SM83_MN.XOR_di_da, 'A'),
     0xEF: new SM83_opcode_info(0xEF, SM83_MN.RST_imp, 0x28),
 
@@ -430,7 +430,7 @@ const SM83_opcode_matrix = Object.freeze({
     0xF1: new SM83_opcode_info(0xF1, SM83_MN.POP_di_AF, 'AF'),
     0xF2: new SM83_opcode_info(0xF2, SM83_MN.LDH_di_ind, 'A', 'C'),
     0xF3: new SM83_opcode_info(0xF3, SM83_MN.DI),
-    //0xF4: new SM83_opcode_info(0xF4, SM83_MN.),
+    0xF4: new SM83_opcode_info(0xF4, SM83_MN.NONE),
     0xF5: new SM83_opcode_info(0xF5, SM83_MN.PUSH_di, 'AF'),
     0xF6: new SM83_opcode_info(0xF6, SM83_MN.OR_di_da, 'A'),
     0xF7: new SM83_opcode_info(0xF7, SM83_MN.RST_imp, 0x30),
@@ -438,12 +438,12 @@ const SM83_opcode_matrix = Object.freeze({
     0xF9: new SM83_opcode_info(0xF9, SM83_MN.LD16_di_di, 'SP', 'HL'),
     0xFA: new SM83_opcode_info(0xFA, SM83_MN.LD_di_addr, 'A'),
     0xFB: new SM83_opcode_info(0xFB, SM83_MN.EI),
-    //0xFC: new SM83_opcode_info(0xFC, SM83_MN.),
-    //0xFD: new SM83_opcode_info(0xFD, SM83_MN.),
+    0xFC: new SM83_opcode_info(0xFC, SM83_MN.NONE),
+    0xFD: new SM83_opcode_info(0xFD, SM83_MN.NONE),
     0xFE: new SM83_opcode_info(0xFE, SM83_MN.CP_di_da, 'A'),
     0xFF: new SM83_opcode_info(0xFF, SM83_MN.RST_imp, 0x38),
-    [SM83_S_RESET]: new SM83_opcode_info(SM83_S_RESET, SM83_MN.RESET),
-    [SM83_S_IRQ]: new SM83_opcode_info(SM83_S_IRQ, SM83_MN.S_IRQ)
+    [SM83_S_IRQ]: new SM83_opcode_info(SM83_S_IRQ, SM83_MN.S_IRQ),
+    [SM83_S_RESET]: new SM83_opcode_info(SM83_S_RESET, SM83_MN.RESET)
 });
 
 const SM83_opcode_matrixCB = Object.freeze({
@@ -740,3 +740,73 @@ class SM83_opcode_functions {
     }
 }
 
+function SM83_C_func_name(mo, CB=false) {
+    if (CB)
+        return 'SM83_ins_CB' + hex2(mo.opcode) + '_' + SM83_MN_R[mo.ins];
+    else
+        return 'SM83_ins_' + hex2(mo.opcode) + '_' + SM83_MN_R[mo.ins];
+}
+
+function SM83_C_func_signature(mo, CB=false) {
+    return 'void ' + SM83_C_func_name(mo, CB) + '(struct SM83_regs *regs, struct SM83_pins *pins)'
+}
+
+function SM83_C_func_dec(mo, CB=false) {
+    let o = SM83_C_func_signature(mo, CB) + ';';
+    if (mo.arg1 || mo.arg2)
+        o += ' // '
+    if (mo.arg1) {
+        o += mo.arg1;
+        if (mo.arg2) o += ', '
+    }// ' + mo.arg1 + ', ' + mo.arg2 + '\n';
+    if (mo.arg2) o += mo.arg2;
+    return o + '\n';
+}
+
+function sm83_opcode_func_gen_c() {
+    let o = '';
+    let o2 = 'SM83_ins_func SM83_decoded_opcodes[0x202] = {\n';
+    let MISSING_OPCODES = [0xCB, 0xD3, 0xDB, 0xDD, 0xE3, 0xE4, 0xEB, 0xEC, 0xED, 0xF4, 0xFC, 0xFD]
+    let perline = 0;
+    for (let i in SM83_opcode_matrix) {
+        let mo = SM83_opcode_matrix[i];
+        let mstr;
+        mstr = SM83_C_func_dec(mo, false);
+        o2 += '  &' + SM83_C_func_name(mo, false) + ',';
+        perline++;
+        if (perline === 5) {
+            perline = 0;
+            o2 += '\n';
+        }
+        else o2 += ' ';
+        o += mstr;
+    }
+    o2 += '\n'
+    perline = 0;
+    for (let i in SM83_opcode_matrixCB) {
+        let mo = SM83_opcode_matrixCB[i];
+        let mstr = SM83_C_func_dec(mo, true);
+        o += mstr;
+        o2 += '  &' + SM83_C_func_name(mo, true) + ','
+        perline++;
+        if (perline === 5) {
+            perline = 0;
+            o2 += '\n';
+        }
+        else o2 += ' ';
+    }
+    o2 += '\n';
+
+    o2 += '};\n';
+    let header = '#ifndef _JSMOOCH_SM83_OPCODES_H\n' +
+        '#define _JSMOOCH_SM83_OPCODES_H\n' +
+        '\n' +
+        '#include "sm83_misc.h"\n' +
+        '\n' +
+        '// This file mostly generated by sm83_opcodes.js in JSMoo\n' +
+        '\n'
+
+    return header + o + '\n' + o2 + '\n#endif';
+}
+
+//console.log(sm83_opcode_func_gen_c());

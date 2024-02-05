@@ -341,7 +341,7 @@ class GB_CPU {
                 this.cpu.regs.IF = val & 0x1F;
                 return;
             case 0xFFFF: // IE: Interrupt Enable
-                //console.log('WRITE IE', val & 0x1F);
+                console.log('WRITE IE', val & 0x1F, this.cpu.regs.PC);
                 this.cpu.regs.IE = val & 0x1F;
                 return;
         }

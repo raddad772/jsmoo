@@ -2,6 +2,13 @@ import {GB_PPU_modes, GB_variants} from "./gb_common";
 import {GB_bus, GB_clock} from "./gb";
 import {dbg} from "../../helpers/debug";
 
+/*
+THIS NEEDS A MODIFICATION.
+FIFO background fetch latches into a "next-up" register, even if sprite causes an abort
+but MINE, aborts and discards.
+this causes too-lon lines
+ */
+
 function GB_sp_tile_addr(tn: u32, y: u32, big_sprites: u32, y_flip: u32): u32 {
     if (big_sprites) {
         tn &= 0xFE;
@@ -73,10 +80,6 @@ class GB_FIFO_t {
 
     empty(): bool {
         return this.num_items === 0;
-    }
-
-    full(): bool {
-        return this.num_items === 8;
     }
 
     // This is for "mixing" on sprite encounter
@@ -214,58 +217,58 @@ class GB_pixel_slice_fetcher {
         return r;
     }
 
-    get_px_if_available(): GB_px {
-        this.out_px.had_pixel = false;
-        this.out_px.bg_or_sp = -1;
-        if ((this.sp_request == 0) && (!this.bg_FIFO.empty())) {
-            this.out_px.had_pixel = true;
-            let has_bg = this.ppu!.io.bg_window_enable
-            let bg = this.bg_FIFO.pop();
-            let bg_color: u32 = bg.pixel;
-            let has_sp: bool = false;
-            let sp_color: i32 = -1;
-            let sp_palette: u32 = 0;
-            let use_what:u32; // 0 for BG, 1 for OBJ
-            let obj: GB_FIFO_item_t = this.obj_FIFO.blank;
+get_px_if_available(): GB_px {
+    this.out_px.had_pixel = false;
+    this.out_px.bg_or_sp = -1;
+    if ((this.sp_request == 0) && (!this.bg_FIFO.empty())) {
+        this.out_px.had_pixel = true;
+        let has_bg = this.ppu!.io.bg_window_enable
+        let bg = this.bg_FIFO.pop();
+        let bg_color: u32 = bg.pixel;
+        let has_sp: bool = false;
+        let sp_color: i32 = -1;
+        let sp_palette: u32 = 0;
+        let use_what:u32; // 0 for BG, 1 for OBJ
+        let obj: GB_FIFO_item_t = this.obj_FIFO.blank;
 
-            if (!this.obj_FIFO.empty()) {
-                obj = this.obj_FIFO.pop();
-                sp_color = <i32>obj.pixel;
-                sp_palette = obj.palette;
-            }
-            if (this.ppu!.io.obj_enable && (sp_color !== -1)) has_sp = true;
-
-            if ((has_bg) && (!has_sp)) {
-                use_what = 1;
-            } else if ((!has_bg) && (has_sp)) {
-                use_what = 1;
-            } else if (has_bg && has_sp) {
-                if (obj.sprite_priority && (bg_color !== 0)) // "If the OBJ pixel has its priority bit set, and the BG pixel's ID is not 0, pick the BG pixel."
-                    use_what = 1; // BG
-                else if (sp_color === 0) // "If the OBJ pixel is 0, pick the BG pixel; "
-                    use_what = 1; // BG
-                else // "otherwise, pick the OBJ pixel"
-                    use_what = 2; // sprite
-            } else {
-                use_what = 0;
-                this.out_px.color = 0;
-            }
-
-            if (use_what === 0) {
-            }
-            else if (use_what === 1) {
-                this.out_px.bg_or_sp = 0;
-                this.out_px.color = bg_color;
-                this.out_px.palette = 0;
-            } else {
-                this.out_px.bg_or_sp = 1;
-                this.out_px.color = sp_color;
-                // @ts-ignore
-                this.out_px.palette = sp_palette;
-            }
+        if (!this.obj_FIFO.empty()) {
+            obj = this.obj_FIFO.pop();
+            sp_color = <i32>obj.pixel;
+            sp_palette = obj.palette;
         }
-        return this.out_px;
+        if (this.ppu!.io.obj_enable && (sp_color !== -1)) has_sp = true;
+
+        if ((has_bg) && (!has_sp)) {
+            use_what = 1;
+        } else if ((!has_bg) && (has_sp)) {
+            use_what = 1;
+        } else if (has_bg && has_sp) {
+            if (obj.sprite_priority && (bg_color !== 0)) // "If the OBJ pixel has its priority bit set, and the BG pixel's ID is not 0, pick the BG pixel."
+                use_what = 1; // BG
+            else if (sp_color === 0) // "If the OBJ pixel is 0, pick the BG pixel; "
+                use_what = 1; // BG
+            else // "otherwise, pick the OBJ pixel"
+                use_what = 2; // sprite
+        } else {
+            use_what = 0;
+            this.out_px.color = 0;
+        }
+
+        if (use_what === 0) {
+        }
+        else if (use_what === 1) {
+            this.out_px.bg_or_sp = 0;
+            this.out_px.color = bg_color;
+            this.out_px.palette = 0;
+        } else {
+            this.out_px.bg_or_sp = 1;
+            this.out_px.color = sp_color;
+            // @ts-ignore
+            this.out_px.palette = sp_palette;
+        }
     }
+    return this.out_px;
+}
 
     run_fetch_cycle(): void {
         // Scan any sprites

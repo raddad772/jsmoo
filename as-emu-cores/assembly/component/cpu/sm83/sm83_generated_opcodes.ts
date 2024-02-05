@@ -5196,42 +5196,42 @@ function sm83_get_opcode_function(opcode: u32): SM83_opcode_functions {
                     break;
             }
         });
-        case 0x100: return new SM83_opcode_functions(SM83_opcode_matrix.get(0x100),
-            function(regs: SM83_regs_t, pins: SM83_pins_t): void { // S_IRQ
-            switch(regs.TCU) {
-                case 1:
-                    regs.IME = 0;
-                    pins.RD = 0; pins.MRQ = 0;
-                    break;
-                case 2:
-                    regs.PC = (regs.PC - 1) & 0xFFFF;
-                    regs.SP = (regs.SP - 1) & 0xFFFF;
-                    break;
-                case 3: // Do write
-                    pins.Addr = (regs.SP);
-                    pins.D = (regs.PC & 0xFF00) >>> 8;
-                    regs.SP = (regs.SP - 1) & 0xFFFF;
-                    pins.WR = 1; pins.MRQ = 1;
-                    break;
-                case 4: // Do write
-                    pins.Addr = (regs.SP);
-                    pins.D = (regs.PC & 0xFF);
-                    break;
-                case 5:
-                    regs.PC = regs.IV;
-                    // Following is auto-generated code for instruction finish
-                    pins.WR = 0; pins.MRQ = 0;
-                    break;
-                case 6: // cleanup_custom
-                    pins.Addr = regs.PC;
-                    regs.PC = (regs.PC + 1) & 0xFFFF;
-                    regs.TCU = 0;
-                    regs.IR = SM83_S_DECODE;
-                    regs.poll_IRQ = true;
-                    pins.RD = 1; pins.MRQ = 1;
-                    break;
-            }
-        });
+case 0x100: return new SM83_opcode_functions(SM83_opcode_matrix.get(0x100),
+    function(regs: SM83_regs_t, pins: SM83_pins_t): void { // S_IRQ
+    switch(regs.TCU) {
+        case 1:
+            regs.IME = 0;
+            pins.RD = 0; pins.MRQ = 0;
+            break;
+        case 2:
+            regs.PC = (regs.PC - 1) & 0xFFFF;
+            regs.SP = (regs.SP - 1) & 0xFFFF;
+            break;
+        case 3: // Do write
+            pins.Addr = (regs.SP);
+            pins.D = (regs.PC & 0xFF00) >>> 8;
+            regs.SP = (regs.SP - 1) & 0xFFFF;
+            pins.WR = 1; pins.MRQ = 1;
+            break;
+        case 4: // Do write
+            pins.Addr = (regs.SP);
+            pins.D = (regs.PC & 0xFF);
+            break;
+        case 5:
+            regs.PC = regs.IV;
+            // Following is auto-generated code for instruction finish
+            pins.WR = 0; pins.MRQ = 0;
+            break;
+        case 6: // cleanup_custom
+            pins.Addr = regs.PC;
+            regs.PC = (regs.PC + 1) & 0xFFFF;
+            regs.TCU = 0;
+            regs.IR = SM83_S_DECODE;
+            regs.poll_IRQ = true;
+            pins.RD = 1; pins.MRQ = 1;
+            break;
+    }
+});
         case 0x101: return new SM83_opcode_functions(SM83_opcode_matrix.get(0x101),
             function(regs: SM83_regs_t, pins: SM83_pins_t): void { // RESET
             switch(regs.TCU) {

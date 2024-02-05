@@ -225,11 +225,9 @@ export class GB_CPU {
 
                 break;
             case 0xFF0F:
-                console.log('WRITE IF ' + (val & 0x1F).toString());
                 this.cpu.regs.IF = val & 0x1F;
                 return;
             case 0xFFFF: // IE: Interrupt Enable
-                console.log('WRITE IE ' + (val & 0x1F).toString());
                 this.cpu.regs.IE = val & 0x1F;
                 return;
         }
