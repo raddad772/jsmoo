@@ -131,10 +131,10 @@ class ARM_codegen {
 
     // *****************************
     armLoadImmediate() {
-        this.set_fn_sig(function ARM_armLoadImmediate(regs, pins, immediate, half, d, n, writeback, up, pre) {);
+        this.set_fn_sig(function ARM_armLoadImmediate(regs, pins, immediate, half, d, n, writeback, up, pre) {});
         outstr  = '\n'
         this.addl('regs.rn = regs.cur[n];');
-        this.addl('regs.rd = regs.cur[d];';
+        this.addl('regs.rd = regs.cur[d];');
 
         this.addl('if (pre === 1) regs.rn = (up ? (regs.rn + immediate) : (regs.rn - immediate)) & 0xFFFFFFFF;');
         outstr = ARMgen_load('        ', outstr, 'regs.rd', 2, '(half ? ARMe.Half : ARMe.Byte) | ARMe.Nonsequential | ARMe.Signed', 'regs.rn');
@@ -142,7 +142,7 @@ class ARM_codegen {
         this.addl('if ((pre === 0) || writeback) regs.cur[n] = regs.rn;');
         this.addl('regs.cur[d] = regs.rd;');
         this.addl('break;');
-        this.addl('}\n'
+        this.addl('}\n');
         outstr += '}\n'
     }
 
@@ -151,7 +151,7 @@ class ARM_codegen {
 function ARMgen_armLoadImmediate() {
     outstr  = 'function ARM_armLoadImmediate(regs, pins, immediate, half, d, n, writeback, up, pre) {\n'
     this.addl('regs.rn = regs.cur[n];');
-    this.addl('regs.rd = regs.cur[d];';
+    this.addl('regs.rd = regs.cur[d];');
 
     this.addl('if (pre === 1) regs.rn = (up ? (regs.rn + immediate) : (regs.rn - immediate)) & 0xFFFFFFFF;');
     outstr = ARMgen_load('        ', outstr, 'regs.rd', 2, '(half ? ARMe.Half : ARMe.Byte) | ARMe.Nonsequential | ARMe.Signed', 'regs.rn');
@@ -159,7 +159,7 @@ function ARMgen_armLoadImmediate() {
     this.addl('if ((pre === 0) || writeback) regs.cur[n] = regs.rn;');
     this.addl('regs.cur[d] = regs.rd;');
     this.addl('break;');
-    this.addl('}\n'
+    this.addl('}\n')
     outstr += '}\n'
     console.log(outstr);
 }
@@ -167,19 +167,19 @@ function ARMgen_armLoadImmediate() {
 function ARMgen_armLoadRegister() {
     let outstr = '';
     outstr  = 'function ARM_armLoadRegister(regs, pins, m, half, d, n, writeback, up, pre) {\n'
-    this.addl('switch(regs.TCU) {\n';
-    this.addl('case 1:\n';
+    this.addl('switch(regs.TCU) {\n');
+    this.addl('case 1:\n');
     this.addl('regs.rn = regs.cur[n];');
     this.addl('regs.rm = regs.cur[m];');
     this.addl('regs.rd = regs.cur[d];');
     this.addl('if (pre === 1) regs.rn = (up ? (regs.rn + regs.rm) : (regs.rn - regs.rm)) & 0xFFFFFFFF;');
     outstr = ARMgen_load('        ', outstr, 'regs.rd', 2, '(half ? ARMe.Half : ARMe.Byte) | ARMe.Nonsequential | ARMe.Signed', 'regs.rn');
     this.addl('if (pre === 0) regs.rn = (up ? (regs.rn + regs.rm) : (regs.rn - regs.rm)) & 0xFFFFFFFF;');
-    this.addl('\n';
+    this.addl('\n');
     this.addl('if ((pre === 0) || writeback) regs.cur[n] = regs.rn;');
     this.addl('regs.cur[d] = regs.rd;');
     this.addl('break;');
-    this.addl('}\n'
+    this.addl('}\n')
     outstr += '}\n'
     console.log(outstr);
 }
@@ -195,15 +195,15 @@ function ARM_armMemSwap(regs, pins, m ,d, n, byte) {
 function ARMgen_armMemSwap() {
     let outstr = '';
     outstr  = 'function ARM_armMemSwap(regs, pins, m ,d, n, byte) {\n'
-    this.addl('switch(regs.TCU) {\n';
-    this.addl('case 1:\n';
+    this.addl('switch(regs.TCU) {\n');
+    this.addl('case 1:\n');
     outstr = ARMgen_load('        ', outstr, 'regs.word', 2, '(byte ? ARMe.Half : ARMe.Byte) | ARMe.Nonsequential', 'regs.cur[n]');
     outstr = ARMgen_store('        ', outstr, 3, '(byte ? ARMe.Byte : ARMe.Word) | ARMe.Nonsequential', 'regs.cur[n]', 'regs.cur[m]');
     this.addl('regs.cur[d] = regs.word;');
     this.addl('break;');
-    this.addl('}\n'
+    this.addl('}\n')
     outstr += '}\n'
     console.log(outstr);
 }
 
-ARMgen_armMemSwap()
+//ARMgen_armMemSwap()

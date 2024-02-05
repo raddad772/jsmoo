@@ -535,8 +535,10 @@ class NES_ppu {
         }
         // INCREMENT VERTICAL SCROLL IN v
         // Cycles 257, copy parts of T to V
-        if ((this.line_cycle === 257) && this.rendering_enabled)
+        if ((this.line_cycle === 257) && this.rendering_enabled) {
+            if (this.clock.ppu_y == 39) console.log(hex4(this.io.t));
             this.io.v = (this.io.v & 0xFBE0) | (this.io.t & 0x41F);
+        }
     }
 
     // Get tile info into shifters using screen X, Y coordinates

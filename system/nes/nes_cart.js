@@ -240,7 +240,8 @@ class NES_cart {
 				this.header.nes_timing = NES_TIMINGS.PAL;
 				break;
 			case 2:
-				alert('WTF even is this');
+				console.log('WTF even is this');
+				this.header.nes_timing = NES_TIMINGS.NTSC;
 				break;
 			case 3:
 				this.header.nes_timing = NES_TIMINGS.DENDY;

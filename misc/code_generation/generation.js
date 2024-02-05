@@ -86,6 +86,11 @@ function generate_sm83_as() {
     save_js('sm83_generated_opcodes.ts', generate_sm83_core_as());
 }
 
+function generate_sm83_c() {
+    set_gentarget('c');
+    save_js('sm83_opcodes.c', generate_sm83_core_c());
+}
+
 
 function click_generate_sm83_tests() {
     let seed = seed_input.value;

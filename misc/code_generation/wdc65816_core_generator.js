@@ -2,7 +2,7 @@
 
 // BIG TODO: implement diff-based RPDV, so pins are not set and reset SO MUCH
 
-
+// is this still true?
 // PROBLEMS
 // Code generation is complete. BUT:
 // Large code generation
@@ -21,54 +21,7 @@
 // * RESET does not restart a STP'd processor like it should
 
 
-/*
- Bank boundary wrapping occurs in both native and emulation mode (and does not depend on which mode the 65C816 is in). The following are confined to bank 0 ("confined to" means they address bank 0 and wrap at the bank 0 boundary):
-
-    A. The direct page
-    B. The stack
-    C. [absolute] and (absolute) addressing modes (JMP is the only instruction available for either addressing mode)
-
-The following are confined to bank K:
-
-    A. X(absolute,X) addressing mode (JMP and JSR are the only instructions available for this addressing mode)
-    B. The Program Counter (i.e. the PC register); again, this means branches wrap at the bank K boundary
-
-source,destination addressing (i.e. the MVN and MVP instructions) wraps at both the source and destination bank boundaries.
-
-Otherwise, wrapping does not occur at bank boundaries.
-*/
-
-/*
-branch -3 (0xFD)
-
-INX   PC=0x100
-BVC   PC=0x101
--3    PC=0x102
-INX   PC=0x103
-
-goes back to the start of INX. so PC is from the "next instruction" which is where it is after anyway
-*/
-
-// So came into a bit of a problem. A naive encoding (with another doubling for D) ended
-//  up with 8MB of code.
-// Taking out D took us from 16 to 8 times, and got us down to 4.5MB.
-// Only including unique function variations (necessitating a search) got us to 1.8MB
-// Minifying got us to 464k. Which isn't so bad, really. But we need to think about better
-//  space usage.
-// Remember not all addressing modes are even done yet.
-
 // Current instruction coding has 5 encodings, for E=0 M=0/1 X=0/1, and E=1 M=1 X=1.
-
-// Really, this could be 3 encodings, wherein there is one for E=1, one for 8bit that
-//  differs from E=1, and one for 16bit. The instruction can use a fast selection function
-//  before call for emu/native8, native8_diff, or native16.
-// Also, the final struct could be generated in-memory and not saved except for analysis...
-// Also, the final struct could be generated as-needed. JIT compilers SHOULD compile these
-//  in this case.
-// RPDVs can be compressed, and other reduntant things removed.
-// Pins.D can be assumed to be &0xFF on input.
-// Also, the struct could have two generation methods: size, or readability.
-// In size mode, it is minified using a minifier of some kind.
 
 /* General idea behind this emulator.
     Pin-centric. However, a real 65816 has some big annoyances, like multiplexing
@@ -1707,7 +1660,7 @@ function WDC_generate_instruction_function(indent, opcode_info, E, M, X) {
             ag.push_L('regs.TR');
             ag.addl('regs.PC = regs.TA;');
             break;
-        case WDC_AM.Ad: // Abslute a R-M-W
+        case WDC_AM.Ad: // Absolute a R-M-W
             ag.addl('//case AM.Ad')
             set_em16rmw();
 
@@ -2676,8 +2629,6 @@ function WDC_generate_instruction_function(indent, opcode_info, E, M, X) {
 function generate_instruction_codes(indent, E, M, X) {
     let outstr = '';
     let firstin = false;
-    let aryo;
-    let keep_it = false;
     for (let opcode = 0; opcode <= WDC_MAX_OPCODE; opcode++) {
         let opcode_info = WDC_opcode_matrix[opcode];
         let opc2 = '0x' + hex2(opcode);
@@ -2692,12 +2643,10 @@ function generate_instruction_codes(indent, E, M, X) {
         mystr += r.affected_by_M ? 'true, ' : 'false, ';
         mystr += r.affected_by_X ? 'true)' : 'false)';
 
-        //if ((E && r.affected_by_E) || (M && r.affected_by_M) || (X && r.affected_by_X) || (!E && !M && !X)) {
-            if (firstin)
-                outstr += ',\n';
-            firstin = true;
-            outstr += mystr;
-        //}
+        if (firstin)
+            outstr += ',\n';
+        firstin = true;
+        outstr += mystr;
     }
     return '{\n' + outstr + '\n}';
 }

@@ -743,6 +743,7 @@ class GB_PPU {
                 if (val & 0x80) this.enable();
                 else this.disable();
 
+                console.log('LCDC WRITE ' + hex2(val) + ' on line ' + this.clock.ly);
                 this.io.window_tile_map_base = (val & 0x40) >>> 6;
                 this.io.window_enable = (val & 0x20) >>> 5;
                 this.io.bg_window_tile_data_base = (val & 0x10) >>> 4;
@@ -785,6 +786,7 @@ class GB_PPU {
                 return;
             case 0xFF4B: // window x + 7
                 this.io.wx = val+1;
+                console.log('WX WRITE ' + hex2(val) + ' on line ' + this.clock.ly);
                 return;
             case 0xFF47: // BGP pallete
                 //if (!this.clock.CPU_can_VRAM) return;
@@ -792,6 +794,7 @@ class GB_PPU {
                 this.bg_palette[1] = (val >>> 2) & 3;
                 this.bg_palette[2] = (val >>> 4) & 3;
                 this.bg_palette[3] = (val >>> 6) & 3;
+                console.log("Write to BG pallette " + hex2(val));
                 return;
             case 0xFF48: // OBP0 sprite palette 0
                 //if (!this.clock.CPU_can_VRAM) return;
@@ -896,6 +899,7 @@ class GB_PPU {
         this.clock.setCPU_can_OAM(1);
         this.io.STAT_IF = 0;
         this.eval_STAT();
+        console.log('DISABLE PPU ' + this.clock.master_clock)
     }
 
     enable() {
@@ -911,6 +915,7 @@ class GB_PPU {
         this.set_mode(GB_PPU_modes.OAM_search);
         this.eval_lyc();
         this.eval_STAT();
+        console.log('ENABLE PPU ' + this.clock.master_clock)
     }
 
     set_mode(which) {
@@ -992,6 +997,7 @@ class GB_PPU {
         if ((cly === 153) && (this.io.lyc !== 153)) cly = 0;
         if (cly === this.io.lyc) {
             this.IRQ_lylyc_up();
+            //console.log('LY=LYC frame #' + this.clock.master_frame + ' line #' + this.clock.ly);
         }
         else
             this.IRQ_lylyc_down();
@@ -1044,7 +1050,7 @@ class GB_PPU {
     eval_STAT() {
         let mask = this.io.STAT_IF & this.io.STAT_IE;
         if ((this.io.old_mask === 0) && (mask !== 0)) {
-            //console.log('TRIGGER STAT!');
+            console.log('TRIGGER STAT IRQ frame #' + this.clock.master_frame + ' line #' + this.clock.ly);
             this.bus.cpu.cpu.regs.IF |= 2;
         }
         else {
