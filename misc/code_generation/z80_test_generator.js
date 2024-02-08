@@ -1296,11 +1296,12 @@ class Z80_test_generator {
 
     CCF() {
         if (this.regs.Q !== 0) { this.regs.F.X = this.regs.F.Y = 0; }
-        this.regs.F.C ^= 1;
         this.regs.F.H = this.regs.F.C;
+        this.regs.F.C ^= 1;
         this.regs.F.N = 0;
-        this.regs.F.X |= (((this.regs.F.getbyte() ^ this.regs.Q) | this.regs.A) & 8) >>> 3;
-        this.regs.F.Y |= (((this.regs.F.getbyte() ^ this.regs.Q) | this.regs.A) & 32) >>> 5;
+        let ta = this.regs.F.getbyte();
+        this.regs.F.X |= (((ta ^ this.regs.Q) | this.regs.A) & 0x08) >>> 3;
+        this.regs.F.Y |= (((ta ^ this.regs.Q) | this.regs.A) & 0x20) >>> 5;
         this.Q(1);
     }
 
