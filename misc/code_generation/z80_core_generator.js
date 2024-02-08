@@ -4,7 +4,30 @@
 // prefix
 // two-prefix
 
+//import {Z80_prefix_to_codemap, Z80_prefixes} from "../../as-emu-cores/assembly/component/cpu/z80/z80_opcodes";
+
 const Z80_matrix_size = Z80_MAX_OPCODE * Z80_prefixes.length;
+
+function Z80replace_for_C(whatr) {
+    whatr = whatr.replaceAll('regs.exchange_shadow_af()', 'Z80_regs_exchange_shadow_af(regs)')
+    whatr = whatr.replaceAll('regs.exchange_shadow()', 'Z80_regs_exchange_shadow(regs)');
+    whatr = whatr.replaceAll('regs.exchange_de_hl()', 'Z80_regs_exchange_de_hl(regs)')
+    whatr = whatr.replaceAll('regs.exchange_shadow_af()', 'Z80_regs_exchange_shadow_af(regs)')
+    whatr = whatr.replaceAll('Z80P.', 'Z80P_')
+    whatr = whatr.replaceAll('regs.F.setbyte(', 'Z80_regs_F_setbyte(&regs->F, ');
+    whatr = whatr.replaceAll('regs.F.getbyte()', 'Z80_regs_F_getbyte(&regs->F)');
+    whatr = whatr.replaceAll('pins.', 'pins->') // Reference to pointer
+    whatr = whatr.replaceAll('regs.', 'regs->') // Reference to pointer
+    whatr = whatr.replaceAll('>>>', '>>'); // Translate >>> to >>
+    whatr = whatr.replaceAll('===', '=='); // === becomes ==
+    whatr = whatr.replaceAll('!==', '!=');
+    whatr = whatr.replaceAll('let ', 'u32 '); // Inline variable declarations
+    whatr = whatr.replaceAll('true', 'TRUE');
+    whatr = whatr.replaceAll('false', 'FALSE');
+    //what = what.replaceAll('mksigned8(regs->TA)', '(i32)(i8)regs->TA')
+    //what = what.replaceAll('mksigned8(regs->TR)', '(i32)(i8)regs->TR')
+    return whatr;
+}
 
 class Z80_get_opc_by_prefix_ret {
     constructor(opc, sub) {
@@ -64,7 +87,7 @@ function Z80_get_opc_by_prefix(prfx, i) {
 }
 
 class Z80_switchgen {
-    constructor(indent, what, sub) {
+    constructor(indent, what, sub, is_C) {
         this.indent1 = indent;
         this.indent2 = '    ' + this.indent1;
         this.indent3 = '    ' + this.indent2;
@@ -74,9 +97,13 @@ class Z80_switchgen {
         this.added_lines = 0;
         this.has_footer = false;
         this.no_addr_at_end = false;
-        this.outstr = this.indent1 + 'switch(regs.TCU) {\n';
+        if (!is_C)
+            this.outstr = this.indent1 + 'switch(regs.TCU) {\n';
+        else
+            this.outstr = this.indent1 + 'switch(regs->TCU) {\n';
         this.has_cycle = false;
         this.on_cycle = [];
+        this.is_C = is_C;
 
         this.old_wr = 0;
         this.old_rd = 0;
@@ -88,6 +115,7 @@ class Z80_switchgen {
 
     psaddl(what) {
         this.added_lines++;
+        if (this.is_C) what = Z80replace_for_C(what);
         this.outstr = this.indent1 + what + '\n' + this.outstr;
     }
 
@@ -125,8 +153,10 @@ class Z80_switchgen {
 
     addl(what) {
         this.added_lines++;
-        if (this.has_cycle)
+        if (this.has_cycle) {
+            if (this.is_C) what = Z80replace_for_C(what);
             this.outstr += this.indent3 + what + '\n';
+        }
         else
             this.on_cycle.push(what);
     }
@@ -258,13 +288,16 @@ class Z80_switchgen {
 
     displace(withwhat, outto, clocks_to_wait=5) {
         if ((withwhat !== 'IX') && (withwhat !== 'IY')) {
-            this.addl(outto + ' = ' + this.readreg(withwhat));
+            this.addl(outto + ' = ' + this.readreg(withwhat) + ';');
             return;
         }
         this.operand8('regs.TR');
         this.addcycles(clocks_to_wait);
         withwhat = this.readreg(withwhat);
-        this.addl('regs.WZ = (' + withwhat + ' + mksigned8(regs.TR)) & 0xFFFF;');
+        if (!this.is_C)
+            this.addl('regs.WZ = (' + withwhat + ' + mksigned8(regs.TR)) & 0xFFFF;');
+        else
+            this.addl('regs.WZ = (((i32)' + withwhat + ') + ((i32)(i8)regs.TR)) & 0xFFFF;');
         this.addl(outto + ' = regs.WZ;');
     }
 
@@ -743,10 +776,16 @@ class Z80_switchgen {
         this.addl('regs.TA = (regs.TA + 1) & 0xFFFF;');
         this.writereg('_HL', 'regs.TA');
         this.addcycles(5);
-        this.addl('let n = (regs.A - regs.TR) & 0xFF;');
+        if (!this.is_C)
+            this.addl('let n = (regs.A - regs.TR) & 0xFF;');
+        else
+            this.addl(';u32 n = (regs.A - regs.TR) & 0xFF;');
         this.addl('regs.F.N = 1;');
         this.addl('regs.TA = (((regs.B << 8) | regs.C) - 1) & 0xFFFF;');
-        this.addl('regs.F.PV = +(regs.TA !== 0)');
+        if (!this.is_C)
+            this.addl('regs.F.PV = +(regs.TA !== 0);');
+        else
+            this.addl('regs.F.PV = regs.TA != 0;');
         this.addl('regs.F.H = ((regs.A ^ regs.TR ^ n) & 0x10) >>> 4;');
         this.addl('regs.B = (regs.TA & 0xFF00) >>> 8;');
         this.addl('regs.C = regs.TA & 0xFF;');
@@ -863,7 +902,7 @@ class Z80_switchgen {
         this.writereg('DE', 'regs.TA');
         this.addcycles(2);
         this.addl('regs.F.N = regs.F.H = 0;');
-        this.addl('regs.TA = (regs.A + regs.TR) & 0xFF');
+        this.addl('regs.TA = (regs.A + regs.TR) & 0xFF;');
         this.addl('regs.F.X = (regs.TA & 8) >>> 3;');
         this.addl('regs.F.Y = (regs.TA & 2) >>> 1;');
         this.addl('regs.TA = (((regs.B << 8) | regs.C) - 1) & 0xFFFF;');
@@ -1007,7 +1046,10 @@ class Z80_switchgen {
     }
 
     SLL(x, out=null) {
-        this.addl('let x = ' + x + ';');
+        if (!this.is_C)
+            this.addl('let x = ' + x + ';');
+        else
+            this.addl(';u32 x = ' + x + ';');
         this.addl('let c = (x & 0x80) >>> 7;');
         this.addl('x = ((x << 1) | 1) & 0xFF;');
 
@@ -1148,16 +1190,24 @@ function Z80_replace_arg(arg, sub) {
     return arg;
 }
 
+function generate_z80_c(is_C=true) {
+    save_js('z80_opcodes.c', generate_z80_core_c());
+}
+
 /**
  * @param {String} indent
  * @param {Z80_opcode_info} opcode_info
  * @param {null|String} sub
  */
-function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS, as=false) {
+function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS, as=false, is_C=false) {
     let r;
     let indent2 = indent + '    ';
+    if (is_C) {
+        indent = '';
+        indent = '    ';
+    }
     let bnum;
-    let ag = new Z80_switchgen(indent2, opcode_info, sub);
+    let ag = new Z80_switchgen(indent2, opcode_info, sub, is_C);
     if (sub === null) sub = 'HL';
     if (typeof opcode_info === 'undefined') debugger;
     let arg1 = opcode_info.arg1;
@@ -1193,8 +1243,11 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS, as=fa
             if (GENTARGET === 'as') {
                 ag.addl('let wait: u32;')
             }
-            else {
+            else if (GENTARGET === 'js') {
                 ag.addl('let wait;')
+            }
+            else if (GENTARGET === 'c') {
+                ag.addl(';u32 wait;');
             }
             ag.addl('switch(pins.IRQ_maskable ? regs.IM : 1) {');
             ag.addl('case 0:');
@@ -1373,7 +1426,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS, as=fa
             ag.Q(0);
             ag.operand16('regs.WZ');
             ag.addl('regs.TA = regs.WZ;');
-            ag.addl('regs.TR = +(' + arg1 + ')');
+            ag.addl('regs.TR = +(' + arg1 + ');');
             // regs.TR is now true or false
             // if we don't do it, skip the push and call...
             ag.addl('if (!regs.TR) { regs.TA = regs.PC; regs.TCU+=7; break; }');
@@ -1474,12 +1527,12 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS, as=fa
                 switch(sub) {
                     case 'IX':
                         ag.DEC('(regs.IX & 0xFF00) >>> 8');
-                        ag.addl('regs.IX = (regs.TR << 8) | (regs.IX & 0xFF)');
+                        ag.addl('regs.IX = (regs.TR << 8) | (regs.IX & 0xFF);');
                         replaced = true;
                         break;
                     case 'IY':
                         ag.DEC('(regs.IY & 0xFF00) >>> 8');
-                        ag.addl('regs.IY = (regs.TR << 8) | (regs.IY & 0xFF)');
+                        ag.addl('regs.IY = (regs.TR << 8) | (regs.IY & 0xFF);');
                         replaced = true;
                         break;
                 }
@@ -1505,7 +1558,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS, as=fa
         case Z80_MN.DEC_rr:  //n16&
             ag.Q(0);
             ag.addcycles(2);
-            ag.addl('regs.TA = ' + ag.readreg(arg1));
+            ag.addl('regs.TA = ' + ag.readreg(arg1) + ';');
             ag.addl('regs.TA = (regs.TA - 1) & 0xFFFF;');
             ag.writereg(arg1, 'regs.TA');
             break;
@@ -1518,10 +1571,14 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS, as=fa
             ag.Q(0);
             ag.addcycle();
             ag.operand8('regs.TR');
-            ag.addl('regs.TR = mksigned8(regs.TR);');
+            if (!is_C)
+                ag.addl('regs.TR = mksigned8(regs.TR);');
             ag.addl('regs.B = (regs.B - 1) & 0xFF;');
             ag.addl('if (regs.B ' + GENEQO + ' 0) { regs.TCU += 5; break; }');
-            ag.addl('regs.WZ = (regs.PC + regs.TR) & 0xFFFF;');
+            if (!is_C)
+                ag.addl('regs.WZ = (regs.PC + regs.TR) & 0xFFFF;');
+            else
+                ag.addl('regs.WZ = ((u32)(((i32)regs.PC) + ((i32)(i8)regs.TR))) & 0xFFFF;');
             ag.addl('regs.PC = regs.WZ;');
             ag.addcycles(5);
             break;
@@ -1608,12 +1665,12 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS, as=fa
                 switch(sub) {
                     case 'IX':
                         ag.INC('(regs.IX & 0xFF00) >>> 8');
-                        ag.addl('regs.IX = (regs.TR << 8) | (regs.IX & 0xFF)');
+                        ag.addl('regs.IX = (regs.TR << 8) | (regs.IX & 0xFF);');
                         replaced = true;
                         break;
                     case 'IY':
                         ag.INC('(regs.IY & 0xFF00) >>> 8');
-                        ag.addl('regs.IY = (regs.TR << 8) | (regs.IY & 0xFF)');
+                        ag.addl('regs.IY = (regs.TR << 8) | (regs.IY & 0xFF);');
                         replaced = true;
                         break;
                 }
@@ -1668,7 +1725,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS, as=fa
            ag.Q(0);
            ag.operand16('regs.WZ');
            if (arg1 === '1') {
-               ag.addl('regs.PC = regs.WZ');
+               ag.addl('regs.PC = regs.WZ;');
            } else {
                ag.addl('if (' + arg1 + ') regs.PC = regs.WZ;');
            }
@@ -1680,9 +1737,14 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS, as=fa
         case Z80_MN.JR_c_e:  //bool
             ag.Q(0);
             ag.operand8('regs.TR');
-            ag.addl('regs.TR = mksigned8(regs.TR);');
+            if (!is_C)
+                ag.addl('regs.TR = mksigned8(regs.TR);');
             ag.addl('if (!(' + arg1 + ')) { regs.TCU += 5; break; }');
-            ag.addl('regs.WZ = (regs.PC + regs.TR) & 0xFFFF;');
+            if (!is_C)
+                ag.addl('regs.WZ = (regs.PC + regs.TR) & 0xFFFF;');
+            else
+                ag.addl('regs.WZ = ((u32)(((i32)regs.PC) + ((i32)(i8)regs.TR))) & 0xFFFF;');
+
             ag.addl('regs.PC = regs.WZ;');
             ag.addcycles(5);
             break;
@@ -1713,7 +1775,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS, as=fa
             break;
         case Z80_MN.LD_irr_a:  //n16&
             ag.Q(0);
-            ag.addl('regs.WZ = ' + ag.readreg(arg1));
+            ag.addl('regs.WZ = ' + ag.readreg(arg1) + ';');
             ag.write('regs.WZ', 'regs.A');
             ag.addl('regs.WZ = ((regs.WZ + 1) & 0xFF) | (regs.A << 8);');
             break;
@@ -1781,7 +1843,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS, as=fa
         case Z80_MN.LD_sp_rr:  //n16&
             ag.Q(0);
             ag.addcycles(2);
-            ag.addl('regs.SP = ' + ag.readreg(arg1));
+            ag.addl('regs.SP = ' + ag.readreg(arg1) + ';');
             break;
         case Z80_MN.LDD:  //
             ag.Q(1);
@@ -1922,7 +1984,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS, as=fa
             ag.addcycle(0);
             ag.addl('if (!(' + arg1 + ')) { regs.TCU += 6; break; }');
             ag.pop16rip('WZ');
-            ag.addl('regs.PC = regs.WZ');
+            ag.addl('regs.PC = regs.WZ;');
             break;
         case Z80_MN.RETI:  //
             ag.Q(0);
@@ -2282,8 +2344,12 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS, as=fa
     }
     if (as)
         return 'function(regs: z80_regs, pins: z80_pins): void { // ' + opcode_info.mnemonic + '\n' + ag.finished() + indent + '}';
-    else
+    else if (GENTARGET === 'js')
         return 'function(regs, pins) { //' + opcode_info.mnemonic + '\n' + ag.finished() + indent + '}';
+    else if (GENTARGET === 'c')
+        return ag.finished() + '}';
+    else
+        return 'HOOLIGAN!';
 }
 
 function Z80_get_matrix_by_prefix(prfx, i) {
@@ -2403,6 +2469,96 @@ function generate_z80_core(CMOS) {
         }
     }
     outstr += '\n});';
+    return outstr;
+}
+
+function Z80_C_func_name(opc, prefix, r)
+{
+    return "Z80_ins_" + hex2(prefix) + '_' + hex2(opc) + '_' + Z80_MN_R[r.ins];
+}
+
+function Z80_C_func_signature(opc, prefix, r)
+{
+    return 'void ' + Z80_C_func_name(opc, prefix, r) + '(struct Z80_regs* regs, struct Z80_pins* pins)';
+}
+
+function Z80_C_func_dec(opc, prefix, r) {
+    return Z80_C_func_signature(opc, prefix, r) + '; // ' + r.mnemonic + '\n';
+}
+
+function generate_z80_core_h(CMOS) {
+    let o = 'void Z80_ins_NONE(struct Z80_regs* regs, struct Z80_pins* pins);\n';
+    let o2 = 'Z80_ins_func Z80_decoded_opcodes[' + ((Z80_MAX_OPCODE+1)*7).toString() + '] = {\n';
+    let perline = 0;
+    for (let p in Z80_prefixes) {
+        let prfx = Z80_prefixes[p];
+        for (let i = 0; i < Z80_MAX_OPCODE; i++) {
+            let on = Z80_prefix_to_codemap[prfx] + i;
+            let opc = Z80_get_opc_by_prefix(prfx, i).opc;
+            let mstr = '';
+	        if (typeof opc === 'undefined') {
+                o2 += '  &Z80_ins_00_00_NOP,';
+            }
+            else {
+                mstr = Z80_C_func_dec(i, prfx, opc);
+                o2 += '  &' + Z80_C_func_name(i, prfx, opc) + ',';
+            }
+            perline++;
+            if (perline === 5) {
+                perline = 0;
+                o2 += '\n';
+            } else o2 += ' ';
+            o += mstr;
+        }
+    }
+    o2 += '\n};\n';
+    let header = '#ifndef _JSMOOCH_Z80_OPCODES_H\n' +
+        '#define _JSMOOCH_Z80_OPCODES_H\n' +
+        '\n' +
+        '#include "z80.h"\n' +
+        '#include "z80_opcodes.h"\n' +
+        '\n' +
+        '// This file mostly generated by sm83_opcodes.js in JSMoo\n' +
+        '\n'
+
+    return header + o + '\n' + o2 + '\n#endif\n';
+}
+//console.log(generate_z80_core_h());
+
+function generate_z80_core_c(CMOS) {
+    let outstr = '#include "helpers/int.h"\n' +
+        '#include "z80.h"\n' +
+        '\n' +
+        '// This file auto-generated by z80_core_generator.js in JSMoo\n' +
+        '\n';
+    let indent = '';
+    let firstin = false;
+    for (let p in Z80_prefixes) {
+        let prfx = Z80_prefixes[p];
+        for (let i = 0; i <= Z80_MAX_OPCODE; i++) {
+            let matrix_code = Z80_prefix_to_codemap[prfx] + i;
+            let r = Z80_get_opc_by_prefix(prfx, i);
+            if ((typeof r === 'undefined') || (typeof r.opc === 'undefined')) {
+                //ra = Z80_generate_instruction_function(indent, Z80_opcode_matrix[0], null, CMOS, false, true);
+                continue;
+            }
+            let opc = r.opc;
+            let mystr = Z80_C_func_signature(i, prfx, opc) + '\n{\n';
+            let ra;
+            /*let sre = Z80_get_matrix_by_prefix(prfx, i);
+            if (typeof sre === 'undefined') {
+                console.log('WHAT?', hex2(prfx), hex2(i));
+            }
+            mystr += sre;*/
+            ra = Z80_generate_instruction_function(indent, r.opc, r.sub, CMOS, false, true);
+            mystr += ra + '\n';
+            if (firstin)
+                outstr += '\n';
+            firstin = true;
+            outstr += mystr;
+        }
+    }
+    outstr += '\n';
     return outstr;
 }
 

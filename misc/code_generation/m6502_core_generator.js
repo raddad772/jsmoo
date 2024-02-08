@@ -1787,7 +1787,7 @@ function generate_nesm6502_core_c(is_C=true) {
     return generate_6502_core_c([M6502_VARIANTS.STOCK], M6502_VARIANTS.STOCK, 'nesm6502_opcodes_decoded', false, '', true);
 }
 
-    function generate_nesm6502_c(is_C=true) {
+function generate_nesm6502_c(is_C=true) {
     set_gentarget('c');
     save_js('nesm6502_opcodes.c', generate_nesm6502_core_c());
 }
