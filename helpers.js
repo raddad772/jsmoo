@@ -284,6 +284,23 @@ function hex8(val) {
     return outstr.toUpperCase();
 }
 
+
+/**
+ * @param {Number} val
+ */
+function hex8(val) {
+    val = val & 0xFFFFFFFF;
+    let outstr = val.toString(16);
+    if (outstr.length < 8) outstr = '0' + outstr;
+    if (outstr.length < 8) outstr = '0' + outstr;
+    if (outstr.length < 8) outstr = '0' + outstr;
+    if (outstr.length < 8) outstr = '0' + outstr;
+    if (outstr.length < 8) outstr = '0' + outstr;
+    if (outstr.length < 8) outstr = '0' + outstr;
+    if (outstr.length < 8) outstr = '0' + outstr;
+    return outstr.toUpperCase();
+}
+
 /**
  * @param {Number} val
  */
@@ -310,6 +327,14 @@ function hex0x2(val) {
 function hex0x4(val) {
     return '0x' + hex4(val);
 }
+
+/**
+ * @param {Number} val
+ */
+function hex0x8(val) {
+    return '0x' + hex8(val);
+}
+
 
 /**
  * @param {Number} val

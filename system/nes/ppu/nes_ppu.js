@@ -291,7 +291,7 @@ class NES_ppu {
                 }
                 break;
             case 0x2004: // OAMDATA
-                output = this.io.OAM[this.io.OAM_addr];
+                output = this.OAM[this.io.OAM_addr];
                 // reads do not increment counter
                 break;
             case 0x2007:

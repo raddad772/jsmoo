@@ -1469,7 +1469,7 @@ class Z80_test_generator {
 
     HALT() {
         this.Q(0);
-        this.regs.PC = (this.regs.PC - 1) & 0xFFFF;
+        //this.regs.PC = (this.regs.PC - 1) & 0xFFFF;
         //this.regs.HALT = 1;
     }
 
@@ -1489,8 +1489,9 @@ class Z80_test_generator {
 
     IN_r_ic(x) {
         this.Q(1);
-        this.writereg(x, this.IN(this.in(this.readreg('BC'))));
         this.regs.WZ = (this.readreg('BC') + 1) & 0xFFFF;
+        this.writereg(x, this.IN(this.in(this.readreg('BC'))));
+        //this.regs.WZ = (this.readreg('BC') + 1) & 0xFFFF;
     }
 
     IN_ic() {
@@ -1829,6 +1830,7 @@ class Z80_test_generator {
     OUT_ic() {
         this.Q(0);
         let ta = this.readreg('BC');
+        this.regs.WZ = (ta + 1) & 0xFFFF;
         if (this.CMOS) this.out(ta, 0xFF);
         else this.out(ta, 0x00);
     }
