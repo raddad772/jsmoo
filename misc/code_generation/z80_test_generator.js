@@ -1299,8 +1299,8 @@ class Z80_test_generator {
         this.regs.F.H = this.regs.F.C;
         this.regs.F.C ^= 1;
         this.regs.F.N = 0;
-        this.regs.F.X |= ((this.regs.F.getbyte() | this.regs.A) & 0x08) >>> 3;
-        this.regs.F.Y |= ((this.regs.F.getbyte() | this.regs.A) & 0x20) >>> 5;
+        this.regs.F.X = ((this.regs.F.getbyte() | this.regs.A) & 0x08) >>> 3;
+        this.regs.F.Y = ((this.regs.F.getbyte() | this.regs.A) & 0x20) >>> 5;
         this.Q(1);
     }
 
@@ -2137,8 +2137,8 @@ class Z80_test_generator {
         if (this.regs.Q !== 0) { this.regs.F.X = this.regs.F.Y = 0; }
         this.regs.F.C = 1;
         this.regs.F.N = this.regs.F.H = 0;
-        this.regs.F.X |= ((this.regs.F.getbyte() | this.regs.A) & 0x08) >>> 3;
-        this.regs.F.Y |= ((this.regs.F.getbyte() | this.regs.A) & 0x20) >>> 5;
+        this.regs.F.X = ((this.regs.F.getbyte() | this.regs.A) & 0x08) >>> 3;
+        this.regs.F.Y = ((this.regs.F.getbyte() | this.regs.A) & 0x20) >>> 5;
         this.Q(1);
     }
 
