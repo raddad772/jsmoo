@@ -584,7 +584,7 @@ function Z80_generate_registers(where) {
 
     where.im = pt_rnd8() % 3;
     where.p = pt_rnd8() & 1;
-    where.q = pt_rnd8() & 1;
+    where.q = pt_rnd8();
     where.iff1 = pt_rnd8() & 1;
     where.iff2 = pt_rnd8() & 1;
 }
