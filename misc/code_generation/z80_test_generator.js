@@ -1897,14 +1897,14 @@ class Z80_test_generator {
     }
 
     RES_o_irr(bit, addr) {
-        this.Q(1);
+        this.Q(0);
         let x = this.RES(bit, this.read(addr));
         this.wait(1);
         this.write(addr, x);
     }
 
     RES_o_irr_r(bit, addr, x) {
-        this.Q(1);
+        this.Q(0);
         this.wait(2);
         let tv = this.RES(bit, this.read(addr));
         this.wait(1);
@@ -1913,7 +1913,7 @@ class Z80_test_generator {
     }
 
     RES_o_r(bit, x) {
-        this.Q(1);
+        this.Q(0);
         this.writereg(x, this.RES(bit, this.readreg(x)));
     }
 
@@ -2144,14 +2144,14 @@ class Z80_test_generator {
     }
 
     SET_o_irr(bit, addr) {
-        this.Q(1);
+        this.Q(0);
         let x = this.SET(bit, this.read(addr));
         this.wait(1);
         this.write(addr, x);
     }
 
     SET_o_irr_r(bit, addr, x) {
-        this.Q(1);
+        this.Q(0);
         this.wait(2);
         let tv = this.SET(bit, this.read(addr));
         this.wait(1);
@@ -2160,7 +2160,7 @@ class Z80_test_generator {
     }
 
     SET_o_r(bit, x) {
-        this.Q(1);
+        this.Q(0);
         this.writereg(x, this.SET(bit, this.readreg(x)));
     }
 
