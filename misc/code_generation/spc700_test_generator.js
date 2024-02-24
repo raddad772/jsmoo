@@ -1774,11 +1774,15 @@ function generate_SPC700_tests(seed = null) {
     for (let i = 0; i < 256; i++) {
         tests[i] = test_generator.generate_test(i, SPC_NUM_TO_GENERATE);
     }
+    dconsole.addl(null, 'Generating custom test...');
+
     dconsole.addl(null,'Zipping tests...');
     let zip = new JSZip();
     for (let i = 0; i < 256; i++) {
         zip.file((hex2(i) + '.json').toLowerCase(), JSON.stringify(tests[i]));
     }
+
+    zip.file('edge_cases.json', JSON.stringify(custom_tests));
 
     dconsole.addl(null,'Finalizing ZIP for download...')
     zip.generateAsync({type:"blob"}).then(function(content) {

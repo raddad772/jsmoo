@@ -997,7 +997,7 @@ class GB_PPU {
         if ((cly === 153) && (this.io.lyc !== 153)) cly = 0;
         if (cly === this.io.lyc) {
             this.IRQ_lylyc_up();
-            //console.log('LY=LYC frame #' + this.clock.master_frame + ' line #' + this.clock.ly);
+            console.log('LY=LYC frame #' + this.clock.master_frame + ' line #' + this.clock.ly);
         }
         else
             this.IRQ_lylyc_down();
@@ -1050,7 +1050,7 @@ class GB_PPU {
     eval_STAT() {
         let mask = this.io.STAT_IF & this.io.STAT_IE;
         if ((this.io.old_mask === 0) && (mask !== 0)) {
-            console.log('TRIGGER STAT IRQ frame #' + this.clock.master_frame + ' line #' + this.clock.ly);
+            //console.log('TRIGGER STAT IRQ frame #' + this.clock.master_frame + ' line #' + this.clock.ly);
             this.bus.cpu.cpu.regs.IF |= 2;
         }
         else {

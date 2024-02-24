@@ -436,56 +436,56 @@ class NES_ppu {
                 }
             }
 
-            // Sprite data fetches into shift registers
-            let sub_cycle = (this.line_cycle - 257) & 0x07;
-            switch (sub_cycle) {
-                case 0: // Read Y coordinate.  257
-                    let syl = eval_y - this.secondary_OAM[this.secondary_OAM_index];
-                    if (syl < 0) syl = 0;
-                    if (syl > (this.status.sprite_height - 1)) syl = this.status.sprite_height - 1;
-                    this.sprite_y_lines[this.secondary_OAM_sprite_index] = syl;
-                    this.secondary_OAM_index++;
-                    break;
-                case 1: // Read tile number 258, and do garbage NT access
-                    this.sprite_pattern_shifters[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index];
-                    this.secondary_OAM_index++;
-                    this.bus.mapper.a12_watch(this.io.v);
-                    break;
-                case 2: // Read attributes 259
-                    this.sprite_attribute_latches[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index];
-                    this.secondary_OAM_index++;
-                    break;
-                case 3: // Read X-coordinate 260 and do garbage NT access
-                    this.sprite_x_counters[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index];
-                    this.secondary_OAM_index++;
-                    this.bus.mapper.a12_watch(this.io.v);
-                    break;
-                case 4: // Fetch tiles for the shifters 261
-                    break;
-                case 5:
-                    let tn = this.sprite_pattern_shifters[this.secondary_OAM_sprite_index];
-                    let sy = this.sprite_y_lines[this.secondary_OAM_sprite_index];
-                    let table = this.io.sprite_pattern_table;
-                    let attr = this.sprite_attribute_latches[this.secondary_OAM_sprite_index];
-                    // Vertical flip....
-                    if (attr & 0x80) sy = (this.status.sprite_height - 1) - sy;
-                    if (this.status.sprite_height === 16) {
-                        table = tn & 1;
-                        tn &= 0xFE;
-                    }
-                    if (sy > 7) {
-                        sy -= 8;
-                        tn += 1;
-                    }
-                    this.sprite_pattern_shifters[this.secondary_OAM_sprite_index] = this.fetch_chr_line(table, tn, sy);
-                    break;
-                case 6: // 263
-                    break;
-                case 7:
-                    this.bus.mapper.a12_watch(this.last_sprite_addr);
-                    this.secondary_OAM_sprite_index++;
-                    break;
-            }
+// Sprite data fetches into shift registers
+let sub_cycle = (this.line_cycle - 257) & 0x07;
+switch (sub_cycle) {
+    case 0: // Read Y coordinate.  257
+        let syl = eval_y - this.secondary_OAM[this.secondary_OAM_index];
+        if (syl < 0) syl = 0;
+        if (syl > (this.status.sprite_height - 1)) syl = this.status.sprite_height - 1;
+        this.sprite_y_lines[this.secondary_OAM_sprite_index] = syl;
+        this.secondary_OAM_index++;
+        break;
+    case 1: // Read tile number 258, and do garbage NT access
+        this.sprite_pattern_shifters[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index];
+        this.secondary_OAM_index++;
+        this.bus.mapper.a12_watch(this.io.v);
+        break;
+    case 2: // Read attributes 259
+        this.sprite_attribute_latches[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index];
+        this.secondary_OAM_index++;
+        break;
+    case 3: // Read X-coordinate 260 and do garbage NT access
+        this.sprite_x_counters[this.secondary_OAM_sprite_index] = this.secondary_OAM[this.secondary_OAM_index];
+        this.secondary_OAM_index++;
+        this.bus.mapper.a12_watch(this.io.v);
+        break;
+    case 4: // Fetch tiles for the shifters 261
+        break;
+    case 5:
+        let tn = this.sprite_pattern_shifters[this.secondary_OAM_sprite_index];
+        let sy = this.sprite_y_lines[this.secondary_OAM_sprite_index];
+        let table = this.io.sprite_pattern_table;
+        let attr = this.sprite_attribute_latches[this.secondary_OAM_sprite_index];
+        // Vertical flip....
+        if (attr & 0x80) sy = (this.status.sprite_height - 1) - sy;
+        if (this.status.sprite_height === 16) {
+            table = tn & 1;
+            tn &= 0xFE;
+        }
+        if (sy > 7) {
+            sy -= 8;
+            tn += 1;
+        }
+        this.sprite_pattern_shifters[this.secondary_OAM_sprite_index] = this.fetch_chr_line(table, tn, sy);
+        break;
+    case 6: // 263
+        break;
+    case 7:
+        this.bus.mapper.a12_watch(this.last_sprite_addr);
+        this.secondary_OAM_sprite_index++;
+        break;
+}
         }
     }
 

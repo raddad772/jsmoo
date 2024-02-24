@@ -1,85 +1,85 @@
 "use strict";
 
 const nesm6502_opcodes_decoded = Object.freeze({
-    0x00: new M6502_opcode_functions(M6502_stock_matrix[0x00],
-        function(regs, pins) { //BRK
-            switch(regs.TCU) {
-                case 1:
-                    regs.P.B = 1;
-                    pins.Addr = regs.PC;
-                    regs.PC = (regs.PC + 1) & 0xFFFF;
-                    break;
-                case 2:
-                    pins.Addr = regs.S | 0x100;
-                    regs.S = (regs.S - 1) & 0xFF;
-                    regs.TR = regs.PC
-                    pins.D = (regs.TR >>> 8) & 0xFF;
-                    pins.RW = 1;
-                    break;
-                case 3:
-                    pins.Addr = regs.S | 0x100;
-                    regs.S = (regs.S - 1) & 0xFF;
-                    pins.D = regs.TR & 0xFF;
-                    break;
-                case 4:
-                    pins.Addr = regs.S | 0x100;
-                    regs.S = (regs.S - 1) & 0xFF;
-                    pins.D = regs.P.getbyte();
-                    break;
-                case 5:
-                    regs.P.B = 1; // Confirmed via Visual6502 that this bit is actually set always during NMI, IRQ, and BRK
-                    regs.new_I = 1;
-                    pins.RW = 0;
-                    pins.Addr = (0xFFFE);
-                    break;
-                case 6:
-                    regs.PC = pins.D;
-                    pins.Addr = (pins.Addr + 1) & 0xFFFF;
-                    break;
-                case 7: // cleanup_custom
-                    regs.PC |= (pins.D << 8);
-                    // Following is auto-generated code for instruction finish
-                    pins.Addr = regs.PC;
-                    regs.PC = (regs.PC + 1) & 0xFFFF;
-                    regs.TCU = 0;
-                    break;
-            }
-    }),
-    0x01: new M6502_opcode_functions(M6502_stock_matrix[0x01],
-        function(regs, pins) { //ORA (d,x)
-            switch(regs.TCU) {
-                case 1:
-                    pins.Addr = regs.PC;
-                    regs.PC = (regs.PC + 1) & 0xFFFF;
-                    break;
-                case 2: // spurious read
-                    pins.Addr = pins.D;
-                    regs.TA = (pins.D + regs.X) & 0xFF;
-                    break;
-                case 3: // real read ABS L
-                    pins.Addr = regs.TA;
-                    break;
-                case 4: // read ABS H
-                    regs.TA = pins.D;
-                    pins.Addr = (pins.Addr + 1) & 0xFF;
-                    break;
-                case 5: // Read from addr
-                    pins.Addr = regs.TA | (pins.D << 8);
-                    break;
-                case 6: // cleanup_custom
-                    regs.A |= pins.D;
-                    regs.P.Z = +((regs.A) === 0);
-                    regs.P.N = ((regs.A) & 0x80) >>> 7;
-                    // Following is auto-generated code for instruction finish
-                    pins.Addr = regs.PC;
-                    regs.PC = (regs.PC + 1) & 0xFFFF;
-                    regs.TCU = 0;
-                    break;
-            }
-    }),
-    0x02: new M6502_opcode_functions(M6502_invalid_matrix[0x02],
-        function(regs, pins) { //
-    }),
+0x00: new M6502_opcode_functions(M6502_stock_matrix[0x00],
+function(regs, pins) { //BRK
+    switch(regs.TCU) {
+        case 1:
+            regs.P.B = 1;
+            pins.Addr = regs.PC;
+            regs.PC = (regs.PC + 1) & 0xFFFF;
+            break;
+        case 2:
+            pins.Addr = regs.S | 0x100;
+            regs.S = (regs.S - 1) & 0xFF;
+            regs.TR = regs.PC
+            pins.D = (regs.TR >>> 8) & 0xFF;
+            pins.RW = 1;
+            break;
+        case 3:
+            pins.Addr = regs.S | 0x100;
+            regs.S = (regs.S - 1) & 0xFF;
+            pins.D = regs.TR & 0xFF;
+            break;
+        case 4:
+            pins.Addr = regs.S | 0x100;
+            regs.S = (regs.S - 1) & 0xFF;
+            pins.D = regs.P.getbyte();
+            break;
+        case 5:
+            regs.P.B = 1; // Confirmed via Visual6502 that this bit is actually set always during NMI, IRQ, and BRK
+            regs.new_I = 1;
+            pins.RW = 0;
+            pins.Addr = (0xFFFE);
+            break;
+        case 6:
+            regs.PC = pins.D;
+            pins.Addr = (pins.Addr + 1) & 0xFFFF;
+            break;
+        case 7: // cleanup_custom
+            regs.PC |= (pins.D << 8);
+            // Following is auto-generated code for instruction finish
+            pins.Addr = regs.PC;
+            regs.PC = (regs.PC + 1) & 0xFFFF;
+            regs.TCU = 0;
+            break;
+    }
+}),
+0x01: new M6502_opcode_functions(M6502_stock_matrix[0x01],
+function(regs, pins) { //ORA (d,x)
+    switch(regs.TCU) {
+        case 1:
+            pins.Addr = regs.PC;
+            regs.PC = (regs.PC + 1) & 0xFFFF;
+            break;
+        case 2: // spurious read
+            pins.Addr = pins.D;
+            regs.TA = (pins.D + regs.X) & 0xFF;
+            break;
+        case 3: // real read ABS L
+            pins.Addr = regs.TA;
+            break;
+        case 4: // read ABS H
+            regs.TA = pins.D;
+            pins.Addr = (pins.Addr + 1) & 0xFF;
+            break;
+        case 5: // Read from addr
+            pins.Addr = regs.TA | (pins.D << 8);
+            break;
+        case 6: // cleanup_custom
+            regs.A |= pins.D;
+            regs.P.Z = +((regs.A) === 0);
+            regs.P.N = ((regs.A) & 0x80) >>> 7;
+            // Following is auto-generated code for instruction finish
+            pins.Addr = regs.PC;
+            regs.PC = (regs.PC + 1) & 0xFFFF;
+            regs.TCU = 0;
+            break;
+    }
+}),
+0x02: new M6502_opcode_functions(M6502_invalid_matrix[0x02],
+function(regs, pins) { //
+}),
     0x03: new M6502_opcode_functions(M6502_invalid_matrix[0x03],
         function(regs, pins) { //
     }),

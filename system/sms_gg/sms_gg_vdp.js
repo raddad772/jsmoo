@@ -530,9 +530,7 @@ class SMSGG_VDP {
             this.clock.line_counter = (this.clock.line_counter - 1);
             if (this.clock.line_counter < 0) {
                 this.clock.line_counter = this.io.line_irq_reload;
-                if (this.io.irq_line_enabled) this.io.irq_line_pending = 1;
-                //this.io.irq_line_pending = 1;
-
+                this.io.irq_line_pending = 1;
                 this.update_irqs();
             }
         }
@@ -541,8 +539,8 @@ class SMSGG_VDP {
         }
 
         if (this.clock.vpos === this.clock.timing.vblank_start) {
-            if (this.io.irq_frame_enabled) this.io.irq_frame_pending = 1;
-            //this.io.irq_frame_pending = 1;
+            //if (this.io.irq_frame_enabled) this.io.irq_frame_pending = 1;
+            this.io.irq_frame_pending = 1;
             this.update_irqs();
         }
 
