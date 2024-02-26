@@ -165,15 +165,27 @@ class Z80_switchgen {
     // This is determined automatically
     // Passed in is reference cycle # and/or a comment for the bros
     addcycle(whatup) {
-        if (this.in_case)
-            this.outstr += this.indent3 + 'break;\n';
+        if (this.in_case) {
+            if (!this.is_C)
+                this.outstr += this.indent3 + 'break;\n';
+            else
+                this.outstr += this.indent3 + 'break; }\n';
+        }
         let what = (parseInt(this.last_case) + 1).toString();
         this.last_case = what;
         this.in_case = true;
-        if (typeof (whatup) !== 'undefined')
-            this.outstr += this.indent2 + 'case ' + what + ': // ' + whatup + '\n';
-        else
-            this.outstr += this.indent2 + 'case ' + what + ':\n';
+        if (typeof (whatup) !== 'undefined') {
+            if (!this.is_C)
+                this.outstr += this.indent2 + 'case ' + what + ': // ' + whatup + '\n';
+            else
+                this.outstr += this.indent2 + 'case ' + what + ': { // ' + whatup + '\n';
+        }
+        else {
+            if (!this.is_C)
+                this.outstr += this.indent2 + 'case ' + what + ':\n';
+            else
+                this.outstr += this.indent2 + 'case ' + what + ': {\n';
+        }
         if (!this.has_cycle) {
             this.has_cycle = true;
             for (let i in this.on_cycle) {
@@ -239,10 +251,6 @@ class Z80_switchgen {
         if (ostr.length > 0) this.addl(ostr);
     }
 
-    addr_to_PC() {
-        this.addl('pins.Addr = regs.PC;');
-    }
-
     addr_to_PC_then_inc() {
         this.addl('pins.Addr = regs.PC;');
         this.addl('regs.PC = (regs.PC + 1) & 0xFFFF;');
@@ -254,7 +262,10 @@ class Z80_switchgen {
         }
         this.regular_end();
 
-        this.outstr += this.indent1 + '}\n';
+        if (!this.is_C)
+            this.outstr += this.indent1 + '}\n';
+        else
+            this.outstr += this.indent1 + '}}\n';
         return this.outstr;
     }
 
@@ -779,7 +790,7 @@ class Z80_switchgen {
         if (!this.is_C)
             this.addl('let n = (regs.A - regs.TR) & 0xFF;');
         else
-            this.addl(';u32 n = (regs.A - regs.TR) & 0xFF;');
+            this.addl('u32 n = (regs.A - regs.TR) & 0xFF;');
         this.addl('regs.F.N = 1;');
         this.addl('regs.TA = (((regs.B << 8) | regs.C) - 1) & 0xFFFF;');
         if (!this.is_C)
@@ -1049,7 +1060,7 @@ class Z80_switchgen {
         if (!this.is_C)
             this.addl('let x = ' + x + ';');
         else
-            this.addl(';u32 x = ' + x + ';');
+            this.addl('u32 x = ' + x + ';');
         this.addl('let c = (x & 0x80) >>> 7;');
         this.addl('x = ((x << 1) | 1) & 0xFF;');
 
@@ -1247,7 +1258,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS, as=fa
                 ag.addl('let wait;')
             }
             else if (GENTARGET === 'c') {
-                ag.addl(';u32 wait;');
+                ag.addl('u32 wait;');
             }
             ag.addl('switch(pins.IRQ_maskable ? regs.IM : 1) {');
             ag.addl('case 0:');
