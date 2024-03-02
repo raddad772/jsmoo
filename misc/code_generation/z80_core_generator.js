@@ -1245,6 +1245,7 @@ function Z80_generate_instruction_function(indent, opcode_info, sub, CMOS, as=fa
             ag.addcycle();
             //ag.addl('if (pins.IRQ_maskable && (!regs.IFF1 || regs.EI)) { regs.TCU = 19; break;}');
             ag.addl('regs.R = (regs.R + 1) & 0x7F;');
+            ag.addl('pins.RD = 0; pins.WR = 0; pins.IO = 0; pins.MRQ = 0;');
 
             ag.push16('regs.PC');
 
