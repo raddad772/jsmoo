@@ -7,7 +7,6 @@ class GB_timer {
         this.TAC = 0;
         this.last_bit = 0;
         this.TIMA_reload_cycle = false;
-        this.TMA_reload_cycle = false;
 
         this.SYSCLK = 0;
 
