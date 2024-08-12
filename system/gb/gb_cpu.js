@@ -73,10 +73,10 @@ class GB_timer {
                 this.TMA = val;
                 return;
             case 0xFF07: // TAC, the timer control
-                let last_bit = this.last_bit;
+                let my_last_bit = this.last_bit;
                 this.last_bit &= ((val & 4) >>> 2);
 
-                this.detect_edge(last_bit, this.last_bit);
+                this.detect_edge(my_last_bit, this.last_bit);
                 this.TAC = val;
                 return;
         }
