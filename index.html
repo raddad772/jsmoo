@@ -1,0 +1,440 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+    <!-- General -->
+    <script type="text/javascript" src="helpers/audio_helper.js"></script>
+    <script type="text/javascript" src="helpers/localforage.min.js"></script>
+    <script type="text/javascript" src="helpers/basicfs.js"></script>
+    <script type="text/javascript" src="helpers/base64codec.js"></script>
+    <script type="text/javascript" src="helpers/serialization_service.js"></script>
+    <script type="text/javascript" src="helpers/thread_common.js"></script>
+    <script type="text/javascript" src="helpers.js"></script>
+    <script type="text/javascript" src="debugging.js"></script>
+    <script type="text/javascript" src="helpers/timing/timing_header.js"></script>
+    <link rel="modulepreload" href="helpers/threaded_emulator_worker.js">
+    <script type="text/javascript" src="ui/bios_manager.js"></script>
+    <script type="text/javascript" src="ui/kb_input.js"></script>
+    <script type="text/javascript" src="helpers/machine_description.js"></script>
+    <script type="text/javascript" src="ui/player.js"></script>
+    <script type="text/javascript" src="ui/canvas.js"></script>
+    <script type="text/javascript" src="ui/ui.js"></script>
+    <script type="text/javascript" src="ui/input.js"></script>
+    <script type="text/javascript" src="rom_upload.js"></script>
+
+    <!-- Testing -->
+    <script type="module" src="/component/cpu/z80/z80_tests_pt_as.js"></script>
+
+    <!-- SNES -->
+    <!--<script type="text/javascript" src="component/cpu/wdc65816/wdc65816_opcodes.js"></script>
+    <script type="text/javascript" src="component/cpu/wdc65816/wdc65816_t.js"></script>
+    <script type="text/javascript" src="component/cpu/wdc65816/wdc65816_assembler.js"></script>
+    <script type="text/javascript" src="component/cpu/wdc65816/wdc65816_generated_opcodes.js"></script>
+    <script type="text/javascript" src="component/cpu/wdc65816/wdc65816_tests_pt.js"></script>
+    <script type="text/javascript" src="component/cpu/wdc65816/asm_charcodes.js"></script>
+    <script type="text/javascript" src="system/snes/cpu/dma.js"></script>
+    <script type="text/javascript" src="component/controller/snes_joypad.js"></script>
+    <script type="text/javascript" src="system/snes/cpu/r5a22.js"></script>
+    <script type="text/javascript" src="component/cpu/spc700/spc700_opcodes.js"></script>
+    <script type="text/javascript" src="component/cpu/spc700/spc700_boot_rom.js"></script>
+    <script type="text/javascript" src="component/cpu/spc700/spc700_assembler.js"></script>
+    <script type="text/javascript" src="component/cpu/spc700/spc700_disassembler.js"></script>
+    <script type="text/javascript" src="system/snes/apu/sdsp.js"></script>
+    <script type="text/javascript" src="component/cpu/spc700/spc700.js"></script>
+    <script type="text/javascript" src="component/cpu/spc700/spc700_generated_opcodes.js"></script>
+    <script type="text/javascript" src="component/cpu/spc700/spc700_tests_pt.js"></script>
+    <script type="text/javascript" src="system/snes/snes_memory.js"></script>
+    <script type="text/javascript" src="system/snes/snes_clock.js"></script>
+    <script type="text/javascript" src="system/snes/snes_clock_generator.js"></script>
+    <script type="text/javascript" src="system/snes/snes_cart.js"></script>
+    <script type="text/javascript" src="system/snes/ppu/snes_ppu.js"></script>
+    <script type="text/javascript" src="system/snes/ppu/snes_ppu_shader_project.js"></script>
+    <script type="text/javascript" src="system/snes/ppu/snes_ppu_worker.js"></script>
+    <script type="text/javascript" src="system/snes/ppu/ppufast_funcs.js"></script>-->
+
+    <!-- Presenters -->
+    <script type="text/javascript" src="system/nes/ppu/nes_palette.js"></script>
+    <script type="text/javascript" src="helpers/presenters/nes_presenter.js"></script>
+    <script type="text/javascript" src="helpers/presenters/sms_gg_presenter.js"></script>
+    <script type="text/javascript" src="helpers/presenters/gb_presenter.js"></script>
+    <script type="text/javascript" src="helpers/presenters/gbc_presenter.js"></script>
+    <script type="text/javascript" src="helpers/presenters/zxspectrum_presenter.js"></script>
+    <script type="text/javascript" src="helpers/presenters/snes_presenter.js"></script>
+    <script type="text/javascript" src="helpers/presenters/ps1_presenter.js"></script>
+
+    <!--
+    <script type="text/javascript" src="component/cpu/m6502/m6502_opcodes.js"></script>
+    <script type="text/javascript" src="component/cpu/m6502/m6502.js"></script>
+    <script type="text/javascript" src="component/cpu/m6502/nesm6502_generated_opcodes.js"></script>
+    <script type="text/javascript" src="system/nes/cpu/rp2a03_based_on_ares.js"></script>
+    <script type="text/javascript" src="component/controller/nes_joypad.js"></script>
+    <script type="text/javascript" src="system/nes/cpu/r2a03.js"></script>
+    <script type="text/javascript" src="system/nes/nes_bus.js"></script>
+    <script type="text/javascript" src="system/nes/nes_cart.js"></script>
+    <script type="text/javascript" src="system/nes/nes_clock.js"></script>
+    <script type="text/javascript" src="system/nes/ppu/nes_ppu.js"></script>
+    <script type="text/javascript" src="system/nes/mappers/nomapper.js"></script>
+    <script type="text/javascript" src="system/nes/mappers/mmc3b.js"></script>
+    <script type="text/javascript" src="system/nes/mappers/vrc2b_4e_4f.js"></script>
+    <script type="text/javascript" src="system/nes/mappers/mmc1.js"></script>
+
+    <script type="text/javascript" src="system/nes/nes.js"></script>
+    <script type="text/javascript" src="component/cpu/m6502/m6502_tests_pt.js"></script>
+    -->
+
+    <!-- AssemblyScript CPU tests -->
+    <!--<script type="text/javascript" src="helpers/as_noimports.js"></script>
+    <script type="text/javascript" src="assemblyscript/build/debug_stable.js"></script>
+    <script type="text/javascript" src="helpers/as_wrapper.js"></script>
+    <script type="text/javascript" src="component/cpu/m6502/m6502_tests_pt_as.js"></script>-->
+
+    <!-- commodore64 and more -->
+    <!--<script type="text/javascript" src="component/cpu/m6502/m65c02_generated_opcodes.js"></script>-->
+
+    <!-- Generic Z80 computer -->
+    <script type="text/javascript" src="system/genericz80/genericz80.js"></script>
+
+    <!-- Motorola 68000 -->
+    <script type="text/javascript" src="component/cpu/m68000/m68000_opcodes.js"></script>
+    <script type="text/javascript" src="component/cpu/m68000/m68000.js"></script>
+
+    <!-- ZX Spectrum -->
+    <!--<script type="text/javascript" src="system/zxspectrum/ula.js"></script>
+    <script type="text/javascript" src="system/zxspectrum/tape_deck.js"></script>
+    <script type="text/javascript" src="system/zxspectrum/zxspectrum.js"></script>
+    <script type="text/javascript" src="component/cpu/z80/z80_opcodes.js"></script>
+    <script type="text/javascript" src="component/cpu/z80/z80_generated_opcodes.js"></script>
+    <script type="text/javascript" src="component/cpu/z80/z80_disassembler.js"></script>
+    <script type="text/javascript" src="component/cpu/z80/z80.js"></script>-->
+    <!--<script type="text/javascript" src="component/cpu/z80/z80_tests_pt.js"></script>-->
+
+    <!-- SMS/GG --> <!--
+    <script type="text/javascript" src="component/controller/sms_joypad.js"></script>
+    <script type="text/javascript" src="system/sms_gg/sms_gg.js"></script>
+    <script type="text/javascript" src="system/sms_gg/sms_gg_io.js"></script>
+    <script type="text/javascript" src="system/sms_gg/sms_gg_mapper_sega.js"></script>
+    <script type="text/javascript" src="system/sms_gg/sms_gg_vdp.js"></script>-->
+
+    <!-- GameBoy --><!--
+    <script type="text/javascript" src="component/cpu/sm83/sm83_disassembler.js"></script>
+    <script type="text/javascript" src="component/cpu/sm83/sm83_opcodes.js"></script>
+    <script type="text/javascript" src="component/cpu/sm83/sm83.js"></script>
+    <script type="text/javascript" src="component/cpu/sm83/sm83_generated_opcodes.js"></script>
+    <script type="text/javascript" src="component/cpu/sm83/sm83_tests_pt.js"></script>
+    <script type="text/javascript" src="system/gb/gb_cart.js"></script>
+    <script type="text/javascript" src="system/gb/gb_ppu.js"></script>
+    <script type="text/javascript" src="system/gb/mappers/nomapper.js"></script>
+    <script type="text/javascript" src="system/gb/mappers/mbc1.js"></script>
+    <script type="text/javascript" src="system/gb/mappers/mbc2.js"></script>
+    <script type="text/javascript" src="system/gb/mappers/mbc3.js"></script>
+    <script type="text/javascript" src="system/gb/mappers/mbc5.js"></script>
+    <script type="text/javascript" src="system/gb/gb_cpu.js"></script>
+    <script type="text/javascript" src="system/gb/gb.js"></script>
+    -->
+    <!--<script type="text/javascript" src="helpers/audio_helper.js"></script>-->
+
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="jsmoo.css">
+    <title>JSMoo Multi-System Experimental Emulator</title>
+</head>
+
+<body>
+
+<div class="ui-bar ui-bar-bg" style="position:fixed; top:0; width:100%">
+  <button class="ui-bar-item ui-bar-button ui-bar-blue-grey tablink-main" onclick="open_tab('tablink-main', 'ui-tab-main', event, 'main_tab_main')">Main</button>
+  <button class="ui-bar-item ui-bar-button tablink-main" onclick="open_tab('tablink-main', 'ui-tab-main', event, 'main_tab_tools')">Tools</button>
+  <button class="ui-bar-item ui-bar-button tablink-main" onclick="open_tab('tablink-main', 'ui-tab-main', event, 'main_tab_settings')">Settings</button>
+</div>
+
+
+<!-- TOOLS TAB -->
+<div id="main_tab_tools" class="ui-tab-main" style="display:none;">
+    <div class="ui-bar ui-bar-bg">
+      <button class="ui-bar-item ui-bar-button ui-bar-blue-grey tablink-tools" onclick="open_tab('tablink-tools', 'ui-tab-tools', event, 'tools_tab_bios')">BIOSes</button>
+      <button class="ui-bar-item ui-bar-button tablink-tools" onclick="open_tab('tablink-tools', 'ui-tab-tools', event, 'settings_tab_rom_management')">ROM management</button>
+    </div>
+
+    <div id="tools_tab_bios" class="ui-tab-tools">
+        <div id="bios-container"></div>
+        <br><hr>Upload a BIOS for
+        <select id="bios_upload_select" name="bios_upload_select"></select>
+        <br>
+        <section>
+            <input id="bios_fileUpload" name="bios_fileUpload" type="file"/>
+            <button id="bios_upload" type="button" onclick="global_player.bios_manager.upload_file();">Go</button>
+        </section>
+
+    </div>
+
+</div>
+<!-- SETTINGS TAB -->
+<div id="main_tab_settings" class="ui-tab-main" style="display:none;">
+    <div class="ui-bar ui-bar-bg">
+      <button class="ui-bar-item ui-bar-button ui-bar-blue-grey tablink-settings-input" onclick="open_tab('tablink-settings-input', 'ui-tab-settings-input', event, 'settings_tab_input_emu')">General</button>
+      <button class="ui-bar-item ui-bar-button tablink-settings-input" onclick="open_tab('tablink-settings-input', 'ui-tab-settings-input', event, 'settings_tab_input_nes')">NES pads</button>
+      <button class="ui-bar-item ui-bar-button tablink-settings-input" onclick="open_tab('tablink-settings-input', 'ui-tab-settings-input', event, 'settings_tab_input_snes')">SNES pads</button>
+      <button class="ui-bar-item ui-bar-button tablink-settings-input" onclick="open_tab('tablink-settings-input', 'ui-tab-settings-input', event, 'settings_tab_input_sms')">SMS pads</button>
+      <button class="ui-bar-item ui-bar-button tablink-settings-input" onclick="open_tab('tablink-settings-input', 'ui-tab-settings-input', event, 'settings_tab_input_spectrum')">ZX Spectrum</button>
+    </div>
+
+    <div id="settings_tab_input_emu" class="ui-tab-settings-input">
+        Click a button to assign a key
+        <br><div id="emubuttonsforconfig"></div>
+    </div>
+    <div id="settings_tab_input_nes" class="ui-tab-settings-input" style="display:none">
+        Click a button to assign key
+        <div style="padding-top: 10px; padding-left: 10px;">
+            <div style="width: 220px; float: left;">
+                Player 1
+                <img src="/img/nes-controller.svg" id="nes1cfg" alt="NES player 1" width="220px"/>
+            </div>
+            <div style="width: 220px; margin-left:280px;">
+                Player 2
+                <img src="/img/nes-controller.svg" id="nes2cfg" alt="NES player 2" width="220px"/>
+            </div>
+        </div>
+    </div>
+    <div id="settings_tab_input_ps1" class="ui-tab-settings-input" style="display:none">
+        Click a button to assign key
+        <div style="padding-top: 10px; padding-left: 10px;">
+            <div style="width: 220px; float: left;">
+                Player 1
+                <img src="/img/nes-controller.svg" id="ps1p1cfg" alt="NES player 1" width="220px"/>
+            </div>
+            <div style="width: 220px; margin-left:280px;">
+                Player 2
+                <img src="/img/nes-controller.svg" id="ps1p2cfg" alt="NES player 2" width="220px"/>
+            </div>
+        </div>
+    </div>
+    <div id="settings_tab_input_gb" class="ui-tab-settings-input" style="display:none">
+        Click a button to assign key
+        <div style="padding-top: 10px; padding-left: 10px;">
+            <div style="width: 220px; float: left;">
+                Player 1
+                <img src="/img/nes-controller.svg" id="gbcfg" alt="GameBoy" width="220px"/>
+            </div>
+        </div>
+    </div>
+    <div id="settings_tab_input_snes" class="ui-tab-settings-input" style="display:none">
+        Click a button to assign key
+        <div style="padding-top: 10px; padding-left: 10px;">
+            <div style="width: 320px; float: left;">
+                Player 1
+                <img src="/img/320px-SNES-Controller-Flat.jpg" width="320" id="snes1cfg" alt="SNES player 1"/>
+            </div>
+            <div style="width: 320px; margin-left:360px;">
+                Player 2
+                <img src="/img/320px-SNES-Controller-Flat.jpg" width="320" id="snes2cfg" alt="SNES player 2"/>
+            </div>
+        </div>
+    </div>
+    <div id="settings_tab_input_gg" class="ui-tab-settings-input" style="display:none">
+        Click a button to assign key
+        <div style="padding-top: 10px; padding-left: 10px;">
+            <div style="width: 220px; float: left;">
+                Player 1
+                <img src="/img/nes-controller.svg" id="ggcfg" alt="NES player 1" width="220px"/>
+            </div>
+        </div>
+    </div>
+    <div id="settings_tab_input_sms" class="ui-tab-settings-input" style="display:none">
+        Click a button to assign key
+        <div style="padding-top: 10px; padding-left: 10px;">
+            <div style="width: 394px; float: left;">
+                Player 1
+                <img src="/img/394px_Sega_Master_System_Controller_Diagram.svg" width="394px" id="sms1cfg" alt="SMS player 1"/>
+            </div>
+            <div style="width: 394px; margin-left:420px;">
+                Player 2
+                <img src="/img/394px_Sega_Master_System_Controller_Diagram.svg" width="394px" id="sms2cfg" alt="SMS player 2"/>
+            </div>
+        </div>
+    </div>
+    <div id="settings_tab_input_spectrum" class="ui-tab-settings-input" style="display:none">
+        ZX Spectrum
+    </div>
+
+    <div>
+        <hr>
+        Button setting
+        <br><span id="input-cfg-controller">null</span>
+        <br><span id="input-cfg-label">null</span>: <input id="input-cfg-input" value="null">
+        <br><br><button id="save_input" onclick="input_config.save()">Save Changes</button>
+    </div>
+
+
+</div>
+
+
+<!-- MAIN EMULATION TAB -->
+<div id="main_tab_main" class="ui-tab-main">
+
+<div class="grid-container" style="width: 100%">
+    <div class="grid-child" style="border: 1px solid black; padding: 5px;">
+        <canvas id="emucanvas" width="200" height="200"></canvas>
+    </div>
+
+    <!-- right-hand helper-->
+    <div class="grid-child" style="border: 1px solid black; padding: 4px; margin-left: auto; margin-right: 0; min-width: 200px;">
+        <span>SYSTEM SELECT<br><select id="systemselect" name="systemselect">
+            <option value="snes">SNES</option>
+            <option value="ps1">PSX</option>
+            <option value="ps1_as">PSX (AS)</option>
+            <option value="nes">NES</option>
+            <option value="nes_as">NES (AS)</option>
+            <option value="gb">Nintendo GameBoy</option>
+            <option value="gb_as">Nintendo GameBoy (AS)</option>
+            <option value="gbc">Nintendo GameBoy Color</option>
+            <option value="gg">Sega GameGear</option>
+            <option value="gg_as">Sega GameGear (AS)</option>
+            <option value="sms">Sega Master System v2</option>
+            <option value="sms_as">Sega Master System v2 (AS)</option>
+            <option value="spectrum">ZX Spectrum 48</option>
+            <!--<option value="genesis">Sega Genesis</option>
+            <option value="c64">Commodore64</option>
+            <option value="sms">SMS</option>-->
+        </select></span>
+
+        <hr>
+        ROM SELECT<br><select id="romselect" name="romselect"></select>
+        <br>
+        <button id="loadrom" onclick="load_sel_rom()">Load ROM</button>
+        <hr>
+        <button id="loadstate" onclick="click_load_state()">Load state</button>&nbsp;<button id="savestate" onclick="click_save_state()">Save state</button>
+        <hr>
+
+        <button id="playbutton" style="width: 60px;" onclick="click_play()">Play</button>
+        <input id="framestilpause" style="width: 50px;"/> frames (0=∞)
+        <br>FPS: <input id="fps" style="width: 50px;" disabled/>
+
+        <br>
+        <hr>
+        <button id="stepclock" type="button" onclick="click_step_clock()">Step</button><input id="masterclocksteps" style="width: 50px; text-align: right;"/> master clocks
+        <br>
+        <button id="linestep" type="button" onclick="click_step_scanlines()">Step</button><input id="scanlinesteps" style="width: 30px; text-align: right;" value="1"/> scanlines
+        <br>
+        <button id="secondstep" type="button" onclick="click_step_seconds()">Step</button><input id="secondsteps" style="width: 30px; text-align: right;" value="1"/> seconds
+        <hr>
+        Current
+        <div class="grid-container">
+            <div class="grid-child">
+                Frame: <span id="curframe">0</span>
+            </div>
+            <div class="grid-child">
+                Scanline: <span id="curline">0</span>
+            </div>
+            <div class="grid-child">
+                X: <span id="curx">0</span>
+            </div>
+            <div class="grid-child">
+                <input type="checkbox" id="zoom_checkbox"><label for="zoom_checkbox">Zoom Video</label>
+                <br><input type="checkbox" id="fps_cap_checkbox"><label for="fps_cap_checkbox">FPS Cap</label>
+                <br><input type="checkbox" id="par_checkbox"><label for="par_checkbox">Correct AR</label>
+                <br><input type="checkbox" id="overscan_checkbox"><label for="overscan_checkbox">Hide Overscan</label>
+            </div>
+    </div>
+</div>
+</div>
+    <input type="checkbox" id="kb_mode_checkbox"><label for="kb_mode_checkbox">Keyboard input (for computers)</label>
+    <hr>
+<!--<div class="ui-sidebar ui-bar-block ui-bar-black ui-card" style="width:130px">-->
+<div class="sidebar-grid-container">
+    <div class="grid-child ui-bar-black" style="width: 130px">
+        <button class="w3-bar-item ui-sidebar-button tablink-sidebar ui-bar-blue-grey" onclick="open_tab_side('tablink-sidebar', 'main-sidebar', event, 'main-sidebar-trace')">Trace Output</button>
+        <button class="w3-bar-item ui-sidebar-button tablink-sidebar" onclick="open_tab_side('tablink-sidebar', 'main-sidebar', event, 'main-sidebar-dbg-opt')">Debug Options</button>
+        <button class="w3-bar-item ui-sidebar-button tablink-sidebar" onclick="open_tab_side('tablink-sidebar', 'main-sidebar', event, 'main-sidebar-gfx')">Graphics View</button>
+        <button class="w3-bar-item ui-sidebar-button tablink-sidebar" onclick="open_tab_side('tablink-sidebar', 'main-sidebar', event, 'main-sidebar-mem')">Memory View</button>
+        <button class="w3-bar-item ui-sidebar-button tablink-sidebar" onclick="open_tab_side('tablink-sidebar', 'main-sidebar', event, 'main-sidebar-upload')">Upload</button>
+        <button class="w3-bar-item ui-sidebar-button tablink-sidebar" onclick="open_tab_side('tablink-sidebar', 'main-sidebar', event, 'main-sidebar-console')">Console</button>
+    </div>
+    <div class="grid-child">
+      <div id="main-sidebar-trace" class="ui-container main-sidebar">
+        <div id="disassemblycontainer" class="disassembly">
+        <pre>
+            <code id="disassembly">
+            </code>
+        </pre>
+        </div>
+      </div>
+
+      <div id="main-sidebar-dbg-opt" class="ui-container main-sidebar" style="display:none">
+        <section>
+            <input type="checkbox" id="bg1on"/><label for="bg1on">BG1 on</label>
+            <input type="checkbox" id="bg2on"/><label for="bg2on">BG2 on</label>
+            <input type="checkbox" id="bg3on"/><label for="bg3on">BG3 on</label>
+            <input type="checkbox" id="bg4on"/><label for="bg4on">BG4 on</label>
+            <input type="checkbox" id="objon"/><label for="objon">Objects on</label>
+            <br>
+            <input type="checkbox" id="render_windows"/><label for="render_windows">Render windows</label>
+            <input type="checkbox" id="log_windows"/><label for="log_windows">Log windows</label>
+            <br>
+            <input type="checkbox" id="loghdma"/><label for="loghdma">Log HDMAs</label>
+            <br>
+            <input type="checkbox" id="tracingCPU"/><label for="tracingCPU">Trace CPU</label>
+            <input type="checkbox" id="tracingAPU"/><label for="tracingAPU">Trace APU</label>
+            <input type="checkbox" id="watchpt"/><label for="watchpt">Watching</label>
+            <br>
+            <input type="checkbox" id="brknmirq"><label for="brknmirq">Break on NMI/IRQ</label>
+            <hr>
+            <hr>
+            <br>
+        </section>
+      </div>
+
+      <div id="main-sidebar-gfx" class="ui-container main-sidebar" style="display:none">
+            <button id="dumpbg1" type="button" onclick="click_bg_dump(1)">Dump BG1</button>
+            <button id="dumpbg2" type="button" onclick="click_bg_dump(2)">Dump BG2</button>
+            <button id="dumpbg3" type="button" onclick="click_bg_dump(3)">Dump BG3</button>
+            <button id="dumpbg4" type="button" onclick="click_bg_dump(4)">Dump BG4</button>
+            <button id="dumptiles" type="button" onclick="click_tile_dump()">Dump tiles</button>
+            <br>
+            <button id="dumsprites" type="button" onclick="click_sprite_dump()">Dump Sprites</button>
+            <button id="renderscr" type="button" onclick="click_render_scr()">Render Screen</button>
+          <br>
+            <button id="dumpdbg" type="button" onclick="click_dump_dbg()">Dump DBG</button>
+            <button id="dumpdbg2" type="button" onclick="click_dump_dbg2()">Dump DBG2</button>
+
+          <br>
+          <canvas id="tilecanvas" width="128" height="200"></canvas>
+          <canvas id="spritecanvas" width="5" height="5"></canvas>
+          <canvas id="bgcanvas" width="5" height="5"></canvas>
+      </div>
+
+
+      <div id="main-sidebar-mem" class="ui-container main-sidebar" style="display:none">
+        <div class="grid-child">
+        <section>
+            <button id="dumpram" type="button" onclick="click_dump_ram()">Dump RAM</button>
+            <button id="dumpvram" type="button" onclick="click_dump_vram()">Dump VRAM</button>
+            <button id="dumpchrom" type="button" onclick="click_dump_chrom()">Dump CHR ROM</button>
+            <input id="memaddr" type="text">
+        </section>
+        <div id="memdumpcontainer" class="disassembly" style="height: 100px; overflow: auto;">
+            <pre><code id="memdumpconsole"></code></pre>
+        </div>
+
+        </div>
+      </div>
+
+      <div id="main-sidebar-console" class="ui-container main-sidebar" style="display:none">
+        <div id="textconsolecontainer" class="disassembly" style="height: 100px; overflow: auto;">
+            <pre><code id="textconsole"></code></pre>
+        </div>
+      </div>
+
+
+        <div id="main-sidebar-upload" class="ui-container main-sidebar" style="display:none">
+        <h2>Upload ROM or BIOS</h2>
+        <section>
+            <input id="fileUpload" name="fileUpload" type="file"/>
+            <button id="upload" type="button" onclick="uploadFile('test');">Go</button>
+        </section>
+      </div>
+
+    </div>
+</div>
+
+</div>
+
+</body>
+</html>

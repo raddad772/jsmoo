@@ -1,0 +1,35 @@
+{
+  "targets": {
+    "debug": {
+      "outFile": "build/debug.wasm",
+      "sourceMap": true,
+      "optimizeLevel": 1,
+      "debug": true,
+      "runtime": "minimal",
+      "maximumMemory": 32768,
+      "sharedMemory": true,
+      "exportRuntime": true,
+      "uncheckedBehavior": "never",
+      "stats": true
+    },
+    "release": {
+      "outFile": "build/release.wasm",
+      "sourceMap": true,
+      "uncheckedBehavior": "always",
+      "optimizeLevel": 3,
+      "shrinkLevel": 0,
+      "converge": true,
+      "noAssert": true,
+      "runtime": "minimal",
+      "maximumMemory": 32768,
+      "sharedMemory": true,
+      "exportRuntime": true,
+      "debug": true,
+      "stats": true
+    }
+  },
+  "options": {
+    "bindings": "raw",
+     "enable": ["threads"]
+  }
+}
