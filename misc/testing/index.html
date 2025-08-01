@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+    <!-- UI of page -->
+    <script type="text/javascript" src="/helpers.js"></script>
+    <script type="text/javascript" src="testing.js"></script>
+
+    <!-- Testing -->
+    <script type="text/javascript" src="/component/cpu/z80/z80.js"></script>
+    <script type="text/javascript" src="/component/cpu/z80/z80_opcodes.js"></script>
+    <script type="text/javascript" src="/component/cpu/z80/z80_tests_pt_as.js"></script>
+    <!-- General -->
+    <script type="text/javascript" src="/debugging.js"></script>
+    <script type="text/javascript" src="/helpers/timing/timing_header.js"></script>
+    <script type="text/javascript" src="/helpers/as_wrapper.js"></script>
+
+    <script type="text/javascript" src="/as-emu-cores/build/debug_stable.js"></script>
+
+
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="/jsmoo.css">
+    <title>JSMoo Multi-System Experimental Emulator Testing</title>
+</head>
+
+<body>
+<h2>Testing</h2>
+
+<hr>
+        <div id="textconsolecontainer" class="disassembly" style="height: 100px; overflow: auto;">
+            <pre><code id="textconsole"></code></pre>
+        </div>
+
+<h2>Z80 testing</h2>
+<button type="button" id="testz80as" onclick="test_z80_as()">Test Z80 (AS) core</button>
+<div id="statushere">Status of generating will go here...</div>
+
+</body>
+</html>

@@ -1,0 +1,1 @@
+powershell -Command "(gc build\debug.js) -replace 'export ', '' | Out-File -encoding ASCII build\debug_stable.js"

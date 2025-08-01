@@ -1,0 +1,114 @@
+.ui-tab-main {
+    margin-top: 40px;
+}
+
+.sidebar-grid-container {
+    display: grid;
+    grid-template-columns: 130px 1fr;
+    grid-gap: 20px;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 20px;
+}
+
+.disassembly {
+    border: 1px solid black;
+    border-radius: 5px;
+    background-color: #eee;
+    margin: 10px 0;
+    padding: 6px;
+}
+
+.ui-bar{
+    width:100%;
+    overflow:hidden;
+}
+
+.ui-bar .ui-bar-item{
+    padding:8px 16px;
+    float:left;
+    width:auto;
+    border:none;
+    display:block;
+    outline:0;
+}
+
+.ui-bar .ui-bar-button{
+    white-space: normal;
+}
+
+.ui-bar-black,.ui-bar-hover-black:hover{
+    color: #fff !important;
+    background-color: #000 !important;
+}
+
+.ui-sidebar-button {
+    border: none;
+    display: inline-block;
+    padding:8px 16px;
+    vertical-align: middle;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    background-color: inherit;
+    text-align: center;
+    cursor: pointer;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.ui-bar-block .ui-bar-item {
+    width:100%;
+    display:block;
+    padding:8px 16px;
+    text-align:left;
+    border:none;
+    white-space:normal;
+    float:none;
+    outline:0;
+}
+
+.ui-bar-block.ui-center .ui-bar-item{
+    text-align:center
+} .ui-block{
+     display:block;
+      width:100%;
+ }
+
+.ui-bar-bg,.ui-bar-hover-bg:hover  {
+    color: #fff !important;
+    background-color: #000 !important;
+}
+
+.ui-bar-blue-grey, .ui-bar-hover-blue-grey:hover {
+    background-color: #606080 !important;
+    color: #fff !important;
+}
+
+.ui-sidebar {
+    height: 100%;
+    width: 180px;
+    background-color: #fff;
+    /*position: fixed !important;*/
+    z-index: 1;
+    overflow: auto;
+}
+
+.ui-container:after, .ui-container:before {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+
+.ui-red,.ui-hover-red:hover {
+    color:#fff !important;
+    background-color: #f04040 !important
+}
+
+.ui-card, .ui-card-2 {
+    box-shadow:0 2px 5px 0 rgba(0, 0, 0, 0.12), 0 2px 10px 0 rgba(0, 0, 0, 0.08)
+}
